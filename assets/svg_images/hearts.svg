@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="208" height="206"
+	viewBox="0 0 208 206">
+<title>Suit Hearts</title>
+<linearGradient id="grad" gradientUnits="objectBoundingBox">
+	<stop offset="0"   stop-color="#F26A61"/>
+	<stop offset="0.1" stop-color="#EB6158"/>
+	<stop offset="0.5" stop-color="#DC4239"/>
+	<stop offset="0.8" stop-color="#D32B2B"/>
+	<stop offset="1"   stop-color="#D02027"/>
+</linearGradient>
+<path style="stroke-linejoin:round; stroke-width:5; stroke:#D02028; fill:url(#grad);"
+	transform="translate(55.5 2) scale(0.445 0.475)"
+	d="m 0 0 c -66.24,0 -120,53.76 -120,120 0,134.75551 135.93315,170.0873 228.56245,303.31 87.57424,-132.40336 228.5625,-172.8546 228.5625,-303.31 0,-66.24 -53.76,-120 -120,-120 -48.0479,0 -89.4016,28.37 -108.5625,69.1875 -19.1608,-40.81708 -60.5145,-69.18751 -108.5625,-69.1875 z"
+	/>
+</svg>
