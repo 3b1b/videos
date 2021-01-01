@@ -352,3 +352,32 @@ class SortingLogoGeneration(LogoGenerationTemplate):
             ]),
             Animation(logo.pupil),
         ]
+
+
+class LogoTest(Scene):
+    def construct(self):
+        n_range = list(range(4, 40, 4))
+        for n, denom in zip(n_range, np.linspace(14, 28, len(n_range))):
+            logo = Logo(**{
+                "iris_background_blue": "#78C0E3",
+                "iris_background_brown": "#8C6239",
+                "blue_spike_colors": [
+                    "#528EA3",
+                    "#3E6576",
+                    "#224C5B",
+                    BLACK,
+                ],
+                "brown_spike_colors": [
+                    "#754C24",
+                    "#603813",
+                    "#42210b",
+                    BLACK,
+                ],
+                "n_spike_layers": 4,
+                "n_spikes": n,
+                "spike_angle": TAU / denom,
+            })
+            self.add(logo)
+            self.wait()
+            self.clear()
+        self.add(logo)

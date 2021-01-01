@@ -4612,16 +4612,53 @@ class Thumbnail(NetworkScene):
         self.add(subtitle)
         self.add(title)
 
+# Extra
 
+class NeuralNetImageAgain(Scene):
+    def construct(self):
+        layers = VGroup()
+        for length in [16, 16, 16, 10]:
+            circs = VGroup(*[
+                Circle(radius=1)
+                for x in range(length)
+            ])
+            circs.arrange(DOWN, buff=0.5)
+            circs.set_stroke(WHITE, 2)
+            layers.add(circs)
+        layers.set_height(6.5)
+        layers.arrange(RIGHT, buff=2.5)
 
+        dots = TexMobject("\\vdots")
+        dots.move_to(layers[0])
+        layers[0][:8].next_to(dots, UP, MED_SMALL_BUFF)
+        layers[0][8:].next_to(dots, DOWN, MED_SMALL_BUFF)
 
+        for layer in layers[1:3]:
+            for node in layer:
+                node.set_fill(WHITE, opacity=random.random())
+        layers[3][6].set_fill(WHITE, 0.9)
 
+        all_edges = VGroup()
+        for l1, l2 in zip(layers, layers[1:]):
+            edges = VGroup()
+            for n1, n2 in it.product(l1, l2):
+                edge = Line(
+                    n1.get_center(), n2.get_center(),
+                    buff=n1.get_height() / 2
+                )
+                edge.set_stroke(WHITE, 1, opacity=0.75)
+                # edge.set_stroke(
+                #     color=random.choice([BLUE, RED]),
+                #     width=3 * random.random()**6,
+                #     # opacity=0.5
+                # )
+                edges.add(edge)
+            all_edges.add(edges)
 
+        network = VGroup(all_edges, layers, dots)
 
+        brace = Brace(network, LEFT)
 
-
-
-
-
-
+        self.add(network)
+        self.add(brace)
 
