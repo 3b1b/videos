@@ -12,10 +12,8 @@ from manimlib.mobject.geometry import DashedLine
 from manimlib.mobject.geometry import Line
 from manimlib.mobject.geometry import Rectangle
 from manimlib.mobject.geometry import Square
-from manimlib.mobject.svg.drawings import Logo
 from manimlib.mobject.svg.tex_mobject import TextMobject
 from manimlib.mobject.types.vectorized_mobject import VGroup
-from manimlib.scene.moving_camera_scene import MovingCameraScene
 from manimlib.scene.scene import Scene
 from manimlib.utils.rate_functions import linear
 
@@ -221,33 +219,6 @@ class PatreonEndScreen(Scene):
                 name.split(" ")
             ))
         return name
-
-
-class LogoGenerationTemplate(MovingCameraScene):
-    def setup(self):
-        MovingCameraScene.setup(self)
-        frame = self.camera_frame
-        frame.shift(DOWN)
-
-        self.logo = Logo()
-        name = TextMobject("3Blue1Brown")
-        name.scale(2.5)
-        name.next_to(self.logo, DOWN, buff=MED_LARGE_BUFF)
-        name.set_sheen(-0.2, DR)
-        self.channel_name = name
-
-    def construct(self):
-        logo = self.logo
-        name = self.channel_name
-
-        self.play(
-            Write(name, run_time=3),
-            *self.get_logo_animations(logo)
-        )
-        self.wait()
-
-    def get_logo_animations(self, logo):
-        return []  # For subclasses
 
 
 class ExternallyAnimatedScene(Scene):
