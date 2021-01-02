@@ -2,9 +2,129 @@
 # -*- coding: utf-8 -*-
 
 from imports_3b1b import *
-from from_3b1b.active.diffyq.part2.fourier_series import FourierOfTexPaths
+from _2019.diffyq.part2.fourier_series import FourierOfTexPaths
+from _2018.quaternions import *
 
-NAME_WITH_SPACES = "Prime Meridian"
+
+# I'm guessing most of this needs to be fixed...
+class ComplexMorphingNames(ComplexTransformationScene):
+    CONFIG = {
+        "patron_name": "Janel",
+        "function": lambda z: 0.2 * (z**3),
+        "default_apply_complex_function_kwargs": {
+            "run_time": 5,
+        },
+        "output_directory": os.path.join(VIDEO_DIR, "EightDollarPatrons"),
+        "include_coordinate_labels": False,
+        "vert_start_color": YELLOW,  # TODO
+        "vert_end_color": PINK,
+        "horiz_start_color": GREEN,
+        "horiz_end_color": BLUE,
+        "use_multicolored_plane": True,
+        # "plane_config" : {
+        #     "unit_size" : 1.5,
+        # },
+    }
+
+    def construct(self):
+        name = self.patron_name
+        self.clear()
+        self.frames = []
+        self.setup()
+        self.add_transformable_plane()
+        self.plane.fade()
+
+        name_mob = TextMobject(name)
+        name_mob.set_width(4)
+        name_mob.next_to(ORIGIN, UP, LARGE_BUFF)
+        self.start_vect = name_mob.get_center()
+        for submob in name_mob.family_members_with_points():
+            submob.insert_n_curves(100)
+        name_mob_copy = name_mob.copy()
+
+        self.play(Write(name_mob))
+        self.play(
+            self.get_rotation(name_mob),
+            run_time=5,
+        )
+        self.wait()
+        self.add_transformable_mobjects(name_mob)
+        self.apply_complex_function(self.function)
+        self.wait()
+        self.play(
+            self.get_post_transform_rotation(name_mob, name_mob_copy),
+            run_time=10
+        )
+        self.wait(3)
+
+    def get_rotation(self, name_mob):
+        return UpdateFromAlphaFunc(
+            name_mob,
+            lambda mob, alpha: mob.move_to(rotate_vector(
+                self.start_vect, 2 * np.pi * alpha
+            ))
+        )
+
+    def get_post_transform_rotation(self, name_mob, name_mob_copy):
+        simple_rotation = self.get_rotation(name_mob_copy)
+
+        def update(name_mob, alpha):
+            simple_rotation.update(alpha)
+            new_name = simple_rotation.mobject.copy()
+            new_name.apply_complex_function(self.function)
+            Transform(name_mob, new_name).update(1)
+            return name_mob
+        return UpdateFromAlphaFunc(name_mob, update)
+
+
+class FlowNameAnimation(Scene):
+    CONFIG = {
+        "patron_name": "Test Name"
+    }
+
+    def construct(self):
+        name_mob = TextMobject(self.patron_name)
+        name_mob.scale(2)
+        max_width = FRAME_WIDTH - 2
+        if name_mob.get_width() > max_width:
+            name_mob.set_width(max_width)
+        name_strokes = VGroup()
+        for mob in name_mob.family_members_with_points():
+            mob.insert_n_curves(20)
+            anchors1, handles1, handles2, anchors2 = mob.get_anchors_and_handles()
+            for a1, h1, h2, a2 in zip(anchors1, handles1, handles2, anchors2):
+                stroke = VMobject()
+                stroke.set_points([a1, h1, h2, a2])
+                stroke.set_stroke(WHITE, width=2)
+                name_strokes.add(stroke)
+                stroke.save_state()
+
+        from _2017.eoc.div_curl import four_swirls_function
+        from _2017.eoc.div_curl import VectorField
+        from _2017.eoc.div_curl import move_submobjects_along_vector_field
+        func = four_swirls_function
+        vector_field = VectorField(func)
+        vector_field.submobjects.sort(
+            key=lambda a: a.get_length()
+        )
+        flow = move_submobjects_along_vector_field(name_strokes, func)
+
+        self.add_foreground_mobjects(name_strokes)
+        self.play(Write(name_strokes))
+        self.play(LaggedStartMap(GrowArrow, vector_field))
+        self.add(flow)
+        self.wait(60)
+        self.remove(flow)
+        self.play(
+            FadeOut(vector_field),
+            LaggedStartMap(
+                ApplyMethod, name_strokes,
+                lambda m: (m.restore,),
+                lag_ratio=0.2
+            ),
+            run_time=5,
+        )
+        self.wait()
 
 
 class NameAnimationScene(Scene):
@@ -228,3 +348,95 @@ class FourierNameAnimation(FourierOfTexPaths, NameAnimationScene):
     CONFIG = {
         "camera_class": MovingCamera
     }
+
+
+class QuaternionNameAnimation(SpecialThreeDScene):
+    CONFIG = {
+        "R": 2,
+    }
+
+    def construct(self):
+        surface = ParametricSurface(lambda u, v: (u, v, 0), resolution=16)
+        surface.set_width(self.R * TAU)
+        surface.set_height(1.8 * self.R, stretch=True)
+        surface.center()
+        surface.set_fill(opacity=0.5)
+        name = TextMobject(self.name_text)
+        name.set_width(self.R * TAU - 1)
+        max_height = 0.4 * surface.get_height()
+        if name.get_height() > max_height:
+            name.set_height(max_height)
+        name.next_to(surface.get_top(), DOWN)
+        for letter in name:
+            letter.add(VectorizedPoint(letter.get_center() + 2 * OUT))
+            letter.set_shade_in_3d(True, z_index_as_group=True)
+            # for submob in letter.family_members_with_points():
+            #     submob.pre_function_handle_to_anchor_scale_factor = 0.001
+
+        axes = self.get_axes()
+
+        self.play(
+            Write(surface),
+            Write(name),
+        )
+        surface.add(name)
+        self.wait()
+        self.move_camera(
+            phi=70 * DEGREES,
+            theta=-140 * DEGREES,
+            added_anims=[
+                ApplyPointwiseFunction(self.plane_to_cylinder, surface),
+                FadeIn(axes),
+            ],
+            run_time=3,
+        )
+        self.begin_ambient_camera_rotation(0.01)
+        self.wait(2)
+        self.play(
+            ApplyPointwiseFunction(self.cylinder_to_sphere, surface),
+            run_time=3
+        )
+        # self.play(Rotating(
+        #     surface, angle=-TAU, axis=OUT,
+        #     about_point=ORIGIN,
+        #     run_time=4,
+        #     rate_func=smooth
+        # ))
+        self.wait(2)
+        for i in range(3):
+            axis = np.zeros(3)
+            axis[i] = 1
+            self.play(Homotopy(
+                self.get_quaternion_homotopy(axis),
+                surface,
+                run_time=10,
+            ))
+        self.wait(5)
+
+    def plane_to_cylinder(self, p):
+        x, y, z = p
+        R = self.R + z
+        return np.array([
+            R * np.cos(x / self.R - 0),
+            R * np.sin(x / self.R - 0),
+            1.0 * y,
+        ])
+
+    def cylinder_to_sphere(self, p):
+        x, y, z = p
+        R = self.R
+        r = np.sqrt(R**2 - z**2)
+        return np.array([
+            x * fdiv(r, R),
+            y * fdiv(r, R),
+            z
+        ])
+
+    def get_quaternion_homotopy(self, axis=[1, 0, 0]):
+        def result(x, y, z, t):
+            alpha = t
+            quaternion = np.array([np.cos(TAU * alpha), 0, 0, 0])
+            quaternion[1:] = np.sin(TAU * alpha) * np.array(axis)
+            new_quat = q_mult(quaternion, [0, x, y, z])
+            return new_quat[1:]
+        return result

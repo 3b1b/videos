@@ -381,3 +381,67 @@ class LogoTest(Scene):
             self.wait()
             self.clear()
         self.add(logo)
+
+
+class LogoGenerationFlurry(LogoGenerationTemplate):
+    CONFIG = {
+        "random_seed": 2,
+    }
+
+    def get_logo_animations(self, logo):
+        layers = logo.spike_layers
+        for i, layer in enumerate(layers):
+            random.shuffle(layer.submobjects)
+            for spike in layer:
+                spike.save_state()
+                spike.scale(0.5)
+                spike.apply_complex_function(np.log)
+                spike.rotate(-90 * DEGREES, about_point=ORIGIN)
+                spike.set_fill(opacity=0)
+            layer.rotate(i * PI / 5)
+
+        logo.iris_background.save_state()
+        logo.iris_background.scale(0.25)
+        logo.iris_background.fade(1)
+
+        return [
+            Restore(
+                logo.iris_background,
+                run_time=3,
+            ),
+            AnimationGroup(*[
+                LaggedStartMap(
+                    Restore, layer,
+                    run_time=3,
+                    path_arc=180 * DEGREES,
+                    # rate_func=squish_rate_func(smooth, a / 3.0, (a + 1.9) / 3.0),
+                    lag_ratio=0.8,
+                )
+                for layer, a in zip(layers, [0, 0.2, 0.1, 0])
+            ]),
+            Animation(logo.pupil),
+        ]
+
+
+class Vertical3B1B(Scene):
+    def construct(self):
+        words = TextMobject(
+            "3", "Blue", "1", "Brown",
+        )
+        words.scale(2)
+        words[::2].scale(1.2)
+        buff = 0.2
+        words.arrange(
+            DOWN,
+            buff=buff,
+            aligned_edge=LEFT,
+        )
+        words[0].match_x(words[1][0])
+        words[2].match_x(words[3][0])
+        self.add(words)
+
+        logo = Logo()
+        logo.next_to(words, LEFT)
+        self.add(logo)
+
+        VGroup(logo, words).center()

@@ -11,9 +11,11 @@ def zeta(z):
     except:
         return np.complex(max_norm, 0)
 
+
 def d_zeta(z):
     epsilon = 0.01
     return (zeta(z + epsilon) - zeta(z))/epsilon
+
 
 class ZetaTransformationScene(ComplexTransformationScene):
     CONFIG = {

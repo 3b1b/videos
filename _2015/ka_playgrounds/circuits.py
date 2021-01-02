@@ -1,4 +1,4 @@
-from big_ol_pile_of_manim_imports import *
+from imports_3b1b import *
 
 class Resistor(Line):
     def init_points(self):

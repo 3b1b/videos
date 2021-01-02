@@ -1,6 +1,7 @@
-from big_ol_pile_of_manim_imports import *
+from imports_3b1b import *
 
 
+# Broken, but fixable
 class ImagesMod256(Scene):
     CONFIG = {
     }

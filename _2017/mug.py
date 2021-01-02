@@ -2052,35 +2052,16 @@ class PatreonThanks(PatreonEndScreen):
         ]
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class NewMugThumbnail(Scene):
+    def construct(self):
+        title = TexMobject(
+            "V - E + F = 0",
+            tex_to_color_map={"0": YELLOW},
+        )
+        title.scale(3)
+        title.to_edge(UP)
+        image = ImageMobject("sci_youtubers_thumbnail")
+        image.set_height(5.5)
+        image.next_to(title, DOWN)
+        self.add(title, image)
 

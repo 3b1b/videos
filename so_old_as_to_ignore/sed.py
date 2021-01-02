@@ -1,8 +1,9 @@
-from big_ol_pile_of_manim_imports import *
+from imports_3b1b import *
+
 import csv
-from pprint import pprint
 import time
 from datetime import datetime
+
 
 class SEDTest(MovingCameraScene):
     def construct(self):
@@ -254,10 +255,9 @@ class SEDTest(MovingCameraScene):
             for x in range(3):
                 self.play(flicker)
             last_label = line.label
-                # self.show_frame()
+            # self.show_frame()
 
         # T -4 spike
         # Separation of arrays
         # Deployment of arrays
         # Indication of power positive
-
