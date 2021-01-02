@@ -17,8 +17,8 @@ from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.scene.scene import Scene
 from manimlib.utils.rate_functions import linear
 
-from manim_extensions.characters.pi_creature import Mortimer
-from manim_extensions.characters.pi_creature import Randolph
+from custom.characters.pi_creature import Mortimer
+from custom.characters.pi_creature import Randolph
 
 
 class OpeningQuote(Scene):

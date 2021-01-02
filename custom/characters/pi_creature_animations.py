@@ -12,7 +12,7 @@ from manimlib.utils.config_ops import digest_config
 from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.rate_functions import there_and_back
 
-from manim_extensions.characters.pi_class import PiCreatureClass
+from custom.characters.pi_class import PiCreatureClass
 
 
 class Blink(ApplyMethod):

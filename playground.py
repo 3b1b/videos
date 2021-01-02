@@ -228,7 +228,6 @@ class CurrBanner(Banner):
             pi.set_gloss(0.1)
 
 
-# Random play
 class SumRotVectors(Scene):
     CONFIG = {
         "n_vects": 100,
@@ -250,7 +249,6 @@ class SumRotVectors(Scene):
             run_time=10,
             rate_func=linear,
         )
-        # vects.clear_updaters()
         self.play(ShowIncreasingSubsets(vects, run_time=5))
 
     def get_vects(self, t):
@@ -268,21 +266,21 @@ class SumRotVectors(Scene):
         return vects
 
 
-class ZetaTest(Scene):
+class ZetaSum(Scene):
     def construct(self):
         plane = ComplexPlane()
         self.add(plane)
         plane.scale(0.2)
 
         s = complex(0.5, 14.135)
-        N = int(1e7)
+        N = int(1e6)
         lines = VGroup()
         color = it.cycle([BLUE, RED])
         r = int(1e3)
         for k in range(1, N + 1, r):
             c = sum([
-                l**(-s) * (N - l + 1) / N
-                for l in range(k, k + r)
+                L**(-s) * (N - L + 1) / N
+                for L in range(k, k + r)
             ])
             line = Line(plane.n2p(0), plane.n2p(c))
             line.set_color(next(color))
@@ -803,12 +801,6 @@ class ZetaSpiral(Scene):
 
         self.add(group)
 
-
-# PRODUCTION_QUALITY_CAMERA_CONFIG = {
-#     "pixel_height": 2560,
-#     "pixel_width": 2560,
-#     "frame_rate": 60,
-# }
 
 class PendulumPhaseSpace(Scene):
     def construct(self):

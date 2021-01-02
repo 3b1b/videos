@@ -18,12 +18,12 @@ from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.rate_functions import there_and_back
 from manimlib.utils.space_ops import get_norm
 
-from manim_extensions.characters.pi_creature import Mortimer
-from manim_extensions.characters.pi_creature import PiCreature
-from manim_extensions.characters.pi_creature import Randolph
-from manim_extensions.characters.pi_creature_animations import Blink
-from manim_extensions.characters.pi_creature_animations import PiCreatureBubbleIntroduction
-from manim_extensions.characters.pi_creature_animations import RemovePiCreatureBubble
+from custom.characters.pi_creature import Mortimer
+from custom.characters.pi_creature import PiCreature
+from custom.characters.pi_creature import Randolph
+from custom.characters.pi_creature_animations import Blink
+from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
+from custom.characters.pi_creature_animations import RemovePiCreatureBubble
 
 
 class PiCreatureScene(Scene):
