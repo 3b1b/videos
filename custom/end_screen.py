@@ -2,11 +2,8 @@ import random
 
 from manimlib.animation.animation import Animation
 from manimlib.animation.composition import Succession
-from manimlib.animation.creation import Write
-from manimlib.animation.fading import FadeIn
 from manimlib.animation.transform import ApplyMethod
 from manimlib.constants import *
-from manimlib.mobject.coordinate_systems import NumberPlane
 from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import DashedLine
 from manimlib.mobject.geometry import Line
@@ -19,68 +16,6 @@ from manimlib.utils.rate_functions import linear
 
 from custom.characters.pi_creature import Mortimer
 from custom.characters.pi_creature import Randolph
-
-
-class OpeningQuote(Scene):
-    CONFIG = {
-        "quote": [],
-        "quote_arg_separator": " ",
-        "highlighted_quote_terms": {},
-        "author": "",
-        "fade_in_kwargs": {
-            "lag_ratio": 0.5,
-            "rate_func": linear,
-            "run_time": 5,
-        },
-        "text_size": "\\Large",
-        "use_quotation_marks": True,
-        "top_buff": 1.0,
-        "author_buff": 1.0,
-    }
-
-    def construct(self):
-        self.quote = self.get_quote()
-        self.author = self.get_author(self.quote)
-
-        self.play(FadeIn(self.quote, **self.fade_in_kwargs))
-        self.wait(2)
-        self.play(Write(self.author, run_time=3))
-        self.wait()
-
-    def get_quote(self, max_width=FRAME_WIDTH - 1):
-        text_mobject_kwargs = {
-            "alignment": "",
-            "arg_separator": self.quote_arg_separator,
-        }
-        if isinstance(self.quote, str):
-            if self.use_quotation_marks:
-                quote = TextMobject("``%s''" %
-                                    self.quote.strip(), **text_mobject_kwargs)
-            else:
-                quote = TextMobject("%s" %
-                                    self.quote.strip(), **text_mobject_kwargs)
-        else:
-            if self.use_quotation_marks:
-                words = [self.text_size + " ``"] + list(self.quote) + ["''"]
-            else:
-                words = [self.text_size] + list(self.quote)
-            quote = TextMobject(*words, **text_mobject_kwargs)
-            # TODO, make less hacky
-            if self.quote_arg_separator == " ":
-                quote[0].shift(0.2 * RIGHT)
-                quote[-1].shift(0.2 * LEFT)
-        for term, color in self.highlighted_quote_terms:
-            quote.set_color_by_tex(term, color)
-        quote.to_edge(UP, buff=self.top_buff)
-        if quote.get_width() > max_width:
-            quote.set_width(max_width)
-        return quote
-
-    def get_author(self, quote):
-        author = TextMobject(self.text_size + " --" + self.author)
-        author.next_to(quote, DOWN, buff=self.author_buff)
-        author.set_color(YELLOW)
-        return author
 
 
 class PatreonEndScreen(Scene):
@@ -219,112 +154,3 @@ class PatreonEndScreen(Scene):
                 name.split(" ")
             ))
         return name
-
-
-class ExternallyAnimatedScene(Scene):
-    def construct(self):
-        raise Exception("Don't actually run this class.")
-
-
-class TODOStub(Scene):
-    CONFIG = {
-        "message": ""
-    }
-
-    def construct(self):
-        self.add(TextMobject("TODO: %s" % self.message))
-        self.wait()
-
-
-class Banner(Scene):
-    CONFIG = {
-        "camera_config": {
-            "pixel_height": 1440,
-            "pixel_width": 2560,
-        },
-        "pi_height": 1.25,
-        "pi_bottom": 0.25 * DOWN,
-        "use_date": False,
-        "date": "Sunday, February 3rd",
-        "message_height": 0.4,
-        "add_supporter_note": False,
-        "pre_date_text": "Next video on ",
-    }
-
-    def __init__(self, **kwargs):
-        # Force these dimensions
-        self.camera_config = {
-            "pixel_height": 1440,
-            "pixel_width": 2560,
-        }
-        Scene.__init__(self, **kwargs)
-
-    def construct(self):
-        # Background
-        plane = NumberPlane(x_range=(0, 14, 0.5), y_range=(0, 8, 0.5))
-        plane.axes.set_stroke(BLUE, 1)
-        plane.fade(0.5)
-        self.add(plane)
-
-        # Pis
-        pis = self.get_pis()
-        pis.set_height(self.pi_height)
-        pis.arrange(RIGHT, aligned_edge=DOWN)
-        pis.move_to(self.pi_bottom, DOWN)
-        self.pis = pis
-        self.add(pis)
-
-        plane.move_to(pis.get_bottom() + SMALL_BUFF * DOWN)
-
-        # Message
-        if self.use_date:
-            message = self.get_date_message()
-        else:
-            message = self.get_probabalistic_message()
-        message.set_height(self.message_height)
-        message.next_to(pis, DOWN)
-        message.set_stroke(BLACK, 5, background=True)
-        self.add(message)
-
-        # Suppoerter note
-        if self.add_supporter_note:
-            note = self.get_supporter_note()
-            note.scale(0.5)
-            message.shift((MED_SMALL_BUFF - SMALL_BUFF) * UP)
-            note.next_to(message, DOWN, SMALL_BUFF)
-            self.add(note)
-
-        yellow_parts = [sm for sm in message if sm.get_color() == YELLOW]
-        for pi in pis:
-            if yellow_parts:
-                pi.look_at(yellow_parts[-1])
-            else:
-                pi.look_at(message)
-
-    def get_pis(self):
-        return VGroup(
-            Randolph(color=BLUE_E, mode="pondering"),
-            Randolph(color=BLUE_D, mode="hooray"),
-            Randolph(color=BLUE_C, mode="sassy"),
-            Mortimer(color=GREY_BROWN, mode="thinking")
-        )
-
-    def get_probabalistic_message(self):
-        return TextMobject(
-            "New video every day ",
-            "(with probability 0.05)",
-            tex_to_color_map={"Sunday": YELLOW},
-        )
-
-    def get_date_message(self):
-        return TextMobject(
-            self.pre_date_text,
-            self.date,
-            tex_to_color_map={self.date: YELLOW},
-        )
-
-    def get_supporter_note(self):
-        return TextMobject(
-            "(Available to supporters for review now)",
-            color="#F96854",
-        )
