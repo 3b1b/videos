@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from once_useful_constructs.light import AmbientLight
 from once_useful_constructs.light import Lighthouse
 from once_useful_constructs.light import SwitchOn

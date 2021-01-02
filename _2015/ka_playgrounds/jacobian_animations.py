@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from imports_3b1b import *
+from manim_imports_ext import *
 
 from zeta import *
 

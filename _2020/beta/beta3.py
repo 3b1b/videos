@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2020.beta.helpers import *
 from _2020.beta.beta1 import *
 from _2020.beta.beta2 import ShowLimitToPdf

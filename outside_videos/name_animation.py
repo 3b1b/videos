@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2019.diffyq.part2.fourier_series import FourierOfTexPaths
 from _2018.quaternions import *
 

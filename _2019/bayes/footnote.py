@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2019.bayes.part1 import BayesDiagram
 from _2019.bayes.part1 import LibrarianIcon
 from _2019.bayes.part1 import Person

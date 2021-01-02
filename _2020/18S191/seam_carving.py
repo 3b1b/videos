@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 
 def get_value_grid(n_rows=10, n_cols=10):

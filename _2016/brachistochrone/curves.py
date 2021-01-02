@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 RANDY_SCALE_FACTOR = 0.3
 

@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 from _2017.crypto import sha256_tex_mob, bit_string_to_mobject, BitcoinLogo
 

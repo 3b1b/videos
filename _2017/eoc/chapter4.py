@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 SINE_COLOR = BLUE
 X_SQUARED_COLOR = GREEN

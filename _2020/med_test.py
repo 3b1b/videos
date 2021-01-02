@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 
 SICKLY_GREEN = "#9BBD37"

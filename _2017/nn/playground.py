@@ -8,7 +8,7 @@ from functools import reduce
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from constants import *
 
-from imports_3b1b import *
+from manim_imports_ext import *
 
 from _2017.nn.network import *
 from _2017.nn.part1 import *

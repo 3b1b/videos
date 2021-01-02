@@ -5,7 +5,7 @@ import itertools as it
 from copy import deepcopy
 import sys
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from functools import reduce
 
 DEFAULT_PLANE_CONFIG = {

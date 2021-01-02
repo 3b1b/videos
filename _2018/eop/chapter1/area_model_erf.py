@@ -1,5 +1,5 @@
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2018.eoc.chapter8 import *
 
 import scipy.special

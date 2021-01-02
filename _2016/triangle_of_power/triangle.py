@@ -1,5 +1,5 @@
 import numbers
-from imports_3b1b import *
+from manim_imports_ext import *
 from functools import reduce
 
 OPERATION_COLORS = [YELLOW, GREEN, BLUE_B]

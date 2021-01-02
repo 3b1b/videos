@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2018.eop.reusables.eop_helpers import *
 from _2018.eop.reusables.eop_constants import *
 from _2018.eop.reusables.upright_coins import *

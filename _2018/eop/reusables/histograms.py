@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from random import *
 
 def text_range(start,stop,step): # a range as a list of strings

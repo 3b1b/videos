@@ -1,5 +1,5 @@
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from once_useful_constructs.combinatorics import *
 
 nb_levels = 5

@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from functools import reduce
 
 # revert_to_original_skipping_status

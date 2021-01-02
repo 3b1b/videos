@@ -8,7 +8,7 @@ from random import random, randint
 import sys
 import inspect
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from script_wrapper import command_line_create_scene
 from functools import reduce
 

@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2018.div_curl import PureAirfoilFlow
 from _2018.div_curl import move_submobjects_along_vector_field
 from _2018.div_curl import move_points_along_vector_field

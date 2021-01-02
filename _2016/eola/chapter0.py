@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from once_useful_constructs import *
 
 EXAMPLE_TRANFORM = [[0, 1], [-1, 1]]

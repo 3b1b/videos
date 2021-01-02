@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2016.eola.chapter5 import get_det_text
 from _2016.eola.chapter8 import *
 

@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2018.lost_lecture import GeometryProofLand
 from _2018.quaternions import SpecialThreeDScene
 from _2018.uncertainty import Flash

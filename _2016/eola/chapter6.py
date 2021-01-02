@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from ka_playgrounds.circuits import Resistor, Source, LongResistor
 
 class OpeningQuote(Scene):

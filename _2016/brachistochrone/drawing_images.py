@@ -9,7 +9,7 @@ import random
 from scipy.spatial.distance import cdist
 from scipy import ndimage
 
-from imports_3b1b import *
+from manim_imports_ext import *
 
 
 DEFAULT_GAUSS_BLUR_CONFIG = {

@@ -7,7 +7,7 @@ from copy import deepcopy
 import sys
 from fractions import Fraction, gcd
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from .inventing_math import Underbrace
 
 import random

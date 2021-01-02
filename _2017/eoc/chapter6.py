@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 SPACE_UNIT_TO_PLANE_UNIT = 0.75
 

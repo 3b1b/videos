@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 
 #### Warning, scenes here not updated based on most recent GraphScene changes #######

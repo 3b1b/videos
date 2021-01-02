@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 from _2019.diffyq.part2.fourier_series import FourierOfTrebleClef
 from _2019.diffyq.part4.complex_functions import TRangingFrom0To1

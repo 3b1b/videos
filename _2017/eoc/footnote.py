@@ -1,7 +1,7 @@
 import scipy
 import math
 
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2017.eoc.eoc.chapter1 import Car, MoveCar
 from _2017.eoc.eoc.chapter10 import derivative
 

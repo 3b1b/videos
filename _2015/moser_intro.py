@@ -6,7 +6,7 @@ import itertools as it
 import operator as op
 from copy import deepcopy
 
-from imports_3b1b import *
+from manim_imports_ext import *
 
 RADIUS = FRAME_Y_RADIUS - 0.1
 CIRCLE_DENSITY = DEFAULT_POINT_DENSITY_1D*RADIUS

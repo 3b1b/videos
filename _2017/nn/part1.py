@@ -4,7 +4,7 @@ import cv2
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from imports_3b1b import *
+from manim_imports_ext import *
 
 import warnings
 warnings.warn("""

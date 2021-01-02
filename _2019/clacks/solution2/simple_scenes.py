@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2018.lost_lecture import ShowWord
 from _2019.clacks.solution2.mirror_scenes import ReflectWorldThroughMirrorNew
 from _2019.clacks.question import Thumbnail

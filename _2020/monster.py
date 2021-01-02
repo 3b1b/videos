@@ -1,4 +1,4 @@
-from imports_3b1b import *
+from manim_imports_ext import *
 
 
 MONSTER_SIZE = 808017424794512875886459904961710757005754368000000000

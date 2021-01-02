@@ -1,5 +1,5 @@
 import scipy
-from imports_3b1b import *
+from manim_imports_ext import *
 from _2017.eoc.chapter1 import Thumbnail as Chapter1Thumbnail
 from _2017.eoc.chapter2 import Car, MoveCar, ShowSpeedometer, \
     IncrementNumber, GraphCarTrajectory, SecantLineToTangentLine, \
