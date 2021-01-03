@@ -9,7 +9,7 @@ OUTPUT_DIRECTORY = "clacks/solution1"
 class FromPuzzleToSolution(MovingCameraScene):
     def construct(self):
         big_rect = FullScreenFadeRectangle()
-        big_rect.set_fill(DARK_GREY, 0.5)
+        big_rect.set_fill(GREY_D, 0.5)
         self.add(big_rect)
 
         rects = VGroup(ScreenRectangle(), ScreenRectangle())
@@ -1193,7 +1193,7 @@ class CircleDiagramFromSlidingBlocks(Scene):
         },
         "axes_config": {
             "style": {
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
                 "stroke_width": 1,
             },
             "width": 5,
@@ -1824,7 +1824,7 @@ class InscribedAngleTheorem(Scene):
                 Line(p1, p2)
                 for p1, p2 in zip(points, points[1:])
             ])
-            lines.set_stroke(LIGHT_GREY, 3)
+            lines.set_stroke(GREY_B, 3)
             return lines
 
         def get_angle_label(lines, tex, reduce_angle=True):
@@ -2875,7 +2875,7 @@ class SumUpWrapper(Scene):
         screen_rect.set_fill(BLACK, 1)
         screen_rect.next_to(title, DOWN)
         self.add(FullScreenFadeRectangle(
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             fill_opacity=0.5
         ))
         self.play(

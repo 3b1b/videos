@@ -32,7 +32,7 @@ class NameBump(BlocksAndWallExample):
 
         name_mobs = VGroup(*map(TextMobject, names))
         name_mobs.set_stroke(BLACK, 3, background=True)
-        name_mobs.set_fill(LIGHT_GREY, 1)
+        name_mobs.set_fill(GREY_B, 1)
         name_mobs.set_sheen(3, UL)
         name_mobs.scale(2)
         configs = [

@@ -219,7 +219,7 @@ class MultipleDefinitionsOfAnEllipse(Scene):
 
         for definition in definitions:
             definition.saved_state = definition.copy()
-            definition.saved_state.set_fill(LIGHT_GREY, 0.5)
+            definition.saved_state.set_fill(GREY_B, 0.5)
 
         self.play(LaggedStartMap(
             FadeInFrom, definitions,
@@ -483,7 +483,7 @@ class ShowOrbits(ShowArrayOfEccentricities):
         full_label.to_edge(UP)
 
         comet_orbit_words = TextMobject("Halley's comet orbit")
-        comet_orbit_words.set_color(LIGHT_GREY)
+        comet_orbit_words.set_color(GREY_B)
         comet_orbit_words.move_to(earth_orbit_words, RIGHT)
 
         orbiting_earth = Orbiting(earth, sun, earth_orbit)
@@ -709,7 +709,7 @@ class EccentricityInThumbtackCase(ShowArrayOfEccentricities):
         angle = 10 * DEGREES
         result = SVGMobject(file_name="push_pin")
         result.set_height(0.5)
-        result.set_fill(LIGHT_GREY)
+        result.set_fill(GREY_B)
         result.rotate(angle)
         return result
 
@@ -767,7 +767,7 @@ class AskWhyAreTheyTheSame(TeacherStudentsScene):
         )
         self.pi_creatures = VGroup(baby_morty)
         bubble = ThoughtBubble(height=6, width=7)
-        bubble.set_fill(DARK_GREY, 0.5)
+        bubble.set_fill(GREY_D, 0.5)
         bubble.pin_to(baby_morty)
 
         egg = Circle(radius=0.4)
@@ -940,7 +940,7 @@ class AskAboutWhyYouWouldAddSpheres(PiCreatureScene):
         self.play(randy.change, "pondering")
         self.play(
             why.to_corner, DR,
-            why.set_fill, LIGHT_GREY, 0.5,
+            why.set_fill, GREY_B, 0.5,
         )
         self.wait()
         self.play(

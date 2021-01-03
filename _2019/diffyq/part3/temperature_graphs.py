@@ -26,7 +26,7 @@ class TemperatureGraphScene(SpecialThreeDScene):
         },
         "default_surface_config": {
             "fill_opacity": 0.1,
-            "checkerboard_colors": [LIGHT_GREY],
+            "checkerboard_colors": [GREY_B],
             "stroke_width": 0.5,
             "stroke_color": WHITE,
             "stroke_opacity": 0.5,

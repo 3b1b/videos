@@ -362,7 +362,7 @@ class ShowTwoPerspectives(Scene):
         p_both = self.p_both
         square = Square()
         square.set_stroke(WHITE, 1)
-        square.set_fill(LIGHT_GREY, 1)
+        square.set_fill(GREY_B, 1)
         square.set_height(self.diagram_height)
 
         b_rect = square.copy()
@@ -1121,7 +1121,7 @@ class DiseaseBayes(Scene):
 class EndScreen(Scene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY
+            "background_color": GREY_E
         }
     }
 

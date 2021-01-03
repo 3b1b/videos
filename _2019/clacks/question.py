@@ -45,13 +45,13 @@ class Block(Square):
 
     def mass_to_color(self, mass):
         colors = [
-            LIGHT_GREY,
+            GREY_B,
             BLUE_D,
             BLUE_D,
             BLUE_E,
             BLUE_E,
-            DARK_GREY,
-            DARK_GREY,
+            GREY_D,
+            GREY_D,
             BLACK,
         ]
         index = min(int(np.log10(mass)), len(colors) - 1)
@@ -1227,7 +1227,7 @@ class CompareToGalacticMass(Scene):
         for bh in black_holes:
             bh.save_state()
             bh.scale(3)
-            bh.set_fill(DARK_GREY, 0)
+            bh.set_fill(GREY_D, 0)
 
         equals = TexMobject("=")
         equals.scale(2)
@@ -1540,7 +1540,7 @@ class EndScreen(Scene):
         ])
         for rect in video_rects[1::2]:
             rect.reverse_points()
-        video_rect.set_fill(DARK_GREY, 0.5)
+        video_rect.set_fill(GREY_D, 0.5)
         video_rect.set_stroke(GREY_BROWN, 0.5)
         date = TextMobject(
             "Solution will be\\\\"
@@ -1587,7 +1587,7 @@ class Thumbnail(BlocksAndWallExample, MovingCameraScene):
         # self.mobjects.insert(
         #     0,
         #     FullScreenFadeRectangle(
-        #         color=DARK_GREY,
+        #         color=GREY_D,
         #         opacity=0.5,
         #         sheen_direction=UL,
         #         sheen=0.5,

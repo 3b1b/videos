@@ -42,7 +42,7 @@ class AnalyzeZSquared(ComplexTransformationScene, ZoomedScene):
 
     def edit_background_plane(self):
         self.backgrounds.set_stroke(GREY, 2)
-        self.background.secondary_lines.set_stroke(DARK_GREY, 1)
+        self.background.secondary_lines.set_stroke(GREY_D, 1)
         self.add_foreground_mobject(self.background.coordinate_labels)
 
     def add_transforming_planes(self):

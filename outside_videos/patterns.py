@@ -127,7 +127,7 @@ class TriominoGrid(Scene):
             MAROON_B,
             YELLOW,
             GREY_BROWN,
-            LIGHT_GREY,
+            GREY_B,
             GREEN_C,
             GREEN_E,
             GREEN_D,

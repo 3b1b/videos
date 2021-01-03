@@ -494,7 +494,7 @@ class ExponentialDecay(PiCreatureScene):
             width=3,
         )
         bubble.pin_to(randy)
-        bubble.set_fill(DARKER_GREY)
+        bubble.set_fill(GREY_E)
         exp = TexMobject(
             "Ce^{", mk_tex, "t}",
             tex_to_color_map=t2c,
@@ -509,7 +509,7 @@ class ExponentialDecay(PiCreatureScene):
             y_max=4,
         )
         axes.set_stroke(width=2)
-        axes.set_color(LIGHT_GREY)
+        axes.set_color(GREY_B)
         axes.scale(0.9)
         axes.to_edge(LEFT, buff=LARGE_BUFF)
         axes.x_axis.add_numbers()
@@ -904,7 +904,7 @@ class CarbonDecayingInMammoth(Scene):
 class BoundaryConditionInterlude(Scene):
     def construct(self):
         background = FullScreenFadeRectangle(
-            fill_color=DARK_GREY
+            fill_color=GREY_D
         )
         storyline = self.get_main_storyline()
         storyline.generate_target()

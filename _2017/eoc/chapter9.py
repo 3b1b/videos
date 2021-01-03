@@ -247,7 +247,7 @@ class LengthOfDayGraph(GraphScene):
         panel = ThreeDMobject(*[
             Rectangle(
                 height = 0.7, width = 0.25,
-                fill_color = DARK_GREY,
+                fill_color = GREY_D,
                 fill_opacity = 1,
                 stroke_width = 1,
                 stroke_color = GREY,

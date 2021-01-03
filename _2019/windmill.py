@@ -8,7 +8,7 @@ class IntroduceIMO(Scene):
         "use_real_images": True,
         # "use_real_images": False,
         "include_labels": False,
-        "camera_config": {"background_color": DARKER_GREY},
+        "camera_config": {"background_color": GREY_E},
         "random_seed": 6,
         "year": 2019,
         "n_flag_rows": 10,
@@ -580,7 +580,7 @@ class USProcessAlt(IntroduceIMO):
         students.arrange_in_grid(n_cols=3, buff=LARGE_BUFF)
         students.set_height(2)
         students.next_to(group, DOWN)
-        colors = it.cycle([RED, LIGHT_GREY, BLUE])
+        colors = it.cycle([RED, GREY_B, BLUE])
         for student, color in zip(students, colors):
             student.set_color(color)
             student.save_state()
@@ -1183,7 +1183,7 @@ class ReadQuestions(Scene):
 class WindmillScene(Scene):
     CONFIG = {
         "dot_config": {
-            "fill_color": LIGHT_GREY,
+            "fill_color": GREY_B,
             "radius": 0.05,
             "background_stroke_width": 2,
             "background_stroke_color": BLACK,
@@ -3327,7 +3327,7 @@ class FailureToEmpathize(PiCreatureScene):
         big_bubble[0].shift(MED_SMALL_BUFF * RIGHT)
         big_bubble[:3].next_to(big_bubble[3], LEFT)
         big_bubble[:3].shift(0.3 * DOWN)
-        big_bubble.set_fill(DARKER_GREY)
+        big_bubble.set_fill(GREY_E)
         big_bubble.to_corner(UR)
 
         equation = TexMobject(
@@ -3518,7 +3518,7 @@ class VastSpaceOfConsiderations(Scene):
 class WhatStaysConstantWrapper(Scene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY
+            "background_color": GREY_E
         }
     }
 
@@ -3719,7 +3719,7 @@ class WindmillFairyTale(Scene):
 
         paths.set_height(FRAME_HEIGHT - 1)
         paths.set_stroke(width=0)
-        paths.set_fill([LIGHT_GREY, WHITE])
+        paths.set_fill([GREY_B, WHITE])
 
         for path in paths:
             path.reverse_points()
@@ -3782,7 +3782,7 @@ class SolveAProblemOneDay(SpiritOfIMO, PiCreatureScene):
 class QuixoteReference(Scene):
     def construct(self):
         rect = FullScreenFadeRectangle()
-        rect.set_fill([DARK_GREY, GREY])
+        rect.set_fill([GREY_D, GREY])
 
         windmill = SVGMobject("windmill")
         windmill.set_fill([GREY_BROWN, WHITE], 1)
@@ -4021,7 +4021,7 @@ class Thumbnail(WindmillScene):
             for a in [0, PI]
         ])
         arcs.move_to(windmill.pivot)
-        arcs.set_color([LIGHT_GREY, WHITE])
+        arcs.set_color([GREY_B, WHITE])
 
         polygon1 = Polygon(
             (FRAME_HEIGHT * UP + FRAME_WIDTH * LEFT) / 2,
@@ -4029,7 +4029,7 @@ class Thumbnail(WindmillScene):
             (FRAME_HEIGHT * DOWN + FRAME_HEIGHT * LEFT) / 2,
             (FRAME_HEIGHT * DOWN + FRAME_WIDTH * LEFT) / 2,
         )
-        polygon1.set_color([BLUE, DARKER_GREY])
+        polygon1.set_color([BLUE, GREY_E])
         polygon1.set_fill(opacity=0.5)
         polygon2 = Polygon(
             (FRAME_HEIGHT * UP + FRAME_WIDTH * RIGHT) / 2,

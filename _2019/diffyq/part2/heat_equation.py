@@ -47,7 +47,7 @@ class TwoDBodyWithManyTemperatures(ThreeDScene):
 
         plate = Square(
             stroke_width=0,
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             sheen_direction=UL,
             sheen_factor=1,
             fill_opacity=1,
@@ -662,7 +662,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
         # Show x-values
         triangle = ArrowTip(
             start_angle=-90 * DEGREES,
-            color=LIGHT_GREY,
+            color=GREY_B,
         )
         x_tracker = ValueTracker(PI)
         get_x = x_tracker.get_value
@@ -898,7 +898,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
         )
         surface.set_style(
             fill_opacity=0.1,
-            fill_color=LIGHT_GREY,
+            fill_color=GREY_B,
             stroke_width=0.5,
             stroke_color=WHITE,
             stroke_opacity=0.5,

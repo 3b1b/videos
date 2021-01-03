@@ -434,7 +434,7 @@ class Dartboard(VGroup):
                 )
             ])
             for colors, in_r, out_r in [
-                ([LIGHT_GREY, DARKER_GREY], 0, 1),
+                ([GREY_B, GREY_E], 0, 1),
                 ([GREEN_E, RED_E], 0.5, 0.55),
                 ([GREEN_E, RED_E], 0.95, 1),
             ]
@@ -592,7 +592,7 @@ class ShowExampleHit(HyperdartScene):
         outline.replace(new_circle)
 
         self.play(
-            circle.set_color, DARK_GREY,
+            circle.set_color, GREY_D,
             TransformFromCopy(chord, chord_copy),
             FadeIn(new_diam_word, UP)
         )
@@ -804,7 +804,7 @@ class ChooseXThenYUniformly(Scene):
 
         square = Square()
         square.replace(circle)
-        square.set_stroke(LIGHT_GREY, 1)
+        square.set_stroke(GREY_B, 1)
         square = DashedVMobject(square, num_dashes=101)
 
         self.add(square, circle)

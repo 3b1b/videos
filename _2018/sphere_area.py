@@ -3151,7 +3151,7 @@ class SecondProof(SpecialThreeDScene):
             axis=RIGHT, about_point=radial_line.get_center()
         )
         shadows = self.shadows
-        self.set_ring_colors(shadows, [GREY_BROWN, DARK_GREY])
+        self.set_ring_colors(shadows, [GREY_BROWN, GREY_D])
         for submob in shadows:
             submob.save_state()
         shadows.become(self.rings.saved_state[:len(shadows)])

@@ -551,7 +551,7 @@ class StartingCalc101(PiCreatureScene):
             width=self.image_frame_width,
             height=self.image_frame_height,
             stroke_color=YELLOW,
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             fill_opacity=0.5,
         )
         mystery_box.scale(1.5)
@@ -3062,7 +3062,7 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
         phi_bro_arrow = Arrow(phi_bro_tick, output_phi_bro_point, **arrow_kwargs)
 
         def fade_arrow(arrow):
-            # arrow.set_stroke(DARK_GREY, 0.5)
+            # arrow.set_stroke(GREY_D, 0.5)
             arrow.set_stroke(width=0.1)
             arrow.tip.set_fill(opacity=0)
             arrow.tip.set_stroke(width=0)
@@ -3348,7 +3348,7 @@ class StaticAlgebraicObject(Scene):
         self.play(frac.scale, factor, run_time=0.5)
         self.play(
             frac.scale, 1 / factor,
-            frac.set_color, LIGHT_GREY,
+            frac.set_color, GREY_B,
             run_time=0.5, rate_func=lambda t: t**5,
         )
         self.wait()
@@ -3498,7 +3498,7 @@ class ShowJacobianZoomedIn(LinearTransformationScene, ZoomedScene):
             x_radius=2,
             y_radius=2,
             color=BLUE_E,
-            secondary_color=DARK_GREY,
+            secondary_color=GREY_D,
         )
         tiny_grid.replace(frame)
 

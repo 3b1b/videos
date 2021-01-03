@@ -158,7 +158,7 @@ class ShowEmergingEllipse(Scene):
         "num_lines": 150,
         "lines_stroke_width": 1,
         "eccentricity_vector": 2 * RIGHT,
-        "ghost_lines_stroke_color": LIGHT_GREY,
+        "ghost_lines_stroke_color": GREY_B,
         "ghost_lines_stroke_width": 0.5,
         "ellipse_color": PINK,
     }
@@ -438,7 +438,7 @@ class FeynmanFame(Scene):
         safe = SVGMobject(file_name="safe", height=2)
         safe_rect = SurroundingRectangle(safe, buff=0)
         safe_rect.set_stroke(width=0)
-        safe_rect.set_fill(DARK_GREY, 1)
+        safe_rect.set_fill(GREY_D, 1)
         safe.add_to_back(safe_rect)
 
         bongo = SVGMobject(file_name="bongo")
@@ -755,7 +755,7 @@ class AskAboutEllipses(TheMotionOfPlanets):
         f1, f2 = self.focus_points
         comet = self.comet
         lines = VGroup(Line(LEFT, RIGHT), Line(LEFT, RIGHT))
-        lines.set_stroke(LIGHT_GREY, 1)
+        lines.set_stroke(GREY_B, 1)
 
         def update_lines(lines):
             l1, l2 = lines
@@ -965,7 +965,7 @@ class AskAboutEllipses(TheMotionOfPlanets):
 
     def get_radial_line_and_update(self, comet):
         line = Line(LEFT, RIGHT)
-        line.set_stroke(LIGHT_GREY, 1)
+        line.set_stroke(GREY_B, 1)
         line_update = Mobject.add_updater(
             line, lambda l: l.put_start_and_end_on(
                 self.sun.get_center(),
@@ -1211,7 +1211,7 @@ class ShowEllipseDefiningProperty(Scene):
         push_pins = VGroup(*[
             SVGMobject(
                 file_name="push_pin",
-                color=LIGHT_GREY,
+                color=GREY_B,
                 fill_opacity=0.8,
                 height=0.5,
             ).move_to(point, DR).shift(0.05 * RIGHT)
@@ -2395,7 +2395,7 @@ class NonEllipticalKeplersLaw(KeplersSecondLaw):
         orbit_shape.set_height(7)
         orbit_shape.stretch(1.5, 0)
         orbit_shape.shift(LEFT)
-        orbit_shape.set_stroke(LIGHT_GREY, 1)
+        orbit_shape.set_stroke(GREY_B, 1)
         return orbit_shape
 
 
@@ -3105,7 +3105,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
             )
             wedges.add(wedge)
 
-        lines.set_stroke(LIGHT_GREY, 2)
+        lines.set_stroke(GREY_B, 2)
         angle_arcs.set_color_by_gradient(
             YELLOW, BLUE, RED, PINK, YELLOW
         )
@@ -3449,7 +3449,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
             arc.scale(0.4, about_point=ORIGIN)
             arc.shift(line.get_center())
             external_angle_arcs.add(arc)
-        external_angle_lines.set_stroke(LIGHT_GREY, 2)
+        external_angle_lines.set_stroke(GREY_B, 2)
         diff_vect = difference_vectors[index]
 
         polygon = Polygon(*[
@@ -3549,7 +3549,7 @@ class PonderOverOffCenterDiagram(PiCreatureScene):
         rect = SurroundingRectangle(
             velocity_diagram,
             buff=MED_LARGE_BUFF,
-            color=LIGHT_GREY
+            color=GREY_B
         )
         rect.stretch(1.2, 1, about_edge=DOWN)
         words = TextMobject("Velocity space")
@@ -3817,7 +3817,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
         tangent_line = Line(
             *original_vector.get_start_and_end()
         )
-        tangent_line.set_stroke(LIGHT_GREY, 3)
+        tangent_line.set_stroke(GREY_B, 3)
         tangent_line.scale(5)
         tangent_line.move_to(comet)
 

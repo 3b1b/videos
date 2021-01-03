@@ -254,8 +254,8 @@ class FilterLabel(TexMobject):
 
 class PolarizingFilter(Circle):
     CONFIG = {
-        "stroke_color" : DARK_GREY,
-        "fill_color" : LIGHT_GREY,
+        "stroke_color" : GREY_D,
+        "fill_color" : GREY_B,
         "fill_opacity" : 0.5,
         "label_tex" : None,
         "filter_angle" : 0,
@@ -1150,9 +1150,9 @@ class ShowVectorEquation(Scene):
 
     def add_plane(self):
         xy_plane = NumberPlane(
-            axes_color = LIGHT_GREY,
-            color = DARK_GREY,
-            secondary_color = DARK_GREY,
+            axes_color = GREY_B,
+            color = GREY_D,
+            secondary_color = GREY_D,
             x_unit_size = 2,
             y_unit_size = 2,
         )
@@ -2506,8 +2506,8 @@ class DescribePhoton(ThreeDScene):
 
     def reposition_to_face_photon_head_on(self):
         plane = NumberPlane(
-            color = LIGHT_GREY,
-            secondary_color = DARK_GREY,
+            color = GREY_B,
+            secondary_color = GREY_D,
             x_unit_size = 2,
             y_unit_size = 2,
             y_radius = FRAME_X_RADIUS,

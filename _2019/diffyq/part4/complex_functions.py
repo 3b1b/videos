@@ -259,7 +259,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
         "input_space_rect_config": {
             "stroke_color": WHITE,
             "stroke_width": 1,
-            "fill_color": DARKER_GREY,
+            "fill_color": GREY_E,
             "fill_opacity": 1,
             "width": 6,
             "height": 2,
@@ -456,7 +456,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
 
 class GraphForFlattenedPi(ClarifyInputAndOutput):
     CONFIG = {
-        "camera_config": {"background_color": DARKER_GREY},
+        "camera_config": {"background_color": GREY_E},
     }
 
     def construct(self):

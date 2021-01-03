@@ -254,7 +254,7 @@ class TeacherStudentsScene(PiCreatureScene):
     CONFIG = {
         "student_colors": [BLUE_D, BLUE_E, BLUE_C],
         "teacher_color": GREY_BROWN,
-        "background_color": DARKER_GREY,
+        "background_color": GREY_E,
         "student_scale_factor": 0.8,
         "seconds_to_blink": 2,
         "screen_height": 3,

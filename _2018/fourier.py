@@ -200,7 +200,7 @@ class AddingPureFrequencies(PiCreatureScene):
             axes.coords_to_point(0, eh),
             axes.coords_to_point(axes.x_max, eh),
             stroke_width = 2,
-            stroke_color = LIGHT_GREY
+            stroke_color = GREY_B
         )
 
         frequency = self.A_frequency
@@ -1078,7 +1078,7 @@ class FourierMachineScene(Scene):
             )
             for n in range(1, n_lines + 1)
         ])
-        v_lines.set_stroke(LIGHT_GREY)
+        v_lines.set_stroke(GREY_B)
         return v_lines
 
     def get_period_v_lines_update_anim(self):
@@ -1359,7 +1359,7 @@ class DrawFrequencyPlot(WrapCosineGraphAroundCircle, PiCreatureScene):
         )
         self.wait()
 
-        metal_wire = pol_graph.copy().set_stroke(LIGHT_GREY)
+        metal_wire = pol_graph.copy().set_stroke(GREY_B)
         self.play(
             ShowCreationThenDestruction(metal_wire),
             run_time = 2,

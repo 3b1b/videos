@@ -6,7 +6,7 @@ class Car(SVGMobject):
     CONFIG = {
         "file_name": "Car",
         "height": 1,
-        "color": LIGHT_GREY,
+        "color": GREY_B,
         "light_colors": [BLACK, BLACK],
     }
 
@@ -199,7 +199,7 @@ class Guitar(SVGMobject):
     CONFIG = {
         "file_name": "guitar",
         "height": 2.5,
-        "fill_color": DARK_GREY,
+        "fill_color": GREY_D,
         "fill_opacity": 1,
         "stroke_color": WHITE,
         "stroke_width": 0.5,
@@ -247,8 +247,8 @@ class PlayingCard(VGroup):
             fill_opacity=1,
         ))
         if self.turned_over:
-            self.set_fill(DARK_GREY)
-            self.set_stroke(LIGHT_GREY)
+            self.set_fill(GREY_D)
+            self.set_stroke(GREY_B)
             contents = VectorizedPoint(self.get_center())
         else:
             value = self.get_value()

@@ -158,7 +158,7 @@ class ShowDotProductMeaning(Scene):
             return Line(
                 center - 3 * direction,
                 center + 3 * direction,
-                stroke_color=LIGHT_GREY,
+                stroke_color=GREY_B,
                 stroke_width=1,
             )
         w_line = always_redraw(get_w_line)

@@ -2293,7 +2293,7 @@ class NonSpatialGradientIntuition(Scene):
                 color = interpolate_color(BLACK, WHITE, 0.5)
             elif abs(decimal.number) < 0.5:
                 adj = "somewhat"
-                color = LIGHT_GREY
+                color = GREY_B
             else:
                 adj = "a lot"
                 color =  WHITE
@@ -2306,7 +2306,7 @@ class NonSpatialGradientIntuition(Scene):
             rect = SurroundingRectangle(
                 VGroup(*decimal[-4:]), 
                 buff = SMALL_BUFF,
-                color = LIGHT_GREY
+                color = GREY_B
             )
             rect.target = words
             rects.add(rect)

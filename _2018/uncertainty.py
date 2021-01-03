@@ -126,7 +126,7 @@ class ProbabalisticVectorCloud(ProbabalisticMobjectCloud):
 class RadarDish(SVGMobject):
     CONFIG = {
         "file_name" : "radar_dish",
-        "fill_color" : LIGHT_GREY,
+        "fill_color" : GREY_B,
         "stroke_color" : WHITE,
         "stroke_width" : 1,
         "height" : 1,
@@ -135,7 +135,7 @@ class RadarDish(SVGMobject):
 class Plane(SVGMobject):
     CONFIG = {
         "file_name" : "plane",
-        "color" : LIGHT_GREY,
+        "color" : GREY_B,
         "height" : 1,
     }
     def __init__(self, **kwargs):
@@ -799,7 +799,7 @@ class TwoCarsAtRedLight(Scene):
             }
         )
         frequency_axes.next_to(time_axes, DOWN, LARGE_BUFF)
-        frequency_axes.set_color(LIGHT_GREY)
+        frequency_axes.set_color(GREY_B)
         frequency_label = TextMobject("Frequency")
         frequency_label.scale(self.text_scale_val)
         frequency_label.next_to(frequency_axes.x_axis.get_right(), DOWN)
@@ -2355,7 +2355,7 @@ class AmbiguityInLongEchos(IntroduceDopplerRadar, PiCreatureScene):
             ),
             SVGMobject(
                 file_name = "helicopter", 
-                color = LIGHT_GREY,
+                color = GREY_B,
                 height = 0.5,
             ).rotate(-TAU/24),
             FalconHeavy(),
@@ -3258,7 +3258,7 @@ class AskPhysicists(PiCreatureScene):
 
         physies = VGroup(*[
             PiCreature(color = c).flip()
-            for c in (GREY, LIGHT_GREY, DARK_GREY)
+            for c in (GREY, GREY_B, GREY_D)
         ])
         physies.arrange(RIGHT, buff = MED_SMALL_BUFF)
         physies.scale(scale_factor)

@@ -381,7 +381,7 @@ class LinAlgPyramid(Scene):
             )
         self.wait()
         self.play(*[
-            ApplyMethod(m.set_color, DARK_GREY)
+            ApplyMethod(m.set_color, GREY_D)
             for m in (words[0], rects[0])
         ])
         self.wait()

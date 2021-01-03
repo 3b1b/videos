@@ -153,7 +153,7 @@ class HighlightEmergentTriangles(AddParallelLines):
         for triplet in triplets:
             self.set_color_region(
                 region_from_polygon_vertices(*triplet),
-                color = "DARK_BLUE"
+                color = "BLUE_D"
             )
 
 class IndicateTroublePointFromParallelLines(AddParallelLines):
@@ -213,7 +213,7 @@ class DrawAllThreeSquaresWithMoreTriangles(DrawAllThreeSquares):
             if fill:
                 self.set_color_region(
                     region_from_polygon_vertices(*vertices),
-                    color = DARK_BLUE
+                    color = BLUE_D
                 )
 
 class IndicateBigRectangleTroublePoint(DrawAllThreeSquaresWithMoreTriangles):
@@ -285,7 +285,7 @@ class AddTriangleCopyToABSquares(DrawOnlyABSquares):
                 for x in range(2):
                     self.set_color_region(region_from_polygon_vertices(
                         *vertices
-                    ), color = DARK_BLUE)
+                    ), color = BLUE_D)
                     vertices.reverse()#silly hack
 
 class AddAllTrianglesToABSquares(AddTriangleCopyToABSquares):
@@ -478,7 +478,7 @@ class FillComponentsOfLargeSquare(LabelLargeSquare):
             self.set_color_region(region_from_line_boundary(*[
                 [points[i], points[j]]
                 for i, j in zip(triplet, triplet[1:])
-            ]), color = DARK_BLUE)
+            ]), color = BLUE_D)
         vertices = points[[1, 3, 5, 7, 1]]
         self.set_color_region(region_from_line_boundary(*[
             [p1, p2]

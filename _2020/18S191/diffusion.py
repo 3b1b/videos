@@ -71,7 +71,7 @@ class Diffusion1D(Scene):
             bars.add(bar)
 
         bars.set_fill(GREY, 0.8)
-        bars.set_stroke(LIGHT_GREY, 0.2)
+        bars.set_stroke(GREY_B, 0.2)
 
         def update_bars(bars, dots=dots, y_unit=y_unit, epsilon=epsilon):
             for bar in bars:
@@ -243,7 +243,7 @@ class Diffusion2D(Diffusion1D):
         ])
         grid.arrange_in_grid(*grid_dimensions, buff=0)
         grid.set_height(FRAME_HEIGHT)
-        grid.set_stroke(LIGHT_GREY, 1)
+        grid.set_stroke(GREY_B, 1)
 
         self.add(grid)
 

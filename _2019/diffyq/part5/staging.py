@@ -1,6 +1,6 @@
 from manim_imports_ext import *
 
-T_COLOR = LIGHT_GREY
+T_COLOR = GREY_B
 VELOCITY_COLOR = GREEN
 POSITION_COLOR = BLUE
 CONST_COLOR = YELLOW
@@ -1492,7 +1492,7 @@ class ReferenceWhatItMeans(PiCreatureScene):
 class VideoWrapper(Scene):
     def construct(self):
         fade_rect = FullScreenFadeRectangle()
-        fade_rect.set_fill(DARK_GREY, 1)
+        fade_rect.set_fill(GREY_D, 1)
         screen_rects = VGroup(
             ScreenRectangle(),
             ScreenRectangle(),

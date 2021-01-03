@@ -85,7 +85,7 @@ class UtilitiesPuzzleScene(Scene):
         for x in range(3):
             house = SVGMobject(file_name = "house")
             house.set_height(self.object_height)
-            house.set_fill(LIGHT_GREY)
+            house.set_fill(GREY_B)
             house.move_to(x*self.h_distance*RIGHT)
             houses.add(house)
         houses.move_to(self.v_distance*UP/2)
@@ -123,7 +123,7 @@ class UtilitiesPuzzleScene(Scene):
             fill_color = WHITE,
         )
         if color == YELLOW:
-            utility.set_fill(DARK_GREY)
+            utility.set_fill(GREY_D)
         utility.move_to(circle)
         circle.add(utility)
         circle.set_height(self.object_height)
@@ -1304,7 +1304,7 @@ class ConcludeFiveRegions(LightUpNodes):
         to_dim.set_fill(opacity = 0)
 
         full_screen_rect = FullScreenFadeRectangle(
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
             fill_opacity = 0.25,
         )
 
@@ -1632,7 +1632,7 @@ class FiveRegionsFourEdgesEachGraph(Scene):
         all_vertices = VGroup(*[r.vertices for r in regions])
 
         ghost_edges = all_edges.copy()
-        ghost_edges.set_stroke(LIGHT_GREY, 1)
+        ghost_edges.set_stroke(GREY_B, 1)
 
         count = Integer(0)
         count.scale(2)

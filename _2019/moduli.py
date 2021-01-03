@@ -513,9 +513,9 @@ class TriangleModuliSpace(Scene):
         ineqs.next_to(triangle, DOWN, buff=1.5)
 
         box = Square(
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             fill_opacity=0.75,
-            stroke_color=LIGHT_GREY,
+            stroke_color=GREY_B,
             stroke_width=2,
         )
         box.replace(Line(axes.c2p(0, 0), axes.c2p(1, 1)))
@@ -615,7 +615,7 @@ class TriangleModuliSpace(Scene):
         self.add(ms_region, axes, x_line, y_line, coord_label, dot)
         self.play(
             FadeIn(ms_region),
-            region.set_fill, DARK_GREY,
+            region.set_fill, GREY_D,
         )
         self.wait()
 
@@ -919,7 +919,7 @@ class Credits(Scene):
         )
         items.arrange(DOWN, buff=LARGE_BUFF)
 
-        items[-1].set_color(LIGHT_GREY)
+        items[-1].set_color(GREY_B)
         items[-1].scale(0.8, about_edge=UP)
         items[-1].to_edge(DOWN)
 

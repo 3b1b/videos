@@ -195,7 +195,7 @@ class InterpretGradientComponents(GradientNudging):
             FadeIn(new_vect_contents),
             FadeOut(w_terms),
             FadeIn(new_w_terms),
-            edges.set_stroke, LIGHT_GREY, 0.35,
+            edges.set_stroke, GREY_B, 0.35,
         )
         self.play(GrowArrow(d1.arrow))
         self.play(ShowCreation(edge1))
@@ -1481,7 +1481,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             for x in range(6)
         ])
         h_lines.arrange(DOWN, buff = 1)
-        h_lines.set_stroke(LIGHT_GREY, 2)
+        h_lines.set_stroke(GREY_B, 2)
         h_lines.to_edge(DOWN, buff = MED_LARGE_BUFF)
         h_lines.to_edge(LEFT, buff = 0)
 
@@ -1490,7 +1490,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             for x in range(self.n_examples + 1)
         ])
         v_lines.arrange(RIGHT, buff = 1.4)
-        v_lines.set_stroke(LIGHT_GREY, 2)
+        v_lines.set_stroke(GREY_B, 2)
         v_lines.to_edge(LEFT, buff = 2)
 
         # self.add(h_lines, v_lines)
@@ -2668,7 +2668,7 @@ class SimplestNetworkExample(PreviewLearning):
             unit_size = 2,
             stroke_width = 2,
             tick_size = 0.075,
-            color = LIGHT_GREY,
+            color = GREY_B,
         )
 
         for mob in wL, zL, aL, C0:

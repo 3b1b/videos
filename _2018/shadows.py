@@ -81,8 +81,8 @@ class ShowShadows(ThreeDScene):
         )
         plane.set_sheen(0.2, DR)
         grid = NumberPlane(
-            color=LIGHT_GREY,
-            secondary_color=DARK_GREY,
+            color=GREY_B,
+            secondary_color=GREY_D,
             y_radius=int(plane.get_height() / 2),
             stroke_width=1,
             secondary_line_ratio=0,

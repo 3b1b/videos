@@ -27,7 +27,7 @@ class ComplexFourierSeriesExample(FourierOfTrebleClef):
             "x_max": 2.5,
             "background_line_style": {
                 "stroke_width": 1,
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
             },
         },
         "top_rect_height": 2.5,
@@ -343,7 +343,7 @@ class RealValuedFunctionFourierSeries(PiFourierSeries):
                     labels[i],
                 ))
                 for i in pair
-            ]).set_stroke(LIGHT_GREY, 2)
+            ]).set_stroke(GREY_B, 2)
             for pair in [(1, 2), (3, 4), (5, 6)]
         ]
 
@@ -433,7 +433,7 @@ class DemonstrateAddingArrows(PiFourierSeries):
             for v in original_top_vectors
         ])
 
-        self.plane.axes.set_stroke(LIGHT_GREY, 1)
+        self.plane.axes.set_stroke(GREY_B, 1)
 
         self.vector_clock.suspend_updating()
         self.remove(circles, original_vectors)
@@ -466,7 +466,7 @@ class LabelRotatingVectors(PiFourierSeries):
         "plane_config": {
             "axis_config": {
                 "unit_size": 1.75,
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
             },
         },
         "top_row_x_spacing": 1.9,
@@ -1089,7 +1089,7 @@ class IntegralTrick(LabelRotatingVectors, TRangingFrom0To1):
             "x_max": 1.75,
             "axis_config": {
                 "unit_size": 1.75,
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
             },
         },
         "center_point": 1.5 * DOWN + 3 * RIGHT,
@@ -1581,7 +1581,7 @@ class ShowStepFunctionIn2dView(SimpleComplexExponentExample, ComplexFourierSerie
             x_min=-1.5,
             x_max=1.5,
             tick_frequency=0.5,
-            stroke_color=LIGHT_GREY,
+            stroke_color=GREY_B,
             stroke_width=2,
         )
         # y_axis.match_style(x_axis)
@@ -1697,8 +1697,8 @@ class ShowStepFunctionIn2dView(SimpleComplexExponentExample, ComplexFourierSerie
 
         self.play(
             plane.axes.set_stroke, WHITE, 1,
-            plane.background_lines.set_stroke, LIGHT_GREY, 0.5,
-            plane.faded_lines.set_stroke, LIGHT_GREY, 0.25, 0.5,
+            plane.background_lines.set_stroke, GREY_B, 0.5,
+            plane.faded_lines.set_stroke, GREY_B, 0.25, 0.5,
         )
 
         self.vector_clock.set_value(0)

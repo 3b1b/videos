@@ -33,7 +33,7 @@ class RightHand(VMobject):
         self.inlines = VMobject(*hand.split()[:-4])
         self.outline = VMobject(*hand.split()[-4:])
         self.outline.set_stroke(color = WHITE, width = 5)
-        self.inlines.set_stroke(color = DARK_GREY, width = 3)
+        self.inlines.set_stroke(color = GREY_D, width = 3)
         VMobject.__init__(self, self.outline, self.inlines)
         self.center().set_height(3)
 

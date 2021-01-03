@@ -257,7 +257,7 @@ class RescaledPascalNetScene(Scene):
             
             for (i,(p,q)) in enumerate(zip(start_points,stop_points_left)):
                 
-                color = LIGHT_GRAY 
+                color = GREY_B 
 
                 if n % 2 == 0 and i <= n/2:
                     m = n/2 + 0.25
@@ -288,7 +288,7 @@ class RescaledPascalNetScene(Scene):
 
             for (i,(p,q)) in enumerate(zip(start_points,stop_points_right)):
                 
-                color = LIGHT_GRAY
+                color = GREY_B
 
                 if n % 2 == 0 and i < n/2:
                     m = n/2 + 0.25

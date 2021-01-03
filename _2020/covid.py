@@ -1715,7 +1715,7 @@ class SubtltyOfGrowthFactorShift(Scene):
         )
         for date, total in zip(dates, totals):
             date.scale(0.75)
-            date.set_color(LIGHT_GREY)
+            date.set_color(GREY_B)
             date.next_to(total, LEFT, buff=0.75, aligned_edge=DOWN)
 
         # Set up changes

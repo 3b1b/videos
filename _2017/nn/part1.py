@@ -99,7 +99,7 @@ class NetworkMobject(VGroup):
         "neuron_stroke_color" : BLUE,
         "neuron_stroke_width" : 3,
         "neuron_fill_color" : GREEN,
-        "edge_color" : LIGHT_GREY,
+        "edge_color" : GREY_B,
         "edge_stroke_width" : 2,
         "edge_propogation_color" : YELLOW,
         "edge_propogation_time" : 1,
@@ -486,7 +486,7 @@ class ExampleThrees(PiCreatureScene):
         alt_mobs = [
             WrappedImage(
                 PixelsAsSquares(ImageMobject(layer_to_image_array(arr))),
-                color = LIGHT_GREY,
+                color = GREY_B,
                 buff = 0
             ).replace(three)
             for arr in arrays
@@ -518,7 +518,7 @@ class ExampleThrees(PiCreatureScene):
             pixel_mob = PixelsAsSquares(im_mob)
             three_mob = WrappedImage(
                 pixel_mob,
-                color = LIGHT_GREY,
+                color = GREY_B,
                 buff = 0
             )
             three_mobs.add(three_mob)
@@ -528,7 +528,7 @@ class BrainAndHow(Scene):
     def construct(self):
         brain = SVGMobject(file_name = "brain")
         brain.set_height(2)
-        brain.set_fill(LIGHT_GREY)
+        brain.set_fill(GREY_B)
         brain_outline = brain.copy()
         brain_outline.set_fill(opacity = 0)
         brain_outline.set_stroke(BLUE_B, 3)
@@ -948,7 +948,7 @@ class BreakDownName(Scene):
 
         randy = Randolph().to_corner(DOWN+LEFT)
         brain = SVGMobject(file_name = "brain")
-        brain.set_fill(LIGHT_GREY, opacity = 0)
+        brain.set_fill(GREY_B, opacity = 0)
         brain.replace(randy.eyes, dim_to_match = 1)
 
         self.add(name)
@@ -2662,7 +2662,7 @@ class MotivateSquishing(Scene):
     def show_interval(self):
         lower_number_line = self.number_line.copy()
         lower_number_line.shift(2*DOWN)
-        lower_number_line.set_color(LIGHT_GREY)
+        lower_number_line.set_color(GREY_B)
         lower_number_line.numbers.set_color(WHITE)
         interval = Line(
             lower_number_line.number_to_point(0),

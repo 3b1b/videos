@@ -32,7 +32,7 @@ border_stroke_width = 10
 cw_circle = Circle(color = WHITE).stretch(-1, 0)
 
 # Used when walker animations are on black backgrounds, in EquationSolver2d and PiWalker
-WALKER_LIGHT_COLOR = DARK_GREY
+WALKER_LIGHT_COLOR = GREY_D
 
 ODOMETER_RADIUS = 1.5
 ODOMETER_STROKE_WIDTH = 20
@@ -1179,7 +1179,7 @@ class EquationSolver2d(ColorMappedObjectsScene):
                 # TODO: Maybe use diagonal lines or something to fill in rectangles indicating
                 # their "Nothing here" status?
                 # Or draw a large X or something
-                fill_rect = polygonObject = Polygon(*points, fill_opacity = 0.8, color = DARK_GREY)
+                fill_rect = polygonObject = Polygon(*points, fill_opacity = 0.8, color = GREY_D)
                 return EquationSolver2dNode(Succession(anim, FadeIn(fill_rect)))
             else:
                 (sub_rect1, sub_rect2) = rect.splits_on_dim(dim_to_split)

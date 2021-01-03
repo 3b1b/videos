@@ -359,7 +359,7 @@ class IntroduceBinomial(Scene):
         ))
 
     def add_p_slider(self):
-        interval = UnitInterval(color = LIGHT_GREY)
+        interval = UnitInterval(color = GREY_B)
         interval.set_width(4)
         interval.next_to(
             VGroup(self.bar_chart.x_axis, self.bar_chart.y_axis), 
@@ -1219,7 +1219,7 @@ class ThousandPossibleQuizzes(Scene):
             ])
             quiz.arrange(RIGHT, buff = 0)
             quiz.set_stroke(width = 0)
-            quiz.set_fill(LIGHT_GREY, 1)
+            quiz.set_fill(GREY_B, 1)
             row = VGroup(*[quiz.copy() for y in range(self.n_quiz_cols)])
             row.arrange(RIGHT, buff = SMALL_BUFF)
             rows.add(row)

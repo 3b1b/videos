@@ -227,7 +227,7 @@ class MainBreakdown(Scene):
         gpu = SVGMobject(
             file_name = "gpu",
             height = 1,
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
         )
         name = TextMobject("Graphics", "Processing", "Unit")
         for word in name:
@@ -691,7 +691,7 @@ class StateOfBitcoin(TeacherStudentsScene):
         gpu = SVGMobject(
             file_name = "gpu",
             height = 1,
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
         )
         gpu.shift(0.5*FRAME_X_RADIUS*RIGHT)
         gpu_name = TextMobject("GPU")

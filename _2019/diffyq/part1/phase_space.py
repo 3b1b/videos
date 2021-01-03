@@ -86,7 +86,7 @@ class VisualizeStates(Scene):
                     width=3,
                     stroke_color=WHITE,
                     stroke_width=2,
-                    fill_color=DARKER_GREY,
+                    fill_color=GREY_E,
                     fill_opacity=1,
                 )
                 pendulum = Pendulum(

@@ -35,7 +35,7 @@ class Zoom100Label(Scene):
 class RelationToOtherVideos(Scene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARK_GREY,
+            "background_color": GREY_D,
         },
     }
 
@@ -582,7 +582,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
             unit_size=8,
             # line_to_number_buff=0.4,
         )
-        number_line.set_stroke(LIGHT_GREY, 2)
+        number_line.set_stroke(GREY_B, 2)
         number_line.move_to(2 * DOWN)
         number_line.add_numbers(
             *np.arange(0, 1.5, 0.5),
@@ -1091,7 +1091,7 @@ class TechnicalNuances(Scene):
         title.set_color(YELLOW)
         line = DashedLine(title.get_left(), title.get_right())
         line.next_to(title, DOWN, SMALL_BUFF)
-        line.set_stroke(LIGHT_GREY, 3)
+        line.set_stroke(GREY_B, 3)
 
         questions = VGroup(*map(TextMobject, [
             "Does the value at $0.5$ matter?",
@@ -1504,7 +1504,7 @@ class SwapIntegralAndSum(Scene):
         # Go through each term
         moving_exp = new_exp.copy()
         rect = SurroundingRectangle(moving_exp)
-        rect.set_stroke(LIGHT_GREY, width=1)
+        rect.set_stroke(GREY_B, width=1)
         times = TexMobject("\\times")
         times.next_to(rect, LEFT, SMALL_BUFF)
         moving_exp.add(VGroup(rect, times))
@@ -1587,7 +1587,7 @@ class SwapIntegralAndSum(Scene):
             **self.tex_config,
         )
         rect = SurroundingRectangle(expression, buff=MED_SMALL_BUFF)
-        rect.set_fill(DARK_GREY, 1)
+        rect.set_fill(GREY_D, 1)
         rect.set_stroke(WHITE, 3)
         group = VGroup(rect, expression)
         group.to_edge(UP, buff=SMALL_BUFF)
@@ -1626,12 +1626,12 @@ class SwapIntegralAndSum(Scene):
             y_min=-coord_max,
             y_max=coord_max,
             axis_config={
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
                 "stroke_width": 1,
                 "unit_size": 0.75,
             },
             background_line_style={
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
                 "stroke_width": 1,
             },
         )
@@ -2127,7 +2127,7 @@ class GeneralChallenge(Scene):
 class HintToGeneralChallenge(Scene):
     def construct(self):
         self.add(FullScreenFadeRectangle(
-            fill_color=DARKER_GREY,
+            fill_color=GREY_E,
             fill_opacity=1,
         ))
         words1 = TextMobject("Hint: Try writing")

@@ -952,8 +952,8 @@ class ShowScalarMultiplication(VectorScene):
         self.play(Write(factor_mob, run_time = 1))
         self.wait()
         self.play(
-            ApplyMethod(v.copy().set_color, DARK_GREY),
-            ApplyMethod(v_label.copy().set_color, DARK_GREY),
+            ApplyMethod(v.copy().set_color, GREY_D),
+            ApplyMethod(v_label.copy().set_color, GREY_D),
             Transform(factor_mob, factor_in_label),
             Transform(v.copy(), scaled_vector),
             Transform(v_label.copy(), label_remainder),
@@ -1179,7 +1179,7 @@ class DataAnalyst(Scene):
         self.wait()
         self.play(
             ApplyMethod(plane.fade, 0.7),
-            ApplyMethod(vects.set_color, DARK_GREY),
+            ApplyMethod(vects.set_color, GREY_D),
             ShowCreation(ellipse)
         )
         self.wait(3)

@@ -142,7 +142,7 @@ class NotPixelatedSpace(Scene):
     def construct(self):
         grid = Grid(64, 64)
         space_region = Region()
-        space_mobject = MobjectFromRegion(space_region, DARK_GREY)
+        space_mobject = MobjectFromRegion(space_region, GREY_D)
         curve = PeanoCurve(order = 5).replace(space_mobject)
         line = Line(5*LEFT, 5*RIGHT)
         line.set_color_by_gradient(curve.start_color, curve.end_color)
@@ -164,7 +164,7 @@ class NotPixelatedSpace(Scene):
         self.wait()
         self.play(Transform(grid, space_mobject, run_time = 5))
         self.remove(grid)
-        self.set_color_region(space_region, DARK_GREY)
+        self.set_color_region(space_region, GREY_D)
         self.wait()
         self.add(infinitely, detailed)
         self.wait()
@@ -172,7 +172,7 @@ class NotPixelatedSpace(Scene):
         self.play(ShowCreation(arrows))
         self.wait()
         self.clear()
-        self.set_color_region(space_region, DARK_GREY)
+        self.set_color_region(space_region, GREY_D)
         self.play(ShowCreation(line))
         self.play(Transform(line, curve, run_time = 5))
 

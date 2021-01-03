@@ -781,7 +781,7 @@ class ImagineShapesAsMetal(FourSelfSimilarShapes):
         self.add(titles, shapes)
         for shape in shapes:
             shape.generate_target()
-            shape.target.set_color(LIGHT_GREY)
+            shape.target.set_color(GREY_B)
         shapes[-1].target.set_color_by_gradient(GREY, WHITE)
         for shape, title in zip(shapes, titles):
             self.play(

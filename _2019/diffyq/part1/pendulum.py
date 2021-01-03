@@ -13,7 +13,7 @@ class Pendulum(VGroup):
         "top_point": 2 * UP,
         "rod_style": {
             "stroke_width": 3,
-            "stroke_color": LIGHT_GREY,
+            "stroke_color": GREY_B,
             "sheen_direction": UP,
             "sheen_factor": 1,
         },

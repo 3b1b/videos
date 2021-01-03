@@ -393,7 +393,7 @@ class PositionPhaseSpaceScene(Scene):
 
     def get_axes(self):
         axes = self.axes = Axes(**self.axes_config)
-        axes.set_stroke(LIGHT_GREY, 2)
+        axes.set_stroke(GREY_B, 2)
         axes.shift(
             self.axes_center - axes.coords_to_point(0, 0)
         )
@@ -1031,7 +1031,7 @@ class EqualMassCase(PositionPhaseSpaceScene):
             line.word = word
 
         for line in lines:
-            line.set_stroke(LIGHT_GREY)
+            line.set_stroke(GREY_B)
             line.set_sheen(1, LEFT)
             self.play(
                 Write(line.word),

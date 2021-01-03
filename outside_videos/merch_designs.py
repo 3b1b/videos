@@ -3,9 +3,6 @@ from manim_imports_ext import *
 
 # Fractal posters
 class ShowHilbertCurve(Scene):
-    # To be run with space dimensions
-    # DEFAULT_PIXEL_WIDTH = 1080*4
-    # DEFAULT_PIXEL_HEIGHT  = 1920*4
     CONFIG = {
         "FractalClass": HilbertCurve,
         "orders": [3, 5, 7],

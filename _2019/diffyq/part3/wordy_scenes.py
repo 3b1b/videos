@@ -69,7 +69,7 @@ class ThreeMainObservations(Scene):
 class LastChapterWrapper(Scene):
     def construct(self):
         full_rect = FullScreenFadeRectangle(
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             fill_opacity=1,
         )
         rect = ScreenRectangle(height=6)
@@ -337,7 +337,7 @@ class EquationAboveSineAnalysis(WriteHeatEquationTemplate):
 class ExpVideoWrapper(Scene):
     def construct(self):
         self.add(FullScreenFadeRectangle(
-            fill_color=DARKER_GREY,
+            fill_color=GREY_E,
             fill_opacity=1,
         ))
 
@@ -771,7 +771,7 @@ class HeatEquationFrame(WriteHeatEquationTemplate):
         dt = equation[:11]
 
         full_rect = FullScreenFadeRectangle(
-            fill_color=DARK_GREY,
+            fill_color=GREY_D,
             fill_opacity=1,
         )
         smaller_rect = ScreenRectangle(
@@ -805,7 +805,7 @@ class CompareFreqDecays1to2(Scene):
 
     def construct(self):
         background = FullScreenFadeRectangle(
-            fill_color=DARKER_GREY,
+            fill_color=GREY_E,
             fill_opacity=1,
         )
 

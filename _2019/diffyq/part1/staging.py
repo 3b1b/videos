@@ -101,7 +101,7 @@ class TourOfDifferentialEquations(MovingCameraScene):
             "fill_opacity": 1,
             "fill_color": BLACK,
         },
-        "camera_config": {"background_color": DARKER_GREY},
+        "camera_config": {"background_color": GREY_E},
         "zoomed_thumbnail_index": 0,
     }
 
@@ -1069,7 +1069,7 @@ class UniversalGravityLawSymbols(Scene):
         x1_tex = "\\vec{\\textbf{x}}_1"
         x2_tex = "\\vec{\\textbf{x}}_2"
         a1_tex = "\\vec{\\textbf{a}}_1"
-        new_brown = interpolate_color(LIGHT_GREY, LIGHT_BROWN, 0.5)
+        new_brown = interpolate_color(GREY_B, LIGHT_BROWN, 0.5)
         law = TexMobject(
             "F_1", "=", "m_1", a1_tex, "=",
             "G", "m_1", "m_2",
@@ -1915,7 +1915,7 @@ class SecondOrderEquationExample(DefineODE):
 
 class ODEvsPDEinFrames(Scene):
     CONFIG = {
-        "camera_config": {"background_color": DARKER_GREY}
+        "camera_config": {"background_color": GREY_E}
     }
 
     def construct(self):
@@ -2036,7 +2036,7 @@ class ODEvsPDEinFrames(Scene):
 
 class ReferencePiCollisionStateSpaces(Scene):
     CONFIG = {
-        "camera_config": {"background_color": DARKER_GREY}
+        "camera_config": {"background_color": GREY_E}
     }
 
     def construct(self):
@@ -2890,7 +2890,7 @@ class ComparePhysicsToLove(Scene):
 
 class FramesComparingPhysicsToLove(Scene):
     CONFIG = {
-        "camera_config": {"background_color": DARKER_GREY}
+        "camera_config": {"background_color": GREY_E}
     }
 
     def construct(self):
@@ -2993,7 +2993,7 @@ class InaccurateComputation(Scene):
             for word in mob:
                 for submob, bit in zip(word, word.get_tex_string()):
                     if bit == "0":
-                        submob.set_color(LIGHT_GREY)
+                        submob.set_color(GREY_B)
         errors = VGroup(
             TexMobject(
                 "\\approx 8.7422 \\times 10^{-8}"

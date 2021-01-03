@@ -461,8 +461,8 @@ class TwoBodyEquations(Scene):
     def construct(self):
         kw = {
             "tex_to_color_map": {
-                "x_1": LIGHT_GREY,
-                "y_1": LIGHT_GREY,
+                "x_1": GREY_B,
+                "y_1": GREY_B,
                 "x_2": BLUE,
                 "y_2": BLUE,
                 "=": WHITE,

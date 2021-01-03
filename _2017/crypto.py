@@ -59,7 +59,7 @@ class LitecoinLogo(SVGMobject):
         "file_name" : "litecoin_logo",
         "stroke_width" : 0,
         "fill_opacity" : 1,
-        "fill_color" : LIGHT_GREY,
+        "fill_color" : GREY_B,
         "height" : 0.5,
     }
 
@@ -136,7 +136,7 @@ class ListOfAttributes(Scene):
             SVGMobject(
                 file_name = "%s_building"%word,
                 height = 2,
-                fill_color = LIGHT_GREY,
+                fill_color = GREY_B,
                 fill_opacity = 1,
                 stroke_width = 0,
             )
@@ -661,7 +661,7 @@ class UnderlyingSystemVsUserFacing(Scene):
         phone.next_to(protocol, UP, LARGE_BUFF)
         card = SVGMobject(
             file_name = "credit_card",
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
             fill_opacity = 1,
             stroke_width = 0,
             height = 1
@@ -1089,7 +1089,7 @@ class DescribeDigitalSignatures(LedgerScene):
         lock = SVGMobject(
             file_name = "lock",
             height = rects.get_height(),
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
             fill_opacity = 1,
             stroke_width = 0,
         )
@@ -1121,7 +1121,7 @@ class DescribeDigitalSignatures(LedgerScene):
 
         rect = SurroundingRectangle(
             lines, 
-            color = LIGHT_GREY, 
+            color = GREY_B, 
             buff = MED_SMALL_BUFF
         )
         document = VGroup(rect, lines)
@@ -1365,7 +1365,7 @@ class FeelConfidentWithVerification(PiCreatureScene):
         lock_box.set_color(RED)
         lock = SVGMobject(
             file_name = "lock", 
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
             height = 0.5,
         )
         lock.next_to(lock_box, LEFT, SMALL_BUFF)
@@ -3317,7 +3317,7 @@ class FromBankToDecentralizedSystem(DistributedBlockChainScene):
     def remove_bank(self):
         bank = SVGMobject(
             file_name = "bank_building",
-            color = LIGHT_GREY,
+            color = GREY_B,
             height = 3,
         )
         cross = Cross(bank)
@@ -3568,7 +3568,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
             self.block_creator_labels[0].get_tex_string(),
             "gets", "10 LD"
         )
-        new_transaction[0].set_color(LIGHT_GREY)
+        new_transaction[0].set_color(GREY_B)
         new_transaction.set_color_by_tex("LD", YELLOW)
         new_transaction.set_height(payments[0].get_height())
         new_transaction.move_to(payments.get_top())
@@ -3619,7 +3619,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
             self.play(Transform(label, new_label))
         top_payment = self.payments[0]
         new_top_payment = TextMobject("Miner 1", "gets", "10 LD")
-        new_top_payment[0].set_color(LIGHT_GREY)
+        new_top_payment[0].set_color(GREY_B)
         new_top_payment[-1].set_color(YELLOW)
         new_top_payment.set_height(top_payment.get_height())
         new_top_payment.move_to(top_payment, LEFT)
@@ -3796,7 +3796,7 @@ class MiningIsALottery(IntroduceBlockCreator):
 
         miner_name = miner.label.get_tex_string()
         top_line = TextMobject(miner_name, "gets", "10 LD")
-        top_line.set_color_by_tex(miner_name, LIGHT_GREY)
+        top_line.set_color_by_tex(miner_name, GREY_B)
         top_line.set_color_by_tex("LD", YELLOW)
         lines.add(top_line)
         payments = [
@@ -4653,7 +4653,7 @@ class CompareBlockTimes(Scene):
             ImageMobject("ripple_logo"),
             LitecoinLogo(),
         )
-        colors = [BITCOIN_COLOR, GREEN, BLUE_B, LIGHT_GREY]
+        colors = [BITCOIN_COLOR, GREEN, BLUE_B, GREY_B]
         for logo, example, color in zip(logos, examples, colors):
             logo.set_height(0.5)
             logo.next_to(example, LEFT)
@@ -5200,7 +5200,7 @@ class ProtocolLabs(PiCreatureScene):
         name = SVGMobject(
             file_name = "protocol_labs_name",
             height = 0.5*logo.get_height(),
-            fill_color = LIGHT_GREY,
+            fill_color = GREY_B,
         )
         for mob in logo, name:
             for submob in mob:

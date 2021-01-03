@@ -1649,7 +1649,7 @@ class MoveAroundAllVectors(LinearTransformationScene):
                 if v is not vector
             ])
             self.wait()
-            self.add(vector.copy().set_color(DARK_GREY))
+            self.add(vector.copy().set_color(GREY_D))
         else:
             for vector in vectors.split():
                 self.add_vector(vector, animate = False)

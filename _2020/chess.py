@@ -47,7 +47,7 @@ class Chessboard(SGroup):
         "shape": (8, 8),
         "height": 7,
         "depth": 0.25,
-        "colors": [LIGHT_GREY, DARKER_GREY],
+        "colors": [GREY_B, GREY_E],
         "gloss": 0.2,
         "square_resolution": (3, 3),
         "top_square_resolution": (5, 5),

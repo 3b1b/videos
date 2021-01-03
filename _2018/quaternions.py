@@ -58,7 +58,7 @@ class Linus(VGroup):
     CONFIG = {
         "body_config": {
             "stroke_width": 15,
-            "stroke_color": LIGHT_GREY,
+            "stroke_color": GREY_B,
             "sheen": 0.4,
         },
         "height": 2,
@@ -428,7 +428,7 @@ class ManyNumberSystems(Scene):
             ("Quaternions", [0, 2, 0], PINK, "2 + 7i + 1j + 8k"),
             ("Rationals", [3, -2, 0], RED, "1 \\over 3"),
             ("p-adic numbers", [-2, -2, 0], GREEN, "\\overline{142857}2"),
-            ("Octonions", [-3, 0, 0], LIGHT_GREY, "3e_1 - 2.3e_2 + \\dots + 1.6e_8"),
+            ("Octonions", [-3, 0, 0], GREY_B, "3e_1 - 2.3e_2 + \\dots + 1.6e_8"),
         ]
         systems = VGroup()
         for name, location, color, ex in name_location_color_example_tuples:
@@ -871,7 +871,7 @@ class QuaternionHistory(Scene):
         hat_back[0].remove(*[
             sm for sm in hat_back[0] if sm.is_subpath
         ])
-        hat_back.set_fill(DARK_GREY)
+        hat_back.set_fill(GREY_D)
         hat.add_to_back(hat_back)
         hat.set_height(1.25)
         hat.next_to(hatter.body, UP, buff=-MED_SMALL_BUFF)
@@ -885,7 +885,7 @@ class QuaternionHistory(Scene):
         hare = SVGMobject(file_name="bunny")
         mouse = SVGMobject(file_name="mouse")
         for mob in hare, mouse:
-            mob.set_color(LIGHT_GREY)
+            mob.set_color(GREY_B)
             mob.set_sheen(0.2, UL)
             mob.set_height(1.5)
 
@@ -1061,7 +1061,7 @@ class QuantumSpin(Scene):
             Arrow(RIGHT, LEFT, **kwargs),
             Arrow(LEFT, RIGHT, **kwargs),
         )
-        curved_arrows.set_color(LIGHT_GREY)
+        curved_arrows.set_color(GREY_B)
         curved_arrows.set_stroke(width=2)
 
         y_arrow = Vector(UP)
@@ -1313,8 +1313,8 @@ class ShowComplexMultiplicationExamples(Scene):
             "stroke_width": 3,
         },
         "background_plane_config": {
-            "color": LIGHT_GREY,
-            "secondary_color": DARK_GREY,
+            "color": GREY_B,
+            "secondary_color": GREY_D,
             "stroke_width": 0.5,
             "stroke_opacity": 0.5,
             "secondary_line_ratio": 0,
@@ -2264,7 +2264,7 @@ class OneDegreeOfFreedomForRotation(Scene):
             return Arc(
                 angle=get_angle(),
                 radius=0.5,
-                color=LIGHT_GREY,
+                color=GREY_B,
             )
 
         arc = get_arc()
@@ -2341,7 +2341,7 @@ class IntroduceStereographicProjection(MovingCameraScene):
         circle_points = self.get_sample_circle_points()
         dots = VGroup(*[Dot(p) for p in circle_points])
         dots.set_sheen(-0.2, DR)
-        dots.set_stroke(DARK_GREY, 2, background=True)
+        dots.set_stroke(GREY_D, 2, background=True)
         arrows = VGroup()
         for dot in dots:
             dot.scale(0.75)
@@ -2541,7 +2541,7 @@ class IntroduceStereographicProjection(MovingCameraScene):
         plane = ComplexPlane(
             unit_size=2,
             color=GREY,
-            secondary_color=DARK_GREY,
+            secondary_color=GREY_D,
             x_radius=FRAME_WIDTH,
             y_radius=FRAME_HEIGHT,
             stroke_width=2,
@@ -2908,8 +2908,8 @@ class ShowRotationUnderStereographicProjection(IntroduceStereographicProjection)
             arrow = Arrow(
                 p1, p2, path_arc=180 * DEGREES,
             )
-            arrow.set_stroke(LIGHT_GREY, width=3)
-            arrow.tip.set_fill(LIGHT_GREY)
+            arrow.set_stroke(GREY_B, width=3)
+            arrow.tip.set_fill(GREY_B)
             arrows.add(arrow)
 
         for arrow in arrows:
@@ -3013,7 +3013,7 @@ class IntroduceFelix(PiCreatureScene, SpecialThreeDScene):
 
         # back_plane = Rectangle().replace(plane, stretch=True)
         # back_plane.shade_in_3d = True
-        # back_plane.set_fill(LIGHT_GREY, opacity=0.5)
+        # back_plane.set_fill(GREY_B, opacity=0.5)
         # back_plane.set_sheen(1, UL)
         # back_plane.shift(SMALL_BUFF * IN)
         # back_plane.set_stroke(width=0)
@@ -3022,7 +3022,7 @@ class IntroduceFelix(PiCreatureScene, SpecialThreeDScene):
         # )
         # back_plane.replace(plane, stretch=True)
         # back_plane.set_stroke(width=0)
-        # back_plane.set_fill(LIGHT_GREY, opacity=0.5)
+        # back_plane.set_fill(GREY_B, opacity=0.5)
 
         sphere = self.get_sphere()
         # sphere.set_fill(BLUE_E, 0.5)
@@ -3210,7 +3210,7 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
     def show_example_number(self):
         x, y, z = coords = 2 * np.array([1.5, -1, 1.25])
         dot = Sphere(radius=0.05)
-        dot.set_fill(LIGHT_GREY)
+        dot.set_fill(GREY_B)
         dot.move_to(coords)
         point_line = Line(ORIGIN, coords)
         point_line.set_stroke(WHITE, 1)
@@ -4029,8 +4029,8 @@ class ShowRotationsJustWithReferenceCircles(TwoDStereographicProjection):
             buff=SMALL_BUFF,
             path_arc=PI,
         )
-        arrow.set_stroke(LIGHT_GREY, 3)
-        arrow.tip.set_fill(LIGHT_GREY)
+        arrow.set_stroke(GREY_B, 3)
+        arrow.tip.set_fill(GREY_B)
         arrows = VGroup(arrow, *[
             arrow.copy().rotate(angle, about_point=ORIGIN)
             for angle in np.arange(TAU / 4, TAU, TAU / 4)
@@ -5400,7 +5400,7 @@ class RuleOfQuaternionMultiplication(HypersphereStereographicProjection):
         one_arrow = i_arrow.copy()
         result = VGroup(i_arrow, neg_one_arrow, neg_i_arrow, one_arrow)
         for arrow in result:
-            arrow.set_color(LIGHT_GREY)
+            arrow.set_color(GREY_B)
             arrow.set_stroke(width=3)
             arrow.rotate(90 * DEGREES, RIGHT)
         i_arrow.next_to(c2p(0, 0, 0), OUT + RIGHT, SMALL_BUFF)
@@ -5416,7 +5416,7 @@ class RuleOfQuaternionMultiplication(HypersphereStereographicProjection):
             buff=SMALL_BUFF,
             use_rectangular_stem=False
         )
-        arrow.set_color(LIGHT_GREY)
+        arrow.set_color(GREY_B)
         arrow.set_stroke(width=3)
         arrows = VGroup(*[
             arrow.copy().rotate(angle, about_point=ORIGIN)

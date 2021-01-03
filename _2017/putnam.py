@@ -379,7 +379,7 @@ class TwoDCase(Scene):
             line.move_to(push_pin, UP)
             line.shift(0.3*SMALL_BUFF*(2*DOWN+LEFT))
             push_pin.add(line)
-            push_pin.set_fill(LIGHT_GREY)
+            push_pin.set_fill(GREY_B)
             push_pin.save_state()
             push_pin.shift(UP)
             push_pin.fade(1)
@@ -908,7 +908,7 @@ class RevisitTwoDCase(TwoDCase):
         center_lines = self.get_center_lines()
         center_lines.save_state()
         center_line_shadows = center_lines.copy()
-        center_line_shadows.set_stroke(LIGHT_GREY, 2)
+        center_line_shadows.set_stroke(GREY_B, 2)
         arcs = self.get_all_arcs()
 
         center_lines.generate_target()

@@ -131,7 +131,7 @@ class Gimbal(VGroup):
                 angle=angle,
                 start_angle=start_angle
             )
-            sector.set_fill(LIGHT_GREY, 0.8)
+            sector.set_fill(GREY_B, 0.8)
             arcs = VGroup(*[
                 Arc(
                     angle=angle,
@@ -288,7 +288,7 @@ class WhoCares(TeacherStudentsScene):
         # vr_headsets = VGroup()
         # for pi in self.students:
         #     vr_headset = SVGMobject("VR_headset")
-        #     vr_headset.set_fill(LIGHT_GREY, opacity=0.9)
+        #     vr_headset.set_fill(GREY_B, opacity=0.9)
         #     vr_headset.set_width(pi.eyes.get_width() + 0.3)
         #     vr_headset.move_to(pi.eyes)
         #     vr_headsets.add(vr_headset)
@@ -490,7 +490,7 @@ class ShowSeveralQuaternionRotations(SpecialThreeDScene):
                 p1 *= dots[max_i]
                 p2 = 10 * vect
                 axes.add(Line(p1, p2))
-        axes.set_stroke(LIGHT_GREY, 1)
+        axes.set_stroke(GREY_B, 1)
         axes.set_shade_in_3d(True)
         return axes
 
@@ -819,7 +819,7 @@ class QuaternionInterpolationScematic(Scene):
 
         radius = 3
         circle = Circle(radius=radius)
-        circle.set_stroke(LIGHT_GREY, 1)
+        circle.set_stroke(GREY_B, 1)
         qs = [circle.point_from_proportion(p) for p in (0.55, 0.35, 0.15)]
         colors = [YELLOW, PINK, RED]
         q_dots = [Dot(q, color=c) for q, c in zip(qs, colors)]
@@ -1273,7 +1273,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
             r * RIGHT, rotate_vector(r * RIGHT, 30 * DEGREES, OUT),
             buff=0,
             path_arc=60 * DEGREES,
-            color=LIGHT_GREY,
+            color=GREY_B,
         )
         curved_arrow.pointwise_become_partial(curved_arrow, 0, 0.9)
         curved_arrow.rotate(150 * DEGREES, about_point=ORIGIN)

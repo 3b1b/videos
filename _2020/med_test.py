@@ -708,7 +708,7 @@ class SamplePopulationBreastCancer(Scene):
             "Sample of ", "$1{,}000$", " women",
             font_size=72,
         )
-        title.add(Underline(title, color=LIGHT_GREY))
+        title.add(Underline(title, color=GREY_B))
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(title)
 
@@ -1351,7 +1351,7 @@ class GigerenzerSession(Scene):
 
         title_underline = Underline(title, buff=SMALL_BUFF)
         title_underline.scale(1.1)
-        title_underline.set_stroke(LIGHT_GREY)
+        title_underline.set_stroke(GREY_B)
 
         self.play(
             FadeIn(title, shift=0.5 * UP),

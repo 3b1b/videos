@@ -93,7 +93,7 @@ class Introduction(Scene):
             unit_size=5,
             tick_frequency=0.25,
             numbers_with_elongated_ticks=[0, 1, 2],
-            color=LIGHT_GREY,
+            color=GREY_B,
         )
         number_line.add_numbers()
         number_line.move_to(DOWN)

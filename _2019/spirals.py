@@ -811,8 +811,8 @@ class ReplacePolarCoordinatesWithPrimes(RefresherOnPolarCoordinates):
             ).scale(2)
             for pair in [("r", "\\theta"), ("p", "p")]
         ]
-        p_coords.x_coord.set_color(LIGHT_GREY)
-        p_coords.y_coord.set_color(LIGHT_GREY)
+        p_coords.x_coord.set_color(GREY_B)
+        p_coords.y_coord.set_color(GREY_B)
 
         some_prime = TextMobject("Some prime")
         some_prime.scale(1.5)
@@ -1176,7 +1176,7 @@ class HighlightGapsInSpirals(IntroducePrimePatterns):
         result.make_smooth()
 
         result.set_stroke(GREY, width=0)
-        result.set_fill(DARK_GREY, 1)
+        result.set_fill(GREY_D, 1)
 
         return result
 
@@ -1506,7 +1506,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
         formula.set_color(YELLOW)
         formula.to_corner(UL)
         formula_rect = SurroundingRectangle(formula, buff=MED_LARGE_BUFF - SMALL_BUFF)
-        formula_rect.set_fill(DARK_GREY, opacity=1)
+        formula_rect.set_fill(GREY_D, opacity=1)
         formula_rect.set_stroke(WHITE, 1)
 
         # 6k
@@ -1580,7 +1580,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
             Line(ORIGIN, box[0].get_center())
             for box in boxes
         ])
-        lines.set_stroke(LIGHT_GREY, width=2)
+        lines.set_stroke(GREY_B, width=2)
 
         arcs = self.get_arcs(range(31))
 
@@ -1970,7 +1970,7 @@ class IntroduceResidueClassTerminology(Scene):
 class SimpleLongDivision(MovingCameraScene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY
+            "background_color": GREY_E
         }
     }
 
@@ -2142,7 +2142,7 @@ class Explain44Spirals(ExplainSixSpirals):
 
         rect = SurroundingRectangle(VGroup(top_line, value), buff=MED_SMALL_BUFF)
         rect.set_stroke(WHITE, 2)
-        rect.set_fill(DARKER_GREY, 0.9)
+        rect.set_fill(GREY_E, 0.9)
 
         self.play(MoveToTarget(ff))
         top_line.add(ff)
@@ -2787,7 +2787,7 @@ class TwoUnrelatedFacts(Scene):
         h_line = Line()
         h_line.match_width(title)
         h_line.next_to(title, DOWN, SMALL_BUFF)
-        h_line.set_stroke(LIGHT_GREY)
+        h_line.set_stroke(GREY_B)
 
         self.play(
             FadeIn(title),
@@ -2997,7 +2997,7 @@ class ExplainRays(Explain44Spirals):
         group = VGroup(equation, brace, value)
         rect = SurroundingRectangle(group, buff=MED_SMALL_BUFF)
         rect.set_stroke(WHITE, 2)
-        rect.set_fill(DARK_GREY, 1)
+        rect.set_fill(GREY_D, 1)
 
         approx = TexMobject(
             "{710", "\\over", "113}",
@@ -3214,7 +3214,7 @@ class CompareTauToApprox(Scene):
 class RecommendedMathologerVideo(Scene):
     def construct(self):
         full_rect = FullScreenFadeRectangle()
-        full_rect.set_fill(DARK_GREY, 1)
+        full_rect.set_fill(GREY_D, 1)
         self.add(full_rect)
 
         title = TextMobject("Recommended Mathologer video")
@@ -4401,7 +4401,7 @@ class RandomToImportant(PiCreatureScene):
             "color": GREY_BROWN,
         },
         "camera_config": {
-            "background_color": DARKER_GREY,
+            "background_color": GREY_E,
         }
     }
 
@@ -4508,7 +4508,7 @@ class RandomWalkOfTopics(Scene):
         dots.sort(lambda p: p[0])
 
         all_edges.set_stroke(WHITE, 2)
-        dots.set_fill(LIGHT_GREY, 1)
+        dots.set_fill(GREY_B, 1)
 
         VGroup(dots, all_edges).to_edge(DOWN, buff=MED_SMALL_BUFF)
 

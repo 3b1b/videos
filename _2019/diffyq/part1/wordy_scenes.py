@@ -125,7 +125,7 @@ class XEqLThetaToCorner(Scene):
 
 class ComingUp(Scene):
     CONFIG = {
-        "camera_config": {"background_color": DARKER_GREY}
+        "camera_config": {"background_color": GREY_E}
     }
 
     def construct(self):
@@ -193,7 +193,7 @@ class ReasonForSolution(Scene):
             Arrow(s_word.get_right(), u_word.get_left()),
             Arrow(s_word.get_right(), c_word.get_left()),
         )
-        arrows.set_color(LIGHT_GREY)
+        arrows.set_color(GREY_B)
         new_arrows = VGroup(
             Arrow(
                 eq_word.get_corner(UR),
@@ -257,7 +257,7 @@ class ReasonForSolution(Scene):
         ode.scale(0.75)
         second_examples = VGroup(
             ode,
-            TexMobject("???").set_color(LIGHT_GREY),
+            TexMobject("???").set_color(GREY_B),
             ScreenRectangle(
                 height=2,
                 stroke_width=1,

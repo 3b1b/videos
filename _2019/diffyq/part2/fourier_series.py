@@ -802,7 +802,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
             y_min=-2,
             y_max=2,
             axis_config={
-                "stroke_color": LIGHT_GREY,
+                "stroke_color": GREY_B,
             }
         )
         plane.set_stroke(width=1)

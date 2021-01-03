@@ -151,7 +151,7 @@ class ConnectionToOptics(Scene):
         title.set_color(YELLOW)
         h_line = Line(LEFT, RIGHT)
         h_line.match_width(title)
-        h_line.set_stroke(LIGHT_GREY)
+        h_line.set_stroke(GREY_B)
         h_line.set_sheen(1, UL)
         points = [
             h_line.get_left() + UP,

@@ -9,7 +9,7 @@ NOT_HYPOTHESIS_COLOR = GREY
 EVIDENCE_COLOR1 = BLUE_C
 EVIDENCE_COLOR2 = BLUE_E
 NOT_EVIDENCE_COLOR1 = GREY
-NOT_EVIDENCE_COLOR2 = DARK_GREY
+NOT_EVIDENCE_COLOR2 = GREY_D
 
 #
 
@@ -54,7 +54,7 @@ class BayesDiagram(VGroup):
     CONFIG = {
         "height": 2,
         "square_style": {
-            "fill_color": DARK_GREY,
+            "fill_color": GREY_D,
             "fill_opacity": 1,
             "stroke_color": WHITE,
             "stroke_width": 2,
@@ -358,7 +358,7 @@ class LibrarianIcon(SVGMobject):
     CONFIG = {
         "file_name": "book",
         "stroke_width": 0,
-        "fill_color": LIGHT_GREY,
+        "fill_color": GREY_B,
         "sheen_factor": 0.5,
         "sheen_direction": UL,
         "height": 0.75,
@@ -380,7 +380,7 @@ class PitchforkIcon(SVGMobject):
     CONFIG = {
         "file_name": "pitch_fork_and_roll",
         "stroke_width": 0,
-        "fill_color": LIGHT_GREY,
+        "fill_color": GREY_B,
         "sheen_factor": 0.5,
         "sheen_direction": UL,
         "height": 1.5,
@@ -393,7 +393,7 @@ class Person(SVGMobject):
         "height": 1.5,
         "stroke_width": 0,
         "fill_opacity": 1,
-        "fill_color": LIGHT_GREY,
+        "fill_color": GREY_B,
     }
 
 
@@ -1085,7 +1085,7 @@ class IntroduceKahnemanAndTversky(DescriptionOfSteve, MovingCameraScene):
         bubble[-1].scale(1.2)
         bubble[-1].to_edge(UP, buff=0)
         bubble[:-1].shift(DOWN)
-        bubble.set_fill(DARK_GREY, 1)
+        bubble.set_fill(GREY_D, 1)
 
         randy = Randolph(color=BLUE_B)
         randy.set_height(1)
@@ -1547,7 +1547,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
             stroke_width=1,
             stroke_color=WHITE,
             fill_opacity=1,
-            fill_color=DARKER_GREY,
+            fill_color=GREY_E,
         )
         left_rect = big_rect.copy()
         prior = 1 / 21
@@ -2228,7 +2228,7 @@ class CreateFormulaFromDiagram(Scene):
             "likelihood": 0.4,
             "antilikelihood": 0.1,
             "not_evidence_color1": GREY,
-            "not_evidence_color2": DARK_GREY,
+            "not_evidence_color2": GREY_D,
             "prior_rect_direction": UP,
         },
     }
@@ -2807,11 +2807,11 @@ class CreateFormulaFromDiagram(Scene):
 
         diagram.evidence_split.set_opacity(0)
         diagram.hypothesis_split.set_opacity(0)
-        diagram.nh_rect.set_fill(DARK_GREY)
+        diagram.nh_rect.set_fill(GREY_D)
 
         if include_people:
             people = VGroup(*[Person() for x in range(210)])
-            people.set_color(interpolate_color(LIGHT_GREY, WHITE, 0.5))
+            people.set_color(interpolate_color(GREY_B, WHITE, 0.5))
             people.arrange_in_grid(n_cols=21)
             people.set_width(diagram.get_width() - SMALL_BUFF)
             people.set_height(diagram.get_height() - SMALL_BUFF, stretch=True)
@@ -3587,7 +3587,7 @@ class LindaDescription(IntroduceLinda):
 class AlternatePhrasings(PiCreatureScene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY,
+            "background_color": GREY_E,
         }
     }
 
@@ -3683,7 +3683,7 @@ class WhenDiscreteChunksArentSoClean(Scene):
         squares = VGroup(*[Square() for x in range(100)])
         squares.arrange_in_grid(n_cols=10, buff=0)
         squares.set_stroke(WHITE, 1)
-        squares.set_fill(DARKER_GREY, 1)
+        squares.set_fill(GREY_E, 1)
         squares.set_height(6)
         squares.to_edge(DOWN)
 
@@ -3754,7 +3754,7 @@ class WhenDiscreteChunksArentSoClean(Scene):
         self.wait(2)
 
         l_rect = Rectangle(fill_color=BLUE_D)
-        r_rect = Rectangle(fill_color=LIGHT_GREY)
+        r_rect = Rectangle(fill_color=GREY_B)
         rects = VGroup(l_rect, r_rect)
         for rect, p in (l_rect, target_p), (r_rect, 1 - target_p):
             rect.set_height(squares.get_height())
@@ -3891,7 +3891,7 @@ class RandomnessVsProportions(Scene):
         square = Square()
         square.round_corners(0.25)
         square.set_stroke(WHITE, 2)
-        square.set_fill(DARKER_GREY, 1)
+        square.set_fill(GREY_E, 1)
         square.set_width(0.6)
 
         edge_groups = [
@@ -3971,7 +3971,7 @@ class RandomnessVsProportions(Scene):
                 num.set_height(square.get_height() - MED_LARGE_BUFF)
                 num.move_to(square)
                 # num.set_stroke(BLACK, 2, background=True)
-                num.set_fill(DARK_GREY)
+                num.set_fill(GREY_D)
                 square.set_fill(colors[i + j], 0.9)
                 numbers.add(num)
 
@@ -4198,7 +4198,7 @@ class GlimpseOfNextVideo(GraphScene):
 
 class ComingUp(Scene):
     CONFIG = {
-        "camera_config": {"background_color": DARK_GREY}
+        "camera_config": {"background_color": GREY_D}
     }
 
     def construct(self):
@@ -4321,7 +4321,7 @@ class QuestionSteveConclusion(HeartOfBayesTheorem, DescriptionOfSteve):
 
         # The assumption changes the prior
         diagram = self.get_diagram(0.05, 0.4, 0.1)
-        diagram.nhne_rect.set_fill(DARK_GREY)
+        diagram.nhne_rect.set_fill(GREY_D)
         diagram.set_height(3.5)
         diagram.center().to_edge(UP, buff=MED_SMALL_BUFF)
 
@@ -4419,7 +4419,7 @@ class FadeInHeart(Scene):
 class ReprogrammingThought(Scene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY,
+            "background_color": GREY_E,
         }
     }
 
@@ -4574,7 +4574,7 @@ class MassOfEarthEstimates(GlimpseOfNextVideo):
 class ShowProgrammer(Scene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY,
+            "background_color": GREY_E,
         }
     }
 

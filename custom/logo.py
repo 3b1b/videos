@@ -333,7 +333,7 @@ class SortingLogoGeneration(LogoGenerationTemplate):
 
         logo.iris_background.save_state()
         # logo.iris_background.scale(0.49)
-        logo.iris_background.set_fill(DARK_GREY, 0.5)
+        logo.iris_background.set_fill(GREY_D, 0.5)
 
         return [
             Restore(

@@ -5,7 +5,7 @@ from _2019.diffyq.part1.shared_constructs import *
 class SomeOfYouWatching(TeacherStudentsScene):
     CONFIG = {
         "camera_config": {
-            "background_color": DARKER_GREY,
+            "background_color": GREY_E,
         }
     }
 
@@ -348,7 +348,7 @@ class HungerForExactness(TeacherStudentsScene):
         solution_p2 = TexMobject(
             "c_1, c_2 = \\text{Constants depending on initial conditions}"
         )
-        solution_p2.set_color(LIGHT_GREY)
+        solution_p2.set_color(GREY_B)
         solution_p2.scale(0.75)
         solution_p3 = TexMobject(
             """
@@ -395,7 +395,7 @@ class HungerForExactness(TeacherStudentsScene):
 
         for part in [solution_p3, solution_p4]:
             part.name.scale(0.7 * 0.7)
-            part.name.set_color(LIGHT_GREY)
+            part.name.set_color(GREY_B)
             part.name.next_to(part, RIGHT)
             part.add(part.name)
 

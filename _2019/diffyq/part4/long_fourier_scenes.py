@@ -222,7 +222,7 @@ class FourierOfSeattleZoomedIn(ZoomedInFourierSeriesExample):
 class VideoWrapper(Scene):
     def construct(self):
         fade_rect = FullScreenFadeRectangle()
-        fade_rect.set_fill(DARK_GREY, 1)
+        fade_rect.set_fill(GREY_D, 1)
         screen_rect = ScreenRectangle()
         screen_rect.set_height(4)
         screen_rect.set_fill(BLACK, 1)

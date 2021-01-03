@@ -567,9 +567,9 @@ class CarefulWithLasers(TeacherStudentsScene):
             Rectangle(
                 height=0.1,
                 width=0.3,
-                fill_color=LIGHT_GREY,
+                fill_color=GREY_B,
                 fill_opacity=1,
-                stroke_color=DARK_GREY,
+                stroke_color=GREY_D,
                 stroke_width=1,
             ),
             Line(ORIGIN, 10 * RIGHT, color=GREEN_SCREEN)
@@ -1174,7 +1174,7 @@ class NewtonsSecond(Scene):
     def construct(self):
         square = Square(
             stroke_color=WHITE,
-            fill_color=LIGHT_GREY,
+            fill_color=GREY_B,
             fill_opacity=0.5,
             side_length=1
         )

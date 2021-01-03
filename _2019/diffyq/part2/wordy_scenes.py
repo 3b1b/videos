@@ -138,7 +138,7 @@ class FourierSeriesIntro(WriteHeatEquationTemplate):
 
         details_coming = TextMobject("Details coming...")
         details_coming.next_to(title.get_corner(DR), DOWN)
-        details_coming.set_color(LIGHT_GREY)
+        details_coming.set_color(GREY_B)
 
         # physics = TextMobject("Physics")
         heat = TextMobject("Heat")

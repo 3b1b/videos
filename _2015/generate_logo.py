@@ -12,7 +12,7 @@ class LogoGeneration(Scene):
         "circle_brown"         : DARK_BROWN,
         "circle_repeats"       : 5,
         "sphere_density"       : 50,
-        "sphere_blue"          : DARK_BLUE,
+        "sphere_blue"          : BLUE_D,
         "sphere_brown"         : LIGHT_BROWN,
         "interpolation_factor" : 0.3,
         "frame_duration"       : 0.03,

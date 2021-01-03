@@ -23,7 +23,7 @@ class Histogram(Group):
         "include_h_lines": True,
         "h_line_style": {
             "stroke_width": 1,
-            "stroke_color": LIGHT_GREY,
+            "stroke_color": GREY_B,
             # "draw_stroke_behind_fill": True,
         },
         "bar_style": {
@@ -184,7 +184,7 @@ def get_die_faces():
     square = Square()
     square.round_corners(0.25)
     square.set_stroke(WHITE, 2)
-    square.set_fill(DARKER_GREY, 1)
+    square.set_fill(GREY_E, 1)
     square.set_width(0.6)
 
     edge_groups = [

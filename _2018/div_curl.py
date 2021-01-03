@@ -806,7 +806,7 @@ class ElectricField(CylinderModel, MovingCameraScene):
                 5 * LEFT, 5 * RIGHT,
                 path_arc=0,
                 n_arc_anchors=50,
-                stroke_color=LIGHT_GREY,
+                stroke_color=GREY_B,
                 stroke_width=2,
             ).shift(y * UP)
             for y in np.arange(-3, 3.25, 0.25)
@@ -994,7 +994,7 @@ class ScopeMeiosis(PiCreatureScene):
 
     def get_lines(self, title, n_lines):
         lines = VGroup(*[
-            Line(3 * LEFT, 3 * RIGHT, color=LIGHT_GREY)
+            Line(3 * LEFT, 3 * RIGHT, color=GREY_B)
             for x in range(n_lines)
         ])
         lines.arrange(DOWN, buff=MED_SMALL_BUFF)
@@ -2959,14 +2959,14 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         v_line = DashedLine(x_point, point)
         h_line = DashedLine(y_point, point)
         v_line.set_color(FOX_COLOR)
-        h_line.set_color(LIGHT_GREY)
+        h_line.set_color(GREY_B)
         dot = Dot(point)
 
         coord_pair = TexMobject(
             "(10, 10)", substrings_to_isolate=["10"]
         )
         pop_sizes = VGroup(Integer(10), Integer(10))
-        pop_sizes[0].set_color(LIGHT_GREY)
+        pop_sizes[0].set_color(GREY_B)
         pop_sizes[1].set_color(FOX_COLOR)
         tens = coord_pair.get_parts_by_tex("10")
         tens.fade(1)
@@ -4266,7 +4266,7 @@ class ThoughtsOnAds(Scene):
         )
 
         line = NumberLine(
-            color=LIGHT_GREY,
+            color=GREY_B,
             x_min=0,
             x_max=12,
             numbers_with_elongated_ticks=[]

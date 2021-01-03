@@ -115,9 +115,9 @@ class MorphBrickRowIntoHistogram3(GenericMorphBrickRowIntoHistogram):
 
         y_guides = VMobject()
         for i in range(0,self.prob_denominator + 1):
-            y_guide = Line(5 * LEFT, 5 * RIGHT, stroke_color = GRAY)
+            y_guide = Line(5 * LEFT, 5 * RIGHT, stroke_color = GREY)
             y_guide.move_to(self.bar_anchor_height * UP + i * float(self.row.width) / self.prob_denominator * UP)
-            y_guide_label = TexMobject("{" + str(i) + "\over " + str(self.prob_denominator) + "}", color = GRAY)
+            y_guide_label = TexMobject("{" + str(i) + "\over " + str(self.prob_denominator) + "}", color = GREY)
             y_guide_label.scale(0.7)
             y_guide_label.next_to(y_guide, LEFT)
             if i != 0:
@@ -224,11 +224,11 @@ class MorphBrickRowIntoHistogram20(GenericMorphBrickRowIntoHistogram):
         y_guide_heights = []
         prob_grid = np.arange(self.prob_ticks, 1.3 * max_prob, self.prob_ticks)
         for i in prob_grid:
-            y_guide = Line(5 * LEFT, 5 * RIGHT, stroke_color = GRAY)
+            y_guide = Line(5 * LEFT, 5 * RIGHT, stroke_color = GREY)
             y_guide_height = self.bar_anchor_height + i * float(self.row.width)
             y_guide_heights.append(y_guide_height)
             y_guide.move_to(y_guide_height * UP)
-            y_guide_label = DecimalNumber(i, num_decimal_places = 2, color = GRAY)
+            y_guide_label = DecimalNumber(i, num_decimal_places = 2, color = GREY)
             y_guide_label.scale(0.7)
             y_guide_label.next_to(y_guide, LEFT)
             y_guide.add(y_guide_label)

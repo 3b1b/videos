@@ -318,7 +318,7 @@ class MathIsATease(Scene):
         for eye in randy.eyes:
             for angle in np.linspace(-np.pi/3, np.pi/3, 12):
                 lash = Line(ORIGIN, RIGHT)
-                lash.set_stroke(DARK_GREY, 2)
+                lash.set_stroke(GREY_D, 2)
                 lash.set_width(0.27)
                 lash.next_to(ORIGIN, RIGHT, buff = 0)
                 lash.rotate(angle + np.pi/2)
@@ -384,7 +384,7 @@ class CircleToPairsOfPoints(Scene):
         circle = Circle(radius = 2, color = YELLOW)
 
         x, y = [np.sqrt(2)/2]*2
-        dot = Dot(2*x*RIGHT + 2*y*UP, color = LIGHT_GREY)
+        dot = Dot(2*x*RIGHT + 2*y*UP, color = GREY_B)
 
         equation = TexMobject("x", "^2", "+", "y", "^2", "=", "1")
         equation.set_color_by_tex("x", GREEN)

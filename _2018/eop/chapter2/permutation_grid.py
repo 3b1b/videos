@@ -36,7 +36,7 @@ class PermutationGrid(Scene):
 
     def text_box(self, str):
         box = TextMobject(str).scale(0.3)
-        box.add(SurroundingRectangle(box, stroke_color = DARK_GREY))
+        box.add(SurroundingRectangle(box, stroke_color = GREY_D))
         return box
 
 
@@ -69,7 +69,7 @@ class PermutationGrid(Scene):
                         perm2_box.next_to(perm3_box[-1], RIGHT, buff = 0.08)
                     perm3_box.add(perm2_box)
                     index_list.pop()
-                perm3_box.add(SurroundingRectangle(perm3_box, buff = 0.12, stroke_color = LIGHT_GRAY))
+                perm3_box.add(SurroundingRectangle(perm3_box, buff = 0.12, stroke_color = GREY_B))
                 if j > 1:
                     perm3_box.next_to(perm4_box[-1], DOWN, buff = 0)
                 perm4_box.add(perm3_box)

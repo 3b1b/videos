@@ -112,7 +112,7 @@ class ContrastAbstractAndConcrete(Scene):
             weight = Square(
                 side_length = 0.5,
                 stroke_width = 0, 
-                fill_color = LIGHT_GREY,
+                fill_color = GREY_B,
                 fill_opacity = 1,
             )
             weight.move_to(spring.points[-1])

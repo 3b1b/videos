@@ -367,7 +367,7 @@ class ShowThreeCases(Scene):
         squares = VGroup(*[
             SurroundingRectangle(
                 submob, buff=0.01,
-                stroke_color=LIGHT_GREY,
+                stroke_color=GREY_B,
                 stroke_width=1,
             )
             for submob in reviews[2]
@@ -1685,7 +1685,7 @@ class AskAboutUnknownProbabilities(Scene):
 
         v_line = Line(UP, DOWN)
         v_line.set_height(FRAME_HEIGHT)
-        v_line.set_stroke([WHITE, LIGHT_GREY], 3)
+        v_line.set_stroke([WHITE, GREY_B], 3)
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(FRAME_WIDTH)
         h_line.next_to(titles, DOWN)
@@ -2134,7 +2134,7 @@ class ComplainAboutSimplisticModel(TeacherStudentsScene):
                 "include_tip": False,
             }
         )
-        axes.set_stroke(LIGHT_GREY, 1)
+        axes.set_stroke(GREY_B, 1)
         axes.set_height(3)
         y_label = TextMobject("Experience quality")
         y_label.scale(0.5)
@@ -2314,7 +2314,7 @@ class AskInverseQuestion(WhatsTheModel):
         short_label = TexMobject(
             "P(\\text{data} | s)",
             tex_to_color_map={
-                "\\text{data}": LIGHT_GREY,
+                "\\text{data}": GREY_B,
                 "s": YELLOW
             }
         )
@@ -2738,7 +2738,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
             formula.set_submobjects(new_formula)
 
             value.set_value(dist.pmf(k))
-            histogram.bars.set_fill(LIGHT_GREY)
+            histogram.bars.set_fill(GREY_B)
             histogram.bars[k].set_fill(GREEN)
             arrow.next_to(histogram.bars[k], UP, SMALL_BUFF)
 
