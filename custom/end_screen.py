@@ -1,4 +1,5 @@
 import random
+import os
 
 from manimlib.animation.animation import Animation
 from manimlib.animation.composition import Succession
@@ -12,6 +13,7 @@ from manimlib.mobject.geometry import Square
 from manimlib.mobject.svg.tex_mobject import TextMobject
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.scene.scene import Scene
+from manimlib.utils.directories import get_directories
 from manimlib.utils.rate_functions import linear
 
 from custom.characters.pi_creature import Mortimer
@@ -73,7 +75,8 @@ class PatreonEndScreen(Scene):
         thanks.add(underline)
 
         # Build name list
-        with open("manimlib/files/patrons.txt", 'r') as fp:
+        file_name = os.path.join(get_directories()["data"], "patrons.txt")
+        with open(file_name, "r") as fp:
             names = [
                 self.modify_patron_name(name.strip())
                 for name in fp.readlines()
