@@ -1,5 +1,5 @@
 import os
-import warnings
+import logging
 
 import numpy as np
 
@@ -12,14 +12,9 @@ from manimlib.mobject.svg.tex_mobject import TextMobject
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.types.vectorized_mobject import VMobject
 from manimlib.utils.config_ops import digest_config
+from manimlib.utils.directories import get_directories
 from manimlib.utils.space_ops import get_norm
 from manimlib.utils.space_ops import normalize
-
-pi_creature_dir_maybe = os.path.join(MEDIA_DIR, "assets", "PiCreature")
-if os.path.exists(pi_creature_dir_maybe):
-    PI_CREATURE_DIR = pi_creature_dir_maybe
-else:
-    PI_CREATURE_DIR = os.path.join("assets")
 
 PI_CREATURE_SCALE_FACTOR = 0.5
 
@@ -45,7 +40,7 @@ class PiCreature(SVGMobject):
         "start_corner": None,
         # Range of proportions along body where arms are
         "right_arm_range": [0.55, 0.7],
-        "left_arm_range": [.34, .462],
+        "left_arm_range": [0.34, 0.462],
         "pupil_to_eye_width_ratio": 0.4,
         "pupil_dot_to_pupil_width_ratio": 0.3,
     }
@@ -56,16 +51,17 @@ class PiCreature(SVGMobject):
         self.parts_named = False
         try:
             svg_file = os.path.join(
-                PI_CREATURE_DIR,
-                f"{self.file_name_prefix}_{mode}.svg"
+                get_directories()["pi_creature_images"],
+                f"{mode}.svg"
             )
         except Exception:
-            warnings.warn(f"No {self.file_name_prefix} design with mode {mode}")
+            logging.log(
+                logging.WARNING,
+                f"No {self.file_name_prefix} design with mode {mode}",
+            )
             svg_file = os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                os.pardir,
-                "files",
-                "PiCreatures_plain.svg",
+                get_directories()["pi_creature_images"],
+                "plain.svg",
             )
         SVGMobject.__init__(self, file_name=svg_file, **kwargs)
 
