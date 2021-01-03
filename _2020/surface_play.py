@@ -3,10 +3,7 @@ from manim_imports_ext import *
 
 class EarthMorph(Scene):
     CONFIG = {
-        "camera_config": {
-            "apply_depth_test": True,
-            "samples": 8,
-        }
+        "camera_class": ThreeDCamera,
     }
 
     def construct(self):
