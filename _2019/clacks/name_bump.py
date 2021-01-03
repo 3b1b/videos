@@ -78,5 +78,5 @@ class NameBump(BlocksAndWallExample):
 #         name=name,
 #         write_to_movie=True,
 #         output_file_name=file_name,
-#         camera_config=PRODUCTION_QUALITY_CAMERA_CONFIG,
+#         camera_config=UHD_QUALITY_CAMERA_CONFIG,
 #     )
