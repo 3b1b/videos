@@ -4,7 +4,6 @@ import os
 import sys
 import importlib
 
-from manimlib.constants import PRODUCTION_QUALITY_CAMERA_CONFIG
 from manimlib.config import get_module
 from manimlib.extract_scene import is_child_scene
 
@@ -37,9 +36,6 @@ def stage_scenes(module_name):
     if len(scene_classes) == 0:
         print("There are no rendered animations from this module")
         return
-    # output_directory_kwargs = {
-    #     "camera_config": PRODUCTION_QUALITY_CAMERA_CONFIG,
-    # }
     # TODO, fix this
     animation_dir = os.path.join(
         os.path.expanduser('~'),
