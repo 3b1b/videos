@@ -144,6 +144,3 @@ dmypy.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 # Custom exclusions:
 .DS_Store
-
-# 
-assets/
