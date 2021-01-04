@@ -69,7 +69,6 @@ class PiCreature(SVGMobject):
             self.flip()
         if self.start_corner is not None:
             self.to_corner(self.start_corner)
-        self.unlock_triangulation()
 
     def align_data(self, mobject):
         # This ensures that after a transform into a different mode,
@@ -254,9 +253,6 @@ class PiCreature(SVGMobject):
             body.copy().pointwise_become_partial(body, *alpha_range)
             for alpha_range in (self.right_arm_range, self.left_arm_range)
         ])
-
-    def prepare_for_animation(self):
-        self.unlock_triangulation()
 
 
 def get_all_pi_creature_modes():

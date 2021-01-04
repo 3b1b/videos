@@ -594,7 +594,6 @@ class GrowthEquation(Scene):
         alt_rhs.next_to(new_lhs, RIGHT)
         self.play(TransformFromCopy(lhs, new_lhs))
 
-        rhs.unlock_triangulation()
         self.play(
             TransformFromCopy(rhs[0], alt_rhs[7].copy()),
             TransformFromCopy(rhs[2][4], alt_rhs[7]),
@@ -1124,7 +1123,6 @@ class RescaleToLogarithmic(IntroducePlot):
                 self.play(self.camera.frame.scale, 1.1, {"about_edge": LEFT})
 
             if last_label:
-                last_label.unlock_triangulation()
                 self.play(
                     ReplacementTransform(last_label, label),
                     ReplacementTransform(last_rect, rect),
@@ -1538,7 +1536,6 @@ class ShowLogisticCurve(Scene):
 
         pre_dot = curve.copy()
         pre_dot.pointwise_become_partial(curve, 0.375, 0.425)
-        pre_dot.unlock_triangulation()
 
         infl_name = TextMobject("Inflection point")
         infl_name.next_to(infl_dot, LEFT)

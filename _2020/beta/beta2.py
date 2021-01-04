@@ -530,7 +530,6 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
         self.add(labels, q_marks)
         self.wait()
 
-        q_marks.unlock_triangulation()
         self.play(
             ReplacementTransform(q_marks, gt_zero, lag_ratio=0.05),
             run_time=2,
@@ -578,7 +577,6 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
         # If equal to zero
         eq_zero.move_to(gt_zero)
         eq_zero.set_color(RED)
-        gt_zero.unlock_triangulation()
         self.play(
             ReplacementTransform(
                 gt_zero, eq_zero,

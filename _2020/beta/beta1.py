@@ -932,7 +932,6 @@ class AskWhy(TeacherStudentsScene):
         )
         self.wait(3)
 
-        self.students[2].bubble.content.unlock_triangulation()
         self.student_says(
             "Is that really\\\\the answer?",
             target_mode="raise_right_hand",

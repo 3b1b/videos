@@ -2142,7 +2142,6 @@ class AsymptomaticCases(Scene):
             else:
                 pi.color_map["I"] = RED
                 pi.mode_map["I"] = "sick"
-            pi.unlock_triangulation()
             pi.set_status("I")
             self.wait(0.1)
         self.wait(2)

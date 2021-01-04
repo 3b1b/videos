@@ -474,7 +474,6 @@ class IntroduceGroupTheory(Scene):
         sym_to_action = TextMobject("Symmetry", " $\\Rightarrow$ ", "\\emph{Action}")
         sym_to_action.set_color_by_tex("Action", YELLOW)
         sym_to_action.replace(sym_word, dim_to_match=1)
-        sym_word.unlock_triangulation()
         self.play(
             ReplacementTransform(sym_word[0], sym_to_action[0]),
             Write(sym_to_action[1]),
@@ -1152,7 +1151,6 @@ class PermutationGroups(Scene):
         new_perm_label.move_to(perm_label)
         new_perm_label[0].align_to(perm_label[2][0], DOWN)
 
-        perm_label.unlock_triangulation()
         old_full_count_center = full_count.get_center()
         self.play(
             ChangeDecimalToValue(
@@ -2220,8 +2218,6 @@ class UsualMultiplicationTable(Scene):
         left_syms, top_syms, table_syms = sym_groups
 
         # Add symbols
-        ls_copies = left_syms.copy().unlock_triangulation()
-        ts_copies = top_syms.copy().unlock_triangulation()
 
         self.add(left_syms, top_syms)
         self.play(LaggedStart(*[

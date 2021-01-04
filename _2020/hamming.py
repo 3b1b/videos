@@ -660,7 +660,6 @@ class TripleRedundancy(Scene):
         flipper_rect = SurroundingRectangle(flipper, buff=SMALL_BUFF)
         flipper_rect.set_stroke(GREEN, 4)
         flipper_rect.set_fill(GREEN, 0.5)
-        bangs.unlock_triangulation()
         self.play(
             ReplacementTransform(bangs, flipper_rect)
         )
@@ -701,7 +700,6 @@ class TripleRedundancy(Scene):
         for rect, label in zip(rects.target, frac_labels):
             label.move_to(rect)
 
-        copies_word.unlock_triangulation()
         redundancy_word = TextMobject("Redundancy")
         redundancy_word.match_height(copies_word)
         redundancy_word.match_color(copies_word)
@@ -879,7 +877,6 @@ class TripleRedundancy(Scene):
             ),
         )
         self.wait()
-        bangs.unlock_triangulation()
         self.play(ReplacementTransform(bangs, q_marks, lag_ratio=0.2))
         self.wait()
 
@@ -2450,7 +2447,6 @@ class ArrayOfValidMessages(Scene):
             arrow.next_to(dot, UP, SMALL_BUFF)
             word.next_to(arrow, UP, SMALL_BUFF)
             example_group = VGroup(word, arrow, dot)
-            example_group.unlock_triangulation()
             example_groups.add(example_group)
 
         fade_rect = SurroundingRectangle(dots)
@@ -5713,8 +5709,8 @@ class HammingCodesWithXOR(Scene):
         brace_bits.next_to(brace, LEFT)
         self.play(GrowFromCenter(brace))
         self.play(
-            Transform(summands[2].copy().unlock_triangulation(), brace_bits, remover=True),
-            ReplacementTransform(new_term.copy().unlock_triangulation(), brace_bits),
+            Transform(summands[2].copy(), brace_bits, remover=True),
+            ReplacementTransform(new_term.copy(), brace_bits),
         )
         self.wait()
 

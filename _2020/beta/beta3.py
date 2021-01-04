@@ -509,7 +509,6 @@ class ShowBayesianUpdating(Scene):
             line.set_stroke(YELLOW, 3)
 
             graph_copy = graph.copy()
-            graph_copy.unlock_triangulation()
             scaled_graph = graph.copy()
             scaled_graph.apply_function(
                 lambda p: axes.c2p(
@@ -1659,7 +1658,6 @@ class BayesRuleWithPdf(ShowLimitToPdf):
 
         self.remove(bayes)
         bayes = self.get_formula()
-        bayes.unlock_triangulation()
         self.add(bayes)
         self.play(Transform(bayes, new_bayes))
         self.play(ShowCreationThenFadeOut(rects))
@@ -2135,7 +2133,6 @@ class UpdateOnceWithBinomial(TalkThroughCoinExample):
         new_region.set_opacity(0.75)
 
         self.add(new_region, new_graph, bayes)
-        region.unlock_triangulation()
         self.play(
             FadeOut(graph),
             FadeOut(region),

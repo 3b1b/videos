@@ -135,7 +135,6 @@ class IntroduceDFT(Scene):
             zeta.replace(plus)
             zeta.set_opacity(0)
 
-        lhs.unlock_triangulation()
         self.play(
             TransformFromCopy(lhs, lhs1),
             *map(Restore, rhs1),
@@ -273,8 +272,6 @@ class IntroduceDFT(Scene):
             new_exp.move_to(z_term[1][1], DL)
             z_term[1].replace_submobject(1, new_exp)
 
-        lhs1.unlock_triangulation()
-        rhs1.unlock_triangulation()
         plane_group = VGroup(
             plane,
             vectors,

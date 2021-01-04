@@ -1235,7 +1235,6 @@ class AskWhatTheParadoxIs(TeacherStudentsScene):
 
         # Test accuracy split
         lower_words = self.teacher.bubble.content[1].copy()
-        lower_words.unlock_triangulation()
 
         top_words = TextMobject("Test Accuracy", font_size=72)
         top_words.to_corner(UR)
@@ -2251,14 +2250,12 @@ class SamplePopulation10PercentPrevalence(Scene):
             nw[0].set_color(GREEN)
             nw.move_to(w)
 
-        wc_words.unlock_triangulation()
         self.play(
             cancer_cases[:9].move_to, cancer_cases,
             FadeOut(cancer_cases[9:]),
             ReplacementTransform(wc_words, new_wc_words),
         )
         self.wait()
-        wo_words.unlock_triangulation()
         self.play(
             false_positives.move_to, healthy_cases,
             FadeOut(VGroup(*(
@@ -2861,7 +2858,6 @@ class NewContrastThreeContexts(Scene):
             group.to_edge(LEFT)
             group.set_stroke(BLACK, 3, background=True)
 
-        words[0][1].unlock_triangulation()
         self.play(*result_change_anims)
         self.play(
             FadeOut(words[0][0]),
@@ -2881,7 +2877,6 @@ class NewContrastThreeContexts(Scene):
             FadeIn(post_odds, 0.25 * UP),
         )
 
-        ta_words.unlock_triangulation()
         self.play(
             ReplacementTransform(ta_words[0], up_words[0]),
             ReplacementTransform(ta_words[2], up_words[1]),
@@ -3515,7 +3510,6 @@ class ProbabilityVsOdds(Scene):
             return example
 
         def generate_example_movement(prob, arrow, odds, example):
-            prob.unlock_triangulation()
             mover = VGroup(prob, arrow.copy(), odds)
             return ReplacementTransform(mover, example)
 
@@ -3804,7 +3798,6 @@ class NewSnazzyBayesRuleSteps(Scene):
         step1_subtext.scale(0.9)
         step1_subtext.next_to(step1, DOWN, aligned_edge=LEFT)
 
-        step1_subtext.unlock_triangulation()
         self.play(
             FadeIn(step1_subtext[:2]),
             ShowIncreasingSubsets(population),
@@ -3826,7 +3819,6 @@ class NewSnazzyBayesRuleSteps(Scene):
             font_size=36,
         )
         multiplication.next_to(step3, DOWN, aligned_edge=LEFT)
-        multiplication.unlock_triangulation()
 
         odds_rect = SurroundingRectangle(step1_subtext[-1], color=YELLOW)
         bf_rect = SurroundingRectangle(bf_computation[-1], color=GREEN)
@@ -4396,7 +4388,6 @@ class PrevalenceVsPrior(Scene):
         )
         self.wait()
 
-        eq[1].unlock_triangulation()
         self.play(
             Uncreate(strike),
             MoveToTarget(prior),
@@ -5983,7 +5974,6 @@ class DisambiguateFPR(Scene):
         frac2.save_state()
         frac2.set_x(0)
 
-        title.unlock_triangulation()
         self.play(
             FadeOut(arrow),
             LaggedStart(*fraction_anims(fp, tn, frac2))
@@ -6240,7 +6230,6 @@ class BayesFactorForCovidExample(Scene):
         )
         fraction.next_to(arrow, DOWN)
 
-        prior_odds.unlock_triangulation()
         self.play(LaggedStart(
             TransformFromCopy(eq_90[1], post_odds[0]),
             TransformFromCopy(prior_odds[1:], post_odds[1:]),
@@ -6268,7 +6257,6 @@ class BayesFactorForCovidExample(Scene):
             FadeIn(approx1, 0.5 * DOWN),
         )
         self.wait()
-        approx1.unlock_triangulation()
         self.play(
             ReplacementTransform(approx1, approx2)
         )

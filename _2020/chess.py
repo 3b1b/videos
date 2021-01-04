@@ -872,7 +872,6 @@ class ErrorCorrectionMention(Scene):
         # Describe ECC
         error_index = 8 * 4 + 5
         error_bit = bits[error_index]
-        error_bit.unlock_triangulation()
         error_bit_rect = SurroundingRectangle(error_bit)
         error_bit_rect.set_stroke(RED, 2)
 
@@ -882,7 +881,6 @@ class ErrorCorrectionMention(Scene):
             error_bit.set_color, RED,
         )
         meaning_label.save_state()
-        meaning_label.unlock_triangulation()
         self.play(
             Transform(meaning_label, error_meaning_label)
         )
@@ -1752,7 +1750,6 @@ class ThreeSquareCase(ThreeDScene):
         )
         for brace, n in zip(braces, [0, 1, 1]):
             brace.add(brace.get_tex(n))
-            brace.unlock_triangulation()
         self.play(GrowFromCenter(braces[0]))
         self.wait()
         self.play(ReplacementTransform(braces[0], braces[1]))
@@ -1808,7 +1805,6 @@ class ThreeSquareCase(ThreeDScene):
 
         self.play(Write(mod3_label))
         self.wait()
-        rhs[1].unlock_triangulation()
         self.play(
             FlipCoin(coins[2]),
             FlipCoin(coin_copies[2]),
@@ -1920,7 +1916,6 @@ class FailedMod3Addition(Scene):
             Integer(2, color=YELLOW),
         )
         csum.arrange(RIGHT, buff=SMALL_BUFF)
-        csum[-1].unlock_triangulation()
         csum[-1].shift(SMALL_BUFF * RIGHT)
         coins = csum[1:7:2]
         csum[-1].add_updater(lambda m, coins=coins: m.set_value(coins[1].is_heads() + 2 * coins[2].is_heads()))
@@ -1967,7 +1962,6 @@ class TreeOfThreeFlips(ThreeDScene):
         def set_rhs_target(cs, colors=[RED, GREEN, BLUE]):
             bools = [c.is_heads() for c in cs.coins]
             value = sum([n * b for n, b in enumerate(bools)]) % 3
-            cs[-1].unlock_triangulation()
             cs[-1].generate_target()
             cs[-1].target.set_value(value)
             cs[-1].target.set_color(colors[value])
@@ -2879,7 +2873,6 @@ class CubeEdgeDescription(Scene):
         top_group.to_edge(UP)
 
         self.add(bf_group)
-        bits.unlock_triangulation()
         self.play(
             TransformFromCopy(*bits),
             GrowArrow(arrow),
