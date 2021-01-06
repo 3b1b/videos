@@ -368,7 +368,7 @@ class ExamplesOfNonlinearTwoDimensionalTransformations(Scene):
         rectangle.set_color(WHITE)
         rectangle.shift(self.blackness.get_center())
         self.blackness.add(rectangle)
-        self.blackness.scale_in_place(0.95)
+        self.blackness.scale(0.95)
 
 
 class TrickyExamplesOfNonlinearTwoDimensionalTransformations(Scene):
@@ -442,7 +442,7 @@ class TrickyExamplesOfNonlinearTwoDimensionalTransformations(Scene):
         rectangle.set_color(WHITE)
         rectangle.shift(self.blackness.get_center())
         self.blackness.add(rectangle)
-        self.blackness.scale_in_place(0.95)
+        self.blackness.scale(0.95)
 
 
 ############# HORRIBLE! ##########################

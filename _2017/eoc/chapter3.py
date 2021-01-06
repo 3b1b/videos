@@ -555,7 +555,7 @@ class NudgeSideLengthOfSquare(PiCreatureScene):
         for tup in tups:
             self.play(
                 *it.chain(*[
-                    [m.scale_in_place, 1.2, m.set_color, RED]
+                    [m.scale, 1.2, m.set_color, RED]
                     for m in tup
                 ]), 
                 rate_func = there_and_back
@@ -691,7 +691,7 @@ class NudgeSideLengthOfSquare(PiCreatureScene):
         dx_squared_group = VGroup(self.dx_squared, self.df_equation[-1])
         circle.replace(dx_squared_group, stretch = True)
         dx_squared_group.add(self.df_equation[-2])
-        circle.scale_in_place(1.5)
+        circle.scale(1.5)
         safe_to_ignore = TextMobject("Safe to ignore")
         safe_to_ignore.next_to(circle, DOWN, aligned_edge = LEFT)
         safe_to_ignore.set_color(circle.get_color())
@@ -850,8 +850,8 @@ class NudgeSideLengthOfCube(Scene):
         )
         dx_brace.stretch_in_place(1.5, 1)
         for brace, tex in (x_brace, "x"), (dx_brace, "dx"):
-            brace.scale_in_place(0.95)
-            brace.rotate_in_place(-np.pi/96)
+            brace.scale(0.95)
+            brace.rotate(-np.pi/96)
             brace.shift(0.3*(UP+LEFT))
             brace.add(brace.get_text("$%s$"%tex))
 
@@ -917,7 +917,7 @@ class NudgeSideLengthOfCube(Scene):
         ignore_text = extras_brace.get_text(
             "Multiple \\\\ of $dx^2$"
         )
-        ignore_text.scale_in_place(0.7)
+        ignore_text.scale(0.7)
         x_squared_dx = TexMobject("x^2", "\\, dx")
 
 
@@ -1039,7 +1039,7 @@ class NudgeSideLengthOfCube(Scene):
     def grab_pieces(self, start_pieces, end_pices, to_write = None):
         for piece in start_pieces:
             piece.generate_target()
-            piece.target.rotate_in_place(
+            piece.target.rotate(
                 np.pi/12, piece.get_center()-self.cube.get_center()
             )
             piece.target.set_color(RED)
@@ -1183,11 +1183,11 @@ class NudgeSideLengthOfCube(Scene):
         return face
 
     def pose_3d_mobject(self, mobject):
-        mobject.rotate_in_place(self.pose_angle, self.pose_axis)
+        mobject.rotate(self.pose_angle, self.pose_axis)
         return mobject
 
     def unpose_3d_mobject(self, mobject):
-        mobject.rotate_in_place(-self.pose_angle, self.pose_axis)
+        mobject.rotate(-self.pose_angle, self.pose_axis)
         return mobject
 
 class ShowCubeDVIn3D(Scene):
@@ -1496,8 +1496,8 @@ class PowerRuleAlgebra(Scene):
 
         circle = Circle(color = DERIVATIVE_COLOR)
         circle.replace(derivative_term, stretch = True)
-        circle.scale_in_place(1.4)
-        circle.rotate_in_place(
+        circle.scale(1.4)
+        circle.rotate(
             Line(
                 derivative_term.get_corner(DOWN+LEFT),
                 derivative_term.get_corner(UP+RIGHT),
@@ -2092,7 +2092,7 @@ class SquareRootOfX(Scene):
         ])
         for brace in little_braces:
             tex = brace.get_text("$d\\sqrt{x}$", buff = SMALL_BUFF)
-            tex.scale_in_place(0.8)
+            tex.scale(0.8)
             brace.add(tex)
 
         area_increase = TextMobject("$dx$ = New area")
@@ -2588,7 +2588,7 @@ class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):
         )
         new_angle_label.rotate(-np.pi/2)
         new_angle_label.shift(little_triangle.points[0])
-        new_angle_label[1].rotate_in_place(np.pi/2)
+        new_angle_label[1].rotate(np.pi/2)
 
         little_triangle_lines = VGroup(*[
             Line(*list(map(little_triangle.get_corner, pair)))
@@ -2609,7 +2609,7 @@ class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):
         groups = [self.d_theta_group, self.d_sine_group]
         for group, line in zip(groups, little_triangle_lines):
             self.play(ApplyMethod(
-                line.rotate_in_place, np.pi/12,
+                line.rotate, np.pi/12,
                 rate_func = wiggle,
                 remover = True,
             ))
@@ -2633,7 +2633,7 @@ class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):
         )
         self.wait()
         self.play(
-            self.radial_line.rotate_in_place, np.pi/12,
+            self.radial_line.rotate, np.pi/12,
             Animation(big_triangle),
             rate_func = wiggle,
         )
@@ -2653,7 +2653,7 @@ class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):
             ),
         )
         self.play(
-            new_angle_label.scale_in_place, 2,
+            new_angle_label.scale, 2,
             new_angle_label.set_color, RED,
             rate_func = there_and_back
         )

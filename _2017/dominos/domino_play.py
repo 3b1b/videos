@@ -695,7 +695,7 @@ class ContrastTwoGraphs(SimpleVelocityGraph):
         for x in range(2):
             self.play(LaggedStartMap(
                 ApplyMethod, dot_group1,
-                lambda m : (m.scale_in_place, 0.5),
+                lambda m : (m.scale, 0.5),
                 rate_func = wiggle,
                 lag_ratio = 0.05,
                 run_time = 3,
@@ -705,7 +705,7 @@ class ContrastTwoGraphs(SimpleVelocityGraph):
         for x in range(2):
             self.play(LaggedStartMap(
                 ApplyMethod, dot_group2,
-                lambda m : (m.scale_in_place, 0.5),
+                lambda m : (m.scale, 0.5),
                 rate_func = wiggle,
                 lag_ratio = 0.05,
                 run_time = 3,
@@ -715,7 +715,7 @@ class ContrastTwoGraphs(SimpleVelocityGraph):
         for x in range(2):
             self.play(LaggedStartMap(
                 ApplyMethod, dot_group3,
-                lambda m : (m.scale_in_place, 0.5),
+                lambda m : (m.scale, 0.5),
                 rate_func = wiggle,
                 lag_ratio = 0.05,
                 run_time = 3,

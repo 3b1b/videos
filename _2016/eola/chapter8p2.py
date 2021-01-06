@@ -506,7 +506,7 @@ class DefineDualTransform(Scene):
         func_input.set_height(func_input_template.get_height())
         func_input.next_to(VGroup(*func_tex[:3]), RIGHT)
         VGroup(*func_tex[-2:]).next_to(func_input, RIGHT)
-        func_tex[0].scale_in_place(1.5)
+        func_tex[0].scale(1.5)
 
         func_tex = VGroup(
             VGroup(*[func_tex[i] for i in (0, 1, 2, -2, -1)]),

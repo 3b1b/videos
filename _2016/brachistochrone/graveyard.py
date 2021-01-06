@@ -231,7 +231,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
                 little_square.get_corner(UP+RIGHT) - \
                 equation_frame.get_corner(UP+RIGHT)
             )
-            equation_frame.scale_in_place(0.9)
+            equation_frame.scale(0.9)
             self.show_snells(index+1, equation_frame)
             self.remove(*figure_marks)
         self.disactivate_zooming()

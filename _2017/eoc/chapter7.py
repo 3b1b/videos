@@ -315,7 +315,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
         )
         for sf, color in (1.2, YELLOW), (1/1.2, WHITE):
             self.play(
-                lim.scale_in_place, sf,
+                lim.scale, sf,
                 lim.set_color, color,
                 lag_ratio = 0.5
             )
@@ -434,7 +434,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
             Circle(color = BLUE_B).replace(
                 lhs.get_part_by_tex(tex)[0],
                 stretch = True,
-            ).scale_in_place(1.5).rotate_in_place(-np.pi/12)
+            ).scale(1.5).rotate(-np.pi/12)
             for tex in ("df", "dx")
         ])
         d_words = TextMobject("""
@@ -581,7 +581,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         self.activate_zooming()
         lil_rect = self.little_rectangle
         lil_rect.move_to(self.ss_group)
-        lil_rect.scale_in_place(3)
+        lil_rect.scale(3)
         lil_rect.save_state()
         self.wait()
         self.add(self.rhs)
@@ -931,7 +931,7 @@ class GraphLimitExpression(GraphScene):
         ))
         self.remove(colored_circle)
         self.play(
-            circle.scale_in_place, 0.3,
+            circle.scale, 0.3,
             run_time = 2,
             rate_func = wiggle
         )
@@ -1101,7 +1101,7 @@ class GraphLimitExpression(GraphScene):
             rate_func = lambda t : smooth(t, 2),
             added_anims = [
                 ApplyMethod(
-                    hole.scale_in_place, 0.5,
+                    hole.scale, 0.5,
                     run_time = 8
                 )
                 for hole in holes
@@ -1507,7 +1507,7 @@ class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
             run_time = 2,
             added_anims = [
                 ApplyMethod(
-                    hole.scale_in_place, 0.25,
+                    hole.scale, 0.25,
                     run_time = 2
                 )
                 for hole in self.holes
@@ -1523,10 +1523,10 @@ class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
         self.activate_zooming()
         lil_rect = self.little_rectangle
         lil_rect.move_to(self.graph_origin)
-        lil_rect.scale_in_place(self.zoom_factor)
+        lil_rect.scale(self.zoom_factor)
         self.add(self.holes)
         self.wait()
-        self.play(lil_rect.scale_in_place, 1./self.zoom_factor)
+        self.play(lil_rect.scale, 1./self.zoom_factor)
         self.wait()
 
     def introduce_delta(self):
@@ -1566,7 +1566,7 @@ class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
                     self.get_delta_group(new_delta)
                 )
             ] + [
-                ApplyMethod(hole.scale_in_place, 0.5)
+                ApplyMethod(hole.scale, 0.5)
                 for hole in self.holes
             ]
         )
@@ -2113,7 +2113,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
             *self.zoomed_rect_center_coords
         ))
         self.wait()
-        self.play(lil_rect.scale_in_place, 1./self.zoom_factor)
+        self.play(lil_rect.scale, 1./self.zoom_factor)
         self.wait()
 
     def talk_through_sizes_of_nudges(self):
@@ -2337,7 +2337,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
         dxs = VGroup(*rhs.get_parts_by_tex("dx"))
         circles = VGroup(*[
-            Circle(color = GREEN).replace(dx).scale_in_place(1.3)
+            Circle(color = GREEN).replace(dx).scale(1.3)
             for dx in dxs
         ])
 
@@ -2512,8 +2512,8 @@ class GeneralLHoptial(LHopitalExample):
         ))
         self.wait()
         self.play(
-            lil_rect.scale_in_place, 1./self.zoom_factor,
-            self.a_dot.scale_in_place, 1./self.zoom_factor,
+            lil_rect.scale, 1./self.zoom_factor,
+            self.a_dot.scale, 1./self.zoom_factor,
             run_time = 3,
         )
         self.wait()
@@ -2642,7 +2642,7 @@ class GeneralLHoptial(LHopitalExample):
 
         dxs = VGroup(*deriv_ratio.get_parts_by_tex("\\,dx"))
         circles = VGroup(*[
-            Circle(color = GREEN).replace(dx).scale_in_place(1.3)
+            Circle(color = GREEN).replace(dx).scale(1.3)
             for dx in dxs
         ])
 

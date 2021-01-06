@@ -299,8 +299,8 @@ class EquationSolver1d(GraphScene, ZoomedScene):
                     self.coords_to_point(self.targetX, self.targetY))
                 inverseZoomFactor = 1/float(self.zoom_factor)
                 self.play(
-                    lowerDot.scale_in_place, inverseZoomFactor,
-                    upperDot.scale_in_place, inverseZoomFactor)
+                    lowerDot.scale, inverseZoomFactor,
+                    upperDot.scale, inverseZoomFactor)
 
 
             def makeUpdater(xAtStart, fixed_guess_x):
@@ -370,7 +370,7 @@ class EquationSolver1d(GraphScene, ZoomedScene):
             midDot = Dot(midCoords, color = sign_color)
             if(self.iteration_at_which_to_start_zoom != None and 
                 i >= self.iteration_at_which_to_start_zoom):
-                midDot.scale_in_place(inverseZoomFactor)
+                midDot.scale(inverseZoomFactor)
             self.add(midDot)
             midYLine = DashedLine(midCoords, self.coords_to_point(0, midY), color = sign_color)
             self.play(

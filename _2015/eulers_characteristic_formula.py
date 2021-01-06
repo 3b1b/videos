@@ -285,9 +285,9 @@ class ThreePiecesOfTerminology(GraphScene):
         self.generate_spanning_tree()
         scale_factor = 1.2       
         def accent(mobject, color = "yellow"):
-            return mobject.scale_in_place(scale_factor).set_color(color)
+            return mobject.scale(scale_factor).set_color(color)
         def tone_down(mobject):
-            return mobject.scale_in_place(1.0/scale_factor).set_color("white")
+            return mobject.scale(1.0/scale_factor).set_color("white")
 
         self.add(accent(cycles))
         self.trace_cycle(run_time = 1.0)
@@ -952,7 +952,7 @@ class IntroduceMortimer(GraphScene):
         self.wait()
         self.play(*[
             ApplyMethod(
-                line.rotate_in_place, 
+                line.rotate, 
                 np.pi/10, 
                 rate_func = wiggle) 
             for line in morty_crossed_lines
@@ -1161,7 +1161,7 @@ class FinalSum(Scene):
         for mob, index in zip(symbols, [-3, -2, -7, -6, -1, -4, -5]):
             copy = plus if index == -2 else deepcopy(mob)
             copy.center().shift(lines[index].get_center())
-            copy.scale_in_place(lines[index].get_width()/mob.get_width())
+            copy.scale(lines[index].get_width()/mob.get_width())
             anims.append(CounterclockwiseTransform(copy, mob))
         self.clear()
         self.play(*anims, run_time = 2.0)

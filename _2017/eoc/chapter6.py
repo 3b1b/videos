@@ -265,11 +265,11 @@ class SlopeOfCircleExample(ZoomedScene):
         self.activate_zooming()
         self.little_rectangle.move_to(step_line.get_center())
         self.little_rectangle.save_state()
-        self.little_rectangle.scale_in_place(self.zoom_factor)
+        self.little_rectangle.scale(self.zoom_factor)
         self.wait()        
         self.play(
             self.little_rectangle.restore,
-            dot.scale_in_place, 1./self.zoom_factor,
+            dot.scale, 1./self.zoom_factor,
             run_time = 2
         )
         self.wait()
@@ -1105,7 +1105,7 @@ class RelatedRatesExample(ThreeDScene):
 
         box = Rectangle(color = YELLOW)
         box.replace(solution)
-        box.scale_in_place(1.5)
+        box.scale(1.5)
 
         self.play(Write(solution))
         self.wait()
@@ -1259,7 +1259,7 @@ class CompareLadderAndCircle(PiCreatureScene, ThreeDScene):
 
         ladder_mobs.save_state()
         ladder_mobs.fade(1)
-        ladder_mobs.rotate_in_place(np.pi/3, UP)
+        ladder_mobs.rotate(np.pi/3, UP)
         self.play(
             self.pi_creature.change_mode, "raise_right_hand",
             self.pi_creature.look_at, ladder_mobs,
@@ -1791,7 +1791,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         )
         self.wait(2)
         self.play(
-            self.little_rectangle.scale_in_place, self.zoom_factor/2,
+            self.little_rectangle.scale, self.zoom_factor/2,
             run_time = 4,
             rate_func = there_and_back
         )
@@ -2115,7 +2115,7 @@ class AlternateExample(ZoomedScene):
 
         circle = Circle(color = GREEN)
         circle.replace(self.rhs)
-        circle.scale_in_place(1.7)
+        circle.scale(1.7)
 
         arrow = Arrow(rhs.get_right(), dx.get_top())
         arrow.set_color(GREEN)
@@ -2449,8 +2449,8 @@ class DerivativeOfNaturalLog(ZoomedScene):
         self.activate_zooming()
         lil_rect = self.little_rectangle
         lil_rect.move_to(group)
-        lil_rect.scale_in_place(self.zoom_factor)
-        self.play(lil_rect.scale_in_place, 1./self.zoom_factor)
+        lil_rect.scale(self.zoom_factor)
+        self.play(lil_rect.scale, 1./self.zoom_factor)
         self.play(Write(dx_line.label))
         self.play(Write(dy_line.label))
         self.wait()

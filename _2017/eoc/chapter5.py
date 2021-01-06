@@ -632,7 +632,7 @@ class FakeDiagram(TeacherStudentsScene):
 
         circle = Circle(color = RED)
         circle.replace(deriv, stretch = True)
-        circle.scale_in_place(1.5)
+        circle.scale(1.5)
 
         words = TextMobject("Not a real explanation")
         words.to_edge(UP)
@@ -767,7 +767,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
             Rectangle(
                 stroke_color = BLUE,
                 stroke_width = 2,
-            ).replace(mob).scale_in_place(1.1)
+            ).replace(mob).scale(1.1)
             for mob in [
                 VGroup(*two_to_t_plus_dt[1:]),
                 two_to_t_two_to_dt
@@ -875,7 +875,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
             Rectangle(
                 stroke_color = color,
                 stroke_width = 2,
-            ).replace(mob, stretch = True).scale_in_place(1.1)
+            ).replace(mob, stretch = True).scale(1.1)
             for mob, color in [
                 (VGroup(parens, dt_to_zero), GREEN), 
                 (extracted_two_to_t, YELLOW),
@@ -1248,7 +1248,7 @@ class ApplyChainRule(TeacherStudentsScene):
         exponent = VGroup(*deriv_equation[-2:])
         circle = Circle(color = YELLOW)
         circle.replace(exponent, stretch = True)
-        circle.scale_in_place(1.5)
+        circle.scale(1.5)
 
         self.teacher_says("Think of the \\\\ chain rule")
         self.change_student_modes(*["pondering"]*3)

@@ -185,7 +185,7 @@ class TransitionFromLastVideo(TeacherStudentsScene):
             word.next_to(monster, UP)
             self.play(
                 FadeIn(word),
-                part.scale_in_place, 1.2,
+                part.scale, 1.2,
                 part.set_color, YELLOW
             )
             self.wait()
@@ -296,7 +296,7 @@ class PreSumRuleDiscussion(Scene):
                 part = specific[i]
                 self.play(
                     part.set_color, YELLOW,
-                    part.scale_in_place, 1.2,
+                    part.scale, 1.2,
                     rate_func = there_and_back
                 )
         self.wait()
@@ -352,11 +352,11 @@ class SumRule(GraphScene):
             direction = UP+RIGHT,
             buff = 0,
         )
-        sine_label.scale_in_place(self.tex_scale_factor)
+        sine_label.scale(self.tex_scale_factor)
         parabola_label = self.get_graph_label(
             parabola, "x^2", x_val = self.graph_label_x_value,
         )
-        parabola_label.scale_in_place(self.tex_scale_factor)
+        parabola_label.scale(self.tex_scale_factor)
 
         graphs = VGroup(sine_graph, parabola)
         labels = VGroup(sine_label, parabola_label)
@@ -631,7 +631,7 @@ class SumRule(GraphScene):
         def indicate(mob):
             self.play(
                 mob.set_color, YELLOW,
-                mob.scale_in_place, 1.2,
+                mob.scale, 1.2,
                 rate_func = there_and_back
             )
         for tex, group in tex_group_pairs:
@@ -694,7 +694,7 @@ class DiscussProducts(TeacherStudentsScene):
         self.change_student_modes(
             "pondering", "confused", "erm",
             added_anims = [
-                not_equals.scale_in_place, 1.3,
+                not_equals.scale, 1.3,
                 not_equals.set_color, RED
             ]
         )
@@ -1053,7 +1053,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
             label.set_color, RED,
         )
         self.play(
-            label[1].scale_in_place, 1.1,
+            label[1].scale, 1.1,
             rate_func = there_and_back
         )
         self.play(boxes.restore, label.restore)
@@ -1175,7 +1175,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
 
         def indicate(mob):
             self.play(
-                mob.scale_in_place, 1.2,
+                mob.scale, 1.2,
                 mob.set_color, YELLOW,
                 rate_func = there_and_back
             )
@@ -1928,7 +1928,7 @@ class GeneralizeChainRule(Scene):
             self.wait()
         self.wait()
         self.play(*it.chain(*[
-            [mob.scale_in_place, 1.2, mob.set_color, YELLOW]
+            [mob.scale, 1.2, mob.set_color, YELLOW]
             for mob in (example_inner, d_example_inner)
         ]), rate_func = there_and_back)
         self.play(Transform(
@@ -1997,7 +1997,7 @@ class GeneralizeChainRule(Scene):
         self.wait()        
         circle = Circle(color = YELLOW)
         circle.replace(d_general_outer_copy[1])
-        circle.scale_in_place(1.4)
+        circle.scale(1.4)
         self.play(ShowCreation(circle))
         self.play(Blink(morty))
         self.wait()
@@ -2042,7 +2042,7 @@ class GeneralizeChainRule(Scene):
         for mob in list(dg_dh)+list(dh_dx):
             circle = Circle(color = YELLOW)
             circle.replace(mob)
-            circle.scale_in_place(1.3)
+            circle.scale(1.3)
             self.play(ShowCreation(circle))
             self.wait()
             self.play(FadeOut(circle))
@@ -2161,7 +2161,7 @@ class NextVideo(TeacherStudentsScene):
         axes = Axes(x_min = -3, x_max = 3, color = GREY)
         axes.add(Circle(color = YELLOW))
         line = Line(np.sqrt(2)*UP, np.sqrt(2)*RIGHT)
-        line.scale_in_place(1.5)
+        line.scale(1.5)
         axes.add(line)
 
         axes.scale(0.5)

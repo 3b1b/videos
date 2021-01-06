@@ -647,9 +647,9 @@ class IntroduceTowersOfHanoi(TowersOfHanoiScene):
             group = VGroup(disk, top, bottom)
             group.truly_original_state = group.copy()
             group.next_to(peg, UP, 0)
-            group.rotate_in_place(-np.pi/24, RIGHT)
+            group.rotate(-np.pi/24, RIGHT)
             group.save_state()
-            group.rotate_in_place(-11*np.pi/24, RIGHT)
+            group.rotate(-11*np.pi/24, RIGHT)
             disk.set_fill(opacity = 0)
             disk_groups.add(group)
         disk_groups.arrange()
@@ -672,7 +672,7 @@ class IntroduceTowersOfHanoi(TowersOfHanoiScene):
         for label in labels:
             label.save_state()
             self.play(
-                label.scale_in_place, 2,
+                label.scale, 2,
                 label.set_color, YELLOW,
                 last.restore,
                 run_time = 0.5
@@ -928,7 +928,7 @@ class RhythmOfDecimalCounting(CountingScene):
         self.wait()
         ten_group.save_state()
         self.play(
-            ten_group.scale_in_place, 7,
+            ten_group.scale, 7,
             ten_group.shift, 2*(DOWN+LEFT),
         )
         self.wait()
@@ -1403,7 +1403,7 @@ class RecursionTime(Scene):
         keith.make_eye_contact(morty)
 
         keith_kick = keith.copy().change_mode("dance_kick")
-        keith_kick.scale_in_place(1.3)
+        keith_kick.scale(1.3)
         keith_kick.shift(0.5*LEFT)
         keith_kick.look_at(morty.eyes)
         keith_hooray = keith.copy().change_mode("hooray")
@@ -2137,7 +2137,7 @@ class RecursiveSolutionToConstrained(RecursiveSolution):
         self.move_subtower_to_peg(self.num_disks-1, 0, added_anims = [
             steps_to_fade.fade, 0.7,
             sub_steps[2].set_color, WHITE,
-            sub_steps[2].scale_in_place, 1.2,
+            sub_steps[2].scale, 1.2,
             FadeIn(sub_sub_steps_brace)
         ])
         num_disks = self.num_disks-1
@@ -3094,7 +3094,7 @@ class DescribeTriforcePattern(SierpinskiGraphScene):
         ]
         def wiggle_island(island):
             return ApplyMethod(
-                island.rotate_in_place, np.pi/12, 
+                island.rotate, np.pi/12, 
                 run_time = 1,
                 rate_func = wiggle
             )

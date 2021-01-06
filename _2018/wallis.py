@@ -1407,7 +1407,7 @@ class Lemma1(DistanceProductScene):
             UpdateFromFunc(self.distance_product_column, update_distance_product_column),
             run_time=5
         )
-        self.distance_product_column[-1].set_color(BLUE).scale_in_place(1.05)
+        self.distance_product_column[-1].set_color(BLUE).scale(1.05)
         self.wait()
 
 

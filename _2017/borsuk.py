@@ -195,7 +195,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
         )
         self.play(*[
             ApplyMethod(
-                jewel.rotate_in_place, np.pi/6, UP, 
+                jewel.rotate, np.pi/6, UP, 
                 rate_func = there_and_back
             )
             for jewel in jewels
@@ -374,7 +374,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
             for jewel_type in jewel_types:
                 self.play(
                     *[
-                        ApplyMethod(jewel.scale_in_place, 1.5)
+                        ApplyMethod(jewel.scale, 1.5)
                         for jewel in jewel_type
                     ],
                     rate_func = there_and_back,
@@ -881,7 +881,7 @@ class WalkEquatorPostTransform(GraphScene):
         )
         self.play(
             dots.set_color, YELLOW,
-            dots.scale_in_place, 1.2,
+            dots.scale, 1.2,
             rate_func = there_and_back
         )
         self.wait()
@@ -955,7 +955,7 @@ class WalkEquatorPostTransform(GraphScene):
         first_half = full_curve.copy().pointwise_become_partial(
             full_curve, 0, 0.5
         )
-        second_half = first_half.copy().rotate_in_place(np.pi, RIGHT)
+        second_half = first_half.copy().rotate(np.pi, RIGHT)
         broken_curve = VGroup(first_half, second_half)
         return broken_curve
 
@@ -1867,7 +1867,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
         self.play(
             *it.chain(*[
                 [
-                    line.rotate_in_place, np.pi/12, vect,
+                    line.rotate, np.pi/12, vect,
                     line.set_color, RED
                 ]
                 for line, vect in zip(self.v_lines, [OUT, IN])

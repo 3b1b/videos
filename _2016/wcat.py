@@ -653,7 +653,7 @@ class PairOfPairBecomeRectangle(Scene):
         factor = lines[0].get_length()/lines[1].get_length()        
         grower = groups[1].copy()
         new_line = grower[-1]
-        new_line.scale_in_place(factor)
+        new_line.scale(factor)
         grower[0].move_to(new_line.get_start())
         grower[2].next_to(grower[0], DOWN)
         grower[1].move_to(new_line.get_end())
@@ -697,7 +697,7 @@ class SearchForRectangleOnLoop(ClosedLoopScene):
         angle_mean = np.mean(angles)
         self.play(
             *[
-                ApplyMethod(line.rotate_in_place, angle_mean-angle)
+                ApplyMethod(line.rotate, angle_mean-angle)
                 for line, angle in zip(self.connecting_lines, angles)
             ] + [Animation(midpoint)],
             rate_func = there_and_back
@@ -1183,7 +1183,7 @@ class EdgesOfSquare(Scene):
         bottom_left = interval.get_left()
         for tick in interval.tick_marks:
             height = tick.get_height()
-            tick.scale_in_place(0.5)
+            tick.scale(0.5)
             tick.shift(height*DOWN/4.)
         self.numbers = interval.get_number_mobjects(0, 1)
         vert_interval = interval.copy()
@@ -1286,7 +1286,7 @@ class EndpointsGluedTogether(ClosedLoopScene):
         dots.set_color(BLUE)
 
         self.add(interval, dots)
-        self.play(dots.rotate_in_place, np.pi/20, rate_func = wiggle)
+        self.play(dots.rotate, np.pi/20, rate_func = wiggle)
         self.wait()
         self.transform_loop(
             original_loop,
@@ -2095,7 +2095,7 @@ class ThumbnailImage(ClosedLoopScene):
     def construct(self):
         self.add_rect_dots(square = True)
         for dot in self.dots:
-            dot.scale_in_place(1.5)
+            dot.scale(1.5)
         self.add_connecting_lines(cyclic = True)
         self.connecting_lines.set_stroke(width = 10)
         self.loop.add(self.connecting_lines, self.dots)

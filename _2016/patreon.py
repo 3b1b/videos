@@ -543,7 +543,7 @@ class MakeALotOfPiCreaturesHappy(Scene):
         self.wait()
         for pi, color in zip(pis.target, colors):
             pi.change_mode("hooray")
-            # pi.scale_in_place(1)
+            # pi.scale(1)
             pi.set_color(color)
         self.play(
             MoveToTarget(

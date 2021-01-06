@@ -314,7 +314,7 @@ class MainBreakdown(Scene):
         hps, h_line, target_laptop = self.get_fraction(
             0, TextMobject("H/s"), Laptop()
         )
-        hps.scale_in_place(0.7)
+        hps.scale(0.7)
 
         self.play(FadeIn(laptop))
         self.play(
@@ -858,7 +858,7 @@ class Thumbnail(Scene):
         num.set_stroke(BLUE_B, 3)
         num.shift(MED_SMALL_BUFF*UP)
         num.add_background_rectangle(opacity = 1)
-        num.background_rectangle.scale_in_place(1.5)
+        num.background_rectangle.scale(1.5)
         self.add(num)
 
         background_num_str = "115792089237316195423570985008687907853269984665640564039457584007913129639936"

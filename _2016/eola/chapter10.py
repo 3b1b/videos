@@ -62,7 +62,7 @@ class StudentsFindThisConfusing(TeacherStudentsScene):
             "What does this actually mean?",
             student_index = 2,
             added_anims = [
-                question1.scale_in_place, 0.8,
+                question1.scale, 0.8,
                 question1.to_edge, LEFT,
                 question1.shift, DOWN,
             ]
@@ -260,7 +260,7 @@ class IHatAsEigenVector(ExampleTranformationScene):
         column1 = VGroup(*self.matrix.get_mob_matrix()[:,0])
 
         self.play(faders.fade, 0.7, Animation(self.matrix))
-        self.play(column1.scale_in_place, 1.3, rate_func = there_and_back)
+        self.play(column1.scale, 1.3, rate_func = there_and_back)
         self.wait()
         self.play(faders.restore, Animation(self.matrix))
         self.wait()
@@ -727,7 +727,7 @@ class SymbolicEigenvectors(Scene):
                 GrowFromCenter(group.brace),
                 Write(group.text, run_time = 2)
             )
-            self.play(group.scale_in_place, 1.2, rate_func = there_and_back)
+            self.play(group.scale, 1.2, rate_func = there_and_back)
             self.wait()
 
         morty = Mortimer().to_edge(DOWN)
@@ -1406,7 +1406,7 @@ class RevisitExampleTransformation(ExampleTranformationScene):
         self.play(*it.chain(
             list(map(FadeOut, faders)),
             [
-                lambda_equals_two.scale_in_place, 1.3,
+                lambda_equals_two.scale, 1.3,
                 lambda_equals_two.next_to, self.matrix, DOWN                
             ]
         ))
@@ -1742,7 +1742,7 @@ class ShearExample(RevisitExampleTransformation):
         # self.play(*it.chain(
         #     map(FadeOut, faders),
         #     [
-        #         lambda_equals_two.scale_in_place, 1.3,
+        #         lambda_equals_two.scale, 1.3,
         #         lambda_equals_two.next_to, self.matrix, DOWN                
         #     ]
         # ))
@@ -1876,7 +1876,7 @@ class BasisVectorsAreEigenvectors(LinearTransformationScene):
         ])
         for entries in diag_entries, off_diag_entries:
             self.play(
-                entries.scale_in_place, 1.3,
+                entries.scale, 1.3,
                 entries.set_color, YELLOW,
                 run_time = 2,
                 rate_func = there_and_back
@@ -1908,7 +1908,7 @@ class DefineDiagonalMatrix(Scene):
         self.wait()
         for entries in off_diag_entries, diag_entries:
             self.play(
-                entries.scale_in_place, 1.1,
+                entries.scale, 1.1,
                 entries.set_color, YELLOW,
                 rate_func = there_and_back,
             )
@@ -1922,7 +1922,7 @@ class DefineDiagonalMatrix(Scene):
         self.wait()
         self.play(diag_entries.set_color, MAROON_B)
         self.play(
-            diag_entries.scale_in_place, 1.1,
+            diag_entries.scale, 1.1,
             rate_func = there_and_back,
         )
         self.wait()

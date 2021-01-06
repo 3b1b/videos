@@ -177,7 +177,7 @@ class FollowLinearCombination(LinearTransformationScene):
         j_label = vector_coordinate_label(self.j_hat)
         j_label.set_color(Y_COLOR)
         for mob in i_label, j_label:
-            mob.scale_in_place(0.8)
+            mob.scale(0.8)
             background = BackgroundRectangle(mob)
             self.play(ShowCreation(background), Write(mob))
 
@@ -1025,8 +1025,8 @@ class ExplanationTrumpsProof(Scene):
             run_time = 1
         )
         self.play(
-            explanation.scale_in_place, 1.5,
-            proof.scale_in_place, 0.7
+            explanation.scale, 1.5,
+            proof.scale, 0.7
         )
         self.wait()
 

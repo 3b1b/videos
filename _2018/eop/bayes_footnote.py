@@ -1057,7 +1057,7 @@ class SourceOfConfusion(Scene):
         rule_rect.set_color(BLUE)
         rule.save_state()
         rule.replace(words_rect)
-        rule.scale_in_place(0.9)
+        rule.scale(0.9)
         rule.set_fill(opacity = 0)
 
         self.play(ShowCreation(words_rect))

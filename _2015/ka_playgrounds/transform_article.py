@@ -268,7 +268,7 @@ class PlaneToSpaceFunction(Scene):
         self.add(plane, divider, axes)
         self.play(Rotating(axes, **rot_kwargs))
 
-        target.rotate_in_place(rot_kwargs["radians"])
+        target.rotate(rot_kwargs["radians"])
         self.play(
             TransformAnimations(
                 Animation(plane.copy()),

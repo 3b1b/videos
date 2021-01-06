@@ -253,7 +253,7 @@ class PreviewLearning(NetworkScene):
                     nc_color if w > 0 else pc_color,
                     3*abs(w)/max_w
                 )
-                edge.rotate_in_place(np.pi)
+                edge.rotate(np.pi)
             if i == 2:
                 delta_edges.submobjects = [
                     delta_edges[j]
@@ -314,7 +314,7 @@ class PreviewLearning(NetworkScene):
         return LaggedStartMap(
             ApplyFunction, edges,
             lambda mob : (
-                lambda m : m.rotate_in_place(np.pi/12).set_color(YELLOW),
+                lambda m : m.rotate(np.pi/12).set_color(YELLOW),
                 mob
             ),
             rate_func = wiggle
@@ -743,7 +743,7 @@ class IntroduceCostFunction(PreviewLearning):
         )
         self.play(LaggedStartMap(
             ApplyMethod, neuron.edges_in,
-            lambda m : (m.rotate_in_place, np.pi/12),
+            lambda m : (m.rotate, np.pi/12),
             rate_func = wiggle,
             run_time = 2
         ))
@@ -1298,7 +1298,7 @@ class EmphasizeComplexityOfCostFunction(IntroduceCostFunction):
         input_words, output_words, parameter_words = self.curr_words
 
         network_mob.generate_target()
-        network_mob.target.scale_in_place(0.7)
+        network_mob.target.scale(0.7)
         network_mob.target.to_edge(UP, buff = LARGE_BUFF)
         rect = SurroundingRectangle(network_mob.target, color = BLUE)
         network_label = TextMobject("Input")
@@ -1771,7 +1771,7 @@ class SingleVariableCostFunction(GraphScene):
         target_x = 0.94
         point = VectorizedPoint(self.coords_to_point(x, 0))
         line = self.get_tangent_line(x)
-        line.scale_in_place(0.5)
+        line.scale(0.5)
         def update_line(line):
             x = self.x_axis.point_to_number(point.get_center())
             self.make_line_tangent(line, x)
@@ -2460,7 +2460,7 @@ class TwoGradientInterpretationsIn2D(Scene):
         grad_group.next_to(ORIGIN, RIGHT).to_edge(UP, buff = MED_SMALL_BUFF)
         for mob in grad, vect, func:
             mob.add_background_rectangle()
-            mob.background_rectangle.scale_in_place(1.1)
+            mob.background_rectangle.scale(1.1)
 
         self.play(Write(func, run_time = 1))
         self.play(Write(grad_group, run_time = 2))
@@ -2668,7 +2668,7 @@ class GradientNudging(PreviewLearning):
             else:
                 new_color = self.negative_edge_color
             edge.set_stroke(new_color, abs(new_num))
-            edge.rotate_in_place(np.pi)
+            edge.rotate(np.pi)
         return MoveToTarget(
             edges,
             lag_ratio = 0.5,
@@ -3571,7 +3571,7 @@ class TrainOnImages(PreviewLearning, RandomlyLabeledImageData):
         for group in groups:
             for edge in edges:
                 edge.generate_target()
-                edge.target.rotate_in_place(np.pi)
+                edge.target.rotate(np.pi)
                 alt_edge = random.choice(edges)
                 color = alt_edge.get_stroke_color()
                 width = alt_edge.get_stroke_width()

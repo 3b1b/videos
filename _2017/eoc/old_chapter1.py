@@ -522,7 +522,7 @@ class PragmatismToArt(Scene):
                 art
             ),
             pragmatism.fade, 0.7,
-            pragmatism.rotate_in_place, np.pi/4,
+            pragmatism.rotate, np.pi/4,
             pragmatism.shift, DOWN+LEFT
         )
         self.play(Blink(morty))
@@ -627,7 +627,7 @@ class IntroduceTinyChangeInArea(CircleScene):
             added_anims = [self.pi_creature.change_mode, "pondering"]
         )
 
-        circum_brace = Brace(almost_rect, UP).scale_in_place(0.95)
+        circum_brace = Brace(almost_rect, UP).scale(0.95)
         dR_brace = TexMobject("\\}")
         dR_brace.stretch(0.5, 1)
         dR_brace.next_to(almost_rect, RIGHT)
@@ -869,7 +869,7 @@ class BuildToDADR(CircleScene):
             rate_func = there_and_back
         )
         self.play(
-            self.nudge_label.scale_in_place, 2,
+            self.nudge_label.scale, 2,
             rate_func = there_and_back
         )
         self.wait(2)
@@ -1191,7 +1191,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
 
         dA_dR_circle = Circle()
         dA_dR_circle.replace(dA_dR, stretch = True)
-        dA_dR_circle.scale_in_place(1.5)
+        dA_dR_circle.scale(1.5)
         dA_dR_circle.set_color(BLUE)
 
         words = TextMobject(
@@ -1351,7 +1351,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         self.play(Transform(self.last_mover, equals))
         self.remove(self.last_mover)
         self.play(
-            equals.scale_in_place, 1.5,
+            equals.scale, 1.5,
             equals.set_color, GREEN,
             rate_func = there_and_back,
             run_time = 2
@@ -1598,7 +1598,7 @@ class DerivativeAsTangentLine(ZoomedScene):
         self.play(ShowCreation(dashed_line))
         self.play(ShowCreation(dot))
         self.play(ShowCreation(arrow))
-        self.play(dot.scale_in_place, 2, rate_func = there_and_back)
+        self.play(dot.scale, 2, rate_func = there_and_back)
         self.wait()
         self.play(*list(map(FadeOut, [dashed_line, dot, arrow])))
 
@@ -1916,7 +1916,7 @@ class IntroduceConcentricRings(CircleScene):
         self.radial_line.get_center = self.circle.get_center
         self.radial_line.save_state()
         self.radial_line.generate_target()
-        self.radial_line.target.scale_in_place(
+        self.radial_line.target.scale(
             0.1 / self.radial_line.get_length()
         )
         self.r_label.generate_target()
@@ -1934,7 +1934,7 @@ class IntroduceConcentricRings(CircleScene):
         self.remove(self.get_mobjects_from_last_animation()[0])
         self.add(zero_target)
         self.wait()
-        self.radial_line.target.scale_in_place(
+        self.radial_line.target.scale(
             self.radius/self.radial_line.get_length()
         )
         equals_0.target = TexMobject("=R")

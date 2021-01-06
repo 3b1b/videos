@@ -419,7 +419,7 @@ class GeneralPositionRule(Scene):
             else:
                 words_mob.set_color()
                 intersecting_lines = [
-                    line.scale_in_place(0.3).set_color()
+                    line.scale(0.3).set_color()
                     for i, j in pairs                    
                     for line in [Line(cs.points[i], cs.points[j])]
                 ]
@@ -653,7 +653,7 @@ class QuadrupletsToIntersections(CircleScene):
             )).repeat(3)
             dot_quad = [deepcopy(self.dots[i]) for i in quad]
             for dot in dot_quad:
-                dot.scale_in_place(2)
+                dot.scale(2)
             dot_quad = Mobject(*dot_quad)
             dot_quad.set_color()
             self.add(dot_quad)
@@ -786,7 +786,7 @@ class EulersFormula(GraphScene):
         ])
         self.add(formula)
         colored_dots = [
-            deepcopy(d).scale_in_place(1.5).set_color("red") 
+            deepcopy(d).scale(1.5).set_color("red") 
             for d in self.dots
         ]
         colored_edges = [
@@ -833,7 +833,7 @@ class CannotDirectlyApplyEulerToMoser(CircleScene):
             mob.shift(shift_val)
         self.add(n_equals)
         yellow_dots  = [
-            d.set_color("yellow").scale_in_place(2)
+            d.set_color("yellow").scale(2)
             for d in deepcopy(self.dots)
         ]
         yellow_lines = Mobject(*[
@@ -879,7 +879,7 @@ class ShowMoserGraphLines(CircleScene):
         self.chop_lines_at_intersection_points()
         self.add(*self.intersection_dots)
         small_lines = [
-            deepcopy(line).scale_in_place(0.5) 
+            deepcopy(line).scale(0.5) 
             for line in self.lines
         ]
 
@@ -982,7 +982,7 @@ class HowIntersectionChopsLine(CircleScene):
         self.play(*[
             Transform(
                 line, 
-                deepcopy(line).scale(1.1).scale_in_place(1/1.1),
+                deepcopy(line).scale(1.1).scale(1/1.1),
                 run_time = 1.5
             )
             for line in new_lines
@@ -998,7 +998,7 @@ class ApplyEulerToMoser(CircleScene):
         self.chop_circle_at_points()
         self.generate_regions()
         for dot in self.dots + self.intersection_dots:
-            dot.scale_in_place(radius / RADIUS)
+            dot.scale(radius / RADIUS)
         self.remove(*self.mobjects)
 
         V      = {}
@@ -1065,7 +1065,7 @@ class ApplyEulerToMoser(CircleScene):
         self.play(*[
             Transform(
                 deepcopy(line),
-                deepcopy(line).scale_in_place(0.5),
+                deepcopy(line).scale(0.5),
                 run_time = 2.0,
             )
             for line in self.lines
@@ -1084,7 +1084,7 @@ class ApplyEulerToMoser(CircleScene):
         self.play(*[
             Transform(
                 deepcopy(dot), 
-                deepcopy(dot).scale_in_place(1.4).set_color("yellow")
+                deepcopy(dot).scale(1.4).set_color("yellow")
             )
             for dot in self.dots + self.intersection_dots
         ] + [
@@ -1122,7 +1122,7 @@ class ApplyEulerToMoser(CircleScene):
             ] + [
                 Transform(
                     deepcopy(line),
-                    deepcopy(line).scale_in_place(0.5),
+                    deepcopy(line).scale(0.5),
                 )
                 for line in self.lines
             ] + [
@@ -1682,7 +1682,7 @@ class IntersectionChoppingExamples(Scene):
             self.add(*lines)
             self.wait()
             self.play(*[
-                Transform(line, deepcopy(line).scale(1.2).scale_in_place(1/1.2))
+                Transform(line, deepcopy(line).scale(1.2).scale(1/1.2))
                 for line in lines
             ])
             self.count(lines, run_time = 3.0, num_offset = ORIGIN)

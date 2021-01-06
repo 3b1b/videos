@@ -101,7 +101,7 @@ class Hand(ImageMobject):
             self.shrink()
 
     def shrink(self):
-        self.scale_in_place(0.8).to_edge(DOWN, buff = 0.0)
+        self.scale(0.8).to_edge(DOWN, buff = 0.0)
 
     # def set_color_thumb(self, color = "yellow"):
     #     self.set_color(

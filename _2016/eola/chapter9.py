@@ -185,9 +185,9 @@ class RemindOfCoordinates(LinearCombinationScene):
 
         self.play(
             FadeOut(everything),
-            x_coord.scale_in_place, 1.5,
+            x_coord.scale, 1.5,
             x_coord.move_to, x_shift + 3*UP,
-            y_coord.scale_in_place, 1.5,
+            y_coord.scale, 1.5,
             y_coord.move_to, y_shift + 3*UP,
             Write(words)
         )
@@ -241,7 +241,7 @@ class RemindOfCoordinates(LinearCombinationScene):
         self.play(
             Write(ass1),
             ApplyFunction(
-                lambda m : m.rotate_in_place(np.pi/6).set_color(X_COLOR),
+                lambda m : m.rotate(np.pi/6).set_color(X_COLOR),
                 x_coord,
                 rate_func = wiggle
             )
@@ -250,7 +250,7 @@ class RemindOfCoordinates(LinearCombinationScene):
         self.play(
             Write(ass2),
             ApplyFunction(
-                lambda m : m.rotate_in_place(np.pi/6).set_color(Y_COLOR),
+                lambda m : m.rotate(np.pi/6).set_color(Y_COLOR),
                 y_coord,
                 rate_func = wiggle
             )
@@ -409,7 +409,7 @@ class IntroduceJennifer(JenniferScene):
             pi.bubble = get_small_bubble(pi)
             pi.bubble.set_fill(BLACK, opacity = 0.7)
             pi.bubble.add_content(pi.coords)
-        jenny.coords.scale_in_place(0.7)
+        jenny.coords.scale(0.7)
 
         new_coords = [-1, 2]
         new_coords_mob = Matrix(new_coords)
@@ -969,7 +969,7 @@ class TalkThroughChangeOfBasisMatrix(JenniferScene):
         b2_coords.set_color(Y_COLOR)
         b2_coords.next_to(self.b2.get_end(), UP)
         for coords in b1_coords, b2_coords:
-            coords.scale_in_place(0.7)
+            coords.scale(0.7)
 
         basis_coords_pair = VGroup(
             Matrix([1, 0]).set_color(X_COLOR).scale(0.7),
@@ -1164,13 +1164,13 @@ class FeelsBackwards(Scene):
         self.play(*list(map(Write, [inverse_word, inverse_exponent])))
         self.play(
             Swap(jenny_grid, our_grid),
-            top_arrow.scale_in_place, 0.8,
+            top_arrow.scale, 0.8,
             top_arrow.shift, 0.8*RIGHT,
             top_arrow.set_color, BLUE,
         )
         self.play(
             Swap(jenny_language, our_language),
-            bottom_arrow.scale_in_place, 0.8,
+            bottom_arrow.scale, 0.8,
             bottom_arrow.shift, 0.8*RIGHT
         )
         self.wait()
@@ -1236,7 +1236,7 @@ class RecallInverse(JenniferScene):
         inv_matrix.set_column_colors(X_COLOR)
         self.play(*[
             ApplyMethod(
-                mob.scale_in_place, 1.2, 
+                mob.scale, 1.2, 
                 rate_func = there_and_back
             )
             for mob in inv_matrix.get_mob_matrix()[:,0]
@@ -1245,7 +1245,7 @@ class RecallInverse(JenniferScene):
         inv_matrix.set_column_colors(X_COLOR, Y_COLOR)
         self.play(*[
             ApplyMethod(
-                mob.scale_in_place, 1.2, 
+                mob.scale, 1.2, 
                 rate_func = there_and_back
             )
             for mob in inv_matrix.get_mob_matrix()[:,1]
@@ -1290,7 +1290,7 @@ class WorkOutInverseComputation(Scene):
         """)
         her_text.set_color(her_vector.get_color())
         for text in our_text, her_text:
-            text.scale_in_place(0.7)
+            text.scale(0.7)
 
         self.add(our_vector)
         self.play(
@@ -1396,7 +1396,7 @@ class SummarizeTranslationProcess(Scene):
         self.wait(2)
         self.play(
             VGroup(her_vector, equals).next_to, A_inv, LEFT,
-            her_arrow.rotate_in_place, -np.pi/6,
+            her_arrow.rotate, -np.pi/6,
             her_arrow.shift, MED_SMALL_BUFF*LEFT,
             Transform(A, A_inv, path_arc = np.pi)
         )
@@ -1538,7 +1538,7 @@ class JennyWatchesRotation(JenniferScene):
         matrix.get_entries().set_color_by_gradient(X_COLOR, Y_COLOR)
         jenny.bubble = get_small_bubble(jenny)
         jenny.bubble.add_content(matrix)
-        matrix.scale_in_place(0.8)
+        matrix.scale(0.8)
 
         self.play(
             jenny.change_mode, "sassy",
@@ -1785,7 +1785,7 @@ class MathematicalEmpathy(TeacherStudentsScene):
         self.random_blink()
         for mob, color in (M, BLUE), (As, MAROON_B):
             self.play(mob.set_color, color)
-            self.play(mob.scale_in_place, 1.2, rate_func = there_and_back)
+            self.play(mob.scale, 1.2, rate_func = there_and_back)
             self.random_blink(2)
 
 class NextVideo(Scene):

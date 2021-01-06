@@ -1779,7 +1779,7 @@ class NameGaussianIntegers(LatticePointScene):
     def restrict_to_one_circle(self):
         dots = self.get_lattice_points_on_r_squared_circle(25).copy()
         for dot in dots:
-            dot.scale_in_place(2)
+            dot.scale(2)
         circle = self.get_circle(5)
         radius, root_label = self.get_radial_line_with_label(5)
 
@@ -4083,7 +4083,7 @@ class CountLatticePointsInBigCircle(LatticePointScene):
         self.plane.scale(2)
         self.lattice_points.scale(2)
         for point in self.lattice_points:
-            point.scale_in_place(0.5)
+            point.scale(0.5)
 
     def introduce_points(self):
         circle = self.get_circle(radius = self.max_lattice_point_radius)
@@ -4157,7 +4157,7 @@ class CountLatticePointsInBigCircle(LatticePointScene):
         center_dot = self.lattice_points[0]
         circle = Circle(color = RED)
         circle.replace(center_dot)
-        circle.scale_in_place(2)
+        circle.scale(2)
         arrow = Arrow(ORIGIN, UP+RIGHT, color = RED)
         arrow.next_to(circle, DOWN+LEFT, SMALL_BUFF)
         new_max = 2*self.max_lattice_point_radius
@@ -4193,7 +4193,7 @@ class CountLatticePointsInBigCircle(LatticePointScene):
         self.play(FadeOut(self.rings))
         self.play(
             ApplyMethod(
-                VGroup(self.circle, self.radius).scale_in_place, 2,
+                VGroup(self.circle, self.radius).scale, 2,
                 rate_func=linear,
             ),
             LaggedStartMap(

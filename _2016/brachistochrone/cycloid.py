@@ -15,7 +15,7 @@ class RollAlongVector(Animation):
     def interpolate_mobject(self, alpha):
         d_alpha = alpha - self.last_alpha
         self.last_alpha = alpha
-        self.mobject.rotate_in_place(
+        self.mobject.rotate(
             d_alpha*self.radians, 
             self.rotation_vector
         )
@@ -247,7 +247,7 @@ class LeviSolution(CycloidScene):
             self.play(
                 ShowCreation(arc),
                 ApplyMethod(
-                    line.rotate_in_place, 
+                    line.rotate, 
                     angle,
                     path_func = path_along_arc(angle)
                 ),

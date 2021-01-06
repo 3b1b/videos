@@ -1293,7 +1293,7 @@ class SubmitToTemptation(TemptingButWrongCalculation):
         title = self.title
         question = self.question
         title.generate_target()
-        title.target.scale_in_place(1./1.5)
+        title.target.scale(1./1.5)
         new_words = TextMobject("and", "okay", "assuming independence.")
         new_words.set_color_by_tex("okay", GREEN)
         new_words.next_to(title.target, RIGHT)
@@ -1927,7 +1927,7 @@ class ShowTrueDistribution(PiCreatureScene):
             arrow.shift(3*UP)
             arrows.add(arrow)
         for arrow in arrows[1:3]:
-            arrow.rotate_in_place(np.pi)
+            arrow.rotate(np.pi)
             arrow.set_color(RED)
         arrows.set_color_by_gradient(BLUE, YELLOW)
 
@@ -2821,7 +2821,7 @@ class GeneralBinomialDistributionValues(Scene):
         self.play(FocusOn(last_row))
         self.play(LaggedStartMap(
             ApplyMethod, last_row,
-            lambda m : (m.scale_in_place, 1.2),
+            lambda m : (m.scale, 1.2),
             rate_func = there_and_back,
         ))
         self.wait()
@@ -3079,7 +3079,7 @@ class CorrectForDependence(NameBinomial):
         ]
         for arrow in arrows:
             arrow.target = arrow.deepcopy()
-            arrow.target.rotate_in_place(np.pi)
+            arrow.target.rotate(np.pi)
         for group in checkmarks, crosses:
             for mob, arrow in zip(group, arrows):
                 mob.generate_target()
@@ -3092,7 +3092,7 @@ class CorrectForDependence(NameBinomial):
                 else:
                     mob.target.set_fill(opacity = 0.5)
         for checkmark in checkmarks:
-            checkmark.target.scale_in_place(1.2)
+            checkmark.target.scale(1.2)
 
         kwargs = {"path_arc" : np.pi}
         if len(indices) > 1:

@@ -289,14 +289,14 @@ class SystemOfEquations(Scene):
         self.play(Transform(scaled_vars, isolated_scaled_vars))
         self.play(scalars.set_color, YELLOW, lag_ratio = 0.5)
         self.play(*[
-            ApplyMethod(m.scale_in_place, 1.2, rate_func = there_and_back)
+            ApplyMethod(m.scale, 1.2, rate_func = there_and_back)
             for m in scalars.split()
         ])
         self.wait()
         self.remove(scalars)
         self.play(scaled_vars.restore)
         self.play(*[
-            ApplyMethod(p.scale_in_place, 1.5, rate_func = there_and_back)
+            ApplyMethod(p.scale, 1.5, rate_func = there_and_back)
             for p in plusses
         ])
         self.wait()
@@ -328,7 +328,7 @@ class SystemOfEquations(Scene):
         circle_slash.next_to(arrow, RIGHT)
         def draw_circle_slash(mob):
             circle_slash.replace(mob)
-            circle_slash.scale_in_place(1.4)
+            circle_slash.scale(1.4)
             self.play(ShowCreation(circle_slash), run_time = 0.5)
             self.wait(0.5)
             self.play(FadeOut(circle_slash), run_time = 0.5)
@@ -369,14 +369,14 @@ class SystemOfEquations(Scene):
         for mob, color in zip([variables, constants, xs, ys, zs], colors):
             mob.square = Square(color = color)
             mob.square.replace(mob, stretch = True)
-            mob.square.scale_in_place(1.1)
+            mob.square.scale(1.1)
             if hasattr(mob, "words"):
                 mob.words = TextMobject(mob.words)
                 mob.words.set_color(color)
                 mob.words.next_to(mob.square, UP)
         ys.square.add(xs.square, zs.square)
         zero_circles = VMobject(*[
-            Circle().replace(mob).scale_in_place(1.3)
+            Circle().replace(mob).scale(1.3)
             for mob in [
                 VMobject(*equations.split()[i].split()[j:j+2])
                 for i, j in [(1, 3), (2, 6)]
@@ -1751,7 +1751,7 @@ class OffsetNullSpace(NameNullSpace):
             color = RED
         )
         circle = Circle(color = YELLOW).replace(dot)
-        circle.scale_in_place(5)
+        circle.scale(5)
         words = TextMobject("""
             All vectors still land 
             on the same spot

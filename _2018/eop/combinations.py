@@ -1140,7 +1140,7 @@ class ProbabilityOfKWomenInGroupOfFive(Scene):
                 "=",
                 str(len(stack))
             )
-            equation[0].scale_in_place(0.6)
+            equation[0].scale(0.6)
             equation.arrange(RIGHT, SMALL_BUFF)
             equation.set_color(YELLOW)
             equation.set_color_by_tex("=", WHITE)
@@ -1226,7 +1226,7 @@ class ProbabilityOfKWomenInGroupOfFive(Scene):
         question.to_edge(UP)
         numbers = self.numbers
         circles = VGroup(*[
-            Circle().replace(num, dim_to_match = 1).scale_in_place(1.5)
+            Circle().replace(num, dim_to_match = 1).scale(1.5)
             for num in numbers
         ])
         circles.set_color(WHITE)
@@ -1886,7 +1886,7 @@ class IntroducePascalsTriangle(Scene):
             self.dehighlight_num(num)
             self.remove(line)
         num.set_color(YELLOW)
-        num.scale_in_place(1.2)
+        num.scale(1.2)
         self.add(line)
         self.wait()
 
@@ -1953,7 +1953,7 @@ class IntroducePascalsTriangle(Scene):
         self.play(Write(eq_result))
         show_random_lines(6)
         self.play(
-            self.nine_choose_four_term.scale_in_place, 1./1.2,
+            self.nine_choose_four_term.scale, 1./1.2,
             self.nine_choose_four_term.set_color, WHITE,
             *list(map(FadeOut, [
                 expr, nine_choose_four_term,
@@ -1966,7 +1966,7 @@ class IntroducePascalsTriangle(Scene):
         top_row = self.rows[0]
         circle = Circle(color = YELLOW)
         circle.replace(top_row, dim_to_match = 1)
-        circle.scale_in_place(1.5)
+        circle.scale(1.5)
 
         line_groups = VGroup()
         for n in range(4, -1, -1):
@@ -2003,11 +2003,11 @@ class IntroducePascalsTriangle(Scene):
 
     def set_color_num(self, num):
         num.set_color(YELLOW)
-        num.scale_in_place(1.2)
+        num.scale(1.2)
 
     def dehighlight_num(self, num):
         num.set_color(WHITE)
-        num.scale_in_place(1.0/1.2)
+        num.scale(1.0/1.2)
 
 class StacksApproachBellCurve(Scene):
     CONFIG = {

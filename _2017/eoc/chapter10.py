@@ -627,7 +627,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
         )
         self.play(*[
             ApplyMethod(
-                const.scale_in_place, 0.8,
+                const.scale, 0.8,
                 run_time = 2,
                 rate_func = squish_rate_func(there_and_back, a, a + 0.75)
             )
@@ -1661,7 +1661,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             align_using_submobjects = True
         )
         rhs.add_background_rectangle()
-        rhs.background_rectangle.scale_in_place(1.2)
+        rhs.background_rectangle.scale(1.2)
 
         self.cosine_third_derivative = VGroup(third_deriv, rhs)
         return self.cosine_third_derivative
@@ -1689,7 +1689,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             align_using_submobjects = True
         )
         rhs.add_background_rectangle()
-        rhs.background_rectangle.scale_in_place(1.2)
+        rhs.background_rectangle.scale(1.2)
 
         self.cosine_fourth_derivative = VGroup(fourth_deriv, rhs)
         return self.cosine_fourth_derivative
@@ -2776,7 +2776,7 @@ class SecondTermIntuition(AreaIsDerivative):
         circle = Circle(color = RED)
         circle.set_height(triangle.get_height())
         circle.replace(triangle, dim_to_match = 1)
-        circle.scale_in_place(1.3)
+        circle.scale(1.3)
 
         self.play(DrawBorderThenFill(triangle))
         self.play(ShowCreation(circle))
@@ -2954,13 +2954,13 @@ class SecondTermIntuition(AreaIsDerivative):
         )
         self.wait()
         self.play(
-            self.rect.scale_in_place, 0.5,
+            self.rect.scale, 0.5,
             rate_func = there_and_back
         )
         self.play(FadeIn(VGroup(*analytic_taylor[3:5])))
         self.wait(2)
         self.play(
-            self.triangle.scale_in_place, 0.5,
+            self.triangle.scale, 0.5,
             rate_func = there_and_back
         )
         self.play(FadeIn(VGroup(*analytic_taylor[5:])))
@@ -2968,7 +2968,7 @@ class SecondTermIntuition(AreaIsDerivative):
 
 class EachTermHasMeaning(TeacherStudentsScene):
     def construct(self):
-        self.get_pi_creatures().scale_in_place(0.8).shift(UP)
+        self.get_pi_creatures().scale(0.8).shift(UP)
         self.teacher_says(
             "Each term \\\\ has meaning!",
             target_mode = "hooray",
@@ -3202,7 +3202,7 @@ class ExpGraphConvergence(ExpPolynomial, ExpConvergenceExample):
 
         equals = TexMobject("=")
         equals.replace(self.arrow)
-        equals.scale_in_place(0.8)
+        equals.scale(0.8)
 
         brace = self.braces[1]
         approx_graph = approx_graphs[1]

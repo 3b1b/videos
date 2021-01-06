@@ -3,9 +3,9 @@ from manim_imports_ext import *
 from functools import reduce
 
 def break_up(mobject, factor = 1.3):
-    mobject.scale_in_place(factor)
+    mobject.scale(factor)
     for submob in mobject:
-        submob.scale_in_place(1./factor)
+        submob.scale(1./factor)
     return mobject
 
 class Britain(SVGMobject):
@@ -125,7 +125,7 @@ class ZoomInOnFractal(PiCreatureScene):
 
 
     def tweak_fractal_subpart(self, subpart):
-        subpart.rotate_in_place(np.pi/4)
+        subpart.rotate(np.pi/4)
 
 class WhatAreFractals(TeacherStudentsScene):
     def construct(self):
@@ -284,7 +284,7 @@ class SelfSimilarFractalsAsSubset(Scene):
 
         small_rect = Rectangle()
         small_rect.replace(VGroup(fractals, title), stretch = True)
-        small_rect.scale_in_place(1.2)
+        small_rect.scale(1.2)
         self.small_rect = small_rect
 
         group = VGroup(fractals, title, small_rect)
@@ -837,9 +837,9 @@ class ScaledLineMass(Scene):
 
         shape_copy = shape.copy()
         shape_copy.next_to(shape, DOWN, buff = self.shape_to_shape_buff)
-        shape_copy.scale_in_place(self.break_up_factor)
+        shape_copy.scale(self.break_up_factor)
         for submob in shape_copy:
-            submob.scale_in_place(1./self.break_up_factor)
+            submob.scale(1./self.break_up_factor)
 
         little_brace = Brace(shape_copy[0], self.brace_direction)
         little_brace_text = little_brace.get_text("$\\frac{1}{2}$")
@@ -1025,7 +1025,7 @@ class DefineTwoDimensional(PiCreatureScene):
         shape, brace = group
         bottom_L = self.bottom_L.copy()
         shape.generate_target()
-        shape.target.scale_in_place(
+        shape.target.scale(
             self.scale_factor,
         )
         brace.target = Brace(shape.target, LEFT)
@@ -2226,7 +2226,7 @@ class IntroduceLogLogPlot(GraphScene):
             fill_opacity = 0.7,
         )
         box.replace(expression, stretch = True)
-        box.scale_in_place(1.2)
+        box.scale(1.2)
         expression.add_to_back(box)
         self.add(expression)
 

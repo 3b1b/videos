@@ -836,7 +836,7 @@ class UpdatePokerPrior(SampleSpaceScene):
 
     def tweak_non_flush_case(self):
         her = self.her
-        her.scale_in_place(0.7)
+        her.scale(0.7)
         her.change_mode("plain")
         her.shift(DOWN)
         her.glasses = SunGlasses(her)

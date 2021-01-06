@@ -427,7 +427,7 @@ class PythagoreanProof(Scene):
             VGroup(triangle, triangle.added_triangles),
             stretch = True
         )
-        square.scale_in_place(1.01)
+        square.scale(1.01)
         return square
 
     #####
@@ -475,7 +475,7 @@ class PythagoreanProof(Scene):
 
     def get_added_triangles_to_ab_squares(self, triangle, a_square):
         t1 = triangle.copy()
-        t1.rotate_in_place(np.pi)
+        t1.rotate(np.pi)
         group = VGroup(triangle, t1).copy()
         group.rotate(-np.pi/2)
         group.move_to(a_square.get_right(), LEFT)
@@ -1732,7 +1732,7 @@ class VisualizeZSquared(Scene):
         scale_factor = self.big_dot_radius/self.dot_radius
         self.play(LaggedStartMap(
             ApplyMethod, self.dots,
-            lambda d : (d.scale_in_place, scale_factor),
+            lambda d : (d.scale, scale_factor),
             rate_func = there_and_back,
             run_time = 3
         ))
@@ -1771,7 +1771,7 @@ class VisualizeZSquared(Scene):
                 about_point = self.plane_center
             )
         for dot in self.dots.target:
-            dot.scale_in_place(1./scale_factor)
+            dot.scale(1./scale_factor)
         self.background_plane.target.fade()
 
         self.revert_to_original_skipping_status()
@@ -2141,7 +2141,7 @@ class DrawRadialLines(PointsWeMiss):
         dot = line.seed_dot
 
         self.play(
-            dot.scale_in_place, 2,
+            dot.scale, 2,
             dot.set_color, RED
         )
         self.play(ReplacementTransform(dot, line))
@@ -2159,7 +2159,7 @@ class DrawRadialLines(PointsWeMiss):
         new_dots = VGroup(*[line.new_dots for line in self.lines])
         for dot in seed_dots:
             dot.generate_target()
-            dot.target.scale_in_place(1.5)
+            dot.target.scale(1.5)
             dot.target.set_color(RED)
 
         self.play(LaggedStartMap(
@@ -2724,7 +2724,7 @@ class FinalProof(RationalPointsOnUnitCircle):
         uv_arc.shift(self.plane_center)
         theta = TexMobject("\\theta")
         theta.next_to(uv_arc, RIGHT, SMALL_BUFF, DOWN)
-        theta.scale_in_place(0.8)
+        theta.scale(0.8)
 
         square_point = self.background_plane.number_to_point(z**2)
         square_dot = Dot(square_point, color = MAROON_B)
@@ -3057,7 +3057,7 @@ class Poster(DrawRadialLines):
 
         for dot_group in self.dots, self.new_dots:
             for dot in dot_group.family_members_with_points():
-                dot.scale_in_place(0.5)
+                dot.scale(0.5)
         self.remove(self.coordinate_labels)
 
         # rect = Rectangle(

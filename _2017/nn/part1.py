@@ -442,7 +442,7 @@ class ExampleThrees(PiCreatureScene):
             self.play(
                 Animation(randy),
                 moving_three.replace, randy.eyes[1],
-                moving_three.scale_in_place, 0.7,
+                moving_three.scale, 0.7,
                 run_time = 2,
                 lag_ratio = 0.5,
             )
@@ -1074,7 +1074,7 @@ class IntroduceEachLayer(PreviewMNistNetwork):
             neuron.move_to(pixel)
             neuron.set_fill(WHITE, pixel.get_fill_opacity())
             neurons.add(neuron)
-        neurons.scale_in_place(1.2)
+        neurons.scale(1.2)
         neurons.space_out_submobjects(1.3)
         neurons.to_edge(DOWN)
 
@@ -1193,7 +1193,7 @@ class IntroduceEachLayer(PreviewMNistNetwork):
         layer.save_state()
         layer.rotate(np.pi/2)
         layer.center()
-        layer.brace_label.rotate_in_place(-np.pi/2)
+        layer.brace_label.rotate(-np.pi/2)
         n = network_mob.max_shown_neurons/2
 
         rows = VGroup(*[
@@ -1255,7 +1255,7 @@ class IntroduceEachLayer(PreviewMNistNetwork):
         for mob in neuron, label:
             mob.save_state()
             mob.generate_target()
-        neuron.target.scale_in_place(4)
+        neuron.target.scale(4)
         neuron.target.shift(1.5*RIGHT)
         label.target.scale(1.5)
         label.target.next_to(neuron.target, RIGHT)
@@ -2415,7 +2415,7 @@ class IntroduceWeights(IntroduceEachLayer):
         )
         self.play(LaggedStartMap(
             ApplyMethod, edges,
-            lambda m : (m.rotate_in_place, np.pi/24),
+            lambda m : (m.rotate, np.pi/24),
             rate_func = wiggle,
             run_time = 2
         ))
@@ -3185,7 +3185,7 @@ class ShowRemainingNetwork(IntroduceWeights):
             self.bias_count,
         )
         group.generate_target()
-        group.target.scale_in_place(0.8)
+        group.target.scale(0.8)
         rect = SurroundingRectangle(group.target, buff = MED_SMALL_BUFF)
         num_mob = TexMobject("13{,}002")
         num_mob.scale(1.5)

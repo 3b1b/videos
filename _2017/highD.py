@@ -798,7 +798,7 @@ class OfferAHybrid(SliderScene):
         titles.to_edge(UP)
         titles[1].set_color(BLUE)
         titles.generate_target()
-        titles[1].scale_in_place(0.001)
+        titles[1].scale(0.001)
         titles[0].shift(FRAME_X_RADIUS*LEFT/2)
         titles.target[0].shift(FRAME_WIDTH*LEFT/3)
         titles[2].shift(FRAME_X_RADIUS*RIGHT/2)

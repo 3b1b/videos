@@ -81,7 +81,7 @@ class ListSteps(Scene):
             self.wait()
         for step in steps:
             target = step.copy()
-            target.scale_in_place(1.1)
+            target.scale(1.1)
             target.set_color(YELLOW)
             target.set_color_by_tex("linear transformations", BLUE)
             step.target = target
@@ -188,7 +188,7 @@ class SimpleDefine2dCrossProduct(LinearTransformationScene):
         )
         self.wait()
         self.play(ApplyFunction(
-            lambda m : m.scale_in_place(1.2).set_color(RED),
+            lambda m : m.scale(1.2).set_color(RED),
             times,
             rate_func = there_and_back
         ))
@@ -207,7 +207,7 @@ class SimpleDefine2dCrossProduct(LinearTransformationScene):
             vect.save_state()
             vect.target = vect.copy()
             vect.target.rotate(angle)
-            vect.target.label.rotate_in_place(-angle)
+            vect.target.label.rotate(-angle)
             vect.target.label.background_rectangle.set_fill(opacity = 0)
         square = self.square
         square.save_state()
@@ -899,8 +899,8 @@ class Define2dCrossProduct(LinearTransformationScene):
         angle = np.pi/3
         self.v.target.rotate(-angle)
         self.w.target.rotate(angle)
-        self.v.target.label.rotate_in_place(angle)
-        self.w.target.label.rotate_in_place(-angle)
+        self.v.target.label.rotate(angle)
+        self.w.target.label.rotate(-angle)
         for vect in self.v, self.w:
             vect.target.label[0].set_fill(opacity = 0)
         self.square.target = self.square.copy().restore()
@@ -957,8 +957,8 @@ class Define2dCrossProduct(LinearTransformationScene):
         for v1, v2 in (self.v, self.w), (self.w, self.v):
             v1.label[0].set_fill(opacity = 0)
             v1.target = v1.copy()
-            v1.target.label.rotate_in_place(v1.get_angle()-v2.get_angle())
-            v1.target.label.scale_in_place(v1.get_length()/v2.get_length())
+            v1.target.label.rotate(v1.get_angle()-v2.get_angle())
+            v1.target.label.scale(v1.get_length()/v2.get_length())
             v1.target.rotate(v2.get_angle()-v1.get_angle())
             v1.target.scale(v2.get_length()/v1.get_length())
             v1.target.label.move_to(v2.label)
@@ -1441,8 +1441,8 @@ class ShowCrossProductFormula(Scene):
             e1.save_state()
             e2.save_state()
             self.play(
-                e1.scale_in_place, 1.5,
-                e2.scale_in_place, 1.5,
+                e1.scale, 1.5,
+                e2.scale, 1.5,
             )
             self.play(
                 Transform(e1.copy(), e1_target),
@@ -1580,7 +1580,7 @@ class DeterminantTrick(Scene):
                 term.next_to(equation, DOWN, buff = MED_SMALL_BUFF, aligned_edge = LEFT)
             last_mob = term
             self.play(*it.chain(*[
-                [mob.scale_in_place, 1.2]
+                [mob.scale, 1.2]
                 for mob in quint
             ]))
             self.wait() 

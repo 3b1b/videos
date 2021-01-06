@@ -330,7 +330,7 @@ class LengthOfDayGraph(GraphScene):
 
         self.play(*[
             ApplyFunction(
-                lambda c : c.scale_in_place(0.9).shift(SMALL_BUFF*DOWN).set_color(RED),
+                lambda c : c.scale(0.9).shift(SMALL_BUFF*DOWN).set_color(RED),
                 constant,
                 run_time = 3,
                 rate_func = squish_rate_func(there_and_back, a, a+0.7)
@@ -414,7 +414,7 @@ class AverageOfFiniteSet(Scene):
         ])
         circle = Circle(color = YELLOW)
         circle.replace(averages[1], stretch = True)
-        circle.scale_in_place(1.5)
+        circle.scale(1.5)
 
         self.add(lines)
         self.play(FadeIn(
@@ -1370,7 +1370,7 @@ class Antiderivative(AverageOfSineStart):
             self.pi_dot.get_center(),
         )
         line.set_color(RED)
-        line.scale_in_place(1.2)
+        line.scale(1.2)
 
         new_v_line = self.v_line.copy().set_color(RED)
         new_h_line = self.h_line.copy().set_color(RED)
@@ -1905,7 +1905,7 @@ class GeneralAntiderivative(GeneralAverage):
     def draw_slope(self):
         line = Line(*self.graph_points_at_bounds)
         line.set_color(PINK)
-        line.scale_in_place(1.3)
+        line.scale(1.3)
 
         self.play(ShowCreation(line, run_time = 2))
         self.wait()

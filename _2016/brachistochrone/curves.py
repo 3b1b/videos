@@ -98,7 +98,7 @@ class SlideWordDownCycloid(Animation):
                 angle = 0
 
             letter.shift(position-letter.get_bottom())
-            letter.rotate_in_place(angle-letter.angle)
+            letter.rotate(angle-letter.angle)
             letter.angle = angle
 
 
@@ -202,7 +202,7 @@ class PathSlidingScene(Scene):
     def roll(self, mobject, arc_length):
         radius = mobject.get_width()/2
         theta = arc_length / radius
-        mobject.rotate_in_place(-theta)
+        mobject.rotate(-theta)
 
     def add_cycloid_end_points(self):
         cycloid = Cycloid()
@@ -650,7 +650,7 @@ class DefineCurveWithKnob(PathSlidingScene):
 
     def midslide_action(self, point, angle):
         d_angle = angle-self.last_angle
-        self.knob.rotate_in_place(d_angle)
+        self.knob.rotate(d_angle)
         self.last_angle = angle
         self.path.set_color(BLUE_D, lambda p : p[0] < point[0])
 

@@ -236,7 +236,7 @@ class HigherDimensionalVectorsNumerically(Scene):
             self.play(*[
                 Transform(
                     entries[i],
-                    entries[i].copy().scale_in_place(1.2).set_color(WHITE),
+                    entries[i].copy().scale(1.2).set_color(WHITE),
                     rate_func = squish_rate_func(
                         there_and_back, 
                         i/(2.*num_entries), 
@@ -278,7 +278,7 @@ class AskAbout4DPhysicsStudent(Scene):
 
         line = Line(LEFT, RIGHT, color = BLUE_B)
         square = Square(color = BLUE_C)
-        square.scale_in_place(0.5)
+        square.scale(0.5)
         cube = HyperCube(color = BLUE_D, dims = 3)
         hyper_cube = HyperCube()
         thought_mobs = []
@@ -1390,7 +1390,7 @@ class DerivativeIsLinear(Scene):
         anims = []
         for term in terms:
             anims += [
-                term.scale_in_place, 1.2,
+                term.scale, 1.2,
                 term.set_color, RED,
             ]
         self.play(
@@ -1691,8 +1691,8 @@ class IntroducePolynomialSpace(Scene):
         self.wait()
         for i, mob in (2, VGroup(*self.poly2[3:5])), (7, self.poly2[0]):
             self.play(
-                new_coords.get_entries()[i].scale_in_place, 1.3,
-                mob.scale_in_place, 1.3,
+                new_coords.get_entries()[i].scale, 1.3,
+                mob.scale, 1.3,
                 rate_func = there_and_back
             )
             self.remove(*self.get_mobjects_from_last_animation())
@@ -1733,7 +1733,7 @@ class IntroducePolynomialSpace(Scene):
         self.wait()
         diag_entries.save_state()
         diag_entries.generate_target()
-        diag_entries.target.scale_in_place(1.2)
+        diag_entries.target.scale(1.2)
         diag_entries.target.set_color(YELLOW)
         for anim in MoveToTarget(diag_entries), diag_entries.restore:
             self.play(
@@ -1848,15 +1848,15 @@ class IntroducePolynomialSpace(Scene):
             self.play(FadeIn(rect), FadeIn(vert_rect))
             self.wait()
             self.play(
-                entry.scale_in_place, 1.2,
-                diag_entry.scale_in_place, 1.2,
+                entry.scale, 1.2,
+                diag_entry.scale, 1.2,
             )
             diag_entry_target, dot, entry_target = result_entry
             self.play(
                 Transform(entry.copy(), entry_target),
                 Transform(diag_entry.copy(), diag_entry_target),
-                entry.scale_in_place, 1/1.2,
-                diag_entry.scale_in_place, 1/1.2,
+                entry.scale, 1/1.2,
+                diag_entry.scale, 1/1.2,
                 Write(dot)
             )
             self.wait()
@@ -2322,7 +2322,7 @@ class VectorSpaceOfPiCreatures(Scene):
                 GREY_BROWN, GREY_BROWN, GREY,
                 YELLOW_C, YELLOW_D, YELLOW_E
             ]))
-            pi.scale_in_place(random.random()+0.5)
+            pi.scale(random.random()+0.5)
 
         self.play(FadeIn(
             creatures,

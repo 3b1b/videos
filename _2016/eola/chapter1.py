@@ -109,7 +109,7 @@ class DifferentConceptions(Scene):
         length = TextMobject("Length")
         length.next_to(brace, DOWN)
         group = VMobject(vector, brace, length)
-        group.rotate_in_place(np.pi/6)
+        group.rotate(np.pi/6)
         vector.get_center = lambda : vector.get_start()        
 
         direction = TextMobject("Direction")
@@ -616,7 +616,7 @@ class CoordinateSystemWalkthrough(VectorScene):
         self.play(FadeIn(point))
         self.wait()
         self.play(ApplyFunction(
-            lambda m : m.scale_in_place(1.25).set_color(YELLOW),
+            lambda m : m.scale(1.25).set_color(YELLOW),
             array.get_brackets(),
             rate_func = there_and_back
         ))

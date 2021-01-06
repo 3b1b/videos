@@ -331,7 +331,7 @@ class IntroduceNotation(TeacherStudentsScene):
         for mob in numerator, denominator:
             circle = Circle(color = YELLOW)
             circle.replace(mob, stretch = True)
-            circle.scale_in_place(1.3)
+            circle.scale(1.3)
             mob.circle = circle
         dx_to_zero = TexMobject("dx \\to 0")
         dx_to_zero.set_color(YELLOW)
@@ -643,7 +643,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
             left_shifter.shift, 0.2*LEFT,
             right_shifter.shift, 0.2*RIGHT,
             ReplacementTransform(pre_exp_two, exp_two),
-            ddf_over_dx_squared.get_part_by_tex("over").scale_in_place, 0.8
+            ddf_over_dx_squared.get_part_by_tex("over").scale, 0.8
         )
         self.wait(2)
 

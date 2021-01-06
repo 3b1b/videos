@@ -172,7 +172,7 @@ class PhotonsThroughPerpendicularFilters(PhotonPassesCompletelyOrNotAtAll):
             self.shoot_photon()
 
     def reposition_filter_label(self, pf):
-        pf.arrow_label.rotate_in_place(np.pi/2, OUT)
+        pf.arrow_label.rotate(np.pi/2, OUT)
         pf.arrow_label.next_to(pf.arrow, RIGHT)
         return pf
 
@@ -622,14 +622,14 @@ class ShowVariousFilterPairsWithPhotonsOverTime(PhotonsThroughPerpendicularFilte
             theta = -0.65*np.pi,
             added_anims = list(it.chain(*[
                  [
-                    pf.arrow_label.rotate_in_place, np.pi/2, OUT,
+                    pf.arrow_label.rotate, np.pi/2, OUT,
                     pf.arrow_label.next_to, pf.arrow, RIGHT
                  ]
                 for pf in self.pol_filters[:2]
             ]))
         )
         for pf in self.new_filters:
-            pf.arrow_label.rotate_in_place(np.pi/2, OUT)
+            pf.arrow_label.rotate(np.pi/2, OUT)
             pf.arrow_label.next_to(pf.arrow, RIGHT)
 
         self.second_filter = self.pol_filters[1]
@@ -913,7 +913,7 @@ class ForgetPreviousActions(ShowVariousFilterPairs):
         VGroup(*self.pol_filters).shift(IN)
 
         for pf in self.pol_filters:
-            pf.arrow_label.rotate_in_place(np.pi/2, OUT)
+            pf.arrow_label.rotate(np.pi/2, OUT)
             pf.arrow_label.next_to(pf.arrow, RIGHT)
 
         self.stop_ambient_camera_rotation()
@@ -941,7 +941,7 @@ class ForgetPreviousActions(ShowVariousFilterPairs):
 
         group = VGroup(*self.pol_filters)
         rect1 = SurroundingRectangle(group)
-        rect1.rotate_in_place(np.pi/2, RIGHT)
+        rect1.rotate(np.pi/2, RIGHT)
         rect1.rescale_to_fit(group.get_depth()+MED_SMALL_BUFF, 2, True)
         rect1.stretch_in_place(1.2, 0)
         prob_words = TextMobject(
@@ -961,7 +961,7 @@ class ForgetPreviousActions(ShowVariousFilterPairs):
             ))
 
         rect2 = SurroundingRectangle(front_filter, color = RED)
-        rect2.rotate_in_place(np.pi/2, RIGHT)
+        rect2.rotate(np.pi/2, RIGHT)
         rect2.rescale_to_fit(front_filter.get_depth()+MED_SMALL_BUFF, 2, True)
         rect2.stretch_in_place(1.5, 0)
         ignore_words = TextMobject("Photon \\\\", "``forgets'' this")
@@ -1394,7 +1394,7 @@ class VennDiagramProofByContradiction(Scene):
                 for start in ("Would pass", "Pass")
             ]
             for mob in label, alt_label:
-                mob[-1][-1].rotate_in_place(-angle)
+                mob[-1][-1].rotate(-angle)
                 mob[-1][-1].shift(0.5*SMALL_BUFF*UP)
             center = circle.get_center()
             label.move_to(center)
@@ -1590,7 +1590,7 @@ class VennDiagramProofByContradiction(Scene):
             MoveToTarget(B),
             MoveToTarget(B.label),
             in_B.shift, 0.5*DOWN+0.2*LEFT,
-            out_of_B.scale_in_place, 1./0.8,
+            out_of_B.scale, 1./0.8,
             out_of_B.shift, 0.15*(UP+RIGHT),
         )
 
@@ -2219,7 +2219,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
             for m1, m2 in [(C0, A1_yellow_copy), (C0, B1), (B0, A1)]
         ])
         for group, vect in zip(groups[1:], [UP, 5*RIGHT+UP]):
-            group.scale_in_place(0.5)
+            group.scale(0.5)
             group.shift(vect)
             group.save_state()
             group.shift(-vect[0]*RIGHT + 5*LEFT)
@@ -2232,7 +2232,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
 
         self.clear()
         self.play(
-            groups[0].scale_in_place, 0.5,
+            groups[0].scale, 0.5,
             groups[0].shift, 5*LEFT + UP,
             Write(inequality[0], run_time = 1),
             FadeIn(big_le),
@@ -2394,7 +2394,7 @@ class NoFirstMeasurementPreferenceBasedOnDirection(ShowVariousFilterPairs):
         chars = "ABC"
         colors = [RED, GREEN, BLUE]
         for z, char, color, pf in zip(zs, chars, colors, self.pol_filters):
-            pf.scale_in_place(0.7)
+            pf.scale(0.7)
             pf.move_to(z*OUT)
             label = TextMobject(char)
             label.add_background_rectangle()

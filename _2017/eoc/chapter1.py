@@ -883,7 +883,7 @@ class ApproximateOneRing(CircleScene, ReconfigurableScene):
             )
             for vect in (UP, LEFT)
         ]
-        top_brace.scale_in_place(self.ring.R/(self.ring.R+self.dR))
+        top_brace.scale(self.ring.R/(self.ring.R+self.dR))
         side_brace.set_stroke(WHITE, 0.5)
 
 
@@ -1416,7 +1416,7 @@ class GraphRectangles(CircleScene, GraphScene):
 
     def show_circle_unwrapping(self):
         rings = self.fresh_rings
-        rings.rotate_in_place(np.pi)
+        rings.rotate(np.pi)
         rings.submobjects.reverse()
         ghost_rings = rings.copy()
         ghost_rings.set_fill(opacity = 0.25)
@@ -1474,7 +1474,7 @@ class GraphRectangles(CircleScene, GraphScene):
         arranged_group.set_height(FRAME_HEIGHT-1)
         arranged_group.to_corner(DOWN+LEFT, buff = MED_SMALL_BUFF)
         for mob in tex_mobs:
-            mob.scale_in_place(0.7)
+            mob.scale(0.7)
 
         middle_rings = rings[self.num_rings_in_ring_sum_start:-1]
         alphas = np.linspace(0, 1, len(middle_rings))
@@ -1671,7 +1671,7 @@ class RecapCircleSolution(GraphRectangles, ReconfigurableScene):
         dr = self.area_label.get_part_by_tex("dr")
         dr_copy = dr.copy()
         circle = Circle().replace(dr)
-        circle.scale_in_place(1.3)
+        circle.scale(1.3)
 
         dr_num = self.approximations[0][-1]
 
@@ -2421,7 +2421,7 @@ class PlayingTowardsDADX(AreaUnderParabola, ReconfigurableScene):
         A_circle, dA_circle = [
             Circle(color = color).replace(
                 mob, stretch = True
-            ).scale_in_place(1.5)
+            ).scale(1.5)
             for mob, color in [(self.A_func, RED), (self.deriv_equation, GREEN)]
         ]
         q_marks = TexMobject("???")
@@ -2618,7 +2618,7 @@ class AlternateAreaUnderCurve(PlayingTowardsDADX):
         dA_dx = VGroup(*self.deriv_equation[:3])
         box = Rectangle(color = GREEN)
         box.replace(dA_dx, stretch = True)
-        box.scale_in_place(1.3)
+        box.scale(1.3)
         brace = Brace(box, UP)
         faders = VGroup(
             self.dx_to_zero_words[0],

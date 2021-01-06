@@ -494,7 +494,7 @@ class AdditiveProperty(Scene):
                 run_time = 0.5
             ))
             self.play(ApplyMethod(
-                copies.scale_in_place, 1.2,
+                copies.scale, 1.2,
                 rate_func = there_and_back
             ))
             self.wait()

@@ -225,7 +225,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         brace = Brace(line, UP, buff = SMALL_BUFF)
         one = brace.get_text("1", buff = SMALL_BUFF)
         VGroup(line, brace, one).rotate(self.theta_value)
-        one.rotate_in_place(-self.theta_value)
+        one.rotate(-self.theta_value)
         self.circle.rotate(self.theta_value)
 
         words = TextMobject("Corresponding point")
@@ -328,7 +328,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         self.change_mode("pondering")
         for frac, text in (tan_frac, tan_text), (cot_frac, cot_text):
             VGroup(frac[5], frac[-2]).set_color(YELLOW)
-            frac.scale_in_place(0.7)
+            frac.scale(0.7)
             text.save_state()
             text.next_to(frac, LEFT)
             self.play(Write(VGroup(text, frac)))
@@ -411,7 +411,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
 
         for text, frac in (sec_text, sec_frac), (csc_text, csc_frac):
             frac[-2].set_color(YELLOW)
-            frac.scale_in_place(0.7)
+            frac.scale(0.7)
             text.save_state()
             text.next_to(frac, LEFT)
             frac.add_to_back(text.copy())
@@ -487,7 +487,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         arc_theta = VGroup(*self.theta_group[1:3]).copy()
         arc_theta.rotate(-np.pi/2)
         arc_theta.shift(csc_line.get_end())
-        arc_theta[1].rotate_in_place(np.pi/2)
+        arc_theta[1].rotate(np.pi/2)
 
         radial_line = self.theta_group[0]
 
@@ -525,7 +525,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
 
         self.play(ShowCreation(tri1))
         self.play(
-            ApplyMethod(tri1.rotate_in_place, np.pi/12, rate_func = wiggle),
+            ApplyMethod(tri1.rotate, np.pi/12, rate_func = wiggle),
             self.pi_creature.change_mode, "thinking"
         )
         self.wait()
@@ -533,7 +533,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         self.play(Transform(tri1, tri2, path_arc = np.pi/2))
         self.play(Write(arc_theta))
         self.play(ApplyMethod(
-            tri1.rotate_in_place, np.pi/12, 
+            tri1.rotate, np.pi/12, 
             rate_func = wiggle
         ))
         self.wait(2)
@@ -568,7 +568,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
             FadeOut(sin_group)
         )
         self.play(
-            radial_line.rotate_in_place, np.pi/12,
+            radial_line.rotate, np.pi/12,
             rate_func = wiggle
         )
         self.wait()

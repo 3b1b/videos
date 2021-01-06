@@ -63,7 +63,7 @@ class IntroduceSteve(Scene):
             image.replace(sample_size)
             image.next_to(last, DOWN)
             last = image
-        sci_fri.scale_in_place(0.9)
+        sci_fri.scale(0.9)
         shift_val = 0
         sample_size.scale(0.75)
         for book in books:
@@ -170,8 +170,8 @@ class DisectBrachistochroneWord(Scene):
         )
 
         pronunciation = TextMobject(["/br", "e", "kist","e","kr$\\bar{o}$n/"])
-        pronunciation.split()[1].rotate_in_place(np.pi)
-        pronunciation.split()[3].rotate_in_place(np.pi) 
+        pronunciation.split()[1].rotate(np.pi)
+        pronunciation.split()[3].rotate(np.pi) 
         pronunciation.scale(0.7)
         pronunciation.shift(DOWN)
 

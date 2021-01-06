@@ -531,7 +531,7 @@ class TwoDCase(Scene):
         self.wait()
         self.play(
             ApplyMethod(
-                arc.rotate_in_place, np.pi/12,
+                arc.rotate, np.pi/12,
                 rate_func = wiggle,
             )
         )
@@ -684,7 +684,7 @@ class TwoDCase(Scene):
         def update_lines(center_lines):
             for point_mob, line in zip(point_mobs, center_lines):
                 point = point_mob.get_center() - self.center
-                line.rotate_in_place(
+                line.rotate(
                     angle_of_vector(point) - line.get_angle()
                 )
                 line.move_to(self.center)
@@ -860,7 +860,7 @@ class RevisitTwoDCase(TwoDCase):
         four = title[-1][-1]
         four_circle = Circle(color = YELLOW)
         four_circle.replace(four, dim_to_match = 1)
-        four_circle.scale_in_place(1.2)
+        four_circle.scale(1.2)
 
         self.n_in = 0
         self.n_out = 0
@@ -1078,7 +1078,7 @@ class RevisitTwoDCase(TwoDCase):
         rect.set_stroke(WHITE, 2)
         brace = Brace(words[2], DOWN)
         brace_text = brace.get_text("4 equally likely outcomes")
-        brace_text.scale_in_place(0.8)
+        brace_text.scale(0.8)
 
         self.play(ShowCreation(rect))
         self.play(GrowFromCenter(brace))
@@ -1152,7 +1152,7 @@ class ContrastTwoRandomProcesses(TwoDCase):
         circle = Circle(color = WHITE, radius = self.radius)
         point_mobs = self.get_point_mobs()
         for point in point_mobs:
-            point.scale_in_place(1.5)
+            point.scale(1.5)
             point.set_stroke(RED, 1)
         labels = self.get_point_mob_labels()
         self.get_labels_update(point_mobs, labels).update(1)

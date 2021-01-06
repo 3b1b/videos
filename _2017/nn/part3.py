@@ -484,7 +484,7 @@ class ShowAveragingCost(PreviewLearning):
         self.play(LaggedStartMap(
             ApplyFunction, edges,
             lambda edge : (
-                lambda m : m.rotate_in_place(np.pi/12).set_color(YELLOW),
+                lambda m : m.rotate(np.pi/12).set_color(YELLOW),
                 edge,
             ),
             rate_func = lambda t : wiggle(t, 4),
@@ -509,7 +509,7 @@ class ShowAveragingCost(PreviewLearning):
                 self.wait(self.time_per_example)
             self.play(LaggedStartMap(
                 ApplyMethod, reversed_edges,
-                lambda m : (m.rotate_in_place, np.pi),
+                lambda m : (m.rotate, np.pi),
                 run_time = 1,
                 lag_ratio = 0.2,
             ))
@@ -588,7 +588,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
             return LaggedStartMap(
                 ApplyFunction, edge_group,
                 lambda edge : (
-                    lambda m : m.rotate_in_place(np.pi/12).set_color(YELLOW),
+                    lambda m : m.rotate(np.pi/12).set_color(YELLOW),
                     edge
                 ),
                 rate_func = wiggle,
@@ -632,7 +632,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         for mover in movers:
             mover.save_state()
             mover.generate_target()
-            mover.target.scale_in_place(2)
+            mover.target.scale(2)
         neurons[2].save_state()
 
         neurons.target.to_edge(DOWN, MED_LARGE_BUFF)
@@ -721,7 +721,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
             arrow.shift(0.175*RIGHT)
             if i == 2:
                 arrow.set_color(BLUE)
-                arrow.rotate_in_place(np.pi)
+                arrow.rotate(np.pi)
             arrows.add(arrow)
 
             rect = SurroundingRectangle(VGroup(neuron, label))
@@ -773,7 +773,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         self.play(LaggedStartMap(
             ApplyFunction, arrows,
             lambda arrow : (
-                lambda m : m.scale_in_place(0.5).set_color(YELLOW),
+                lambda m : m.scale(0.5).set_color(YELLOW),
                 arrow,
             ),
             rate_func = wiggle
@@ -966,7 +966,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         self.play(LaggedStartMap(
             ApplyFunction, edges,
             lambda edge : (
-                lambda m : m.rotate_in_place(np.pi/12).set_stroke(YELLOW),
+                lambda m : m.rotate(np.pi/12).set_stroke(YELLOW),
                 edge
             ),
             rate_func = wiggle
@@ -1164,7 +1164,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         self.play(LaggedStartMap(
             ApplyFunction, prev_neurons,
             lambda neuron : (
-                lambda m : m.scale_in_place(0.5).set_color(YELLOW),
+                lambda m : m.scale(0.5).set_color(YELLOW),
                 neuron
             ),
             rate_func = wiggle
@@ -1364,7 +1364,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
             edge_copies = neuron.edges_in.copy()
             for edge in edge_copies:
                 edge.set_stroke(arrow.get_color(), 2)
-                edge.rotate_in_place(np.pi)
+                edge.rotate(np.pi)
             self.play(
                 edges.set_stroke, None, 0.15,
                 neuron.edges_in.restore,
@@ -1579,7 +1579,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             for i in range(5)
         ])
         more_h_dots.shift(MED_LARGE_BUFF*RIGHT)
-        more_h_dots[-2].rotate_in_place(-np.pi/4)
+        more_h_dots[-2].rotate(-np.pi/4)
         more_v_dots = VGroup(*[
             self.dots.copy().move_to(
                 self.get_grid_position(3, j)
@@ -1595,7 +1595,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             for j in range(1, self.n_examples)
         ])
         for change in changes:
-            change.scale_in_place(self.change_scale_val)
+            change.scale(self.change_scale_val)
 
         self.play(
             LaggedStartMap(FadeIn, examples),
@@ -1960,7 +1960,7 @@ class OrganizeDataIntoMiniBatches(Scene):
             return LaggedStartMap(
                 ApplyFunction, row,
                 lambda row : (
-                    lambda m : m.scale_in_place(0.75).set_color(YELLOW),
+                    lambda m : m.scale(0.75).set_color(YELLOW),
                     row
                 ),
                 rate_func = wiggle
@@ -3883,7 +3883,7 @@ class GeneralFormulas(SimplestNetworkExample):
         self.play(LaggedStartMap(
             ApplyFunction, edges,
             lambda e : (
-                lambda m : m.rotate_in_place(np.pi/12).set_color(YELLOW),
+                lambda m : m.rotate(np.pi/12).set_color(YELLOW),
                 e
             ),
             rate_func = wiggle

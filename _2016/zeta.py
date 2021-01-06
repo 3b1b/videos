@@ -901,7 +901,7 @@ class FromRealToComplex(ComplexTransformationScene):
         input_label.add_background_rectangle()
         input_label.save_state()
         input_label.replace(VGroup(*complex_zeta[1][2:5]))
-        input_label.background_rectangle.scale_in_place(0.01)
+        input_label.background_rectangle.scale(0.01)
         self.input_label = input_label
 
         self.play(Transform(self.zeta, complex_zeta))
@@ -944,7 +944,7 @@ class FromRealToComplex(ComplexTransformationScene):
 
         new_words = TextMobject("Not \\emph{super} \\\\", "crucial to know...")
         new_words.replace(words)
-        new_words.scale_in_place(1.3)
+        new_words.scale(1.3)
 
         self.play(FadeIn(randy))
         self.play(
@@ -1318,7 +1318,7 @@ class ComplexExponentiation(Scene):
                 label.move_to(plane.num_pair_to_point((0, y)))
                 labels.add(label)
             for label in labels:
-                label.scale_in_place(0.5)
+                label.scale(0.5)
                 label.next_to(
                     label.get_center(), DOWN+RIGHT,
                     buff = SMALL_BUFF
@@ -1882,7 +1882,7 @@ class ShowZetaOnHalfPlane(ZetaTransformationScene):
             when Re$(s) < 1$
         """, buff = SMALL_BUFF)
         words.add_background_rectangle()
-        words.scale_in_place(0.8)
+        words.scale(0.8)
         divergent_sum = TexMobject("1+2+3+4+\\cdots")
         divergent_sum.next_to(ORIGIN, UP)
         divergent_sum.to_edge(LEFT)

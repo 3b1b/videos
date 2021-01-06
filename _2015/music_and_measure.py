@@ -657,11 +657,11 @@ class ConstructPiano(Scene):
         keys = piano.split()
         anims = []
         askew = deepcopy(keys[-1])
-        keys[-1].rotate_in_place(np.pi/5)
+        keys[-1].rotate(np.pi/5)
         for key in keys:
             key.stroke_width = 1
             key_copy = deepcopy(key).to_corner(DOWN+LEFT)
-            key_copy.scale_in_place(0.25)
+            key_copy.scale(0.25)
             key_copy.shift(1.8*random.random()*FRAME_X_RADIUS*RIGHT)
             key_copy.shift(1.8*random.random()*FRAME_Y_RADIUS*UP)
             key_copy.rotate(2*np.pi*random.random())
@@ -1181,7 +1181,7 @@ class StepsToSolution(IntervalScene):
         anims = []
         for tick in self.ticks:
             interval = OpenInterval(tick.get_center(), self.spacing)
-            interval.scale_in_place(0.5)
+            interval.scale(0.5)
             squished = deepcopy(interval).stretch_to_fit_width(0)
             anims.append(Transform(squished, interval))
         self.play(*anims)
@@ -1201,7 +1201,7 @@ class StepsToSolution(IntervalScene):
             "rate_func" : there_and_back
         }
         self.play(*[
-            ApplyMethod(mob.scale_in_place, 0.5*random.random(), **kwargs)
+            ApplyMethod(mob.scale, 0.5*random.random(), **kwargs)
             for mob in self.intervals
         ])
         self.wait()
@@ -1246,7 +1246,7 @@ class StepsToSolution(IntervalScene):
     def stretch_intervals(self):
         for interval, count in zip(self.intervals, it.count(1)):
             self.play(
-                ApplyMethod(interval.scale_in_place, 1.0/(count**2)),
+                ApplyMethod(interval.scale, 1.0/(count**2)),
                 run_time = 1.0/count
             )
         self.wait()
@@ -1311,8 +1311,8 @@ class TroubleDrawingSmallInterval(IntervalScene):
         interval, line = self.add_open_interval(0.5, 0.5)
         big = Mobject(interval, line)
         small_int, small_line = self.add_open_interval(0.5, 0.01)
-        small = Mobject(small_int, line.scale_in_place(0.01/0.5))
-        shrunk = deepcopy(big).scale_in_place(0.01/0.5)
+        small = Mobject(small_int, line.scale(0.01/0.5))
+        shrunk = deepcopy(big).scale(0.01/0.5)
         self.clear()
         IntervalScene.construct(self)
         words = TextMobject("This tiny stretch")
@@ -1408,7 +1408,7 @@ class ShiftSetupByOne(IntervalScene):
         )
         self.remove(*intervals+lines)        
         for interval, frac in zip(intervals, rationals()):
-            interval.scale_in_place(2.0/frac.denominator)
+            interval.scale(2.0/frac.denominator)
 
 
         for interval in intervals[:10]:
@@ -1496,7 +1496,7 @@ class FinalEquivalence(IntervalScene):
             run_time_per_interval = 0,
         )
         for interval, frac in zip(intervals, rationals()):
-            interval.scale_in_place(2.0/frac.denominator)
+            interval.scale(2.0/frac.denominator)
         self.remove(*intervals+lines)
         intervals = Mobject(*intervals)
         arrow = TexMobject("\\Leftrightarrow")

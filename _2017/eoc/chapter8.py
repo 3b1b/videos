@@ -141,7 +141,7 @@ class InCarRestrictedView(ShowSpeedometer):
 
         square = Square(stroke_color = WHITE)
         square.replace(VGroup(self.speedometer, self.speedometer_title))
-        square.scale_in_place(1.5)
+        square.scale(1.5)
         square.pointwise_become_partial(square, 0.25, 0.75)
 
         time_label = TextMobject("Time (in seconds):", "0")
@@ -621,7 +621,7 @@ class ConstantVelocityPlot(PlotVelocity):
             width = 4,
             fill_opacity = 1,
         )
-        bubble.content.scale_in_place(0.8)
+        bubble.content.scale(0.8)
         bubble.content.shift(SMALL_BUFF*UP)
         VGroup(bubble[-1], bubble.content).shift(1.5*LEFT)
 
@@ -710,15 +710,15 @@ class PiecewiseConstantCar(Scene):
         self.add(car)
         self.wait()
         for shift in 2, 6, 12:
-            car.randy.rotate_in_place(np.pi/8)
+            car.randy.rotate(np.pi/8)
             anim = MoveCar(
                 car, start_point+shift*RIGHT,
                 rate_func=linear
             )
 
-            anim.target_mobject[0].rotate_in_place(-np.pi/8)
+            anim.target_mobject[0].rotate(-np.pi/8)
             # for mob in anim.starting_mobject, anim.mobject:
-            #     mob.randy.rotate_in_place(np.pi/6)
+            #     mob.randy.rotate(np.pi/6)
             self.play(anim)
         self.wait()
 
@@ -1987,7 +1987,7 @@ class GraphSPlusC(GraphDistanceVsTime):
         v_line = self.get_vertical_line_to_graph(
             6, graph, line_class = DashedLine
         )
-        v_line.scale_in_place(2)
+        v_line.scale(2)
         v_line.set_color(WHITE)
         graph_label, plus_C = full_label = TexMobject(
             "s(t) = 4t^2 - \\frac{1}{3}t^3", "+C"
@@ -2044,7 +2044,7 @@ class LowerBound(AreaIsDerivative):
         lower_bound = self.integral.get_part_by_tex("0")
         circle = Circle(color = YELLOW)
         circle.replace(lower_bound)
-        circle.scale_in_place(3)
+        circle.scale(3)
         zero_label = lower_bound.copy()
 
         self.play(ShowCreation(circle))
@@ -2067,7 +2067,7 @@ class LowerBound(AreaIsDerivative):
         for bound in zero_int_bounds:
             circle = Circle(color = YELLOW)
             circle.replace(bound)
-            circle.scale_in_place(3)
+            circle.scale(3)
             bound.circle = circle
         self.integral.save_state()
         equals_zero = TexMobject("=0")

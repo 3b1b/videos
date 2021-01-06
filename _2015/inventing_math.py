@@ -1633,7 +1633,7 @@ class TriangleInequality(Scene):
         ]).to_edge(UP).split()
         all_dists = [ab, ac, bc]
         ab_line, ac_line, bc_line = all_lines = [
-            Line(*pair).scale_in_place(0.8)
+            Line(*pair).scale(0.8)
             for pair in it.combinations(locations, 2)
         ]
         def put_on_line(mob, line):
@@ -1898,7 +1898,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
                     num_mobs[index].set_color("green")
                 self.play(*[
                     ApplyMethod(
-                        num_mobs[index].rotate_in_place, np.pi/10, 
+                        num_mobs[index].rotate, np.pi/10, 
                         rate_func = wiggle
                     )
                     for index in pair

@@ -526,7 +526,7 @@ class SymmetriesOfSquare(ThreeDScene):
         )
         if hasattr(square, "labels"):
             for label in rotation.target_mobject.labels:
-                label.rotate_in_place(-angle, axis)
+                label.rotate(-angle, axis)
 
         if show_axis:
             axis_line = self.get_axis_line(square, axis)
@@ -575,7 +575,7 @@ class SymmetriesOfSquare(ThreeDScene):
     def get_axis_line(self, square, axis):
         axis_line = DashedLine(2*axis, -2*axis, **self.dashed_line_config)
         axis_line.replace(square, dim_to_match = np.argmax(np.abs(axis)))
-        axis_line.scale_in_place(1.2)
+        axis_line.scale(1.2)
         return axis_line
 
     def add_labels_and_dots(self, square):
@@ -933,7 +933,7 @@ class AddCircleSymmetries(CircleSymmetries):
         self.wait(2)
         for term, arc in zip(equation[::2], arcs):
             self.play(*[
-                ApplyMethod(mob.scale_in_place, 1.2, rate_func = there_and_back)
+                ApplyMethod(mob.scale, 1.2, rate_func = there_and_back)
                 for mob in (term, arc)
             ])
             self.wait()
@@ -1798,7 +1798,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
         self.zero_point = self.number_line.number_to_point(0)
         self.one = [m for m in self.number_line.numbers if m.get_tex_string() is "1"][0]
         self.one.add_background_rectangle()
-        self.one.background_rectangle.scale_in_place(1.3)
+        self.one.background_rectangle.scale(1.3)
         self.number_line.save_state()        
 
     def introduce_stretch_and_squish(self):
@@ -2213,7 +2213,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         brace_text.add_background_rectangle()
         brace_text.scale(0.7, about_point = brace.get_top())
         brace.rotate(angle)
-        brace_text.rotate(angle).rotate_in_place(-angle)
+        brace_text.rotate(angle).rotate(-angle)
         VGroup(brace, brace_text).set_color(MAROON_B)
         arc = Arc(angle, color = WHITE, radius = 0.5)
         angle_label = TexMobject("30^\\circ")
@@ -2485,7 +2485,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.wait(2)
         self.play(
             imag_power.move_to, UP,
-            imag_power.scale_in_place, 1.5,
+            imag_power.scale, 1.5,
             imag_power.set_color, BLUE,
             self.exponential_rule.to_edge, RIGHT,
             self.get_teacher().change_mode, "speaking"
@@ -3301,7 +3301,7 @@ class ECLPromo(PiCreatureScene):
         )        
         self.play(DrawBorderThenFill(logo_part2))
         self.play(
-            logo_part2.scale_in_place, 0.5,
+            logo_part2.scale, 0.5,
             logo_part2.to_edge, UP
         )
         self.play(

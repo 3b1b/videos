@@ -210,7 +210,7 @@ class AddingPureFrequencies(PiCreatureScene):
         pressure = TextMobject("Pressure")
         time = TextMobject("Time")
         for label in pressure, time:
-            label.scale_in_place(0.8)
+            label.scale(0.8)
         pressure.next_to(axes.y_axis, UP)
         pressure.to_edge(LEFT, buff = MED_SMALL_BUFF)
         time.next_to(axes.x_axis.get_right(), DOWN+LEFT)

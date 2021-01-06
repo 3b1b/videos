@@ -77,7 +77,7 @@ class Chapter9(Scene):
         vector = Vector([3, 2])
         vector.center().shift(2*DOWN)
         vector.set_stroke(width = 8)
-        vector.tip.scale_in_place(2)
+        vector.tip.scale(2)
 
         you.coords = Matrix([3, 2])
         jenny.coords = Matrix(["5/3", "1/3"])

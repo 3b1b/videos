@@ -286,7 +286,7 @@ class JohannThinksOfFermat(Scene):
         bubble.pin_to(johann)
         bubble.shift(DOWN)
         bubble.add_content(fermat)
-        fermat.scale_in_place(0.4)
+        fermat.scale(0.4)
 
 
         self.add(johann, bubble)

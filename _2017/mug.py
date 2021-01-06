@@ -557,7 +557,7 @@ class IntroduceGraph(PiCreatureScene):
         self.wait()
         self.play(LaggedStartMap(
             ApplyMethod, lines,
-            lambda l : (l.rotate_in_place, np.pi/12),
+            lambda l : (l.rotate, np.pi/12),
             rate_func = wiggle
         ))
         self.play(
@@ -744,7 +744,7 @@ class IntroduceRegions(UtilitiesPuzzleScene):
                     lambda m, a : m.set_fill(opacity = int(2*a)),
                 ),
                 ApplyMethod(
-                    paint_bucket.scale_in_place, 0.5,
+                    paint_bucket.scale, 0.5,
                     rate_func = there_and_back,
                 ),
                 run_time = 0.25,
@@ -871,7 +871,7 @@ class AskAboutRegions(IntroduceRegions):
         self.play(MoveToTarget(front_regions))
         self.play(LaggedStartMap(
             ApplyMethod, front_regions,
-            lambda m : (m.rotate_in_place, np.pi/12),
+            lambda m : (m.rotate, np.pi/12),
             rate_func = wiggle,
             lag_ratio = 0.75,
             run_time = 1
@@ -1110,7 +1110,7 @@ class LightUpNodes(IntroduceRegions):
         houses, utilities = self.houses, self.utilities
 
         #First region, lines 0, 1, 4, 3
-        lines[4].rotate_in_place(np.pi)
+        lines[4].rotate(np.pi)
         region = regions[1]
 
         self.play(ShowCreation(lines[0]))
@@ -1144,7 +1144,7 @@ class LightUpNodes(IntroduceRegions):
 
         #Next region, lines 2, 7, 8
         region = regions[3]
-        lines[6].rotate_in_place(np.pi)
+        lines[6].rotate(np.pi)
 
         for line, vertex in (lines[2], houses[2]), (lines[6], utilities[2]):
             self.play(ShowCreation(line), *it.chain(
@@ -1861,8 +1861,8 @@ class EulersFormulaForGeneralPlanarGraph(LightUpNodes, ThreeDScene):
         ])
         cube = self.get_cube_faces(points)
         cube.shift(OUT)
-        cube.rotate_in_place(np.pi/12, RIGHT)
-        cube.rotate_in_place(np.pi/6, UP)
+        cube.rotate(np.pi/12, RIGHT)
+        cube.rotate(np.pi/6, UP)
         cube.shift(MED_LARGE_BUFF*DOWN)
         shade_in_3d(cube)
 

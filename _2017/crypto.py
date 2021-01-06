@@ -1659,7 +1659,7 @@ class LedgerWithInitialBuyIn(SignedLedgerScene):
             lines.add(new_line)
         line = Line(LEFT, RIGHT)
         line.set_width(self.ledger.get_width())
-        line.scale_in_place(0.9)
+        line.scale(0.9)
         line.next_to(lines[-1], DOWN, SMALL_BUFF, LEFT)
         line.set_stroke(width = 1)
         lines[-1].add(line)
@@ -2366,7 +2366,7 @@ class TrustComputationalWork(DistributedLedgerScene):
         ledgers = self.get_distributed_ledgers()
         ledger = ledgers[0]
         ledger.scale(3)
-        ledger[1].scale_in_place(2./3)
+        ledger[1].scale(2./3)
         ledger.center().to_edge(UP).shift(4*LEFT)
         plus = TexMobject("+")
         plus.next_to(ledger, RIGHT)
@@ -3341,7 +3341,7 @@ class FromBankToDecentralizedSystem(DistributedBlockChainScene):
         VGroup(self.charlie, self.you).to_edge(DOWN)
         chains = self.get_distributed_ledgers()
         for pi, chain in zip(creatures, chains):
-            pi.scale_in_place(1.5)
+            pi.scale(1.5)
             pi.shift(0.5*pi.get_center()[0]*RIGHT)
             chain.next_to(pi, UP)
         center_chain = self.get_block_chain()

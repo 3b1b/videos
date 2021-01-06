@@ -818,7 +818,7 @@ class Order3PseudoHilbertCurve(Scene):
         self.clear()
         self.add(words, grid8, *mini_curves)
         self.play(*[
-            ApplyMethod(curve.rotate_in_place, np.pi, axis)
+            ApplyMethod(curve.rotate, np.pi, axis)
             for curve, axis in [
                 (mini_curves[0], UP+RIGHT),
                 (mini_curves[3], UP+LEFT)
@@ -858,7 +858,7 @@ class GrowToOrder8PseudoHilbertCurve(Scene):
         self.clear()
         self.add(*mini_curves)
         self.play(*[
-            ApplyMethod(curve.rotate_in_place, np.pi, axis)
+            ApplyMethod(curve.rotate, np.pi, axis)
             for curve, axis in [
                 (mini_curves[0], UP+RIGHT),
                 (mini_curves[3], UP+LEFT)

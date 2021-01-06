@@ -125,7 +125,7 @@ class MoveCar(ApplyMethod):
             return
         radians = alpha * self.total_tire_radians
         for tire in self.mobject.get_tires():
-            tire.rotate_in_place(radians)
+            tire.rotate(radians)
 
 
 class PartyHat(SVGMobject):
@@ -361,7 +361,7 @@ class PlayingCard(VGroup):
         ])
         for symbol in design:
             if symbol.get_center()[1] < self.get_center()[1]:
-                symbol.rotate_in_place(np.pi)
+                symbol.rotate(np.pi)
         return design
 
     def get_face_card_design(self, value, symbol):

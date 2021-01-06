@@ -302,7 +302,7 @@ class BabyPiCreature(PiCreature):
         eyes.move_to(eyes_bottom, aligned_edge=DOWN)
         looking_direction = self.get_looking_direction()
         for pupil in self.pupils:
-            pupil.scale_in_place(self.pupil_scale_factor)
+            pupil.scale(self.pupil_scale_factor)
         self.look(looking_direction)
 
 

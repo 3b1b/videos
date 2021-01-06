@@ -430,7 +430,7 @@ class DirectionOfPolarizationScene(FilterScene):
         anchors = r1.get_anchors()
         vect = anchors[0] - anchors[3]
         curr_angle = angle_of_vector([vect[2], -vect[1]])
-        r1.rotate_in_place(target_angle - curr_angle, RIGHT)
+        r1.rotate(target_angle - curr_angle, RIGHT)
 
         epsilon = 0.001
         curr_depth = max(r2.get_depth(), epsilon)
@@ -2223,7 +2223,7 @@ class EnergyOfWavesWavePortion(DirectWaveOutOfScreen):
         brace = Brace(Line(ORIGIN, 4*RIGHT))
         brace.rotate(np.pi/4, OUT)
         brace.A = brace.get_tex("A", buff = MED_SMALL_BUFF)
-        brace.A.scale_in_place(2)
+        brace.A.scale(2)
         brace.A.set_color(GREEN)
         brace_group = VGroup(brace, brace.A)
         self.position_brace_group(brace_group)
@@ -2246,7 +2246,7 @@ class EnergyOfWavesWavePortion(DirectWaveOutOfScreen):
         v_brace = Brace(Line(ORIGIN, length*UP), LEFT)
         for brace, c in (h_brace, "x"), (v_brace, "y"):
             brace.A = brace.get_tex("A_%s"%c, buff = MED_LARGE_BUFF)
-            brace.A.scale_in_place(2)
+            brace.A.scale(2)
             brace.A.set_color(GREEN)
         brace_group = VGroup(h_brace, h_brace.A, v_brace, v_brace.A)
         self.position_brace_group(brace_group)
@@ -2628,7 +2628,7 @@ class DescribePhoton(ThreeDScene):
         superposition.target.set_color_by_tex("gamma", TEAL_D)
         superposition.target.set_color_by_tex("delta", MAROON)
         for part in superposition.target.get_parts_by_tex("rangle"):
-            part[1].rotate_in_place(-np.pi/12)
+            part[1].rotate(-np.pi/12)
         superposition.target.rotate(np.pi/2, RIGHT)
         superposition.target.rotate(np.pi/2, OUT)
         superposition.target.move_to(superposition)
@@ -3025,7 +3025,7 @@ class ShootPhotonThroughFilter(DirectionOfPolarizationScene):
                 Rotate(self.superposition_tex, np.pi/2),
             ] + [
                 ApplyMethod(
-                    v.rotate_in_place, 
+                    v.rotate, 
                     -np.pi/2, 
                     method_kwargs = {"axis" : v.get_vector()}
                 )
@@ -3050,7 +3050,7 @@ class ShootPhotonThroughFilter(DirectionOfPolarizationScene):
                 Rotate(self.superposition_tex, -np.pi/2),
             ] + [
                 ApplyMethod(
-                    v.rotate_in_place, 
+                    v.rotate, 
                     np.pi/2, 
                     method_kwargs = {"axis" : v.get_vector()}
                 )
@@ -3473,7 +3473,7 @@ class PhotonAtSlightAngle(ThreeFilters):
             phi = np.pi/2, theta = 0,
             added_anims = list(it.chain(*[
                 [
-                    v.rotate_in_place, np.pi/2, v.get_vector(),
+                    v.rotate, np.pi/2, v.get_vector(),
                     v.set_fill, None, 0.7,
                 ]
                 for v in self.photon.mobject

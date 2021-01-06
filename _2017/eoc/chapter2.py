@@ -1289,10 +1289,10 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
         ]
         dots = list(map(Dot, points))
         for dot in dots:
-            dot.scale_in_place(0.5)
+            dot.scale(0.5)
         secant_line = Line(*points)
         secant_line.set_color(VELOCITY_COLOR)
-        secant_line.scale_in_place(
+        secant_line.scale(
             self.secant_line_length/secant_line.get_length()
         )
 
@@ -1366,7 +1366,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
         deriv_def.add(deriv_word)
         rect = Rectangle(color = WHITE)
         rect.replace(deriv_def, stretch = True)
-        rect.scale_in_place(1.2)
+        rect.scale(1.2)
         deriv_def.add(rect)
         deriv_def.scale(0.7)
         deriv_def.move_to(target_upper_left, UP+LEFT)
@@ -1881,7 +1881,7 @@ class TCubedExample(SecantLineToTangentLine):
         slope_text.next_to(v_line.get_end(), LEFT)
         self.play(Write(slope_text))
         self.play(
-            self.ds_dt_group.rotate_in_place, np.pi/24,
+            self.ds_dt_group.rotate, np.pi/24,
             rate_func = wiggle
         )
         self.play(ShowCreation(v_line))
@@ -1934,7 +1934,7 @@ class TCubedExample(SecantLineToTangentLine):
         denominator = VGroup(*self.rhs[-2:])
         for mob in numerator, denominator, self.approach_text, self.deriv_term:
             mob.generate_target()
-            mob.target.scale_in_place(1.2)
+            mob.target.scale(1.2)
             mob.target.set_color(MAROON_B)
             self.play(
                 MoveToTarget(
@@ -2164,7 +2164,7 @@ class ParadoxAtTEquals0(TCubedExample):
         VGroup(*derivative[0][:2]).set_color(DISTANCE_COLOR)
         VGroup(*derivative[0][3:5]).set_color(TIME_COLOR)
         derivative[1][3].set_color(RED)
-        derivative[-1].scale_in_place(0.7)
+        derivative[-1].scale(0.7)
         derivative.to_edge(RIGHT, buff = LARGE_BUFF)
         derivative.shift(2*UP)
 
@@ -2269,7 +2269,7 @@ class ParadoxAtTEquals0(TCubedExample):
         self.play(Blink(morty))
         for word in change_word, moment_word:
             self.play(
-                word.scale_in_place, 1.2,
+                word.scale, 1.2,
                 word.set_color, YELLOW,
                 rate_func = there_and_back,
                 run_time = 1.5
@@ -2287,7 +2287,7 @@ class ParadoxAtTEquals0(TCubedExample):
         )
         self.wait()
         self.play(
-            self.tangent_line.rotate_in_place, np.pi/24,
+            self.tangent_line.rotate, np.pi/24,
             rate_func = wiggle,
             run_time = 1
         )
@@ -2339,7 +2339,7 @@ class TinyMovement(ZoomedScene):
 
         self.add(car, time_label, start_time)
         self.play(
-            zoom_rect.scale_in_place,
+            zoom_rect.scale,
             10*self.distance / zoom_rect.get_width()
         )
         self.play(ShowCreation(dots[0]))

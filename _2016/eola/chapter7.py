@@ -1430,7 +1430,7 @@ class ProjectOntoUnitVectorNumberline(VectorScene):
         u_brace.put_at_tip(one)
         u_brace.add(one)
         u_brace.rotate(u_hat.get_angle())
-        one.rotate_in_place(-u_hat.get_angle())
+        one.rotate(-u_hat.get_angle())
 
         number_line = NumberLine(x_min = -9, x_max = 9)
         numbers = number_line.get_numbers()
@@ -1643,7 +1643,7 @@ class ProjectBasisVectors(ProjectOntoUnitVectorNumberline):
         proj_dots = self.get_proj_dots(dots)
         proj_lines = self.get_proj_lines(dots, proj_dots)
         for dot in proj_dots:
-            dot.scale_in_place(0.1)
+            dot.scale(0.1)
         proj_basis = VGroup(*[
             get_vect_mob_projection(vector, self.u_hat)
             for vector in basis_vectors
