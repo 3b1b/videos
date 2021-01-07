@@ -240,7 +240,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
             half_labels = VGroup()
             for label in enumeration_labels:
                 tex, jewel = label
-                num = int(tex.get_tex_string())
+                num = int(tex.get_tex())
                 half_label = VGroup(
                     TexMobject(str(num/2)),
                     jewel.copy()

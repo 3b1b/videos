@@ -397,7 +397,7 @@ class PythagoreanProof(Scene):
 
     def add_labels_to_squares(self, squares, side_labels):
         for label, square in zip(side_labels, squares):
-            label.target = TexMobject(label.get_tex_string() + "^2")
+            label.target = TexMobject(label.get_tex() + "^2")
             label.target.set_color(label.get_color())
             # label.target.scale(0.7)
             label.target.move_to(square)
@@ -624,7 +624,7 @@ class ReframeOnLattice(PiCreatureScene):
         )
         coordinate_labels = self.plane.coordinate_labels
         for coord in coordinate_labels:
-            x = int(coord.get_tex_string())
+            x = int(coord.get_tex())
             coord.generate_target()
             coord.target.scale(1.5)
             coord.target.next_to(

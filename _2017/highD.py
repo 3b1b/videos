@@ -1063,7 +1063,7 @@ class TwoDimensionalCase(Introduce4DSliders):
         SliderScene.setup(self)
         self.sliders.shift(RIGHT)
         for number in self.sliders[0].numbers:
-            value = int(number.get_tex_string())
+            value = int(number.get_tex())
             number.move_to(center_of_mass([
                 slider.number_to_point(value)
                 for slider in self.sliders
@@ -1918,7 +1918,7 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
         VGroup(*self.get_top_level_mobjects()).shift(RIGHT)
         x_slider = self.sliders[0]
         for number in x_slider.numbers:
-            value = int(number.get_tex_string())
+            value = int(number.get_tex())
             number.next_to(
                 x_slider.number_to_point(value), 
                 LEFT, MED_SMALL_BUFF

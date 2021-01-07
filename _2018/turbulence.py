@@ -1381,7 +1381,7 @@ class Poem(Scene):
         self.play(FadeIn(title, DOWN))
         self.wait()
         for word in poem:
-            if "whirl" in word.get_tex_string():
+            if "whirl" in word.get_tex():
                 word.set_color(BLUE)
             self.play(ShowWord(word))
             self.wait(0.005 * len(word)**1.5)

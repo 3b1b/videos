@@ -1592,7 +1592,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
         Must be a group of pure TexMobjects,
         last part must be of the form x^n
         """
-        n = int(term[-1].get_tex_string()[-1])
+        n = int(term[-1].get_tex()[-1])
         curr_term = term
         added_anims_iter = iter(added_anims)
         for k in range(n, 0, -1):
@@ -2313,7 +2313,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
 
     def replace_coefficients_in_generality(self):
         new_polynomial = self.get_polynomial("x", *[
-            tex_mob.get_tex_string()
+            tex_mob.get_tex()
             for tex_mob in self.derivs_at_zero[:-1]
         ])
         new_polynomial.to_corner(UP+RIGHT)
@@ -2380,7 +2380,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
 
     def show_polynomial_around_a(self):
         new_polynomial = self.get_polynomial("(x-a)", *[
-            tex_mob.get_tex_string()
+            tex_mob.get_tex()
             for tex_mob in self.derivs_at_a[:-2]
         ])
         new_polynomial.to_corner(UP+RIGHT)

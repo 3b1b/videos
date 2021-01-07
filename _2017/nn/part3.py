@@ -2598,7 +2598,7 @@ class SimplestNetworkExample(PreviewLearning):
         new_terms = VGroup()
         for attr in attrs:
             term = getattr(comp_graph, attr)
-            tex = term.get_tex_string()
+            tex = term.get_tex()
             if "L-1" in tex:
                 tex = tex.replace("L-1", "L-2")
             else:

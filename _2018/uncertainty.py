@@ -2911,7 +2911,7 @@ class IntroduceDeBroglie(Scene):
 
         def update_words(words):
             text = year_to_words.get(get_year(), "Hi there")
-            if text not in words.get_tex_string():
+            if text not in words.get_tex():
                 words.__init__(text)
                 words.scale(text_scale_val)
             words.move_to(interpolate(

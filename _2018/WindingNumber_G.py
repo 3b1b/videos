@@ -1741,7 +1741,7 @@ class HypothesisAboutFullyColoredBoundary(ColorMappedObjectsScene):
         )
         hypothesis[0].next_to(hypothesis[1:], UP)
         hypothesis[0].set_color(YELLOW)
-        s = hypothesis[1].get_tex_string()
+        s = hypothesis[1].get_tex()
         s = [c for c in s if c not in string.whitespace]
         n = s.index("colors")
         hypothesis[1][n:n+len("colors")].set_color_by_gradient(

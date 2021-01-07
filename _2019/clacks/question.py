@@ -1265,7 +1265,7 @@ class CompareToGalacticMass(Scene):
         ])
         dots = VGroup(*[
             mob
-            for c, mob in zip(digits.get_tex_string(), digits)
+            for c, mob in zip(digits.get_tex(), digits)
             if c is "."
         ])
 

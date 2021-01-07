@@ -467,7 +467,7 @@ class WriteOpeningWords(Scene):
                 lag_ratio=1.5 / len(word)
             ))
             self.wait(word_wait)
-            if word.get_tex_string()[-1] == ",":
+            if word.get_tex()[-1] == ",":
                 self.wait(comma_wait)
 
 

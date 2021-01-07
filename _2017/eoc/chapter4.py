@@ -1678,7 +1678,7 @@ class ThreeLinesChainRule(ReconfigurableScene):
         )
         dsine_value = TextMobject(
             "$=\\cos(%s)$"%self.line_configs[1]["func_label"],
-            dx_squared_brace.text.get_tex_string()
+            dx_squared_brace.text.get_tex()
         )
         dsine_value.next_to(dsine_brace.text)
         less_than_zero = TexMobject("<0")

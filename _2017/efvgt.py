@@ -1796,7 +1796,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
     def add_number_line(self):
         AdditiveGroupOfReals.add_number_line(self)
         self.zero_point = self.number_line.number_to_point(0)
-        self.one = [m for m in self.number_line.numbers if m.get_tex_string() is "1"][0]
+        self.one = [m for m in self.number_line.numbers if m.get_tex() is "1"][0]
         self.one.add_background_rectangle()
         self.one.background_rectangle.scale(1.3)
         self.number_line.save_state()        
@@ -1844,7 +1844,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
             )
             for num in (3, 0.5)
         ]
-        three_mob = [m for m in self.shadow_line.numbers if m.get_tex_string() == "3"][0]
+        three_mob = [m for m in self.shadow_line.numbers if m.get_tex() == "3"][0]
         half_point = self.shadow_line.number_to_point(0.5)
         half_arrow = Arrow(
             half_point+UP+LEFT, half_point, buff = SMALL_BUFF,
@@ -2153,7 +2153,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         self.turn_arrow = arc
 
     def show_action_at_i_again(self):
-        neg_one_label = [m for m in self.real_labels if m.get_tex_string() == "-1"][0]
+        neg_one_label = [m for m in self.real_labels if m.get_tex() == "-1"][0]
         half_turn_arc = Arc(
             start_angle = np.pi/12,
             angle = 10*np.pi/12,
@@ -2339,7 +2339,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         for twos in three_twos, five_twos:
             twos.next_to(teacher_corner, UP)
             twos.generate_target()
-            d = sum(np.array(list(twos.get_tex_string())) == "2")
+            d = sum(np.array(list(twos.get_tex())) == "2")
             exponents.append(d)
             twos.brace = Brace(twos, UP)
             twos.exp = twos.brace.get_text("$2^%d$"%d)

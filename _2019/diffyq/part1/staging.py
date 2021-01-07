@@ -2104,7 +2104,7 @@ class BreakingSecondOrderIntoTwoFirstOrder(IntroduceVectorField):
         theta_dots = VGroup(*filter(
             lambda m: (
                 isinstance(m, SingleStringTexMobject) and
-                "{\\dot\\theta}" == m.get_tex_string()
+                "{\\dot\\theta}" == m.get_tex()
             ),
             system1.get_family(),
         ))
@@ -2991,7 +2991,7 @@ class InaccurateComputation(Scene):
         for mob in bit_strings:
             mob.arrange(DOWN, buff=SMALL_BUFF)
             for word in mob:
-                for submob, bit in zip(word, word.get_tex_string()):
+                for submob, bit in zip(word, word.get_tex()):
                     if bit == "0":
                         submob.set_color(GREY_B)
         errors = VGroup(

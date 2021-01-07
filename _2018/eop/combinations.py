@@ -150,7 +150,7 @@ class ExperienceProblemSolver(PiCreatureScene):
         rows.scale(0.8)
         for row in rows:
             for num in row:
-                n = float(num.get_tex_string())
+                n = float(num.get_tex())
                 num.set_color(interpolate_color(
                     BLUE, YELLOW, n/10.0
                 ))
@@ -299,7 +299,7 @@ class InitialFiveChooseThreeExample(Scene):
         )
         self.wait()
         for line in stack:
-            ones = VGroup(*[mob for mob in line if "1" in mob.get_tex_string()])
+            ones = VGroup(*[mob for mob in line if "1" in mob.get_tex()])
             line.ones = ones
             self.play(LaggedStartMap(
                 ApplyMethod, ones,
@@ -425,7 +425,7 @@ class SixChooseThreeExample(InitialFiveChooseThreeExample):
         stack.set_height(self.stack_height)
         stack.to_edge(DOWN)
         for line in stack:
-            line.ones = VGroup(*[mob for mob in line if "1" in mob.get_tex_string()])
+            line.ones = VGroup(*[mob for mob in line if "1" in mob.get_tex()])
 
         equation = TexMobject(
             "{%d \\choose %d}"%(self.n, self.k),
@@ -1068,7 +1068,7 @@ class ProbabilityOfKWomenInGroupOfFive(Scene):
             men, women = VGroup(), VGroup()
             for lineup in lineup_group:
                 item = lineup.items[i]
-                if "female" in item.get_tex_string():
+                if "female" in item.get_tex():
                     women.add(item)
                 else:
                     men.add(item)
@@ -1101,7 +1101,7 @@ class ProbabilityOfKWomenInGroupOfFive(Scene):
         lineups = self.lineups
         stacks = VGroup(*[VGroup() for x in range(6)])
         for lineup in lineups:
-            lineup.women = VGroup(*[m for m in lineup.items if "female" in m.get_tex_string()])
+            lineup.women = VGroup(*[m for m in lineup.items if "female" in m.get_tex()])
             stacks[len(lineup.women)].add(lineup)
         stacks.generate_target()
         stacks.target.scale(0.75)
@@ -1133,7 +1133,7 @@ class ProbabilityOfKWomenInGroupOfFive(Scene):
                 items.add(lineup.items)
                 lines.add(lineup.lines)
                 for item in lineup.items:
-                    if "female" in item.get_tex_string():
+                    if "female" in item.get_tex():
                         women.add(item)
             equation = TexMobject(
                 "{%d \\choose %d}"%(n, k),
@@ -1312,7 +1312,7 @@ class TeacherHoldingSomething(TeacherStudentsScene):
 #             for lineup in stack:
 #                 group = VGroup()
 #                 for item in lineup:
-#                     if "female" in item.get_tex_string():
+#                     if "female" in item.get_tex():
 #                         group.add(item)
 #                 women_groups.add(group)
 
@@ -1438,7 +1438,7 @@ class BuildFiveFromFour(ProbabilityOfKWomenInGroupOfFive):
         lineups = self.lineups
         stacks = VGroup(*[VGroup() for x in range(5)])
         for lineup in lineups:
-            women = [m for m in lineup.items if "female" in m.get_tex_string()]
+            women = [m for m in lineup.items if "female" in m.get_tex()]
             stacks[len(women)].add(lineup)
         stacks.generate_target()
         stacks.target.scale(0.75)
@@ -1504,7 +1504,7 @@ class BuildFiveFromFour(ProbabilityOfKWomenInGroupOfFive):
                 new_stack = VGroup()
                 for lineup in stack:
                     new_lineup = self.get_lineup(*[
-                        Female() if "female" in item.get_tex_string() else Male()
+                        Female() if "female" in item.get_tex() else Male()
                         for item in lineup.items
                     ] + [sym], buff = SMALL_BUFF)
                     new_lineup.replace(lineup, dim_to_match = 1)
@@ -2253,7 +2253,7 @@ class ChooseThreeFromFive(InitialFiveChooseThreeExample, PiCreatureScene):
         full_line_rect = SurroundingRectangle(VGroup(line, triplet))
         people_rects = VGroup()
         for pi, name, obj in zip(people.target, names.target, line):
-            if "1" in obj.get_tex_string():
+            if "1" in obj.get_tex():
                 rect = SurroundingRectangle(VGroup(pi, name))
                 people_rects.add(rect)
                 pi.change_mode("hooray")
@@ -2402,7 +2402,7 @@ class ChooseThreeFromFive(InitialFiveChooseThreeExample, PiCreatureScene):
     def pattern_is_unambiguous(self):
         all_ones = VGroup()
         for line in self.stack:
-            ones = VGroup(*[m for m in line if "1" in m.get_tex_string()]).copy()
+            ones = VGroup(*[m for m in line if "1" in m.get_tex()]).copy()
             ones.set_color(YELLOW)
             all_ones.add(ones)
 

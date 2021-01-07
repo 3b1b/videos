@@ -1601,7 +1601,7 @@ class ManyExponentialForms(TeacherStudentsScene):
                 const.set_color(BLUE)
                 brace = Brace(const, UP)
                 log = brace.get_text(
-                    "$\\log_{%s}(2)$"%part[1].get_tex_string()[:-1]
+                    "$\\log_{%s}(2)$"%part[1].get_tex()[:-1]
                 )
                 log.set_color(BLUE)
                 part.add(brace, log)

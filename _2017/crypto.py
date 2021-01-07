@@ -1869,7 +1869,7 @@ class RenameToLedgerDollars(LedgerScene):
             dollar_sign = amount[0]
             amount.remove(dollar_sign)
             amount.add(dollar_sign)
-            tex_string = amount.get_tex_string()
+            tex_string = amount.get_tex()
             ld = TextMobject(tex_string[2:] + " LD")
             ld.set_color(YELLOW)
             ld.scale(0.8)
@@ -3565,7 +3565,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
     def add_block_reward(self):
         payments = self.payments
         new_transaction = TextMobject(
-            self.block_creator_labels[0].get_tex_string(),
+            self.block_creator_labels[0].get_tex(),
             "gets", "10 LD"
         )
         new_transaction[0].set_color(GREY_B)
@@ -3612,7 +3612,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
 
     def write_miners(self):
         for label in self.block_creator_labels:
-            tex = label.get_tex_string()
+            tex = label.get_tex()
             new_label = TextMobject("Miner " + tex[-1])
             new_label.set_color(label.get_color())
             new_label.replace(label, dim_to_match = 1)
@@ -3794,7 +3794,7 @@ class MiningIsALottery(IntroduceBlockCreator):
 
         lines = VGroup()
 
-        miner_name = miner.label.get_tex_string()
+        miner_name = miner.label.get_tex()
         top_line = TextMobject(miner_name, "gets", "10 LD")
         top_line.set_color_by_tex(miner_name, GREY_B)
         top_line.set_color_by_tex("LD", YELLOW)

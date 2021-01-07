@@ -1383,7 +1383,7 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
             for element in moving_column_mob.target.get_family():
                 if not isinstance(element, TexMobject):
                     continue
-                tex_string = element.get_tex_string()
+                tex_string = element.get_tex()
                 if "sin" in tex_string or "cos" in tex_string:
                     element.set_stroke(width=1)
                     element.scale(1.25)

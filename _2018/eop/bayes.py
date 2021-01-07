@@ -246,7 +246,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
             p, colors = [SuitSymbol.CONFIG["red"], BLUE_E]
         )
         braces, labels = sample_space.get_side_braces_and_labels([
-            percentage.get_tex_string(), "95.5\\%"
+            percentage.get_tex(), "95.5\\%"
         ])
         top_label, bottom_label = labels
 
@@ -1038,7 +1038,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         double_heart = SuitSymbol("hearts")
         double_heart.add(SuitSymbol("hearts"))
         double_heart.arrange(RIGHT, buff = SMALL_BUFF)
-        double_heart.get_tex_string = lambda : self.double_heart_template
+        double_heart.get_tex = lambda : self.double_heart_template
         template = tex_mob.get_part_by_tex(self.double_heart_template)
         double_heart.replace(template)
         tex_mob.submobjects[tex_mob.index_of_part(template)] = double_heart

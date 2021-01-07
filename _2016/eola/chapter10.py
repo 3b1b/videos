@@ -415,7 +415,7 @@ class NameEigenvectorsAndEigenvalues(ExampleTranformationScene):
             words.target = eigen_word
             eigen_val_words = TextMobject(
                 "with eigenvalue ",
-                "%s"%words.get_tex_string()[-1]
+                "%s"%words.get_tex()[-1]
             )
             eigen_val_words.add_background_rectangle()
             eigen_val_words.next_to(words, DOWN, aligned_edge = RIGHT)
@@ -909,7 +909,7 @@ class SymbolicEigenvectors(Scene):
         ).shift(0.5*RIGHT)
         matrix.next_to(brace.text, DOWN)
         for entry in matrix.get_entries():
-            if len(entry.get_tex_string()) > 1:
+            if len(entry.get_tex()) > 1:
                 entry[-1].set_color(lamb.get_color())
         self.play(
             GrowFromCenter(brace),

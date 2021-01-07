@@ -1793,7 +1793,7 @@ class BackToEulerSumScene(PiCreatureScene):
             bubble_indicator_target.add(bubble_indicator_target.tex_reading)
             # center it in the indicator
 
-            if bubble_indicator_target.tex_reading.get_tex_string() != "1":
+            if bubble_indicator_target.tex_reading.get_tex() != "1":
                 bubble_indicator_target.tex_reading.set_height(0.8*indicator.get_height())
             # the target is less bright, possibly switch to a white text color
             if bubble_indicator_target.intensity < 0.7:

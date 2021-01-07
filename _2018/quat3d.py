@@ -1318,7 +1318,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
     def get_quaternion_label(self, angle_tex):
         vect_label = self.vect_label.copy()
         vect_label.rotate(TAU / 4, LEFT)
-        vect_label.replace(TexMobject(vect_label.get_tex_string()))
+        vect_label.replace(TexMobject(vect_label.get_tex()))
         vect_label.add_background_rectangle()
         result = VGroup(
             TexMobject("\\big("),

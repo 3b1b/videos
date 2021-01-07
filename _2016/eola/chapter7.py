@@ -1569,7 +1569,7 @@ class ProjectSingleVectorOnUHat(ProjectOntoUnitVectorNumberline):
         v.proj_line = DashedLine(v.get_end(), v.proj.get_end())
         v.proj_line.set_color(v.get_color())
         v_tex = "\\vec{\\textbf{v}}"
-        u_tex = self.u_hat.label.get_tex_string()
+        u_tex = self.u_hat.label.get_tex()
         v.label = TexMobject(v_tex)
         v.label.set_color(v.get_color())
         v.label.next_to(v.get_end(), LEFT)

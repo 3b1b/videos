@@ -2657,7 +2657,7 @@ class IntroduceStereographicProjectionLinusView(IntroduceStereographicProjection
             arrow.next_to(point, vect, 2 * SMALL_BUFF)
             arrows.add(arrow)
             label.set_stroke(width=0, background=True)
-            if stot in label.get_tex_string():
+            if stot in label.get_tex():
                 label.set_height(0.5)
             else:
                 label.set_height(0.5)
@@ -4300,7 +4300,7 @@ class IntroduceQuaternions(Scene):
                     #     "j": RED,
                     #     "k": BLUE,
                     # })
-                    if part.get_tex_string() == "j":
+                    if part.get_tex() == "j":
                         part.shift(0.5 * SMALL_BUFF * DL)
             number[2].set_color(GREEN)
             if len(number) > 5:

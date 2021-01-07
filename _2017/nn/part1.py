@@ -2386,7 +2386,7 @@ class IntroduceWeights(IntroduceEachLayer):
         w_labels = VGroup()
         for p_label in p_labels:
             w_label = TexMobject(
-                p_label.get_tex_string().replace("p", "w")
+                p_label.get_tex().replace("p", "w")
             )
             w_label.set_color(self.weights_color)
             w_label.move_to(p_label)
@@ -3526,7 +3526,7 @@ class IntroduceWeightMatrix(NetworkScene):
         Transform(mid_as, dots).update(1)
         last_a = column[-1]
         new_last_a = TexMobject(
-            last_a.get_tex_string().replace("7", "n")
+            last_a.get_tex().replace("7", "n")
         )
         new_last_a.replace(last_a)
         Transform(last_a, new_last_a).update(1)
@@ -3597,7 +3597,7 @@ class IntroduceWeightMatrix(NetworkScene):
         for row in lower_rows:
             for target, mover in zip(last_row, row):
                 mover.move_to(target)
-                if "w" in mover.get_tex_string():
+                if "w" in mover.get_tex():
                     mover.set_color(GREEN)
             row.next_to(last_row, DOWN, buff = 0.45)
             last_row = row

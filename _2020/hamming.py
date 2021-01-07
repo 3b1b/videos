@@ -3794,7 +3794,7 @@ class ChecksSpellOutPositionInBinary(Scene):
         self.play(FadeIn(VGroup(*[
             part
             for part in bin_equation
-            if part.get_tex_string() not in ["{0}", "{1}", "{7}"]
+            if part.get_tex() not in ["{0}", "{1}", "{7}"]
         ]), lag_ratio=0.1))
         self.add(bin_equation)
         self.wait()
@@ -3988,7 +3988,7 @@ class ChecksSpellOutPositionInBinary(Scene):
                 arrow.set_height(0.8 * char.get_height())
                 arrow.next_to(char, UP, buff=0.05)
                 arrow.set_stroke(width=0)
-                if char.get_tex_string() == '0':
+                if char.get_tex() == '0':
                     arrow.set_fill(GREY, 1)
                 else:
                     arrow.set_fill(BLUE, 1)

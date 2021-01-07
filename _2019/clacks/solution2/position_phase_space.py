@@ -2335,7 +2335,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
         sqrty_m = Matrix([[m1], [m2]])
         deriv_array = Matrix([[d1], [d2]])
         for entry in sqrty_m.get_entries():
-            if "sqrt" in entry.get_tex_string():
+            if "sqrt" in entry.get_tex():
                 entry[2:].set_color(BLUE)
         for matrix in sqrty_m, deriv_array:
             matrix.add_to_back(BackgroundRectangle(matrix))

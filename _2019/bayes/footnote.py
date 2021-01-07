@@ -1029,7 +1029,7 @@ class DiseaseBayes(Scene):
             pi.set_color(SICKLY_GREEN)
             pi.replace(D)
             formula.submobjects[index] = pi
-            pi.get_tex_string = lambda: ""
+            pi.get_tex = lambda: ""
 
         lhs = formula[:6]
         lhs.save_state()

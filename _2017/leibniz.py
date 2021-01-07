@@ -1881,7 +1881,7 @@ class FactorOrdinaryNumber(TeacherStudentsScene):
             ("=", "2 \\cdot (-3) \\cdot (3) \\cdot (-5) \\cdot 5^2"),
         ]))
         for alt_rhs in alt_rhs_list:
-            if "\\ne" in alt_rhs.get_tex_string():
+            if "\\ne" in alt_rhs.get_tex():
                 alt_rhs.set_color(RED)
             else:
                 alt_rhs.set_color(GREEN)
@@ -3808,7 +3808,7 @@ class WriteCountingRuleWithChi(SummarizeCountingRule):
             self.wait(2)
             self.play(Indicate(count, color = PINK))
             self.wait()
-            if base.get_tex_string() is "3":
+            if base.get_tex() is "3":
                 new_exp = TexMobject("3")
                 new_exp.replace(exp)
                 count_num = count[1]
@@ -4574,7 +4574,7 @@ class AddUpGrid(Scene):
         ))
 
         pi_sum = TexMobject(
-            "4", self.alt_rhs[-1].get_tex_string(),
+            "4", self.alt_rhs[-1].get_tex(),
             "=", "\\pi"
         )
         pi_sum.scale(0.9)
