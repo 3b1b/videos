@@ -20,7 +20,7 @@ def get_bayes_formula():
             "A": YELLOW,
             "B": BLUE,
         },
-        substrings_to_isolate=list("P(|)")
+        isolate=list("P(|)")
     )
 
 
@@ -677,7 +677,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
         # Show venn diagram
         kw = {
             "tex_to_color_map": TEX_TO_COLOR_MAP,
-            "substrings_to_isolate": list("P()"),
+            "isolate": list("P()"),
         }
         formula = VGroup(
             TexMobject("P(A \\text{ and } B)", **kw),
@@ -1017,7 +1017,7 @@ class DiseaseBayes(Scene):
                 "D": YELLOW,
                 "+": BLUE,
             },
-            substrings_to_isolate=list("P(|)=")
+            isolate=list("P(|)=")
         )
         formula.scale(2.5)
 

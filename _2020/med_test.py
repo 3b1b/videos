@@ -5820,7 +5820,7 @@ class DisambiguateFPR(Scene):
         # Add title
         title = TextMobject(
             "1\\% False Positive Rate",
-            substrings_to_isolate=["F", "P", "R"],
+            isolate=["F", "P", "R"],
             font_size=72
         )
         title.to_edge(UP)

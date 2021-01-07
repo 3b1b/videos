@@ -83,7 +83,7 @@ class StrogatzQuote(Scene):
             """ + author,
             alignment="",
             arg_separator=" ",
-            substrings_to_isolate=[law_words, language_words, author]
+            isolate=[law_words, language_words, author]
         )
         quote.law_part = quote.get_part_by_tex(law_words)
         quote.language_part = quote.get_part_by_tex(language_words)

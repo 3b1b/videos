@@ -16,7 +16,7 @@ def apply_function_to_points(point_func, mobject):
 
 def get_nested_one_plus_one_over_x(n_terms, bottom_term="x"):
     tex = "1+ {1 \\over" * n_terms + bottom_term + "}" * n_terms
-    return TexMobject(tex, substrings_to_isolate=["1", "\\over", bottom_term])
+    return TexMobject(tex, isolate=["1", "\\over", bottom_term])
 
 
 def get_phi_continued_fraction(n_terms):

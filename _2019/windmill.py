@@ -3704,7 +3704,7 @@ class TerryTaoQuote(Scene):
             """,
             alignment="",
             arg_separator=" ",
-            substrings_to_isolate=[story_words]
+            isolate=[story_words]
         )
         quote.story_part = quote.get_part_by_tex(story_words)
         quote.set_width(FRAME_WIDTH - 2.5)

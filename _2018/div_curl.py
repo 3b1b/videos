@@ -2963,7 +2963,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         dot = Dot(point)
 
         coord_pair = TexMobject(
-            "(10, 10)", substrings_to_isolate=["10"]
+            "(10, 10)", isolate=["10"]
         )
         pop_sizes = VGroup(Integer(10), Integer(10))
         pop_sizes[0].set_color(GREY_B)
@@ -3174,7 +3174,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
                 {dYY \\over dt} =
                 YY \\cdot (\\delta X - \\gamma)
             """,
-            substrings_to_isolate=variables
+            isolate=variables
         )
         animals = [self.get_rabbit(), self.get_fox().flip()]
         for char, animal in zip(variables, animals):
@@ -3770,7 +3770,7 @@ class DivergenceTinyNudgesView(MovingCameraScene):
         substrings = ["Step", "Difference"]
         dot_product = TextMobject(
             "(Step) $\\cdot$ (Difference)",
-            substrings_to_isolate=substrings,
+            isolate=substrings,
             arg_separator="",
         ).scale(sf)
         group = VGroup(div_text, dot_product)

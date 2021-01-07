@@ -20,7 +20,7 @@ def get_bayes_formula(expand_denominator=False):
         "{\\neg H}": NOT_HYPOTHESIS_COLOR,
         "{E}": EVIDENCE_COLOR1,
     }
-    substrings_to_isolate = ["P", "\\over", "=", "\\cdot", "+"]
+    isolate = ["P", "\\over", "=", "\\cdot", "+"]
 
     tex = "P({H} | {E}) = {P({H}) P({E} | {H}) \\over "
     if expand_denominator:
@@ -31,7 +31,7 @@ def get_bayes_formula(expand_denominator=False):
     formula = TexMobject(
         tex,
         tex_to_color_map=t2c,
-        substrings_to_isolate=substrings_to_isolate,
+        isolate=isolate,
     )
 
     formula.posterior = formula[:6]
@@ -4184,7 +4184,7 @@ class GlimpseOfNextVideo(GraphScene):
                 "H": HYPOTHESIS_COLOR,
                 "E": EVIDENCE_COLOR1,
             },
-            substrings_to_isolate=list("p(|)")
+            isolate=list("p(|)")
         )
         formula.move_to(self.formula_position)
         return formula
@@ -4558,7 +4558,7 @@ class MassOfEarthEstimates(GlimpseOfNextVideo):
                 "M": HYPOTHESIS_COLOR,
                 "\\text{data}": EVIDENCE_COLOR1,
             },
-            substrings_to_isolate=list("p(|)")
+            isolate=list("p(|)")
         )
         formula.move_to(self.formula_position)
         return formula
