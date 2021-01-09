@@ -1,5 +1,6 @@
 import random
 import os
+import json
 
 from manimlib.animation.animation import Animation
 from manimlib.animation.composition import Succession
@@ -136,17 +137,13 @@ class PatreonEndScreen(Scene):
         self.play(frame_shift, blinks)
 
     def modify_patron_name(self, name):
-        modification_map = {
-            "RedAgent14": "Brian Shepetofsky",
-            "DeathByShrimp": "Henry Bresnahan",
-            "akostrikov": "Aleksandr Kostrikov",
-            "Jacob Baxter": "Will Fleshman",
-            "Sansword Huang": "SansWord@TW",
-            "Sunil Nagaraj": "Ubiquity Ventures",
-            "Nitu Kitchloo": "Ish Kitchloo",
-            "PedroTristão": "Tristan",
-            "Nipun Ramakrishnan": "Reducible",
-        }
+        path = os.path.join(
+            get_directories()['data'],
+            "patron_name_replacements.json"
+        )
+        with open(path) as fp:
+            modification_map = json.load(fp)
+
         for n1, n2 in modification_map.items():
             name = name.replace("ā", "\\={a}")
             if name.lower() == n1.lower():
