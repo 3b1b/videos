@@ -609,7 +609,7 @@ class AskAboutFindingNewVelocities(Scene):
         self.vps_point.rotate(2 * theta, about_point=ORIGIN)
 
     def reflect_block2(self):
-        self.vps_point.points[:, 1] *= -1
+        self.vps_point.get_points()[:, 1] *= -1
 
     def halt(self):
         self.is_halted = True
@@ -1694,7 +1694,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
 
             wedge = arc.copy()
             wedge.add_line_to(ORIGIN)
-            wedge.add_line_to(wedge.points[0])
+            wedge.add_line_to(wedge.get_points()[0])
             wedge.set_stroke(width=0)
             wedge.set_fill(arc.get_color(), 0.2)
             wedges.add(wedge)
@@ -2558,7 +2558,7 @@ class ActanAndTanGraphs(GraphScene):
         labels = VGroup(id_label, arctan_label, tan_label)
         for label, graph in zip(labels, graphs):
             label.match_color(graph)
-            label.next_to(graph.points[-1], RIGHT)
+            label.next_to(graph.get_points()[-1], RIGHT)
             if label.get_bottom()[1] > FRAME_HEIGHT / 2:
                 label.next_to(graph.point_from_proportion(0.75), LEFT)
 

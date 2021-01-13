@@ -69,7 +69,7 @@ class ConvolutionIntroduction(ThreeDScene):
 
             h, w = kernel.shape
             pixels = np.array([
-                square.fill_rgbas[0]
+                square.data["fill_rgba"][0]
                 for square in pixel_array
             ]).reshape((height, width, 4))
 
@@ -82,7 +82,7 @@ class ConvolutionIntroduction(ThreeDScene):
 
             kernel_array.move_to(pixel_array[pos])
             right_rect.move_to(new_array[pos])
-            new_array[pos].fill_rgbas[0] = rgba
+            new_array[pos].data["fill_rgba"][0] = rgba
 
         def walk(start, stop, time=5, surface=None):
             for n in range(start, stop):

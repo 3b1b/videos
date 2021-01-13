@@ -959,10 +959,10 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
             buff=MED_LARGE_BUFF,
             color=BLUE,
         )
-        # B_rect.points[0] += 0.2 * RIGHT
-        # B_rect.points[-1] += 0.2 * RIGHT
-        # B_rect.points[3] += 0.2 * LEFT
-        # B_rect.points[4] += 0.2 * LEFT
+        # B_rect.get_points()[0] += 0.2 * RIGHT
+        # B_rect.get_points()[-1] += 0.2 * RIGHT
+        # B_rect.get_points()[3] += 0.2 * LEFT
+        # B_rect.get_points()[4] += 0.2 * LEFT
         # B_rect.make_jagged()
 
         self.play(FadeIn(ht_grid_group))

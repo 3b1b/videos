@@ -2339,7 +2339,7 @@ class ChooseThreeFromFive(InitialFiveChooseThreeExample, PiCreatureScene):
         odm_words_outline = VGroup()
         for letter in odm_words:
             mob = VMobject()
-            mob.points = letter.points
+            mob.set_points(letter.get_points())
             odm_words_outline.add(mob)
         odm_words_outline.set_fill(opacity = 0)
         odm_words_outline.set_stroke(YELLOW, 1)

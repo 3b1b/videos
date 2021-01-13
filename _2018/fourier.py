@@ -34,7 +34,7 @@ def get_fourier_graph(
     ])
     graph.set_color(color)
     f_min, f_max = [
-        axes.x_axis.point_to_number(graph.points[i])
+        axes.x_axis.point_to_number(graph.get_points()[i])
         for i in (0, -1)
     ]
     graph.underlying_function = lambda f : axes.y_axis.point_to_number(
@@ -921,8 +921,8 @@ class FourierMachineScene(Scene):
             self.get_frequency_axes()
         func = time_graph.underlying_function
         t_axis = self.time_axes.x_axis
-        t_min = t_axis.point_to_number(time_graph.points[0])
-        t_max = t_axis.point_to_number(time_graph.points[-1])
+        t_min = t_axis.point_to_number(time_graph.get_points()[0])
+        t_max = t_axis.point_to_number(time_graph.get_points()[-1])
         f_max = self.frequency_axes.x_max
         # result = get_fourier_graph(
         #     self.frequency_axes, func, t_min, t_max,
@@ -930,12 +930,12 @@ class FourierMachineScene(Scene):
         # )
         # too_far_right_point_indices = [
         #     i
-        #     for i, point in enumerate(result.points)
+        #     for i, point in enumerate(result.get_points())
         #     if self.frequency_axes.x_axis.point_to_number(point) > f_max
         # ]
         # if too_far_right_point_indices:
         #     i = min(too_far_right_point_indices)
-        #     prop = float(i)/len(result.points)
+        #     prop = float(i)/len(result.get_points())
         #     result.pointwise_become_partial(result, 0, prop)
         # return result
         return self.frequency_axes.get_graph(
@@ -997,8 +997,8 @@ class FourierMachineScene(Scene):
         vector = Vector(UP, color = WHITE)
         graph_copy = graph.copy()
         x_axis = self.time_axes.x_axis
-        x_min = x_axis.point_to_number(graph.points[0])
-        x_max = x_axis.point_to_number(graph.points[-1])
+        x_min = x_axis.point_to_number(graph.get_points()[0])
+        x_max = x_axis.point_to_number(graph.get_points()[-1])
         def update_vector(vector, alpha):
             x = interpolate(x_min, x_max, alpha)
             vector.put_start_and_end_on(
@@ -3342,7 +3342,7 @@ class ScaleUpCenterOfMass(WriteComplexExponentialExpression):
         self.remove(graph.polarized_mobject)
         self.play(
             com_dot.move_to, 
-            center_of_mass(short_graph.polarized_mobject.points),
+            center_of_mass(short_graph.polarized_mobject.get_points()),
             com_vector_update,
             time_span.restore,
             ShowCreation(short_graph.polarized_mobject),
@@ -3391,7 +3391,7 @@ class ScaleUpCenterOfMass(WriteComplexExponentialExpression):
         long_graph.move_to(graph, LEFT)
         self.play(
             com_dot.move_to, 
-            center_of_mass(long_graph.polarized_mobject.points),
+            center_of_mass(long_graph.polarized_mobject.get_points()),
             com_vector_update,
             time_span.stretch, 2, 0, {"about_edge" : LEFT},
             *[
@@ -3442,7 +3442,7 @@ class ScaleUpCenterOfMass(WriteComplexExponentialExpression):
         self.get_polarized_mobject(very_long_graph, freq = 2.0)
         self.play(
             com_dot.move_to,
-            center_of_mass(very_long_graph.polarized_mobject.points),
+            center_of_mass(very_long_graph.polarized_mobject.get_points()),
             com_vector_update,
             ShowCreation(
                 very_long_graph,
@@ -3711,7 +3711,7 @@ class SummarizeTheFullTransform(DrawFrequencyPlot):
         imaginary_fourier_graph.set_color(BLUE)
         imaginary_fourier_graph.shift(
             frequency_axes.x_axis.get_right() - \
-            imaginary_fourier_graph.points[-1],
+            imaginary_fourier_graph.get_points()[-1],
         )
 
         real_part = TextMobject(
@@ -3995,7 +3995,7 @@ class ShowUncertaintyPrinciple(Scene):
                 if axes == bottom_axes:
                     f = 1./f
                 new_graph = axes.get_graph(get_bell_func(f))
-                graph.points = new_graph.points
+                graph.set_points(new_graph.get_points())
             return update_graph
 
         factors = [0.3, 0.1, 2, 10, 100, 0.01, 0.5]

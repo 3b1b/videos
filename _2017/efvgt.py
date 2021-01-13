@@ -51,7 +51,7 @@ class ConfettiSpiril(Animation):
         Animation.__init__(self, mobject, **kwargs)
 
     def interpolate_submobject(self, submobject, starting_submobject, alpha):
-        submobject.points = np.array(starting_submobject.points)
+        submobject.set_points(starting_submobject.get_points())
 
     def interpolate_mobject(self, alpha):
         Animation.interpolate_mobject(self, alpha)
@@ -400,7 +400,7 @@ class SymmetriesOfSquare(ThreeDScene):
         for axis in OUT, RIGHT, UP:
             self.rotate_square(
                 angle = np.pi, axis = axis,
-                added_anims = [randy.look_at, self.square.points[0]]
+                added_anims = [randy.look_at, self.square.get_points()[0]]
             )
         self.play(Blink(randy))
         self.wait()
@@ -551,7 +551,7 @@ class SymmetriesOfSquare(ThreeDScene):
 
     def get_rotation_arcs(self, square, angle, angle_buff = SMALL_BUFF):
         square_radius = get_norm(
-            square.points[0] - square.get_center()
+            square.get_points()[0] - square.get_center()
         )
         arc = Arc(
             radius = square_radius + SMALL_BUFF,

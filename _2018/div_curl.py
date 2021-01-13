@@ -282,8 +282,8 @@ class ShowWritingTrajectory(TeacherStudentsScene):
             for x in np.arange(0, 1 + step, step)
         ])
         arrow = Arrow(
-            solid_path.points[-2],
-            solid_path.points[-1],
+            solid_path.get_points()[-2],
+            solid_path.get_points()[-1],
             buff=0
         )
         dashed_path.add(arrow.tip)
@@ -1409,8 +1409,8 @@ class FluidFlowAsHillGradient(CylinderModel, ThreeDScene):
             }
         )
         for line in stream_lines:
-            line.points[:, 2] = np.apply_along_axis(
-                potential, 1, line.points
+            line.get_points()[:, 2] = np.apply_along_axis(
+                potential, 1, line.get_points()
             )
         stream_lines_animation = self.get_stream_lines_animation(
             stream_lines
@@ -2005,7 +2005,7 @@ class PureCylinderFlow(Scene):
         )
         self.add(stream_lines)
         for stream_line in stream_lines:
-            if get_norm(stream_line.points[0]) < 1:
+            if get_norm(stream_line.get_points()[0]) < 1:
                 stream_lines.remove(stream_line)
 
         self.modify_flow(stream_lines)
@@ -4123,7 +4123,7 @@ class NoChargesOverlay(Scene):
         rect.set_fill(BLUE_D, 0.75)
         circle = Circle(radius=1.5, num_anchors=5000)
         circle.rotate(135 * DEGREES)
-        rect.add_subpath(circle.points)
+        rect.add_subpath(circle.get_points())
 
         words = TextMobject("No charges outside wire")
         words.scale(1.5)

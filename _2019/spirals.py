@@ -1331,7 +1331,7 @@ class ShowSpiralsForWholeNumbers(CountSpirals):
         for n, spiral in zip(it.count(1), new_spirals):
             count = Integer(n)
             count.scale(2)
-            count.move_to(spiral.points[50])
+            count.move_to(spiral.get_points()[50])
             counts.add(count)
 
         self.remove(curr_spiral)
@@ -4907,7 +4907,7 @@ class Thumbnail(SpiralScene):
                 fill_color=TEAL,
                 # fill_opacity=interpolate(0.5, 1, min(get_norm(point), 1))
             )
-            for point in p_spiral.points
+            for point in p_spiral.get_points()
         ])
         dots.set_fill([TEAL_E, TEAL_A])
         dots.set_stroke(BLACK, 1)

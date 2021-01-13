@@ -72,8 +72,8 @@ class FlatCoin(UprightCoin):
         self.stretch_in_place(self.foreshortening, 1)
         
         # draw the edge
-        control_points1 = self.points[12:25].tolist()
-        control_points2 = self.copy().shift(self.thickness * DOWN).points[12:25].tolist()
+        control_points1 = self.get_points()[12:25].tolist()
+        control_points2 = self.copy().shift(self.thickness * DOWN).get_points()[12:25].tolist()
         edge_anchors_and_handles = control_points1
         edge_anchors_and_handles.append(edge_anchors_and_handles[-1] + self.thickness * DOWN)
         edge_anchors_and_handles.append(edge_anchors_and_handles[-1] + self.thickness * UP)

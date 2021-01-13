@@ -186,7 +186,7 @@ class TemperatureGraphScene(SpecialThreeDScene):
                 axes.x_min,
                 t_tracker.get_value(),
                 axes.z_min,
-            ) - plane.points[0]
+            ) - plane.get_points()[0]
         ))
         plane.t_tracker = t_tracker
         return plane

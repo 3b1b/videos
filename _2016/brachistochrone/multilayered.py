@@ -421,7 +421,7 @@ class ContinuouslyObeyingSnellsLaw(MultilayeredScene):
 
 
     def show_equation(self, chopped_cycloid, ref_mob):
-        point2, point1 = chopped_cycloid.points[-2:]
+        point2, point1 = chopped_cycloid.get_points()[-2:]
         arc, theta, vert_line, tangent_line = self.get_marks(
             point1, point2
         )

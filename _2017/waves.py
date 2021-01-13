@@ -2170,7 +2170,7 @@ class ShowPolarizingFilter(DirectionOfPolarizationScene):
                 new_decimal.set_depth(decimal.get_depth())
                 new_decimal.move_to(decimal, UP)
                 new_decimal.set_color(decimal.get_color())
-                decimal.align_data(new_decimal)
+                decimal.align_data_and_family(new_decimal)
                 families = [
                     mob.family_members_with_points()
                     for mob in (decimal, new_decimal)
@@ -4052,7 +4052,7 @@ class CircularPhotons(ShootPhotonThroughFilter):
         arrows.scale(0.7)
         arrows.rotate(np.pi/2, RIGHT)
         arrows.rotate(np.pi/2, OUT)
-        arrows.move_to(center_of_mass(pf.points))
+        arrows.move_to(center_of_mass(pf.get_points()))
 
         pf.label = arrows
         pf.add(arrows)

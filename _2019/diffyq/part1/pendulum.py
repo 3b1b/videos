@@ -940,7 +940,7 @@ class WherePendulumLeads(PiCreatureScene):
 
         weight = Dot(radius=0.25)
         weight.add_updater(lambda m: m.move_to(
-            spring.points[-1]
+            spring.get_points()[-1]
         ))
         weight.set_color(BLUE)
         weight.set_sheen(1, UL)

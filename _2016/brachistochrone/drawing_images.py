@@ -46,7 +46,7 @@ def sort_by_color(mob):
         mob.rgbas
     ))
     mob.rgbas = mob.rgbas[indices]    
-    mob.points = mob.points[indices]
+    mob.points = mob.get_points()[indices]
 
 
 
@@ -84,10 +84,10 @@ def nearest_neighbor_align(mobject1, mobject2):
     for n in range(mobject1.get_num_points()):
         indices = (closest_point_indices == n)
         new_mob1.add_points(
-            [mobject1.points[n]]*sum(indices)
+            [mobject1.get_points()[n]]*sum(indices)
         )
         new_mob2.add_points(
-            mobject2.points[indices],
+            mobject2.get_points()[indices],
             rgbas = mobject2.rgbas[indices]
         )
     return new_mob1, new_mob2

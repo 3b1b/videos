@@ -788,9 +788,9 @@ class RiemannFatherOfComplex(ComplexTransformationScene):
         arc = Arc(-2*np.pi/3)
         arc.rotate(-np.pi)
         arc.add_tip()
-        arc.shift(input_dot.get_top()-arc.points[0]+SMALL_BUFF*UP)
+        arc.shift(input_dot.get_top()-arc.get_points()[0]+SMALL_BUFF*UP)
         output_dot = Dot(
-            arc.points[-1] + SMALL_BUFF*(2*RIGHT+DOWN),
+            arc.get_points()[-1] + SMALL_BUFF*(2*RIGHT+DOWN),
             color = MAROON_B
         )
         for dot, tex in (input_dot, "z"), (output_dot, "f(z)"):
@@ -1660,7 +1660,7 @@ class VisualizingSSquared(ComplexTransformationScene):
                 lambda t : self.z_to_point(z**(1.1+0.8*t))
             )
             stand_in_arrow = Arrow(
-                arrow.points[-2], arrow.points[-1],
+                arrow.get_points()[-2], arrow.get_points()[-1],
                 tip_length = 0.2
             )
             arrow.add(stand_in_arrow.tip)
@@ -2044,7 +2044,7 @@ class SquiggleOnExtensions(ZetaTransformationScene):
             sinusoidal_func,
         ]
         for mob in self.left_plane.family_members_with_points():
-            if np.all(np.abs(mob.points[:,1]) < 0.1):
+            if np.all(np.abs(mob.get_points()[:,1]) < 0.1):
                 self.left_plane.remove(mob)
 
         new_left_planes = [
@@ -2326,7 +2326,7 @@ class IntroduceAnglePreservation(VisualizingSSquared):
 
     def put_angle_tex_next_to_arc(self, angle_tex, arc):
         vect = arc.point_from_proportion(0.5)-interpolate(
-            arc.points[0], arc.points[-1], 0.5
+            arc.get_points()[0], arc.get_points()[-1], 0.5
         )
         unit_vect = vect/get_norm(vect)
         angle_tex.move_to(arc.get_center() + 1.7*unit_vect)

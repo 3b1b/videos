@@ -19,7 +19,7 @@ class Britain(SVGMobject):
     }
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
-        self.points = self[0].points
+        self.set_points(self[0].get_points())
         self.submobjects = []
         self.set_height(self.height)
         self.center()
@@ -420,7 +420,7 @@ class InfiniteKochZoom(Scene):
     def construct(self):
         small_curve = self.get_curve(self.order)
         larger_curve = self.get_curve(self.order + 1)
-        larger_curve.scale(3, about_point = small_curve.points[0])
+        larger_curve.scale(3, about_point = small_curve.get_points()[0])
         self.play(Transform(small_curve, larger_curve, run_time = 2))
         self.repeat_frames(5)
 
@@ -435,7 +435,7 @@ class InfiniteKochZoom(Scene):
         )
         koch_curve.set_width(18)
         koch_curve.shift(
-            self.left_point - koch_curve.points[0]
+            self.left_point - koch_curve.get_points()[0]
         )
         return koch_curve
 

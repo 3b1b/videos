@@ -315,7 +315,7 @@ class TauPoem(Scene):
             Transform(pi.left_leg, tau.leg),
             Transform(
                 pi.right_leg, 
-                Point(pi.right_leg.points[0,:]).set_color("black")
+                Point(pi.right_leg.get_points()[0,:]).set_color("black")
             ),
             Transform(pi.mouth, tau.mouth),
             CounterclockwiseTransform(
@@ -327,7 +327,7 @@ class TauPoem(Scene):
     def line9(self):
         tau = TauCreature()
         pi = PiCreature().set_color("red").give_straight_face()
-        pi.scale(0.2).move_to(tau.arm.points[-1,:])
+        pi.scale(0.2).move_to(tau.arm.get_points()[-1,:])
         point = Point(pi.get_center()).set_color("black")
         vanish_local = 3*(LEFT + UP)
         new_pi = deepcopy(pi)

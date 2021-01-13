@@ -331,7 +331,7 @@ class WalkingRandolph(GraphScene):
 
     def construct(self):
         GraphScene.construct(self)
-        point_path = [self.points[i] for i in self.path]
+        point_path = [self.get_points()[i] for i in self.path]
         randy = Randolph()
         randy.scale(RANDOLPH_SCALE_FACTOR)
         randy.move_to(point_path[0])
@@ -364,15 +364,15 @@ class PathExamples(GraphScene):
         for path, non_path in zip(paths, non_paths):
             path_lines = Mobject(*[
                 Line(
-                    self.points[path[i]], 
-                    self.points[path[i+1]]
+                    self.get_points()[path[i]], 
+                    self.get_points()[path[i+1]]
                 ).set_color("yellow")
                 for i in range(len(path) - 1)
             ])
             non_path_lines = Mobject(*[
                 Line(
-                    self.points[pp[0]],
-                    self.points[pp[1]],
+                    self.get_points()[pp[0]],
+                    self.get_points()[pp[1]],
                 ).set_color("yellow")
                 for pp in non_path
             ])
@@ -414,7 +414,7 @@ class IntroduceRandolph(GraphScene):
         name = TextMobject("Randolph")
         self.play(Transform(
             randy,
-            deepcopy(randy).scale(RANDOLPH_SCALE_FACTOR).move_to(self.points[0]),
+            deepcopy(randy).scale(RANDOLPH_SCALE_FACTOR).move_to(self.get_points()[0]),
         ))
         self.wait()
         name.shift((0, 1, 0))
@@ -425,7 +425,7 @@ class DefineSpanningTree(GraphScene):
     def construct(self):
         GraphScene.construct(self)
         randy = Randolph()
-        randy.scale(RANDOLPH_SCALE_FACTOR).move_to(self.points[0])
+        randy.scale(RANDOLPH_SCALE_FACTOR).move_to(self.get_points()[0])
         dollar_signs = TextMobject("\\$\\$")
         dollar_signs.scale(EDGE_ANNOTATION_SCALE_FACTOR)
         dollar_signs = Mobject(*[
@@ -437,7 +437,7 @@ class DefineSpanningTree(GraphScene):
         self.generate_spanning_tree()
         def green_dot_at_index(index):
             return Dot(
-                self.points[index], 
+                self.get_points()[index], 
                 radius = 2*Dot.DEFAULT_RADIUS,
                 color = "lightgreen",
             )
@@ -459,8 +459,8 @@ class DefineSpanningTree(GraphScene):
         for pair in self.spanning_tree_index_pairs:
             self.play(ShowCreation(
                 Line(
-                    self.points[pair[0]], 
-                    self.points[pair[1]]
+                    self.get_points()[pair[0]], 
+                    self.get_points()[pair[1]]
                 ).set_color("yellow"),
                 run_time = run_time_per_branch
             ))
@@ -472,7 +472,7 @@ class DefineSpanningTree(GraphScene):
 
         unneeded_edges = list(filter(out_of_spanning_set, self.graph.edges))
         for edge, limit in zip(unneeded_edges, list(range(5))):
-            line = Line(self.points[edge[0]], self.points[edge[1]])
+            line = Line(self.get_points()[edge[0]], self.get_points()[edge[1]])
             line.set_color("red")
             self.play(ShowCreation(line, run_time = 1.0))
             self.add(unneeded.center().shift(line.get_center() + 0.2*UP))
@@ -622,9 +622,9 @@ class ExamplesOfGraphs(GraphScene):
         )).to_corner().shift(0.5*RIGHT).split()
         horizontal_line = Line(
             (-FRAME_X_RADIUS, FRAME_Y_RADIUS-1, 0),
-            (max(notions.points[:,0]), FRAME_Y_RADIUS-1, 0)
+            (max(notions.get_points()[:,0]), FRAME_Y_RADIUS-1, 0)
         )
-        vert_line_x_val = min(notions.points[:,0]) - buff
+        vert_line_x_val = min(notions.get_points()[:,0]) - buff
         vertical_line = Line(
             (vert_line_x_val, FRAME_Y_RADIUS, 0),
             (vert_line_x_val,-FRAME_Y_RADIUS, 0)
@@ -701,7 +701,7 @@ class ExamplesOfGraphs(GraphScene):
         not_connected = TextMobject("Not Connected")
         not_connected.set_color("red")
         for mob in connected, not_connected:
-            mob.shift(self.points[3] + UP)
+            mob.shift(self.get_points()[3] + UP)
 
         self.play(*[
             ShowCreation(mob, run_time = 1.0)
@@ -836,7 +836,7 @@ class ListOfCorrespondances(Scene):
             this_arrow = deepcopy(arrow)
             for mob in left, right, this_arrow:
                 mob.shift(height*UP)
-            arrow_xs = this_arrow.points[:,0]
+            arrow_xs = this_arrow.get_points()[:,0]
             left.to_edge(RIGHT)
             left.shift((min(arrow_xs) - FRAME_X_RADIUS, 0, 0))
             right.to_edge(LEFT)
@@ -863,15 +863,15 @@ class CyclesCorrespondWithConnectedComponents(GraphScene):
         enclosed_vertices = [0, 1]
         randy = Randolph()
         randy.scale(RANDOLPH_SCALE_FACTOR)
-        randy.move_to(self.points[cycle[0]])
+        randy.move_to(self.get_points()[cycle[0]])
 
         lines_to_remove = []
         for last, next in zip(cycle, cycle[1:]):
-            line = Line(self.points[last], self.points[next])
+            line = Line(self.get_points()[last], self.get_points()[next])
             line.set_color("yellow")
             self.play(
                 ShowCreation(line),
-                WalkPiCreature(randy, self.points[next]),
+                WalkPiCreature(randy, self.get_points()[next]),
                 run_time = 1.0
             )
             lines_to_remove.append(line)
@@ -911,7 +911,7 @@ class IntroduceMortimer(GraphScene):
         randy_path = (0, 1, 3)
         morty_path = (-2, -3, -4)
         morty_crossed_lines = [
-            Line(self.points[i], self.points[j]).set_color("red")
+            Line(self.get_points()[i], self.get_points()[j]).set_color("red")
             for i, j in [(7, 1), (1, 5)]
         ]
         kwargs = {"run_time" : 1.0}
@@ -924,7 +924,7 @@ class IntroduceMortimer(GraphScene):
         self.remove(name)
         small_randy = deepcopy(randy).scale(RANDOLPH_SCALE_FACTOR)
         small_morty = deepcopy(morty).scale(RANDOLPH_SCALE_FACTOR)
-        small_randy.move_to(self.points[randy_path[0]])
+        small_randy.move_to(self.get_points()[randy_path[0]])
         small_morty.move_to(self.dual_points[morty_path[0]])
         self.play(*[
             FadeIn(mob)
@@ -942,10 +942,10 @@ class IntroduceMortimer(GraphScene):
             self.set_color_region(self.regions[next])
         self.wait()
         for last, next in zip(randy_path, randy_path[1:]):
-            line = Line(self.points[last], self.points[next])
+            line = Line(self.get_points()[last], self.get_points()[next])
             line.set_color("yellow")
             self.play(
-                WalkPiCreature(randy, self.points[next]),
+                WalkPiCreature(randy, self.get_points()[next]),
                 ShowCreation(line),
                 **kwargs
             )
@@ -969,7 +969,7 @@ class RandolphMortimerSpanningTreeGame(GraphScene):
         self.generate_regions()
         randy = Randolph().scale(RANDOLPH_SCALE_FACTOR)
         morty = Mortimer().scale(RANDOLPH_SCALE_FACTOR)
-        randy.move_to(self.points[0])
+        randy.move_to(self.get_points()[0])
         morty.move_to(self.dual_points[0])
         attempted_dual_point_index = 2
         region_ordering = [0, 1, 7, 2, 3, 5, 4, 6]
@@ -1005,7 +1005,7 @@ class RandolphMortimerSpanningTreeGame(GraphScene):
         cycle = self.graph.region_cycles[cycle_index]
         self.set_color_region(self.regions[cycle_index], "black")
         self.play(ShowCreation(Mobject(*[
-            Line(self.points[last], self.points[next]).set_color("green")
+            Line(self.get_points()[last], self.get_points()[next]).set_color("green")
             for last, next in zip(cycle, list(cycle)[1:] + [cycle[0]])
         ])))
         self.wait()
@@ -1092,7 +1092,7 @@ class DualSpanningTree(GraphScene):
         self.generate_spanning_tree()
         randy = Randolph()
         randy.scale(RANDOLPH_SCALE_FACTOR)
-        randy.move_to(self.points[0])
+        randy.move_to(self.get_points()[0])
         morty = Mortimer()
         morty.scale(RANDOLPH_SCALE_FACTOR)
         morty.move_to(self.dual_points[0])
@@ -1119,14 +1119,14 @@ class TreeCountFormula(Scene):
         gs.generate_treeified_spanning_tree()
         branches = gs.treeified_spanning_tree.to_edge(LEFT).split()
 
-        all_dots = [Dot(branches[0].points[0])]
+        all_dots = [Dot(branches[0].get_points()[0])]
         self.add(text, all_dots[0])
         for branch in branches:
             self.play(
                 ShowCreation(branch), 
                 run_time = time_per_branch
             )
-            dot = Dot(branch.points[-1])
+            dot = Dot(branch.get_points()[-1])
             self.add(dot)
             all_dots.append(dot)
         self.wait()

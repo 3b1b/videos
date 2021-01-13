@@ -23,7 +23,7 @@ def stereo_project_point(point, axis=0, r=1, max_norm=10000):
 def stereo_project(mobject, axis=0, r=1, outer_r=10, **kwargs):
     epsilon = 1
     for submob in mobject.family_members_with_points():
-        points = submob.points
+        points = submob.get_points()
         n = len(points)
         for i in range(n):
             if points[i, axis] == -r:
@@ -44,10 +44,10 @@ def stereo_project(mobject, axis=0, r=1, outer_r=10, **kwargs):
 
         # If all points are outside a certain range, this
         # shouldn't be displayed
-        norms = np.apply_along_axis(get_norm, 1, submob.points)
+        norms = np.apply_along_axis(get_norm, 1, submob.get_points())
         if np.all(norms > outer_r):
             # TODO, instead set opacity?
-            # submob.points[:, :] = 0
+            # submob.get_points()[:, :] = 0
             submob.set_fill(opacity=0)
             submob.set_stroke(opacity=0)
 
@@ -176,7 +176,7 @@ class CheckeredCircle(Circle):
     def __init__(self, **kwargs):
         Circle.__init__(self, **kwargs)
         pieces = self.get_pieces(self.n_pieces)
-        self.points = np.zeros((0, 3))
+        self.set_points(np.zeros((0, 3)))
         self.add(*pieces)
         n_colors = len(self.colors)
         for i, color in enumerate(self.colors):
@@ -320,7 +320,7 @@ class StereoProjectedCircleFromHypersphere(CheckeredCircle):
 
     def remove_large_pieces(self):
         for piece in self:
-            length = get_norm(piece.points[0] - piece.points[-1])
+            length = get_norm(piece.get_points()[0] - piece.get_points()[-1])
             violations = [
                 length > self.max_length,
                 get_norm(piece.get_center()) > self.max_r,
@@ -344,11 +344,11 @@ class QuaternionTracker(ValueTracker):
             self.add_updater(lambda q: q.normalize())
 
     def set_value(self, vector):
-        self.points = np.array(vector).reshape((1, 4))
+        self.set_points(np.array(vector).reshape((1, 4)))
         return self
 
     def get_value(self):
-        return self.points[0]
+        return self.get_points()[0]
 
     def normalize(self):
         self.set_value(normalize(
@@ -1595,8 +1595,8 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
                     brace.get_bottom() + SMALL_BUFF * DOWN,
                     target.get_top() + MED_SMALL_BUFF * UP,
                 )
-                arrow.points[1] = arrow.points[0] + DOWN
-                arrow.points[2] = arrow.points[3] + UP
+                arrow.get_points()[1] = arrow.get_points()[0] + DOWN
+                arrow.get_points()[2] = arrow.get_points()[3] + UP
                 tip = RegularPolygon(3, start_angle=-100 * DEGREES)
                 tip.set_height(0.2)
                 tip.set_stroke(width=0)
@@ -2568,7 +2568,7 @@ class IntroduceStereographicProjection(MovingCameraScene):
         n = self.n_sample_points
         rotater = 1
         if hasattr(self, "circle_shadow"):
-            point = self.circle_shadow[0].points[0]
+            point = self.circle_shadow[0].get_points()[0]
             rotater = complex(*point[:2])
             rotater /= abs(rotater)
         numbers = [
@@ -2634,7 +2634,7 @@ class IntroduceStereographicProjectionLinusView(IntroduceStereographicProjection
         dots.set_stroke(BLACK, 1)
 
         def generate_dot_updater(circle_piece):
-            return lambda d: d.move_to(circle_piece.points[0])
+            return lambda d: d.move_to(circle_piece.get_points()[0])
 
         for dot, piece in zip(dots, circle[::(len(circle) // 8)]):
             dot.add_updater(generate_dot_updater(piece))
@@ -2834,7 +2834,7 @@ class ShowRotationUnderStereographicProjection(IntroduceStereographicProjection)
         lines = always_redraw(self.get_lines)
 
         def generate_dot_updater(circle_piece):
-            return lambda d: d.move_to(circle_piece.points[0])
+            return lambda d: d.move_to(circle_piece.get_points()[0])
 
         for circ, color in [(self.circle_shadow, RED), (self.circle, WHITE)]:
             for piece in circ[::(len(circ) // 8)]:
@@ -2861,7 +2861,7 @@ class ShowRotationUnderStereographicProjection(IntroduceStereographicProjection)
         circle_shadow = self.circle_shadow
 
         def get_rotated_one_point():
-            return circle_shadow[0].points[0]
+            return circle_shadow[0].get_points()[0]
 
         def get_angle():
             return angle_of_vector(get_rotated_one_point())
@@ -3618,7 +3618,7 @@ class TwoDStereographicProjection(IntroduceFelix):
         circle_path.rotate(-90 * DEGREES)
 
         self.play(FadeInFromLarge(circle))
-        self.play(point_mob.move_to, circle_path.points[0])
+        self.play(point_mob.move_to, circle_path.get_points()[0])
         self.play(MoveAlongPath(point_mob, circle_path, run_time=6))
         self.move_camera(
             phi=0,
@@ -5589,10 +5589,10 @@ class ShowMultiplicationBy135Example(RuleOfQuaternionMultiplication):
         label.set_background_stroke(width=0)
 
         def get_one_point():
-            return self.circle_1i[0].points[0]
+            return self.circle_1i[0].get_points()[0]
 
         def get_j_point():
-            return self.circle_jk[0].points[0]
+            return self.circle_jk[0].get_points()[0]
 
         one_point = VectorizedPoint()
         one_point.add_updater(lambda v: v.set_location(get_one_point()))
@@ -5834,7 +5834,7 @@ class ShowArbitraryMultiplication(ShowMultiplicationBy135Example):
         one_dot.set_color(YELLOW_E)
         one_dot.move_to(ORIGIN)
         one_dot.add_updater(
-            lambda m: m.move_to(circle1[0].points[0])
+            lambda m: m.move_to(circle1[0].get_points()[0])
         )
         self.add(one_dot)
 
@@ -5852,7 +5852,7 @@ class ShowArbitraryMultiplication(ShowMultiplicationBy135Example):
             run_time=2
         )
         hand.add_updater(
-            lambda h: h.move_to(circle1[0].points[0], LEFT)
+            lambda h: h.move_to(circle1[0].get_points()[0], LEFT)
         )
 
         for quat in [special_q, [1, 0, 0, 0], special_q]:
@@ -6367,8 +6367,8 @@ class ThumbnailP1(RuleOfQuaternionMultiplication):
         # unit_sphere.set_stroke(width=0)
         # proj_sphere.set_fill_by_checkerboard(BLUE_E, BLUE, opacity=0.8)
         for face in proj_sphere:
-            face.points = face.points[::-1]
-            max_r = np.max(np.apply_along_axis(get_norm, 1, face.points))
+            face.set_points(face.get_points()[::-1])
+            max_r = np.max(np.apply_along_axis(get_norm, 1, face.get_points()))
             if max_r > 30:
                 face.fade(1)
 

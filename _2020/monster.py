@@ -19,8 +19,8 @@ def get_baby_monster():
 
 def blink_monster(monster):
     monster.generate_target()
-    left_eye_points = monster.target[0].points[498:528]
-    right_eye_points = monster.target[0].points[582:612]
+    left_eye_points = monster.target[0].get_points()[498:528]
+    right_eye_points = monster.target[0].get_points()[582:612]
     for points in left_eye_points, right_eye_points:
         points[:, 1] = points[0, 1]
     return MoveToTarget(monster, rate_func=squish_rate_func(there_and_back, 0.4, 0.6))
@@ -63,7 +63,7 @@ def get_cube(color=BLUE_D, opacity=1, height=2, frame=None):
 
     for face, p_face in zip(cube, poor_cube):
         face.add(*[
-            Line3D(p_face.points[i], p_face.points[j], width=0.02, color=GREY_B)
+            Line3D(p_face.get_points()[i], p_face.get_points()[j], width=0.02, color=GREY_B)
             for i, j in [(0, 1), (1, 3), (3, 2), (2, 0)]
         ])
 
@@ -2761,7 +2761,7 @@ class AskAboutCubeDiagonals(QuadrupletShufflings):
         for diag in diagonals:
             globals()['diag'] = diag
             Group(*[
-                cds[np.argmin([get_norm(cd.get_center() - diag.points[i]) for cd in cds])]
+                cds[np.argmin([get_norm(cd.get_center() - diag.get_points()[i]) for cd in cds])]
                 for i in [0, -1]
             ]).match_color(diag)
 

@@ -3175,8 +3175,8 @@ class ProportionOfSphereInBox(GraphScene):
 
         graph = self.get_graph(lambda x : np.exp(0.1*(9-x)))
         max_y = self.coords_to_point(0, 1)[1]
-        too_high = graph.points[:,1] > max_y
-        graph.points[too_high, 1] = max_y
+        too_high = graph.get_points()[:,1] > max_y
+        graph.get_points()[too_high, 1] = max_y
 
         footnote = TextMobject("""
             \\begin{flushleft}

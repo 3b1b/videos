@@ -604,10 +604,10 @@ class FakeDiagram(TeacherStudentsScene):
             for dx in (0.25, 0)
         ])
         for graph in graphs:
-            end_point = graph.points[-1]
+            end_point = graph.get_points()[-1]
             axis_point = end_point[0]*RIGHT + gs.graph_origin[1]*UP
             for alpha in np.linspace(0, 1, 20):
-                point = interpolate(axis_point, graph.points[0], alpha)
+                point = interpolate(axis_point, graph.get_points()[0], alpha)
                 graph.add_line_to(point)
             graph.set_stroke(width = 1)
             graph.set_fill(opacity = 1)
@@ -1686,8 +1686,8 @@ class TemperatureOverTimeOfWarmWater(GraphScene):
         def update_delta_T_group(group):
             brace, label = group
             v_line = Line(
-                graph.points[-1],
-                graph.points[-1][0]*RIGHT + h_line.get_center()[1]*UP
+                graph.get_points()[-1],
+                graph.get_points()[-1][0]*RIGHT + h_line.get_center()[1]*UP
             )
             brace.set_height(v_line.get_height())
             brace.next_to(v_line, RIGHT, SMALL_BUFF)

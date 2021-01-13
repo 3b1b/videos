@@ -485,12 +485,12 @@ class TriangleModuliSpace(Scene):
         self.wait()
 
         # Adjust triangle
-        tip_tracker = VectorizedPoint(triangle.points[0])
+        tip_tracker = VectorizedPoint(triangle.get_points()[0])
 
         def update_triangle(tri):
             point = tip_tracker.get_location()
-            tri.points[0] = point
-            tri.points[-1] = point
+            tri.get_points()[0] = point
+            tri.get_points()[-1] = point
             tri.make_jagged()
 
         triangle.add_updater(update_triangle)

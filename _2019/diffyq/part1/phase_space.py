@@ -503,7 +503,7 @@ class VisualizeStates(Scene):
 
         def update_trajectory(traj):
             point = mobject.get_center()
-            if get_norm(trajectory.points[-1] == point) > 0.05:
+            if get_norm(trajectory.get_points()[-1] == point) > 0.05:
                 traj.add_smooth_curve_to(point)
         trajectory.add_updater(update_trajectory)
         return trajectory
@@ -699,7 +699,7 @@ class IntroduceVectorField(VisualizeStates):
         trajectory.start_new_path(dot.get_center())
         dt = 0.01
         for x in range(130):
-            p = trajectory.points[-1]
+            p = trajectory.get_points()[-1]
             dp_dt = self.vector_field_func(p)
             trajectory.add_smooth_curve_to(p + dp_dt * dt)
         self.tie_state_to_dot_position(state, dot)
@@ -1010,7 +1010,7 @@ class ShowHighVelocityCase(ShowPendulumPhaseFlow, MovingCameraScene):
                 rate_func=linear,
             ),
             UpdateFromFunc(
-                dot, lambda d: d.move_to(traj.points[-1])
+                dot, lambda d: d.move_to(traj.get_points()[-1])
             ),
         ]
         if get_norm(self.frame_shift_vect) > 0:
@@ -1030,7 +1030,7 @@ class ShowHighVelocityCase(ShowPendulumPhaseFlow, MovingCameraScene):
         traj = VMobject()
         traj.start_new_path(start_point)
         for x in range(int(time / dt)):
-            last_point = traj.points[-1]
+            last_point = traj.get_points()[-1]
             for y in range(added_steps):
                 dp_dt = field.func(last_point)
                 last_point += dp_dt * dt / added_steps
@@ -1242,7 +1242,7 @@ class SpectrumOfStartingStates(ShowHighVelocityCase):
 
         def update_dots(ds):
             for d, t in zip(ds, trajs):
-                d.move_to(t.points[-1])
+                d.move_to(t.get_points()[-1])
             return ds
         dots.add_updater(update_dots)
 
@@ -1362,7 +1362,7 @@ class AskAboutStability(ShowHighVelocityCase):
 
         def update_dots(ds):
             for t, d in zip(trajs, ds):
-                d.move_to(t.points[-1])
+                d.move_to(t.get_points()[-1])
         dots.add_updater(update_dots)
         self.add(trajs, dots)
         self.play(
@@ -1522,7 +1522,7 @@ class LovePhaseSpace(ShowHighVelocityCase):
 
         def update_dots(ds):
             for d, t in zip(ds, ds.trajs):
-                d.move_to(t.points[-1])
+                d.move_to(t.get_points()[-1])
         dots.add_updater(update_dots)
 
         self.add(trajs, dots)

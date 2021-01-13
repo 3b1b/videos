@@ -1172,7 +1172,7 @@ class BinaryCountingAtEveryScale(Scene):
             ], run_time = 1)
 
         for bit_mob in bit_mobs:
-            curr_bits.align_data(bit_mob)
+            curr_bits.align_data_and_family(bit_mob)
             bit_mob.set_color(YELLOW)
             bit_mob[0].set_color(MAROON_B)
         self.play(get_run_through(bit_mobs[1:2**(self.num_bits-1)]))
@@ -1359,7 +1359,7 @@ class IntroduceSolveByCounting(TowersOfHanoiScene):
         self.curr_bit_mob = next(self.bit_mobs_iter)
 
         for bit_mob in bit_mobs:
-            bit_mob.align_data(self.curr_bit_mob)
+            bit_mob.align_data_and_family(self.curr_bit_mob)
             for bit, disk in zip(bit_mob, reversed(list(self.disks))):
                 bit.set_color(disk.get_color())
         bit_mobs.next_to(self.peg_labels, DOWN)
@@ -2431,7 +2431,7 @@ class TernaryCountingSelfSimilarPattern(Scene):
         curr_ternary_mob = next(ternary_mob_iter)
 
         for trits in ternary_mobs:
-            trits.align_data(curr_ternary_mob)
+            trits.align_data_and_family(curr_ternary_mob)
             for trit, color in zip(trits, colors):
                 trit.set_color(color)
         def get_increment():
@@ -2488,7 +2488,7 @@ class SolveConstrainedWithTernaryCounting(ConstrainedTowersOfHanoiScene):
         ternary_mobs.next_to(self.peg_labels, DOWN)
 
         for trits in ternary_mobs:
-            trits.align_data(ternary_mobs[0])
+            trits.align_data_and_family(ternary_mobs[0])
             trits.set_color_by_gradient(*self.disk_start_and_end_colors)
         self.ternary_mob_iter = it.cycle(ternary_mobs)            
         self.curr_ternary_mob = self.ternary_mob_iter.next().copy()            

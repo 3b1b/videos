@@ -1199,7 +1199,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
             label.to_corner(UL)
         brace = Brace(half_angle_q, DOWN)
         q_label = brace.get_tex("q")
-        full_angle_q.align_data(half_angle_q)
+        full_angle_q.align_data_and_family(half_angle_q)
         rect = SurroundingRectangle(full_angle_q[5])
 
         for mob in full_angle_q, half_angle_q, brace, q_label, rect:

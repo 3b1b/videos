@@ -581,8 +581,8 @@ class IntegrationByParts(Scene):
         v_lines, h_lines = VGroup(), VGroup()
         for alpha in np.linspace(0, 1, 30):
             point = curve.point_from_proportion(alpha)
-            top_point = curve.points[0][1]*UP + point[0]*RIGHT
-            left_point = curve.points[0][0]*RIGHT + point[1]*UP
+            top_point = curve.get_points()[0][1]*UP + point[0]*RIGHT
+            left_point = curve.get_points()[0][0]*RIGHT + point[1]*UP
             v_lines.add(Line(top_point, point))
             h_lines.add(Line(left_point, point))
         v_lines.set_color(BLUE_E)
@@ -643,13 +643,13 @@ class IntegrationByParts(Scene):
         )
         coords.set_color_by_tex("0.00", BLACK)
         dot = Dot(radius = 0.1)
-        dot.move_to(curve.points[0])
+        dot.move_to(curve.get_points()[0])
         coords.next_to(dot, UP+RIGHT)
         self.play(
             ShowCreation(curve),
             UpdateFromFunc(
                 dot,
-                lambda d : d.move_to(curve.points[-1])
+                lambda d : d.move_to(curve.get_points()[-1])
             ),
             MaintainPositionRelativeTo(coords, dot),
             run_time = 5,

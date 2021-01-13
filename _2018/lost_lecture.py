@@ -2196,7 +2196,7 @@ class KeplersSecondLaw(AskAboutEllipses):
         self.show_area_sweep()
         end_prop = orbit.proportion
         arc = self.get_arc(start_prop, end_prop)
-        radius = Line(sun_point, arc.points[0])
+        radius = Line(sun_point, arc.get_points()[0])
         radius.set_color(WHITE)
 
         radius_words = self.get_radius_words(radius, "Short")
@@ -2233,7 +2233,7 @@ class KeplersSecondLaw(AskAboutEllipses):
         self.show_area_sweep()
         end_prop = orbit.proportion
         short_arc = self.get_arc(start_prop, end_prop)
-        long_radius = Line(sun_point, short_arc.points[0])
+        long_radius = Line(sun_point, short_arc.get_points()[0])
         long_radius.set_color(WHITE)
         long_radius_words = self.get_radius_words(long_radius, "Long")
 
@@ -2281,11 +2281,11 @@ class KeplersSecondLaw(AskAboutEllipses):
         # Add lines from start
         result = VMobject()
         result.append_vectorized_mobject(
-            Line(sun_point, arc.points[0])
+            Line(sun_point, arc.get_points()[0])
         )
         result.append_vectorized_mobject(arc)
         result.append_vectorized_mobject(
-            Line(arc.points[-1], sun_point)
+            Line(arc.get_points()[-1], sun_point)
         )
 
         result.set_stroke(WHITE, width=0)
@@ -3097,11 +3097,11 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
 
             wedge = VMobject()
             wedge.append_vectorized_mobject(
-                Line(sun_center, arc.points[0])
+                Line(sun_center, arc.get_points()[0])
             )
             wedge.append_vectorized_mobject(arc)
             wedge.append_vectorized_mobject(
-                Line(arc.points[-1], sun_center)
+                Line(arc.get_points()[-1], sun_center)
             )
             wedges.add(wedge)
 
@@ -3336,7 +3336,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
         self.wait()
 
         self.play(
-            comet.move_to, arc.points[0],
+            comet.move_to, arc.get_points()[0],
             path_arc=90 * DEGREES
         )
         force_vector_update.update(0)
@@ -4125,11 +4125,11 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
     def get_wedge(self, arc, center_point, opacity=0.8):
         wedge = VMobject()
         wedge.append_vectorized_mobject(
-            Line(center_point, arc.points[0])
+            Line(center_point, arc.get_points()[0])
         )
         wedge.append_vectorized_mobject(arc)
         wedge.append_vectorized_mobject(
-            Line(arc.points[-1], center_point)
+            Line(arc.get_points()[-1], center_point)
         )
         wedge.set_stroke(width=0)
         wedge.set_fill(COBALT, opacity=opacity)

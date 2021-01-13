@@ -253,7 +253,7 @@ class ComplexFourierSeriesExample(FourierOfTrebleClef):
                 np.clip(alpha - 0.01, 0, 1),
                 np.clip(alpha, 0, 1),
             )
-            p.points[-1] = vectors[-1].get_end()
+            p.get_points()[-1] = vectors[-1].get_end()
 
         path.add_updater(update_path)
         return path

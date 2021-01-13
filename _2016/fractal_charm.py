@@ -19,7 +19,7 @@ class FractalCreation(Scene):
                 order = order,
                 **self.fractal_kwargs
             )
-            fractal.align_data(new_fractal)
+            fractal.align_data_and_family(new_fractal)
             self.play(Transform(
                 fractal, new_fractal,
                 **self.transform_kwargs

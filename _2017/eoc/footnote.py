@@ -192,7 +192,7 @@ class SecondDerivativeGraphically(GraphScene):
         dot = Dot()
         def get_dot_update_func(curve):
             def update_dot(dot):
-                dot.move_to(curve.points[-1])
+                dot.move_to(curve.get_points()[-1])
                 return dot
             return update_dot
 

@@ -175,7 +175,7 @@ class RadarPulseSingleton(ContinualAnimation):
         )
         self.arc.set_height(0.75*radar_dish.get_height())
         self.arc.move_to(radar_dish, UP+RIGHT)
-        self.start_points = np.array(self.arc.points)
+        self.start_points = np.array(self.arc.get_points())
         self.start_center = self.arc.get_center()
         self.finished = False
 
@@ -184,7 +184,7 @@ class RadarPulseSingleton(ContinualAnimation):
     def update_mobject(self, dt):
         arc = self.arc
         total_distance = self.speed*self.internal_time
-        arc.points = np.array(self.start_points)
+        arc.set_points(self.start_points)
         arc.shift(total_distance*self.direction)
 
         if self.internal_time < self.fade_in_time:
@@ -202,10 +202,10 @@ class RadarPulseSingleton(ContinualAnimation):
         #Don't use elif in case the above code creates reflection_distance
         if self.reflection_distance is not None:
             delta_distance = total_distance - self.reflection_distance
-            point_distances = np.dot(self.direction, arc.points.T)
+            point_distances = np.dot(self.direction, arc.get_points().T)
             diffs = point_distances - self.reflection_distance
             shift_vals = np.outer(-2*np.maximum(diffs, 0), self.direction)
-            arc.points += shift_vals
+            arc.set_points(arc.get_points() + shift_vals)
 
             #Check if done
             arc_point = arc.get_edge_center(-self.direction)
@@ -869,8 +869,8 @@ class TwoCarsAtRedLight(Scene):
         new_frequency_graph.match_color(self.frequency_graph)
 
         def pin_freq_graph_end_points(freq_graph):
-            freq_graph.points[0] = frequency_axes.coords_to_point(0, 0)
-            freq_graph.points[-1] = frequency_axes.coords_to_point(2, 0)
+            freq_graph.get_points()[0] = frequency_axes.coords_to_point(0, 0)
+            freq_graph.get_points()[-1] = frequency_axes.coords_to_point(2, 0)
 
         self.play(LaggedStartMap(
             FadeOut, VGroup(
@@ -973,7 +973,7 @@ class VariousMusicalNotes(Scene):
             )
         graph = get_graph()
         def graph_update(graph):
-            graph.points = get_graph().points
+            graph.set_points(get_graph().get_points())
         graph_update_anim = UpdateFromFunc(graph, graph_update)
         def change_width_anim(width, **kwargs):
             a = 2.0/(width**2)
@@ -3960,9 +3960,9 @@ class MusicalNote(AddingPureFrequencies):
         v_line = DashedLine(ORIGIN, 0.5*UP)
         v_line_update = UpdateFromFunc(
             v_line, lambda l : l.put_start_and_end_on_with_projection(
-                graph.points[-1],
+                graph.get_points()[-1],
                 axes.x_axis.number_to_point(
-                    axes.x_axis.point_to_number(graph.points[-1])
+                    axes.x_axis.point_to_number(graph.get_points()[-1])
                 )
             )
         )

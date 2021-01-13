@@ -2307,7 +2307,7 @@ class ThreeBodiesInSpace(SpecialThreeDScene):
     def add_trajectories(self):
         def update_trajectory(traj, dt):
             new_point = traj.body.point
-            if get_norm(new_point - traj.points[-1]) > 0.01:
+            if get_norm(new_point - traj.get_points()[-1]) > 0.01:
                 traj.add_smooth_curve_to(new_point)
 
         for body in self.bodies:
@@ -2772,7 +2772,7 @@ class LoveExample(PiCreatureScene):
                 )
                 s_alpha = squish_rate_func(smooth, 0.25, 1)(alpha)
                 if s_alpha > 0:
-                    y.align_data(you_copy)
+                    y.align_data_and_family(you_copy)
                     f1 = y.family_members_with_points()
                     f2 = you_copy.family_members_with_points()
                     for sm1, sm2 in zip(f1, f2):
@@ -2827,7 +2827,7 @@ class LoveExample(PiCreatureScene):
                 )
                 s_alpha = squish_rate_func(smooth, 0.25, 1)(alpha)
                 if s_alpha > 0:
-                    t.align_data(tau_copy)
+                    t.align_data_and_family(tau_copy)
                     f1 = t.family_members_with_points()
                     f2 = tau_copy.family_members_with_points()
                     for sm1, sm2 in zip(f1, f2):

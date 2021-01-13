@@ -516,7 +516,7 @@ class AreaUnderVGraph(PlotVelocity):
 
         for new_rects in rect_list:
             new_rects.set_fill(opacity = 0.8)
-            rects.align_submobjects(new_rects)
+            rects.align_family(new_rects)
             for alt_rect in rects[::2]:
                 alt_rect.set_fill(opacity = 0)
             self.play(Transform(
@@ -1191,7 +1191,7 @@ class PiecewiseConstantPlot(PlotVelocity):
                 dt_copy, self.v_t, self.v_t_brace
             ]))
         )
-        rects.align_submobjects(next_rects)
+        rects.align_family(next_rects)
         for every_other_rect in rects[::2]:
             every_other_rect.set_fill(opacity = 0)
         self.play(
@@ -1269,7 +1269,7 @@ class PiecewiseConstantPlot(PlotVelocity):
         )
         self.play(FadeIn(brace), FadeIn(dt_to_0))
         for new_rects in self.rect_list[4:]:
-            rects.align_submobjects(new_rects)
+            rects.align_family(new_rects)
             for every_other_rect in rects[::2]:
                 every_other_rect.set_fill(opacity = 0)
             self.play(
@@ -1455,7 +1455,7 @@ class AreaUnderACurve(GraphScene):
         self.play(ShowCreation(graph))
         self.play(Write(rects))
         for new_rects in rect_list[1:]:
-            rects.align_submobjects(new_rects)
+            rects.align_family(new_rects)
             for every_other_rect in rects[::2]:
                 every_other_rect.set_fill(opacity = 0)
             self.play(Transform(
@@ -1993,7 +1993,7 @@ class GraphSPlusC(GraphDistanceVsTime):
             "s(t) = 4t^2 - \\frac{1}{3}t^3", "+C"
         )
         plus_C.set_color(YELLOW)
-        full_label.next_to(graph.points[-1], DOWN)
+        full_label.next_to(graph.get_points()[-1], DOWN)
         full_label.to_edge(RIGHT)
 
         self.play(ShowCreation(graph))

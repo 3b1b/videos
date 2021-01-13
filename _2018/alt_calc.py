@@ -713,7 +713,7 @@ class StartingCalc101(PiCreatureScene):
                 )
             ),
             weight.add_updater(
-                lambda w: w.move_to(spring.points[-1])
+                lambda w: w.move_to(spring.get_points()[-1])
             )
         ]
 

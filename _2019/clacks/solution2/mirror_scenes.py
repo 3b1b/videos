@@ -343,7 +343,7 @@ class MirrorScene(Scene):
             result.append(
                 UpdateFromFunc(
                     self.beam_point,
-                    lambda m: m.move_to(smallest_flash.mobject.points[-1])
+                    lambda m: m.move_to(smallest_flash.mobject.get_points()[-1])
                 )
             )
 
@@ -354,7 +354,7 @@ class MirrorScene(Scene):
             )
             ghost_beam_point_update = UpdateFromFunc(
                 self.ghost_beam_point,
-                lambda m: m.move_to(ghost_flash.mobject.points[-1])
+                lambda m: m.move_to(ghost_flash.mobject.get_points()[-1])
             )
             result += [
                 ghost_flash,
@@ -435,7 +435,7 @@ class ReflectWorldThroughMirrorNew(MirrorScene):
         randy.tracked_mobject = self.trajectory
         randy.add_updater(
             lambda m: m.look_at(
-                m.tracked_mobject.points[-1]
+                m.tracked_mobject.get_points()[-1]
             )
         )
         self.add(randy)
@@ -450,7 +450,7 @@ class ReflectWorldThroughMirrorNew(MirrorScene):
     def add_ghost_beam_point(self):
         self.ghost_beam_point.add_updater(
             lambda m: m.move_to(
-                self.ghost_trajectory.points[-1]
+                self.ghost_trajectory.get_points()[-1]
             )
         )
         self.add(self.ghost_beam_point)
@@ -658,7 +658,7 @@ class ReflectWorldThroughMirrorNew(MirrorScene):
         self.ghost_beam_point.clear_updaters()
         self.ghost_beam_point.add_updater(
             lambda m: m.move_to(
-                gt_beam_anims[0].mobject.points[-1]
+                gt_beam_anims[0].mobject.get_points()[-1]
             )
         )
         self.randy.tracked_mobject = t_beam_anims[0].mobject
@@ -927,7 +927,7 @@ class MirrorAndWiresOverlay(MirrorScene):
         )
         d_trajectory.match_style(g_trajectory)
 
-        g_trajectory.points[0] += 0.2 * RIGHT + 0.1 * DOWN
+        g_trajectory.get_points()[0] += 0.2 * RIGHT + 0.1 * DOWN
         g_trajectory.make_jagged()
         for x in range(3):
             self.play(

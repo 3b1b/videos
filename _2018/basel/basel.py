@@ -101,7 +101,7 @@ class AngleUpdater(ContinualAnimation):
         )
         new_arc.init_points()
         new_arc.move_arc_center_to(self.spotlight.get_source_point())
-        self.angle_arc.points = new_arc.points
+        self.angle_arc.set_points(new_arc.get_points())
         self.angle_arc.add_tip(tip_length = ARC_TIP_LENGTH,
             at_start = True, at_end = True)
 

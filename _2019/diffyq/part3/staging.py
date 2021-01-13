@@ -471,7 +471,7 @@ class CircleAnimationOfF(FourierOfTrebleClef):
         path = VMobject()
         shape = TextMobject("F")
         for sp in shape.family_members_with_points():
-            path.append_points(sp.points)
+            path.append_points(sp.get_points())
         return path
 
 

@@ -306,8 +306,8 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
             0, self.cycloid.get_num_points()-1, 10
         )
         for index in indices:
-            point = self.cycloid.points[index]
-            next_point = self.cycloid.points[index+1]
+            point = self.cycloid.get_points()[index]
+            next_point = self.cycloid.get_points()[index+1]
             angle = angle_of_vector(point - next_point)
             for mob in little_square, line:
                 mob.shift(point - mob.get_center())

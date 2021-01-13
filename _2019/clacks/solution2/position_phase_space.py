@@ -1014,10 +1014,10 @@ class EqualMassCase(PositionPhaseSpaceScene):
         flash_mob = flashes[0].mobject  # Lol
 
         def update_ps_point_from_flas_mob(ps_point):
-            if len(flash_mob.points) > 0:
-                ps_point.move_to(flash_mob.points[-1])
+            if len(flash_mob.get_points()) > 0:
+                ps_point.move_to(flash_mob.get_points()[-1])
             else:
-                ps_point.move_to(trajectory.points[0])
+                ps_point.move_to(trajectory.get_points()[0])
 
         # Mirror words
         xy_line = self.d1_eq_d2_line
@@ -1097,7 +1097,7 @@ class FailedAngleRelation(PositionPhaseSpaceScene):
         arcs = self.get_arcs(trajectory)
         equation = self.get_word_equation()
         equation.next_to(
-            trajectory.points[0], UR, MED_SMALL_BUFF,
+            trajectory.get_points()[0], UR, MED_SMALL_BUFF,
             index_of_submobject_to_align=0,
         )
 
@@ -1350,7 +1350,7 @@ class RescaleCoordinates(PositionPhaseSpaceScene, MovingCameraScene):
     def put_into_frame(self):
         rect = ScreenRectangle(height=FRAME_HEIGHT + 10)
         inner_rect = ScreenRectangle(height=FRAME_HEIGHT)
-        rect.add_subpath(inner_rect.points[::-1])
+        rect.add_subpath(inner_rect.get_points()[::-1])
         rect.set_fill("#333333", opacity=1)
         frame = self.camera_frame
 

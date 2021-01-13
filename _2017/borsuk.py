@@ -836,7 +836,7 @@ class WalkEquatorPostTransform(GraphScene):
             target_dots.append(new_dots)
 
         alt_eq = equator.copy()
-        alt_eq.points = np.array(list(reversed(alt_eq.points)))
+        alt_eq.set_points(list(reversed(alt_eq.get_points())))
         alt_dots = dots.copy()
         alt_dots.submobjects.reverse()
         target_arcs += [alt_eq, alt_eq.copy()]

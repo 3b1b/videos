@@ -2568,7 +2568,7 @@ class UnwrappedCircleLogic(UnfoldCircles):
         line_word.shift(line.get_center())
 
         curve = line.copy()
-        curve.points[1] = unwrapped_circle.get_corner(DL)
+        curve.get_points()[1] = unwrapped_circle.get_corner(DL)
         not_line = TextMobject("Not line")
         not_line.rotate(line.get_angle() / 2)
         not_line.move_to(line_word)
@@ -2898,7 +2898,7 @@ class SecondProof(SpecialThreeDScene):
 
         # shaded_back_half = back_half.copy()
         # for piece in shaded_back_half.family_members_with_points():
-        #     piece.points = piece.points[::-1]
+        #     piece.set_points(piece.get_points()[::-1])
         # shaded_back_half.scale(0.999)
         # shaded_back_half.set_fill(opacity=0.5)
 
@@ -3208,10 +3208,10 @@ class SecondProof(SpecialThreeDScene):
             for piece in ring:
                 piece.insert_n_curves(4)
                 piece.on_sphere = True
-                piece.points = np.array([
-                    *piece.points[3:-1],
-                    *piece.points[:3],
-                    piece.points[3]
+                piece.set_points([
+                    *piece.get_points()[3:-1],
+                    *piece.get_points()[:3],
+                    piece.get_points()[3]
                 ])
         return rings
 
@@ -3239,7 +3239,7 @@ class SecondProof(SpecialThreeDScene):
 
     def get_theta(self, ring):
         piece = ring[0]
-        point = piece.points[3]
+        point = piece.get_points()[3]
         return np.arccos(point[2] / get_norm(point))
 
     def get_theta_group(self, theta):

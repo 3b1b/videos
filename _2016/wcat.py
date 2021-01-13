@@ -991,8 +991,8 @@ class DeformToInterval(ClosedLoopScene):
         self.loop.to_edge(UP)
         original_loop = self.loop.copy()
         cut_loop = self.loop.copy()
-        cut_loop.points[0] += 0.3*(UP+RIGHT)
-        cut_loop.points[-1] += 0.3*(DOWN+RIGHT)
+        cut_loop.get_points()[0] += 0.3*(UP+RIGHT)
+        cut_loop.get_points()[-1] += 0.3*(DOWN+RIGHT)
 
         #Unwrap loop
         self.transform_loop(cut_loop, path_arc = np.pi)
@@ -1036,7 +1036,7 @@ class DeformToInterval(ClosedLoopScene):
         self.loop = original_loop
         self.dots = dots_copy
         dot_at_1 = self.dots[-1]
-        dot_at_1.target.move_to(cut_loop.points[-1])
+        dot_at_1.target.move_to(cut_loop.get_points()[-1])
         self.transform_loop(
             cut_loop,
             added_anims = [MoveToTarget(dot_at_1)]
@@ -1291,7 +1291,7 @@ class EndpointsGluedTogether(ClosedLoopScene):
         self.transform_loop(
             original_loop,
             added_anims = [
-                ApplyMethod(dot.move_to, original_loop.points[0])
+                ApplyMethod(dot.move_to, original_loop.get_points()[0])
                 for dot in dots
             ],
             run_time = 3
@@ -1729,7 +1729,7 @@ class PrepareForMobiusStrip(Scene):
         )
         self.wait()
         self.play(*[
-            ApplyMethod(tri.shift, tri.points[0][0]*LEFT)
+            ApplyMethod(tri.shift, tri.get_points()[0][0]*LEFT)
             for tri in self.triangles
         ])
         self.play(*[

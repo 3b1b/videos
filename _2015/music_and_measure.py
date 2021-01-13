@@ -113,8 +113,8 @@ class Piano(ImageMobject):
             x0 = left + count*self.ivory_jump
             x1 = x0 + self.ivory_jump
             key.add_points(
-                self.points[
-                    (self.points[:,0] > x0)*(self.points[:,0] < x1)
+                self.get_points()[
+                    (self.get_points()[:,0] > x0)*(self.get_points()[:,0] < x1)
                 ]
             )
             keys.append(key)
@@ -534,7 +534,7 @@ class FlashOnXProximity(Animation):
 
     def interpolate_mobject(self, alpha):
         for mob in self.close_mobjects:
-            if np.min(np.abs(mob.points[:,0] - self.x_val)) < 0.1:
+            if np.min(np.abs(mob.get_points()[:,0] - self.x_val)) < 0.1:
                 self.mobject.set_color()
                 return
         self.mobject.to_original_color()

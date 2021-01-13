@@ -107,7 +107,7 @@ class ContrastAbstractAndConcrete(Scene):
             spring.next_to(ORIGIN, RIGHT)
             spring.shift(
                 alignement_mob.get_center()[1]*UP + SMALL_BUFF*RIGHT \
-                -spring.points[0]
+                -spring.get_points()[0]
             )
             weight = Square(
                 side_length = 0.5,
@@ -115,7 +115,7 @@ class ContrastAbstractAndConcrete(Scene):
                 fill_color = GREY_B,
                 fill_opacity = 1,
             )
-            weight.move_to(spring.points[-1])
+            weight.move_to(spring.get_points()[-1])
             spring.add(weight)
 
         return Transform(
@@ -1716,7 +1716,7 @@ class OneOverX(PiCreatureScene, GraphScene):
     def introduce_graph(self):
         rect_group = self.rect_group
         graph = self.get_graph(lambda x : 1./x)
-        graph.points = np.array(list(reversed(graph.points)))
+        graph.set_points(list(reversed(graph.get_points())))
 
         self.change_rectangle_group(
             rect_group, 0.01,
@@ -2587,7 +2587,7 @@ class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):
             little_triangle.get_width()/big_triangle.get_height()
         )
         new_angle_label.rotate(-np.pi/2)
-        new_angle_label.shift(little_triangle.points[0])
+        new_angle_label.shift(little_triangle.get_points()[0])
         new_angle_label[1].rotate(np.pi/2)
 
         little_triangle_lines = VGroup(*[

@@ -237,7 +237,7 @@ class MathIsDeep(PiCreatureScene):
         #     pn.fade(1)
         #     pn.set_color(RED)
         #     pn.move_to(letter)
-        # num_mobs[1].add_subpath(num_mobs[1].points)
+        # num_mobs[1].add_subpath(num_mobs[1].get_points())
 
         self.play(
             LaggedStartMap(

@@ -230,7 +230,7 @@ class ThetaTGraph(Scene):
         graph = ParametricCurve(
             lambda t : 4*t*RIGHT + 2*smooth(t)*UP
         )
-        line = Line(graph.points[0], graph.points[-1], color = WHITE)
+        line = Line(graph.get_points()[0], graph.get_points()[-1], color = WHITE)
         q_mark = TextMobject("?")
         q_mark.next_to(Point(graph.get_center()), LEFT)
         stars = Stars(color = BLACK)
@@ -384,7 +384,7 @@ class ShortestPathProblem(Scene):
             end = 2*np.pi
         )
         path.scale(6/(2*np.pi))
-        path.shift(point_a - path.points[0])
+        path.shift(point_a - path.get_points()[0])
         path.set_color(RED)
         line = Line(point_a, point_b)
         words = TextMobject("Shortest path from $A$ to $B$")

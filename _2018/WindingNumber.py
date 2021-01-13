@@ -552,7 +552,7 @@ class WalkerAnimation(Animation):
 
     # Perhaps abstract this out into an "Animation updating from original object" class
     def interpolate_submobject(self, submobject, starting_submobject, alpha):
-        submobject.points = np.array(starting_submobject.points)
+        submobject.set_points(starting_submobject.get_points())
 
     def interpolate_mobject(self, alpha):
         Animation.interpolate_mobject(self, alpha)
@@ -1328,7 +1328,7 @@ class FuncRotater(Animation):
 
     # Perhaps abstract this out into an "Animation updating from original object" class
     def interpolate_submobject(self, submobject, starting_submobject, alpha):
-        submobject.points = np.array(starting_submobject.points)
+        submobject.set_points(starting_submobject.get_points())
 
     def interpolate_mobject(self, alpha):
         Animation.interpolate_mobject(self, alpha)
@@ -1632,12 +1632,12 @@ class HasItsLimitations(Scene):
         new_curved_arrow.init_points()
         new_curved_arrow.add_tip()
 
-        input_diff = input_dot.get_center() - curved_arrow.points[0]
-        output_diff = output_dot.get_center() - curved_arrow.points[-1]
+        input_diff = input_dot.get_center() - curved_arrow.get_points()[0]
+        output_diff = output_dot.get_center() - curved_arrow.get_points()[-1]
 
-        new_curved_arrow.shift((new_input_dot.get_center() - new_curved_arrow.points[0]) - input_diff)
+        new_curved_arrow.shift((new_input_dot.get_center() - new_curved_arrow.get_points()[0]) - input_diff)
 
-        new_output_dot = output_dot.copy().move_to(new_curved_arrow.points[-1] + output_diff)
+        new_output_dot = output_dot.copy().move_to(new_curved_arrow.get_points()[-1] + output_diff)
         new_output_label = output_label.copy().next_to(new_output_dot, UP + RIGHT)
 
         dot_objects = Group(input_dot, input_label, output_dot, output_label, curved_arrow)

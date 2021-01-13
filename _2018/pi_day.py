@@ -44,7 +44,7 @@ class LabelTracksLine(Animation):
 
     def interpolate_mobject(self,alpha):
         line_center = self.line.get_center()
-        line_end = self.line.points[-1]
+        line_end = self.line.get_points()[-1]
         v = line_end - line_center
         v = v/get_norm(v)
         w = np.array([-v[1],v[0],0])
@@ -220,7 +220,7 @@ def get_image(name):
 def get_circle_drawing_terms(radius = 1, positioning_func = lambda m : m.center()):
     circle = Circle(color = YELLOW, radius = 1.25)
     positioning_func(circle)
-    radius = Line(circle.get_center(), circle.points[0])
+    radius = Line(circle.get_center(), circle.get_points()[0])
     radius.set_color(WHITE)
     one = TexMobject("1")
     one.scale(0.75)
@@ -459,7 +459,7 @@ class HistoryOfOurPeople(TeacherStudentsScene):
 class TauFalls(Scene):
     def construct(self):
         tau = TauCreature()
-        bottom = np.min(tau.body.points[:,1])*UP
+        bottom = np.min(tau.body.get_points()[:,1])*UP
         angle = -0.15*TAU
         tau.generate_target()
         tau.target.change("angry")

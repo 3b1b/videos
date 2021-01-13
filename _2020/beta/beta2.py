@@ -358,7 +358,6 @@ class ShowInfiniteContinuum(Scene):
         # Arrows
         arrows = VGroup()
         arrow_template = Vector(DOWN)
-        arrow_template.lock_triangulation()
 
         def get_arrow(s, denom, arrow_template=arrow_template, axes=axes):
             arrow = arrow_template.copy()
@@ -2078,7 +2077,7 @@ class Thumbnail(Scene):
         black_arrow.set_color(BLACK)
         black_arrow.set_stroke(width=20)
 
-        arrow.points[0] += 0.025 * DR
+        arrow.get_points()[0] += 0.025 * DR
 
         # Coords
         coords = TexMobject("(x, y) = (0.31415\\dots, 0.27182\\dots)")

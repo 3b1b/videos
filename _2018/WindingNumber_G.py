@@ -1615,13 +1615,13 @@ class DirectionOfA2DFunctionAlongABoundary(InputOutputScene):
         rect_image = rect.copy()
         rect_image.match_background_image_file(colorings[1])
         def update_rect_image(rect_image):
-            rect_image.points = np.array(rect.points)
+            rect_image.set_points(rect.get_points())
             rect_image.apply_function(self.point_function)
         rect_image_update_anim = UpdateFromFunc(rect_image, update_rect_image)
 
 
         def get_input_point():
-            return rect.points[-1]
+            return rect.get_points()[-1]
 
         def get_output_coords():
             in_coords = input_plane.point_to_coords(get_input_point())
@@ -1639,7 +1639,7 @@ class DirectionOfA2DFunctionAlongABoundary(InputOutputScene):
             out_vect,
             lambda ov : ov.put_start_and_end_on(
                 output_plane.coords_to_point(0, 0),
-                rect_image.points[-1]
+                rect_image.get_points()[-1]
             ).set_color(get_color())
         )
 
@@ -1833,7 +1833,7 @@ class ForeverNarrowingLoop(InputOutputScene):
         circle_image.match_background_image_file(output_coloring)
 
         def update_circle_image(circle_image):
-            circle_image.points = circle.points
+            circle_image.set_points(circle.get_points())
             circle_image.apply_function(self.point_function)
             circle_image.make_smooth()
 
@@ -2234,7 +2234,7 @@ class TransitionFromPathsToBoundaries(ColorMappedObjectsScene):
             dot.move_to, path1.get_start()
         )
         for square in squares:
-            self.position_dot(square.points[0])
+            self.position_dot(square.get_points()[0])
             kwargs = {
                 "run_time" : 4,
                 "rate_func" : bezier([0, 0, 1, 1]),
@@ -2246,11 +2246,11 @@ class TransitionFromPathsToBoundaries(ColorMappedObjectsScene):
             )
             self.wait()
         self.play(
-            dot.move_to, joint_rect.points[0],
+            dot.move_to, joint_rect.get_points()[0],
             FadeOut(squares),
             FadeIn(joint_rect),
         )
-        self.position_dot(joint_rect.points[0])
+        self.position_dot(joint_rect.get_points()[0])
         self.play(
             Transform(left_square.label[0], joint_rect.label[0]),
             Transform(
@@ -2378,7 +2378,7 @@ class BreakDownLoopWithNonzeroWinding(TransitionFromPathsToBoundaries):
             for var in (x, y)
         ])
 
-        self.position_dot(joint_rect.points[0])
+        self.position_dot(joint_rect.get_points()[0])
         self.add(joint_rect)
         self.play(
             MoveAlongPath(dot, joint_rect, rate_func = bezier([0, 0, 1, 1])),
@@ -2492,8 +2492,8 @@ class MonomialTerm(PathContainingZero):
         out_loop.apply_function(self.point_function)
         out_loop.match_background_image_file(self.output_coloring)
 
-        get_in_point = lambda : loop.points[-1]
-        get_out_point = lambda : out_loop.points[-1]
+        get_in_point = lambda : loop.get_points()[-1]
+        get_out_point = lambda : out_loop.get_points()[-1]
         in_origin = self.input_plane.coords_to_point(0, 0)
         out_origin = self.output_plane.coords_to_point(0, 0)
 
@@ -2589,7 +2589,7 @@ class PolynomialTerms(MonomialTerm):
         out_line = line.copy()
         update_out_line = UpdateFromFunc(
             out_line, 
-            lambda m : m.set_points(line.points).apply_function(self.point_function),
+            lambda m : m.set_points(line.get_points()).apply_function(self.point_function),
         )
 
         self.play(
@@ -2610,7 +2610,7 @@ class PolynomialTerms(MonomialTerm):
 
         update_out_loop = UpdateFromFunc(
             out_loop,
-            lambda m : m.set_points(loop.points).apply_function(self.point_function)
+            lambda m : m.set_points(loop.get_points()).apply_function(self.point_function)
         )
 
         self.add(
@@ -2799,7 +2799,7 @@ class WindingNumbersInInputOutputContext(PathContainingZero):
         out_loop.match_background_image_file(self.output_coloring)
         update_out_loop = Mobject.add_updater(
             out_loop,
-            lambda m : m.set_points(in_loop.points).apply_function(self.point_function)
+            lambda m : m.set_points(in_loop.get_points()).apply_function(self.point_function)
         )
         # self.add(update_out_loop)
 

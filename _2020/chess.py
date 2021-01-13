@@ -183,7 +183,7 @@ class FlipCoin(Animation):
     def interpolate_mobject(self, alpha):
         coin = self.mobject
         for sm, start_sm in self.families:
-            sm.points[:] = start_sm.points
+            sm.match_points(start_sm)
         coin.rotate(alpha * PI, axis=self.axis)
         coin.shift(4 * alpha * (1 - alpha) * self.shift_vect)
         return coin
@@ -4018,9 +4018,9 @@ class FourDCubeColoringFromTrees(ThreeDScene):
         ])
         vertex_holder.center()
         if dim == 4:
-            vertex_holder.points[8:] *= 2
+            vertex_holder.get_points()[8:] *= 2
         vertex_holder.set_width(width)
-        return vertex_holder.points
+        return vertex_holder.get_points()
 
 
 class IntroduceHypercube(FourDCubeColoringFromTrees):

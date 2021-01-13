@@ -923,7 +923,6 @@ class VisualizeBayesRule(Scene):
 
         arrows = VGroup()
         arrow_template = Vector(DOWN)
-        arrow_template.lock_triangulation()
 
         def get_arrow(s, denom):
             arrow = arrow_template.copy()

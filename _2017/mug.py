@@ -42,7 +42,7 @@ class HappyHolidays(TeacherStudentsScene):
             vect = LEFT
         hat.set_fill(RED_D)
         hat.set_stroke(width=0)
-        hat[0].points = hat[0].points[8 * 4:]
+        hat[0].set_points(hat[0].get_points()[8 * 4:])
         hat[0].set_fill("#DDDDDD")
         hat[2].set_fill(WHITE)
         hat.add(hat[0])
@@ -188,7 +188,7 @@ class UtilitiesPuzzleScene(Scene):
         for i, edge in enumerate(bounding_edges):
             new_edge = edge.copy()
             if i%2 == 1:
-                new_edge.points = new_edge.points[::-1]
+                new_edge.set_points(new_edge.get_points()[::-1])
             region.append_vectorized_mobject(new_edge)
         region.set_stroke(width = 0)
         region.set_fill(WHITE, opacity = 1)
@@ -977,7 +977,7 @@ class NewRegionClosedOnlyForNodesWithEdges(UtilitiesPuzzleScene):
             self.get_line(2, 2),
         )
         lit_line = lines[2].copy()
-        lit_line.points = lit_line.points[::-1]
+        lit_line.set_points(lit_line.get_points()[::-1])
         lit_line.set_stroke(WHITE, 5)
 
         region = self.get_region(*lines)
@@ -1438,7 +1438,7 @@ class CyclesHaveAtLeastFour(UtilitiesPuzzleScene):
             self.get_line(1, 0, self.objects.get_corner(DOWN+LEFT)),
         ]
         for line in lines[1::2]:
-            line.points = line.points[::-1]
+            line.set_points(line.get_points()[::-1])
         arrows = VGroup()
         for vertex in vertices:
             vect = vertices.get_center() - vertex.get_center()

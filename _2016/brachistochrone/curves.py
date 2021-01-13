@@ -73,26 +73,26 @@ class SlideWordDownCycloid(Animation):
             if time < cut_offs[0]:
                 brightness = time/cut_offs[0]
                 letter.rgbas = brightness*np.ones(letter.rgbas.shape)
-                position = self.path.points[0]
+                position = self.path.get_points()[0]
                 angle = 0
             elif time < cut_offs[1]:
                 alpha = (time-cut_offs[0])/(cut_offs[1]-cut_offs[0])
                 angle = -rush_into(alpha)*np.pi/2
-                position = self.path.points[0]
+                position = self.path.get_points()[0]
             elif time < cut_offs[2]:
                 alpha = (time-cut_offs[1])/(cut_offs[2]-cut_offs[1])
                 index = int(alpha*self.path.get_num_points())
-                position = self.path.points[index]
+                position = self.path.get_points()[index]
                 try:
                     angle = angle_of_vector(
-                        self.path.points[index+1] - \
-                        self.path.points[index]
+                        self.path.get_points()[index+1] - \
+                        self.path.get_points()[index]
                     )
                 except:
                     angle = letter.angle
             else:
                 alpha = (time-cut_offs[2])/(1-cut_offs[2])
-                start = self.path.points[-1]
+                start = self.path.get_points()[-1]
                 end = end_letter.get_bottom()
                 position = interpolate(start, end, rush_from(alpha))
                 angle = 0
@@ -206,8 +206,8 @@ class PathSlidingScene(Scene):
 
     def add_cycloid_end_points(self):
         cycloid = Cycloid()
-        point_a = Dot(cycloid.points[0])
-        point_b = Dot(cycloid.points[-1])
+        point_a = Dot(cycloid.get_points()[0])
+        point_b = Dot(cycloid.get_points()[-1])
         A = TexMobject("A").next_to(point_a, LEFT)
         B = TexMobject("B").next_to(point_b, RIGHT)
         self.add(point_a, point_b, A, B)
@@ -221,8 +221,8 @@ class TryManyPaths(PathSlidingScene):
         self.slider = randy.copy()  
         randy.scale(RANDY_SCALE_FACTOR)
         paths = self.get_paths()
-        point_a = Dot(paths[0].points[0])
-        point_b = Dot(paths[0].points[-1])
+        point_a = Dot(paths[0].get_points()[0])
+        point_b = Dot(paths[0].get_points()[-1])
         A = TexMobject("A").next_to(point_a, LEFT)
         B = TexMobject("B").next_to(point_b, RIGHT)
         for point, tex in [(point_a, A), (point_b, B)]:
@@ -288,8 +288,8 @@ class TryManyPaths(PathSlidingScene):
         return paths + [cycloid]
 
     def align_paths(self, paths, target_path):
-        start = target_path.points[0]
-        end = target_path.points[-1]
+        start = target_path.get_points()[0]
+        end = target_path.get_points()[-1]
         for path in paths:
             path.put_start_and_end_on(start, end)
 
@@ -312,7 +312,7 @@ class NotTheCircle(PathSlidingScene):
         angle = 2*np.pi/3
         path = Arc(angle, radius = 3)
         path.set_color_by_gradient(RED_D, WHITE)
-        radius = Line(ORIGIN, path.points[0])
+        radius = Line(ORIGIN, path.get_points()[0])
         randy = Randolph()
         randy.scale(RANDY_SCALE_FACTOR)
         randy.shift(-randy.get_bottom())
@@ -582,8 +582,8 @@ class ThetaTInsteadOfXY(Scene):
     def construct(self):
         cycloid = Cycloid()
         index = cycloid.get_num_points()/3
-        point = cycloid.points[index]
-        vect = cycloid.points[index+1]-point
+        point = cycloid.get_points()[index]
+        vect = cycloid.get_points()[index+1]-point
         vect /= get_norm(vect)
         vect *= 3
         vect_mob = Vector(point, vect)

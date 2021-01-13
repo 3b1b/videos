@@ -238,7 +238,7 @@ class Person(VGroup):
                 self.pop_anim(anim)
 
     def get_center(self):
-        return self.center_point.points[0]
+        return self.center_point.get_points()[0]
 
 
 class DotPerson(Person):
@@ -3050,7 +3050,6 @@ class WideSpreadTesting(Scene):
 class VirusSpreading(Scene):
     def construct(self):
         virus = SVGMobject(file_name="virus")
-        virus.lock_triangulation()
         virus.set_fill(RED_E, 1)
         virus.set_stroke([RED, WHITE], width=0)
         height = 3

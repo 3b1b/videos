@@ -1412,7 +1412,7 @@ class WindmillScene(Scene):
         tips.set_stroke(BLACK, 1, background=True)
         for tip, a in zip(tips, np.linspace(0, 1, n_tips)):
             tip.shift(
-                windmill.point_from_proportion(a) - tip.points[0]
+                windmill.point_from_proportion(a) - tip.get_points()[0]
             )
         return tips
 
@@ -2972,7 +2972,7 @@ class Rotate180Argument(WindmillScene):
         self.wait()
 
     def show_parallel_lines(self):
-        points = self.points
+        points = self.get_points()
         rotation_label = self.rotation_label
         dots = self.dots
         windmill = self.windmill

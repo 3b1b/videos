@@ -41,7 +41,7 @@ class Block(Square):
         return label
 
     def get_points_defining_boundary(self):
-        return self.points
+        return self.get_points()
 
     def mass_to_color(self, mass):
         colors = [
@@ -564,7 +564,7 @@ class LightBouncing(MovingCameraScene):
             ),
             UpdateFromFunc(
                 dot,
-                lambda m: m.move_to(beam.points[-1])
+                lambda m: m.move_to(beam.get_points()[-1])
             ),
         )
 

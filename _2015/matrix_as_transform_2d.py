@@ -232,7 +232,7 @@ class ShowMatrixTransform(TransformScene2D):
         if show_matrix:
             self.add(matrix_mobject(matrix).to_corner(UP+LEFT))
         def func(mobject):
-            mobject.points[:, :2] = np.dot(mobject.points[:, :2], np.transpose(matrix))
+            mobject.get_points()[:, :2] = np.dot(mobject.get_points()[:, :2], np.transpose(matrix))
             return mobject
 
         self.wait()
@@ -251,7 +251,7 @@ class ShowMatrixTransform(TransformScene2D):
                 )
                 arrow.remove_tip()
                 new_arrow.remove_tip()
-                Mobject.align_data(arrow, new_arrow)
+                Mobject.align_data_and_family(arrow, new_arrow)
                 arrow.add_tip()
                 new_arrow.add_tip()
                 anims.append(Transform(arrow, new_arrow, **kwargs))
@@ -471,7 +471,7 @@ class ShowMatrixTransformWithDot(TransformScene2D):
         if show_matrix:
             self.add(matrix_mobject(matrix).to_corner(UP+LEFT))
         def func(mobject):
-            mobject.points[:, :2] = np.dot(mobject.points[:, :2], np.transpose(matrix))
+            mobject.get_points()[:, :2] = np.dot(mobject.get_points()[:, :2], np.transpose(matrix))
             return mobject
         dot = Dot((-1, 2, 0), color = "yellow")
         self.add(dot)
@@ -500,7 +500,7 @@ class ShowMatrixTransformWithDot(TransformScene2D):
                 )
                 arrow.remove_tip()
                 new_arrow.remove_tip()
-                Mobject.align_data(arrow, new_arrow)
+                Mobject.align_data_and_family(arrow, new_arrow)
                 arrow.add_tip()
                 new_arrow.add_tip()
                 anims.append(Transform(arrow, new_arrow, **kwargs))

@@ -70,10 +70,10 @@ class PiCreature(SVGMobject):
         if self.start_corner is not None:
             self.to_corner(self.start_corner)
 
-    def align_data(self, mobject):
+    def align_data_and_family(self, mobject):
         # This ensures that after a transform into a different mode,
         # the pi creatures mode will be updated appropriately
-        SVGMobject.align_data(self, mobject)
+        SVGMobject.align_data_and_family(self, mobject)
         if isinstance(mobject, PiCreature):
             self.mode = mobject.get_mode()
 
@@ -139,8 +139,10 @@ class PiCreature(SVGMobject):
 
     def set_color(self, color):
         self.body.set_fill(color)
-        self.color = color
         return self
+
+    def get_color(self):
+        return self.body.get_color()
 
     def change_mode(self, mode):
         new_self = self.__class__(mode=mode)
@@ -206,7 +208,7 @@ class PiCreature(SVGMobject):
         eye_bottom_y = eye_parts.get_y(DOWN)
 
         for eye_part in eye_parts.family_members_with_points():
-            eye_part.points[:, 1] = eye_bottom_y
+            eye_part.get_points()[:, 1] = eye_bottom_y
 
         return self
 
@@ -240,9 +242,10 @@ class PiCreature(SVGMobject):
 
     def shrug(self):
         self.change_mode("shruggie")
+        points = self.mouth.get_points()
         top_mouth_point, bottom_mouth_point = [
-            self.mouth.points[np.argmax(self.mouth.points[:, 1])],
-            self.mouth.points[np.argmin(self.mouth.points[:, 1])]
+            points[np.argmax(points[:, 1])],
+            points[np.argmin(points[:, 1])]
         ]
         self.look(top_mouth_point - bottom_mouth_point)
         return self

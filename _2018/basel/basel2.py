@@ -73,7 +73,7 @@ class AngleUpdater(ContinualAnimation):
         )
         new_arc.init_points()
         new_arc.move_arc_center_to(self.spotlight.get_source_point())
-        self.angle_arc.points = new_arc.points
+        self.angle_arc.set_points(new_arc.get_points())
         self.angle_arc.add_tip(
             tip_length = ARC_TIP_LENGTH,
             at_start = True, at_end = True
@@ -739,7 +739,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
 
     def draw_circle(self):
         semi_circle = Arc(angle = np.pi, radius = 2)
-        radius = Line(ORIGIN, semi_circle.points[0])
+        radius = Line(ORIGIN, semi_circle.get_points()[0])
         radius.set_color(BLUE)
         semi_circle.set_color(YELLOW)
 
@@ -749,7 +749,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
 
         decimal = DecimalNumber(0)
         def decimal_position_update_func(decimal):
-            decimal.move_to(semi_circle.points[-1])
+            decimal.move_to(semi_circle.get_points()[-1])
             decimal.shift(0.3*radius.get_vector())
 
         one = TexMobject("1")
@@ -1386,11 +1386,11 @@ class IntroduceScreen(Scene):
         rays.set_stroke(YELLOW, 1)
         max_angle = np.max([
             angle_of_vector(point - source_point)
-            for point in screen.points
+            for point in screen.get_points()
         ])
         min_angle = np.min([
             angle_of_vector(point - source_point)
-            for point in screen.points
+            for point in screen.get_points()
         ])
         for ray in rays:
             if min_angle <= ray.get_angle() <= max_angle:
@@ -2685,7 +2685,7 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
                 anims = []
                 if x > 0:
                     anims.append(FadeOut(triangle.copy()))
-                anims.append(GrowFromPoint(triangle, triangle.points[0]))
+                anims.append(GrowFromPoint(triangle, triangle.get_points()[0]))
                 self.play(*anims)
             self.play(FadeOut(triangle))
             pass

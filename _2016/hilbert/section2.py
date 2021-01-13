@@ -50,7 +50,7 @@ class HilbertCurveIsPerfect(Scene):
         )
         colored_curve.rgbas = sparce_lion.rgbas[closest_point_indices]
         line = Line(5*LEFT, 5*RIGHT)
-        Mobject.align_data(line, colored_curve)
+        Mobject.align_data_and_family(line, colored_curve)
         line.rgbas = colored_curve.rgbas
 
         self.add(lion)
@@ -246,7 +246,7 @@ class DefinitionOfCurve(Scene):
         fine_curve.replace(curve)
         dots = Mobject(*[
             Dot(
-                curve.points[n*curve.get_num_points()/15],
+                curve.get_points()[n*curve.get_num_points()/15],
                 color = YELLOW_C
             )
             for n in range(1, 15)
@@ -411,9 +411,9 @@ class PseudoHilbertCurveAsFunctionExample(Scene):
         for mob in curve, grid:
             mob.scale(0.7)
         index = int(0.3*line.get_num_points())
-        dot1 = Dot(line.points[index])
+        dot1 = Dot(line.get_points()[index])
         arrow1 = Arrow(arg, dot1, buff = 0.1)
-        dot2 = Dot(curve.points[index])
+        dot2 = Dot(curve.get_points()[index])
         arrow2 = Arrow(result.get_bottom(), dot2, buff = 0.1)
 
         self.add(phc)
@@ -487,7 +487,7 @@ class FormalDefinitionOfContinuity(Scene):
             lambda t : 5.5*RIGHT + UP - 2*spiril(1-t),
             density = 5*DEFAULT_POINT_DENSITY_1D,
         )
-        Mobject.align_data(self.spiril1, self.spiril2)
+        Mobject.align_data_and_family(self.spiril1, self.spiril2)
         self.output = Mobject(self.spiril1, self.spiril2)
         self.output.ingest_submobjects()
         self.output.set_color(GREEN_A)
@@ -522,10 +522,10 @@ class FormalDefinitionOfContinuity(Scene):
         output_points = Mobject(color = self.output_color)
         n = self.output.get_num_points()
         output_points.add_points(
-            self.output.points[int(min_input*n):int(max_input*n)]
+            self.output.get_points()[int(min_input*n):int(max_input*n)]
         )
-        output_center = output_points.points[int(0.5*output_points.get_num_points())]
-        max_distance = get_norm(output_center-output_points.points[-1])
+        output_center = output_points.get_points()[int(0.5*output_points.get_num_points())]
+        max_distance = get_norm(output_center-output_points.get_points()[-1])
         output_circle = Circle(
             radius = max_distance, 
             color = WHITE
@@ -572,8 +572,8 @@ class FormalDefinitionOfContinuity(Scene):
 
     def label_jump(self):
         jump_points = Mobject(
-            Point(self.spiril1.points[-1]),
-            Point(self.spiril2.points[0])
+            Point(self.spiril1.get_points()[-1]),
+            Point(self.spiril2.get_points()[0])
         )
         self.brace = Brace(jump_points, RIGHT)
         self.jump = TextMobject("Jump")
@@ -817,7 +817,7 @@ class WonderfulPropertyOfPseudoHilbertCurves(Scene):
         for num in range(2,9):
             new_curve = HilbertCurve(order = num)
             new_curve.scale(0.8)
-            new_dot = Dot(new_curve.points[int(val*new_curve.get_num_points())])
+            new_dot = Dot(new_curve.get_points()[int(val*new_curve.get_num_points())])
             new_num_str = TexMobject(str(num)).replace(num_str)
             self.play(
                 Transform(curve, new_curve),
@@ -874,7 +874,7 @@ class FollowManyPoints(Scene):
             new_curve = HilbertCurve(order = num)
             new_curve.scale(0.8)
             new_dots = Mobject(*[
-                Dot(new_curve.points[int(val*new_curve.get_num_points())])
+                Dot(new_curve.get_points()[int(val*new_curve.get_num_points())])
                 for val in vals
             ])
             self.play(
@@ -924,7 +924,7 @@ class FormalDefinitionOfHilbertCurve(Scene):
         for num in range(1, 9):
             new_curve = HilbertCurve(order = num)
             new_curve.scale(0.8)
-            new_dot = Dot(new_curve.points[int(val*new_curve.get_num_points())])
+            new_dot = Dot(new_curve.get_points()[int(val*new_curve.get_num_points())])
             self.play(
                 Transform(curve, new_curve),
                 Transform(dot, new_dot),

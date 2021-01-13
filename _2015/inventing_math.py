@@ -80,7 +80,7 @@ def convergent_sum():
 def Underbrace(left, right):
     result = TexMobject("\\Underbrace{%s}"%(14*"\\quad"))
     result.stretch_to_fit_width(right[0]-left[0])
-    result.shift(left - result.points[0])
+    result.shift(left - result.get_points()[0])
     return result
 
 def zero_to_one_interval():
@@ -154,14 +154,14 @@ class IntroduceDivergentSum(Scene):
             equation[0].get_boundary_point(DOWN+LEFT),
             equation[1].get_boundary_point(DOWN+RIGHT)
         ).shift(0.2*DOWN)
-        min_x_coord = min(equation[0].points[:,0])
+        min_x_coord = min(equation[0].get_points()[:,0])
         for x in range(NUM_WRITTEN_TERMS):
             self.add(equation[x])
             if x == 0:
                 self.wait(0.75)
                 continue
             brace.stretch_to_fit_width(
-                max(equation[x].points[:,0]) - min_x_coord
+                max(equation[x].get_points()[:,0]) - min_x_coord
             )
             brace.to_edge(LEFT, buff = FRAME_X_RADIUS+min_x_coord)
             if sum_value:
@@ -175,7 +175,7 @@ class IntroduceDivergentSum(Scene):
             *[equation[NUM_WRITTEN_TERMS + i] for i in range(3)]
         )
         end_brace = deepcopy(brace).stretch_to_fit_width(
-            max(ellipses.points[:,0])-min_x_coord
+            max(ellipses.get_points()[:,0])-min_x_coord
         ).to_edge(LEFT, buff = FRAME_X_RADIUS+min_x_coord)
         kwargs = {"run_time" : 5.0, "rate_func" : rush_into}        
         flip_through = FlipThroughNumbers(
@@ -209,7 +209,7 @@ class ClearlyNonsense(Scene):
         )
         right_arrow = Arrow(
             (FRAME_X_RADIUS-0.5)*RIGHT + DOWN, 
-            tail = (max(this_way.points[:,0]), -1, 0)
+            tail = (max(this_way.get_points()[:,0]), -1, 0)
         )
         how_here.set_color("red")
         neg_1_arrow.set_color("red")
@@ -418,7 +418,7 @@ class DotsGettingCloser(Scene):
         self.add(*dots)
         self.wait()
         for x in range(10):
-            distance = min(dots[1].points[:,0])-max(dots[0].points[:,0])
+            distance = min(dots[1].get_points()[:,0])-max(dots[0].get_points()[:,0])
             self.play(ApplyMethod(dots[0].shift, 0.5*distance*RIGHT))
 
 
@@ -757,7 +757,7 @@ class CircleZoomInOnOne(Scene):
         ])
         self.wait()
         for num in numbers[1:] + [text]:
-            curr_num.points = np.array(list(reversed(curr_num.points)))
+            curr_num.set_points(list(reversed(curr_num.get_points())))
             self.play(
                 ShowCreation(
                     curr_num, 
@@ -847,8 +847,8 @@ class DefineInfiniteSum(Scene):
             lambda mob : mob.scale(0.5).to_corner(UP+LEFT, buff = buff),
             expression            
         ))
-        bottom = (min(expression.points[:,1]) - buff)*UP
-        side   = (max(expression.points[:,0]) + buff)*RIGHT
+        bottom = (min(expression.get_points()[:,1]) - buff)*UP
+        side   = (max(expression.get_points()[:,0]) + buff)*RIGHT
         lines = [
             Line(FRAME_X_RADIUS*LEFT+bottom, side+bottom),
             Line(FRAME_Y_RADIUS*UP+side, side+bottom)
@@ -873,7 +873,7 @@ class DefineInfiniteSum(Scene):
         number_line = NumberLine()
         ex_point = 2*RIGHT
         ex = TexMobject("X").shift(ex_point + LEFT + UP)
-        arrow = Arrow(ex_point, tail = ex.points[-1]).nudge()
+        arrow = Arrow(ex_point, tail = ex.get_points()[-1]).nudge()
 
         for term, count in zip(terms, it.count()):
             self.add(term)
@@ -954,7 +954,7 @@ class SeekMoreGeneralTruths(Scene):
             for summand in summands
         ], size = "")
         sums.stretch_to_fit_height(FRAME_HEIGHT-1)
-        sums.shift((FRAME_Y_RADIUS-0.5-max(sums.points[:,1]))*UP)
+        sums.shift((FRAME_Y_RADIUS-0.5-max(sums.get_points()[:,1]))*UP)
 
         for qsum in sums.split():
             qsum.sort_points(lambda p : np.dot(p, DOWN+RIGHT))
@@ -1017,7 +1017,7 @@ class ChopIntervalInProportions(Scene):
                         brace.get_center()+0.3*UP,
                         tail = term.get_center()+0.5*DOWN
                     )
-                    arrow.points = np.array(list(reversed(arrow.points)))
+                    arrow.set_points(list(reversed(arrow.get_points()))
                     additional_anims = [ShowCreation(arrow)]
             if brace_to_replace is not None:
                 if mode == "p":
@@ -2025,7 +2025,7 @@ class PAdicMetric(Scene):
             ),
             DelayByOrder(Transform(
                 start,
-                Point(arrow.points[0]).set_color("white")
+                Point(arrow.get_points()[0]).set_color("white")
             ))
         )
         self.play(ShimmerIn(end))

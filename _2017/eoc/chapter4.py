@@ -216,7 +216,7 @@ class DampenedSpring(Scene):
             spring.scale(0.5)
             spring.rotate(np.pi/6, UP)
             spring.set_color(GREY)
-            spring.shift(-spring.points[0] + 3*LEFT)
+            spring.shift(-spring.get_points()[0] + 3*LEFT)
 
         moving_spring = compact_spring.copy()
 

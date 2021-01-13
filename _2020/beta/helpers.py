@@ -96,7 +96,6 @@ class Histogram(Group):
         labels = VGroup()
         for value in self.y_axis_numbers_to_show:
             label = Integer(value, unit="\\%")
-            fix_percent(label[-1][0])
             label.set_height(self.y_axis_label_height)
             label.next_to(axes.y_axis.n2p(0.01 * value), LEFT)
             labels.add(label)
@@ -127,18 +126,6 @@ class Histogram(Group):
 
 
 # Images of randomness
-
-def fix_percent(sym):
-    # Really need to make this unneeded...
-    new_sym = sym.copy()
-    path_lengths = [len(path) for path in sym.get_subpaths()]
-    n = sum(path_lengths[:2])
-    p1 = sym.points[:n]
-    p2 = sym.points[n:]
-    sym.points = p1
-    new_sym.points = p2
-    sym.add(new_sym)
-    sym.lock_triangulation()
 
 
 def get_random_process(choices, shuffle_time=2, total_time=3, change_rate=0.05,
@@ -238,7 +225,6 @@ def get_coin(symbol, color=None):
     label.move_to(circ)
     coin.add(circ, label)
     coin.symbol = symbol
-    coin.lock_triangulation()
     return coin
 
 
@@ -393,7 +379,6 @@ def close_off_graph(axes, graph):
     x_max = axes.x_axis.p2n(graph.get_end())
     graph.add_line_to(axes.c2p(x_max, 0))
     graph.add_line_to(axes.c2p(0, 0))
-    graph.lock_triangulation()
     return graph
 
 
@@ -403,7 +388,6 @@ def get_beta_graph(axes, n_plus, n_minus, **kwargs):
     close_off_graph(axes, graph)
     graph.set_stroke(BLUE, 2)
     graph.set_fill(BLUE_E, 1)
-    graph.lock_triangulation()
     return graph
 
 

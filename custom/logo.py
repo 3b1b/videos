@@ -174,9 +174,9 @@ class Logo(VMobject):
         ])
         for sector in new_pupil:
             sector.add_cubic_bezier_curve_to([
-                sector.points[-1],
+                sector.get_points()[-1],
                 *[center] * 3,
-                *[sector.points[0]] * 2
+                *[sector.get_points()[0]] * 2
             ])
         self.remove(pupil)
         self.add(new_pupil)
@@ -243,7 +243,7 @@ class LogoGeneration(LogoGenerationTemplate):
         for layer in layers:
             for spike in layer:
                 spike.save_state()
-                point = np.array(spike.points[0])
+                point = np.array(spike.get_points()[0])
                 angle = angle_of_vector(point)
                 spike.rotate(-angle + 90 * DEGREES)
                 spike.stretch_to_fit_width(0.2)
@@ -318,11 +318,11 @@ class SortingLogoGeneration(LogoGenerationTemplate):
                     spike.angle,
                     about_point=ORIGIN
                 )
-                # spike.points[1] = rotate_vector(
-                #     spike.points[1], TAU/28,
+                # spike.get_points()[1] = rotate_vector(
+                #     spike.get_points()[1], TAU/28,
                 # )
-                # spike.points[-1] = rotate_vector(
-                #     spike.points[-1], -TAU/28,
+                # spike.get_points()[-1] = rotate_vector(
+                #     spike.get_points()[-1], -TAU/28,
                 # )
 
         def get_spike_animation(spike, **kwargs):

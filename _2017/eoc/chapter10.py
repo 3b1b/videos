@@ -569,11 +569,11 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             mob.set_color(self.colors[0])
 
         def update_dot(dot):
-            dot.move_to(cosine_graph.points[-1])
+            dot.move_to(cosine_graph.get_points()[-1])
             return dot
 
         self.play(Write(cosine_label, run_time = 1))
-        self.play(dot.move_to, cosine_graph.points[0])
+        self.play(dot.move_to, cosine_graph.get_points()[0])
         self.play(
             ShowCreation(cosine_graph),
             UpdateFromFunc(dot, update_dot),

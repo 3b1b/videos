@@ -87,7 +87,7 @@ class CircleScene(Scene):
         self.circle_pieces = []
         self.smaller_circle_pieces = []
         for i in range(len(self.points)):
-            pp = self.points[i], self.points[(i+1)%len(self.points)]
+            pp = self.get_points()[i], self.get_points()[(i+1)%len(self.points)]
             transform = np.array([
                 [pp[0][0], pp[1][0], 0],
                 [pp[0][1], pp[1][1], 0],
@@ -148,7 +148,7 @@ class MoserPattern(CircleScene):
         self.add(n_equals)
         for n in range(1, len(radians)+1):
             self.add(*self.dots[:n])
-            self.add(*[Line(p[0], p[1]) for p in it.combinations(self.points[:n], 2)])
+            self.add(*[Line(p[0], p[1]) for p in it.combinations(self.get_points()[:n], 2)])
             tex_stuffs = [
                 TexMobject(str(moser_function(n))),
                 TexMobject(str(n)).shift(num.get_center())
@@ -357,7 +357,7 @@ class NonGeneralPosition(CircleScene):
         center_region = reduce(
             Region.intersect,
             [
-                HalfPlane((self.points[x], self.points[(x+3)%6]))
+                HalfPlane((self.get_points()[x], self.get_points()[(x+3)%6]))
                 for x in [0, 4, 2]#Ya know, trust it
             ]
         )
@@ -421,7 +421,7 @@ class GeneralPositionRule(Scene):
                 intersecting_lines = [
                     line.scale(0.3).set_color()
                     for i, j in pairs                    
-                    for line in [Line(cs.points[i], cs.points[j])]
+                    for line in [Line(cs.get_points()[i], cs.get_points()[j])]
                 ]
                 self.play(*[
                     ShowCreation(line, run_time = 1.0)
@@ -558,8 +558,8 @@ class IntersectionPointCorrespondances(CircleScene):
         indices.sort()
         CircleScene.__init__(self, radians, *args, **kwargs)
         intersection_point = intersection(
-            (self.points[indices[0]], self.points[indices[2]]),
-            (self.points[indices[1]], self.points[indices[3]])
+            (self.get_points()[indices[0]], self.get_points()[indices[2]]),
+            (self.get_points()[indices[1]], self.get_points()[indices[3]])
         )
         if len(intersection_point) == 2:
             intersection_point = list(intersection_point) + [0]
@@ -620,8 +620,8 @@ class LinesIntersectOutside(CircleScene):
         indices.sort()
         CircleScene.__init__(self, radians, *args, **kwargs)
         intersection_point = intersection(
-            (self.points[indices[0]], self.points[indices[1]]),
-            (self.points[indices[2]], self.points[indices[3]])
+            (self.get_points()[indices[0]], self.get_points()[indices[1]]),
+            (self.get_points()[indices[2]], self.get_points()[indices[3]])
         )
         intersection_point = tuple(list(intersection_point) + [0])
         intersection_dot = Dot(intersection_point)
@@ -636,8 +636,8 @@ class LinesIntersectOutside(CircleScene):
         ])
         self.play(*[
             Transform(
-                Line(self.points[indices[p0]], self.points[indices[p1]]), 
-                Line(self.points[indices[p0]], intersection_point))
+                Line(self.get_points()[indices[p0]], self.get_points()[indices[p1]]), 
+                Line(self.get_points()[indices[p0]], intersection_point))
             for p0, p1 in [(0, 1), (3, 2)]
         ] + [ShowCreation(intersection_dot)])
 
@@ -648,8 +648,8 @@ class QuadrupletsToIntersections(CircleScene):
         frame_time = 1.0
         for quad in quadruplets:
             intersection_dot = Dot(intersection(
-                (self.points[quad[0]], self.points[quad[2]]),
-                (self.points[quad[1]], self.points[quad[3]])
+                (self.get_points()[quad[0]], self.get_points()[quad[2]]),
+                (self.get_points()[quad[1]], self.get_points()[quad[3]])
             )).repeat(3)
             dot_quad = [deepcopy(self.dots[i]) for i in quad]
             for dot in dot_quad:
@@ -736,8 +736,8 @@ class IntersectCubeGraphEdges(GraphScene):
         self.remove(self.edges[0], self.edges[4])
         self.play(*[
             Transform(
-                Line(self.points[i], self.points[j]),
-                CurvedLine(self.points[i], self.points[j]),
+                Line(self.get_points()[i], self.get_points()[j]),
+                CurvedLine(self.get_points()[i], self.get_points()[j]),
             )
             for i, j in [(0, 1), (5, 4)]
         ])
@@ -939,14 +939,14 @@ class HowIntersectionChopsLine(CircleScene):
         indices.sort()
         CircleScene.__init__(self, radians, *args, **kwargs)
         intersection_point = intersection(
-            (self.points[indices[0]], self.points[indices[2]]),
-            (self.points[indices[1]], self.points[indices[3]])
+            (self.get_points()[indices[0]], self.get_points()[indices[2]]),
+            (self.get_points()[indices[1]], self.get_points()[indices[3]])
         )
         if len(intersection_point) == 2:
             intersection_point = list(intersection_point) + [0]
         pairs = list(it.combinations(list(range(len(radians))), 2))
         lines = [
-            Line(self.points[indices[p0]], self.points[indices[p1]])
+            Line(self.get_points()[indices[p0]], self.get_points()[indices[p1]])
             for p0, p1 in [(2, 0), (1, 3)]
         ]
         self.remove(*[

@@ -489,7 +489,7 @@ class RandomMapping(Scene):
         # for mob in grid, freq_line:
         #     indices = np.arange(mob.get_num_points())
         #     random.shuffle(indices)
-        #     mob.points = mob.points[indices]
+        #     mob.points = mob.get_points()[indices]
         stars = Stars(stroke_width = grid.stroke_width)
 
         self.add(grid)
@@ -615,7 +615,7 @@ class WeaveLineThroughPixels(Scene):
             fraction_along_curve = index_along_curve/float(curve.get_num_points())
             target = square.copy().center().scale(0.8/(2**order))
             line_index = int(fraction_along_curve*line.get_num_points())
-            target.shift(line.points[line_index])
+            target.shift(line.get_points()[line_index])
             targets.add(target)
 
 
@@ -766,7 +766,7 @@ class Order2PseudoHilbertCurve(Scene):
         last_curve = mini_curves[0]
         naive_curve = Mobject(last_curve)
         for mini_curve in mini_curves[1:]:
-            line = Line(last_curve.points[-1], mini_curve.points[0])
+            line = Line(last_curve.get_points()[-1], mini_curve.get_points()[0])
             naive_curve.add(line, mini_curve)
             last_curve = mini_curve
         naive_curve.ingest_submobjects()
@@ -986,7 +986,7 @@ class IncreasingResolutionWithSnakeCurve(Scene):
         start_dots, end_dots = [
             Mobject(*[
                 Dot(
-                    curve.points[int(x*curve.get_num_points())],
+                    curve.get_points()[int(x*curve.get_num_points())],
                     color = color
                 )
                 for x, color in [
@@ -1024,7 +1024,7 @@ class TrackSpecificCurvePoint(Scene):
         dot = Dot(UP)
         start_dot = Dot(0.1*LEFT)
         dots = [
-            Dot(curve.points[alpha*curve.get_num_points()])
+            Dot(curve.get_points()[alpha*curve.get_num_points()])
             for curve in curves
         ]
 

@@ -588,7 +588,7 @@ class FourierNDQ(FourierOfTrebleClef):
         path = VMobject()
         shape = TexMobject("NDQ")
         for sp in shape.family_members_with_points():
-            path.append_points(sp.points)
+            path.append_points(sp.get_points())
         return path
 
 

@@ -2345,7 +2345,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         )
 
         def center_of_mass(mob):
-            return np.apply_along_axis(np.mean, 0, mob.points)
+            return np.apply_along_axis(np.mean, 0, mob.get_points())
 
         movers = [A_group, B_group, C_group]
         A_ref, B_ref, C_ref = [g[4] for g in movers]

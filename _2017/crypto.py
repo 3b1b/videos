@@ -83,7 +83,7 @@ class TenDollarBill(VGroup):
         oval = Circle()
         oval.stretch_to_fit_height(0.7*self.height)
         oval.stretch_to_fit_width(0.4*self.height)
-        rect.add_subpath(oval.points)
+        rect.add_subpath(oval.get_points())
 
         pi = Randolph(
             mode = "pondering",
@@ -3079,9 +3079,9 @@ class IntroduceBlockChain(Scene):
                 0
             ])
             arrow = Arrow(end+LEFT, end, buff = SMALL_BUFF)
-            arrow.points[0] = block.get_right()
-            arrow.points[1] = block.get_right() + RIGHT
-            arrow.points[2] = end + LEFT + SMALL_BUFF*UP
+            arrow.get_points()[0] = block.get_right()
+            arrow.get_points()[1] = block.get_right() + RIGHT
+            arrow.get_points()[2] = end + LEFT + SMALL_BUFF*UP
             new_arrows.add(arrow)
 
         for i in range(3):
@@ -3272,10 +3272,10 @@ class DistributedBlockChainScene(DistributedLedgerScene):
                 b2.get_left(), b2.get_corner(UP+LEFT), 0.8
             )
             arrow.next_to(target_point, LEFT, 0.5*SMALL_BUFF)
-            arrow.points[0] = b1.get_right()
-            arrow.points[1] = b2.get_left()
-            arrow.points[2] = b1.get_corner(UP+RIGHT)
-            arrow.points[2] += SMALL_BUFF*LEFT
+            arrow.get_points()[0] = b1.get_right()
+            arrow.get_points()[1] = b2.get_left()
+            arrow.get_points()[2] = b1.get_corner(UP+RIGHT)
+            arrow.get_points()[2] += SMALL_BUFF*LEFT
             arrows.add(arrow)
         block_chain = VGroup(blocks, arrows)
         block_chain.blocks = blocks
@@ -4259,9 +4259,9 @@ class AliceRacesOtherMiners(DoubleSpendingAttack):
         block.target.shift(dist*DOWN)
         ff_head.target.shift(dist*UP)
         arrow.target[1].shift(dist*DOWN)
-        arrow.target.points[-2:] += dist*DOWN
+        arrow.target.get_points()[-2:] += dist*DOWN
         ff_arrow.target[1].shift(dist*UP)
-        ff_arrow.target.points[-2:] += dist*UP
+        ff_arrow.target.get_points()[-2:] += dist*UP
 
         self.play(
             Broadcast(block),
@@ -5003,7 +5003,7 @@ class ShowManyExchanges(Scene):
         currencies = self.get_currencies()
         for currency in it.chain(currencies, cryptocurrencies):
             currency.set_height(0.5)
-            currency.align_data(EthereumLogo())
+            currency.align_data_and_family(EthereumLogo())
         exchange = VGroup(*[
             Arrow(
                 p1, p2,

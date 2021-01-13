@@ -883,8 +883,8 @@ class StateGoal(PiCreatureScene, Scene):
 
         rects = VGroup()
         for curve in CurvesAsSubmobjects(gold):
-            p1 = curve.points[0]
-            p2 = curve.points[-1]
+            p1 = curve.get_points()[0]
+            p2 = curve.get_points()[-1]
             rect = Polygon(p1, p2, p2 + 2 * OUT, p1 + 2 * OUT)
             rect.match_style(gold)
             # rect.set_fill(GOLD)

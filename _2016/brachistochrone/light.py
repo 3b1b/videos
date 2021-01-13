@@ -29,7 +29,7 @@ class PhotonScene(Scene):
     def wavify(self, mobject):
         result = mobject.copy()
         result.ingest_submobjects()
-        tangent_vectors = result.points[1:]-result.points[:-1]
+        tangent_vectors = result.get_points()[1:]-result.get_points()[:-1]
         lengths = np.apply_along_axis(
             get_norm, 1, tangent_vectors
         )
@@ -42,7 +42,7 @@ class PhotonScene(Scene):
         nudge_sizes = 0.1*np.sin(2*np.pi*times)
         thick_nudge_sizes = nudge_sizes.repeat(3).reshape((len(nudge_sizes), 3))
         nudges = thick_nudge_sizes*normal_vectors
-        result.points[1:] += nudges
+        result.get_points()[1:] += nudges
         return result
 
 
@@ -292,7 +292,7 @@ class ShowMultiplePathsInWater(ShowMultiplePathsScene):
         straight = Line(self.start_point, self.end_point)
         slow = TextMobject("Slow")
         slow.rotate(np.arctan(straight.get_slope()))
-        slow.shift(straight.points[int(0.7*straight.get_num_points())])
+        slow.shift(straight.get_points()[int(0.7*straight.get_num_points())])
         slow.shift(0.5*DOWN)
         too_long = TextMobject("Too long")
         too_long.shift(UP)
@@ -367,7 +367,7 @@ class StraightLinesFastestInConstantMedium(PhotonScene):
             end = 2*np.pi
         )
         squaggle.shift(2*UP)
-        start, end = squaggle.points[0], squaggle.points[-1]
+        start, end = squaggle.get_points()[0], squaggle.get_points()[-1]
         line = Line(start, end)
         result = [squaggle, line]
         for mob in result:
@@ -465,12 +465,12 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
         top_dist.scale(0.5)
         a = 0.3
         n = top_line.get_num_points()
-        point = top_line.points[int(a*n)]
+        point = top_line.get_points()[int(a*n)]
         top_dist.next_to(Point(point), RIGHT, buff = 0.3)
         bottom_dist = TexMobject("\\sqrt{h_2^2+(w-x)^2}")
         bottom_dist.scale(0.5)
         n = bottom_line.get_num_points()
-        point = bottom_line.points[int((1-a)*n)]
+        point = bottom_line.get_points()[int((1-a)*n)]
         bottom_dist.next_to(Point(point), LEFT, buff = 1)
 
         end_top_line = Line(self.start_point, end_x)
@@ -494,7 +494,7 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
             axes, UP
         ))
         new_graph = graph.copy()
-        midpoint = new_graph.points[new_graph.get_num_points()/2]
+        midpoint = new_graph.get_points()[new_graph.get_num_points()/2]
         new_graph.filter_out(lambda p : p[0] < midpoint[0])
         new_graph.reverse_points()
         pairs_for_end_transform = [
@@ -549,7 +549,7 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
         step = self.frame_duration/run_time
         for a in smooth(np.arange(0, 1-step, step)):
             index = int(a*graph.get_num_points())
-            p1, p2 = graph.points[index], graph.points[index+1]
+            p1, p2 = graph.get_points()[index], graph.get_points()[index+1]
             line = Line(LEFT, RIGHT)
             line.rotate(angle_of_vector(p2-p1))
             line.shift(p1)
@@ -666,7 +666,7 @@ class SpringSetup(ShowMultiplePathsInWater):
             circle = Circle(color = next(colors))
             circle.reverse_points()
             circle.scale(spring.loop_radius)
-            circle.shift(spring.points[0])
+            circle.shift(spring.get_points()[0])
 
             self.play(Transform(circle, spring))
             self.remove(circle)

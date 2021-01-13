@@ -165,7 +165,7 @@ class HighlightReviewParts(Scene):
         inv_rects = VGroup()
         for rect in rects:
             fsr = FullScreenFadeRectangle()
-            fsr.append_points(rect.points[::-1])
+            fsr.append_points(rect.get_points()[::-1])
             inv_rects.add(fsr)
 
         inv_rects.set_fill(BLACK, 0.85)
@@ -1552,7 +1552,7 @@ class LookAtAllPossibleSuccessRates(Scene):
         graph = axes.get_graph(dist.pdf)
         graph.set_stroke(BLUE, 3)
         flat_graph = graph.copy()
-        flat_graph.points[:, 1] = axes.c2p(0, 0)[1]
+        flat_graph.get_points()[:, 1] = axes.c2p(0, 0)[1]
         flat_graph.set_stroke(YELLOW, 3)
 
         x_labels = axes.x_axis.numbers
@@ -1956,14 +1956,9 @@ class RunCarFactory(Scene):
         self.add(factory)
 
         # Dumb hack
-        l1 = Line(
-            factory[0].points[-200],
-            factory[0].points[-216],
-        )
-        l2 = Line(
-            factory[0].points[-300],
-            factory[0].points[-318],
-        )
+        points = factory[0].get_points()
+        l1 = Line(points[-200], points[-216])
+        l2 = Line(points[-300], points[-318])
         for line in l1, l2:
             square = Square()
             square.set_fill(BLACK, 1)

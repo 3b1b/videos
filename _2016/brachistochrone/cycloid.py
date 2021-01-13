@@ -63,7 +63,7 @@ class CycloidScene(Scene):
         self.play(
             RollAlongVector(
                 self.circle,
-                self.cycloid.points[-1]-self.cycloid.points[0],
+                self.cycloid.get_points()[-1]-self.cycloid.get_points()[0],
                 **kwargs
             ),
             ShowCreation(self.cycloid, **kwargs),
@@ -75,7 +75,7 @@ class CycloidScene(Scene):
         self.play(
             RollAlongVector(
                 self.circle,
-                self.cycloid.points[0]-self.cycloid.points[- 1],
+                self.cycloid.get_points()[0]-self.cycloid.get_points()[- 1],
                 rotation_vector = IN,
                 **kwargs
             ),
@@ -136,7 +136,7 @@ class IntroduceCycloid(CycloidScene):
         q_marks, arrows = result = [Mobject(), Mobject()]
         for x in range(n_marks):
             index = (x+0.5)*self.cycloid.get_num_points()/n_marks
-            q_point = self.cycloid.points[index]
+            q_point = self.cycloid.get_points()[index]
             vect = q_point-mob.get_center()
             start_point = circle.get_boundary_point(vect)
             arrow = Arrow(
@@ -178,7 +178,7 @@ class LeviSolution(CycloidScene):
 
     def init_points(self):
         index = int(self.cycloid_fraction*self.cycloid.get_num_points())
-        p_point = self.cycloid.points[index]
+        p_point = self.cycloid.get_points()[index]
         p_dot = Dot(p_point)
         p_label = TexMobject("P")
         p_label.next_to(p_dot, DOWN+LEFT)
@@ -557,7 +557,7 @@ class SlidingObject(CycloidScene, PathSlidingScene):
             end_time,
             RollAlongVector(
                 self.circle, 
-                self.cycloid.points[-1]-self.cycloid.points[0],
+                self.cycloid.get_points()[-1]-self.cycloid.get_points()[0],
                 run_time = end_time-start_time,
                 rate_func=linear
             )
