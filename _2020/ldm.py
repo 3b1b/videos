@@ -799,7 +799,7 @@ class EtoILimit(Scene):
 class ImaginaryInterestRates(Scene):
     def construct(self):
         plane = ComplexPlane(x_min=-20, x_max=20, y_min=-20, y_max=20)
-        plane.add_coordinates()
+        plane.add_coordinate_labels()
         circle = Circle(radius=1)
         circle.set_stroke(YELLOW, 1)
         self.add(plane, circle)
