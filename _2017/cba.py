@@ -87,7 +87,7 @@ class LayersOfAbstraction(EnumerableSaveScene):
             VGroup(Rectangle(height=1, width=5))
             for x in range(6)
         ])
-        layers.arrange_submobjects(UP, buff=0)
+        layers.arrange(UP, buff=0)
         layers.set_stroke(GREY, 2)
         layers.set_sheen(1, UL)
 

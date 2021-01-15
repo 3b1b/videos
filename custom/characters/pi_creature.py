@@ -64,6 +64,7 @@ class PiCreature(SVGMobject):
                 "plain.svg",
             )
         SVGMobject.__init__(self, file_name=svg_file, **kwargs)
+        self.refresh_triangulation()
 
         if self.flip_at_start:
             self.flip()

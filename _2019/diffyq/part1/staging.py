@@ -319,7 +319,7 @@ class ShowGravityAcceleration(Scene):
             # delta_y=2,
         )
         gravity_field.set_opacity(0.5)
-        gravity_field.sort_submobjects(
+        gravity_field.sort(
             lambda p: -p[1],
         )
         self.add(gravity_field)

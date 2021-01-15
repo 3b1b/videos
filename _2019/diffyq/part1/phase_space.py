@@ -323,7 +323,7 @@ class VisualizeStates(Scene):
         self.wait()
 
         # Show initial trajectory
-        state.pendulum.clear_updaters(recursive=False)
+        state.pendulum.clear_updaters(recurse=False)
         self.tie_dot_position_to_state(dot, state)
         state.pendulum.start_swinging()
         trajectory = self.get_evolving_trajectory(dot)
@@ -402,7 +402,7 @@ class VisualizeStates(Scene):
 
         # Continue on spiral
         sub_traj.resume_updating()
-        state.pendulum.clear_updaters(recursive=False)
+        state.pendulum.clear_updaters(recurse=False)
         state.pendulum.start_swinging()
         dot.clear_updaters()
         self.tie_dot_position_to_state(dot, state)
@@ -824,7 +824,7 @@ class IntroduceVectorField(VisualizeStates):
         state = self.state
         dot = self.state_dot
 
-        state.pendulum.clear_updaters(recursive=False)
+        state.pendulum.clear_updaters(recurse=False)
         self.tie_dot_position_to_state(dot, state)
         state.pendulum.start_swinging()
 

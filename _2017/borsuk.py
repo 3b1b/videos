@@ -1301,7 +1301,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
         enumeration_labels.to_edge(UP)
 
         for jewel_type, label in zip(jewel_types, enumeration_labels):
-            jewel_type.sort_submobjects()
+            jewel_type.sort()
          
             jewel_type.save_state()
             jewel_type.generate_target()
