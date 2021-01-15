@@ -26,6 +26,7 @@ tex:
   text_to_replace: "[tex_expression]"
 universal_import_line: "from manim_imports_ext import *"
 style:
+  font: "CMU Serif"
   background_color: "#000000"
 camera_qualities:
   low:
