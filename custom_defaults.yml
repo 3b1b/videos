@@ -1,45 +1,14 @@
 directories:
-  # Set this to true if you want the path to video files
-  # to match the directory structure of the path to the
-  # sourcecode generating that video
-  mirror_module_path: True
-  # Where should manim output video and image files?
   output: "/Users/grant/Dropbox/3Blue1Brown Team Folder/videos"
-  # If you want to use images, manim will look to these folders to find them
   raster_images: "/Users/grant/Dropbox/3Blue1Brown Team Folder/images/raster"
   vector_images: "/Users/grant/Dropbox/3Blue1Brown Team Folder/images/vector"
   pi_creature_images: "/Users/grant/Dropbox/3Blue1Brown Team Folder/images/pi_creature"
-  # If you want to use sounds, manim will look here to find it.
   sounds: "/Users/grant/Dropbox/3Blue1Brown Team Folder/sounds"
-  # Data to read in
   data: "/Users/grant/Dropbox/3Blue1Brown Team Folder/data"
-  # Manim often generates tex_files or other kinds of serialized data
-  # to keep from having to generate the same thing too many times.  By
-  # default, these will be stored at tempfile.gettempdir(), e.g. this might
-  # return whatever is at to the TMPDIR environment variable.  If you want to
-  # specify them elsewhere,
   temporary_storage: ""
-tex:
-  executable: "latex"
-  template_file: "tex_template.tex" 
-  intermediate_filetype: "dvi"
-  text_to_replace: "[tex_expression]"
 universal_import_line: "from manim_imports_ext import *"
 style:
   font: "CMU Serif"
   background_color: "#000000"
-window_position: UR
 camera_qualities:
-  low:
-    resolution: "854x480"
-    frame_rate: 15
-  medium:
-    resolution: "1280x720"
-    frame_rate: 30
-  high:
-    resolution: "1920x1080"
-    frame_rate: 30
-  ultra_high:
-    resolution: "3840x2160"
-    frame_rate: 60
   default_quality: "ultra_high"
