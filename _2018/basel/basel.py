@@ -272,7 +272,7 @@ class IntroScene(PiCreatureScene):
 
     def build_up_euler_sum(self):
 
-        self.euler_sum = TexMobject(
+        self.euler_sum = Tex(
            "1", "+", 
            "{1 \\over 4}", "+",
            "{1 \\over 9}", "+",
@@ -329,7 +329,7 @@ class IntroScene(PiCreatureScene):
                 
             self.wait()
 
-        self.q_marks = TextMobject("???").set_color(LIGHT_COLOR)
+        self.q_marks = TexText("???").set_color(LIGHT_COLOR)
         self.q_marks.move_to(self.partial_sum_decimal)
 
         self.play(
@@ -394,9 +394,9 @@ class IntroScene(PiCreatureScene):
         self.little_euler_terms = VGroup()
         for i in range(1,7):
             if i == 1:
-                term = TexMobject("1", fill_color = slab_colors[i-1])
+                term = Tex("1", fill_color = slab_colors[i-1])
             else:
-                term = TexMobject("{1\over " + str(i**2) + "}", fill_color = slab_colors[i-1])
+                term = Tex("{1\over " + str(i**2) + "}", fill_color = slab_colors[i-1])
             term.scale(0.4)
             self.little_euler_terms.add(term)
 
@@ -410,7 +410,7 @@ class IntroScene(PiCreatureScene):
             term.next_to(self.rects[i], UP)
             self.play(FadeIn(term))
 
-        self.ellipsis = TexMobject("\cdots")
+        self.ellipsis = Tex("\cdots")
         self.ellipsis.scale(0.4)
         for i in range(5, max_n1):
             
@@ -449,7 +449,7 @@ class IntroScene(PiCreatureScene):
 
     def show_pi_answer(self):
 
-        self.pi_answer = TexMobject("{\\pi^2 \\over 6}").set_color(YELLOW)
+        self.pi_answer = Tex("{\\pi^2 \\over 6}").set_color(YELLOW)
         self.pi_answer.move_to(self.partial_sum_decimal)
         self.pi_answer.next_to(self.euler_sum[-1], RIGHT, buff = 1,
             submobject_to_align = self.pi_answer[-2])
@@ -469,11 +469,11 @@ class IntroScene(PiCreatureScene):
             FadeOut(self.arrow)
         )
 
-        self.leibniz_sum = TexMobject(
+        self.leibniz_sum = Tex(
             "1-{1\\over 3}+{1\\over 5}-{1\\over 7}+{1\\over 9}-\\cdots",
             "=", "\quad\,\,{\\pi \\over 4}", arg_separator = " \\, ")
 
-        self.wallis_product = TexMobject(
+        self.wallis_product = Tex(
             "{2\\over 1} \\cdot {2\\over 3} \\cdot {4\\over 3} \\cdot {4\\over 5}" +
              "\\cdot {6\\over 5} \\cdot {6\\over 7} \\cdots",
              "=", "\quad\,\, {\\pi \\over 2}", arg_separator = " \\, ")
@@ -530,7 +530,7 @@ class IntroScene(PiCreatureScene):
             radius = 0.5, 
             stroke_width = 3.0
         )
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.next_to(q_circle)
 
         thought = Group(q_circle, q_mark)
@@ -622,7 +622,7 @@ class FirstLighthouseScene(PiCreatureScene):
         light_sources = []
 
 
-        euler_sum_above = TexMobject("1", "+", "{1\over 4}", 
+        euler_sum_above = Tex("1", "+", "{1\over 4}", 
             "+", "{1\over 9}", "+", "{1\over 16}", "+", "{1\over 25}", "+", "{1\over 36}")
 
         for (i,term) in zip(list(range(len(euler_sum_above))),euler_sum_above):
@@ -705,10 +705,10 @@ class FirstLighthouseScene(PiCreatureScene):
 
 
         # show limit value in light indicator and an equals sign
-        limit_reading = TexMobject("{\pi^2 \over 6}")
+        limit_reading = Tex("{\pi^2 \over 6}")
         limit_reading.move_to(light_indicator.reading)
 
-        equals_sign = TexMobject("=")
+        equals_sign = Tex("=")
         equals_sign.next_to(randy, UP)
         old_y = equals_sign.get_center()[1]
         new_y = euler_sum_above.get_center()[1]
@@ -1493,7 +1493,7 @@ class ScreenShapingScene(ThreeDScene):
         self.remove(self.spotlight)
 
 
-        reading1 = TexMobject("1")
+        reading1 = Tex("1")
         orientate(reading1)
 
         self.play(FadeIn(reading1))
@@ -1505,7 +1505,7 @@ class ScreenShapingScene(ThreeDScene):
             Transform(self.unit_screen, fourfold_screen)
         )
 
-        reading21 = TexMobject("{1\over 4}").scale(0.8)
+        reading21 = Tex("{1\over 4}").scale(0.8)
         orientate(reading21)
         reading22 = reading21.deepcopy()
         reading23 = reading21.deepcopy()
@@ -1554,7 +1554,7 @@ class ScreenShapingScene(ThreeDScene):
             Transform(self.unit_screen, ninefold_screen)
         )
 
-        reading31 = TexMobject("{1\over 9}").scale(0.8)
+        reading31 = Tex("{1\over 9}").scale(0.8)
         orientate(reading31)
         reading32 = reading31.deepcopy()
         reading33 = reading31.deepcopy()
@@ -1618,20 +1618,20 @@ class IndicatorScalingScene(Scene):
 
         indicator1 = LightIndicator(show_reading = False, color = LIGHT_COLOR)
         indicator1.set_intensity(unit_intensity)
-        reading1 = TexMobject("1")
+        reading1 = Tex("1")
         reading1.move_to(indicator1)
         
 
         indicator2 = LightIndicator(show_reading = False, color = LIGHT_COLOR)
         indicator2.shift(2*RIGHT)
         indicator2.set_intensity(unit_intensity/4)
-        reading2 = TexMobject("{1\over 4}").scale(0.8)
+        reading2 = Tex("{1\over 4}").scale(0.8)
         reading2.move_to(indicator2)
 
         indicator3 = LightIndicator(show_reading = False, color = LIGHT_COLOR)
         indicator3.shift(4*RIGHT)
         indicator3.set_intensity(unit_intensity/9)
-        reading3 = TexMobject("{1\over 9}").scale(0.8)
+        reading3 = Tex("{1\over 9}").scale(0.8)
         reading3.move_to(indicator3)
 
         
@@ -1710,7 +1710,7 @@ class BackToEulerSumScene(PiCreatureScene):
         )
 
 
-        euler_sum = TexMobject("1", "+", "{1\over 4}", 
+        euler_sum = Tex("1", "+", "{1\over 4}", 
             "+", "{1\over 9}", "+", "{1\over 16}", "+", "{1\over 25}", "+", "\cdots", " ")
         # the last entry is a dummy element which makes looping easier
         # used just for putting the fractions into the light indicators
@@ -1855,7 +1855,7 @@ class BackToEulerSumScene(PiCreatureScene):
                 show_reading = False
             )
         sum_indicator.set_intensity(intensities[0] * np.pi**2/6)
-        sum_indicator_reading = TexMobject("{\pi^2 \over 6}")
+        sum_indicator_reading = Tex("{\pi^2 \over 6}")
         sum_indicator_reading.set_fill(color = BLACK)
         sum_indicator_reading.set_height(0.8 * sum_indicator.get_height())
         sum_indicator.add(sum_indicator_reading)
@@ -2003,11 +2003,11 @@ class TwoLightSourcesScene(PiCreatureScene):
         line_h = VMobject()
         line_h.set_points_as_corners([H,C])
 
-        label_a = TexMobject("a")
+        label_a = Tex("a")
         label_a.next_to(line_a, LEFT, buff = 0.5)
-        label_b = TexMobject("b")
+        label_b = Tex("b")
         label_b.next_to(line_b, DOWN, buff = 0.5)
-        label_h = TexMobject("h")
+        label_h = Tex("h")
         label_h.next_to(line_h.get_center(), RIGHT, buff = 0.5)
 
         self.play(
@@ -2032,8 +2032,8 @@ class TwoLightSourcesScene(PiCreatureScene):
 
         # state the IPT
         theorem_location = np.array([3.,2.,0.])
-        theorem = TexMobject("{1\over a^2} + {1\over b^2} = {1\over h^2}")
-        theorem_name = TextMobject("Inverse Pythagorean Theorem")
+        theorem = Tex("{1\over a^2} + {1\over b^2} = {1\over h^2}")
+        theorem_name = TexText("Inverse Pythagorean Theorem")
         buffer = 1.2
         theorem_box = Rectangle(width = buffer*theorem.get_width(),
             height = buffer*theorem.get_height())
@@ -2094,11 +2094,11 @@ class IPTScene1(PiCreatureScene):
         length_c = line_c.get_length()
         length_h = line_h.get_length()
 
-        label_a = TexMobject("a")
+        label_a = Tex("a")
         label_a.next_to(line_a, LEFT, buff = 0.5)
-        label_b = TexMobject("b")
+        label_b = Tex("b")
         label_b.next_to(line_b, DOWN, buff = 0.5)
-        label_h = TexMobject("h")
+        label_h = Tex("h")
         label_h.next_to(line_h.get_center(), RIGHT, buff = 0.5)
 
         self.add_foreground_mobject(line_a)
@@ -2256,21 +2256,21 @@ class IPTScene2(Scene):
 
         indy1 = LightIndicator(color = LIGHT_COLOR, show_reading = False, radius = indy_radius)
         indy1.set_intensity(intensity1)
-        reading1 = TexMobject("{1\over a^2}").scale(formula_scale).move_to(indy1)
+        reading1 = Tex("{1\over a^2}").scale(formula_scale).move_to(indy1)
         indy1.add(reading1)
 
         indy2 = LightIndicator(color = LIGHT_COLOR, show_reading = False, radius = indy_radius)
         indy2.set_intensity(intensity2)
-        reading2 = TexMobject("{1\over b^2}").scale(formula_scale).move_to(indy2)
+        reading2 = Tex("{1\over b^2}").scale(formula_scale).move_to(indy2)
         indy2.add(reading2)
 
         indy3 = LightIndicator(color = LIGHT_COLOR, show_reading = False, radius = indy_radius)
         indy3.set_intensity(intensity1 + intensity2)
-        reading3 = TexMobject("{1\over h^2}").scale(formula_scale).move_to(indy3)
+        reading3 = Tex("{1\over h^2}").scale(formula_scale).move_to(indy3)
         indy3.add(reading3)
 
-        plus_sign = TexMobject("+").scale(formula_scale)
-        equals_sign = TexMobject("=").scale(formula_scale)
+        plus_sign = Tex("+").scale(formula_scale)
+        equals_sign = Tex("=").scale(formula_scale)
 
         plus_sign.next_to(indy1, RIGHT)
         indy2.next_to(plus_sign, RIGHT)
@@ -2292,7 +2292,7 @@ class IPTScene2(Scene):
         box = Rectangle(width = formula.get_width() * buffer,
             height = formula.get_height() * buffer)
         box.move_to(formula)
-        text = TextMobject("Inverse Pythagorean Theorem").scale(formula_scale)
+        text = TexText("Inverse Pythagorean Theorem").scale(formula_scale)
         text.next_to(box,UP)
         self.play(ShowCreation(box),Write(text))
 
@@ -2410,7 +2410,7 @@ class InscribedAngleScene(ThreeDScene):
         )
         arc_left.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_left = TexMobject("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_left = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_left.next_to(arc_left,LEFT)
         
 
@@ -2422,7 +2422,7 @@ class InscribedAngleScene(ThreeDScene):
         )
         arc_right.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_right = TexMobject("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_right = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_right.next_to(arc_right,RIGHT)
 
         self.play(
@@ -2450,7 +2450,7 @@ class InscribedAngleScene(ThreeDScene):
             buff = 0,
             color = WHITE,
         )
-        diameter_text = TexMobject("d").scale(TEX_SCALE)
+        diameter_text = Tex("d").scale(TEX_SCALE)
         diameter_text.next_to(diameter,RIGHT)
 
         self.play(
@@ -2460,7 +2460,7 @@ class InscribedAngleScene(ThreeDScene):
             FadeOut(self.ls0_dot)
         )
 
-        indicator_reading = TexMobject("{1\over d^2}").scale(TEX_SCALE)
+        indicator_reading = Tex("{1\over d^2}").scale(TEX_SCALE)
         indicator_reading.move_to(indicator)
         self.unzoomable_mobs.add(indicator_reading)
 
@@ -2469,7 +2469,7 @@ class InscribedAngleScene(ThreeDScene):
         )
 
         # replace d with its value
-        new_diameter_text = TexMobject("{2\over \pi}").scale(TEX_SCALE)
+        new_diameter_text = Tex("{2\over \pi}").scale(TEX_SCALE)
         new_diameter_text.color = LAKE_COLOR
         new_diameter_text.move_to(diameter_text)
         self.play(
@@ -2477,7 +2477,7 @@ class InscribedAngleScene(ThreeDScene):
         )
 
         # insert into indicator reading
-        new_reading = TexMobject("{\pi^2 \over 4}").scale(TEX_SCALE)
+        new_reading = Tex("{\pi^2 \over 4}").scale(TEX_SCALE)
         new_reading.move_to(indicator)
 
         self.play(
@@ -2824,7 +2824,7 @@ class InscribedAngleScene(ThreeDScene):
             stroke_color = ANGLE_COLOR1)
         inner_angle_arc.move_arc_center_to(inner_lake_center)
 
-        inner_label = TexMobject("\\theta", fill_color = ANGLE_COLOR1).scale(3).next_to(inner_angle_arc, LEFT, buff = -0.1)
+        inner_label = Tex("\\theta", fill_color = ANGLE_COLOR1).scale(3).next_to(inner_angle_arc, LEFT, buff = -0.1)
 
         self.play(
             ShowCreation(line1),
@@ -2848,7 +2848,7 @@ class InscribedAngleScene(ThreeDScene):
             stroke_color = ANGLE_COLOR2)
         outer_angle_arc.move_arc_center_to(outer_lake_center)
 
-        outer_label = TexMobject("{\\theta \over 2}", color = ANGLE_COLOR2).scale(2.5).move_to(outer_angle_arc)
+        outer_label = Tex("{\\theta \over 2}", color = ANGLE_COLOR2).scale(2.5).move_to(outer_angle_arc)
         outer_label.shift([-2,-1,0])
 
         self.play(
@@ -3182,7 +3182,7 @@ class PondScene(ThreeDScene):
         )
         arc_left.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_left = TexMobject("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_left = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_left.next_to(arc_left,LEFT)
         
 
@@ -3194,7 +3194,7 @@ class PondScene(ThreeDScene):
         )
         arc_right.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_right = TexMobject("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_right = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_right.next_to(arc_right,RIGHT)
 
         self.play(
@@ -3226,7 +3226,7 @@ class PondScene(ThreeDScene):
             buff = 0,
             color = WHITE,
         )
-        diameter_text = TexMobject("d").scale(TEX_SCALE)
+        diameter_text = Tex("d").scale(TEX_SCALE)
         diameter_text.next_to(diameter,RIGHT)
 
         self.play(
@@ -3236,7 +3236,7 @@ class PondScene(ThreeDScene):
             FadeOut(self.ls0_dot)
         )
 
-        indicator_reading = TexMobject("{1\over d^2}").scale(TEX_SCALE)
+        indicator_reading = Tex("{1\over d^2}").scale(TEX_SCALE)
         indicator_reading.move_to(indicator)
         self.unzoomable_mobs.add(indicator_reading)
 
@@ -3246,7 +3246,7 @@ class PondScene(ThreeDScene):
         self.add_foreground_mobject(indicator_reading)
 
         # replace d with its value
-        new_diameter_text = TexMobject("{2\over \pi}").scale(TEX_SCALE)
+        new_diameter_text = Tex("{2\over \pi}").scale(TEX_SCALE)
         new_diameter_text.color = LAKE_COLOR
         new_diameter_text.move_to(diameter_text)
         self.play(
@@ -3254,7 +3254,7 @@ class PondScene(ThreeDScene):
         )
 
         # insert into indicator reading
-        new_reading = TexMobject("{\pi^2 \over 4}").scale(TEX_SCALE)
+        new_reading = Tex("{\pi^2 \over 4}").scale(TEX_SCALE)
         new_reading.move_to(indicator)
 
         self.play(
@@ -3827,7 +3827,7 @@ class PondScene(ThreeDScene):
             FadeIn(self.number_line.tick_marks),
         )
 
-        two_sided_sum = TexMobject("\dots", "+", "{1\over (-11)^2}",\
+        two_sided_sum = Tex("\dots", "+", "{1\over (-11)^2}",\
          "+", "{1\over (-9)^2}", " + ", "{1\over (-7)^2}", " + ", "{1\over (-5)^2}", " + ", \
          "{1\over (-3)^2}", " + ", "{1\over (-1)^2}", " + ", "{1\over 1^2}", " + ", \
          "{1\over 3^2}", " + ", "{1\over 5^2}", " + ", "{1\over 7^2}", " + ", \
@@ -3874,7 +3874,7 @@ class PondScene(ThreeDScene):
         self.add_foreground_mobject(indicator_reading)
 
 
-        half_indicator_reading = TexMobject("{\pi^2 \over 8}").scale(TEX_SCALE)
+        half_indicator_reading = Tex("{\pi^2 \over 8}").scale(TEX_SCALE)
         half_indicator_reading.move_to(indicator)
 
         central_plus_sign = two_sided_sum[13]
@@ -3886,7 +3886,7 @@ class PondScene(ThreeDScene):
         )
 
 
-        equals_sign = TexMobject("=").scale(TEX_SCALE)
+        equals_sign = Tex("=").scale(TEX_SCALE)
         equals_sign.move_to(central_plus_sign)
         p = 2 * scale * LEFT + central_plus_sign.get_center()[1] * UP
 
@@ -3916,10 +3916,10 @@ class WaitScene(TeacherStudentsScene):
     def construct(self):
 
 
-        self.teacher_says(TexMobject("{1\over 1^2}+{1\over 3^2}+{1\over 5^2}+{1\over 7^2}+\dots = {\pi^2 \over 8}!"))
+        self.teacher_says(Tex("{1\over 1^2}+{1\over 3^2}+{1\over 5^2}+{1\over 7^2}+\dots = {\pi^2 \over 8}!"))
 
-        student_q = TextMobject("What about")
-        full_sum = TexMobject("{1\over 1^2}+{1\over 2^2}+{1\over 3^2}+{1\over 4^2}+\dots?")
+        student_q = TexText("What about")
+        full_sum = Tex("{1\over 1^2}+{1\over 2^2}+{1\over 3^2}+{1\over 4^2}+\dots?")
         full_sum.next_to(student_q,RIGHT)
         student_q.add(full_sum)
 
@@ -4000,10 +4000,10 @@ class FinalSumManipulationScene(PiCreatureScene):
         odd_terms = VMobject()
         for i in odd_range:
             if i == 1:
-                term = TexMobject("\phantom{+\,\,\,}{1\over " + str(i) + "^2}",
+                term = Tex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}",
                     fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
             else:
-                term = TexMobject("+\,\,\, {1\over " + str(i) + "^2}",
+                term = Tex("+\,\,\, {1\over " + str(i) + "^2}",
                     fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
 
             term.next_to(self.number_line1.number_to_point(i), DOWN, buff = 1.5)
@@ -4017,7 +4017,7 @@ class FinalSumManipulationScene(PiCreatureScene):
                 Write(term, run_time = switch_on_time)
             )
 
-        result1 = TexMobject("{\pi^2\over 8} =", fill_color = LIGHT_COLOR,
+        result1 = Tex("{\pi^2\over 8} =", fill_color = LIGHT_COLOR,
             stroke_color = LIGHT_COLOR)
         result1.next_to(self.number_line1, LEFT, buff = 0.5)
         result1.shift(0.87 * vertical_spacing)
@@ -4070,7 +4070,7 @@ class FinalSumManipulationScene(PiCreatureScene):
 
         even_terms = VMobject()
         for i in even_range:
-            term = TexMobject("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR)
+            term = Tex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR)
             term.next_to(self.number_line1.number_to_point(i), DOWN, buff = sum_vertical_spacing)
             even_terms.add(term)
 
@@ -4118,7 +4118,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         Q2 = interpolate(P1, P2, 0.8)
         quarter_arrow = Arrow(Q1, Q2,
             color = LIGHT_COLOR2)
-        quarter_label = TexMobject("\\times {1\over 4}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR2)
+        quarter_label = Tex("\\times {1\over 4}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR2)
         quarter_label.scale(0.7)
         quarter_label.next_to(quarter_arrow.get_center(), RIGHT)
 
@@ -4133,7 +4133,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         R2 = interpolate(P1, P3, 0.8)
         three_quarters_arrow = Arrow(R1, R2,
             color = LIGHT_COLOR)
-        three_quarters_label = TexMobject("\\times {3\over 4}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
+        three_quarters_label = Tex("\\times {3\over 4}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
         three_quarters_label.scale(0.7)
         three_quarters_label.next_to(three_quarters_arrow.get_center(), LEFT)
 
@@ -4144,7 +4144,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         self.wait()
 
         four_thirds_arrow = Arrow(R2, R1, color = LIGHT_COLOR)
-        four_thirds_label = TexMobject("\\times {4\over 3}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
+        four_thirds_label = Tex("\\times {4\over 3}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
         four_thirds_label.scale(0.7)
         four_thirds_label.next_to(four_thirds_arrow.get_center(), LEFT)
 
@@ -4167,11 +4167,11 @@ class FinalSumManipulationScene(PiCreatureScene):
         full_terms = VMobject()
         for i in range(1,8): #full_range:
             if i == 1:
-                term = TexMobject("\phantom{+\,\,\,}{1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = Tex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
             elif i == 7:
-                term = TexMobject("+\,\,\,\dots", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = Tex("+\,\,\,\dots", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
             else:
-                term = TexMobject("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = Tex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
 
             term.move_to(self.number_line2.number_to_point(i))
             full_terms.add(term)
@@ -4208,7 +4208,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         )
         self.wait()
 
-        final_result = TexMobject("{\pi^2 \over 6}=", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+        final_result = Tex("{\pi^2 \over 6}=", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
         final_result.next_to(arrow_copy, DOWN)
 
         self.play(
@@ -4336,13 +4336,13 @@ class ThumbnailScene(Scene):
 
     def construct(self):
 
-        equation = TexMobject("1+{1\over 4}+{1\over 9}+{1\over 16}+{1\over 25}+\dots")
+        equation = Tex("1+{1\over 4}+{1\over 9}+{1\over 16}+{1\over 25}+\dots")
         equation.scale(1.5)
         equation.move_to(1.5 * UP)
-        q_mark = TexMobject("=?", color = LIGHT_COLOR).scale(5)
+        q_mark = Tex("=?", color = LIGHT_COLOR).scale(5)
         q_mark.next_to(equation, DOWN, buff = 1.5)
         #equation.move_to(2 * UP)
-        #q_mark = TexMobject("={\pi^2\over 6}", color = LIGHT_COLOR).scale(3)
+        #q_mark = Tex("={\pi^2\over 6}", color = LIGHT_COLOR).scale(3)
         #q_mark.next_to(equation, DOWN, buff = 1)
 
         lake_radius = 6
@@ -4390,7 +4390,7 @@ class InfiniteCircleScene(PiCreatureScene):
 
         arrow = Arrow(ORIGIN, 2.4 * RIGHT)
         dot = Dot(color = BLUE).next_to(arrow)
-        ellipsis = TexMobject("\dots")
+        ellipsis = Tex("\dots")
 
         infsum = VGroup()
         infsum.add(ellipsis.copy())

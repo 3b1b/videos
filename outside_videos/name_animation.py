@@ -34,7 +34,7 @@ class ComplexMorphingNames(ComplexTransformationScene):
         self.add_transformable_plane()
         self.plane.fade()
 
-        name_mob = TextMobject(name)
+        name_mob = TexText(name)
         name_mob.set_width(4)
         name_mob.next_to(ORIGIN, UP, LARGE_BUFF)
         self.start_vect = name_mob.get_center()
@@ -83,7 +83,7 @@ class FlowNameAnimation(Scene):
     }
 
     def construct(self):
-        name_mob = TextMobject(self.patron_name)
+        name_mob = TexText(self.patron_name)
         name_mob.scale(2)
         max_width = FRAME_WIDTH - 2
         if name_mob.get_width() > max_width:
@@ -177,7 +177,7 @@ class RotatingNameLetters(NameAnimationScene):
 
         name = self.animated_name.replace(" ", "$\\cdot$")
         name += "$\\cdot$"
-        text_mob = TextMobject(name)
+        text_mob = TexText(name)
         text_mob.set_stroke(BLACK, 2, background=True)
         # for part in text_mob.get_parts_by_tex("$\\cdot$"):
         #     part.set_opacity(0)
@@ -201,7 +201,7 @@ class RotatingNameLetters(NameAnimationScene):
             radius * np.sin(angles[2]) * UP
 
         times_n_label = VGroup(
-            TexMobject("\\times"),
+            Tex("\\times"),
             Integer(1)
         )
         times_n_label.arrange(RIGHT)
@@ -237,7 +237,7 @@ class RotatingNameLetters(NameAnimationScene):
             times_n_label.submobjects[1] = new_n
             self.wait(0.5)
 
-        thank_you = TextMobject("Thank You!").next_to(randy, DOWN)
+        thank_you = TexText("Thank You!").next_to(randy, DOWN)
         new_randy = randy.copy()
         new_randy.change("hooray")
         new_randy.set_color(BLUE_E)
@@ -254,7 +254,7 @@ class ModularMultiplicationNameAnimation(RotatingNameLetters):
         max_width = FRAME_WIDTH - 4
         char_radius = 3
         index_radius = 2.5
-        text = TextMobject(self.animated_name)[0]
+        text = TexText(self.animated_name)[0]
         N = len(text)
 
         text.scale(2)
@@ -312,7 +312,7 @@ class ModularMultiplicationNameAnimation(RotatingNameLetters):
             lines.set_color(MAROON_B)
             lines.set_stroke(width=1)
 
-            label = VGroup(TexMobject("\\times"), Integer(k))
+            label = VGroup(Tex("\\times"), Integer(k))
             label.arrange(RIGHT, buff=SMALL_BUFF)
             label.scale(2)
             label.next_to(circle_text, UR)
@@ -361,7 +361,7 @@ class QuaternionNameAnimation(SpecialThreeDScene):
         surface.set_height(1.8 * self.R, stretch=True)
         surface.center()
         surface.set_fill(opacity=0.5)
-        name = TextMobject(self.name_text)
+        name = TexText(self.name_text)
         name.set_width(self.R * TAU - 1)
         max_height = 0.4 * surface.get_height()
         if name.get_height() > max_height:

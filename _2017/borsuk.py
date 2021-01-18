@@ -71,7 +71,7 @@ class FromPreviousTopologyVideo(Scene):
     def construct(self):
         rect = Rectangle(height = 9, width = 16)
         rect.set_height(FRAME_HEIGHT-2)
-        title = TextMobject("From original ``Who cares about topology'' video")
+        title = TexText("From original ``Who cares about topology'' video")
         title.to_edge(UP)
         rect.next_to(title, DOWN)
 
@@ -89,7 +89,7 @@ class CheckOutMathologer(PiCreatureScene):
     }
     def construct(self):
         logo = self.get_logo()
-        name = TextMobject(self.channel_name)
+        name = TexText(self.channel_name)
         name.next_to(logo, RIGHT)
 
         rect = Rectangle(height = 9, width = 16)
@@ -156,7 +156,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
         self.thieves = thieves
 
     def write_title(self):
-        title = TextMobject("Stolen necklace problem")
+        title = TexText("Stolen necklace problem")
         title.to_edge(UP)
         self.play(
             Write(title),
@@ -174,7 +174,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
 
         enumeration_labels = VGroup()
         for jewel_type in jewel_types:
-            num_mob = TexMobject(str(len(jewel_type)))
+            num_mob = Tex(str(len(jewel_type)))
             jewel_copy = jewel_type[0].copy().scale(2)
             jewel_copy.next_to(num_mob)
             label = VGroup(num_mob, jewel_copy)
@@ -242,7 +242,7 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
                 tex, jewel = label
                 num = int(tex.get_tex())
                 half_label = VGroup(
-                    TexMobject(str(num/2)),
+                    Tex(str(num/2)),
                     jewel.copy()
                 )
                 half_label.arrange()
@@ -466,9 +466,9 @@ class IntroduceStolenNecklaceProblem(ThreeDScene):
 class ThingToProve(PiCreatureScene):
     def construct(self):
         arrow = Arrow(UP, DOWN)
-        top_words = TextMobject("$n$ jewel types")
+        top_words = TexText("$n$ jewel types")
         top_words.next_to(arrow, UP)
-        bottom_words = TextMobject("""
+        bottom_words = TexText("""
             Fair division possible
             with $n$ cuts
         """)
@@ -506,7 +506,7 @@ class FiveJewelCase(IntroduceStolenNecklaceProblem):
 
     def add_title(self):
         n_cuts = len(self.jewel_colors)
-        title = TextMobject(
+        title = TexText(
             "%d jewel types, %d cuts"%(n_cuts, n_cuts)
         )
         title.to_edge(UP)
@@ -579,7 +579,7 @@ class WriteWords(Scene):
         "color" : WHITE,
     }
     def construct(self):
-        words = TextMobject(self.words)
+        words = TexText(self.words)
         words.set_color(self.color)
         words.set_width(FRAME_WIDTH-1)
         words.to_edge(DOWN)
@@ -670,7 +670,7 @@ class TemperaturePressurePlane(GraphScene):
     def add_example_coordinates(self):
         dot = Dot(self.coords_to_point(*self.example_point_coords))
         dot.set_color(YELLOW)
-        tex = TexMobject("(25^\\circ\\text{C}, 101 \\text{ kPa})")
+        tex = Tex("(25^\\circ\\text{C}, 101 \\text{ kPa})")
         tex.next_to(dot, UP+RIGHT, buff = SMALL_BUFF)
 
         self.play(ShowCreation(dot))
@@ -976,14 +976,14 @@ class MentionGenerality(TeacherStudentsScene, ThreeDScene):
         necklace = Necklace(width = FRAME_X_RADIUS)
         necklace.shift(2*UP)
         necklace.to_edge(RIGHT)
-        arrow = TexMobject("\\Leftrightarrow")
+        arrow = Tex("\\Leftrightarrow")
         arrow.scale(2)
         arrow.next_to(necklace, LEFT)
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.next_to(arrow, UP)
         arrow.add(q_marks)
 
-        formula = TexMobject("f(\\textbf{x}) = f(-\\textbf{x})")
+        formula = Tex("f(\\textbf{x}) = f(-\\textbf{x})")
         formula.next_to(self.get_students(), UP, buff = LARGE_BUFF)
         formula.to_edge(LEFT, buff = LARGE_BUFF)
 
@@ -1017,7 +1017,7 @@ class PointsIn3D(Scene):
         "colors" : color_gradient([GREEN, BLUE], 3),
     }
     def construct(self):
-        sphere_def = TextMobject(
+        sphere_def = TexText(
             "\\doublespacing Sphere in 3D: All", "$(x_1, x_2, x_3)$\\\\", 
             "such that", "$x_1^2 + x_2^2 + x_3^2 = 1$",
             alignment = "",
@@ -1028,7 +1028,7 @@ class PointsIn3D(Scene):
             for subindex, color in zip(subindex_list, colors):
                 sphere_def[index][subindex].set_color(color)
 
-        point_ex = TextMobject(
+        point_ex = TexText(
             "For example, ", 
             "(", "0.41", ", ", "-0.58", ", ", "0.71", ")",
             arg_separator = ""
@@ -1087,7 +1087,7 @@ class WritePointCoordinates(Scene):
         self.wait()
 
     def get_coords(self):
-        coords = TexMobject(
+        coords = Tex(
             "(", "0.41", ", ", "-0.58", ", ", "0.71", ")",
             arg_separator = ""
         )
@@ -1102,7 +1102,7 @@ class WriteAntipodalCoordinates(WritePointCoordinates):
     }
 
     def get_coords(self):
-        coords = TexMobject(
+        coords = Tex(
             "(", "-", "0.41", ", ", "+", "0.58", ", ", "-", "0.71", ")",
             arg_separator = ""
         )
@@ -1124,7 +1124,7 @@ class GeneralizeBorsukUlam(Scene):
     def construct(self):
         sphere_set = self.get_sphere_set()
         arrow = Arrow(LEFT, RIGHT)
-        f = TexMobject("f")
+        f = Tex("f")
         output_space = self.get_output_space()
         equation = self.get_equation()
 
@@ -1154,15 +1154,15 @@ class GeneralizeBorsukUlam(Scene):
         self.wait()
 
     def get_condition(self):
-        squares = list(map(TexMobject, [
+        squares = list(map(Tex, [
             "x_%d^2"%d
             for d in range(1, 1+self.n_dims)
         ]))
         for square, color in zip(squares, self.colors):
             square[0].set_color(color)
             square[-1].set_color(color)
-        plusses = [TexMobject("+") for x in range(self.n_dims-1)]
-        plusses += [TexMobject("=1")]
+        plusses = [Tex("+") for x in range(self.n_dims-1)]
+        plusses += [Tex("=1")]
         condition = VGroup(*it.chain(*list(zip(squares, plusses))))
         condition.arrange(RIGHT)
 
@@ -1173,7 +1173,7 @@ class GeneralizeBorsukUlam(Scene):
             ["x_%d"%d, ","]
             for d in range(1, self.n_dims)
         ]))
-        tup = TexMobject(*["("] + mid_parts + ["x_%d"%self.n_dims, ")"])
+        tup = Tex(*["("] + mid_parts + ["x_%d"%self.n_dims, ")"])
         for index, color in zip(it.count(1, 2), self.colors):
             tup[index].set_color(color)
 
@@ -1184,7 +1184,7 @@ class GeneralizeBorsukUlam(Scene):
             ["-", "x_%d"%d, ","]
             for d in range(1, self.n_dims)
         ]))
-        tup = TexMobject(*["("] + mid_parts + ["-", "x_%d"%self.n_dims, ")"])
+        tup = Tex(*["("] + mid_parts + ["-", "x_%d"%self.n_dims, ")"])
         for index, color in zip(it.count(1, 3), self.colors):
             tup[index].set_color(self.negative_color)
             tup[index+1].set_color(color)
@@ -1192,14 +1192,14 @@ class GeneralizeBorsukUlam(Scene):
         return tup
 
     def get_output_space(self):
-        return TextMobject("%dD space"%(self.n_dims-1))
+        return TexText("%dD space"%(self.n_dims-1))
         # n_dims = self.n_dims-1
         # colors = color_gradient(self.output_boundary_color, n_dims)
         # mid_parts = list(it.chain(*[
         #     ["y_%d"%d, ","]
         #     for d in range(1, n_dims)
         # ]))
-        # tup = TexMobject(*["("] + mid_parts + ["y_%d"%n_dims, ")"])
+        # tup = Tex(*["("] + mid_parts + ["y_%d"%n_dims, ")"])
         # for index, color in zip(it.count(1, 2), colors):
         #     tup[index].set_color(color)
 
@@ -1208,8 +1208,8 @@ class GeneralizeBorsukUlam(Scene):
     def get_equation(self):
         tup = self.get_tuple()
         neg_tup = self.get_negative_tuple()
-        f1, f2 = [TexMobject("f") for x in range(2)]
-        equals = TexMobject("=")
+        f1, f2 = [Tex("f") for x in range(2)]
+        equals = Tex("=")
         equation = VGroup(f1, tup, equals, f2, neg_tup)
         equation.arrange(RIGHT, buff = SMALL_BUFF)
 
@@ -1217,7 +1217,7 @@ class GeneralizeBorsukUlam(Scene):
 
     def get_sphere_set(self):
         tup = self.get_tuple()
-        such_that = TextMobject("such that")
+        such_that = TexText("such that")
         such_that.next_to(tup, RIGHT)
         condition = self.get_condition()
         condition.next_to(
@@ -1291,7 +1291,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
     def count_jewel_types(self, jewel_types):
         enumeration_labels = VGroup()
         for jewel_type in jewel_types:
-            num_mob = TexMobject(str(len(jewel_type)))
+            num_mob = Tex(str(len(jewel_type)))
             jewel_copy = jewel_type[0].copy()
             # jewel_copy.set_height(num_mob.get_height())
             jewel_copy.next_to(num_mob)
@@ -1374,7 +1374,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
         ])
 
         for group in segment_types:
-            length_tex = TexMobject("\\frac{%d}{%d}"%(
+            length_tex = Tex("\\frac{%d}{%d}"%(
                 len(group),
                 len(jewels)
              ))
@@ -1496,7 +1496,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
 
         weight_description = VGroup(*[
             VGroup(
-                TexMobject("\\frac{%d}{%d}"%(
+                Tex("\\frac{%d}{%d}"%(
                     len(jewel_type)/2, len(self.segments)
                 )),
                 Jewel(color = jewel_type[0].get_color())
@@ -1581,7 +1581,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
         ])
         self.wait()
 
-        words = TextMobject("Cut part way through segment")
+        words = TexText("Cut part way through segment")
         words.to_edge(RIGHT)
         words.shift(2*UP)
         arrow1 = Arrow(words.get_bottom(), left_segment.parts[0].get_right())
@@ -1597,7 +1597,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
         emerald_segments.target.move_to(2*DOWN)
         brace = Brace(emerald_segments.target, DOWN)
         label = VGroup(
-            TexMobject("5\\left( 1/18 \\right)"),
+            Tex("5\\left( 1/18 \\right)"),
             Jewel(color = self.jewel_colors[1])
         ).arrange()
         label.next_to(brace, DOWN)
@@ -1742,7 +1742,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
                 brace.concrete_label
             ).set_color(YELLOW)
 
-        words = TextMobject(
+        words = TexText(
             "1) Choose", "$a$, $b$, $c$", "so that", "$a+b+c = 1$"
         )
         words[1].set_color(YELLOW)
@@ -1774,7 +1774,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
         groups = self.get_groups()
         boxes, labels = self.get_boxes_and_labels()
         arrow_pairs, curr_arrows = self.get_choice_arrow_pairs(groups)
-        words = TextMobject("2) Make a binary choice for each segment")
+        words = TexText("2) Make a binary choice for each segment")
         words.next_to(
             self.choice_one_words, DOWN, 
             buff = MED_LARGE_BUFF, 
@@ -1840,7 +1840,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
             for vect in (UP, DOWN)
         ])
         labels = VGroup(*[
-            TextMobject(
+            TexText(
                 "Thief %d"%(i+1)
             ).next_to(box, UP, aligned_edge = RIGHT)
             for i, box in enumerate(boxes)
@@ -1848,7 +1848,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
         return boxes, labels
 
     def get_choice_arrow_pairs(self, groups):
-        arrow = TexMobject("\\uparrow")
+        arrow = Tex("\\uparrow")
         arrow_pairs = [
             [arrow.copy(), arrow.copy().rotate(np.pi)]
             for group in groups
@@ -1900,13 +1900,13 @@ class ChoicesForSpherePoint(GeneralizeBorsukUlam):
         self.show_binary_choices()
 
     def get_tuple(self):
-        tup = TexMobject("(x, y, z)")
+        tup = Tex("(x, y, z)")
         for i, color in zip([1, 3, 5], self.colors):
             tup[i].set_color(color)
         return tup
 
     def get_condition(self):
-        condition = TexMobject("x^2+y^2+z^2 = 1")
+        condition = Tex("x^2+y^2+z^2 = 1")
         for i, color in zip([0, 3, 6], self.colors):
             VGroup(*condition[i:i+2]).set_color(color)
         return condition
@@ -1921,7 +1921,7 @@ class ChoicesForSpherePoint(GeneralizeBorsukUlam):
         self.sphere_set = sphere_set
 
     def initialize_words(self):
-        choice_one_words = TextMobject(
+        choice_one_words = TexText(
             "1) Choose", "$x^2$, $y^2$, $z^2$",
             "so that", "$x^2+y^2+z^2 = 1$"
         )
@@ -1930,7 +1930,7 @@ class ChoicesForSpherePoint(GeneralizeBorsukUlam):
                 VGroup(*choice_one_words[i][j:j+2]).set_color(color)
         choice_one_words.to_corner(UP+LEFT)
 
-        choice_two_words = TextMobject(
+        choice_two_words = TexText(
             "2) Make a binary choice for each one"
         )
         choice_two_words.next_to(
@@ -1944,7 +1944,7 @@ class ChoicesForSpherePoint(GeneralizeBorsukUlam):
 
     def show_example_choices(self):
         choices = VGroup(*[
-            TexMobject(*tex).set_color(color)
+            Tex(*tex).set_color(color)
             for color, tex in zip(self.colors, [
                 ("x", "^2 = ", "1/6"),
                 ("y", "^2 = ", "1/3"),
@@ -1974,7 +1974,7 @@ class ChoicesForSpherePoint(GeneralizeBorsukUlam):
             var_tex = choice.expression_parts[0]
             frac_tex = choice.expression_parts[2]
             sqrts = VGroup(*[
-                TexMobject(
+                Tex(
                     var_tex + "=" + sign + \
                     "\\sqrt{%s}"%frac_tex)
                 for sign in ["+", "-"]
@@ -2017,7 +2017,7 @@ class NecklaceDivisionSphereAssociation(ChoicesInNecklaceCutting):
         self.ask_about_antipodal_pairs()
 
     def add_sphere_point_label(self):
-        label = TextMobject(
+        label = TexText(
             "$(x, y, z)$",
             "such that",
             "$x^2 + y^2 + z^2 = 1$"
@@ -2082,7 +2082,7 @@ class NecklaceDivisionSphereAssociation(ChoicesInNecklaceCutting):
         for brace, denom, group, final_choice in quads:
             char = brace.label.args[0][1]
             choices = [
-                TexMobject(
+                Tex(
                     char, "=", sign, "\\sqrt{\\frac{1}{%d}}"%denom
                 )
                 for sign in ("+", "-")
@@ -2120,10 +2120,10 @@ class NecklaceDivisionSphereAssociation(ChoicesInNecklaceCutting):
             ]
 
     def ask_about_antipodal_pairs(self):
-        question = TextMobject("What do antipodal points signify?")
+        question = TexText("What do antipodal points signify?")
         question.move_to(self.sphere_point_label, LEFT)
         question.set_color(MAROON_B)
-        antipodal_tex = TexMobject(
+        antipodal_tex = Tex(
             "(x, y, z) \\rightarrow (-x, -y, -z)"
         )
         antipodal_tex.next_to(question, DOWN, aligned_edge = LEFT)
@@ -2224,7 +2224,7 @@ class TotalLengthOfEachJewelEquals(NecklaceDivisionSphereAssociation, ThreeDScen
                 group.target.arrange(buff = SMALL_BUFF)
                 brace = Brace(group.target, UP)
                 label = VGroup(
-                    TextMobject("Thief %d"%(i+1)),
+                    TexText("Thief %d"%(i+1)),
                     Jewel(color = group[0].get_color())
                 )
                 label.arrange()
@@ -2234,7 +2234,7 @@ class TotalLengthOfEachJewelEquals(NecklaceDivisionSphereAssociation, ThreeDScen
                 full_group.next_to(ORIGIN, vect, buff = MED_LARGE_BUFF)
                 full_group.to_edge(UP)
                 labels.add(VGroup(brace, label))
-            equals = TexMobject("=")
+            equals = Tex("=")
             equals.next_to(monochrome_groups[0].target, RIGHT)
             labels[-1].add(equals)
 
@@ -2350,7 +2350,7 @@ class ShowFunctionDiagram(TotalLengthOfEachJewelEquals, ReconfigurableScene):
             self.wait()
 
     def add_sphere_arrow(self):
-        up_down_arrow = TexMobject("\\updownarrow")
+        up_down_arrow = Tex("\\updownarrow")
         up_down_arrow.scale(1.5)
         up_down_arrow.set_color(YELLOW)
         up_down_arrow.next_to(self.necklace, DOWN, buff = LARGE_BUFF)
@@ -2384,7 +2384,7 @@ class JewelPairPlane(GraphScene):
         self.setup_axes()
         point = self.coords_to_point(4, 5)
         dot = Dot(point, color = WHITE)
-        coord_pair = TexMobject(
+        coord_pair = Tex(
             "\\big(", 
             "\\text{Thief %d }"%self.thief_number, "X", ",", 
             "\\text{Thief %d }"%self.thief_number, "X", 
@@ -2404,7 +2404,7 @@ class JewelPairPlane(GraphScene):
 
 class WhatThisMappingActuallyLooksLikeWords(Scene):
     def construct(self):
-        words = TextMobject("What this mapping actually looks like")
+        words = TexText("What this mapping actually looks like")
         words.set_width(FRAME_WIDTH-1)
         words.to_edge(DOWN)
 
@@ -2445,7 +2445,7 @@ class FourDBorsukUlam(GeneralizeBorsukUlam, PiCreatureScene):
     def construct(self):
         sphere_set = self.get_sphere_set()
         arrow = Arrow(LEFT, RIGHT)
-        f = TexMobject("f")
+        f = Tex("f")
         output_space = self.get_output_space()
         equation = self.get_equation()
 
@@ -2508,7 +2508,7 @@ class CircleToSphereToQMarks(Scene):
         shapes = [
             Circle(color = BLUE, radius = 0.5), 
             VectorizedPoint(), 
-            TexMobject("???")
+            Tex("???")
         ]
         for d, mode, shape in zip(it.count(2), modes, shapes):
             randy = Randolph(mode = mode)
@@ -2519,7 +2519,7 @@ class CircleToSphereToQMarks(Scene):
             )
             bubble.pin_to(randy)
             bubble.position_mobject_inside(shape)
-            title = TextMobject("%dD"%d)
+            title = TexText("%dD"%d)
             title.next_to(randy, UP)
             arrow = Arrow(LEFT, RIGHT)
             arrow.next_to(randy.get_corner(UP+RIGHT))
@@ -2572,7 +2572,7 @@ class MortyLookingAtRectangle(Scene):
     def construct(self):
         morty = Mortimer()
         morty.to_corner(DOWN+RIGHT)
-        url = TextMobject("www.thegreatcoursesplus.com/3blue1brown")
+        url = TexText("www.thegreatcoursesplus.com/3blue1brown")
         url.scale(0.75)
         url.to_corner(UP+LEFT)
         rect = Rectangle(height = 9, width = 16)

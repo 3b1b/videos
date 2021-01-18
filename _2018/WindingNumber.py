@@ -143,7 +143,7 @@ class EquationSolver1d(GraphScene, ZoomedScene):
             self.add(target_line_object)
 
             target_label_num = 0 if self.show_y_as_deviation else self.targetY
-            target_line_label = TexMobject("y = " + str(target_label_num))
+            target_line_label = Tex("y = " + str(target_label_num))
             target_line_label.next_to(target_line_object.get_left(), UP + RIGHT)
             self.add(target_line_label)
 
@@ -178,7 +178,7 @@ class EquationSolver1d(GraphScene, ZoomedScene):
         else:
             y_bias = 0
 
-        startBrace = TexMobject("|", stroke_width = 10) #TexMobject("[") # Not using [ and ] because they end up crossing over 
+        startBrace = Tex("|", stroke_width = 10) #Tex("[") # Not using [ and ] because they end up crossing over 
         startBrace.set_color(lower_color)
         endBrace = startBrace.copy().stretch(-1, 0)
         endBrace.set_color(upper_color)
@@ -342,12 +342,12 @@ class EquationSolver1d(GraphScene, ZoomedScene):
             # We only actually add this much later
             midXPoint = Dot(self.coords_to_point(midX, self.base_line_y) + OUT, color = sign_color)
 
-            x_guess_label_caption = TextMobject("New guess: x = ", fill_color = midColor)
+            x_guess_label_caption = TexText("New guess: x = ", fill_color = midColor)
             x_guess_label_num = DecimalNumber(midX, fill_color = midColor)
             x_guess_label_num.move_to(0.9 * FRAME_Y_RADIUS * DOWN)
             x_guess_label_caption.next_to(x_guess_label_num, LEFT)
             x_guess_label = Group(x_guess_label_caption, x_guess_label_num)
-            y_guess_label_caption = TextMobject(", y = ", fill_color = midColor)
+            y_guess_label_caption = TexText(", y = ", fill_color = midColor)
             y_guess_label_num = DecimalNumber(midY, fill_color = sign_color)
             y_guess_label_caption.next_to(x_guess_label_num, RIGHT)
             y_guess_label_num.next_to(y_guess_label_caption, RIGHT)
@@ -1072,7 +1072,7 @@ class EquationSolver2d(ColorMappedObjectsScene):
         linger_rate = squish_rate_func(lambda t : t, 0, 
                         fdiv(run_time_base, run_time_with_lingering))
 
-        cursor_base = TextMobject("?")
+        cursor_base = TexText("?")
         cursor_base.scale(2)
 
         # Helper functions for manual_wind_override
@@ -1382,7 +1382,7 @@ class OdometerScene(ColorMappedObjectsScene):
         num_display = DecimalNumber(0, include_background_rectangle = False)
         num_display.move_to(2 * DOWN)
 
-        caption = TextMobject("turns clockwise")
+        caption = TexText("turns clockwise")
         caption.next_to(num_display, DOWN)
         self.add(caption)
 
@@ -1461,15 +1461,15 @@ class RewriteEquation(Scene):
     def construct(self):
         # Can maybe use get_center() to perfectly center Groups before and after transform
 
-        f_old = TexMobject("f(x)")
+        f_old = Tex("f(x)")
         f_new = f_old.copy()
-        equals_old = TexMobject("=")
+        equals_old = Tex("=")
         equals_old_2 = equals_old.copy()
         equals_new = equals_old.copy()
-        g_old = TexMobject("g(x)")
+        g_old = Tex("g(x)")
         g_new = g_old.copy()
-        minus_new = TexMobject("-")
-        zero_new = TexMobject("0")
+        minus_new = Tex("-")
+        zero_new = Tex("0")
         f_old.next_to(equals_old, LEFT)
         g_old.next_to(equals_old, RIGHT)
         minus_new.next_to(g_new, LEFT)
@@ -1477,12 +1477,12 @@ class RewriteEquation(Scene):
         equals_new.next_to(g_new, RIGHT)
         zero_new.next_to(equals_new, RIGHT)
 
-        # where_old = TextMobject("Where does ")
+        # where_old = TexText("Where does ")
         # where_old.next_to(f_old, LEFT)
         # where_new = where_old.copy()
         # where_new.next_to(f_new, LEFT)
         
-        # qmark_old = TextMobject("?")
+        # qmark_old = TexText("?")
         # qmark_old.next_to(g_old, RIGHT)
         # qmark_new = qmark_old.copy()
         # qmark_new.next_to(zero_new, RIGHT)
@@ -1522,8 +1522,8 @@ class SignsExplanation(Scene):
                 buff = 0,
                 color = negative_color)
 
-        plus_sign = TexMobject("+", fill_color = positive_color)
-        minus_sign = TexMobject("-", fill_color = negative_color)
+        plus_sign = Tex("+", fill_color = positive_color)
+        minus_sign = Tex("-", fill_color = negative_color)
 
         plus_sign.next_to(pos_arrow, UP)
         minus_sign.next_to(neg_arrow, UP)
@@ -1597,7 +1597,7 @@ class HasItsLimitations(Scene):
         # play well with z coordinates.
         
         input_dot = Dot(base_point + DOT_Z, color = dot_color)
-        input_label = TextMobject("Input", fill_color = dot_color)
+        input_label = TexText("Input", fill_color = dot_color)
         input_label.next_to(input_dot, UP + LEFT)
         input_label.add_background_rectangle()
         self.add_foreground_mobject(input_dot)
@@ -1612,7 +1612,7 @@ class HasItsLimitations(Scene):
         self.play(ShowCreation(curved_arrow))
 
         output_dot = Dot(base_point + 2 * RIGHT + DOT_Z, color = dot_color)
-        output_label = TextMobject("Output", fill_color = dot_color)
+        output_label = TexText("Output", fill_color = dot_color)
         output_label.next_to(output_dot, UP + RIGHT)
         output_label.add_background_rectangle()
 
@@ -1830,7 +1830,7 @@ class DemonstrateColorMapping(ColorMappedObjectsScene):
         ColorMappedObjectsScene.construct(self)
 
         # Doing this in Premiere now instead
-        # output_plane_label = TextMobject("Output Plane", color = WHITE)
+        # output_plane_label = TexText("Output Plane", color = WHITE)
         # output_plane_label.move_to(3 * UP)
         # self.add_foreground_mobject(output_plane_label)
 
@@ -2286,8 +2286,8 @@ class DiffOdometer(OdometerScene):
 
 class CombineInterval(Scene):
     def construct(self):
-        plus_sign = TexMobject("+", fill_color = positive_color)
-        minus_sign = TexMobject("-", fill_color = negative_color)
+        plus_sign = Tex("+", fill_color = positive_color)
+        minus_sign = Tex("-", fill_color = negative_color)
 
         left_point = Dot(LEFT, color = positive_color)
         right_point = Dot(RIGHT, color = negative_color)
@@ -2307,7 +2307,7 @@ class CombineInterval(Scene):
 
         mid_point = Dot(ORIGIN, color = GREY)
 
-        question_mark = TexMobject("?", fill_color = GREY)
+        question_mark = Tex("?", fill_color = GREY)
         plus_sign_copy = plus_sign.copy()
         minus_sign_copy = minus_sign.copy()
         new_signs = Group(question_mark, plus_sign_copy, minus_sign_copy)
@@ -2340,7 +2340,7 @@ class CombineInterval(Scene):
 
 class CombineInterval2(Scene):
     def construct(self):
-        plus_sign = TexMobject("+", fill_color = positive_color)
+        plus_sign = Tex("+", fill_color = positive_color)
 
         def make_interval(a, b):
             line = Line(a, b)
@@ -2697,7 +2697,7 @@ class PiWalkerFancyLineTest(PiWalkerExamplePlaneFunc):
 
 class NotFoundScene(Scene):
     def construct(self):
-        self.add(TextMobject("SCENE NOT FOUND!"))
+        self.add(TexText("SCENE NOT FOUND!"))
         self.wait()
 
 criticalStripYScale = 100
@@ -2718,7 +2718,7 @@ class TopLabel(Scene):
         "text" : "Text"
     }
     def construct(self):
-        label = TextMobject(self.text)
+        label = TexText(self.text)
         label.move_to(3 * UP)
         self.add(label)
         self.wait()

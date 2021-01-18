@@ -10,7 +10,7 @@ class Student(PiCreature):
         "name" : "Student"
     }
     def get_name(self):
-        text = TextMobject(self.name)
+        text = TexText(self.name)
         text.add_background_rectangle()
         text.next_to(self, DOWN)
         return text
@@ -30,7 +30,7 @@ class CSStudent(Student):
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "``Such",
             "axioms,", 
             "together with other unmotivated definitions,", 
@@ -44,7 +44,7 @@ class OpeningQuote(Scene):
         words.set_color_by_tex("difficult for the uninitiated", RED)
         words.set_width(FRAME_WIDTH - 2)
         words.to_edge(UP)
-        author = TextMobject("-Vladmir Arnold")
+        author = TexText("-Vladmir Arnold")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = MED_LARGE_BUFF)
 
@@ -57,7 +57,7 @@ class RevisitOriginalQuestion(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Let's revisit ", "\\\\ an old question")
         self.random_blink()
-        question = TextMobject("What are ", "vectors", "?", arg_separator = "")
+        question = TexText("What are ", "vectors", "?", arg_separator = "")
         question.set_color_by_tex("vectors", YELLOW)
         self.teacher_says(
             question,
@@ -92,7 +92,7 @@ class WhatIsA2DVector(LinearTransformationScene):
         coords.add_to_back(BackgroundRectangle(coords))
         coords.next_to(v.get_end(), RIGHT)
 
-        two_d_vector = TextMobject(
+        two_d_vector = TexText(
             "``Two-dimensional ", "vector", "''", 
             arg_separator = ""
         )
@@ -129,7 +129,7 @@ class WhatIsA2DVector(LinearTransformationScene):
             for mob in v, coords:
                 mob.target = mob.copy()
                 mob.target.scale(0.7)
-            arrow = TexMobject("\\Rightarrow")
+            arrow = Tex("\\Rightarrow")
             group = VGroup(v.target, arrow, coords.target)
             group.arrange(vect)
             student.bubble.add_content(group)
@@ -154,7 +154,7 @@ class WhatIsA2DVector(LinearTransformationScene):
             group.arrange(DOWN)
             group.set_height(coords.get_height())
             group.next_to(student.arrow, RIGHT)
-            student.q_marks = TexMobject("???")
+            student.q_marks = Tex("???")
             student.q_marks.set_color_by_gradient(BLUE, YELLOW)
             student.q_marks.next_to(student.arrow, LEFT)
             anims += [
@@ -197,7 +197,7 @@ class WhatIsA2DVector(LinearTransformationScene):
 
 class HigherDimensionalVectorsNumerically(Scene):
     def construct(self):
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             "4D vector", 
             "5D vector", 
             "100D vector", 
@@ -284,7 +284,7 @@ class AskAbout4DPhysicsStudent(Scene):
         thought_mobs = []
         for i, mob in enumerate([line, square, cube, hyper_cube]):
             mob.set_height(2)            
-            tex = TexMobject("%dD"%(i+1))
+            tex = Tex("%dD"%(i+1))
             tex.next_to(mob, UP)
             group = VGroup(mob, tex)
             thought_mobs.append(group)
@@ -326,7 +326,7 @@ class ManyCoordinateSystems(LinearTransformationScene):
         },
     }
     def construct(self):
-        self.title = TextMobject("Many possible coordinate systems")
+        self.title = TexText("Many possible coordinate systems")
         self.title.add_background_rectangle()
         self.title.to_edge(UP)
         self.add_foreground_mobject(self.title)
@@ -408,7 +408,7 @@ class DeterminantAndEigenvectorDontCare(LinearTransformationScene):
         },
     }
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Determinant", 
             "and", 
             "eigenvectors", 
@@ -430,12 +430,12 @@ class DeterminantAndEigenvectorDontCare(LinearTransformationScene):
             fill_opacity = 1,
         )
         blob.shift(2*LEFT+UP)
-        det_label = TexMobject("A")
+        det_label = Tex("A")
         det_label = VGroup(
             VectorizedPoint(det_label.get_left()).set_color(WHITE),
             det_label
         )
-        det_label_target = TexMobject("\\det(M)\\cdot", "A")
+        det_label_target = Tex("\\det(M)\\cdot", "A")
         det_label.move_to(blob)
 
         eigenvectors = VGroup(*self.get_eigenvectors())
@@ -543,7 +543,7 @@ class WhatIsSpace(Scene):
 
 class OtherVectorishThings(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "There are other\\\\",
             "vectorish",
             "things..."
@@ -554,7 +554,7 @@ class OtherVectorishThings(TeacherStudentsScene):
             "pondering", "raise_right_hand", "erm"
         )
         self.random_blink(2)
-        words = TextMobject("...like", "functions")
+        words = TexText("...like", "functions")
         words.set_color_by_tex("functions", PINK)
         self.teacher_says(words)
         self.change_student_modes(*["pondering"]*3)
@@ -631,7 +631,7 @@ class FunctionGraphScene(Scene):
     def label_graph(self, function_graph, name = None, animate = True):
         index = self.get_index(function_graph)
         name = name or self.default_names[index%len(self.default_names)]
-        label = TexMobject("%s(x)"%name)
+        label = Tex("%s(x)"%name)
         label.next_to(function_graph.point_from_proportion(1), RIGHT)
         label.shift_onto_screen()
         label.set_color(function_graph.get_color())
@@ -701,7 +701,7 @@ class AddTwoFunctions(FunctionGraphScene):
         self.show_line_addition(f_lines[1], g_lines[1], sum_lines[1])
         self.wait()
 
-        final_sum_def = self.get_sum_definition(TexMobject("x"))
+        final_sum_def = self.get_sum_definition(Tex("x"))
         final_sum_def.to_corner(UP+LEFT)
         self.play(
             FadeOut(rect),
@@ -715,13 +715,13 @@ class AddTwoFunctions(FunctionGraphScene):
 
     def get_sum_definition(self, input_mob):
         result = VGroup(*it.chain(
-            TexMobject("(f+g)", "("), 
+            Tex("(f+g)", "("), 
             [input_mob.copy()],
-            TexMobject(")", "=", "f("),
+            Tex(")", "=", "f("),
             [input_mob.copy()],
-            TexMobject(")", "+", "g("),
+            Tex(")", "+", "g("),
             [input_mob.copy()],
-            TexMobject(")")
+            Tex(")")
         ))
         result.arrange()
         result[0].set_color(self.graph_colors[2])
@@ -772,7 +772,7 @@ class AddVectorsCoordinateByCoordinate(Scene):
             v.get_entries()[0].set_color(X_COLOR)
             v.get_entries()[1].set_color(Y_COLOR)
             v.get_entries()[2].set_color(Z_COLOR)
-        plus, equals = TexMobject("+=")
+        plus, equals = Tex("+=")
         VGroup(v1, plus, v2, equals, v_sum).arrange()
 
         self.add(v1, plus, v2)
@@ -804,7 +804,7 @@ class ScaleFunction(FunctionGraphScene):
         two_f_label = self.label_graph(scaled_graph, "(2f)", animate = False)
         self.remove(two_f_label)
 
-        title = TexMobject("(2f)", "(x) = 2", "f", "(x)")
+        title = Tex("(2f)", "(x) = 2", "f", "(x)")
         title.set_color_by_tex("(2f)", scaled_graph.get_color())
         title.set_color_by_tex("f", graph.get_color())
         title.next_to(ORIGIN, LEFT, buff = MED_SMALL_BUFF)
@@ -821,7 +821,7 @@ class ScaleFunction(FunctionGraphScene):
 
 class ScaleVectorByCoordinates(Scene):
     def construct(self):
-        two, dot, equals = TexMobject("2 \\cdot =")
+        two, dot, equals = Tex("2 \\cdot =")
         v1 = Matrix(list("xyz"))
         v1.get_entries().set_color_by_gradient(X_COLOR, Y_COLOR, Z_COLOR)
         v2 = v1.copy()
@@ -874,8 +874,8 @@ class FromVectorsToFunctions(VectorScene):
     def show_vector_addition_and_scaling(self):
         self.plane = self.add_plane()
         self.plane.fade()
-        words1 = TextMobject("Vector", "addition")
-        words2 = TextMobject("Vector", "scaling")
+        words1 = TexText("Vector", "addition")
+        words2 = TexText("Vector", "scaling")
         for words in words1, words2:
             words.add_background_rectangle()
             words.next_to(ORIGIN, RIGHT).to_edge(UP)
@@ -908,12 +908,12 @@ class FromVectorsToFunctions(VectorScene):
         fg_scene_config = FunctionGraphScene.CONFIG
         graph = FunctionGraph(fg_scene_config["default_functions"][0])
         graph.set_color(MAROON_B)
-        func_tex = TexMobject("\\frac{1}{9}x^3 - x")
+        func_tex = Tex("\\frac{1}{9}x^3 - x")
         func_tex.set_color(graph.get_color())
         func_tex.shift(5.5*RIGHT+2*UP)
 
         words = VGroup(*[
-            TextMobject(words).add_background_rectangle()
+            TexText(words).add_background_rectangle()
             for words in [
                 "Linear transformations",
                 "Null space",
@@ -955,11 +955,11 @@ class FromVectorsToFunctions(VectorScene):
         new_graph.set_color(YELLOW)
 
         func_tex.generate_target()
-        lp, rp = parens = TexMobject("()")
+        lp, rp = parens = Tex("()")
         parens.set_height(func_tex.get_height())
-        L, equals = TexMobject("L=")
-        deriv = TexMobject("\\frac{d}{dx}")
-        new_func = TexMobject("\\frac{1}{3}x^2 - 1")
+        L, equals = Tex("L=")
+        deriv = Tex("\\frac{d}{dx}")
+        new_func = Tex("\\frac{1}{3}x^2 - 1")
         new_func.set_color(YELLOW)
         group = VGroup(
             L, lp, func_tex.target, rp,
@@ -1046,7 +1046,7 @@ class ManyFunctions(FunctionGraphScene):
 
 class WhatDoesLinearMean(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject("""
+        words = TexText("""
             What does it mean for
             a transformation of functions
             to be """, "linear", "?",
@@ -1078,7 +1078,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         self.add_words()
 
     def write_properties(self):
-        title = TextMobject(
+        title = TexText(
             "Formal definition of linearity"
         )
         title.add_background_rectangle()
@@ -1101,7 +1101,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         ]
         properties = VGroup()
         for tex_set in tex_sets:
-            words = VGroup(*it.starmap(TexMobject, tex_set))
+            words = VGroup(*it.starmap(Tex, tex_set))
             for word in words:
                 word.set_color_by_tex(v_tex, YELLOW)
                 word.set_color_by_tex(w_tex, MAROON_B)
@@ -1137,7 +1137,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         v_label_copy, w_label_copy = v_label.copy(), w_label.copy()
         v_label_copy.generate_target()
         w_label_copy.generate_target()
-        plus = TexMobject("+")
+        plus = Tex("+")
         vw_label = VGroup(v_label_copy.target, plus, w_label_copy.target)
         vw_label.arrange()
         vw_label.next_to(vw_sum.get_end(), RIGHT)
@@ -1158,9 +1158,9 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
             w_group.restore,
         )
         vw_label.target = VGroup(
-            TexMobject("L(").scale(0.8),
+            Tex("L(").scale(0.8),
             vw_label_copy,
-            TexMobject(")").scale(0.8),
+            Tex(")").scale(0.8),
         )
         vw_label.target.arrange()
         for mob in vw_label, vw_label.target:
@@ -1178,7 +1178,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         v_label_copy, w_label_copy = v_label.copy(), w_label.copy()
         v_label_copy.generate_target()
         w_label_copy.generate_target()
-        equals, plus = TexMobject("=+")
+        equals, plus = Tex("=+")
         rhs = VGroup(
             equals, v_label_copy.target,
             plus, w_label_copy.target
@@ -1211,7 +1211,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         v = self.add_vector([1, -1])
         v_label = self.add_transformable_label(v, "v")
         scaled_v = v.copy().scale(2)
-        scaled_v_label = TexMobject("c\\vec{\\textbf{v}}")
+        scaled_v_label = Tex("c\\vec{\\textbf{v}}")
         scaled_v_label.set_color(YELLOW)
         scaled_v_label[0].set_color(GREEN)
         scaled_v_label.next_to(scaled_v.get_end(), RIGHT)
@@ -1228,7 +1228,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
 
         transform = self.get_matrix_transformation(self.t_matrix)
         point = transform(scaled_v.get_end())
-        scaled_v_label.target = TexMobject("L(", "c", "\\vec{\\textbf{v}}", ")")
+        scaled_v_label.target = Tex("L(", "c", "\\vec{\\textbf{v}}", ")")
         scaled_v_label.target.set_color_by_tex("c", GREEN)
         scaled_v_label.target.set_color_by_tex("\\vec{\\textbf{v}}", YELLOW)
         scaled_v_label.target.scale(0.8)
@@ -1241,7 +1241,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         )
         self.wait()
         scaled_v = v.copy().scale(2)
-        rhs = TexMobject("=", "c", "L(", "\\vec{\\textbf{v}}", ")")
+        rhs = Tex("=", "c", "L(", "\\vec{\\textbf{v}}", ")")
         rhs.set_color_by_tex("c", GREEN)
         rhs.set_color_by_tex("\\vec{\\textbf{v}}", YELLOW)
         rhs.add_background_rectangle()
@@ -1264,7 +1264,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
         bubble.set_fill(BLACK, opacity = 0.8)
         bubble.shift(0.5*DOWN)
         VGroup(randy, bubble).to_edge(RIGHT, buff = 0)
-        words = TextMobject(
+        words = TexText(
             "Linear transformations\\\\",
             "preserve",
             "addition and \\\\ scalar multiplication",
@@ -1284,7 +1284,7 @@ class FormalDefinitionOfLinear(LinearTransformationScene):
 
 class CalcStudentsKnowThatDerivIsLinear(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             """Calc students subconsciously
             know that""",
             "$\\dfrac{d}{dx}$",
@@ -1305,17 +1305,17 @@ class DerivativeIsLinear(Scene):
         self.show_scaling()
 
     def add_title(self):
-        title = TextMobject("Derivative is linear")
+        title = TexText("Derivative is linear")
         title.to_edge(UP)
         self.add(title)
 
     def prepare_text(self):
         v_tex, w_tex = ["\\vec{\\textbf{%s}}"%s for s in "vw"]
-        additivity = TexMobject(
+        additivity = Tex(
             "L(", v_tex, "+", w_tex, ")", "=",
             "L(", v_tex, ")+L(", w_tex, ")"
         )
-        scaling = TexMobject(
+        scaling = Tex(
             "L(", "c", v_tex, ")=", "c", "L(", v_tex, ")"
         )
         for text in additivity, scaling:
@@ -1324,12 +1324,12 @@ class DerivativeIsLinear(Scene):
             text.set_color_by_tex("c", GREEN)
 
         deriv_tex = "\\dfrac{d}{dx}"
-        deriv_additivity = TexMobject(
+        deriv_additivity = Tex(
             deriv_tex, "(", "x^3", "+", "x^2", ")", "=",
             deriv_tex, "(", "x^3", ")", "+", 
             deriv_tex, "(", "x^2", ")"
         )
-        deriv_scaling = TexMobject(
+        deriv_scaling = Tex(
             deriv_tex, "(", "4", "x^3", ")", "=",
             "4", deriv_tex, "(", "x^3", ")"
         )
@@ -1415,7 +1415,7 @@ class ProposeDerivativeAsMatrix(TeacherStudentsScene):
 
 class PolynomialsHaveArbitrarilyLargeDegree(Scene):
     def construct(self):
-        polys = VGroup(*list(map(TexMobject, [
+        polys = VGroup(*list(map(Tex, [
             "x^{300} + 9x^2",
             "4x^{4{,}000{,}000{,}000} + 1",
             "3x^{\\left(10^{100}\\right)}",
@@ -1425,13 +1425,13 @@ class PolynomialsHaveArbitrarilyLargeDegree(Scene):
         polys.arrange(DOWN, buff = MED_LARGE_BUFF)
         polys.scale(1.3)
 
-        arrow = TexMobject("\\Rightarrow").scale(1.5)
+        arrow = Tex("\\Rightarrow").scale(1.5)
 
         brace = Brace(
             Line(UP, DOWN).scale(FRAME_Y_RADIUS).shift(FRAME_X_RADIUS*RIGHT),
             LEFT
         )
-        words = TextMobject("Infinitely many")
+        words = TexText("Infinitely many")
         words.scale(1.5)
         words.next_to(brace, LEFT)
         arrow.next_to(words, LEFT)
@@ -1448,7 +1448,7 @@ class PolynomialsHaveArbitrarilyLargeDegree(Scene):
 
 class GeneneralPolynomialCoordinates(Scene):
     def construct(self):
-        poly = TexMobject(
+        poly = Tex(
             "a_n", "x^n", "+",
             "a_{n-1}", "x^{n-1}", "+",
             "\\cdots",
@@ -1470,7 +1470,7 @@ class GeneneralPolynomialCoordinates(Scene):
         array.get_entries()[4].set_color(YELLOW)
         array.scale(1.2)
 
-        equals = TexMobject("=").scale(1.3)
+        equals = Tex("=").scale(1.3)
         group = VGroup(poly, equals, array)
         group.arrange()
         group.to_edge(RIGHT)
@@ -1506,7 +1506,7 @@ class IntroducePolynomialSpace(Scene):
         self.derivative_as_matrix()
 
     def add_title(self):
-        title = TextMobject("Our current space: ", "All polynomials")
+        title = TexText("Our current space: ", "All polynomials")
         title.to_edge(UP)
         title[1].set_color(BLUE)
         self.play(Write(title))
@@ -1520,12 +1520,12 @@ class IntroducePolynomialSpace(Scene):
         
 
         polys = VGroup(
-            TexMobject("x^2", "+", "3", "x", "+", "5"),
-            TexMobject("4x^7-5x^2"),
-            TexMobject("x^{100}+2x^{99}+3x^{98}"),
-            TexMobject("3x-7"),
-            TexMobject("x^{1{,}000{,}000{,}000}+1"),
-            TexMobject("\\vdots"),
+            Tex("x^2", "+", "3", "x", "+", "5"),
+            Tex("4x^7-5x^2"),
+            Tex("x^{100}+2x^{99}+3x^{98}"),
+            Tex("3x-7"),
+            Tex("x^{1{,}000{,}000{,}000}+1"),
+            Tex("\\vdots"),
         )
         polys.set_color_by_gradient(BLUE_B, BLUE_D)
         polys.arrange(DOWN, buff = MED_SMALL_BUFF)
@@ -1545,10 +1545,10 @@ class IntroducePolynomialSpace(Scene):
         )
 
     def split_individual_polynomial(self):
-        leading_coef = TexMobject("1")
+        leading_coef = Tex("1")
         leading_coef.next_to(self.poly1[0], LEFT, aligned_edge = DOWN)
         self.poly1.add_to_back(leading_coef)
-        one = TexMobject("\\cdot", "1")
+        one = Tex("\\cdot", "1")
         one.next_to(self.poly1[-1], RIGHT, aligned_edge = DOWN)
         self.poly1.add(one)
         for mob in leading_coef, one:
@@ -1575,13 +1575,13 @@ class IntroducePolynomialSpace(Scene):
         self.brace = brace
 
     def list_basis_functions(self):
-        title = TextMobject("Basis functions")
+        title = TexText("Basis functions")
         title.next_to(self.title, DOWN, buff = MED_SMALL_BUFF)
         title.to_edge(RIGHT)
         h_line = Line(ORIGIN, RIGHT).scale(title.get_width())
         h_line.next_to(title, DOWN)
 
-        x_cubed = TexMobject("x^3")
+        x_cubed = Tex("x^3")
         x_cubed.set_color(MAROON_B)
         x_cubed.to_corner(DOWN+RIGHT).shift(2*(DOWN+RIGHT))
         basis_group = VGroup(
@@ -1595,11 +1595,11 @@ class IntroducePolynomialSpace(Scene):
             DOWN, buff = 0.75*LARGE_BUFF, aligned_edge = LEFT
         )
         basis_group.target.to_edge(RIGHT, buff = MED_LARGE_BUFF)
-        dots = TexMobject("\\vdots")
+        dots = Tex("\\vdots")
         dots.next_to(basis_group.target, DOWN, buff = MED_SMALL_BUFF, aligned_edge = LEFT)
 
         basis_functions = [
-            TexMobject("b_%d(x)"%i, "=")
+            Tex("b_%d(x)"%i, "=")
             for i in range(len(list(basis_group)))
         ]
         for basis_func, term in zip(basis_functions, basis_group.target):
@@ -1626,7 +1626,7 @@ class IntroducePolynomialSpace(Scene):
         for i, color in enumerate([X_COLOR, Y_COLOR, Z_COLOR]):
             coords[i].set_color(color)
         self.poly1.generate_target()
-        equals = TexMobject("=").next_to(coords, LEFT)
+        equals = Tex("=").next_to(coords, LEFT)
         self.poly1.target.next_to(equals, LEFT)
         entries = coords.get_entries()
         entries.save_state()
@@ -1656,9 +1656,9 @@ class IntroducePolynomialSpace(Scene):
         target[5].next_to(target[3], LEFT)
         target[2].next_to(target[0], LEFT)
         more_terms = [
-            TexMobject("+0", "x^3").set_color_by_tex("x^3", MAROON_B),
-            TexMobject("+0", "x^4").set_color_by_tex("x^4", YELLOW),
-            TexMobject("\\vdots")
+            Tex("+0", "x^3").set_color_by_tex("x^3", MAROON_B),
+            Tex("+0", "x^4").set_color_by_tex("x^4", YELLOW),
+            Tex("\\vdots")
         ]        
         for entry, term in zip(entries, terms+more_terms):
             term.next_to(entry, LEFT, buff = LARGE_BUFF)
@@ -1723,8 +1723,8 @@ class IntroducePolynomialSpace(Scene):
         ##End horrible
         matrix.set_column_colors(X_COLOR, Y_COLOR, Z_COLOR, MAROON_B)
 
-        deriv = TexMobject("\\dfrac{d}{dx}")
-        equals = TexMobject("=")
+        deriv = Tex("\\dfrac{d}{dx}")
+        equals = Tex("=")
         equals.next_to(matrix, LEFT)
         deriv.next_to(equals, LEFT)
 
@@ -1756,7 +1756,7 @@ class IntroducePolynomialSpace(Scene):
             *list(map(MoveToTarget, [matrix, deriv]))
         )
 
-        poly = TexMobject(
+        poly = Tex(
             "(", "1", "x^3", "+",
             "5", "x^2", "+",
             "4", "x", "+",
@@ -1770,7 +1770,7 @@ class IntroducePolynomialSpace(Scene):
         poly.next_to(deriv)
         self.play(FadeIn(poly))
 
-        array = Matrix(list(coefs.copy()) + [TexMobject("\\vdots")])
+        array = Matrix(list(coefs.copy()) + [Tex("\\vdots")])
         array.next_to(matrix, RIGHT)
         self.play(Write(array.get_brackets()))
         to_remove = []
@@ -1782,11 +1782,11 @@ class IntroducePolynomialSpace(Scene):
         self.remove(*to_remove)
         self.add(array)
 
-        eq1, eq2 = TexMobject("="), TexMobject("=")
+        eq1, eq2 = Tex("="), Tex("=")
         eq1.next_to(poly)
         eq2.next_to(array)
         
-        poly_result = TexMobject(
+        poly_result = Tex(
             "3", "x^2", "+",
             "10", "x", "+",
             "4"
@@ -1806,7 +1806,7 @@ class IntroducePolynomialSpace(Scene):
             VGroup(*poly_result[0:3]),
         ]
         relevant_entries = VGroup(*array.get_entries()[1:4])
-        dots = [TexMobject("\\cdot") for x in range(3)]
+        dots = [Tex("\\cdot") for x in range(3)]
         result_entries = []
         for entry, diag_entry, dot in zip(relevant_entries, diag_entries, dots):
             entry.generate_target()
@@ -1816,8 +1816,8 @@ class IntroducePolynomialSpace(Scene):
             result_entries.append(group)
         result_array = Matrix(
             result_entries + [
-                TexMobject("0"),
-                TexMobject("\\vdots")
+                Tex("0"),
+                Tex("\\vdots")
             ]
         )
         result_array.next_to(eq2)
@@ -1874,8 +1874,8 @@ class MatrixVectorMultiplicationAndDerivative(TeacherStudentsScene):
         )
         mv_mult.arrange()
         mv_mult.scale(0.75)
-        arrow = TexMobject("\\Leftrightarrow")
-        deriv = TexMobject("\\dfrac{df}{dx}")
+        arrow = Tex("\\Leftrightarrow")
+        deriv = Tex("\\dfrac{df}{dx}")
         group = VGroup(mv_mult, arrow, deriv)
         group.arrange(buff = MED_SMALL_BUFF)
         arrow.set_color(BLACK)
@@ -1892,7 +1892,7 @@ class MatrixVectorMultiplicationAndDerivative(TeacherStudentsScene):
         self.random_blink()
         group.generate_target()        
         group.target.scale(0.8)
-        words = TextMobject("Linear transformations")
+        words = TexText("Linear transformations")
         h_line = Line(ORIGIN, RIGHT).scale(words.get_width())
         h_line.next_to(words, DOWN)
         group.target.next_to(h_line, DOWN, buff = MED_SMALL_BUFF)
@@ -1911,8 +1911,8 @@ class MatrixVectorMultiplicationAndDerivative(TeacherStudentsScene):
 
 class CompareTermsInLinearAlgebraToFunction(Scene):
     def construct(self):
-        l_title = TextMobject("Linear algebra \\\\ concepts")
-        r_title = TextMobject("Alternate names when \\\\ applied to functions")
+        l_title = TexText("Linear algebra \\\\ concepts")
+        r_title = TexText("Alternate names when \\\\ applied to functions")
         for title, vect in (l_title, LEFT), (r_title, RIGHT):
             title.to_edge(UP)
             title.shift(vect*FRAME_X_RADIUS/2)
@@ -1927,12 +1927,12 @@ class CompareTermsInLinearAlgebraToFunction(Scene):
         self.play(*list(map(ShowCreation, [h_line, v_line])))
         self.wait()
 
-        lin_alg_concepts = VGroup(*list(map(TextMobject, [
+        lin_alg_concepts = VGroup(*list(map(TexText, [
             "Linear transformations",
             "Dot products",
             "Eigenvectors",
         ])))
-        function_concepts = VGroup(*list(map(TextMobject, [
+        function_concepts = VGroup(*list(map(TexText, [
             "Linear operators",
             "Inner products",
             "Eigenfunctions",
@@ -1970,7 +1970,7 @@ class YouAsAMathematician(Scene):
     def construct(self):
         mathy = Mathematician()
         mathy.to_corner(DOWN+LEFT)
-        words = TextMobject("You as a mathematician")
+        words = TexText("You as a mathematician")
         words.shift(2*UP)
         arrow = Arrow(words.get_bottom(), mathy.get_corner(UP+RIGHT))
         bubble = mathy.get_bubble()
@@ -2009,10 +2009,10 @@ class YouAsAMathematician(Scene):
 
     def get_content(self):
         v_tex = "\\vec{\\textbf{v}}"
-        eigen_equation = TexMobject("A", v_tex, "=", "\\lambda", v_tex)
-        v_ne_zero = TexMobject(v_tex, "\\ne \\vec{\\textbf{0}}")
-        det_equation = TexMobject("\\det(A-", "\\lambda", "I)=0")
-        arrow = TexMobject("\\Rightarrow")
+        eigen_equation = Tex("A", v_tex, "=", "\\lambda", v_tex)
+        v_ne_zero = Tex(v_tex, "\\ne \\vec{\\textbf{0}}")
+        det_equation = Tex("\\det(A-", "\\lambda", "I)=0")
+        arrow = Tex("\\Rightarrow")
 
         for tex in eigen_equation, v_ne_zero, det_equation:
             tex.set_color_by_tex(v_tex, YELLOW)
@@ -2026,7 +2026,7 @@ class YouAsAMathematician(Scene):
 
 class ShowVectorSpaces(Scene):
     def construct(self):
-        title = TextMobject("Vector spaces")
+        title = TexText("Vector spaces")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
@@ -2098,7 +2098,7 @@ class ShowVectorSpaces(Scene):
 
 class ToolsOfLinearAlgebra(Scene):
     def construct(self):
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             "Linear transformations",
             "Null space",
             "Eigenvectors",
@@ -2161,14 +2161,14 @@ class MathematicianSpeakingToAll(Scene):
 
 class ListAxioms(Scene):
     def construct(self):
-        title = TextMobject("Rules for vectors addition and scaling")
+        title = TexText("Rules for vectors addition and scaling")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
         self.add(title, h_line)
 
         u_tex, v_tex, w_tex = ["\\vec{\\textbf{%s}}"%s for s in "uvw"]
-        axioms = VGroup(*it.starmap(TexMobject, [
+        axioms = VGroup(*it.starmap(Tex, [
             (
                 "1. \\,", 
                 u_tex, "+", "(", v_tex, "+", w_tex, ")=(", 
@@ -2231,7 +2231,7 @@ class ListAxioms(Scene):
             run_time = 5
         ))
         self.wait()
-        axioms_word = TextMobject("``Axioms''")
+        axioms_word = TexText("``Axioms''")
         axioms_word.set_color(YELLOW)
         axioms_word.scale(2)
         axioms_word.shift(FRAME_X_RADIUS*RIGHT/2, FRAME_Y_RADIUS*DOWN/2)
@@ -2258,12 +2258,12 @@ class AxiomsAreInterface(Scene):
         VGroup(mathy, others).to_edge(DOWN)
         double_arrow = DoubleArrow(mathy, others)
 
-        axioms, are, rules_of_nature = words = TextMobject(
+        axioms, are, rules_of_nature = words = TexText(
             "Axioms", "are", "rules of nature"
         )
         words.to_edge(UP)
         axioms.set_color(YELLOW)
-        an_interface = TextMobject("an interface")
+        an_interface = TexText("an interface")
         an_interface.next_to(rules_of_nature, DOWN)
         red_line = Line(
             rules_of_nature.get_left(),
@@ -2350,7 +2350,7 @@ class VectorSpaceOfPiCreatures(Scene):
         sum_pi.set_height(pi1.get_height()+pi2.get_height())
         for pi in pis:
             pi.generate_target()
-        plus, equals = TexMobject("+=")
+        plus, equals = Tex("+=")
         sum_equation = VGroup(
             pi1.target, plus, pi2.target,
             equals, sum_pi
@@ -2358,8 +2358,8 @@ class VectorSpaceOfPiCreatures(Scene):
         sum_equation.arrange().center()
 
         scaled_pi3 = pi3.copy().scale(2)
-        equals2 = TexMobject("=")
-        two = TexMobject("2 \\cdot")
+        equals2 = Tex("=")
+        two = Tex("2 \\cdot")
         scale_equation = VGroup(
             two, pi3.target, equals2, scaled_pi3
         )
@@ -2388,9 +2388,9 @@ class MathematicianDoesntHaveToThinkAboutThat(Scene):
     def construct(self):
         mathy = Mathematician().to_corner(DOWN+LEFT)
         bubble = mathy.get_bubble(ThoughtBubble, height = 4)
-        words = TextMobject("I don't have to worry", "\\\\ about that madness!")
+        words = TexText("I don't have to worry", "\\\\ about that madness!")
         bubble.add_content(words)
-        new_words = TextMobject("So long as I", "\\\\ work abstractly")
+        new_words = TexText("So long as I", "\\\\ work abstractly")
         bubble.add_content(new_words)
 
         self.play(
@@ -2457,7 +2457,7 @@ class LastAskWhatAreVectors(TeacherStudentsScene):
 
 class WhatIsThree(Scene):
     def construct(self):
-        what_is, three, q_mark = words = TextMobject(
+        what_is, three, q_mark = words = TexText(
             "What is ", "3", "?",
             arg_separator = ""
         )
@@ -2477,7 +2477,7 @@ class WhatIsThree(Scene):
             ]),
             VGroup(*[HyperCube().scale(0.3) for x in range(3)]),
             VGroup(*[Vector(RIGHT) for x in range(3)]),
-            TexMobject("""
+            Tex("""
                 \\Big\\{
                     \\emptyset, 
                     \\{\\emptyset\\}, 
@@ -2487,7 +2487,7 @@ class WhatIsThree(Scene):
         ]
         directions = [UP+LEFT, UP+RIGHT, DOWN+LEFT, DOWN+RIGHT]
         for group, vect in zip(triplets, directions):
-            if isinstance(group, TexMobject):
+            if isinstance(group, Tex):
                 pass
             elif isinstance(group[0], Vector):
                 group.arrange(RIGHT)
@@ -2520,7 +2520,7 @@ class IStillRecommendConcrete(TeacherStudentsScene):
 
 class AbstractionIsThePrice(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Abstractness", "is the price\\\\"
             "of", "generality"
         )

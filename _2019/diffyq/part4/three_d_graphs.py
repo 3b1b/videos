@@ -50,8 +50,8 @@ class ShowLinearity(WriteHeatEquationTemplate, TemperatureGraphScene):
             self.get_graph(axes2, freqs, scalar_trackers),
         )
 
-        plus = TexMobject("+").scale(2)
-        equals = TexMobject("=").scale(2)
+        plus = Tex("+").scale(2)
+        equals = Tex("=").scale(2)
         plus.move_to(midpoint(
             axes0.get_right(),
             axes1.get_left(),
@@ -74,7 +74,7 @@ class ShowLinearity(WriteHeatEquationTemplate, TemperatureGraphScene):
 
     def show_words(self):
         equation = self.get_d1_equation()
-        name = TextMobject("Heat equation")
+        name = TexText("Heat equation")
         name.next_to(equation, DOWN)
         name.set_color_by_gradient(RED, YELLOW)
         group = VGroup(equation, name)
@@ -85,7 +85,7 @@ class ShowLinearity(WriteHeatEquationTemplate, TemperatureGraphScene):
         arrow = Vector(1.5 * RIGHT)
         arrow.move_to(group)
         arrow.shift(shift_val)
-        linear_word = TextMobject("``Linear''")
+        linear_word = TexText("``Linear''")
         linear_word.scale(2)
         linear_word.next_to(arrow, RIGHT)
 
@@ -104,7 +104,7 @@ class ShowLinearity(WriteHeatEquationTemplate, TemperatureGraphScene):
 
         solution_labels = VGroup()
         for axes in axes_group:
-            label = TextMobject("Solution", "$\\checkmark$")
+            label = TexText("Solution", "$\\checkmark$")
             label.set_color_by_tex("checkmark", GREEN)
             label.next_to(axes, DOWN)
             solution_labels.add(label)
@@ -115,10 +115,10 @@ class ShowLinearity(WriteHeatEquationTemplate, TemperatureGraphScene):
                 "T_2": GREEN,
             }
         }
-        T1 = TexMobject("a", "T_1", **kw)
-        T2 = TexMobject("b", "T_2", **kw)
-        T_sum = TexMobject("T_1", "+", "T_2", **kw)
-        T_sum_with_scalars = TexMobject(
+        T1 = Tex("a", "T_1", **kw)
+        T2 = Tex("b", "T_2", **kw)
+        T_sum = Tex("T_1", "+", "T_2", **kw)
+        T_sum_with_scalars = Tex(
             "a", "T_1", "+", "b", "T_2", **kw
         )
 
@@ -284,7 +284,7 @@ class CombineSeveralSolutions(ShowLinearity):
         top_axes_group.arrange(RIGHT, buff=2)
         top_axes_group.set_width(FRAME_WIDTH - 1.5)
         top_axes_group.to_corner(UL)
-        dots = TexMobject("\\dots")
+        dots = Tex("\\dots")
         dots.next_to(top_axes_group, RIGHT)
 
         low_axes = self.get_axes()
@@ -423,7 +423,7 @@ class CombineSeveralSolutions(ShowLinearity):
             decimal.shift(SMALL_BUFF * RIGHT)
             decimal.set_color(YELLOW)
             decimal.scalar_tracker = st
-            times = TexMobject("\\times")
+            times = Tex("\\times")
             times.next_to(decimal, LEFT, SMALL_BUFF)
             decimal.add_updater(lambda d: d.set_value(
                 d.scalar_tracker.get_value()

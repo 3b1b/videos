@@ -103,7 +103,7 @@ class ShowShadows(ThreeDScene):
         self.shadow = always_redraw(lambda: get_shadow(self.obj3d))
 
     def add_shadow_area_label(self):
-        text = TextMobject("Shadow area: ")
+        text = TexText("Shadow area: ")
         decimal = DecimalNumber(0)
         label = VGroup(text, decimal)
         label.arrange(RIGHT)
@@ -130,7 +130,7 @@ class ShowShadows(ThreeDScene):
         self.add(decimal)
 
     def add_surface_area_label(self):
-        text = TextMobject("Surface area: ")
+        text = TexText("Surface area: ")
         decimal = DecimalNumber(self.surface_area)
         label = VGroup(text, decimal)
         label.arrange(RIGHT)
@@ -207,7 +207,7 @@ class ShowShadows(ThreeDScene):
             buff=SMALL_BUFF,
             color=RED,
         )
-        words = TextMobject(
+        words = TexText(
             "Average", "=",
             "$\\frac{\\text{Surface area}}{4}$"
         )

@@ -430,11 +430,11 @@ class PositionPhaseSpaceScene(Scene):
     def get_axes_labels(self, axes, with_sqrts=None):
         if with_sqrts is None:
             with_sqrts = self.rescale_coordinates
-        x_label = TexMobject("x", "=", "d_1")
-        y_label = TexMobject("y", "=", "d_2")
+        x_label = Tex("x", "=", "d_1")
+        y_label = Tex("y", "=", "d_2")
         labels = VGroup(x_label, y_label)
         if with_sqrts:
-            additions = map(TexMobject, [
+            additions = map(Tex, [
                 "\\sqrt{m_1}", "\\sqrt{m_2}"
             ])
             for label, addition in zip(labels, additions):
@@ -493,7 +493,7 @@ class PositionPhaseSpaceScene(Scene):
 
     def get_d_label(self, n, get_d):
         label = VGroup(
-            TexMobject("d_{}".format(n), "="),
+            Tex("d_{}".format(n), "="),
             DecimalNumber(),
         )
         color = GREEN if n == 1 else RED
@@ -593,7 +593,7 @@ class PositionPhaseSpaceScene(Scene):
         return self.d1_eq_d2_line
 
     def get_d1_eq_d2_label(self):
-        label = TexMobject(self.d1_eq_d2_tex)
+        label = Tex(self.d1_eq_d2_tex)
         label.scale(0.75)
         line = self.d1_eq_d2_line
         point = interpolate(
@@ -616,7 +616,7 @@ class PositionPhaseSpaceScene(Scene):
         return self.d2_eq_w2_line
 
     def get_d2_eq_w2_label(self):
-        label = TexMobject("d2 = \\text{block width}")
+        label = Tex("d2 = \\text{block width}")
         label.scale(0.75)
         label.next_to(self.d2_eq_w2_line, UP, SMALL_BUFF)
         label.to_edge(RIGHT, buff=MED_SMALL_BUFF)
@@ -1024,7 +1024,7 @@ class EqualMassCase(PositionPhaseSpaceScene):
         w2_line = self.d2_eq_w2_line
         lines = VGroup(xy_line, w2_line)
         for line in lines:
-            word = TextMobject("Mirror")
+            word = TexText("Mirror")
             word.next_to(ORIGIN, UP, SMALL_BUFF)
             word.rotate(line.get_angle(), about_point=ORIGIN)
             word.shift(line.get_center())
@@ -1168,9 +1168,9 @@ class FailedAngleRelation(PositionPhaseSpaceScene):
 
     def get_word_equation(self):
         result = VGroup(
-            TextMobject("Angle of incidence"),
-            TexMobject("\\ne").rotate(90 * DEGREES),
-            TextMobject("Angle of reflection")
+            TexText("Angle of incidence"),
+            Tex("\\ne").rotate(90 * DEGREES),
+            TexText("Angle of reflection")
         )
         result.arrange(DOWN)
         result.set_stroke(BLACK, 5, background=True)
@@ -1261,7 +1261,7 @@ class RescaleCoordinates(PositionPhaseSpaceScene, MovingCameraScene):
             )
             group = VGroup(
                 new_axes_labels[index][2][-2:].copy(),
-                TexMobject("="),
+                Tex("="),
                 block.label.copy(),
             )
             group.generate_target()
@@ -1540,8 +1540,8 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
         self.projection_lines = VGroup(x_line, y_line)
 
         # Vector labels
-        dx_label = TexMobject("\\frac{dx}{dt}")
-        dy_label = TexMobject("\\frac{dy}{dt}")
+        dx_label = Tex("\\frac{dx}{dt}")
+        dy_label = Tex("\\frac{dy}{dt}")
         labels = VGroup(dx_label, dy_label)
         for label, arrow, direction in zip(labels, vects, [UP, RIGHT]):
             label.scale(0.25)
@@ -1602,7 +1602,7 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
         block_vectors = self.block_velocity_vectors
 
         x_eq = x_label[1]
-        dx_eq = TexMobject("=")
+        dx_eq = Tex("=")
         dx_eq.next_to(
             x_eq, DOWN,
             buff=LARGE_BUFF,
@@ -1612,7 +1612,7 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
             label.generate_target()
             label.target.scale(1.5)
         dx_label.target.next_to(dx_eq, LEFT)
-        dx_rhs = TexMobject("\\sqrt{m_1}", "v_1")
+        dx_rhs = Tex("\\sqrt{m_1}", "v_1")
         dx_rhs[0][2:].set_color(BLUE)
         dx_rhs[1].set_color(GREEN)
         dx_rhs.next_to(dx_eq, RIGHT)
@@ -1655,10 +1655,10 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
 
         # dy_label
         y_eq = y_label[1]
-        dy_eq = TexMobject("=")
+        dy_eq = Tex("=")
         dy_eq.next_to(y_eq, DOWN, LARGE_BUFF)
         dy_label.target.next_to(dy_eq, LEFT)
-        dy_rhs = TexMobject("\\sqrt{m_2}", "v_2")
+        dy_rhs = Tex("\\sqrt{m_2}", "v_2")
         dy_rhs[0][2:].set_color(BLUE)
         dy_rhs[1].set_color(RED)
         dy_rhs.next_to(dy_eq, RIGHT)
@@ -1697,12 +1697,12 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
         )
         big_ps_vect.match_style(ps_vect)
         big_ps_vect.scale(1.5)
-        magnitude_bars = TexMobject("||", "||")
+        magnitude_bars = Tex("||", "||")
         magnitude_bars.match_height(
             big_ps_vect, stretch=True
         )
         rhs_scale_val = 0.8
-        rhs = TexMobject(
+        rhs = Tex(
             "=\\sqrt{"
             "\\left( dx/dt \\right)^2 + "
             "\\left( dy/dt \\right)^2"
@@ -1716,7 +1716,7 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
         group.arrange(RIGHT)
         group.next_to(corner_rect.get_corner(UL), DR)
 
-        new_rhs = TexMobject(
+        new_rhs = Tex(
             "=", "\\sqrt", "{m_1(v_1)^2 + m_2(v_2)^2}",
             tex_to_color_map={
                 "m_1": BLUE,
@@ -1728,7 +1728,7 @@ class IntroduceVelocityVector(PositionPhaseSpaceScene, MovingCameraScene):
         new_rhs.scale(rhs_scale_val)
         new_rhs.next_to(rhs, DOWN, aligned_edge=LEFT)
 
-        final_rhs = TexMobject(
+        final_rhs = Tex(
             "=", "\\sqrt{2(\\text{Kinetic energy})}"
         )
         final_rhs.scale(rhs_scale_val)
@@ -1824,7 +1824,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
         xy_line = line.copy()
         xy_line.set_stroke(YELLOW, 3)
         xy_line.set_angle(45 * DEGREES)
-        xy_label = TexMobject("x = y")
+        xy_label = Tex("x = y")
         xy_label.next_to(ORIGIN, DOWN, SMALL_BUFF)
         xy_label.rotate(45 * DEGREES, about_point=ORIGIN)
         xy_label.shift(xy_line.point_from_proportion(0.2))
@@ -1853,8 +1853,8 @@ class ShowMomentumConservation(IntroduceVelocityVector):
         eqs_targets = VGroup(*[eq.target for eq in eqs])
 
         new_eqs = VGroup(
-            TexMobject("{y", "\\over", "\\sqrt{m_2}}", "=", "d_2"),
-            TexMobject("{x", "\\over", "\\sqrt{m_1}}", "=", "d_1"),
+            Tex("{y", "\\over", "\\sqrt{m_2}}", "=", "d_2"),
+            Tex("{x", "\\over", "\\sqrt{m_1}}", "=", "d_1"),
         )
         new_x_eq, new_y_eq = new_eqs
         # Shuffle to align with x_eq and y_eq
@@ -1883,7 +1883,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
             eq.submobjects = [eq[i] for i in [0, 1, 3, 2, 4]]
 
         # Set equal
-        equals = TexMobject("=")
+        equals = Tex("=")
         for eq in eqs:
             eq.generate_target()
         VGroup(
@@ -1908,7 +1908,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
         self.wait()
 
         # Simplify
-        final_eq = TexMobject(
+        final_eq = Tex(
             "y", "=",
             "{\\sqrt{m_2}", "\\over", "\\sqrt{m_1}}",
             "x",
@@ -1991,7 +1991,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
 
     def ask_what_next(self):
         ps_vect = self.ps_velocity_vector
-        question = TextMobject("What next?")
+        question = TexText("What next?")
         question.set_background_stroke(color=BLACK, width=3)
         question.next_to(self.ps_point, UP)
 
@@ -2316,7 +2316,7 @@ class ShowMomentumConservation(IntroduceVelocityVector):
             ))
 
     def get_momentum_equation(self):
-        equation = TexMobject(
+        equation = Tex(
             "m_1", "v_1", "+", "m_2", "v_2",
             "=", "\\text{const.}",
             tex_to_color_map={
@@ -2341,8 +2341,8 @@ class ShowMomentumConservation(IntroduceVelocityVector):
             matrix.add_to_back(BackgroundRectangle(matrix))
             matrix.get_brackets().scale(0.9)
             matrix.set_height(1.25)
-        dot = TexMobject("\\cdot")
-        rhs = TexMobject("= \\text{const.}")
+        dot = Tex("\\cdot")
+        rhs = Tex("= \\text{const.}")
         dot_product = VGroup(
             sqrty_m, dot, deriv_array, rhs
         )

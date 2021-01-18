@@ -45,7 +45,7 @@ class LinearSystem(VGroup):
         else:
             dim = len(matrix)
         self.matrix_mobject = Matrix(matrix, **self.matrix_config)
-        self.equals = TexMobject("=")
+        self.equals = Tex("=")
         self.equals.scale(1.5)
 
         colors = [X_COLOR, Y_COLOR, Z_COLOR][:dim]
@@ -85,15 +85,15 @@ class AltOpeningQuote(OpeningQuote):
             "alignment": "",
         }
         parts = VGroup(
-            TextMobject("Jerry: Ah, you're crazy!", **kw),
-            TextMobject(
+            TexText("Jerry: Ah, you're crazy!", **kw),
+            TexText(
                 "Kramer:",
                 "{} Am I? Or am I so sane that\\\\",
                 "you just blew your mind?",
                 **kw
             ),
-            TextMobject("Jerry: It's impossible!", **kw),
-            TextMobject(
+            TexText("Jerry: It's impossible!", **kw),
+            TexText(
                 "Kramer:", "{} Is it?! Or is it so possible\\\\",
                 "your head is spinning like a top?",
                 **kw
@@ -155,7 +155,7 @@ class LeaveItToComputers(TeacherStudentsScene):
             rhs.set_height(2.25)
             rhs.move_to(self.hold_up_spot, DOWN)
             rhs.to_edge(RIGHT, buff=LARGE_BUFF)
-            equals = TexMobject("=").next_to(rhs, LEFT)
+            equals = Tex("=").next_to(rhs, LEFT)
             variable = system.input_vect_mob.elements[i].copy()
             variable.next_to(equals, LEFT)
             cramer_group = VGroup(variable, equals, rhs)
@@ -268,7 +268,7 @@ class PrerequisiteKnowledge(TeacherStudentsScene):
         randy = self.students[1]
         self.add(randy)
 
-        title = TextMobject("Prerequisites")
+        title = TexText("Prerequisites")
         title.to_edge(UP)
 
         h_line = Line(LEFT, RIGHT).scale(5)
@@ -310,7 +310,7 @@ class NotTheMostComputationallyEfficient(Scene):
         big_rect = FullScreenFadeRectangle(opacity=self.opacity)
         self.add(big_rect)
 
-        words = TextMobject(self.words)
+        words = TexText(self.words)
         words.set_color(RED)
         words.set_stroke(WHITE, 1)
         words.set_width(FRAME_WIDTH - 2 * MED_LARGE_BUFF)
@@ -320,7 +320,7 @@ class NotTheMostComputationallyEfficient(Scene):
 
 class GaussTitle(Scene):
     def construct(self):
-        title = TextMobject("Gaussian Elimination")
+        title = TexText("Gaussian Elimination")
         title.scale(1.5)
         title.to_edge(UP)
         line = Line(LEFT, RIGHT).scale(7)
@@ -517,7 +517,7 @@ class SetupSimpleSystemOfEquations(LinearTransformationScene):
 
         input_vect = np.dot(np.linalg.inv(self.matrix), self.output_vect)
         input_vect_mob = self.get_vector(input_vect, color=INPUT_COLOR)
-        q_marks = TexMobject("????")
+        q_marks = Tex("????")
         q_marks.set_color_by_gradient(INPUT_COLOR, OUTPUT_COLOR)
         q_marks.next_to(input_vect_mob.get_end(), DOWN, SMALL_BUFF)
         q_marks_rect = SurroundingRectangle(q_marks, color=WHITE)
@@ -602,7 +602,7 @@ class SetupSimpleSystemOfEquations(LinearTransformationScene):
                     sign = "+"
                 args += [str(abs(row[i])), chars[i], sign]
             args.append(str(num))
-            line = TexMobject(*args)
+            line = Tex(*args)
             line.set_color_by_tex_to_color_map(dict([
                 (char, color)
                 for char, color in zip(chars, colors)
@@ -623,7 +623,7 @@ class SetupSimpleSystemOfEquations(LinearTransformationScene):
 
 class FloatingMinus(Scene):
     def construct(self):
-        minus = TexMobject("-")
+        minus = Tex("-")
         self.add(minus)
         self.play(minus.shift, 2.9 * UP, run_time=1)
 
@@ -641,7 +641,7 @@ class ShowZeroDeterminantCase(LinearTransformationScene):
         self.show_det_zero()
 
     def add_equation(self):
-        equation = self.equation = TexMobject(
+        equation = self.equation = Tex(
             "A", "\\vec{\\textbf{x}}", "=", "\\vec{\\textbf{v}}"
         )
         equation.scale(self.tex_scale_factor)
@@ -666,11 +666,11 @@ class ShowZeroDeterminantCase(LinearTransformationScene):
             circle.move_to(vect_mob.get_end())
             vect_mob.circle = circle
 
-        vect_off_span_words = TextMobject("No input lands here")
+        vect_off_span_words = TexText("No input lands here")
         vect_off_span_words.next_to(vect_off_span_mob.circle, UP)
         vect_off_span_words.add_background_rectangle()
 
-        vect_in_span_words = TextMobject("Many inputs lands here")
+        vect_in_span_words = TexText("Many inputs lands here")
         vect_in_span_words.next_to(vect_in_span_mob.circle, DR)
         vect_in_span_words.shift_onto_screen()
         vect_in_span_words.add_background_rectangle()
@@ -728,7 +728,7 @@ class ShowZeroDeterminantCase(LinearTransformationScene):
 
     def show_det_equation(self):
         equation = self.equation
-        det_equation = TexMobject(
+        det_equation = Tex(
             "\\det(", "A", ")", self.det_eq_symbol, "0"
         )
         det_equation.scale(self.tex_scale_factor)
@@ -763,10 +763,10 @@ class NonZeroDeterminantCase(ShowZeroDeterminantCase, SetupSimpleSystemOfEquatio
         input_vect_mob = self.get_vector(input_vect, color=INPUT_COLOR)
         output_vect_mob = self.get_vector(output_vect, color=OUTPUT_COLOR)
 
-        input_vect_label = TextMobject("Input")
+        input_vect_label = TexText("Input")
         input_vect_label.next_to(input_vect_mob.get_end(), DOWN, SMALL_BUFF)
         input_vect_label.match_color(input_vect_mob)
-        output_vect_label = TextMobject("Output")
+        output_vect_label = TexText("Output")
         output_vect_label.next_to(output_vect_mob.get_end(), DOWN, SMALL_BUFF)
         output_vect_label.match_color(output_vect_mob)
         for label in input_vect_label, output_vect_label:
@@ -829,7 +829,7 @@ class ThinkOfPuzzleAsLinearCombination(SetupSimpleSystemOfEquations):
         movers = VGroup(x, y, equals, output_vect)
         for mover in movers:
             mover.generate_target()
-        plus = TexMobject("+")
+        plus = Tex("+")
 
         new_system = VGroup(
             x.target, column_arrays[0], plus,
@@ -937,10 +937,10 @@ class LookAtDotProducts(SetupSimpleSystemOfEquations):
             basis[i] = 1
             equation = VGroup(
                 Matrix(["x", "y"]),
-                TexMobject("\\cdot"),
+                Tex("\\cdot"),
                 IntegerMatrix(basis),
-                TexMobject("="),
-                TexMobject(["x", "y"][i]),
+                Tex("="),
+                Tex(["x", "y"][i]),
             )
             for part in equation:
                 if isinstance(part, Matrix):
@@ -1013,7 +1013,7 @@ class LookAtDotProducts(SetupSimpleSystemOfEquations):
         for equation in moving_equations:
             equation.generate_target()
             xy_vect, dot, basis, equals, coord = equation.target
-            T1, lp1, rp1 = TexMobject("T", "(", ")")
+            T1, lp1, rp1 = Tex("T", "(", ")")
             lp1.scale(1, about_edge=LEFT)
             rp1.scale(1, about_edge=LEFT)
             for paren in lp1, rp1:
@@ -1027,7 +1027,7 @@ class LookAtDotProducts(SetupSimpleSystemOfEquations):
             transformed_equation.arrange(RIGHT, buff=SMALL_BUFF)
             # transformed_equation.scale(self.equation_scale_factor)
 
-            implies = TexMobject("\\Rightarrow").scale(1.2)
+            implies = Tex("\\Rightarrow").scale(1.2)
             implies.next_to(equation, RIGHT)
             implies.set_color(BLUE)
 
@@ -1044,7 +1044,7 @@ class LookAtDotProducts(SetupSimpleSystemOfEquations):
             ))
 
             for mob in [implies]:
-                mob.add(TexMobject("?").next_to(mob, UP, SMALL_BUFF))
+                mob.add(Tex("?").next_to(mob, UP, SMALL_BUFF))
 
             transformed_equation.parts_to_write = VGroup(
                 T1, lp1, rp1, T2, lp2, rp2
@@ -1191,9 +1191,9 @@ class ShowDotProductChanging(LinearTransformationScene):
     def get_equation(self, v_label, w_label, rhs):
         equation = VGroup(
             v_label.copy(),
-            TexMobject("\\cdot"),
+            Tex("\\cdot"),
             w_label.copy(),
-            TexMobject(rhs),
+            Tex(rhs),
         )
         equation.arrange(RIGHT, buff=SMALL_BUFF)
         equation.add_to_back(BackgroundRectangle(equation))
@@ -1219,7 +1219,7 @@ class OrthonormalWords(Scene):
     def construct(self):
         v_tex = "\\vec{\\textbf{v}}"
         w_tex = "\\vec{\\textbf{w}}"
-        top_words = TexMobject(
+        top_words = Tex(
             "\\text{If }",
             "T(", v_tex, ")", "\\cdot",
             "T(", w_tex, ")", "=",
@@ -1230,7 +1230,7 @@ class OrthonormalWords(Scene):
             v_tex: YELLOW,
             w_tex: MAROON_B,
         })
-        bottom_words = TextMobject(
+        bottom_words = TexText(
             "$T$", "is", "``Orthonormal''"
         )
         bottom_words.set_color_by_tex("Orthonormal", BLUE)
@@ -1282,7 +1282,7 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
             output_vect=output_vect,
             matrix_config={
                 "h_buff": 2.5,
-                "element_to_mobject": TexMobject,
+                "element_to_mobject": Tex,
             },
             height=1.25,
         )
@@ -1292,7 +1292,7 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
         system_rect = BackgroundRectangle(system, buff=MED_SMALL_BUFF)
 
         matrix_brace = Brace(system.matrix_mobject, DOWN, buff=SMALL_BUFF)
-        orthonomal_label = TextMobject("Orthonormal")
+        orthonomal_label = TexText("Orthonormal")
         orthonomal_label.set_color(WHITE)
         orthonomal_label.next_to(matrix_brace, DOWN, SMALL_BUFF)
         orthonomal_label.add_background_rectangle()
@@ -1307,7 +1307,7 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
 
         input_vect = np.dot(np.linalg.inv(matrix), output_vect)
         input_vect_mob = self.get_vector(input_vect, color=INPUT_COLOR)
-        input_vect_label = TextMobject("Mystery input vector")
+        input_vect_label = TexText("Mystery input vector")
         input_vect_label.add_background_rectangle()
         input_vect_label.next_to(input_vect_mob.get_end(), RIGHT, SMALL_BUFF)
         input_vect_label.match_color(input_vect_mob)
@@ -1372,16 +1372,16 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
             moving_var = system.input_vect_mob.elements[i].copy()
             equation = VGroup(
                 moving_var.generate_target(),
-                TexMobject("="),
+                Tex("="),
                 moving_output_vect_label.generate_target(),
-                TexMobject("\\cdot"),
+                Tex("\\cdot"),
                 moving_column_mob.generate_target(use_deepcopy=True)
             )
             equation.movers = VGroup(
                 moving_var, moving_output_vect_label, moving_column_mob
             )
             for element in moving_column_mob.target.get_family():
-                if not isinstance(element, TexMobject):
+                if not isinstance(element, Tex):
                     continue
                 tex_string = element.get_tex()
                 if "sin" in tex_string or "cos" in tex_string:
@@ -1439,7 +1439,7 @@ class SolvingASystemWithOrthonormalMatrix(LinearTransformationScene):
 
 class TransitionToParallelogramIdea(TeacherStudentsScene):
     def construct(self):
-        teacher_words = TextMobject(
+        teacher_words = TexText(
             "Now ask about \\\\ other geometric \\\\ views of",
             "$x$", "and", "$y$"
         )
@@ -1495,7 +1495,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         input_vect_label.scale(self.array_scale_factor)
         self.set_input_vect_label_position(input_vect_mob, input_vect_label)
 
-        mystery_words = TextMobject("Mystery input vector")
+        mystery_words = TexText("Mystery input vector")
         mystery_words.next_to(input_vect_label, RIGHT)
         mystery_words.add_background_rectangle()
 
@@ -1519,7 +1519,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
             tip_length=0.2,
         )
         area_arrow.shift(ip.get_center() - area_arrow.get_end() + SMALL_BUFF * DL)
-        area_words = TexMobject(
+        area_words = Tex(
             "\\text{Area}", "=", "1", "\\times",
             ["x", "y"][index]
         )
@@ -1607,7 +1607,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         self.play(FadeOut(VGroup(morty, morty.bubble, morty.bubble.content, randy)))
 
         # Signed area
-        signed = TextMobject("Signed")
+        signed = TexText("Signed")
         signed.match_color(area_words[0])
         signed.next_to(area_words, LEFT)
 
@@ -1665,7 +1665,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         index = self.index
         non_index = (index + 1) % 2
 
-        apply_words = TextMobject("Apply")
+        apply_words = TexText("Apply")
         apply_words.add_background_rectangle()
         matrix_mobject = IntegerMatrix(self.matrix)
         matrix_mobject.set_column_colors(X_COLOR, Y_COLOR)
@@ -1677,7 +1677,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         apply_group = VGroup(apply_words, matrix_mobject, matrix_brace, matrix_label)
         apply_group.to_corner(UL, buff=MED_SMALL_BUFF)
 
-        area_scale_words = TextMobject("All areas get scaled by", "$\\det(A)$")
+        area_scale_words = TexText("All areas get scaled by", "$\\det(A)$")
         area_scale_words.scale(1.5)
         area_scale_words.move_to(2 * DOWN)
         area_scale_words.add_background_rectangle()
@@ -1685,7 +1685,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         blobs = VGroup(
             Circle(radius=0.5).move_to(2 * LEFT + UP),
             Square(side_length=1).rotate(TAU / 12).move_to(2 * UP + 0.5 * RIGHT),
-            TexMobject("\\pi").scale(3).move_to(3 * RIGHT)
+            Tex("\\pi").scale(3).move_to(3 * RIGHT)
         )
         blobs.set_stroke(YELLOW, 3)
         blobs.set_fill(YELLOW, 0.3)
@@ -1720,7 +1720,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         ip_copy.set_stroke(BLACK, 4)
         ip_copy.set_fill(BLACK, 0)
 
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.scale(1.5)
         q_marks.rect = BackgroundRectangle(q_marks)
         q_marks_group = VGroup(q_marks, q_marks.rect)
@@ -1863,7 +1863,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
             VGroup(matrix_mobject_copy, denom_det_text)
         )
         rhs.arrange(DOWN, buff=SMALL_BUFF)
-        rhs_equals = TexMobject("=")
+        rhs_equals = Tex("=")
         rhs_equals.next_to(h_line, RIGHT)
         rhs.next_to(rhs_equals, submobject_to_align=rhs_h_line)
 
@@ -1879,7 +1879,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         system_input.add_background_rectangle()
         system_output = output_vect_label.copy()
         system_output.generate_target()
-        system_eq = TexMobject("=")
+        system_eq = Tex("=")
         for array in system_input, system_output.target:
             array.match_height(matrix_mobject.target)
         system = VGroup(
@@ -2027,10 +2027,10 @@ class ThreeDDotVectorWithKHat(ExternallyAnimatedScene):
 class ZEqualsVDotK(Scene):
     def construct(self):
         equation = VGroup(
-            TexMobject("z"),
-            TexMobject("="),
+            Tex("z"),
+            Tex("="),
             Matrix(["x", "y", "z"]),
-            TexMobject("\\cdot"),
+            Tex("\\cdot"),
             IntegerMatrix([0, 0, 1]),
         )
         equation[2].elements.set_color_by_gradient(X_COLOR, Y_COLOR, Z_COLOR)
@@ -2061,12 +2061,12 @@ class ParallelepipedForYCoordinate(ExternallyAnimatedScene):
 class ThreeDCoordinatesAsVolumes(Scene):
     def construct(self):
         colors = [X_COLOR, Y_COLOR, Z_COLOR]
-        x, y, z = coords = VGroup(*list(map(TexMobject, "xyz")))
+        x, y, z = coords = VGroup(*list(map(Tex, "xyz")))
         coords.set_color_by_gradient(*colors)
         matrix = IntegerMatrix(np.identity(3))
         matrix.set_column_colors(*colors)
         det_text = get_det_text(matrix)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(det_text[0], LEFT)
         equals.shift(SMALL_BUFF * DOWN)
         coords.next_to(equals, LEFT)
@@ -2115,7 +2115,7 @@ class ThreeDCoordinatesAsVolumes(Scene):
 
 class WriteCramersRule(Scene):
     def construct(self):
-        words = TextMobject("``Cramer's Rule''")
+        words = TexText("``Cramer's Rule''")
         words.set_width(FRAME_WIDTH - LARGE_BUFF)
         words.add_background_rectangle()
         self.play(Write(words))
@@ -2124,14 +2124,14 @@ class WriteCramersRule(Scene):
 
 class CramersYEvaluation(Scene):
     def construct(self):
-        frac = TexMobject("{(2)(2) - (4)(0) \\over (2)(1) - (-1)(0)}")[0]
+        frac = Tex("{(2)(2) - (4)(0) \\over (2)(1) - (-1)(0)}")[0]
         VGroup(frac[1], frac[11], frac[15], frac[26]).set_color(GREEN)
         VGroup(frac[4], frac[8]).set_color(MAROON_B)
         VGroup(frac[18], frac[22], frac[23]).set_color(RED)
 
         group = VGroup(
-            TexMobject("="), frac,
-            TexMobject("= \\frac{4}{2}"), TexMobject("=2")
+            Tex("="), frac,
+            Tex("= \\frac{4}{2}"), Tex("=2")
         )
         group.arrange(RIGHT)
 
@@ -2142,15 +2142,15 @@ class CramersYEvaluation(Scene):
 # Largely copy-pasted.  Not great, but what are you gonna do.
 class CramersXEvaluation(Scene):
     def construct(self):
-        frac = TexMobject("{(4)(1) - (-1)(2) \\over (2)(1) - (-1)(0)}")[0]
+        frac = Tex("{(4)(1) - (-1)(2) \\over (2)(1) - (-1)(0)}")[0]
         VGroup(frac[1], frac[12]).set_color(MAROON_B)
         VGroup(frac[4], frac[8], frac[9]).set_color(RED)
         VGroup(frac[16], frac[27]).set_color(GREEN)
         VGroup(frac[19], frac[23], frac[24]).set_color(RED)
 
         group = VGroup(
-            TexMobject("="), frac,
-            TexMobject("= \\frac{6}{2}"), TexMobject("=3")
+            Tex("="), frac,
+            Tex("= \\frac{6}{2}"), Tex("=3")
         )
         group.arrange(RIGHT)
         group.add_to_back(BackgroundRectangle(group))
@@ -2161,8 +2161,8 @@ class CramersXEvaluation(Scene):
 
 class FourPlusTwo(Scene):
     def construct(self):
-        p1 = TexMobject("(4)(1)")
-        p2 = TexMobject("-(-1)(2)")
+        p1 = Tex("(4)(1)")
+        p2 = Tex("-(-1)(2)")
         p2.next_to(p1, RIGHT, SMALL_BUFF)
         b1 = Brace(p1, UP)
         b2 = Brace(p2, UP)
@@ -2180,13 +2180,13 @@ class FourPlusTwo(Scene):
 
 class Equals2(Scene):
     def construct(self):
-        self.add(TexMobject("=2").add_background_rectangle())
+        self.add(Tex("=2").add_background_rectangle())
         self.wait()
 
 
 class Equals3(Scene):
     def construct(self):
-        self.add(TexMobject("=3").add_background_rectangle())
+        self.add(Tex("=3").add_background_rectangle())
         self.wait()
 
 
@@ -2272,7 +2272,7 @@ class Thumbnail(TransformingAreasYCoord, MovingCameraScene):
         self.square.set_sheen(0.75, UR)
         self.camera_frame.shift(UP)
 
-        words = TextMobject("Cramer's", "rule")
+        words = TexText("Cramer's", "rule")
         words.scale(3)
         words.set_stroke(BLACK, 6, background=True)
         words.to_edge(UP, buff=-MED_LARGE_BUFF)

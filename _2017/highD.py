@@ -44,7 +44,7 @@ class Slider(NumberLine):
         self.last_sign = -1
 
     def add_label(self, tex):
-        label = TexMobject(tex)
+        label = Tex(tex)
         label.scale(self.label_scale_val)
         label.move_to(self.get_top())
         label.shift(MED_LARGE_BUFF*UP)
@@ -386,13 +386,13 @@ class CircleToPairsOfPoints(Scene):
         x, y = [np.sqrt(2)/2]*2
         dot = Dot(2*x*RIGHT + 2*y*UP, color = GREY_B)
 
-        equation = TexMobject("x", "^2", "+", "y", "^2", "=", "1")
+        equation = Tex("x", "^2", "+", "y", "^2", "=", "1")
         equation.set_color_by_tex("x", GREEN)
         equation.set_color_by_tex("y", RED)
         equation.to_corner(UP+LEFT)
         equation.add_background_rectangle()
 
-        coord_pair = TexMobject("(", "-%.02f"%x, ",", "-%.02f"%y, ")") 
+        coord_pair = Tex("(", "-%.02f"%x, ",", "-%.02f"%y, ")") 
         fixed_numbers = coord_pair.get_parts_by_tex("-")
         fixed_numbers.set_fill(opacity = 0)
         coord_pair.add_background_rectangle()
@@ -447,7 +447,7 @@ class CircleToPairsOfPoints(Scene):
 
         ######### Rotation equations ##########
 
-        rot_equation = TexMobject(
+        rot_equation = Tex(
             "\\Rightarrow"
             "\\big(\\cos(\\theta)x - \\sin(\\theta)y\\big)^2 + ",
             "\\big(\\sin(\\theta)x + \\cos(\\theta)y\\big)^2 = 1",
@@ -456,7 +456,7 @@ class CircleToPairsOfPoints(Scene):
         rot_equation.next_to(equation, RIGHT)
         rot_equation.add_background_rectangle()
 
-        words = TextMobject("Rotational \\\\ symmetry")
+        words = TexText("Rotational \\\\ symmetry")
         words.next_to(ORIGIN, UP)
         words.to_edge(RIGHT)
         words.add_background_rectangle()
@@ -512,10 +512,10 @@ class CirclesSpheresSumsSquares(ExternallyAnimatedScene):
 
 class BackAndForth(Scene):
     def construct(self):
-        analytic = TextMobject("Analytic")
+        analytic = TexText("Analytic")
         analytic.shift(FRAME_X_RADIUS*LEFT/2)
         analytic.to_edge(UP, buff = MED_SMALL_BUFF)
-        geometric = TextMobject("Geometric")
+        geometric = TexText("Geometric")
         geometric.shift(FRAME_X_RADIUS*RIGHT/2)
         geometric.to_edge(UP, buff = MED_SMALL_BUFF)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
@@ -523,18 +523,18 @@ class BackAndForth(Scene):
         v_line = Line(UP, DOWN).scale(FRAME_Y_RADIUS)
         self.add(analytic, geometric, h_line, v_line)
 
-        pair = TexMobject("(", "x", ",", "y", ")")
+        pair = Tex("(", "x", ",", "y", ")")
         pair.shift(FRAME_X_RADIUS*LEFT/2 + FRAME_Y_RADIUS*UP/3)
-        triplet = TexMobject("(", "x", ",", "y", ",", "z", ")")
+        triplet = Tex("(", "x", ",", "y", ",", "z", ")")
         triplet.shift(FRAME_X_RADIUS*LEFT/2 + FRAME_Y_RADIUS*DOWN/2)
         for mob in pair, triplet:
             arrow = DoubleArrow(LEFT, RIGHT)
             arrow.move_to(mob)
             arrow.shift(2*RIGHT)
             mob.arrow = arrow
-        circle_eq = TexMobject("x", "^2", "+", "y", "^2", "=", "1")
+        circle_eq = Tex("x", "^2", "+", "y", "^2", "=", "1")
         circle_eq.move_to(pair)
-        sphere_eq = TexMobject("x", "^2", "+", "y", "^2", "+", "z", "^2", "=", "1")
+        sphere_eq = Tex("x", "^2", "+", "y", "^2", "+", "z", "^2", "=", "1")
         sphere_eq.move_to(triplet)
 
         plane = NumberPlane(x_unit_size = 2, y_unit_size = 2)
@@ -569,7 +569,7 @@ class SphereForming(ExternallyAnimatedScene):
 
 class PreviousVideos(Scene):
     def construct(self):
-        titles = VGroup(*list(map(TextMobject, [
+        titles = VGroup(*list(map(TexText, [
             "Pi hiding in prime regularities",
             "Visualizing all possible pythagorean triples",
             "Borsuk-Ulam theorem",
@@ -592,12 +592,12 @@ class TODOTease(TODOStub):
 
 class AskAboutLongerLists(TeacherStudentsScene):
     def construct(self):
-        question = TextMobject(
+        question = TexText(
             "What about \\\\", 
             "$(x_1, x_2, x_3, x_4)?$"
         )
         tup = question[1]
-        alt_tups = list(map(TextMobject, [
+        alt_tups = list(map(TexText, [
             "$(x_1, x_2, x_3, x_4, x_5)?$",
             "$(x_1, x_2, \\dots, x_{99}, x_{100})?$"
         ]))
@@ -642,7 +642,7 @@ class Professionals(PiCreatureScene):
         self.analogies()
 
     def introduce_characters(self):
-        titles = VGroup(*list(map(TextMobject, [
+        titles = VGroup(*list(map(TexText, [
             "Mathematician",
             "Computer scientist",
             "Physicist",
@@ -658,7 +658,7 @@ class Professionals(PiCreatureScene):
         self.wait()
 
     def add_equation(self):
-        quaternion = TexMobject(
+        quaternion = Tex(
             "\\frac{1}{2}", "+", 
             "0", "\\textbf{i}", "+",
             "\\frac{\\sqrt{6}}{4}", "\\textbf{j}", "+",
@@ -672,10 +672,10 @@ class Professionals(PiCreatureScene):
             "k" : BLUE,
         })
 
-        array = TexMobject("[a_1, a_2, \\dots, a_{100}]")
+        array = Tex("[a_1, a_2, \\dots, a_{100}]")
         array.next_to(self.compy, UP)
 
-        kets = TexMobject(
+        kets = Tex(
             "\\alpha",
             "|\\!\\uparrow\\rangle + ",
             "\\beta",
@@ -711,9 +711,9 @@ class Professionals(PiCreatureScene):
         examples.add(Circle())
         examples.arrange(RIGHT, buff = 2)
         examples.to_edge(UP, buff = LARGE_BUFF)
-        labels = VGroup(*list(map(TextMobject, ["2D", "3D"])))
+        labels = VGroup(*list(map(TexText, ["2D", "3D"])))
 
-        title = TextMobject("Fly by instruments")
+        title = TexText("Fly by instruments")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -777,7 +777,7 @@ class OfferAHybrid(SliderScene):
         for line, vect in zip(v_lines.target, [LEFT, RIGHT]):
             line.shift(vect*FRAME_X_RADIUS/3)
 
-        equation = TexMobject("x^2 + y^2 + z^2 = 1")
+        equation = Tex("x^2 + y^2 + z^2 = 1")
         equation.generate_target()
         equation.shift(FRAME_X_RADIUS*LEFT/2)
         equation.target.shift(FRAME_WIDTH*LEFT/3)
@@ -792,7 +792,7 @@ class OfferAHybrid(SliderScene):
         self.wait()
 
     def get_titles(self):
-        titles = VGroup(*list(map(TextMobject, [
+        titles = VGroup(*list(map(TexText, [
             "Analytic", "Hybrid", "Geometric"
         ])))
         titles.to_edge(UP)
@@ -826,7 +826,7 @@ class DismissProjection(PiCreatureScene):
         self.transition_to_next_scene()
         
     def show_all_spheres(self):
-        equations = VGroup(*list(map(TexMobject, [
+        equations = VGroup(*list(map(Tex, [
             "x^2 + y^2 = 1",
             "x^2 + y^2 + z^2 = 1",
             "x^2 + y^2 + z^2 + w^2 = 1",
@@ -878,14 +878,14 @@ class DismissProjection(PiCreatureScene):
         sphere = self.spheres[-1]
         equation = self.equations[-1]
 
-        sphere_words = TextMobject("``4-dimensional sphere''")
+        sphere_words = TexText("``4-dimensional sphere''")
         sphere_words.next_to(sphere, DOWN+LEFT, buff = LARGE_BUFF)
         arrow = Arrow(
             sphere_words.get_right(), sphere.get_bottom(), 
             path_arc = np.pi/3, 
             color = BLUE
         )
-        descriptor = TexMobject(
+        descriptor = Tex(
             "\\text{Just lists of numbers like }", 
             "(%.02f \\,, %.02f \\,, %.02f \\,, %.02f \\,)"%tuple(self.example_vect)
         )
@@ -920,7 +920,7 @@ class DismissProjection(PiCreatureScene):
         sphere = self.spheres[-1]
 
         morty = self.pi_creature
-        alt_dims = VGroup(*list(map(TextMobject, ["5D", "6D", "7D"])))
+        alt_dims = VGroup(*list(map(TexText, ["5D", "6D", "7D"])))
         alt_dims.next_to(morty.eyes, UP, SMALL_BUFF)
         alt_dim = alt_dims[0]
 
@@ -992,9 +992,9 @@ class Introduce4DSliders(SliderScene):
         self.start_vect = DismissProjection.CONFIG["example_vect"]
         self.remove(self.sliders)
 
-        equation = TexMobject("x^2 + y^2 + z^2 + w^2 = 1")
+        equation = Tex("x^2 + y^2 + z^2 + w^2 = 1")
         x, y, z, w = self.start_vect
-        tup = TexMobject(
+        tup = Tex(
             "(", "%.02f \\,"%x, 
             ",", "%.02f \\,"%y, 
             ",", "%.02f \\,"%z, 
@@ -1085,7 +1085,7 @@ class TwoDimensionalCase(Introduce4DSliders):
         dot = Dot(color = YELLOW)
         dot.move_to(plane.coords_to_point(1, 0))
 
-        equation = TexMobject("x^2 + y^2 = 1")
+        equation = Tex("x^2 + y^2 = 1")
         equation.to_corner(UP + RIGHT)
 
         self.add(plane, circle, dot, equation)
@@ -1125,7 +1125,7 @@ class TwoDimensionalCase(Introduce4DSliders):
         decimals.arrange(RIGHT, buff = LARGE_BUFF)
         decimals.next_to(rects, DOWN, LARGE_BUFF)
 
-        real_estate_word = TextMobject("``Real estate''")
+        real_estate_word = TexText("``Real estate''")
         real_estate_word.next_to(decimals, DOWN, MED_LARGE_BUFF)
         self.play(FadeIn(real_estate_word))
 
@@ -1278,7 +1278,7 @@ class TwoDimensionalCase(Introduce4DSliders):
         self.wait(10)
 
     def write_distance_squared(self):
-        d_squared = TexMobject("(\\text{Distance})^2")
+        d_squared = Tex("(\\text{Distance})^2")
         d_squared.next_to(self.real_estate_word, DOWN)
         d_squared.set_color(YELLOW)
 
@@ -1313,7 +1313,7 @@ class ThreeDCase(TwoDimensionalCase):
     }
     def setup(self):
         SliderScene.setup(self)
-        self.equation = TexMobject(
+        self.equation = Tex(
             "x^2", "+", "y^2", "+", "z^2", "=", "1"
         )
         self.equation.to_corner(UP+RIGHT)
@@ -1356,7 +1356,7 @@ class ThreeDCase(TwoDimensionalCase):
                 color = color
             )
             arrows.add(arrow)
-        real_estate_word = TextMobject("``Real estate''")
+        real_estate_word = TexText("``Real estate''")
         real_estate_word.next_to(decimals, DOWN, MED_LARGE_BUFF)
 
         sliders = self.sliders
@@ -1564,7 +1564,7 @@ class TwoDBoxExample(Scene):
         for x, y in it.product(*[[1, -1]]*2):
             point = self.plane.coords_to_point(x, y)
             dot = Dot(point, color = WHITE)
-            coords = TexMobject("(%d, %d)"%(x, y))
+            coords = Tex("(%d, %d)"%(x, y))
             coords.add_background_rectangle()
             coords.next_to(point, point, SMALL_BUFF)
             corner_dots.add(dot)
@@ -1596,7 +1596,7 @@ class TwoDBoxExample(Scene):
         radius.rotate(-np.pi/4)
         c0_center = circles[0].get_center()
         radius.shift(c0_center)
-        r_equals_1 = TexMobject("r = 1")
+        r_equals_1 = Tex("r = 1")
         r_equals_1.add_background_rectangle()
         r_equals_1.next_to(
             radius.point_from_proportion(0.75),
@@ -1632,7 +1632,7 @@ class TwoDBoxExample(Scene):
             dim_to_match = 0
         )
         radius.rotate(np.pi/4)
-        r_equals_q = TexMobject("r", "= ???")
+        r_equals_q = Tex("r", "= ???")
         r_equals_q[1].add_background_rectangle()
         r_equals_q.next_to(radius, RIGHT, buff = -SMALL_BUFF)
 
@@ -1657,23 +1657,23 @@ class TwoDBoxExample(Scene):
             stroke_width = 6,
             stroke_color = WHITE,
         )
-        bottom_one = TexMobject("1")
+        bottom_one = Tex("1")
         bottom_one.next_to(triangle.get_bottom(), UP, SMALL_BUFF)
         bottom_one.shift(MED_SMALL_BUFF*RIGHT)
-        side_one = TexMobject("1")
+        side_one = Tex("1")
         side_one.next_to(triangle, RIGHT)
-        sqrt_1_plus_1 = TexMobject("\\sqrt", "{1^2 + 1^2}")
-        sqrt_2 = TexMobject("\\sqrt", "{2}")
+        sqrt_1_plus_1 = Tex("\\sqrt", "{1^2 + 1^2}")
+        sqrt_2 = Tex("\\sqrt", "{2}")
         for sqrt in sqrt_1_plus_1, sqrt_2:
             sqrt.add_background_rectangle()
             sqrt.next_to(ORIGIN, UP, SMALL_BUFF)
             sqrt.rotate(np.pi/4)
             sqrt.shift(triangle.get_center())
 
-        root_2_value = TexMobject("\\sqrt{2} \\approx 1.414")
+        root_2_value = Tex("\\sqrt{2} \\approx 1.414")
         root_2_value.to_corner(UP+RIGHT)
         root_2_value.add_background_rectangle()
-        root_2_minus_1_value = TexMobject(
+        root_2_minus_1_value = Tex(
             "\\sqrt{2} - 1 \\approx 0.414"
         )
         root_2_minus_1_value.next_to(root_2_value, DOWN)
@@ -1684,7 +1684,7 @@ class TwoDBoxExample(Scene):
         c0_center = self.corner_circles[0].get_center()
         corner_radius.rotate(-np.pi/2, about_point = c0_center)
 
-        rhs = TexMobject("=", "\\sqrt", "{2}", "-1")
+        rhs = Tex("=", "\\sqrt", "{2}", "-1")
         rhs.next_to(self.inner_r, RIGHT, SMALL_BUFF, DOWN)
         rhs.shift(0.5*SMALL_BUFF*DOWN)
         sqrt_2_target = VGroup(*rhs[1:3])
@@ -1722,11 +1722,11 @@ class ThreeDBoxExample(ExternallyAnimatedScene):
 class ThreeDCubeCorners(Scene):
     def construct(self):
         coordinates = VGroup(*[
-            TexMobject("(%d,\\, %d,\\, %d)"%(x, y, z))
+            Tex("(%d,\\, %d,\\, %d)"%(x, y, z))
             for x, y, z in it.product(*3*[[1, -1]])
         ])
         coordinates.arrange(DOWN, aligned_edge = LEFT)
-        name = TextMobject("Corners: ")
+        name = TexText("Corners: ")
         name.next_to(coordinates[0], LEFT)
         group = VGroup(name, coordinates)
         group.set_height(FRAME_HEIGHT - 1)
@@ -1738,7 +1738,7 @@ class ThreeDCubeCorners(Scene):
 
 class ShowDistanceFormula(TeacherStudentsScene):
     def construct(self):
-        rule = TexMobject(
+        rule = Tex(
             "||(", "x_1", ", ", "x_2", "\\dots, ", "x_n", ")||", 
             "=", 
             "\\sqrt", "{x_1^2", " + ", "x_2^2", " +\\cdots", "x_n^2", "}"
@@ -1792,11 +1792,11 @@ class GeneralizePythagoreanTheoremBeyondTwoD(ThreeDScene):
         side.move_to(rect.get_right())
         side.set_color(tex_to_color_map["y"])
 
-        x = TexMobject("x")
+        x = Tex("x")
         x.next_to(rect.get_bottom(), UP, SMALL_BUFF)
-        y = TexMobject("y")
+        y = Tex("y")
         y.next_to(rect.get_right(), LEFT, SMALL_BUFF)
-        hyp = TexMobject("\\sqrt", "{x", "^2 + ", "y", "^2}")
+        hyp = Tex("\\sqrt", "{x", "^2 + ", "y", "^2}")
         hyp.set_color_by_tex_to_color_map(tex_to_color_map)
         hyp.next_to(ORIGIN, UP)
         hyp.rotate(diag.get_angle())
@@ -1818,7 +1818,7 @@ class GeneralizePythagoreanTheoremBeyondTwoD(ThreeDScene):
         corner = diag.get_end()
         z_line = Line(corner, corner + 3*UP)
         z_line.set_color(tex_to_color_map["z"])
-        z = TexMobject("z")
+        z = Tex("z")
         z.set_color(tex_to_color_map["z"])
         z.next_to(z_line, RIGHT)
         dot = Dot(z_line.get_end())
@@ -1843,16 +1843,16 @@ class GeneralizePythagoreanTheoremBeyondTwoD(ThreeDScene):
 
 class ThreeDBoxFormulas(Scene):
     def construct(self):
-        question = TexMobject(
+        question = Tex(
             "||(1, 1, 1)||", "=", "???"
         )
-        answer = TexMobject(
+        answer = Tex(
             "||(1, 1, 1)||", "&=", "\\sqrt{1^2 + 1^2 + 1^2}\\\\",
             "&= \\sqrt{3}\\\\", "&\\approx", "1.73",
         )
         for mob in question, answer:
             mob.to_corner(UP+LEFT)
-        inner_r = TexMobject(
+        inner_r = Tex(
             "\\text{Inner radius}", "&=", "\\sqrt{3} - 1\\\\",
             "&\\approx", "0.73"
         )
@@ -1955,7 +1955,7 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
         self.ask_about_inner_real_estate()
 
     def ask_about_off_center_circle(self):
-        question = TextMobject("Off-center circles?")
+        question = TexText("Off-center circles?")
         question.next_to(self.plane, UP)
 
         self.initialize_ambiant_slider_movement()
@@ -2008,8 +2008,8 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
 
     def write_x_and_y_real_estate(self):
         phrases = VGroup(
-            TextMobject("$x$", "real estate:", "$(x-1)^2$"),
-            TextMobject("$y$", "real estate:", "$(y+1)^2$"),
+            TexText("$x$", "real estate:", "$(x-1)^2$"),
+            TexText("$y$", "real estate:", "$(y+1)^2$"),
         )
         phrases.next_to(self.plane, UP)
         phrases[0].set_color_by_tex("x", GREEN)
@@ -2088,7 +2088,7 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
             self.sliders[0].dial.get_left() + MED_SMALL_BUFF*LEFT,
             self.sliders[1].dial.get_right() + MED_SMALL_BUFF*RIGHT,
         )
-        words = TextMobject("Evenly shared \\\\ real estate")
+        words = TexText("Evenly shared \\\\ real estate")
         words.scale(0.8)
         words.next_to(re_line, RIGHT)
         self.play(ShowCreation(re_line))
@@ -2115,8 +2115,8 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
         self.wait()
 
         #Comment on real estate exchange
-        x_words = TextMobject("Gain expensive \\\\", "real estate")
-        y_words = TextMobject("Give up cheap \\\\", "real estate")
+        x_words = TexText("Gain expensive \\\\", "real estate")
+        y_words = TexText("Give up cheap \\\\", "real estate")
         VGroup(x_words, y_words).scale(0.8)
         x_words.next_to(self.re_line, UP+LEFT)
         x_words.shift(SMALL_BUFF*(DOWN+LEFT))
@@ -2193,10 +2193,10 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
         self.wait(9)
 
     def ask_about_inner_real_estate(self):
-        question = TextMobject("What is \\\\ $x^2 + y^2$?")
+        question = TexText("What is \\\\ $x^2 + y^2$?")
         question.next_to(self.re_line, RIGHT)
 
-        rhs = TexMobject("<0.5^2 + 0.5^2")
+        rhs = Tex("<0.5^2 + 0.5^2")
         rhs.scale(0.8)
         rhs.next_to(question, DOWN)
         rhs.to_edge(RIGHT)
@@ -2205,7 +2205,7 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
             slider.number_to_point(0.5) + MED_LARGE_BUFF*vect
             for slider, vect in zip(self.sliders, [LEFT, RIGHT])
         ])
-        half = TexMobject("0.5")
+        half = Tex("0.5")
         half.scale(self.sliders[0].number_scale_val)
         half.next_to(half_line, LEFT, SMALL_BUFF)
 
@@ -2266,7 +2266,7 @@ class ThreeDBoxExampleWithSliders(SliderScene):
         self.comment_on_inner_sphere_smallness()
 
     def name_corner_sphere(self):
-        sphere_name = TextMobject(
+        sphere_name = TexText(
             """Sphere with radius 1\\\\
             centered at (1, 1, 1)"""
         )
@@ -2289,7 +2289,7 @@ class ThreeDBoxExampleWithSliders(SliderScene):
     def point_out_closest_point(self):
         target_x = 1-np.sqrt(1./3)
         target_vector = np.array(3*[target_x])
-        re_words = TextMobject(
+        re_words = TexText(
             "$x$, $y$ and $z$ each have \\\\",
             "$\\frac{1}{3}$", "units of real estate"
         )
@@ -2325,7 +2325,7 @@ class ThreeDBoxExampleWithSliders(SliderScene):
             for i, vect in [(0, LEFT), (2, RIGHT)]
         ])
         half_line.set_stroke(MAROON_B, 6)
-        half_label = TexMobject("0.5")
+        half_label = Tex("0.5")
         half_label.scale(self.sliders[0].number_scale_val)
         half_label.next_to(half_line, LEFT, MED_SMALL_BUFF)
         half_label.set_color(half_line.get_color())
@@ -2338,7 +2338,7 @@ class ThreeDBoxExampleWithSliders(SliderScene):
         ])
 
         cross = Cross(self.re_words.get_parts_by_tex("frac"))
-        new_re = TexMobject("(0.5)^2 = 0.25")
+        new_re = Tex("(0.5)^2 = 0.25")
         new_re.next_to(cross, DOWN, MED_SMALL_BUFF, LEFT)
         new_re.set_color(MAROON_B)
 
@@ -2377,11 +2377,11 @@ class ThreeDBoxExampleWithSliders(SliderScene):
             slider.real_estate_ticks
             for slider in self.sliders
         ])
-        inner_sphere_words = TextMobject(
+        inner_sphere_words = TexText(
             "Also a point on \\\\", "the inner sphere"
         )
         inner_sphere_words.next_to(self.re_line, RIGHT)
-        question = TextMobject("How much \\\\", "real estate?")
+        question = TexText("How much \\\\", "real estate?")
         question.next_to(self.re_line, RIGHT, MED_LARGE_BUFF)
 
         self.play(
@@ -2408,7 +2408,7 @@ class ThreeDBoxExampleWithSliders(SliderScene):
         self.re_question = question
 
     def place_bound_on_inner_real_estate(self):
-        bound = TexMobject(
+        bound = Tex(
             "&< 3(0.5)^2 ",
             "= 0.75"
         )
@@ -2440,7 +2440,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         self.inner_sphere_touches_box()
 
     def list_corner_coordinates(self):
-        title = TextMobject(
+        title = TexText(
             "$2 \\!\\times\\! 2 \\!\\times\\! 2 \\!\\times\\! 2$ box vertices:"
         )
         title.shift(FRAME_X_RADIUS*LEFT/2)
@@ -2448,7 +2448,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
 
         coordinates = list(it.product(*4*[[1, -1]]))
         coordinate_mobs = VGroup(*[
-            TexMobject("(%d, %d, %d, %d)"%tup)
+            Tex("(%d, %d, %d, %d)"%tup)
             for tup in coordinates
         ])
         coordinate_mobs.arrange(DOWN, aligned_edge = LEFT)
@@ -2467,7 +2467,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         self.box_vertices_title = title
 
     def show_16_corner_spheres(self):
-        sphere_words = VGroup(TextMobject("Sphere centered at"))
+        sphere_words = VGroup(TexText("Sphere centered at"))
         sphere_words.scale(0.8)
         sphere_words.next_to(self.sliders, RIGHT)
         sphere_words.shift(2*UP)
@@ -2509,7 +2509,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
             self.sliders[i].number_to_point(0.5)+MED_SMALL_BUFF*vect
             for i, vect in [(0, LEFT), (-1, RIGHT)]
         ])
-        half_label = TexMobject("0.5")
+        half_label = Tex("0.5")
         half_label.scale(self.sliders[0].number_scale_val)
         half_label.next_to(re_line, LEFT, MED_SMALL_BUFF)
         half_label.set_color(MAROON_B)
@@ -2527,8 +2527,8 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         self.half_label = half_label
 
     def show_real_estate_at_closest_point(self):
-        words = TextMobject("Total real estate:")
-        value = TexMobject("4(0.5)^2 = 4(0.25) = 1")
+        words = TexText("Total real estate:")
+        value = Tex("4(0.5)^2 = 4(0.25) = 1")
         value.next_to(words, DOWN)
         re_words = VGroup(words, value)
         re_words.scale(0.8)
@@ -2558,7 +2558,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         sphere_words.generate_target()
         sphere_words.target.shift(2*DOWN)
         old_coords = sphere_words.target[1]
-        new_coords = TexMobject("(0, 0, 0, 0)")
+        new_coords = Tex("(0, 0, 0, 0)")
         new_coords.replace(old_coords, dim_to_match = 1)
         new_coords.set_color(old_coords.get_color())
         Transform(old_coords, new_coords).update(1)
@@ -2595,7 +2595,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         self.wait(4)
 
     def compute_inner_radius_numerically(self):
-        computation = TexMobject(
+        computation = Tex(
             "R_\\text{Inner}", 
             "&= ||(1, 1, 1, 1)|| - 1 \\\\",
             # "&= \\sqrt{1^2 + 1^2 + 1^2 + 1^2} - 1 \\\\",
@@ -2619,7 +2619,7 @@ class FourDBoxExampleWithSliders(ThreeDBoxExampleWithSliders):
         self.computation = computation
 
     def inner_sphere_touches_box(self):
-        touching_words = TextMobject(
+        touching_words = TexText(
             "This point touches\\\\",
             "the $2 \\!\\times\\! 2 \\!\\times\\! 2 \\!\\times\\! 2$ box!"
         )
@@ -2709,12 +2709,12 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
         self.poke_out_of_box()
 
     def show_32_corner_spheres(self):
-        sphere_words = VGroup(TextMobject("Sphere centered at"))
+        sphere_words = VGroup(TexText("Sphere centered at"))
         sphere_words.next_to(self.sliders, RIGHT, MED_LARGE_BUFF)
         sphere_words.shift(2.5*UP)
         self.add(sphere_words)
 
-        n_sphere_words = TextMobject("32 corner spheres")
+        n_sphere_words = TexText("32 corner spheres")
         n_sphere_words.to_edge(LEFT)
         n_sphere_words.shift(2*UP)
         self.add(n_sphere_words)
@@ -2723,7 +2723,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
             s = str(tuple(coords))
             s = s.replace("1", "+1")
             s = s.replace("-+1", "-1")
-            coords_mob = TexMobject(s)
+            coords_mob = Tex(s)
             coords_mob.set_color(GREEN)
             coords_mob.next_to(sphere_words, DOWN)
             for slider, x in zip(self.sliders, coords):
@@ -2749,7 +2749,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
             self.sliders[i].number_to_point(target_x)+MED_SMALL_BUFF*vect
             for i, vect in [(0, LEFT), (-1, RIGHT)]
         ])
-        re_words = TextMobject(
+        re_words = TexText(
             "$0.2$", "units of real \\\\ estate each"
         )
         re_words.next_to(self.sphere_words, DOWN, MED_LARGE_BUFF)
@@ -2788,7 +2788,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
             for i, vect in [(0, LEFT), (-1, RIGHT)]
         ])
         half_line.set_color(MAROON_B)
-        half_label = TexMobject("0.5")
+        half_label = Tex("0.5")
         half_label.scale(self.sliders[0].number_scale_val)
         half_label.next_to(half_line, LEFT, MED_SMALL_BUFF)
         half_label.set_color(half_line.get_color())
@@ -2798,7 +2798,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
             slider.dial.copy().set_fill(WHITE, 0.75)
             for slider in self.sliders
         ])
-        point_25 = TexMobject("0.25")
+        point_25 = Tex("0.25")
         point_25.set_color(half_label.get_color())
         point_25.move_to(self.re_words[0], RIGHT)
         self.re_words.save_state()
@@ -2838,13 +2838,13 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
 
         self.sphere_words.generate_target()
         old_coords = self.sphere_words.target[1]
-        new_coords = TexMobject(str(tuple(5*[0])))
+        new_coords = Tex(str(tuple(5*[0])))
         new_coords.replace(old_coords, dim_to_match = 1)
         new_coords.set_color(old_coords.get_color())
         Transform(old_coords, new_coords).update(1)
 
         self.re_words.generate_target()
-        new_re = TexMobject("0.31")
+        new_re = Tex("0.31")
         new_re.set_color(GREEN)
         old_re = self.re_words.target[0]
         new_re.move_to(old_re, RIGHT)
@@ -2876,7 +2876,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
         self.wait(12)
 
     def compute_radius(self):
-        computation = TexMobject(
+        computation = Tex(
             "R_{\\text{inner}} &= \\sqrt{5}-1 \\\\",
             "&\\approx 1.24"
         )
@@ -2889,7 +2889,7 @@ class FiveDBoxExampleWithSliders(FourDBoxExampleWithSliders):
         self.wind_down_ambient_movement(0)
         self.reset_dials([np.sqrt(5)-1])
 
-        words = TextMobject("Poking outside \\\\ the box!")
+        words = TexText("Poking outside \\\\ the box!")
         words.to_edge(LEFT)
         words.set_color(RED)
         arrow = Arrow(
@@ -3009,7 +3009,7 @@ class TenDBoxExampleWithSliders(FiveDBoxExampleWithSliders):
         self.wait(5)
 
     def compute_inner_radius_numerically(self):
-        computation = TexMobject(
+        computation = Tex(
             "R_{\\text{inner}} &= \\sqrt{10}-1 \\\\",
             "&\\approx 2.16"
         )
@@ -3024,7 +3024,7 @@ class TenDBoxExampleWithSliders(FiveDBoxExampleWithSliders):
         self.wind_down_ambient_movement()
         self.reset_dials([np.sqrt(10)-1])
 
-        words = TextMobject(
+        words = TexText(
             "Outside the \\emph{outer} \\\\",
             "bounding box!"
         )
@@ -3044,7 +3044,7 @@ class TenDBoxExampleWithSliders(FiveDBoxExampleWithSliders):
 
 class TwoDOuterBox(TwoDInnerSphereTouchingBox):
     def construct(self):
-        words = TextMobject("$4 \\!\\times\\! 4$ outer bounding box")
+        words = TexText("$4 \\!\\times\\! 4$ outer bounding box")
         words.next_to(self.plane, UP)
         words.set_color(MAROON_B)
         line = Line(
@@ -3069,7 +3069,7 @@ class ThreeDOuterBoundingBox(ExternallyAnimatedScene):
 
 class ThreeDOuterBoundingBoxWords(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "$4 \\!\\times\\! 4\\!\\times\\! 4$ outer\\\\",
             "bounding box"
         )
@@ -3094,7 +3094,7 @@ class FaceDistanceDoesntDependOnDimension(TwoDOuterBox):
             stroke_width = 6,
             color = YELLOW
         )
-        length_words = TextMobject("Always 2, in all dimensions")
+        length_words = TexText("Always 2, in all dimensions")
         length_words.next_to(self.plane, RIGHT, MED_LARGE_BUFF, UP)
         arrow = Arrow(length_words[4].get_bottom(), line.get_center())
 
@@ -3167,7 +3167,7 @@ class ProportionOfSphereInBox(GraphScene):
     }
     def construct(self):
         self.setup_axes()
-        title = TextMobject(
+        title = TexText(
             "Proportion of inner sphere \\\\ inside box"
         )
         title.next_to(self.y_axis, RIGHT, MED_SMALL_BUFF, UP)
@@ -3178,7 +3178,7 @@ class ProportionOfSphereInBox(GraphScene):
         too_high = graph.get_points()[:,1] > max_y
         graph.get_points()[too_high, 1] = max_y
 
-        footnote = TextMobject("""
+        footnote = TexText("""
             \\begin{flushleft}
             *I may or may not have used an easy-to-compute \\\\
             but not-totally-accurate curve here, due to \\\\
@@ -3264,7 +3264,7 @@ class QuestionsFromStudents(TeacherStudentsScene):
 
 class FunHighDSpherePhenomena(Scene):
     def construct(self):
-        title = TextMobject(
+        title = TexText(
             "Fun high-D sphere phenomena"
         )
         title.to_edge(UP)
@@ -3273,7 +3273,7 @@ class FunHighDSpherePhenomena(Scene):
         h_line.next_to(title, DOWN)
         self.add(title, h_line)
 
-        items = VGroup(*list(map(TextMobject, [
+        items = VGroup(*list(map(TexText, [
             "$\\cdot$ Most volume is near the equator",
             "$\\cdot$ Most volume is near the surface",
             "$\\cdot$ Sphere packing in 8 dimensions",
@@ -3331,8 +3331,8 @@ class Skeptic(TeacherStudentsScene, SliderScene):
         self.initialize_ambiant_slider_movement()
 
     def construct(self):
-        analytic_thought = VGroup(TextMobject("No different from"))
-        equation = TexMobject(
+        analytic_thought = VGroup(TexText("No different from"))
+        equation = Tex(
             "x", "^2 + ", "y", "^2 + ", "z", "^2 + ", "w", "^2 = 1"
         )
         variables = VGroup(*[
@@ -3422,7 +3422,7 @@ class JustBecauseYouCantVisualize(Scene):
         phrase += "Just because you can't visualize\\\\ "
         phrase += "something   doesn't mean you can't\\\\ "
         phrase += "still think about it visually."
-        phrase_mob = TextMobject(*phrase.split(" "))
+        phrase_mob = TexText(*phrase.split(" "))
         phrase_mob.set_color_by_tex("visual", YELLOW)
         phrase_mob.next_to(ORIGIN, UP)
 
@@ -3435,14 +3435,14 @@ class JustBecauseYouCantVisualize(Scene):
 
 class Announcements(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Announcements")
+        title = TexText("Announcements")
         title.scale(1.5)
         title.to_edge(UP, buff = MED_SMALL_BUFF)
         h_line = Line(LEFT, RIGHT).scale(3)
         h_line.next_to(title, DOWN)
         self.add(title, h_line)
 
-        items = VGroup(*list(map(TextMobject, [
+        items = VGroup(*list(map(TexText, [
             "$\\cdot$ Where to learn more",
             "$\\cdot$ Q\\&A Followup (podcast!)",
         ])))
@@ -3464,7 +3464,7 @@ class Promotion(PiCreatureScene):
         "seconds_to_blink" : 5,
     }
     def construct(self):
-        url = TextMobject("https://brilliant.org/3b1b/")
+        url = TexText("https://brilliant.org/3b1b/")
         url.to_corner(UP+LEFT)
 
         rect = Rectangle(height = 9, width = 16)
@@ -3504,13 +3504,13 @@ class BrilliantScrollThroughCourses(ExternallyAnimatedScene):
 
 class Podcast(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Podcast!")
+        title = TexText("Podcast!")
         title.scale(1.5)
         title.to_edge(UP)
         title.shift(FRAME_X_RADIUS*LEFT/2)
         self.add(title)
 
-        q_and_a = TextMobject("Q\\&A Followup")
+        q_and_a = TexText("Q\\&A Followup")
         q_and_a.next_to(self.teacher.get_corner(UP+LEFT), UP, LARGE_BUFF)
 
         self.play(
@@ -3601,7 +3601,7 @@ class Thumbnail(SliderScene):
         vect /= get_norm(vect)
         self.set_to_vector(vect)
 
-        title = TextMobject("10D Sphere?")
+        title = TexText("10D Sphere?")
         title.scale(2)
         title.to_edge(UP)
         self.add(title)
@@ -3629,7 +3629,7 @@ class TenDThumbnail(Scene):
         group.to_edge(LEFT)
         square.scale(2)
 
-        words = TextMobject(
+        words = TexText(
             "What\\\\"
             "about\\\\"
             "in 10D?\\\\"

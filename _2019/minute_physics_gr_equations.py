@@ -154,7 +154,7 @@ class GREquations(Scene):
             ]
 
         result = VGroup(*[
-            TexMobject(*args, **config)
+            Tex(*args, **config)
             for args in tex_args
         ])
         result.arrange(RIGHT, buff=SMALL_BUFF)

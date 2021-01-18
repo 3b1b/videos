@@ -97,14 +97,14 @@ class CircleConstants(Scene):
         self.radius.set_color(RADIUS_COLOR)
         self.circle_arc.set_color(CIRCUM_COLOR)
 
-        self.pi_equals = TexMobject("\pi\\approx", color = CIRCUM_COLOR)
+        self.pi_equals = Tex("\pi\\approx", color = CIRCUM_COLOR)
         self.decimal = DecimalNumber(0, color = CIRCUM_COLOR)
         self.decimal.next_to(self.pi_equals, RIGHT, buff = 0.25)
         self.circum_label = VGroup(self.pi_equals, self.decimal)
         self.circum_label.next_to(self.radius, RIGHT, buff = RADIUS_BUFF_HOR)
 
             
-        self.one = TexMobject("1", color = RADIUS_COLOR)
+        self.one = Tex("1", color = RADIUS_COLOR)
         self.one.next_to(self.radius, UP)
 
         self.play(ShowCreation(self.radius), FadeIn(self.one))
@@ -149,7 +149,7 @@ class AnalysisQuote(Scene):
 
     def construct(self):
 
-        text = TextMobject('``We therefore set the radius of \\\\'\
+        text = TexText('``We therefore set the radius of \\\\'\
          'the circle\dots to be = 1, and \dots\\\\'\
          'through approximations the \\\\'\
          'semicircumference of said circle  \\\\'\
@@ -179,7 +179,7 @@ class BernoulliQuote(Scene):
 
     def construct(self):
 
-        text = TextMobject('``Your most profound investigation of the series \\\\'\
+        text = TexText('``Your most profound investigation of the series \\\\'\
          '$1+{1\over 4}+{1\over 9}+{1\over 16} + $ etc., which I had found to be \\\\'\
           'one sixth of the square of $\pi$ itself\dots, not only\\\\'\
         ' gave me the greatest pleasure, but also renown \\\\'\
@@ -222,7 +222,7 @@ def get_circle_drawing_terms(radius = 1, positioning_func = lambda m : m.center(
     positioning_func(circle)
     radius = Line(circle.get_center(), circle.get_points()[0])
     radius.set_color(WHITE)
-    one = TexMobject("1")
+    one = Tex("1")
     one.scale(0.75)
     one_update = UpdateFromFunc(
         one, lambda m : m.move_to(
@@ -268,9 +268,9 @@ class PiTauDebate(PiCreatureScene):
         pi, tau = self.pi, self.tau
         self.add(pi, tau)
 
-        pi_value = TextMobject("3.1415...!")
+        pi_value = TexText("3.1415...!")
         pi_value.set_color(BLUE)
-        tau_value = TextMobject("6.2831...!")
+        tau_value = TexText("6.2831...!")
         tau_value.set_color(GREEN)
 
         self.play(PiCreatureSays(
@@ -313,7 +313,7 @@ class PiTauDebate(PiCreatureScene):
         circle.move_to(pi)
         circle.to_edge(UP, buff = MED_LARGE_BUFF)
         diameter = Line(circle.get_left(), circle.get_right())
-        one = TexMobject("1")
+        one = Tex("1")
         one.scale(0.75)
         one.next_to(diameter, UP, SMALL_BUFF)
 
@@ -362,13 +362,13 @@ class HartlAndPalais(Scene):
         palais_rect = hartl_rect.copy()
         palais_rect.to_edge(RIGHT)
 
-        tau_words = TextMobject("$\\tau$ ``tau''")
+        tau_words = TexText("$\\tau$ ``tau''")
         tau_words.next_to(hartl_rect, UP)
 
-        hartl_words = TextMobject("Michael Hartl's \\\\ ``Tau manifesto''")
+        hartl_words = TexText("Michael Hartl's \\\\ ``Tau manifesto''")
         hartl_words.next_to(hartl_rect, DOWN)
 
-        palais_words = TextMobject("Robert Palais' \\\\ ``Pi is Wrong!''")
+        palais_words = TexText("Robert Palais' \\\\ ``Pi is Wrong!''")
         palais_words.next_to(palais_rect, DOWN)
 
         for words in hartl_words, palais_words:
@@ -395,10 +395,10 @@ class HartlAndPalais(Scene):
 class ManyFormulas(Scene):
     def construct(self):
         formulas = VGroup(
-            TexMobject("\\sin(x + \\tau) = \\sin(x)"),
-            TexMobject("e^{\\tau i} = 1"),
-            TexMobject("n! \\approx \\sqrt{\\tau n} \\left(\\frac{n}{e} \\right)^n"),
-            TexMobject("c_n = \\frac{1}{\\tau} \\int_0^\\tau f(x) e^{inx}dx"),
+            Tex("\\sin(x + \\tau) = \\sin(x)"),
+            Tex("e^{\\tau i} = 1"),
+            Tex("n! \\approx \\sqrt{\\tau n} \\left(\\frac{n}{e} \\right)^n"),
+            Tex("c_n = \\frac{1}{\\tau} \\int_0^\\tau f(x) e^{inx}dx"),
         )
         formulas.arrange(DOWN, buff = MED_LARGE_BUFF)
         formulas.to_edge(LEFT)
@@ -424,7 +424,7 @@ class ManyFormulas(Scene):
             mini_arc = arc.copy()
             mini_arc.set_stroke(WHITE, 2)
             mini_arc.scale(0.15, about_point = circle.get_center())
-            tau_tex = TexMobject("\\tau/%d"%denom)
+            tau_tex = Tex("\\tau/%d"%denom)
             point = mini_arc.point_from_proportion(0.5)
             tau_tex.next_to(point, direction = point - circle.get_center())
             angle_group = VGroup(radius_copy, mini_arc, tau_tex, arc)
@@ -493,7 +493,7 @@ class EulerWrites628(Scene):
         rect.move_to(image)
         rect.shift(0.15*DOWN)
 
-        words = TextMobject(
+        words = TexText(
             "``Let", "$\\pi$", "be the", "circumference", 
             "of a circle whose", "radius = 1''",
         )
@@ -515,7 +515,7 @@ class EulerWrites628(Scene):
         unwrapped_perimeter.next_to(circle, DOWN)
         brace = Brace(unwrapped_perimeter, UP, buff = SMALL_BUFF)
 
-        perimeter = TexMobject(
+        perimeter = Tex(
             "\\pi\\epsilon\\rho\\iota\\mu\\epsilon\\tau\\rho\\text{o}\\varsigma",
             "\\text{ (perimeter)}",
             "="
@@ -567,15 +567,15 @@ class HeroAndVillain(Scene):
         bad_euler.move_to(FRAME_X_RADIUS*RIGHT/2)
         bad_euler_pixelated.move_to(bad_euler)
 
-        good_euler_label = TextMobject("Leonhard Euler")
+        good_euler_label = TexText("Leonhard Euler")
         good_euler_label.next_to(good_euler, DOWN)
-        tau_words = TextMobject("Used 6.2831...")
+        tau_words = TexText("Used 6.2831...")
         tau_words.next_to(good_euler, UP)
         tau_words.set_color(GREEN)
 
-        bad_euler_label = TextMobject("Also Euler...")
+        bad_euler_label = TexText("Also Euler...")
         bad_euler_label.next_to(bad_euler, DOWN)
-        pi_words = TextMobject("Used 3.1415...")
+        pi_words = TexText("Used 3.1415...")
         pi_words.set_color(RED)
         pi_words.next_to(bad_euler, UP)
 
@@ -601,7 +601,7 @@ class AnalysisQuote(Scene):
         analysis.set_height(FRAME_HEIGHT)
         analysis.to_edge(LEFT, buff = 0)
 
-        text = TextMobject(
+        text = TexText(
             "``\\dots set the radius of",
             "the circle\\dots to be = 1, \\dots \\\\",
             "through approximations the",
@@ -611,7 +611,7 @@ class AnalysisQuote(Scene):
             "brevity, \\\\ I will write", "$\pi$\\dots''",
             alignment = ''
         )
-        pi_formula = TexMobject(
+        pi_formula = Tex(
             "\\pi", "=", "{ \\text{semicircumference}", "\\over", "\\text{radius}}"
         )
         text.set_width(FRAME_X_RADIUS)
@@ -660,9 +660,9 @@ class QuarterTurn(Scene):
         )
         self.wait()
 
-        pi_halves = TexMobject("\\pi", "/2")
+        pi_halves = Tex("\\pi", "/2")
         pi_halves[0].set_color(RED)
-        tau_fourths = TexMobject("\\tau", "/4")
+        tau_fourths = Tex("\\tau", "/4")
         tau_fourths[0].set_color(GREEN)
         for mob in pi_halves, tau_fourths:
             mob.next_to(decimal, UP)
@@ -692,7 +692,7 @@ class UsingTheta(Scene):
         arc.set_color(GREEN)
         start_arc = arc.copy()
 
-        theta = TexMobject("\\theta", "=")
+        theta = Tex("\\theta", "=")
         theta[0].match_color(arc)
         theta.add_background_rectangle()
         update_theta = Mobject.add_updater(
@@ -726,7 +726,7 @@ class UsingTheta(Scene):
 
 class ThingsNamedAfterEuler(Scene):
     def construct(self):
-        group = VGroup(*list(map(TextMobject, [
+        group = VGroup(*list(map(TexText, [
             "Euler's formula (Complex analysis)",
             "Euler's formula (Graph theory)",
             "Euler's formula (Mechanical engineering)",
@@ -756,7 +756,7 @@ class EulerThinking(Scene):
         bubble.shift(0.8*LEFT)
         bubble.set_fill(BLACK, 0.3)
 
-        pi_vs_tau = TextMobject(
+        pi_vs_tau = TexText(
             "Should $\\pi$ represent \\\\", "3.1415...", 
             "or", "6.2831...", "?"
         )
@@ -766,7 +766,7 @@ class EulerThinking(Scene):
         })
         pi_vs_tau.move_to(bubble.get_bubble_center())
 
-        question = TexMobject(
+        question = Tex(
             "\\frac{1}{1} + \\frac{1}{4} + \\frac{1}{9} + \\frac{1}{16} + \\cdots = ",
             "\\;???"
         )
@@ -802,25 +802,25 @@ class WhatIsRight(PiCreatureScene):
     def construct(self):
         randy = self.pi_creature
         randy.scale(0.75, about_edge = DOWN)
-        title = TextMobject("Which is ``right''?")
+        title = TexText("Which is ``right''?")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
 
-        sum_over_N_converges = TexMobject("1+2+3+\\cdots = -\\frac{1}{12}")
-        sum_over_N_diverges = TexMobject("1+2+3+\\cdots \\text{ Diverges}")
+        sum_over_N_converges = Tex("1+2+3+\\cdots = -\\frac{1}{12}")
+        sum_over_N_diverges = Tex("1+2+3+\\cdots \\text{ Diverges}")
 
-        literal_derivative = TexMobject(
+        literal_derivative = Tex(
             "f'(x) = \\frac{f(x+dx) - f(x)}{dx}"
         )
-        limit_derivative = TexMobject(
+        limit_derivative = Tex(
             "f'(x) = \\lim_{h \\to 0}\\frac{f(x+h) - f(x)}{h}"
         )
 
-        divide_by_zero_definable = TexMobject(
+        divide_by_zero_definable = Tex(
             "\\frac{1}{0}", "\\text{ has meaning}"
         )
-        divide_by_zero_undefinable = TexMobject(
+        divide_by_zero_undefinable = Tex(
             "\\frac{1}{0}", "\\text{ is undefined}"
         )
 
@@ -873,14 +873,14 @@ class WhatIsRight(PiCreatureScene):
 
 class AskPuzzle(TeacherStudentsScene):
     def construct(self):
-        series = TexMobject(
+        series = Tex(
             "\\frac{1}{1} + \\frac{1}{4} + \\frac{1}{9} + \\cdots + " +\
             "\\frac{1}{n^2} + \\cdots = ", "\\,???"
         )
         series[0].set_color_by_gradient(BLUE_C, BLUE_B)
         series[1].set_color(YELLOW)
 
-        question = TextMobject(
+        question = TexText(
             "How should we think about\\\\",
             "$\\displaystyle \\sum_{n=1}^\\infty \\frac{1}{n^s}$",
             "for arbitrary $s$?"
@@ -888,7 +888,7 @@ class AskPuzzle(TeacherStudentsScene):
         question[1].set_color(BLUE)
         question[0].shift(SMALL_BUFF*UP)
 
-        response = TextMobject(
+        response = TexText(
             "What do you mean by ", 
             "$\\displaystyle \\sum_{n = 1}^{\\infty}$", 
             "?"
@@ -927,12 +927,12 @@ class AskPuzzle(TeacherStudentsScene):
 class ChangeTopic(PiCreatureScene):
     def construct(self):
         pi, tau = self.pi_creatures
-        title = TextMobject("Happy $\\pi$ day!")
+        title = TexText("Happy $\\pi$ day!")
         title.scale(1.5)
         title.to_edge(UP, buff = MED_SMALL_BUFF)
         self.add(title)
 
-        question = TextMobject(
+        question = TexText(
             "Have you ever seen why \\\\",
             "$\\displaystyle \\frac{2}{1} \\cdot \\frac{2}{3} \\cdots"+ \
             "\\frac{4}{3} \\cdot \\frac{4}{5} \\cdot" + \
@@ -969,7 +969,7 @@ class ChangeTopic(PiCreatureScene):
 
 class SpecialThanks(Scene):
     def construct(self):
-        title = TextMobject("Special thanks to:")
+        title = TexText("Special thanks to:")
         title.to_edge(UP, LARGE_BUFF)
         title.scale(1.5)
         title.set_color(BLUE)
@@ -977,7 +977,7 @@ class SpecialThanks(Scene):
         h_line.next_to(title, DOWN)
         h_line.set_stroke(WHITE, 1)
 
-        people = VGroup(*list(map(TextMobject, [
+        people = VGroup(*list(map(TexText, [
             "Ben Hambrecht",
             "University Library Basel",
             "Martin Mattmüller",
@@ -999,7 +999,7 @@ class EndScene(PatreonEndScreen):
         title = self.title
         basel_screen = ScreenRectangle(height = 2.35)
         basel_screen.next_to(title, DOWN)
-        watch_basel = TextMobject(
+        watch_basel = TexText(
             "One such actual piece of math", "(quite pretty!)",
         )
         watch_basel[0].set_color(YELLOW)
@@ -1016,7 +1016,7 @@ class EndScene(PatreonEndScreen):
         plushie_square.to_corner(DOWN+LEFT, buff = MED_LARGE_BUFF)
         plushie_square.shift(UP)
 
-        plushie_words = TextMobject(
+        plushie_words = TexText(
             "Plushie pi \\\\ creatures \\\\ now available.",
             alignment = ""
         )
@@ -1025,7 +1025,7 @@ class EndScene(PatreonEndScreen):
         self.add(plushie_words)
         # self.add(plushie_square)
 
-        instagram_line = TextMobject(
+        instagram_line = TexText(
             "randy\\_the\\_pi"
         )
         instagram_logo = ImageMobject("instagram_logo")
@@ -1062,7 +1062,7 @@ class EndScene(PatreonEndScreen):
 
 class Thumbnail(Scene):
     def construct(self):
-        pi, eq, num = formula = TexMobject(
+        pi, eq, num = formula = Tex(
             "\\pi", "=", "6.283185\\dots"
         )
         formula.scale(2)
@@ -1072,7 +1072,7 @@ class Thumbnail(Scene):
         # formula.shift(0.5*RIGHT)
         self.add(formula)
 
-        words = TextMobject("...according to Euler.")
+        words = TexText("...according to Euler.")
         words.scale(1.5)
         words.next_to(formula, DOWN, MED_LARGE_BUFF)
         self.add(words)

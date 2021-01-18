@@ -65,7 +65,7 @@ class Chapter8OpeningQuote(OpeningQuote, PiCreatureScene):
         self.wait()
 
     def get_formula(self):
-        result = TexMobject(
+        result = Tex(
             "{d(\\sin(\\theta)) \\over \\,", "d\\theta}", "=",
             "\\lim_{", "h", " \\to 0}", 
             "{\\sin(\\theta+", "h", ") - \\sin(\\theta) \\over", " h}", "=",
@@ -88,7 +88,7 @@ class ThisVideo(TeacherStudentsScene):
         this_video.save_state()
         next_video = series[8]
 
-        deriv, integral, v_t, dt, equals, v_T = formula = TexMobject(
+        deriv, integral, v_t, dt, equals, v_T = formula = Tex(
             "\\frac{d}{dT}", 
             "\\int_0^T", "v(t)", "\\,dt", 
             "=", "v(T)"
@@ -144,7 +144,7 @@ class InCarRestrictedView(ShowSpeedometer):
         square.scale(1.5)
         square.pointwise_become_partial(square, 0.25, 0.75)
 
-        time_label = TextMobject("Time (in seconds):", "0")
+        time_label = TexText("Time (in seconds):", "0")
         time_label.shift(2*UP)
 
         dots = VGroup(*list(map(Dot, [self.point_A, self.point_B])))
@@ -178,7 +178,7 @@ class InCarRestrictedView(ShowSpeedometer):
             ),
             run_time = 8
         )
-        eight = TexMobject("8").move_to(time_label[1])
+        eight = Tex("8").move_to(time_label[1])
         self.play(Transform(
             time_label[1], eight,
             rate_func = squish_rate_func(smooth, 0, 0.5)
@@ -325,7 +325,7 @@ class PlotVelocity(GraphScene):
             x_max = 8,
             color = VELOCITY_COLOR
         )
-        graph_label = TexMobject("v(t)", "=t(8-t)")
+        graph_label = Tex("v(t)", "=t(8-t)")
         graph_label.set_color_by_tex("v(t)", VELOCITY_COLOR)
         graph_label.next_to(
             graph.point_from_proportion(7./8.),
@@ -340,7 +340,7 @@ class Chapter2Wrapper(Scene):
         "title" : "Chapter 2: The paradox of the derivative",
     }
     def construct(self):
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = WHITE)
         rect.set_height(1.5*FRAME_Y_RADIUS)
@@ -388,7 +388,7 @@ class AskAboutAntiderivative(PlotVelocity):
         self.graph_label = label
 
     def write_s_formula(self):
-        ds_dt = TexMobject("ds", "\\over\\,", "dt")
+        ds_dt = Tex("ds", "\\over\\,", "dt")
         ds_dt.set_color_by_tex("ds", DISTANCE_COLOR)
         ds_dt.set_color_by_tex("dt", TIME_COLOR)
         ds_dt.next_to(self.graph_label, UP, LARGE_BUFF)
@@ -409,7 +409,7 @@ class AskAboutAntiderivative(PlotVelocity):
         randy = Randolph()
         randy.to_corner(DOWN+LEFT)
         randy.shift(2*RIGHT)
-        words = TexMobject(
+        words = Tex(
             "{d(", "???", ") \\over \\,", "dt}", "=", "t(8-t)"
         )
         words.set_color_by_tex("t(8-t)", VELOCITY_COLOR)
@@ -459,10 +459,10 @@ class Antiderivative(PiCreatureScene):
         self.wait()
 
     def get_functions(self, left_tex, right_tex):
-        left = TexMobject(left_tex)
+        left = Tex(left_tex)
         left.shift(2*LEFT)
         left.set_color(DISTANCE_COLOR)
-        right = TexMobject(right_tex)
+        right = Tex(right_tex)
         right.shift(2*RIGHT)
         right.set_color(VELOCITY_COLOR)
         result = VGroup(left, right)
@@ -488,9 +488,9 @@ class Antiderivative(PiCreatureScene):
 
     def get_arc_labels(self, arcs):
         top_arc, bottom_arc = arcs
-        derivative = TextMobject("Derivative")
+        derivative = TexText("Derivative")
         derivative.next_to(top_arc, UP)
-        antiderivative = TextMobject("``Antiderivative''")
+        antiderivative = TexText("``Antiderivative''")
         antiderivative.next_to(bottom_arc, DOWN)
         antiderivative.set_color(bottom_arc.get_color())
 
@@ -588,7 +588,7 @@ class ConstantVelocityPlot(PlotVelocity):
         )
         t_label.set_color(TIME_COLOR)
 
-        s_label = TexMobject("10", "\\times",  "8", "\\text{ meters}")
+        s_label = Tex("10", "\\times",  "8", "\\text{ meters}")
         s_label.set_color_by_tex("10", VELOCITY_COLOR)
         s_label.set_color_by_tex("8", TIME_COLOR)
         s_label.move_to(rect)
@@ -752,7 +752,7 @@ class PiecewiseConstantPlot(PlotVelocity):
     def always_changing(self):
         dot = Dot()
         arrow = Arrow(LEFT, RIGHT)
-        words = TextMobject("Always changing")
+        words = TexText("Always changing")
         group = VGroup(dot, arrow, words)
         def update_group(group, alpha):
             dot, arrow, words = group
@@ -894,7 +894,7 @@ class PiecewiseConstantPlot(PlotVelocity):
         brace = Brace(tick_pair, DOWN, buff = 0)
         dt_label = brace.get_text("$dt$", buff = SMALL_BUFF)
 
-        example_text = TextMobject(
+        example_text = TexText(
             "For example, \\\\",
             "$dt$", "$=0.25$"
         )
@@ -947,7 +947,7 @@ class PiecewiseConstantPlot(PlotVelocity):
 
         t_vals = [1, 1.25]
         t_labels = VGroup(*[
-            TexMobject("t=%s"%str(t))
+            Tex("t=%s"%str(t))
             for t in t_vals
         ])
         t_labels.scale(0.7)
@@ -973,7 +973,7 @@ class PiecewiseConstantPlot(PlotVelocity):
             y_axis_point = self.graph_origin[0]*RIGHT
             y_axis_point += v_line.get_end()[1]*UP
             h_line = DashedLine(v_line.get_end(), y_axis_point)
-            label = TexMobject("%.1f"%v_func(t))
+            label = Tex("%.1f"%v_func(t))
             label.scale(0.5)
             label.next_to(h_line, LEFT, SMALL_BUFF)
             v_lines.add(v_line)
@@ -1030,7 +1030,7 @@ class PiecewiseConstantPlot(PlotVelocity):
         )
         self.wait()
 
-        area = TextMobject(
+        area = TexText(
             "7$\\frac{\\text{m}}{\\text{s}}$",
             "$\\times$",
             "0.25s",
@@ -1063,7 +1063,7 @@ class PiecewiseConstantPlot(PlotVelocity):
         last_rect = None
         for rect in rects_subset:
             brace = Brace(rect, LEFT, buff = 0)
-            v_t = TexMobject("v(t)")
+            v_t = Tex("v(t)")
             v_t.next_to(brace, LEFT, SMALL_BUFF)
             anims = [
                 rect.set_fill, None, 1,
@@ -1091,17 +1091,17 @@ class PiecewiseConstantPlot(PlotVelocity):
         self.v_t_brace = last_brace
 
     def write_integral_symbol(self):
-        integral = TexMobject(
+        integral = Tex(
             "\\int", "^8", "_0", "v(t)", "\\,dt"
         )
         integral.to_corner(UP+RIGHT)
         int_copy = integral.get_part_by_tex("int").copy()
         bounds = list(map(integral.get_part_by_tex, ["0", "8"]))
 
-        sum_word = TextMobject("``Sum''")
+        sum_word = TexText("``Sum''")
         sum_word.next_to(integral, DOWN, MED_LARGE_BUFF, LEFT)
         alt_sum_word = sum_word.copy()
-        int_symbol = TexMobject("\\int")
+        int_symbol = Tex("\\int")
         int_symbol.replace(alt_sum_word[1], dim_to_match = 1)
         alt_sum_word.submobjects[1] = int_symbol
 
@@ -1236,13 +1236,13 @@ class PiecewiseConstantPlot(PlotVelocity):
         morty = self.morty
         rects = self.rects
 
-        cross = TexMobject("\\times")
+        cross = Tex("\\times")
         cross.replace(self.sum_word, stretch = True)
         cross.set_color(RED)
         brace = Brace(self.integral, DOWN)
         dt_to_0 = brace.get_text("$dt \\to 0$")
 
-        distance_words = TextMobject(
+        distance_words = TexText(
             "Area", "= Distance traveled"
         )
         distance_words.next_to(rects, UP)
@@ -1295,7 +1295,7 @@ class PiecewiseConstantPlot(PlotVelocity):
         self.area_arrow = arrow
 
     def label_integral(self):
-        words = TextMobject("``Integral of $v(t)$''")
+        words = TexText("``Integral of $v(t)$''")
         words.to_edge(UP)
         arrow = Arrow(
             words.get_right(),
@@ -1372,8 +1372,8 @@ class CarJourneyApproximation(Scene):
         cars = [Car().move_to(point) for point in points]
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         words = [
-            TextMobject("Real motion (smooth)").shift(3*UP),
-            TextMobject(self.bottom_words).shift(0.5*DOWN),
+            TexText("Real motion (smooth)").shift(3*UP),
+            TexText(self.bottom_words).shift(0.5*DOWN),
         ]
         words[1].set_color(GREEN)
 
@@ -1524,13 +1524,13 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
         self.wait()
 
     def write_integral(self):
-        integral = TexMobject("\\int", "^T", "_0", "v(t)", "\\,dt")
+        integral = Tex("\\int", "^T", "_0", "v(t)", "\\,dt")
         integral.to_corner(UP+RIGHT)
         integral.shift(2*LEFT)
         top_T = integral.get_part_by_tex("T")
         moving_T = self.T_label_group[0]
 
-        s_T = TexMobject("s(T)", "= ")
+        s_T = Tex("s(T)", "= ")
         s_T.set_color_by_tex("s", DISTANCE_COLOR)
         s_T.next_to(integral, LEFT)
 
@@ -1542,7 +1542,7 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
             for mob in (integral, s_T)
         ]
 
-        distance_word = TextMobject("Distance")
+        distance_word = TexText("Distance")
         distance_word.move_to(self.area)
 
         self.play(Write(integral))
@@ -1604,7 +1604,7 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
         dT_label = dT_brace.get_text("$dT$", buff = SMALL_BUFF)
         dT_label_group = VGroup(dT_label, dT_brace)
 
-        ds_label = TexMobject("ds")
+        ds_label = Tex("ds")
         ds_label.next_to(rect, RIGHT, LARGE_BUFF, UP)
         ds_label.set_color(DISTANCE_COLOR)
         ds_arrow = Arrow(ds_label.get_left(), rect.get_left())
@@ -1644,8 +1644,8 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
         self.ds_arrow = ds_arrow
 
     def show_rectangle_approximation(self):
-        formula1 = TexMobject("ds", "=", "v(T)", "dT")
-        formula2 = TexMobject("{ds", "\\over\\,", "dT}", "=", "v(T)")
+        formula1 = Tex("ds", "=", "v(T)", "dT")
+        formula2 = Tex("{ds", "\\over\\,", "dT}", "=", "v(T)")
         for formula in formula1, formula2:
             formula.next_to(self.v_graph_label, UP, LARGE_BUFF)
             formula.set_color_by_tex("ds", DISTANCE_COLOR)
@@ -1693,7 +1693,7 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         triangle.set_fill(WHITE, 1)
         triangle.set_stroke(width = 0)
-        T_label = TexMobject(self.variable_point_label)
+        T_label = Tex(self.variable_point_label)
         T_label.next_to(triangle, DOWN)
         v_line = self.get_vertical_line_to_graph(
             x_val, self.v_graph,
@@ -1756,20 +1756,20 @@ class AreaIsDerivative(PlotVelocity, ReconfigurableScene):
 
 class DirectInterpretationOfDsDt(TeacherStudentsScene):
     def construct(self):
-        equation = TexMobject("{ds", "\\over\\,", "dT}", "(T)", "=", "v(T)")
+        equation = Tex("{ds", "\\over\\,", "dT}", "(T)", "=", "v(T)")
         ds, over, dt, of_T, equals, v = equation
         equation.next_to(self.get_pi_creatures(), UP, LARGE_BUFF)
         equation.shift(RIGHT)
         v.set_color(VELOCITY_COLOR)
 
-        s_words = TextMobject("Tiny change in", "distance")
+        s_words = TexText("Tiny change in", "distance")
         s_words.next_to(ds, UP+LEFT, LARGE_BUFF)
         s_words.shift_onto_screen()
         s_arrow = Arrow(s_words[1].get_bottom(), ds.get_left())
         s_words.add(s_arrow)
         s_words.set_color(DISTANCE_COLOR)
 
-        t_words = TextMobject("Tiny change in", "time")
+        t_words = TexText("Tiny change in", "time")
         t_words.next_to(dt, DOWN+LEFT)
         t_words.to_edge(LEFT)
         t_arrow = Arrow(t_words[1].get_top(), dt.get_left())
@@ -1802,7 +1802,7 @@ class FindAntiderivative(Antiderivative):
 
     def introduce(self):
         q_marks, rhs = functions = self.get_functions("???", "t(8-t)")
-        expanded_rhs = TexMobject("8t - t^2")
+        expanded_rhs = Tex("8t - t^2")
         expanded_rhs.move_to(rhs, LEFT)
         expanded_rhs.set_color(rhs.get_color())
         self.v_part1 = VGroup(*expanded_rhs[:2])
@@ -1950,7 +1950,7 @@ class FindAntiderivative(Antiderivative):
     def add_plus_C(self):
         s_group = VGroup(self.s_part1, self.s_part2)
         plus_Cs = [
-            TexMobject("+%d"%d)
+            Tex("+%d"%d)
             for d in range(1, 8)
         ]
         for plus_C in plus_Cs:
@@ -1989,7 +1989,7 @@ class GraphSPlusC(GraphDistanceVsTime):
         )
         v_line.scale(2)
         v_line.set_color(WHITE)
-        graph_label, plus_C = full_label = TexMobject(
+        graph_label, plus_C = full_label = Tex(
             "s(t) = 4t^2 - \\frac{1}{3}t^3", "+C"
         )
         plus_C.set_color(YELLOW)
@@ -2070,7 +2070,7 @@ class LowerBound(AreaIsDerivative):
             circle.scale(3)
             bound.circle = circle
         self.integral.save_state()
-        equals_zero = TexMobject("=0")
+        equals_zero = Tex("=0")
         equals_zero.next_to(zero_integral, RIGHT)
         equals_zero.set_color(GREEN)
 
@@ -2168,7 +2168,7 @@ class LowerBound(AreaIsDerivative):
         new_integral = self.get_integral("1", "7")
         new_antideriv_diff = self.get_antiderivative_difference("1", "7")
         numbers = [
-            TexMobject("%d"%d).next_to(
+            Tex("%d"%d).next_to(
                 self.coords_to_point(d, 0), 
                 DOWN, MED_LARGE_BUFF
             )
@@ -2196,7 +2196,7 @@ class LowerBound(AreaIsDerivative):
 
     def add_constant_to_antiderivative(self):
         antideriv_diff = self.antideriv_diff
-        plus_fives = VGroup(*[TexMobject("+5") for i in range(2)])
+        plus_fives = VGroup(*[Tex("+5") for i in range(2)])
         plus_fives.set_color(YELLOW)
         for five, part in zip(plus_fives, antideriv_diff[1::2]):
             five.next_to(part, DOWN)
@@ -2219,7 +2219,7 @@ class LowerBound(AreaIsDerivative):
     #####
 
     def get_integral(self, lower_bound, upper_bound):
-        result = TexMobject(
+        result = Tex(
             "\\int", "^"+upper_bound, "_"+lower_bound, 
             "t(8-t)", "\\,dt"
         )
@@ -2237,7 +2237,7 @@ class LowerBound(AreaIsDerivative):
                 strings.append(bound)
         parts = []
         for s in strings:
-            part = TexMobject(
+            part = Tex(
                 "\\left(",
                 "4", s, "^2", "-", "\\frac{1}{3}", s, "^3"
                 "\\right))"
@@ -2245,8 +2245,8 @@ class LowerBound(AreaIsDerivative):
             part.set_color_by_tex(s, YELLOW, substring = False)
             parts.append(part)
         result = VGroup(
-            TexMobject("="), parts[0], 
-            TexMobject("-"), parts[1],
+            Tex("="), parts[0], 
+            Tex("-"), parts[1],
         )
         result.left_part, result.right_part = parts
         result.arrange(RIGHT)
@@ -2274,7 +2274,7 @@ class FundamentalTheorem(GraphScene):
 
     def add_graph_and_integral(self):
         self.setup_axes()
-        integral = TexMobject("\\int", "^b", "_a", "f(x)", "\\,dx")
+        integral = Tex("\\int", "^b", "_a", "f(x)", "\\,dx")
         integral.next_to(ORIGIN, LEFT)
         integral.to_edge(UP)
         integral.set_color_by_tex("a", self.lower_bound_color)
@@ -2372,12 +2372,12 @@ class FundamentalTheorem(GraphScene):
             )
 
     def write_antiderivative(self):
-        deriv = TexMobject(
+        deriv = Tex(
             "{d", "F", "\\over\\,", "dx}", "(x)", "=", "f(x)"
         )
         deriv_F = deriv.get_part_by_tex("F")
         deriv.next_to(self.integral, DOWN, MED_LARGE_BUFF)
-        rhs = TexMobject(*"=F(b)-F(a)")
+        rhs = Tex(*"=F(b)-F(a)")
         rhs.set_color_by_tex("a", self.lower_bound_color)
         rhs.set_color_by_tex("b", self.upper_bound_color)
         rhs.next_to(self.integral, RIGHT)
@@ -2406,7 +2406,7 @@ class FundamentalTheorem(GraphScene):
         self.rhs = rhs
 
     def write_fundamental_theorem_of_calculus(self):
-        words = TextMobject("""
+        words = TexText("""
             Fundamental 
             theorem of 
             calculus
@@ -2523,7 +2523,7 @@ class NegativeArea(GraphScene):
         self.area = area
 
     def write_negative_area(self):
-        words = TextMobject("Negative area")
+        words = TexText("Negative area")
         words.set_color(RED)
         words.next_to(
             self.coords_to_point(7, -2),
@@ -2586,12 +2586,12 @@ class NegativeArea(GraphScene):
 
     def write_v_dt(self):
         brace = Brace(self.nose_lines, DOWN, buff = 0)
-        equation = TexMobject("ds", "=", "v(t)", "dt")
+        equation = Tex("ds", "=", "v(t)", "dt")
         equation.next_to(brace, DOWN, SMALL_BUFF, LEFT)
         equation.set_color_by_tex("ds", DISTANCE_COLOR)
         equation.set_color_by_tex("dt", TIME_COLOR)
 
-        negative = TextMobject("Negative")
+        negative = TexText("Negative")
         negative.set_color(RED)
         negative.next_to(equation.get_corner(UP+RIGHT), UP, LARGE_BUFF)
         ds_arrow, v_arrow = arrows = VGroup(*[
@@ -2659,10 +2659,10 @@ class NegativeArea(GraphScene):
         self.wait()
 
     def write_signed_area(self):
-        words = TextMobject("``Signed area''")
+        words = TexText("``Signed area''")
         words.next_to(self.coords_to_point(self.sample_input, 0), UP)
         symbols = VGroup(*[
-            TexMobject(sym).move_to(self.coords_to_point(*coords))
+            Tex(sym).move_to(self.coords_to_point(*coords))
             for sym, coords in [
                 ("+", (1, 2)),
                 ("-", (5, -1)),
@@ -2685,7 +2685,7 @@ class NextVideo(TeacherStudentsScene):
         series = VideoSeries()
         series.to_edge(UP)
         next_video = series[8]
-        integral = TexMobject("\\int")
+        integral = Tex("\\int")
         integral.next_to(next_video, DOWN, LARGE_BUFF)
 
         self.play(FadeIn(series, lag_ratio = 0.5))
@@ -2755,7 +2755,7 @@ class Thumbnail(Chapter1Thumbnail):
             x_max = 4,
             dx = 0.25,
         )
-        words = TextMobject("Integrals")
+        words = TexText("Integrals")
         words.set_width(8)
         words.to_edge(UP)
 

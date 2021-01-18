@@ -36,7 +36,7 @@ def get_small_bubble(pi_creature, height = 4, width = 3):
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "\\centering ``Mathematics is the art of giving the \\\\",
             "same name ",
             "to ",
@@ -48,7 +48,7 @@ class OpeningQuote(Scene):
         words.set_color_by_tex("different things", MAROON_B)
         # words.set_width(FRAME_WIDTH - 2)
         words.to_edge(UP)
-        author = TextMobject("-Henri Poincar\\'e.")
+        author = TexText("-Henri Poincar\\'e.")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -92,7 +92,7 @@ class LinearCombinationScene(LinearTransformationScene):
             basis.save_state()
             basis.label.save_state()
         if coord_mobs is None:
-            coord_mobs = list(map(TexMobject, list(map(str, numerical_coords))))
+            coord_mobs = list(map(Tex, list(map(str, numerical_coords))))
             VGroup(*coord_mobs).set_fill(opacity = 0)
             for coord, basis in zip(coord_mobs, basis_vectors):
                 coord.next_to(basis.label, LEFT)
@@ -173,7 +173,7 @@ class RemindOfCoordinates(LinearCombinationScene):
         for mob in to_save:
             mob.save_state()
         everything = VGroup(*self.get_mobjects())
-        words = TextMobject("Think of coordinates \\\\ as", "scalars")
+        words = TexText("Think of coordinates \\\\ as", "scalars")
         words.set_color_by_tex("scalars", YELLOW)
         words.to_edge(UP)
 
@@ -213,21 +213,21 @@ class RemindOfCoordinates(LinearCombinationScene):
 
     def list_implicit_assumptions(self, x_coord, y_coord):
         everything = VGroup(*self.get_mobjects())
-        title = TextMobject("Implicit assumptions")
+        title = TexText("Implicit assumptions")
         h_line = Line(title.get_left(), title.get_right())
         h_line.set_color(YELLOW)
         h_line.next_to(title, DOWN)
         title.add(h_line)
 
-        ass1 = TextMobject("-First coordinate")
+        ass1 = TexText("-First coordinate")
         ass1 = VGroup(ass1, self.i_hat.copy())
         ass1.arrange(buff = MED_SMALL_BUFF)
 
-        ass2 = TextMobject("-Second coordinate")
+        ass2 = TexText("-Second coordinate")
         ass2 = VGroup(ass2, self.j_hat.copy())
         ass2.arrange(buff = MED_SMALL_BUFF)
 
-        ass3 = TextMobject("-Unit of distance")
+        ass3 = TexText("-Unit of distance")
 
         group = VGroup(title, ass1, ass2, ass3)
         group.arrange(DOWN, aligned_edge = LEFT, buff = MED_SMALL_BUFF)
@@ -273,26 +273,26 @@ class NameCoordinateSystem(Scene):
     def construct(self):
         vector = Vector([3, 2])
         coords = Matrix([3, 2])
-        arrow = TexMobject("\\Rightarrow")
+        arrow = Tex("\\Rightarrow")
         vector.next_to(arrow, RIGHT, buff = 0)
         coords.next_to(arrow, LEFT, buff = MED_LARGE_BUFF)
         group = VGroup(coords, arrow, vector)
         group.shift(2*UP)
-        coordinate_system = TextMobject("``Coordinate system''")
+        coordinate_system = TexText("``Coordinate system''")
         coordinate_system.next_to(arrow, UP, buff = LARGE_BUFF)
 
         i_hat, j_hat = Vector([1, 0]), Vector([0, 1])
         i_hat.set_color(X_COLOR)
         j_hat.set_color(Y_COLOR)
-        i_label = TexMobject("\\hat{\\imath}")
+        i_label = Tex("\\hat{\\imath}")
         i_label.set_color(X_COLOR)
         i_label.next_to(i_hat, DOWN)
-        j_label = TexMobject("\\hat{\\jmath}")
+        j_label = Tex("\\hat{\\jmath}")
         j_label.set_color(Y_COLOR)
         j_label.next_to(j_hat, LEFT)
         basis_group = VGroup(i_hat, j_hat, i_label, j_label)
         basis_group.shift(DOWN)
-        basis_words = TextMobject("``Basis vectors''")
+        basis_words = TexText("``Basis vectors''")
         basis_words.shift(basis_group.get_bottom()[1]*UP+MED_SMALL_BUFF*DOWN)
 
         self.play(Write(coords))
@@ -331,7 +331,7 @@ class JenniferScene(LinearCombinationScene):
         self.b1 = Vector(self.b1_coords, color = X_COLOR)
         self.b2 = Vector(self.b2_coords, color = Y_COLOR)
         for i, vect in enumerate([self.b1, self.b2]):
-            vect.label = TexMobject("\\vec{\\textbf{b}}_%d"%(i+1))
+            vect.label = Tex("\\vec{\\textbf{b}}_%d"%(i+1))
             vect.label.scale(0.7)
             vect.label.add_background_rectangle()
             vect.label.set_color(vect.get_color())
@@ -369,7 +369,7 @@ class IntroduceJennifer(JenniferScene):
 
     def introduce_jenny(self):
         jenny = self.jenny
-        name = TextMobject("Jennifer")
+        name = TexText("Jennifer")
         name.next_to(jenny, UP)
         name.shift_onto_screen()
 
@@ -387,7 +387,7 @@ class IntroduceJennifer(JenniferScene):
         self.wait()
 
     def add_basis_vectors(self):
-        words = TextMobject("Alternate basis vectors")
+        words = TexText("Alternate basis vectors")
         words.shift(2.5*UP)
         self.play(Write(words, run_time = 2))
         for vect in self.b1, self.b2:
@@ -532,8 +532,8 @@ class IntroduceJennifer(JenniferScene):
         new_label2 = VGroup(coord_mobs[1], b2.label)
         new_label1.target = new_label1.copy().next_to(b1.target, DOWN)
         new_label2.target = new_label2.copy().next_to(b2.target, LEFT)
-        i_sym = TexMobject("\\hat{\\imath}").add_background_rectangle()
-        j_sym = TexMobject("\\hat{\\jmath}").add_background_rectangle()
+        i_sym = Tex("\\hat{\\imath}").add_background_rectangle()
+        j_sym = Tex("\\hat{\\jmath}").add_background_rectangle()
         i_sym.set_color(X_COLOR).move_to(new_label1.target[1], aligned_edge = LEFT)
         j_sym.set_color(Y_COLOR).move_to(new_label2.target[1], aligned_edge = LEFT)
         Transform(new_label1.target[1], i_sym).update(1)
@@ -621,15 +621,15 @@ class IntroduceJennifer(JenniferScene):
 class SpeakingDifferentLanguages(JenniferScene):
     def construct(self):
         jenny, you = self.jenny, self.you
-        title = TextMobject("Different languages")
+        title = TexText("Different languages")
         title.to_edge(UP)
 
         vector = Vector([3, 2])
         vector.center().shift(DOWN)
         you.coords = Matrix([3, 2])
-        you.text = TextMobject("Looks to be")
+        you.text = TexText("Looks to be")
         jenny.coords = Matrix(["5/3", "1/3"])
-        jenny.text = TextMobject("Non, c'est")
+        jenny.text = TexText("Non, c'est")
         for pi in jenny, you:
             pi.bubble = pi.get_bubble(SpeechBubble, width = 4.5, height = 3.5)
             if pi is you:
@@ -687,7 +687,7 @@ class SpaceHasNoGrid(LinearTransformationScene):
         "include_background_plane" : False
     }
     def construct(self):
-        words = TextMobject("Space has no grid")
+        words = TexText("Space has no grid")
         words.to_edge(UP)
         self.play(
             Write(words),
@@ -750,7 +750,7 @@ class ShowOriginOfGrid(JenniferScene):
         self.add(self.jenny_plane)
         self.jenny_plane.save_state()
 
-        origin_word = TextMobject("Origin")
+        origin_word = TexText("Origin")
         origin_word.shift(2*RIGHT+2.5*UP)
         origin_word.add_background_rectangle()
         arrow = Arrow(origin_word, ORIGIN, color = RED)
@@ -872,7 +872,7 @@ class TranslateFromJenny(JenniferScene):
 
     def perform_arithmetic(self):
         jenny_x, jenny_y = self.jenny.coords.get_entries().copy()
-        equals, plus, equals2 = syms = list(map(TexMobject, list("=+=")))
+        equals, plus, equals2 = syms = list(map(Tex, list("=+=")))
         result = Matrix([-4, 1])
         result.set_height(self.you.coords.get_height())
         for mob in syms + [self.you.coords, self.jenny.coords, result]:
@@ -973,7 +973,7 @@ class TalkThroughChangeOfBasisMatrix(JenniferScene):
 
         basis_coords_pair = VGroup(
             Matrix([1, 0]).set_color(X_COLOR).scale(0.7),
-            TexMobject(","),
+            Tex(","),
             Matrix([0, 1]).set_color(Y_COLOR).scale(0.7),
         )
         basis_coords_pair.arrange(aligned_edge = DOWN)
@@ -1080,13 +1080,13 @@ class ChangeOfBasisExample(JenniferScene):
             pi.bubble.add_content(v_coords.copy())
             pi.add(pi.bubble, pi.bubble.content)
 
-        start_words = TextMobject("How", "we", "think of")
+        start_words = TexText("How", "we", "think of")
         start_words.add_background_rectangle()
         start_group = VGroup(start_words, v_coords)
         start_group.arrange(buff = MED_SMALL_BUFF)
         start_group.next_to(self.you, LEFT, buff = 0)
         start_group.to_edge(UP)
-        end_words = TextMobject("How", "Jennifer", "thinks of")
+        end_words = TexText("How", "Jennifer", "thinks of")
         end_words.add_background_rectangle()
         end_words.move_to(start_words, aligned_edge = RIGHT)
 
@@ -1132,10 +1132,10 @@ class FeelsBackwards(Scene):
         bottom_arrow.next_to(matrix, DOWN, buff = LARGE_BUFF)
         top_arrow.set_color(BLUE)
 
-        jenny_grid = TextMobject("Jennifer's grid").set_color(BLUE)
-        our_grid = TextMobject("Our grid").set_color(BLUE)
-        jenny_language = TextMobject("Jennifer's language")
-        our_language = TextMobject("Our language")
+        jenny_grid = TexText("Jennifer's grid").set_color(BLUE)
+        our_grid = TexText("Our grid").set_color(BLUE)
+        jenny_language = TexText("Jennifer's language")
+        our_language = TexText("Our language")
 
         our_grid.next_to(top_arrow, LEFT)
         jenny_grid.next_to(top_arrow, RIGHT)
@@ -1157,9 +1157,9 @@ class FeelsBackwards(Scene):
         self.wait()
 
         ##Swap things
-        inverse_word = TextMobject("Inverse")
+        inverse_word = TexText("Inverse")
         inverse_word.next_to(matrix, LEFT, buff = MED_SMALL_BUFF)
-        inverse_exponent = TexMobject("-1")
+        inverse_exponent = Tex("-1")
         inverse_exponent.next_to(matrix.get_corner(UP+RIGHT), RIGHT)
         self.play(*list(map(Write, [inverse_word, inverse_exponent])))
         self.play(
@@ -1191,14 +1191,14 @@ class RecallInverse(JenniferScene):
         matrix.set_column_colors(X_COLOR, Y_COLOR)
         matrix.to_corner(UP+LEFT, buff = MED_LARGE_BUFF)
         # matrix.shift(MED_SMALL_BUFF*DOWN)
-        inverse_exponent = TexMobject("-1")
+        inverse_exponent = Tex("-1")
         inverse_exponent.next_to(matrix.get_corner(UP+RIGHT), RIGHT)
         inverse_exponent.add_background_rectangle()
         brace = Brace(VGroup(matrix, inverse_exponent))
         inverse_word = brace.get_text("Inverse")
         inverse_word.add_background_rectangle()
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.add_background_rectangle()
         inv_matrix = Matrix([
             ["1/3", "1/3"],
@@ -1259,7 +1259,7 @@ class WorkOutInverseComputation(Scene):
         matrix = Matrix([["1/3", "1/3"], ["-1/3", "2/3"]])
         our_vector.set_color(BLUE_D)
         her_vector.set_color(MAROON_B)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equation = VGroup(
             matrix, our_vector, equals, her_vector
         )
@@ -1327,12 +1327,12 @@ class SummarizeTranslationProcess(Scene):
     def define_matrix(self):
         matrix = Matrix([[2, -1], [1, 1]])
         matrix.set_column_colors(X_COLOR, Y_COLOR)
-        A, equals = list(map(TexMobject, list("A=")))
+        A, equals = list(map(Tex, list("A=")))
         equation = VGroup(A, equals, matrix)
         equation.arrange()
         equation.to_corner(UP+LEFT)
         equation.shift(RIGHT)
-        words = TextMobject("""
+        words = TexText("""
             Jennifer's basis vectors, 
             written in our coordinates
         """)
@@ -1354,9 +1354,9 @@ class SummarizeTranslationProcess(Scene):
         for vector, color in (our_vector, BLUE_D), (her_vector, MAROON_B):
             # vector.set_height(1.5)
             vector.set_color(color)
-        A = TexMobject("A")
-        A_inv = TexMobject("A^{-1}")
-        equals = TexMobject("=")
+        A = Tex("A")
+        A_inv = Tex("A^{-1}")
+        equals = Tex("=")
 
         equation = VGroup(A, her_vector, equals, our_vector)
         equation.arrange()
@@ -1364,14 +1364,14 @@ class SummarizeTranslationProcess(Scene):
         equation.shift(0.5*UP)
         A_inv.next_to(our_vector, LEFT)
 
-        her_words = TextMobject("Vector in her coordinates")
+        her_words = TexText("Vector in her coordinates")
         her_words.set_color(her_vector.get_color())
         her_words.scale(0.8).to_corner(UP+RIGHT)
         her_arrow = Arrow(
             her_words, her_vector, 
             color = her_vector.get_color()
         )
-        our_words = TextMobject("Same vector in\\\\ our coordinates")
+        our_words = TexText("Same vector in\\\\ our coordinates")
         our_words.set_color(our_vector.get_color())
         our_words.scale(0.8).to_edge(RIGHT).shift(2*DOWN)
         our_words.shift_onto_screen()
@@ -1414,13 +1414,13 @@ class VectorsAreNotTheOnlyOnes(TeacherStudentsScene):
 
 class Prerequisites(Scene):
     def construct(self):
-        title = TextMobject("Prerequisites")
+        title = TexText("Prerequisites")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
 
         self.add(title, h_line)
-        prereqs = list(map(TextMobject, [
+        prereqs = list(map(TexText, [
             "Linear transformations",
             "Matrix multiplication",
         ]))
@@ -1441,7 +1441,7 @@ class RotationExample(LinearTransformationScene):
         "t_matrix" : [[0, 1], [-1, 0]]
     }
     def construct(self):
-        words = TextMobject("$90^\\circ$ rotation")
+        words = TexText("$90^\\circ$ rotation")
         words.scale(1.2)
         words.add_background_rectangle()
         words.to_edge(UP)
@@ -1497,7 +1497,7 @@ class RotationExample(LinearTransformationScene):
         self.add_words(matrix)
 
     def add_words(self, matrix):
-        follow_basis = TextMobject(
+        follow_basis = TexText(
             "Follow", "our choice",
             "\\\\ of basis vectors"
         )
@@ -1508,7 +1508,7 @@ class RotationExample(LinearTransformationScene):
             buff = MED_SMALL_BUFF, 
         )
 
-        record = TextMobject(
+        record = TexText(
             "Record using \\\\",
             "our coordinates"
         )
@@ -1561,7 +1561,7 @@ class AksAboutTranslatingColumns(TeacherStudentsScene):
         matrix = Matrix([[0, -1], [1, 0]])
         matrix.set_column_colors(X_COLOR, Y_COLOR)
         matrix.scale(0.7)
-        words = TextMobject("Translate columns of")
+        words = TexText("Translate columns of")
         matrix.next_to(words, DOWN)
         words.add(matrix)
         self.student_says(words, student_index = 0)
@@ -1583,7 +1583,7 @@ class AksAboutTranslatingColumns(TeacherStudentsScene):
         self.add(bubble, matrix.target)
 
         self.random_blink()
-        words = TextMobject(
+        words = TexText(
             "\\centering Those columns still \\\\ represent ",
             "our basis", ", not ", "hers",
             arg_separator = ""
@@ -1606,7 +1606,7 @@ class HowToTranslateAMatrix(Scene):
             [[2, -1], [1, 1]],
         ])))
         result, her_vector, cob_matrix, transform, inv_cob = arrays
-        neg_1 = TexMobject("-1")
+        neg_1 = Tex("-1")
         neg_1.next_to(inv_cob.get_corner(UP+RIGHT), RIGHT)
         inv_cob.add(neg_1)
         arrays.arrange(LEFT)
@@ -1642,7 +1642,7 @@ class HowToTranslateAMatrix(Scene):
         for brace, text_args in brace_text_pairs:
             text_args = list(text_args)
             text_args[0] = "\\centering " + text_args[0]
-            text = TextMobject(*text_args)
+            text = TexText(*text_args)
             text.set_color_by_tex("our", BLUE)
             text.set_color_by_tex("her", MAROON_B)
             brace.put_at_tip(text)
@@ -1684,7 +1684,7 @@ class HowToTranslateAMatrix(Scene):
         echo_introduce(inv_cob)
 
         #Genearlize to single matrix
-        v = TexMobject("\\vec{\\textbf{v}}")
+        v = Tex("\\vec{\\textbf{v}}")
         v.set_color(her_vector.get_color())
         v.move_to(her_vector, aligned_edge = LEFT)
         self.play(
@@ -1699,7 +1699,7 @@ class HowToTranslateAMatrix(Scene):
         )
         self.wait()
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.replace(v)
         result.next_to(equals, RIGHT)
         self.play(
@@ -1718,7 +1718,7 @@ class HowToTranslateAMatrix(Scene):
 
 
     def add_title(self):
-        title = TextMobject("How to translate a matrix")
+        title = TexText("How to translate a matrix")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
@@ -1741,7 +1741,7 @@ class JennyWatchesRotationWithMatrixAndVector(JenniferScene):
         vector_array.next_to(matrix, RIGHT)
 
         result = Matrix([-1, 1])
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(vector_array)
         result.next_to(equals)
 
@@ -1771,7 +1771,7 @@ class JennyWatchesRotationWithMatrixAndVector(JenniferScene):
 
 class MathematicalEmpathy(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "\\centering An expression like",
             "$A^{-1} M A$",
             "\\\\ suggests a mathematical \\\\",
@@ -1790,7 +1790,7 @@ class MathematicalEmpathy(TeacherStudentsScene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("""
+        title = TexText("""
             Next video: Eigenvectors and eigenvalues
         """)
         title.to_edge(UP, buff = MED_SMALL_BUFF)

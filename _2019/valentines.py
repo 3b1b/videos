@@ -42,7 +42,7 @@ class PowersOfTwo(MovingCameraScene):
             for k in range(n)
         ]
 
-        title = TexMobject(
+        title = Tex(
             "\\mathds{Z} / (101 \\mathds{Z})"
         )
         title.scale(2)

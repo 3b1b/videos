@@ -14,7 +14,7 @@ class StreamIntro(Scene):
         self.add(*logo.family_members_with_points())
 
         # Add label
-        label = TextMobject("The lesson will\\\\begin shortly")
+        label = TexText("The lesson will\\\\begin shortly")
         label.scale(2)
         label.next_to(logo, DOWN)
         self.add(label)
@@ -63,7 +63,7 @@ class OldStreamIntro(Scene):
         self.wait(3)
         return
 
-        text = TextMobject("The lesson will\\\\begin soon.")
+        text = TexText("The lesson will\\\\begin soon.")
         text.set_height(1.5)
         text.to_corner(DL, buff=LARGE_BUFF)
         self.add(text)
@@ -71,7 +71,7 @@ class OldStreamIntro(Scene):
 
 class QuadraticFormula(TeacherStudentsScene):
     def construct(self):
-        formula = TexMobject(
+        formula = Tex(
             "\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
         )
         formula.next_to(self.students, UP, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
@@ -98,7 +98,7 @@ class QuadraticFormula(TeacherStudentsScene):
 
 class SimplerQuadratic(Scene):
     def construct(self):
-        tex = TexMobject("m \\pm \\sqrt{m^2 - p}")
+        tex = Tex("m \\pm \\sqrt{m^2 - p}")
         tex.set_stroke(BLACK, 12, background=True)
         tex.scale(1.5)
         self.add(tex)
@@ -128,8 +128,8 @@ class CosGraphs(Scene):
         graph1.set_stroke(YELLOW, 5)
         graph2.set_stroke(BLUE, 5)
 
-        label1 = TexMobject("\\cos(x)")
-        label2 = TexMobject("\\cos^2(x)")
+        label1 = Tex("\\cos(x)")
+        label2 = Tex("\\cos^2(x)")
 
         label1.match_color(graph1)
         label1.set_height(0.75)
@@ -237,7 +237,7 @@ class SineWave(Scene):
         self.add(c_line, c_dot)
         self.add(w_line, w_dot)
 
-        sin_label = TexMobject(
+        sin_label = Tex(
             "\\sin\\left(\\theta\\right)",
             tex_to_color_map={"\\theta": RED}
         )
@@ -279,13 +279,13 @@ class SineWave(Scene):
         ]
         syms = VGroup()
         for val, tex in pairs:
-            sym = TexMobject(tex)
+            sym = Tex(tex)
             sym.scale(0.5)
             sym.next_to(wave_axes.c2p(val, 0), DOWN, MED_SMALL_BUFF)
             syms.add(sym)
         wave_axes.add(syms)
 
-        theta = TexMobject("\\theta")
+        theta = Tex("\\theta")
         theta.set_color(RED)
         theta.next_to(wave_axes.x_axis.get_end(), UP)
         wave_axes.add(theta)
@@ -437,7 +437,7 @@ class CosWave(SineWave):
             self.add(always_redraw(get_square))
             self.add(always_redraw(get_square_graph))
 
-        cos_label = TexMobject(
+        cos_label = Tex(
             "\\cos\\left(\\theta\\right)",
             tex_to_color_map={"\\theta": RED}
         )
@@ -465,7 +465,7 @@ class ComplexNumberPreview(Scene):
         z = complex(2, 1)
         dot = Dot()
         dot.move_to(plane.n2p(z))
-        label = TexMobject("2+i")
+        label = Tex("2+i")
         label.set_color(YELLOW)
         dot.set_color(YELLOW)
         label.next_to(dot, UR, SMALL_BUFF)
@@ -491,7 +491,7 @@ class ComplexMultiplication(Scene):
         z = complex(2, 1)
         z_dot = Dot(color=PINK)
         z_dot.move_to(plane.n2p(z))
-        z_label = TexMobject("z")
+        z_label = Tex("z")
         z_label.next_to(z_dot, UR, buff=0.5 * SMALL_BUFF)
         z_label.match_color(z_dot)
 
@@ -505,7 +505,7 @@ class ComplexMultiplication(Scene):
         one_vect.target = Vector(plane.n2p(z))
         one_vect.target.match_style(one_vect)
 
-        z_rhs = TexMobject("=", "z \\cdot 1")
+        z_rhs = Tex("=", "z \\cdot 1")
         z_rhs[1].match_color(one_vect)
         z_rhs.next_to(z_label, RIGHT, 1.5 * SMALL_BUFF, aligned_edge=DOWN)
         z_rhs.set_stroke(BLACK, 3, background=True)
@@ -526,7 +526,7 @@ class ComplexMultiplication(Scene):
         zi_point = plane.n2p(z * complex(0, 1))
         i_vect.target = Vector(zi_point)
         i_vect.target.match_style(i_vect)
-        i_vect_label = TexMobject("z \\cdot i")
+        i_vect_label = Tex("z \\cdot i")
         i_vect_label.match_color(i_vect)
         i_vect_label.set_stroke(BLACK, 3, background=True)
         i_vect_label.next_to(zi_point, UL, SMALL_BUFF)
@@ -636,9 +636,9 @@ class RotatePiCreature(Scene):
         self.wait()
 
         label = VGroup(
-            TexMobject("(x + iy)"),
+            Tex("(x + iy)"),
             Vector(DOWN),
-            TexMobject("(\\cos(30^\\circ) + i\\sin(30^\\circ))", "(x + iy)"),
+            Tex("(\\cos(30^\\circ) + i\\sin(30^\\circ))", "(x + iy)"),
         )
         label[2][0].set_color(YELLOW)
         label.arrange(DOWN)
@@ -673,7 +673,7 @@ class ExpMeaning(Scene):
             plane.add(circle)
 
         # Equation
-        equation = TexMobject(
+        equation = Tex(
             "\\text{exp}(i\\theta) = ",
             "1 + ",
             "i\\theta + ",
@@ -692,7 +692,7 @@ class ExpMeaning(Scene):
         # Label
         theta_tracker = ValueTracker(0)
         theta_label = VGroup(
-            TexMobject("\\theta = "),
+            Tex("\\theta = "),
             DecimalNumber(0, num_decimal_places=4)
         )
         theta_decimal = theta_label[1]
@@ -767,7 +767,7 @@ class PositionAndVelocityExample(Scene):
 class EulersFormula(Scene):
     def construct(self):
         kw = {"tex_to_color_map": {"\\theta": YELLOW}}
-        formula = TexMobject(
+        formula = Tex(
             "&e^{i\\theta} = \\\\ &\\cos\\left(\\theta\\right) + i\\cdot\\sin\\left(\\theta\\right)",
         )[0]
         formula[:4].scale(2, about_edge=UL)
@@ -780,7 +780,7 @@ class EulersFormula(Scene):
 
 class EtoILimit(Scene):
     def construct(self):
-        tex = TexMobject(
+        tex = Tex(
             "\\lim_{n \\to \\infty} \\left(1 + \\frac{it}{n}\\right)^n",
         )[0]
         VGroup(tex[3], tex[12], tex[14]).set_color(YELLOW)
@@ -789,7 +789,7 @@ class EtoILimit(Scene):
         tex.set_stroke(BLACK, 5, background=True)
         # self.add(tex)
 
-        text = TextMobject("Interest rate\\\\of ", "$\\sqrt{-1}$")
+        text = TexText("Interest rate\\\\of ", "$\\sqrt{-1}$")
         text[1].set_color(BLUE) 
         text.scale(1.5)
         text.set_stroke(BLACK, 5, background=True)
@@ -882,7 +882,7 @@ class ImaginaryInterestRates(Scene):
 
         label = VGroup(
             DecimalNumber(0, num_decimal_places=3),
-            TextMobject("Years")
+            TexText("Years")
         )
         label.arrange(RIGHT, aligned_edge=DOWN)
         label.move_to(3 * LEFT + 1.5 * UP)
@@ -902,7 +902,7 @@ class ImaginaryInterestRates(Scene):
 
 class Logs(Scene):
     def construct(self):
-        log = TexMobject(
+        log = Tex(
             "&\\text{log}(ab) = \\\\ &\\text{log}(a) + \\text{log}(b)",
             tex_to_color_map={"a": BLUE, "b": YELLOW},
             alignment="",
@@ -916,12 +916,12 @@ class Logs(Scene):
 
 class LnX(Scene):
     def construct(self):
-        sym = TexMobject("\\ln(x)")
+        sym = Tex("\\ln(x)")
         sym.scale(3)
         sym.shift(UP)
         sym.set_stroke(BLACK, 5, background=True)
 
-        word = TextMobject("Natural?")
+        word = TexText("Natural?")
         word.scale(1.5)
         word.set_color(YELLOW)
         word.set_stroke(BLACK, 5, background=True)
@@ -970,7 +970,7 @@ class HarmonicSum(Scene):
             bar.replace(line, stretch=True)
             bars.add(bar)
 
-            label = TexMobject(f"1 \\over {x}")
+            label = Tex(f"1 \\over {x}")
             label.set_height(0.7)
             label.next_to(bar, UP, SMALL_BUFF)
             bar_labels.add(label)
@@ -988,7 +988,7 @@ class HarmonicSum(Scene):
 
 class PowerTower(Scene):
     def construct(self):
-        mob = TexMobject("4 = x^{x^{{x^{x^{x^{\cdot^{\cdot^{\cdot}}}}}}}}")
+        mob = Tex("4 = x^{x^{{x^{x^{x^{\cdot^{\cdot^{\cdot}}}}}}}}")
         mob[0][-1].shift(0.1 * DL)
         mob[0][-2].shift(0.05 * DL)
 
@@ -1000,8 +1000,8 @@ class PowerTower(Scene):
 
 class ItoTheI(Scene):
     def construct(self):
-        tex = TexMobject("i^i")
-        # tex = TexMobject("\\sqrt{-1}^{\\sqrt{-1}}")
+        tex = Tex("i^i")
+        # tex = Tex("\\sqrt{-1}^{\\sqrt{-1}}")
         tex.set_height(3)
         tex.set_stroke(BLACK, 8, background=True)
         self.add(tex)
@@ -1112,10 +1112,10 @@ class ComplexExponentialPlay(Scene):
 
         # Labels
         labels = VGroup(
-            TexMobject("f(1)"),
-            TexMobject("f(i)"),
-            TexMobject("f(-1)"),
-            TexMobject("f(-i)"),
+            Tex("f(1)"),
+            Tex("f(i)"),
+            Tex("f(-1)"),
+            Tex("f(-i)"),
         )
         for label, dot in zip(labels, special_dots):
             label.set_height(0.3)
@@ -1131,20 +1131,20 @@ class ComplexExponentialPlay(Scene):
         labels.add_updater(update_labels)
 
         # Titles
-        title = TexMobject(
+        title = Tex(
             "f(x) =", "\\text{exp}(r\\cdot x)",
             tex_to_color_map={"r": YELLOW}
         )
         title.to_corner(UL)
         title.set_stroke(BLACK, 5, background=True)
         brace = Brace(title[1:], UP, buff=SMALL_BUFF)
-        e_pow = TexMobject("e^{rx}", tex_to_color_map={"r": YELLOW})
+        e_pow = Tex("e^{rx}", tex_to_color_map={"r": YELLOW})
         e_pow.add_background_rectangle()
         e_pow.next_to(brace, UP, buff=SMALL_BUFF)
         title.add(brace, e_pow)
 
         r_eq = VGroup(
-            TexMobject("r=", tex_to_color_map={"r": YELLOW}),
+            Tex("r=", tex_to_color_map={"r": YELLOW}),
             DecimalNumber(1)
         )
         r_eq.arrange(RIGHT, aligned_edge=DOWN)

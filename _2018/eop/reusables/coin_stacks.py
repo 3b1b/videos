@@ -31,11 +31,11 @@ class TailsStack(CoinStack):
 
 
 
-class DecimalTally(TextMobject):
+class DecimalTally(TexText):
 
     def __init__(self, heads, tails, **kwargs):
 
-        TextMobject.__init__(self, str(heads), "\\textemdash\,", str(tails), **kwargs)
+        TexText.__init__(self, str(heads), "\\textemdash\,", str(tails), **kwargs)
         self[0].set_color(COLOR_HEADS)
         self[-1].set_color(COLOR_TAILS)
         # this only works for single-digit tallies

@@ -95,7 +95,7 @@ class ShowWord(Animation):
     }
 
     def __init__(self, word, **kwargs):
-        assert(isinstance(word, SingleStringTexMobject))
+        assert(isinstance(word, SingleStringTex))
         digest_config(self, kwargs)
         run_time = kwargs.pop(
             "run_time",
@@ -179,15 +179,15 @@ class ShowEmergingEllipse(Scene):
         ghost_line = self.get_ghost_lines(line)
         ghost_lines = self.get_ghost_lines(lines)
 
-        rot_words = TextMobject("Rotate $90^\\circ$ \\\\ about center")
+        rot_words = TexText("Rotate $90^\\circ$ \\\\ about center")
         rot_words.next_to(line_dot, RIGHT)
 
         elbow = self.get_elbow(line)
 
-        eccentric_words = TextMobject("``Eccentric'' point")
+        eccentric_words = TexText("``Eccentric'' point")
         eccentric_words.next_to(circle.get_center(), DOWN)
 
-        ellipse_words = TextMobject("Perfect ellipse")
+        ellipse_words = TexText("Perfect ellipse")
         ellipse_words.next_to(ellipse, UP, SMALL_BUFF)
 
         for text in rot_words, ellipse_words:
@@ -375,7 +375,7 @@ class FeynmanAndOrbitingPlannetOnEllipseDiagram(ShowEmergingEllipse):
         feynman.set_height(6)
         feynman.next_to(ORIGIN, LEFT)
         feynman.to_edge(UP)
-        feynman_name = TextMobject("Richard Feynman")
+        feynman_name = TexText("Richard Feynman")
         feynman_name.next_to(feynman, DOWN)
         feynman.save_state()
         feynman.shift(2 * DOWN)
@@ -454,7 +454,7 @@ class FeynmanFame(Scene):
 
         VGroup(objects, feynman_smile).next_to(ORIGIN, RIGHT)
 
-        joke = TextMobject(
+        joke = TexText(
             "``Science is the belief \\\\ in the ignorance of \\\\ experts.''"
         )
         joke.move_to(objects)
@@ -531,7 +531,7 @@ class FeynmanFame(Scene):
             ]
         ])
         labels = VGroup(*[
-            TexMobject(tex)
+            Tex(tex)
             for tex in ["e^-", "e^+", "\\text{\\=q}", "q"]
         ])
         vects = [UR, DR, UL, DL]
@@ -543,7 +543,7 @@ class FeynmanFame(Scene):
             x_min=x_min,
             x_max=x_max,
         )
-        wave_label = TexMobject("\\gamma")
+        wave_label = Tex("\\gamma")
         wave_label.next_to(wave, UP, SMALL_BUFF)
         labels.add(wave_label)
 
@@ -563,7 +563,7 @@ class FeynmanFame(Scene):
             arrows[2].point_from_proportion(0.75),
             DR, buff=0
         )
-        squiggle_label = TexMobject("g")
+        squiggle_label = Tex("g")
         squiggle_label.next_to(squiggle, UR, buff=-MED_SMALL_BUFF)
         labels.add(squiggle_label)
 
@@ -572,7 +572,7 @@ class FeynmanFame(Scene):
 
 class FeynmanLecturesScreenCaptureFrame(Scene):
     def construct(self):
-        url = TextMobject("http://www.feynmanlectures.caltech.edu/")
+        url = TexText("http://www.feynmanlectures.caltech.edu/")
         url.to_edge(UP)
 
         screen_rect = ScreenRectangle(height=6)
@@ -594,7 +594,7 @@ class TheMotionOfPlanets(Scene):
         self.setup_orbits()
 
     def add_title(self):
-        title = TextMobject("``The motion of planets around the sun''")
+        title = TexText("``The motion of planets around the sun''")
         title.set_color(YELLOW)
         title.to_edge(UP)
         title.add_to_back(title.copy().set_stroke(BLACK, 5))
@@ -606,13 +606,13 @@ class TheMotionOfPlanets(Scene):
         sun.set_height(0.7)
         planets, ellipses, orbits = self.get_planets_ellipses_and_orbits(sun)
 
-        archivist_words = TextMobject(
+        archivist_words = TexText(
             "Judith Goodstein (Caltech archivist)"
         )
         archivist_words.to_corner(UL)
         archivist_words.shift(1.5 * DOWN)
         archivist_words.add_background_rectangle()
-        alt_name = TextMobject("David Goodstein (Caltech physicist)")
+        alt_name = TexText("David Goodstein (Caltech physicist)")
         alt_name.next_to(archivist_words, DOWN, aligned_edge=LEFT)
         alt_name.add_background_rectangle()
 
@@ -804,7 +804,7 @@ class AskAboutEllipses(TheMotionOfPlanets):
         )
 
         # Force equation
-        force_equation = TexMobject(
+        force_equation = Tex(
             "F = {GMm \\over (0.000)^2}",
             tex_to_color_map={
                 "F": YELLOW,
@@ -831,7 +831,7 @@ class AskAboutEllipses(TheMotionOfPlanets):
             self.comet
         )
 
-        inverse_square_law_words = TextMobject(
+        inverse_square_law_words = TexText(
             "``Inverse square law''"
         )
         inverse_square_law_words.next_to(force_equation, DOWN, MED_LARGE_BUFF)
@@ -885,14 +885,14 @@ class AskAboutEllipses(TheMotionOfPlanets):
         self.wait(2)
 
     def set_up_differential_equations(self):
-        d_dt = TexMobject("{d \\over dt}")
+        d_dt = Tex("{d \\over dt}")
         in_vect = Matrix(np.array([
             "x(t)",
             "y(t)",
             "\\dot{x}(t)",
             "\\dot{y}(t)",
         ]))
-        equals = TexMobject("=")
+        equals = Tex("=")
         out_vect = Matrix(np.array([
             "\\dot{x}(t)",
             "\\dot{y}(t)",
@@ -1000,7 +1000,7 @@ class FeynmanElementaryQuote(Scene):
             except to have an infinite amount of intelligence.
         """
         quote_parts = [s for s in quote_text.split(" ") if s]
-        quote = TextMobject(
+        quote = TexText(
             *quote_parts,
             tex_to_color_map={
                 "\\emph{elementary}": BLUE,
@@ -1020,7 +1020,7 @@ class FeynmanElementaryQuote(Scene):
         quote.to_edge(UP)
         quote.get_part_by_tex("of").set_color(WHITE)
 
-        nothing = TextMobject("nothing")
+        nothing = TexText("nothing")
         nothing.scale(0.9)
         very = quote.get_part_by_tex("very")
         nothing.shift(very[0].get_left() - nothing[0].get_left())
@@ -1125,9 +1125,9 @@ class AskAboutInfiniteIntelligence(TeacherStudentsScene):
 class TableOfContents(Scene):
     def construct(self):
         items = VGroup(
-            TextMobject("How the ellipse will arise"),
-            TextMobject("Kepler's 2nd law"),
-            TextMobject("The shape of velocities"),
+            TexText("How the ellipse will arise"),
+            TexText("Kepler's 2nd law"),
+            TexText("The shape of velocities"),
         )
         items.arrange(
             DOWN, buff=LARGE_BUFF, aligned_edge=LEFT
@@ -1268,7 +1268,7 @@ class ShowEllipseDefiningProperty(Scene):
         )
 
         sum_rect = SurroundingRectangle(numbers[-1])
-        constant_words = TextMobject("Stays constant")
+        constant_words = TexText("Stays constant")
         constant_words.next_to(sum_rect, DOWN, aligned_edge=RIGHT)
         VGroup(sum_rect, constant_words).set_color(BLUE)
 
@@ -1295,10 +1295,10 @@ class ShowEllipseDefiningProperty(Scene):
     def label_foci(self):
         foci = self.get_foci()
         focus_words = VGroup(*[
-            TextMobject("Focus").next_to(focus, DOWN)
+            TexText("Focus").next_to(focus, DOWN)
             for focus in foci
         ])
-        foci_word = TextMobject("Foci")
+        foci_word = TexText("Foci")
         foci_word.move_to(focus_words)
         foci_word.shift(MED_SMALL_BUFF * UP)
         connecting_lines = VGroup(*[
@@ -1311,7 +1311,7 @@ class ShowEllipseDefiningProperty(Scene):
             for focus_word, edge in zip(focus_words, [LEFT, RIGHT])
         ])
 
-        translation = TextMobject(
+        translation = TexText(
             "``Foco'' $\\rightarrow$ Fireplace"
         )
         translation.to_edge(RIGHT)
@@ -1339,12 +1339,12 @@ class ShowEllipseDefiningProperty(Scene):
     def label_focal_sum(self):
         sum_rect = self.sum_rect
 
-        focal_sum = TextMobject("``Focal sum''")
+        focal_sum = TexText("``Focal sum''")
         focal_sum.scale(1.5)
         focal_sum.next_to(sum_rect, DOWN, aligned_edge=RIGHT)
         VGroup(sum_rect, focal_sum).set_color(RED)
 
-        footnote = TextMobject(
+        footnote = TexText(
             """
             \\Large
             *This happens to equal the longest distance
@@ -1432,7 +1432,7 @@ class ShowEllipseDefiningProperty(Scene):
         return distance_labels, distance_labels_animation
 
     def get_sum_expression_and_update(self, lines, colors, sum_position_func):
-        sum_expression = TexMobject("0.00", "+", "0.00", "=", "0.00")
+        sum_expression = Tex("0.00", "+", "0.00", "=", "0.00")
         sum_position_func(sum_expression)
         number_refs = sum_expression.get_parts_by_tex("0.00")
         number_refs.set_fill(opacity=0)
@@ -1508,7 +1508,7 @@ class GeometryProofLand(Scene):
         self.wait()
 
     def get_geometry_proof_land_word(self):
-        word = TextMobject(self.text)
+        word = TexText(self.text)
         word.rotate(-90 * DEGREES)
         word.scale(0.25)
         word.shift(3 * RIGHT)
@@ -1568,8 +1568,8 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         ep_dot = self.ep_dot
         dots = VGroup(center_dot, ep_dot)
 
-        center_label = TextMobject("Circle center")
-        ep_label = TextMobject("Eccentric point")
+        center_label = TexText("Circle center")
+        ep_label = TexText("Eccentric point")
         labels = VGroup(center_label, ep_label)
         vects = [UL, DR]
         arrows = VGroup()
@@ -1592,7 +1592,7 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         labels_target.arrange(
             DOWN, aligned_edge=LEFT
         )
-        guess_start = TextMobject("Guess: Foci = ")
+        guess_start = TexText("Guess: Foci = ")
         brace = Brace(labels_target, LEFT)
         full_guess = VGroup(guess_start, brace, labels_target)
         full_guess.arrange(RIGHT)
@@ -1727,7 +1727,7 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         to_fade.remove(line, ghost_line)
 
         P_dot = Dot(line.saved_state.get_end())
-        P_label = TexMobject("P")
+        P_label = Tex("P")
         P_label.next_to(P_dot, UP, SMALL_BUFF)
 
         self.add_foreground_mobjects(self.ellipse)
@@ -1772,7 +1772,7 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         )
 
         # Perpendicular bisector label
-        label = TextMobject("``Perpendicular bisector''")
+        label = TexText("``Perpendicular bisector''")
         label.scale(0.75)
         label.set_color(YELLOW)
         label.next_to(ORIGIN, UP, MED_SMALL_BUFF)
@@ -1793,7 +1793,7 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         Q_dot.move_to(line.point_from_proportion(0.9))
         Q_dot.save_state()
 
-        Q_label = TexMobject("Q")
+        Q_label = Tex("Q")
         Q_label.scale(0.7)
         Q_label.match_color(Q_dot)
         Q_label.add_to_back(Q_label.copy().set_stroke(BLACK, 5))
@@ -1919,7 +1919,7 @@ class ProveEllipse(ShowEmergingEllipse, ShowEllipseDefiningProperty):
         sum_rect = SurroundingRectangle(
             self.numbers[-1]
         )
-        tangency_comment = TextMobject(
+        tangency_comment = TexText(
             "Always $\\ge$ radius"
         )
         tangency_comment.next_to(
@@ -2126,7 +2126,7 @@ class SimpleThinking(Scene):
 class EndOfGeometryProofiness(GeometryProofLand):
     def construct(self):
         geometry_word = self.get_geometry_proof_land_word()
-        orbital_mechanics = TextMobject("Orbital Mechanics")
+        orbital_mechanics = TexText("Orbital Mechanics")
         orbital_mechanics.scale(1.5)
         orbital_mechanics.to_edge(UP)
         underline = Line(LEFT, RIGHT)
@@ -2164,13 +2164,13 @@ class KeplersSecondLaw(AskAboutEllipses):
         self.contrast_close_to_far()
 
     def add_title(self):
-        title = TextMobject("Kepler's 2nd law:")
+        title = TexText("Kepler's 2nd law:")
         title.scale(1.0)
         title.to_edge(UP)
         self.add(title)
         self.title = title
 
-        subtitle = TextMobject(
+        subtitle = TexText(
             "Orbits sweep a constant area per unit time"
         )
         subtitle.next_to(title, DOWN, buff=0.2)
@@ -2202,7 +2202,7 @@ class KeplersSecondLaw(AskAboutEllipses):
         radius_words = self.get_radius_words(radius, "Short")
         radius_words.next_to(radius.get_center(), LEFT, SMALL_BUFF)
 
-        arc_words = TextMobject("Long arc")
+        arc_words = TexText("Long arc")
         arc_words.rotate(90 * DEGREES)
         arc_words.scale(0.5)
         arc_words.next_to(RIGHT, RIGHT)
@@ -2237,7 +2237,7 @@ class KeplersSecondLaw(AskAboutEllipses):
         long_radius.set_color(WHITE)
         long_radius_words = self.get_radius_words(long_radius, "Long")
 
-        short_arc_words = TextMobject("Short arc")
+        short_arc_words = TexText("Short arc")
         short_arc_words.scale(0.5)
         short_arc_words.rotate(90 * DEGREES)
         short_arc_words.next_to(short_arc, LEFT, SMALL_BUFF)
@@ -2332,7 +2332,7 @@ class KeplersSecondLaw(AskAboutEllipses):
                 self.wait(self.frame_duration)
 
     def get_radius_words(self, radius, adjective):
-        radius_words = TextMobject(
+        radius_words = TexText(
             "%s radius" % adjective,
         )
         min_width = 0.8 * radius.get_length()
@@ -2440,13 +2440,13 @@ class AngularMomentumArgument(KeplersSecondLaw):
             color=WHITE,
             buff=0
         )
-        velocity_vector_label = TexMobject("\\vec{\\textbf{v}}")
+        velocity_vector_label = Tex("\\vec{\\textbf{v}}")
         velocity_vector_label.next_to(
             velocity_vector.get_center(), UL,
             buff=SMALL_BUFF
         )
 
-        small_time_label = TextMobject(
+        small_time_label = TexText(
             "Small", "time", "$\\Delta t$",
         )
         small_time_label.to_edge(UP)
@@ -2504,7 +2504,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
         triangle_points = triangle.get_anchors()[:3]
         top = triangle_points[1]
 
-        area_label = TexMobject(
+        area_label = Tex(
             "\\text{Area}", "=", "\\frac{1}{2}",
             "\\text{Base}", "\\times", "\\text{Height}",
         )
@@ -2514,7 +2514,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
         })
         area_label.to_edge(UP)
         equals = area_label.get_part_by_tex("=")
-        area_expression = TexMobject(
+        area_expression = Tex(
             "=", "\\frac{1}{2}", "R", "\\times",
             "\\vec{\\textbf{v}}_\\perp",
             "\\Delta t",
@@ -2543,7 +2543,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
         height = Line(top, base_point)
         height.set_stroke(YELLOW, 3)
 
-        radius_label = TextMobject("Radius")
+        radius_label = TexText("Radius")
         radius_label.next_to(base, DOWN, SMALL_BUFF)
         radius_label.match_color(base)
 
@@ -2555,7 +2555,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
         v_perp = Arrow(*height.get_start_and_end(), buff=0)
         v_perp.set_color(YELLOW)
         v_perp.shift(comet.get_center() - v_perp.get_start())
-        v_perp_label = TexMobject(
+        v_perp_label = Tex(
             "\\vec{\\textbf{v}}_\\perp"
         )
         v_perp_label.set_color(YELLOW)
@@ -2616,7 +2616,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
             lambda p: -get_norm(p - sun_center)
         )
 
-        stays_constant = TextMobject("Stays constant")
+        stays_constant = TexText("Stays constant")
         stays_constant.next_to(
             R_v_perp_rect, DR, buff=MED_LARGE_BUFF
         )
@@ -2633,7 +2633,7 @@ class AngularMomentumArgument(KeplersSecondLaw):
         R_v_perp.save_state()
         R_v_perp.generate_target()
         R_v_perp.target.to_edge(LEFT, buff=MED_LARGE_BUFF)
-        lp, rp = parens = TexMobject("()")
+        lp, rp = parens = Tex("()")
         lp.next_to(R_v_perp.target, LEFT)
         rp.next_to(R_v_perp.target, RIGHT)
 
@@ -2703,8 +2703,8 @@ class HistoryOfAngularMomentum(TeacherStudentsScene):
     }
 
     def construct(self):
-        am = VGroup(TextMobject("Angular momentum"))
-        k2l = TextMobject("Kepler's 2nd law")
+        am = VGroup(TexText("Angular momentum"))
+        k2l = TexText("Kepler's 2nd law")
         arrow = Arrow(ORIGIN, RIGHT)
 
         group = VGroup(am, arrow, k2l)
@@ -2716,7 +2716,7 @@ class HistoryOfAngularMomentum(TeacherStudentsScene):
         k2l_image.next_to(k2l, UP)
         k2l.add(k2l_image)
 
-        angular_momentum_formula = TexMobject(
+        angular_momentum_formula = Tex(
             "R", "\\times", "m", "\\vec{\\textbf{v}}_\\perp",
         )
         angular_momentum_formula.set_color_by_tex_to_color_map({
@@ -2818,7 +2818,7 @@ class IntroduceShapeOfVelocities(AskAboutEllipses, MovingCameraScene):
 
     def reference_inverse_square_law(self):
         ellipse = self.ellipse
-        force_equation = TexMobject(
+        force_equation = Tex(
             "F", "=", "{G", "M", "m", "\\over", "R^2}"
         )
         force_equation.move_to(ellipse)
@@ -2905,7 +2905,7 @@ class IntroduceShapeOfVelocities(AskAboutEllipses, MovingCameraScene):
         circle.replace(vector_targets)
         circle.scale(1.04)
 
-        velocity_space = TextMobject("Velocity space")
+        velocity_space = TexText("Velocity space")
         velocity_space.next_to(circle, UP)
 
         rect = SurroundingRectangle(
@@ -3078,7 +3078,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
             angle_arc.mid_angle = angle + self.theta / 2
             angle_arcs.add(angle_arc)
 
-            theta = TexMobject("\\theta")
+            theta = Tex("\\theta")
             theta.scale(0.6)
             vect = rotate_vector(RIGHT, angle_arc.mid_angle)
             theta.move_to(
@@ -3151,10 +3151,10 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
         comet = self.comet
         frame = self.camera_frame
 
-        words1 = TextMobject(
+        words1 = TexText(
             "Time spent \\\\ traversing \\\\ this slice?"
         )
-        words2 = TextMobject("How about \\\\ this one?")
+        words2 = TexText("How about \\\\ this one?")
 
         words1.to_corner(UR)
         words2.next_to(wedge2, LEFT, MED_LARGE_BUFF)
@@ -3204,7 +3204,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
 
         line = self.lines[len(self.lines) / 2]
         thick_line = line.copy().set_stroke(PINK, 4)
-        radius_word = TextMobject("Radius")
+        radius_word = TexText("Radius")
         radius_word.next_to(thick_line, UP, SMALL_BUFF)
         radius_word.match_color(thick_line)
 
@@ -3215,14 +3215,14 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
             wedge, thick_line, radius_word, thick_arc
         )
 
-        expression = TextMobject(
+        expression = TexText(
             "Time", "$\\propto$",
             "Area", "$\\propto$", "$(\\text{Radius})^2$"
         )
         expression.next_to(ellipse, UP, LARGE_BUFF)
 
         prop_to_brace = Brace(expression[1], DOWN, buff=SMALL_BUFF)
-        prop_to_words = TextMobject("(proportional to)")
+        prop_to_words = TexText("(proportional to)")
         prop_to_words.scale(0.7)
         prop_to_words.next_to(prop_to_brace, DOWN, SMALL_BUFF)
         VGroup(prop_to_words, prop_to_brace).set_color(GREEN)
@@ -3266,7 +3266,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
 
         arc = self.arcs[len(self.arcs) / 2]
 
-        force_expression = TexMobject(
+        force_expression = Tex(
             "ma", "=", "\\text{Force}",
             "\\propto", "\\frac{1}{(\\text{Radius})^2}"
         )
@@ -3274,7 +3274,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
         force_expression.align_to(prop_exp, UP)
         force_expression.set_color_by_tex("Force", YELLOW)
 
-        acceleration_expression = TexMobject(
+        acceleration_expression = Tex(
             "a", "=", "{\\Delta v",
             "\\over", "\\Delta t}",
             "\\propto", "{1 \\over (\\text{Radius})^2}"
@@ -3284,7 +3284,7 @@ class ShowEqualAngleSlices(IntroduceShapeOfVelocities):
             aligned_edge=LEFT
         )
 
-        delta_v_expression = TexMobject(
+        delta_v_expression = Tex(
             "\\Delta v}", "\\propto",
             "{\\Delta t", "\\over", "(\\text{Radius})^2}"
         )
@@ -3552,7 +3552,7 @@ class PonderOverOffCenterDiagram(PiCreatureScene):
             color=GREY_B
         )
         rect.stretch(1.2, 1, about_edge=DOWN)
-        words = TextMobject("Velocity space")
+        words = TexText("Velocity space")
         words.next_to(rect.get_top(), DOWN)
 
         self.play(
@@ -3640,7 +3640,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
         self.show_equal_angle_slices()
         self.revert_to_original_skipping_status()
 
-        orbit_word = self.orbit_word = TextMobject("Orbit")
+        orbit_word = self.orbit_word = TexText("Orbit")
         orbit_word.scale(1.5)
         orbit_word.next_to(self.ellipse, UP, LARGE_BUFF)
         self.add(orbit_word)
@@ -3675,7 +3675,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
         )
         circle.shift(0.035 * LEFT)  # ?!?
 
-        velocities_word = TextMobject("Velocities")
+        velocities_word = TexText("Velocities")
         velocities_word.scale(1.5)
         velocities_word.next_to(circle, UP)
         velocities_word.align_to(self.orbit_word, DOWN)
@@ -3738,7 +3738,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
             radius=0.5
         )
         ellipse_angle_arc.shift(sun_center)
-        ellipse_theta = TexMobject("\\theta")
+        ellipse_theta = Tex("\\theta")
         ellipse_theta.next_to(ellipse_angle_arc, RIGHT, MED_SMALL_BUFF)
         ellipse_theta.shift(2 * SMALL_BUFF * UL)
 
@@ -3752,7 +3752,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
             circle, 0, fdiv(index, len(vectors))
         )
         circle_arc.set_stroke(RED, 4)
-        circle_theta = TexMobject("\\theta")
+        circle_theta = Tex("\\theta")
         circle_theta.scale(1.5)
         circle_theta.next_to(circle_arc, UP, SMALL_BUFF)
         circle_theta.shift(SMALL_BUFF * DL)
@@ -3909,7 +3909,7 @@ class UseVelocityDiagramToDeduceCurve(ShowEqualAngleSlices):
         arc.rotate(90 * DEGREES, about_point=ORIGIN)
         arc.shift(vector.get_start())
 
-        theta_q = TexMobject("\\theta ?")
+        theta_q = Tex("\\theta ?")
         theta_q.next_to(arc, UP)
         theta_q.shift(SMALL_BUFF * LEFT)
         cross = Cross(theta_q)
@@ -4164,7 +4164,7 @@ class TryToRememberProof(PiCreatureScene):
     def construct(self):
         randy = self.pi_creature
 
-        words = TextMobject("Oh god...how \\\\ did it go?")
+        words = TexText("Oh god...how \\\\ did it go?")
         words.next_to(randy, UP)
         words.shift_onto_screen()
 
@@ -4282,7 +4282,7 @@ class Thumbnail(ShowEmergingEllipse):
         small_group[0].set_fill(opacity=0.25)
         self.add(small_group)
 
-        title = TextMobject(
+        title = TexText(
             "Feynman's \\\\", "Lost \\\\", "Lecture",
             alignment=""
         )

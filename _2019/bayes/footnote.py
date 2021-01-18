@@ -14,7 +14,7 @@ SICKLY_GREEN = "#9BBD37"
 
 
 def get_bayes_formula():
-    return TexMobject(
+    return Tex(
         "P(A|B) = {P(A)P(B|A) \\over P(B)}",
         tex_to_color_map={
             "A": YELLOW,
@@ -32,14 +32,14 @@ class ThisIsAFootnote(TeacherStudentsScene):
         image.set_height(2.5)
         rect = SurroundingRectangle(image, buff=0)
         rect.set_stroke(WHITE, 3)
-        title = TextMobject("Bayes' theorem")
+        title = TexText("Bayes' theorem")
         title.match_width(image)
         title.next_to(image, UP)
 
         image_group = Group(rect, image, title)
         image_group.to_corner(UL)
 
-        asterisk = TextMobject("*")
+        asterisk = TexText("*")
         asterisk.set_height(0.5)
         asterisk.set_stroke(BLACK, 3, background=True)
         asterisk.move_to(image.get_corner(UR), LEFT)
@@ -95,11 +95,11 @@ class ThisIsAFootnote(TeacherStudentsScene):
         self.wait()
 
         # Move to top
-        p_both = TexMobject(
+        p_both = Tex(
             "P(A \\text{ and } B)",
             tex_to_color_map={"A": YELLOW, "B": BLUE},
         )
-        eq2 = TexMobject("=")
+        eq2 = Tex("=")
         full_equation = VGroup(
             pb, pab, eq, p_both, eq2, pa, pba
         )
@@ -174,7 +174,7 @@ class ShowTwoPerspectives(Scene):
         )
         d1_line.set_stroke(BLACK, 2)
 
-        space_words = TextMobject(
+        space_words = TexText(
             "Space of all\\\\possibilities"
         )
         space_words.match_width(diagram1.square)
@@ -288,7 +288,7 @@ class ShowTwoPerspectives(Scene):
             }
         }
         parts = VGroup(*[
-            TexMobject(tex, **kw)
+            Tex(tex, **kw)
             for tex in [
                 "P(B)", "P(A|B)", "=",
                 "P(A \\text{ and } B)",
@@ -323,8 +323,8 @@ class ShowTwoPerspectives(Scene):
         circles = VGroup(c1, c2)
 
         titles = VGroup(
-            TexMobject("A"),
-            TexMobject("B"),
+            Tex("A"),
+            Tex("B"),
         )
         for title, circle, vect in zip(titles, circles, [UL, UR]):
             title.match_color(circle)
@@ -345,8 +345,8 @@ class ShowTwoPerspectives(Scene):
 
         diagram.add_brace_attrs()
         kw = {"tex_to_color_map": TEX_TO_COLOR_MAP}
-        diagram.pa_label = TexMobject("P(A)", **kw)
-        diagram.pba_label = TexMobject("P(B|A)", **kw)
+        diagram.pa_label = Tex("P(A)", **kw)
+        diagram.pba_label = Tex("P(B|A)", **kw)
         diagram.pa_label.add_updater(
             lambda m: m.next_to(diagram.h_brace, DOWN, SMALL_BUFF),
         )
@@ -394,8 +394,8 @@ class ShowTwoPerspectives(Scene):
         pb_brace = Brace(b_rect, LEFT, buff=SMALL_BUFF)
         pab_brace = Brace(ba_rect, DOWN, buff=SMALL_BUFF)
         kw = {"tex_to_color_map": TEX_TO_COLOR_MAP}
-        pb_label = TexMobject("P(B)", **kw)
-        pab_label = TexMobject("P(A|B)", **kw)
+        pb_label = Tex("P(B)", **kw)
+        pab_label = Tex("P(A|B)", **kw)
         pb_label.next_to(pb_brace, LEFT, SMALL_BUFF)
         pab_label.next_to(pab_brace, DOWN, SMALL_BUFF)
 
@@ -417,7 +417,7 @@ class Rearrange(ShowTwoPerspectives):
     def construct(self):
         formula = self.get_formula()
         pb, pab, eq1, p_both, eq2, pa, pba = formula
-        over = TexMobject("{\\qquad\\qquad \\over \\quad}")
+        over = Tex("{\\qquad\\qquad \\over \\quad}")
         over.match_width(formula[:2])
         eq3 = eq1.copy()
 
@@ -609,14 +609,14 @@ class LandscapeOfTools(TeacherStudentsScene):
     def get_formulas(self):
         group = VGroup(
             get_bayes_formula(),
-            TexMobject(
+            Tex(
                 "P(X = k) = {\\lambda^k \\over k!}", "e^{-\\lambda}",
                 tex_to_color_map={
                     "k": YELLOW,
                     "\\lambda": GREEN,
                 }
             ),
-            TexMobject(
+            Tex(
                 "{1 \\over \\sigma\\sqrt{2\\pi}}",
                 "e^{\\frac{1}{2}\\left({(x - \\mu) \\over \\sigma}\\right)^2}",
                 tex_to_color_map={
@@ -624,7 +624,7 @@ class LandscapeOfTools(TeacherStudentsScene):
                     "\\mu": BLUE,
                 }
             ),
-            TexMobject(
+            Tex(
                 "P(X = k) =", "\\left({n \\over k}\\right)", "p^k(1-p)^{n-k}",
                 tex_to_color_map={
                     "\\over": BLACK,
@@ -634,19 +634,19 @@ class LandscapeOfTools(TeacherStudentsScene):
                     "k": GREEN
                 }
             ),
-            TexMobject(
+            Tex(
                 "E[X + Y] = E[x] + E[y]"
             ),
-            TexMobject(
+            Tex(
                 "\\text{Var}(X + Y) = \\text{Var}(x) + \\text{Var}(y) + 2\\text{Cov}(X, Y)"
             ),
-            TexMobject(
+            Tex(
                 "H = \\sum_{i} -p_i \\log", "(p_i)",
                 tex_to_color_map={
                     "p_i": YELLOW,
                 }
             ),
-            TexMobject(
+            Tex(
                 "{n \\choose k}",
                 "{B(k + \\alpha, n -k + \\beta) \\over B(\\alpha, \\beta)}",
                 tex_to_color_map={
@@ -654,11 +654,11 @@ class LandscapeOfTools(TeacherStudentsScene):
                     "\\beta": YELLOW,
                 }
             ),
-            TexMobject(
+            Tex(
                 "P(d) = \\log_{10}\\left(1 + {1 \\over d}\\right)",
                 tex_to_color_map={"d": BLUE},
             ),
-            TexMobject(
+            Tex(
                 "\\text{Cov}(X, Y) = \\sum_{i, j} p({x}_i, {y}_j)({x}_i - \\mu_{x})({y}_j - \\mu_{y})",
                 tex_to_color_map={
                     "{x}": BLUE,
@@ -680,15 +680,15 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
             "isolate": list("P()"),
         }
         formula = VGroup(
-            TexMobject("P(A \\text{ and } B)", **kw),
-            TexMobject("="),
-            TexMobject("P(A)P(B)", "\\,", "\\,", **kw),
+            Tex("P(A \\text{ and } B)", **kw),
+            Tex("="),
+            Tex("P(A)P(B)", "\\,", "\\,", **kw),
         )
         formula.arrange(RIGHT)
         formula.scale(1.5)
         formula.to_edge(UP)
 
-        q_marks = TexMobject("???")[0]
+        q_marks = Tex("???")[0]
         q_marks.scale(1.25)
         q_marks.next_to(formula[1], UP, SMALL_BUFF)
 
@@ -745,7 +745,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
             pair.restore()
 
         pair = pairs[0].target.copy()
-        prob = TexMobject(
+        prob = Tex(
             "P(", "OO", ")", "= \\frac{1}{4} \\cdot \\frac{1}{4} = \\frac{1}{16}",
         )
         pair.move_to(prob[1])
@@ -780,7 +780,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
         # Coin flips
         ht_grid = self.get_grid(2, 2, height=3)
         ht_grid.move_to(grid)
-        ht_labels = VGroup(TextMobject("H"), TextMobject("T"))
+        ht_labels = VGroup(TexText("H"), TexText("T"))
         ht_labels.set_submobject_colors_by_gradient(BLUE, RED)
         ht_labels.scale(2)
         left_ht_labels = ht_labels.copy()
@@ -791,7 +791,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
         ht_both_square.set_stroke(YELLOW, 5)
         ht_both_square.set_fill(YELLOW, 0.25)
 
-        ht_prob = TexMobject(
+        ht_prob = Tex(
             "P(\\text{TT}) = \\frac{1}{2} \\cdot \\frac{1}{2} = \\frac{1}{4}",
             tex_to_color_map={"\\text{TT}": RED}
         )
@@ -828,7 +828,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
         dice_both_square.set_stroke(YELLOW, 5)
         dice_both_square.set_fill(YELLOW, 0.25)
 
-        dice_prob = TexMobject(
+        dice_prob = Tex(
             "P(", "OO", ") = \\frac{1}{6} \\cdot \\frac{1}{6} = \\frac{1}{36}",
         )
         pair = dice_pairs[0].copy()
@@ -903,7 +903,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
         cross = Cross(formula)
         cross.set_stroke(RED, 6)
 
-        real_rhs = TexMobject("P(A)P(B|A)", **kw)
+        real_rhs = Tex("P(A)P(B|A)", **kw)
         real_rhs.scale(1.5)
         real_formula = VGroup(*formula[:2].copy(), real_rhs)
         real_formula.shift(1.5 * DOWN)
@@ -911,7 +911,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
 
         real_rect = SurroundingRectangle(real_formula, buff=SMALL_BUFF)
         real_rect.set_stroke(GREEN)
-        check = TexMobject("\\checkmark")
+        check = Tex("\\checkmark")
         check.set_color(GREEN)
         check.match_height(real_formula)
         check.next_to(real_rect, LEFT)
@@ -1011,7 +1011,7 @@ class TemptingFormula(ShowTwoPerspectives, RandomnessVsProportions):
 
 class DiseaseBayes(Scene):
     def construct(self):
-        formula = TexMobject(
+        formula = Tex(
             "P(D | +) = {P(D) P(+ | D) \\over P(+)}",
             tex_to_color_map={
                 "D": YELLOW,
@@ -1037,7 +1037,7 @@ class DiseaseBayes(Scene):
 
         sicky = lhs[2]
 
-        sick_words = TextMobject(
+        sick_words = TexText(
             "You are sick",
             tex_to_color_map={
                 "sick": SICKLY_GREEN,
@@ -1045,7 +1045,7 @@ class DiseaseBayes(Scene):
         )
         sick_words.scale(1.5)
         sick_words.next_to(sicky, UP, 2 * LARGE_BUFF)
-        positive_words = TextMobject("Positive test result")
+        positive_words = TexText("Positive test result")
         positive_words.scale(1.5)
         positive_words.set_color(BLUE)
         positive_words.next_to(lhs[4], DOWN, 2 * LARGE_BUFF)
@@ -1136,7 +1136,7 @@ class EndScreen(Scene):
         )
         video_rect.shift(UP)
 
-        date = TextMobject(
+        date = TexText(
             "Solution will be\\\\"
             "posted", "1/20/19",
         )
@@ -1144,7 +1144,7 @@ class EndScreen(Scene):
         date.set_width(video_rect.get_width() - 2 * MED_SMALL_BUFF)
         date.move_to(video_rect)
 
-        handle = TextMobject("@3blue1brown")
+        handle = TexText("@3blue1brown")
         handle.next_to(video_rect, DOWN, MED_LARGE_BUFF)
 
         self.add(video_rect, handle)

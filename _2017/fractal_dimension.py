@@ -137,7 +137,7 @@ class WhatAreFractals(TeacherStudentsScene):
         self.change_student_modes("thinking", "pondering", None)
         self.wait()
 
-        name = TextMobject("Benoit Mandelbrot")
+        name = TexText("Benoit Mandelbrot")
         name.to_corner(UP+LEFT)
         # picture = Rectangle(height = 4, width = 3)
         picture = ImageMobject("Mandelbrot")
@@ -152,7 +152,7 @@ class WhatAreFractals(TeacherStudentsScene):
             ]
         )
         self.wait(2)
-        question = TextMobject("Aren't they", "self-similar", "shapes?")
+        question = TexText("Aren't they", "self-similar", "shapes?")
         question.set_color_by_tex("self-similar", YELLOW)
         self.student_says(question)
         self.play(self.get_teacher().change_mode, "happy")
@@ -165,7 +165,7 @@ class IntroduceVonKochCurve(Scene):
     }
     def construct(self):
         snowflake = self.get_snowflake()
-        name = TextMobject("Von Koch Snowflake")
+        name = TexText("Von Koch Snowflake")
         name.to_edge(UP)
 
         self.play(ShowCreation(snowflake, run_time = 3))
@@ -279,7 +279,7 @@ class SelfSimilarFractalsAsSubset(Scene):
         fractals.arrange(RIGHT)
         fractals[-1].next_to(VGroup(*fractals[:-1]), DOWN)
 
-        title = TextMobject("Self-similar fractals")
+        title = TexText("Self-similar fractals")
         title.next_to(fractals, UP)
 
         small_rect = Rectangle()
@@ -303,7 +303,7 @@ class SelfSimilarFractalsAsSubset(Scene):
             width = FRAME_WIDTH - MED_LARGE_BUFF,
             height = FRAME_HEIGHT - MED_LARGE_BUFF,
         )
-        title = TextMobject("Fractals")
+        title = TexText("Fractals")
         title.scale(1.5)
         title.next_to(ORIGIN, RIGHT, buff = LARGE_BUFF)
         title.to_edge(UP, buff = MED_LARGE_BUFF)
@@ -345,9 +345,9 @@ class ConstrastSmoothAndFractal(Scene):
     }
     def construct(self):
         v_line = Line(UP, DOWN).scale(FRAME_Y_RADIUS)
-        smooth = TextMobject("Smooth")
+        smooth = TexText("Smooth")
         smooth.shift(FRAME_X_RADIUS*LEFT/2)
-        fractal = TextMobject("Fractal")
+        fractal = TexText("Fractal")
         fractal.shift(FRAME_X_RADIUS*RIGHT/2)
         VGroup(smooth, fractal).to_edge(UP)
         background_rectangle = Rectangle(
@@ -443,9 +443,9 @@ class ShowIdealizations(Scene):
     def construct(self):
         arrow = DoubleArrow(FRAME_X_RADIUS*LEFT, FRAME_X_RADIUS*RIGHT)
         arrow.shift(DOWN)
-        left_words = TextMobject("Idealization \\\\ as smooth")
-        middle_words = TextMobject("Nature")
-        right_words = TextMobject("""
+        left_words = TexText("Idealization \\\\ as smooth")
+        middle_words = TexText("Nature")
+        right_words = TexText("""
             Idealization
             as perfectly
             self-similar
@@ -498,7 +498,7 @@ class SayFractalDimension(TeacherStudentsScene):
 class ExamplesOfDimension(Scene):
     def construct(self):
         labels = VGroup(*[
-            TextMobject("%s-dimensional"%s)
+            TexText("%s-dimensional"%s)
             for s in ("1.585", "1.262", "1.21")
         ])
         fractals = VGroup(*[
@@ -548,7 +548,7 @@ class FractalDimensionIsNonsense(Scene):
 class DimensionForNaturalNumbers(Scene):
     def construct(self):
         labels = VGroup(*[
-            TextMobject("%d-dimensional"%d)
+            TexText("%d-dimensional"%d)
             for d in (1, 2, 3)
         ])
         for label, vect in zip(labels, [LEFT, ORIGIN, RIGHT]):
@@ -604,7 +604,7 @@ class FourSelfSimilarShapes(Scene):
         self.mention_measurements()
 
     def get_titles(self):
-        titles = VGroup(*list(map(TextMobject, [
+        titles = VGroup(*list(map(TexText, [
             "Line", "Square", "Cube", "Sierpinski"
         ])))
         for title, x in zip(titles, np.linspace(-0.75, 0.75, 4)):
@@ -626,7 +626,7 @@ class FourSelfSimilarShapes(Scene):
         square.set_stroke(width = 0)
         square.set_fill(BLUE, 0.7)
 
-        cube = TextMobject("TODO")
+        cube = TexText("TODO")
         cube.set_fill(opacity = 0)
 
         sierpinski = Sierpinski(order = self.sierpinski_order)
@@ -701,7 +701,7 @@ class FourSelfSimilarShapes(Scene):
     def mention_measurements(self):
         line, square, cube, sierpinski = self.shapes_copy
 
-        labels = list(map(TextMobject, [
+        labels = list(map(TexText, [
             "$1/2$ length",
             "$1/4$ area",
             "$1/8$ volume",
@@ -729,12 +729,12 @@ class BrokenUpCubeIn3D(Scene):
 
 class GeneralWordForMeasurement(Scene):
     def construct(self):
-        measure = TextMobject("``Measure''")
+        measure = TexText("``Measure''")
         measure.to_edge(UP)
-        mass = TextMobject("Mass")
+        mass = TexText("Mass")
         mass.move_to(measure)
 
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             "Length", "Area", "Volume"
         ])))
         words.arrange(RIGHT, buff = 2*LARGE_BUFF)
@@ -766,7 +766,7 @@ class ImagineShapesAsMetal(FourSelfSimilarShapes):
         shapes = self.get_shapes(titles)
         shapes.shift(DOWN)
         descriptions = VGroup(*[
-            TextMobject(*words, arg_separator = "\\\\")
+            TexText(*words, arg_separator = "\\\\")
             for shape, words in zip(shapes, [
                 ["Thin", "wire"],
                 ["Flat", "sheet"],
@@ -810,14 +810,14 @@ class ScaledLineMass(Scene):
         "shape_to_shape_buff" : 2*LARGE_BUFF,
     }
     def construct(self):
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.to_edge(UP)
-        scaling_factor_label = TextMobject(
+        scaling_factor_label = TexText(
             "Scaling factor:", "$\\frac{1}{2}$"
         )
         scaling_factor_label[1].set_color(YELLOW)
         scaling_factor_label.to_edge(LEFT).shift(UP)
-        mass_scaling_label = TextMobject(
+        mass_scaling_label = TexText(
             "Mass scaling factor:", "$%s$"%self.mass_scaling_factor
         )
         mass_scaling_label[1].set_color(GREEN)
@@ -940,7 +940,7 @@ class DefineTwoDimensional(PiCreatureScene):
         self.show_dimension()
 
     def add_title(self):
-        title = TextMobject(
+        title = TexText(
             self.dimension, "-dimensional",
             arg_separator = ""
         )
@@ -966,13 +966,13 @@ class DefineTwoDimensional(PiCreatureScene):
         self.shape = shape
 
     def add_width_mass_labels(self):
-        top_length = TextMobject("Length:", "$L$")
-        top_mass = TextMobject("Mass:", "$M$")
-        bottom_length = TextMobject(
+        top_length = TexText("Length:", "$L$")
+        top_mass = TexText("Mass:", "$M$")
+        bottom_length = TexText(
             "Length: ", "$%s$"%self.scalar, "$L$",
             arg_separator = ""
         )
-        bottom_mass = TextMobject(
+        bottom_mass = TexText(
             "Mass: ",
             "$%s^%s$"%(self.scalar, self.dimension),
             "$M$",
@@ -1075,7 +1075,7 @@ class DefineSierpinskiDimension(DefineTwoDimensional):
         self.isolate_equation()
 
     def add_one_third(self):
-        equation = TextMobject(
+        equation = TexText(
             "$= \\left(\\frac{1}{3}\\right)$", "$M$",
             arg_separator = ""
         )
@@ -1126,12 +1126,12 @@ class DefineSierpinskiDimension(DefineTwoDimensional):
         )
         self.wait(2)
 
-        simpler_equation = TexMobject("2^D = 3")
+        simpler_equation = Tex("2^D = 3")
         simpler_equation[1].set_color(self.dimension_color)
         simpler_equation.scale(self.equation_scale_factor)
         simpler_equation.next_to(equation, DOWN, buff = MED_LARGE_BUFF)
 
-        log_expression = TexMobject("\\log_2(3) \\approx", "1.585")
+        log_expression = Tex("\\log_2(3) \\approx", "1.585")
         log_expression[-1].set_color(self.dimension_color)
         log_expression.scale(self.equation_scale_factor)
         log_expression.next_to(simpler_equation, DOWN, buff = MED_LARGE_BUFF)
@@ -1179,9 +1179,9 @@ class LengthAndAreaOfSierpinski(ShowSierpinskiCurve):
         "n_iterations" : 3,
     }
     def construct(self):
-        length = TextMobject("Length = $\\infty$")
+        length = TexText("Length = $\\infty$")
         length.shift(FRAME_X_RADIUS*LEFT/2).to_edge(UP)
-        area = TextMobject("Area = $0$")
+        area = TexText("Area = $0$")
         area.shift(FRAME_X_RADIUS*RIGHT/2).to_edge(UP)
         v_line = Line(UP, DOWN).scale(FRAME_Y_RADIUS)
         self.add(length, area, v_line)
@@ -1261,7 +1261,7 @@ class DimensionOfKoch(Scene):
         self.show_dimension()
 
     def add_labels(self):
-        scaling_factor = TextMobject(
+        scaling_factor = TexText(
             "Scaling factor:",
             "$\\frac{1}{%d}$"%self.scaling_factor,
         )
@@ -1270,7 +1270,7 @@ class DimensionOfKoch(Scene):
         scaling_factor[1].set_color(self.scaling_factor_color)
         self.add(scaling_factor[0])
 
-        mass_scaling = TextMobject(
+        mass_scaling = TexText(
             "Mass scaling factor:",
             "$\\frac{1}{%d}$"%self.mass_scaling_factor
         )
@@ -1330,7 +1330,7 @@ class DimensionOfKoch(Scene):
         self.wait()
 
     def show_dimension(self):
-        raw_formula = TexMobject("""
+        raw_formula = Tex("""
             \\left( \\frac{1}{%s} \\right)^D
             =
             \\left( \\frac{1}{%s} \\right)
@@ -1343,7 +1343,7 @@ class DimensionOfKoch(Scene):
         )
         formula.to_corner(UP+LEFT)
 
-        simpler_formula = TexMobject(
+        simpler_formula = Tex(
             str(self.scaling_factor),
             "^D", "=",
             str(self.mass_scaling_factor)
@@ -1355,7 +1355,7 @@ class DimensionOfKoch(Scene):
             mob[1].set_color(self.dimension_color)
             mob[3].set_color(self.mass_scaling_color)
 
-        log_expression = TexMobject(
+        log_expression = Tex(
             "D = \\log_%d(%d) %s"%(
                 self.scaling_factor,
                 self.mass_scaling_factor,
@@ -1422,14 +1422,14 @@ class DimensionOfQuadraticKoch(DimensionOfKoch):
         return curve
 
     def add_curve(self):
-        seed_label = TextMobject("Seed")
+        seed_label = TexText("Seed")
         seed_label.shift(FRAME_X_RADIUS*RIGHT/2).to_edge(UP)
         seed = self.get_curve(order = 1)
         seed.next_to(seed_label, DOWN)
 
         curve = seed.copy()
 
-        resulting_fractal = TextMobject("Resulting fractal")
+        resulting_fractal = TexText("Resulting fractal")
         resulting_fractal.shift(FRAME_X_RADIUS*RIGHT/2)
 
         self.add(seed_label, seed)
@@ -1513,7 +1513,7 @@ class ShowSeveralSelfSimilarityDimensions(Scene):
             1.843,
         ]
 
-        title = TextMobject("``Self-similarity dimension''")
+        title = TexText("``Self-similarity dimension''")
         title.to_edge(UP)
         title.set_color(YELLOW)
         self.add(title)
@@ -1531,7 +1531,7 @@ class ShowSeveralSelfSimilarityDimensions(Scene):
         self.add(curves)
 
         for curve, dimension, u in zip(curves, dimensions, [1, -1, 1]):
-            label = TextMobject("%.3f-dimensional"%dimension)
+            label = TexText("%.3f-dimensional"%dimension)
             label.scale(0.85)
             label.next_to(curve, u*UP, buff = LARGE_BUFF)
             self.add(label)
@@ -1583,7 +1583,7 @@ class ShowDiskScaling(Scene):
         self.try_fitting_small_disks()
 
     def show_non_self_similar_shapes(self):
-        title = TextMobject(
+        title = TexText(
             "Most shapes are not self-similar"
         )
         title.to_edge(UP)
@@ -1625,7 +1625,7 @@ class ShowDiskScaling(Scene):
             disk.get_center(), disk.get_right(),
             color = YELLOW
         )
-        one = TexMobject("1").next_to(radius, DOWN, SMALL_BUFF)
+        one = Tex("1").next_to(radius, DOWN, SMALL_BUFF)
 
         self.play(ShowCreation(radius))
         self.play(Write(one))
@@ -1640,7 +1640,7 @@ class ShowDiskScaling(Scene):
         scaled_disk.target.next_to(ORIGIN, RIGHT)
 
         one = scaled_disk.target[-1]
-        two = TexMobject("2")
+        two = Tex("2")
         two.move_to(one, UP)
         scaled_disk.target.submobjects[-1] = two
 
@@ -1650,7 +1650,7 @@ class ShowDiskScaling(Scene):
         self.scaled_disk = scaled_disk
 
     def write_mass_scaling_factor(self):
-        mass_scaling = TextMobject(
+        mass_scaling = TexText(
             "Mass scaling factor: $2^2 = 4$"
         )
         mass_scaling.next_to(self.scaled_disk, UP)
@@ -1794,7 +1794,7 @@ class BoxCountingScene(Scene):
         return rect
 
     def get_counting_label(self):
-        label = TextMobject("Boxes touched:")
+        label = TexText("Boxes touched:")
         label.next_to(ORIGIN, RIGHT)
         label.to_edge(UP)
         label.shift(self.corner_rect_left_extension*LEFT)
@@ -1835,7 +1835,7 @@ class BoxCountingWithDisk(BoxCountingScene):
 
         radius = Line(disk.get_center(), disk.get_right())
         disk.add(radius)
-        one = TexMobject("1").next_to(radius, DOWN, SMALL_BUFF)
+        one = Tex("1").next_to(radius, DOWN, SMALL_BUFF)
 
         boxes = self.get_highlighted_boxes(disk)
         small_box_num = len(boxes)
@@ -1843,7 +1843,7 @@ class BoxCountingWithDisk(BoxCountingScene):
         corner_rect = self.get_corner_rect()
         counting_label = self.get_counting_label()
 
-        prop_words = TextMobject("Proportional to", "$\\pi r^2$")
+        prop_words = TexText("Proportional to", "$\\pi r^2$")
         prop_words[1].set_color(BLUE)
         prop_words.next_to(counting_label, DOWN, aligned_edge = LEFT)
 
@@ -1866,7 +1866,7 @@ class BoxCountingWithDisk(BoxCountingScene):
 
         disk.generate_target()
         disk.target.scale(2, about_point = disk.get_top())
-        two = TexMobject("2").next_to(disk.target[1], DOWN, SMALL_BUFF)
+        two = Tex("2").next_to(disk.target[1], DOWN, SMALL_BUFF)
         self.play(
             MoveToTarget(disk),
             Transform(one, two),
@@ -1878,13 +1878,13 @@ class BoxCountingWithDisk(BoxCountingScene):
         new_counting_mob = self.count_boxes(boxes)
         self.wait()
 
-        frac_line = TexMobject("-")
+        frac_line = Tex("-")
         frac_line.set_color(YELLOW)
         frac_line.stretch_to_fit_width(new_counting_mob.get_width())
         frac_line.next_to(new_counting_mob, DOWN, buff = SMALL_BUFF)
-        decimal = TexMobject(self.decimal_string%(float(large_box_count)/small_box_num))
+        decimal = Tex(self.decimal_string%(float(large_box_count)/small_box_num))
         decimal.next_to(frac_line, RIGHT)
-        approx = TexMobject("\\approx 2^2")
+        approx = Tex("\\approx 2^2")
         approx.next_to(decimal, RIGHT, aligned_edge = DOWN)
         approx.shift_onto_screen()
         self.play(*list(map(Write, [frac_line, decimal])))
@@ -1952,7 +1952,7 @@ class PlotDiskBoxCounting(GraphScene):
         self.wait()
 
     def describe_better_fit(self):
-        words = TextMobject("Better fit at \\\\ higher inputs")
+        words = TexText("Better fit at \\\\ higher inputs")
         arrow = Arrow(2*LEFT, 2*RIGHT)
         arrow.next_to(self.x_axis_label_mob, UP)
         arrow.shift(2*LEFT)
@@ -2022,13 +2022,13 @@ class BoxCountingSierpinski(BoxCountingScene):
         new_counting_mob = self.count_boxes(boxes)
         self.wait()
 
-        frac_line = TexMobject("-")
+        frac_line = Tex("-")
         frac_line.set_color(YELLOW)
         frac_line.stretch_to_fit_width(new_counting_mob.get_width())
         frac_line.next_to(new_counting_mob, DOWN, buff = SMALL_BUFF)
-        approx_three = TexMobject("\\approx 3")
+        approx_three = Tex("\\approx 3")
         approx_three.next_to(frac_line, RIGHT)
-        equals_exp = TexMobject("= 2^{1.585...}")
+        equals_exp = Tex("= 2^{1.585...}")
         equals_exp.next_to(approx_three, RIGHT, aligned_edge = DOWN)
         equals_exp.shift_onto_screen()
 
@@ -2077,7 +2077,7 @@ class BoxCountingWithBritain(BoxCountingScene):
 
     def show_formula(self):
         corner_rect = self.get_corner_rect()
-        equation = TextMobject("""
+        equation = TexText("""
             Number of boxes $\\approx$
             \\quad $c(\\text{scaling factor})^{1.21}$
         """)
@@ -2120,11 +2120,11 @@ class BoxCountingWithBritain(BoxCountingScene):
         self.play(MoveToTarget(simpler_eq))
         self.wait(2)
 
-        log_expression1 = TexMobject(
+        log_expression1 = Tex(
             "\\log(", "N", ")", "=",
             "\\log(", "c", "s", "^{1.21}", ")"
         )
-        log_expression2 = TexMobject(
+        log_expression2 = Tex(
             "\\log(", "N", ")", "=",
             "\\log(", "c", ")", "+",
             "1.21", "\\log(", "s", ")"
@@ -2245,7 +2245,7 @@ class IntroduceLogLogPlot(GraphScene):
         slope_lines = VGroup(h_line, v_line)
         slope_lines.set_color(GREEN)
 
-        slope = TextMobject("Slope = ", "$%.2f$"%self.dimension)
+        slope = TexText("Slope = ", "$%.2f$"%self.dimension)
         slope[-1].set_color(GREEN)
         slope.next_to(slope_lines, RIGHT)
 
@@ -2323,7 +2323,7 @@ class DefineFractal(TeacherStudentsScene):
 
 class RoughnessAndFractionalDimension(Scene):
     def construct(self):
-        title = TextMobject(
+        title = TexText(
             "Non-integer dimension $\\Leftrightarrow$ Roughness"
         )
         title.to_edge(UP)
@@ -2340,11 +2340,11 @@ class RoughnessAndFractionalDimension(Scene):
         for mob in target, ponder_target:
             fractalify(mob, order = 2)
 
-        dimension_label = TextMobject("Boundary dimension = ", "1")
+        dimension_label = TexText("Boundary dimension = ", "1")
         dimension_label.to_edge(LEFT)
         one = dimension_label[1]
         one.set_color(BLUE)
-        new_dim = TexMobject("1.2")
+        new_dim = Tex("1.2")
         new_dim.move_to(one, DOWN+LEFT)
         new_dim.set_color(one.get_color())
         self.add(dimension_label)
@@ -2374,7 +2374,7 @@ class DifferentSlopesAtDifferentScales(IntroduceLogLogPlot):
         )
         self.remove(self.graph)
 
-        words = TextMobject("""
+        words = TexText("""
             Different slopes
             at different scales
         """)
@@ -2432,8 +2432,8 @@ class SmoothHilbertZoom(Scene):
         hilbert.make_smooth()
         self.add(hilbert)
 
-        two_d_title = TextMobject("2D at a distance...")
-        one_d_title = TextMobject("1D up close")
+        two_d_title = TexText("2D at a distance...")
+        one_d_title = TexText("1D up close")
         for title in two_d_title, one_d_title:
             title.to_edge(UP)
 
@@ -2457,7 +2457,7 @@ class ListDimensionTypes(PiCreatureScene):
         "use_morty" : False,
     }
     def construct(self):
-        types = VGroup(*list(map(TextMobject, [
+        types = VGroup(*list(map(TexText, [
             "Box counting dimension",
             "Information dimension",
             "Hausdorff dimension",
@@ -2504,7 +2504,7 @@ class ZoomInOnBritain(Scene):
 
 class NoteTheConstantSlope(Scene):
     def construct(self):
-        words = TextMobject("Note the \\\\ constant slope")
+        words = TexText("Note the \\\\ constant slope")
         words.set_color(YELLOW)
         self.play(Write(words))
         self.wait(2)
@@ -2565,7 +2565,7 @@ class WhatSlopeDoesLogLogPlotApproach(IntroduceLogLogPlot):
             for point in data_points
         ])
 
-        words = TextMobject(self.words)
+        words = TexText(self.words)
         p1, p2 = [
             data_dots[int(alpha*len(data_dots))].get_center()
             for alpha in (0.3, 0.5)
@@ -2657,8 +2657,8 @@ class SmoothBritainLogLogPlot(IntroduceLogLogPlot):
         slope_lines_group = VGroup(slope_lines1, slope_lines2)
         slope_lines_group.set_color(GREEN)
 
-        slope_label1 = TextMobject("Slope $> 1$")
-        slope_label2 = TextMobject("Slope $= 1$")
+        slope_label1 = TexText("Slope $> 1$")
+        slope_label2 = TexText("Slope $= 1$")
         slope_label1.next_to(slope_lines1)
         slope_label2.next_to(slope_lines2)
 
@@ -2720,11 +2720,11 @@ class CompareBritainAndNorway(Scene):
         britain.to_edge(UP)
         fractalify(britain, order = 1, dimension = 1.21)
 
-        britain_label = TextMobject("""
+        britain_label = TexText("""
             Britain coast:
             1.21-dimensional
         """)
-        norway_label = TextMobject("""
+        norway_label = TexText("""
             Norway coast:
             1.52-dimensional
         """)
@@ -2749,8 +2749,8 @@ class CompareBritainAndNorway(Scene):
 
 class CompareOceansLabels(Scene):
     def construct(self):
-        label1 = TextMobject("Dimension $\\approx 2.05$")
-        label2 = TextMobject("Dimension $\\approx 2.3$")
+        label1 = TexText("Dimension $\\approx 2.05$")
+        label2 = TexText("Dimension $\\approx 2.3$")
 
         label1.shift(FRAME_X_RADIUS*LEFT/2).to_edge(UP)
         label2.shift(FRAME_X_RADIUS*RIGHT/2).to_edge(UP)
@@ -2766,9 +2766,9 @@ class CompareOceans(Scene):
 
 class FractalNonFractalFlowChart(Scene):
     def construct(self):
-        is_fractal = TextMobject("Is it a \\\\ fractal?")
-        nature = TextMobject("Probably from \\\\ nature")
-        man_made = TextMobject("Probably \\\\ man-made")
+        is_fractal = TexText("Is it a \\\\ fractal?")
+        nature = TexText("Probably from \\\\ nature")
+        man_made = TexText("Probably \\\\ man-made")
 
         is_fractal.to_edge(UP)
         nature.shift(FRAME_X_RADIUS*LEFT/2)
@@ -2783,8 +2783,8 @@ class FractalNonFractalFlowChart(Scene):
             man_made.get_top()
         )
 
-        yes = TextMobject("Yes")
-        no = TextMobject("No")
+        yes = TexText("Yes")
+        no = TexText("No")
         yes.set_color(GREEN)
         no.set_color(RED)
 
@@ -2872,7 +2872,7 @@ class MortyLookingAtRectangle(Scene):
     def construct(self):
         morty = Mortimer()
         morty.to_corner(DOWN+RIGHT)
-        url = TextMobject("affirmjobs.3b1b.co")
+        url = TexText("affirmjobs.3b1b.co")
         url.to_corner(UP+LEFT)
         rect = Rectangle(height = 9, width = 16)
         rect.set_height(5)
@@ -2917,7 +2917,7 @@ class MortyLookingAtRectangle(Scene):
 
 class Thumbnail(Scene):
     def construct(self):
-        title = TextMobject("1.5-dimensional")
+        title = TexText("1.5-dimensional")
         title.scale(2)
         title.to_edge(UP)
 

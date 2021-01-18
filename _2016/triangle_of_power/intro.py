@@ -56,17 +56,17 @@ class Notation(Scene):
 
 
     def introduce_notation(self):
-        notation = TextMobject("Notation")
+        notation = TexText("Notation")
         notation.to_edge(UP)
 
-        self.sum1 = TexMobject("\\sum_{n=1}^\\infty \\dfrac{1}{n}")
-        self.prod1 = TexMobject("\\prod_{p\\text{ prime}}\\left(1-p^{-s}\\right)")
-        self.trigs1 = TexMobject([
+        self.sum1 = Tex("\\sum_{n=1}^\\infty \\dfrac{1}{n}")
+        self.prod1 = Tex("\\prod_{p\\text{ prime}}\\left(1-p^{-s}\\right)")
+        self.trigs1 = Tex([
             ["\\sin", "(x)"],
             ["\\cos", "(x)"],
             ["\\tan", "(x)"],
         ], next_to_direction = DOWN)
-        self.func1 = TexMobject("f(x) = y")
+        self.func1 = Tex("f(x) = y")
         symbols = [self.sum1, self.prod1, self.trigs1, self.func1]
         for sym, vect in zip(symbols, compass_directions(4, UP+LEFT)):
             sym.scale(0.5)
@@ -84,12 +84,12 @@ class Notation(Scene):
     def shift_to_good_and_back(self):
         sum2 = self.sum1.copy()
         sigma = sum2.submobjects[1]
-        plus = TexMobject("+").replace(sigma)
+        plus = Tex("+").replace(sigma)
         sum2.submobjects[1] = plus
 
         prod2 = self.prod1.copy()
         pi = prod2.submobjects[0]
-        times = TexMobject("\\times").replace(pi)
+        times = Tex("\\times").replace(pi)
         prod2.submobjects[0] = times
 
         new_sin, new_cos, new_tan = [
@@ -115,8 +115,8 @@ class Notation(Scene):
             VMobject(new_tan, x3),
         )
 
-        x, arrow, y = TexMobject("x \\rightarrow y").split()
-        f = TexMobject("f")
+        x, arrow, y = Tex("x \\rightarrow y").split()
+        f = Tex("f")
         f.next_to(arrow, UP)
         func2 = VMobject(f, VMobject(), x, VMobject(), arrow, y)
         func2.scale(0.5)
@@ -195,8 +195,8 @@ class Notation(Scene):
 
 class ButDots(Scene):
     def construct(self):
-        but = TextMobject("but")
-        dots = TexMobject("\\dots")
+        but = TexText("but")
+        dots = Tex("\\dots")
         dots.next_to(but, aligned_edge = DOWN)
         but.shift(20*RIGHT)
         self.play(ApplyMethod(but.shift, 20*LEFT))
@@ -206,9 +206,9 @@ class ButDots(Scene):
 
 class ThreesomeOfNotation(Scene):
     def construct(self):
-        exp = TexMobject("x^y = z")
-        log = TexMobject("\\log_x(z) = y")
-        rad = TexMobject("\\sqrt[y]{z} = x")
+        exp = Tex("x^y = z")
+        log = Tex("\\log_x(z) = y")
+        rad = Tex("\\sqrt[y]{z} = x")
         exp.to_edge(LEFT).shift(2*UP)
         rad.to_edge(RIGHT).shift(2*DOWN)
         x1, y1, eq, z1 = exp.split()
@@ -225,7 +225,7 @@ class ThreesomeOfNotation(Scene):
         self.play(Write(rad))
         self.wait()
 
-        words = TextMobject("Artificially unrelated")
+        words = TexText("Artificially unrelated")
         words.to_corner(UP+RIGHT)
         words.set_color(YELLOW)
         self.play(Write(words))
@@ -234,10 +234,10 @@ class ThreesomeOfNotation(Scene):
 
 class TwoThreeEightExample(Scene):
     def construct(self):
-        start = TexMobject("2 \\cdot 2 \\cdot 2 = 8")
+        start = Tex("2 \\cdot 2 \\cdot 2 = 8")
         two1, dot1, two2, dot2, two3, eq, eight = start.split()
         brace = Brace(VMobject(two1, two3), DOWN)
-        three = TexMobject("3").next_to(brace, DOWN, buff = 0.2)
+        three = Tex("3").next_to(brace, DOWN, buff = 0.2)
         rogue_two = two1.copy()
 
         self.add(two1)
@@ -262,7 +262,7 @@ class TwoThreeEightExample(Scene):
         )
         self.wait()
 
-        exp = TexMobject("2^3")
+        exp = Tex("2^3")
         exp.next_to(eq, LEFT)
         exp.shift(0.2*UP)
         base_two, exp_three = exp.split()
@@ -279,7 +279,7 @@ class TwoThreeEightExample(Scene):
         self.wait(3)
 
         rad_three, rad1, rad2, rad_eight, rad_eq, rad_two = \
-            TexMobject("\\sqrt[3]{8} = 2").split()
+            Tex("\\sqrt[3]{8} = 2").split()
         self.play(*[
             Transform(*pair, path_arc = np.pi/2)
             for pair in [
@@ -301,7 +301,7 @@ class TwoThreeEightExample(Scene):
         self.wait()
 
         l, o, g, log_two, p1, log_eight, p2, log_eq, log_three = \
-            TexMobject("\\log_2(8) = 3").split()
+            Tex("\\log_2(8) = 3").split()
         self.clear()
         self.play(*[
             Transform(*pair, path_arc = np.pi/2)
@@ -329,7 +329,7 @@ class WhatTheHell(Scene):
     def construct(self):
         randy = Randolph()
         randy.to_corner(DOWN+LEFT)
-        exp, rad, log = list(map(TexMobject,[
+        exp, rad, log = list(map(Tex,[
             "2^3 = 8",
             "\\sqrt[3]{8} = 2",
             "\\log_2(8) = 3",
@@ -344,7 +344,7 @@ class WhatTheHell(Scene):
             mob.next_to(last, DOWN)
             last = mob
         q_marks = VMobject(*[
-            TexMobject("?!").next_to(arrow, RIGHT)
+            Tex("?!").next_to(arrow, RIGHT)
             for arrow in (arrow1, arrow2)
         ])
         q_marks.set_color(RED_D)
@@ -352,7 +352,7 @@ class WhatTheHell(Scene):
         everyone.scale(0.7)
         everyone.to_corner(UP+RIGHT)
         phrases = [
-            TextMobject(
+            TexText(
                 ["Communicate with", words]
             ).next_to(mob, LEFT, buff = 1)
             for words, mob in [
@@ -378,8 +378,8 @@ class WhatTheHell(Scene):
 
 class Countermathematical(Scene):
     def construct(self):
-        counterintuitive = TextMobject("Counterintuitive")
-        mathematical = TextMobject("mathematical")
+        counterintuitive = TexText("Counterintuitive")
+        mathematical = TexText("mathematical")
         intuitive = VMobject(*counterintuitive.split()[7:])
         mathematical.shift(intuitive.get_left()-mathematical.get_left())
 
@@ -398,14 +398,14 @@ class PascalsCollision(Scene):
         pascals_triangle.to_corner(UP+LEFT)
         final_triangle.scale(0.7)
         final_triangle.to_edge(UP)
-        equation = TexMobject([
+        equation = Tex([
             "{n \\choose k}",
             " = \\dfrac{n!}{(n-k)!k!}"
         ])
         equation.scale(0.5)
         equation.to_corner(UP+RIGHT)
         n_choose_k, formula = equation.split()
-        words = TextMobject("Seemingly unrelated")
+        words = TexText("Seemingly unrelated")
         words.shift(2*DOWN)
         to_remove = VMobject(*words.split()[:-7])
 
@@ -427,14 +427,14 @@ class LogarithmProperties(Scene):
         randy.to_corner()
         bubble = ThoughtBubble().pin_to(randy)
         props = [
-            TexMobject("\\log_a(x) = \\dfrac{\\log_b(a)}{\\log_b(x)}"),        
-            TexMobject("\\log_a(x) = \\dfrac{\\log_b(x)}{\\log_b(a)}"),
-            TexMobject("\\log_a(x) = \\log_b(x) - \\log_b(a)"),
-            TexMobject("\\log_a(x) = \\log_b(x) + \\log_b(a)"),
-            TexMobject("\\log_a(x) = \\dfrac{\\log_b(x)}{\\log_b(a)}"),            
+            Tex("\\log_a(x) = \\dfrac{\\log_b(a)}{\\log_b(x)}"),        
+            Tex("\\log_a(x) = \\dfrac{\\log_b(x)}{\\log_b(a)}"),
+            Tex("\\log_a(x) = \\log_b(x) - \\log_b(a)"),
+            Tex("\\log_a(x) = \\log_b(x) + \\log_b(a)"),
+            Tex("\\log_a(x) = \\dfrac{\\log_b(x)}{\\log_b(a)}"),            
         ]
         bubble.add_content(props[0])
-        words = TextMobject("What was it again?")
+        words = TexText("What was it again?")
         words.set_color(YELLOW)
         words.scale(0.5)
         words.next_to(props[0], UP)
@@ -455,7 +455,7 @@ class LogarithmProperties(Scene):
 
 class HaveToShare(Scene):
     def construct(self):
-        words = list(map(TextMobject, [
+        words = list(map(TexText, [
             "Lovely", "Symmetrical", "Utterly Reasonable"
         ]))
         for w1, w2 in zip(words, words[1:]):

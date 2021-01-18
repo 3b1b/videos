@@ -18,9 +18,9 @@ tex_config = {
 class IntroductionOfExp(Scene):
     def construct(self):
         questions = VGroup(
-            TextMobject("What", "is", "$e^{t}$", "?"),
-            TextMobject("What", "properties", "does", "$e^{t}$", "have?"),
-            TextMobject(
+            TexText("What", "is", "$e^{t}$", "?"),
+            TexText("What", "properties", "does", "$e^{t}$", "have?"),
+            TexText(
                 "What", "property", "defines", "$e^{t}$", "?",
                 tex_to_color_map={"defines": BLUE}
             ),
@@ -127,14 +127,14 @@ class IntroductionOfExp(Scene):
             const_str,
             "{t}}"
         ]
-        derivative = TexMobject(
+        derivative = Tex(
             *args,
             **tex_config
         )
         if const:
             derivative.set_color_by_tex(const_str, CONST_COLOR)
 
-        ic = TexMobject("e^{0} = 1", **tex_config)
+        ic = Tex("e^{0} = 1", **tex_config)
         group = VGroup(derivative, ic)
         group.arrange(RIGHT, buff=LARGE_BUFF)
         ic.align_to(derivative.get_part_by_tex("e^"), DOWN)
@@ -244,7 +244,7 @@ class IntroducePhysicalModel(IntroductionOfExp):
             args += [const_str, "\\cdot"]
         args += ["0." + ndp * "0"]
 
-        tip_label = TexMobject(*args, arg_separator="")
+        tip_label = Tex(*args, arg_separator="")
         if const_str:
             tip_label[1].set_color(CONST_COLOR)
 
@@ -269,7 +269,7 @@ class IntroducePhysicalModel(IntroductionOfExp):
 
     def setup_output_label(self):
         label = VGroup(
-            TexMobject("="),
+            Tex("="),
             DecimalNumber(1, **self.output_label_config)
         )
         label.set_color(POSITION_COLOR)
@@ -324,10 +324,10 @@ class IntroducePhysicalModel(IntroductionOfExp):
         velocity_vect = self.velocity_vect
 
         max_width = 1.5
-        p_label = TextMobject("Position")
+        p_label = TexText("Position")
         p_label.set_color(POSITION_COLOR)
         p_label.vect = position_vect
-        v_label = TextMobject("Velocity")
+        v_label = TexText("Velocity")
         v_label.set_color(VELOCITY_COLOR)
         v_label.vect = velocity_vect
 
@@ -377,8 +377,8 @@ class IntroducePhysicalModel(IntroductionOfExp):
         rhs_rect.set_stroke(POSITION_COLOR, 2)
         lhs_rect.set_stroke(VELOCITY_COLOR, 2)
 
-        rhs_word = TextMobject("Position")
-        lhs_word = TextMobject("Velocity")
+        rhs_word = TexText("Position")
+        lhs_word = TexText("Velocity")
         words = VGroup(rhs_word, lhs_word)
         for word, rect in zip(words, rects):
             word.match_color(rect)
@@ -551,7 +551,7 @@ class ConstantEquals2(IntroducePhysicalModel):
         parts = VGroup(v_part, c_part, p_part)
 
         rects = VGroup(*map(SurroundingRectangle, parts))
-        words = VGroup(*map(TextMobject, [
+        words = VGroup(*map(TexText, [
             "Velocity", self.const_text, "Position"
         ]))
         colors = [VELOCITY_COLOR, CONST_COLOR, POSITION_COLOR]
@@ -604,7 +604,7 @@ class ConstantEquals2(IntroducePhysicalModel):
         p_copy.generate_target()
         p_copy.target.shift(2 * UR)
 
-        times_2 = TexMobject("\\times", "2")
+        times_2 = Tex("\\times", "2")
         times_2.set_color_by_tex("2", CONST_COLOR)
         times_2.next_to(p_copy.target.get_end(), UP, MED_SMALL_BUFF)
 
@@ -747,14 +747,14 @@ class NegativeConstant(ConstantEquals2):
         p_copy.generate_target()
         p_copy.target.shift(5 * RIGHT + 2 * UP)
 
-        times_neg1 = TexMobject("\\times", "(\\cdot 1)")
+        times_neg1 = Tex("\\times", "(\\cdot 1)")
         temp_neg = times_neg1[1][-3]
-        neg = TexMobject("-")
+        neg = Tex("-")
         neg.set_width(0.2, stretch=True)
         neg.move_to(temp_neg)
         temp_neg.become(neg)
 
-        times_point5 = TexMobject("\\times", "0.5")
+        times_point5 = Tex("\\times", "0.5")
         terms = VGroup(times_neg1, times_point5)
         for term in terms:
             term[1].set_color(CONST_COLOR)
@@ -913,7 +913,7 @@ class ImaginaryConstant(ConstantEquals2):
         rects = VGroup(*map(SurroundingRectangle, terms))
         colors = [VELOCITY_COLOR, CONST_COLOR, POSITION_COLOR]
         labels = VGroup(*map(
-            TextMobject,
+            TexText,
             ["Velocity", self.const_text, "Position"]
         ))
         for rect, color, label in zip(rects, colors, labels):
@@ -995,15 +995,15 @@ class ImaginaryConstant(ConstantEquals2):
             arc_center=p_copy.target.get_start(),
         )
         arc.add_tip(tip_length=0.1)
-        angle_label = TexMobject("90^\\circ")
+        angle_label = Tex("90^\\circ")
         angle_label.scale(0.5)
         angle_label.next_to(arc.point_from_proportion(0.5), UR, SMALL_BUFF)
 
-        times_i = TexMobject("\\times", "i")
+        times_i = Tex("\\times", "i")
         times_i.set_color_by_tex("i", CONST_COLOR)
         times_i.next_to(p_copy.target, UP, buff=0)
 
-        rot_v_label = TextMobject("Velocity")
+        rot_v_label = TexText("Velocity")
         rot_v_label.set_color(VELOCITY_COLOR)
         rot_v_label.add_background_rectangle()
         rot_v_label.scale(0.8)
@@ -1100,7 +1100,7 @@ class ImaginaryConstant(ConstantEquals2):
         )
         nl.target.shift(plane.n2p(0) - nl.target.n2p(0))
 
-        plane_title = TextMobject("Complex plane")
+        plane_title = TexText("Complex plane")
         plane_title.set_stroke(BLACK, 3, background=True)
         plane_title.scale(2)
         plane_title.to_corner(UR)
@@ -1279,7 +1279,7 @@ class ImaginaryConstant(ConstantEquals2):
         circle.move_to(plane.n2p(0))
 
         epii, eti = results = [
-            TexMobject(
+            Tex(
                 "e^{{i}" + s1 + "} = " + s2,
                 tex_to_color_map={
                     "{i}": CONST_COLOR,
@@ -1377,7 +1377,7 @@ class ImaginaryConstant(ConstantEquals2):
 
 class PiMinuteMark(Scene):
     def construct(self):
-        text = TexMobject(
+        text = Tex(
             "\\pi \\text{ minutes} \\approx \\text{3:08}"
         )
         rect = SurroundingRectangle(text)
@@ -1402,21 +1402,21 @@ class ReferenceWhatItMeans(PiCreatureScene):
                 "-1": POSITION_COLOR,
             },
         }
-        epii = TexMobject(
+        epii = Tex(
             "e^{{i} \\pi} = -1",
             **tex_config
         )
         epii.scale(2)
 
-        many_es = TexMobject("e \\cdot e \\cdots e", "= -1", **tex_config)
+        many_es = Tex("e \\cdot e \\cdots e", "= -1", **tex_config)
         many_es.scale(2)
         brace = Brace(many_es[0], DOWN)
-        pi_i = TexMobject("{i} \\pi \\text{ times}", **tex_config)
+        pi_i = Tex("{i} \\pi \\text{ times}", **tex_config)
         pi_i.next_to(brace, DOWN, SMALL_BUFF)
         repeated_mult = VGroup(many_es, brace, pi_i)
 
         # arrow = Vector(2 * RIGHT)
-        arrow = TexMobject("\\Rightarrow")
+        arrow = Tex("\\Rightarrow")
         arrow.scale(2)
 
         group = VGroup(epii, arrow, repeated_mult)
@@ -1429,12 +1429,12 @@ class ReferenceWhatItMeans(PiCreatureScene):
             )
         group.to_edge(UP)
 
-        does_not_mean = TextMobject("Does \\emph{not}\\\\mean")
+        does_not_mean = TexText("Does \\emph{not}\\\\mean")
         does_not_mean.set_color(RED)
         does_not_mean.move_to(arrow)
         # cross = Cross(repeated_mult)
 
-        nonsense = TextMobject(
+        nonsense = TexText(
             "\\dots because that's "
             "literal nonsense!"
         )
@@ -1442,16 +1442,16 @@ class ReferenceWhatItMeans(PiCreatureScene):
         nonsense.to_edge(RIGHT, buff=MED_SMALL_BUFF)
         nonsense.set_color(RED)
 
-        down_arrow = TexMobject("\\Downarrow")
+        down_arrow = Tex("\\Downarrow")
         down_arrow.scale(2)
         down_arrow.stretch(1.5, 1)
         down_arrow.set_color(GREEN)
         down_arrow.next_to(epii, DOWN, LARGE_BUFF)
-        actually_means = TextMobject("It actually\\\\means")
+        actually_means = TexText("It actually\\\\means")
         actually_means.next_to(down_arrow, RIGHT)
         actually_means.set_color(GREEN)
 
-        series = TexMobject(
+        series = Tex(
             "{({i} \\pi )^0 \\over 0!} + ",
             "{({i} \\pi )^1 \\over 1!} + ",
             "{({i} \\pi )^2 \\over 2!} + ",
@@ -1506,8 +1506,8 @@ class VideoWrapper(Scene):
         boundary = VGroup(*map(AnimatedBoundary, screen_rects))
 
         titles = VGroup(
-            TextMobject("Want more?"),
-            TextMobject("Learn calculus"),
+            TexText("Want more?"),
+            TexText("Learn calculus"),
         )
         titles.scale(1.5)
         for rect, title, in zip(screen_rects, titles):
@@ -1525,7 +1525,7 @@ class VideoWrapper(Scene):
 
 class Thumbnail(Scene):
     def construct(self):
-        epii = TexMobject(
+        epii = Tex(
             "e^{{i} \\pi} = -1",
             tex_to_color_map={
                 "{i}": CONST_COLOR,
@@ -1537,8 +1537,8 @@ class Thumbnail(Scene):
         epii.to_edge(UP)
 
         words = VGroup(
-            TextMobject("in"),
-            TextMobject(
+            TexText("in"),
+            TexText(
                 "in", 
                 "3.14", " minutes"
             ),

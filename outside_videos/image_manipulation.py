@@ -12,9 +12,9 @@ class ImagesMod256(Scene):
         lion.to_edge(DOWN)
         integer = Integer(1)
         expression = VGroup(
-            TexMobject("n \\rightarrow"),
+            Tex("n \\rightarrow"),
             integer,
-            TexMobject("\\times n \\mod 256")
+            Tex("\\times n \\mod 256")
         )
         expression.arrange(RIGHT)
         expression[-2:].shift(MED_SMALL_BUFF * RIGHT)

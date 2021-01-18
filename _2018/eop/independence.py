@@ -9,7 +9,7 @@ def get_binomial_distribution(n, p):
     return lambda k : choose(n, k)*(p**(k))*((1-p)**(n-k))
 
 def get_quiz(*questions):
-    q_mobs = VGroup(*list(map(TextMobject, [
+    q_mobs = VGroup(*list(map(TexText, [
         "%d. %s"%(i+1, question)
         for i, question in enumerate(questions)
     ])))
@@ -19,7 +19,7 @@ def get_quiz(*questions):
         aligned_edge = LEFT, 
     )
     content = VGroup(
-        TextMobject("Quiz").scale(1.5),
+        TexText("Quiz").scale(1.5),
         Line(q_mobs.get_left(), q_mobs.get_right()),
         q_mobs
     )
@@ -32,13 +32,13 @@ def get_quiz(*questions):
     quiz.scale(0.7)
     return quiz
 
-class Checkmark(TexMobjectFromPresetString):
+class Checkmark(TexFromPresetString):
     CONFIG = {
         "tex" : "\\checkmark",
         "color" : GREEN
     }
 
-class Xmark(TexMobjectFromPresetString):
+class Xmark(TexFromPresetString):
     CONFIG = {
         "tex" : "\\times",
         "color" : RED
@@ -63,7 +63,7 @@ def get_slot_group(
     lines.arrange(RIGHT, buff = buff)
     if include_qs:
         labels = VGroup(*[
-            TextMobject("Q%d"%d) for d in range(1, n+1)
+            TexText("Q%d"%d) for d in range(1, n+1)
         ])
     else:
         labels = VGroup(*[VectorizedPoint() for d in range(n)])
@@ -85,11 +85,11 @@ def get_slot_group(
         if i >= len(bool_list) or bool_list[i] is None:
             mob = VectorizedPoint()
         elif bool_list[i]:
-            mob = TexMobject("\\checkmark")
+            mob = Tex("\\checkmark")
             mob.set_color(GREEN)
             slot_group.shift(total_height*DOWN / (base**(i+1)))
         else:
-            mob = TexMobject("\\times")
+            mob = Tex("\\times")
             mob.set_color(RED)
             slot_group.shift(total_height*UP / (base**(i+1)))
         mob.next_to(line, UP, SMALL_BUFF)
@@ -99,9 +99,9 @@ def get_slot_group(
 def get_probability_of_slot_group(bool_list, conditioned_list = None):
     filler_tex = "Fi"*max(len(bool_list), 3)
     if conditioned_list is None:
-        result = TexMobject("P(", filler_tex, ")")
+        result = Tex("P(", filler_tex, ")")
     else:
-        result = TexMobject("P(", filler_tex, "|", filler_tex, ")")
+        result = Tex("P(", filler_tex, "|", filler_tex, ")")
     fillers = result.get_parts_by_tex(filler_tex)
     for filler, bl in zip(fillers, [bool_list, conditioned_list]):
         slot_group = get_slot_group(
@@ -137,7 +137,7 @@ class IndependenceOpeningQuote(OpeningQuote):
 class DangerInProbability(Scene):
     def construct(self):
         warning = self.get_warning_sign()
-        probability = TextMobject("Probability")
+        probability = TexText("Probability")
         probability.scale(2)
 
         self.play(Write(warning, run_time = 1))
@@ -154,7 +154,7 @@ class DangerInProbability(Scene):
         triangle = RegularPolygon(n = 3, start_angle = np.pi/2)
         triangle.set_stroke(RED, 12)
         triangle.set_height(2)
-        bang = TextMobject("!")
+        bang = TexText("!")
         bang.set_height(0.6*triangle.get_height())
         bang.move_to(interpolate(
             triangle.get_bottom(),
@@ -222,7 +222,7 @@ class MeaningOfIndependence(SampleSpaceScene):
             for vect in (UP, DOWN)
         ])
         line.set_stroke(RED, 8)
-        word = TextMobject("Independence")
+        word = TexText("Independence")
         word.scale(1.5)
         word.next_to(self.sample_space, RIGHT, buff = LARGE_BUFF)
         word.set_color(RED)
@@ -245,7 +245,7 @@ class MeaningOfIndependence(SampleSpaceScene):
         ignored_braces, new_top_labels = self.sample_space[0].get_top_braces_and_labels(
             ["P(B)", "P(\\overline B)"]
         )
-        equation = TexMobject(
+        equation = Tex(
             "P(B | A) = P(B)"
         )
         equation.scale(1.5)
@@ -320,12 +320,12 @@ class IntroduceBinomial(Scene):
 
 
     def add_title(self):
-        title = TextMobject("Binomial distribution")
+        title = TexText("Binomial distribution")
         title.scale(1.3)
         title.to_edge(RIGHT)
         title.shift(2*UP)
 
-        formula = TexMobject(
+        formula = Tex(
             "P(X=", "k", ")=", 
             "{n \\choose k}", 
             "p", "^k",
@@ -374,7 +374,7 @@ class IntroduceBinomial(Scene):
         )
         triangle.set_height(0.25)
         triangle.move_to(interval.number_to_point(self.p), DOWN)
-        label = TexMobject("p")
+        label = Tex("p")
         label.next_to(triangle, UP, SMALL_BUFF)
         label.set_color(triangle.get_color())
 
@@ -387,7 +387,7 @@ class IntroduceBinomial(Scene):
             self.wait()
 
     def write_independence_assumption(self):
-        assumption = TextMobject("Independence assumption")
+        assumption = TexText("Independence assumption")
         assumption.scale(1.2)
         assumption.next_to(self.formula, DOWN, MED_LARGE_BUFF, LEFT)
         assumption.set_color(GREEN_C)
@@ -477,7 +477,7 @@ class IntroduceQuiz(PiCreatureScene):
     def ask_about_probabilities(self):
         probabilities, abbreviated_probabilities = [
             VGroup(*[
-                TexMobject(
+                Tex(
                     "P(", s_tex, "=", str(score), ")", rhs
                 ).set_color_by_tex_to_color_map({
                     str(score) : YELLOW,
@@ -546,7 +546,7 @@ class IntroduceQuiz(PiCreatureScene):
         self.bar_chart = chart
 
     def show_single_question_probability(self):
-        prob = TexMobject(
+        prob = Tex(
             "P(", "\\text{Can answer a given question}", ")",
             "= 0.8"
         )
@@ -630,7 +630,7 @@ class BreakDownQuestionPatterns(IntroduceQuiz):
 
     def count_patterns(self):
         brace = Brace(self.slot_groups, LEFT)
-        count = TexMobject("2^3 = 8")
+        count = Tex("2^3 = 8")
         count.next_to(brace, LEFT)
 
         self.play(
@@ -669,7 +669,7 @@ class AssociatePatternsWithScores(BreakDownQuestionPatterns):
         for slot_group in self.slot_groups:
             score_groups[sum(slot_group.bool_list)].add(slot_group)
         for i, score_group in enumerate(score_groups):
-            score = TextMobject("Score", "=", str(i))
+            score = TexText("Score", "=", str(i))
             score.set_color_by_tex("Score", GREEN)
             scores.add(score)
             score_group.organized = score_group.deepcopy()
@@ -763,14 +763,14 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
         self.write_simple_product()
 
     def add_title(self):
-        title = TextMobject("Tempting$\\dots$")
+        title = TexText("Tempting$\\dots$")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
         self.title = title
 
     def write_simple_product(self):
-        lhs = TexMobject("P\\big(", "Filler Blah", "\\big)", "= ")
+        lhs = Tex("P\\big(", "Filler Blah", "\\big)", "= ")
         lhs.next_to(ORIGIN, UP+LEFT)
         p_of = lhs.get_part_by_tex("P\\big(")
         filler = lhs.get_part_by_tex("Filler")
@@ -780,7 +780,7 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
         lhs.submobjects.remove(filler)
 
         rhs = VGroup(*[
-            TexMobject("P(", "\\checkmark" if b else "\\times", ")")
+            Tex("P(", "\\checkmark" if b else "\\times", ")")
             for b in slot_group.bool_list
         ])
         rhs.arrange(RIGHT, SMALL_BUFF)
@@ -792,15 +792,15 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
             })
             brace = Brace(part, UP)
             if b:
-                value = TexMobject("(0.8)")
+                value = Tex("(0.8)")
             else:
-                value = TexMobject("(0.2)")
+                value = Tex("(0.2)")
             value.set_color(part[1].get_color())
             value.next_to(brace, UP)
             part.brace = brace
             part.value = value
 
-        question = TextMobject("What about correlations?")
+        question = TexText("What about correlations?")
         question.next_to(rhs, DOWN, LARGE_BUFF)
 
         self.play(
@@ -856,7 +856,7 @@ class ThousandPossibleQuizzes(Scene):
 
     def draw_all_quizzes(self):
         quizzes = self.get_thousand_quizzes()
-        title = TextMobject("$1{,}000$ possible quizzes")
+        title = TexText("$1{,}000$ possible quizzes")
         title.scale(1.5)
         title.next_to(quizzes, UP)
         full_quizzes = VGroup(
@@ -912,7 +912,7 @@ class ThousandPossibleQuizzes(Scene):
         labels = VGroup()
         for num, b, split in (800, True, top_split), (200, False, bottom_split):
             label = VGroup(
-                TexMobject(str(num)),
+                Tex(str(num)),
                 get_slot_group([b], buff = SMALL_BUFF, include_qs = False)
             )
             label.arrange(DOWN)
@@ -942,8 +942,8 @@ class ThousandPossibleQuizzes(Scene):
             for b in (True, False)
         ])
         question = VGroup(
-            TextMobject("Where are"), sg1,
-            TextMobject("and"), sg2, TextMobject("?"),
+            TexText("Where are"), sg1,
+            TexText("and"), sg2, TexText("?"),
         )
         question.arrange(RIGHT, aligned_edge = DOWN)
         question[-1].next_to(question[-2], RIGHT, SMALL_BUFF)
@@ -981,7 +981,7 @@ class ThousandPossibleQuizzes(Scene):
         left_split.target.shift(LEFT)
 
         left_label = VGroup(
-            TexMobject("(0.8)", "800 =", "640"),
+            Tex("(0.8)", "800 =", "640"),
             get_slot_group([True, True], buff = SMALL_BUFF, include_qs = False)
         )
         left_label.arrange(RIGHT, buff = MED_LARGE_BUFF)
@@ -1014,7 +1014,7 @@ class ThousandPossibleQuizzes(Scene):
             quiz[1].set_color(left_split[0][1].get_color())
         movers.target.shift(LEFT)
 
-        new_equation = TexMobject("(0.925)", "800 =", "740")
+        new_equation = Tex("(0.925)", "800 =", "740")
         for i in 0, 2:
             new_equation[i].set_color(YELLOW)
         new_equation.move_to(left_label_equation)
@@ -1058,12 +1058,12 @@ class ThousandPossibleQuizzes(Scene):
         for quiz in movers.target:
             quiz[1].set_color(right_split.target[0][1].get_color())
 
-        equation = TexMobject("(0.8)", "200 = ", "160")
+        equation = Tex("(0.8)", "200 = ", "160")
         slot_group = get_slot_group([False, True], buff = SMALL_BUFF, include_qs = False)
         label = VGroup(equation, slot_group)
         label.arrange(DOWN, buff = SMALL_BUFF)
         label.next_to(left_split.target, UP, SMALL_BUFF, LEFT)
-        alt_equation = TexMobject("(0.3)", "200 = ", "60")
+        alt_equation = Tex("(0.3)", "200 = ", "60")
         for i in 0, 2:
             alt_equation[i].set_color(YELLOW)
         alt_equation.move_to(equation)
@@ -1108,7 +1108,7 @@ class ThousandPossibleQuizzes(Scene):
         num1 = self.top_equation[-1].copy()
         num2 = self.bottom_equation[-1].copy()
 
-        equation = TexMobject("740", "+", "60", "=", "800")
+        equation = Tex("740", "+", "60", "=", "800")
         for tex in "740", "60":
             equation.set_color_by_tex(tex, YELLOW)
         slot_group = get_slot_group([True, True])
@@ -1236,7 +1236,7 @@ class ExampleConditional(Scene):
         prob = get_probability_of_slot_group(
             [True, True], [True]
         )
-        rhs = TexMobject("=", "0.925", ">", "0.8")
+        rhs = Tex("=", "0.925", ">", "0.8")
         rhs.set_color_by_tex("0.925", YELLOW)
         rhs.next_to(prob, RIGHT)
         expression = VGroup(prob, rhs)
@@ -1277,7 +1277,7 @@ class HarderQuizzes(Scene):
 class WritePSecond(Scene):
     def construct(self):
         prob = get_probability_of_slot_group([None, True, None])
-        rhs = TexMobject("= 0.8")
+        rhs = Tex("= 0.8")
         rhs.next_to(prob, RIGHT)
         prob.add(rhs)
         prob.set_width(FRAME_WIDTH - 1)
@@ -1294,7 +1294,7 @@ class SubmitToTemptation(TemptingButWrongCalculation):
         question = self.question
         title.generate_target()
         title.target.scale(1./1.5)
-        new_words = TextMobject("and", "okay", "assuming independence.")
+        new_words = TexText("and", "okay", "assuming independence.")
         new_words.set_color_by_tex("okay", GREEN)
         new_words.next_to(title.target, RIGHT)
         VGroup(title.target, new_words).center().to_edge(UP)
@@ -1324,10 +1324,10 @@ class AccurateProductRule(SampleSpaceScene, ThreeDScene):
 
     def setup_terms(self):
         filler_tex = "Filler"
-        lhs = TexMobject("P(", filler_tex, ")", "=")
-        p1 = TexMobject("P(", filler_tex, ")")
-        p2 = TexMobject("P(", filler_tex, "|", filler_tex, ")")
-        p3 = TexMobject("P(", filler_tex, "|", filler_tex, ")")
+        lhs = Tex("P(", filler_tex, ")", "=")
+        p1 = Tex("P(", filler_tex, ")")
+        p2 = Tex("P(", filler_tex, "|", filler_tex, ")")
+        p3 = Tex("P(", filler_tex, "|", filler_tex, ")")
         terms = VGroup(lhs, p1, p2, p3)
         terms.arrange(RIGHT, buff = SMALL_BUFF)
         terms.to_edge(UP, buff = LARGE_BUFF)
@@ -1355,7 +1355,7 @@ class AccurateProductRule(SampleSpaceScene, ThreeDScene):
 
         value_texs = ["0.8", ">0.8", "<0.2"]
         for term, tex in zip(terms[1:], value_texs):
-            term.value = TexMobject(tex)
+            term.value = Tex(tex)
             term.value.next_to(term, UP)
 
         self.terms = terms
@@ -1491,7 +1491,7 @@ class ShowAllEightConditionals(Scene):
         equations = VGroup()
         filler_tex = "Filler"
         for bool_list in it.product(*[[True, False]]*3):
-            equation = TexMobject(
+            equation = Tex(
                 "P(", filler_tex, ")", "=",
                 "P(", filler_tex, ")",
                 "P(", filler_tex, "|", filler_tex, ")",
@@ -1549,10 +1549,10 @@ class ShowAllEightConditionals(Scene):
 class ShowIndependenceSymbolically(Scene):
     def construct(self):
         filler_tex = "Filler"
-        rhs = TexMobject("=", "0.8")
+        rhs = Tex("=", "0.8")
         rhs.set_color_by_tex("0.8", YELLOW)
         rhs.next_to(ORIGIN, RIGHT, LARGE_BUFF)
-        lhs = TexMobject("P(", filler_tex, "|", filler_tex, ")")
+        lhs = Tex("P(", filler_tex, "|", filler_tex, ")")
         lhs.next_to(rhs, LEFT)
         VGroup(lhs, rhs).scale(1.5)
         for part in lhs.get_parts_by_tex(filler_tex):
@@ -1572,7 +1572,7 @@ class ShowIndependenceSymbolically(Scene):
         arrow = Arrow(UP, DOWN)
         arrow.next_to(condition, UP)
         arrow.set_color(RED)
-        words = TextMobject("Doesn't matter")
+        words = TexText("Doesn't matter")
         words.set_color(RED)
         words.next_to(arrow, UP)
 
@@ -1609,7 +1609,7 @@ class ComputeProbabilityOfOneWrong(Scene):
             probs = ["(%s)"%self.default_p]*3
             probs[i] = "(%s)"%self.default_q
             lhs = get_probability_of_slot_group(bool_list)
-            rhs = TexMobject("=", *probs)
+            rhs = Tex("=", *probs)
             rhs.set_color_by_tex("0.8", GREEN)
             rhs.set_color_by_tex("0.2", RED)
             point_8s.add(*rhs.get_parts_by_tex("0.8"))
@@ -1636,7 +1636,7 @@ class ComputeProbabilityOfOneWrong(Scene):
             self.wait()
 
     def show_final_result(self):
-        result = TexMobject(
+        result = Tex(
             "P(", "\\text{Score} = %s"%self.score, ")", "=",
             *self.final_result_rhs_tex
         )
@@ -1674,22 +1674,22 @@ class ShowFullDistribution(Scene):
 
     def add_scores_one_and_two(self):
         scores = VGroup(
-            TexMobject(
+            Tex(
                 "P(", "\\text{Score} = 0", ")",
                 "=", "(0.2)", "^3",
                 "=", "0.008",
             ),
-            TexMobject(
+            Tex(
                 "P(", "\\text{Score} = 1", ")",
                 "=", "3", "(0.8)", "(0.2)", "^2", 
                 "=", "0.096",
             ),
-            TexMobject(
+            Tex(
                 "P(", "\\text{Score} = 2", ")",
                 "=", "3", "(0.8)", "^2", "(0.2)",
                 "=", "0.384",
             ),
-            TexMobject(
+            Tex(
                 "P(", "\\text{Score} = 3", ")",
                 "=", "(0.8)", "^3",
                 "=", "0.512",
@@ -1751,7 +1751,7 @@ class ShowFullDistribution(Scene):
         chart.shift(DOWN)
 
         new_p_terms = VGroup(*[
-            TexMobject("P(", "S=%d"%k, ")")
+            Tex("P(", "S=%d"%k, ")")
             for k in range(4)
         ])
         for term, bar in zip(new_p_terms, chart.bars):
@@ -1790,7 +1790,7 @@ class ShowFullDistribution(Scene):
         bars.set_fill(GREY, opacity = 0.5)
         vect = 4*UP
         bars.shift(vect)
-        nums = VGroup(*list(map(TexMobject, list(map(str, [1, 3, 3, 1])))))
+        nums = VGroup(*list(map(Tex, list(map(str, [1, 3, 3, 1])))))
         for num, bar in zip(nums, bars):
             num.next_to(bar, UP)
         bars_copy = bars.copy()
@@ -1813,7 +1813,7 @@ class ShowFullDistribution(Scene):
         self.alt_bars_labels = nums
 
     def show_alternate_values_of_p(self):
-        new_prob = TexMobject(
+        new_prob = Tex(
             "P(", "\\text{Correct}", ")", "=", "0.8"
         )
         new_prob.set_color_by_tex("Correct", GREEN)
@@ -1824,7 +1824,7 @@ class ShowFullDistribution(Scene):
         alt_rhss = VGroup()
         alt_charts = VGroup()
         for p in alt_ps:
-            rhs = TexMobject(str(p))
+            rhs = Tex(str(p))
             rhs.set_color(YELLOW)
             rhs.move_to(new_prob[-1])
             alt_rhss.add(rhs)
@@ -1858,7 +1858,7 @@ class ShowFullDistribution(Scene):
                 bool_list = np.array([False]*3)
                 bool_list[list(indices)] = True
                 prob = get_probability_of_slot_group(bool_list)
-                rhs = TexMobject("= (0.5)^3")
+                rhs = Tex("= (0.5)^3")
                 rhs.next_to(prob, RIGHT)
                 prob.add(rhs)
                 prob.scale(0.9)
@@ -1897,7 +1897,7 @@ class ShowTrueDistribution(PiCreatureScene):
         self.get_angry()
 
     def add_title(self):
-        title = TexMobject("P(", "\\text{Correct}", ")", "=", "0.65")
+        title = Tex("P(", "\\text{Correct}", ")", "=", "0.65")
         title.to_edge(UP)
         title.set_color_by_tex("Correct", GREEN)
 
@@ -1991,10 +1991,10 @@ class TeacherAssessingLiklihoodOfZero(TeacherStudentsScene):
         self.teacher_reacts()
 
     def add_title(self):
-        title = TexMobject("P(", "\\text{Correct}", ")", "=", "0.65")
+        title = Tex("P(", "\\text{Correct}", ")", "=", "0.65")
         title.to_edge(UP)
         title.set_color_by_tex("Correct", GREEN)
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.next_to(title[-2], UP, SMALL_BUFF)
         title.add(q_mark)
 
@@ -2008,12 +2008,12 @@ class TeacherAssessingLiklihoodOfZero(TeacherStudentsScene):
 
     def show_independence_probability(self):
         prob = get_probability_of_slot_group(3*[False])
-        rhs = TexMobject("=", "(0.35)", "^3", "\\approx 4.3\\%")
+        rhs = Tex("=", "(0.35)", "^3", "\\approx 4.3\\%")
         rhs.set_color_by_tex("0.35", RED)
         rhs.next_to(prob, RIGHT)
         prob.add(rhs)
         prob.next_to(self.teacher, UP+LEFT)
-        words = TextMobject("Assuming independence")
+        words = TexText("Assuming independence")
         words.next_to(prob, UP)
 
         self.play(
@@ -2065,7 +2065,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
     def add_top_calculation(self):
         equation = VGroup(
             get_probability_of_slot_group(3*[False]),
-            TexMobject("="),
+            Tex("="),
             get_probability_of_slot_group([False]),
             get_probability_of_slot_group(2*[False], [False]),
             get_probability_of_slot_group(3*[False], 2*[False]),
@@ -2088,7 +2088,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[0].set_color(color)
         top_part.target.shift(UP)
         brace = Brace(bottom_part, LEFT)
-        prop = TexMobject("0.35")
+        prop = Tex("0.35")
         prop.next_to(brace, LEFT)
 
         term = self.equation[2]
@@ -2123,7 +2123,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[1].set_color(color)
         left_part.target.shift(LEFT)
         brace = Brace(right_part, UP)
-        prop = TexMobject(">0.35")
+        prop = Tex(">0.35")
         prop.next_to(brace, UP)
 
         term = self.equation[3]
@@ -2156,7 +2156,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[2].set_color(color)
         top_part.target.shift(0.5*UP)
         brace = Brace(bottom_part, LEFT)
-        prop = TexMobject("\\gg 0.35")
+        prop = Tex("\\gg 0.35")
         prop.next_to(brace, LEFT)
 
         term = self.equation[4]
@@ -2179,7 +2179,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
 
     def comment_on_final_size(self):
         rect = SurroundingRectangle(self.quizzes)
-        words = TextMobject(
+        words = TexText(
             "Much more than ", "$(0.35)^3 \\approx 4.3\\%$"
         )
         words.next_to(rect, LEFT)
@@ -2194,18 +2194,18 @@ class WeighingIndependenceAssumption(PiCreatureScene):
     def construct(self):
         randy = self.randy
 
-        title = TextMobject("Independence")
+        title = TexText("Independence")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
-        formula = TexMobject(
+        formula = Tex(
             "P(", "A", "B", ")", "="
             "P(", "A", ")", "P(", "B", ")"
         )
         formula.set_color_by_tex("A", BLUE)
         formula.set_color_by_tex("B", GREEN)
 
-        clean = TextMobject("Clean")
+        clean = TexText("Clean")
         clean.next_to(formula, UP)
         VGroup(clean, formula).next_to(randy, UP+LEFT)
         clean.save_state()
@@ -2253,16 +2253,16 @@ class NameBinomial(Scene):
             chart.to_edge(LEFT)
             charts.add(chart)
 
-        probability = TexMobject(
+        probability = Tex(
             "P(", "\\checkmark", ")", "=", str(p)
         )
         probability.set_color_by_tex("checkmark", GREEN)
         probability.move_to(charts, UP)
 
-        title = TextMobject("``Binomial distribution''")
+        title = TexText("``Binomial distribution''")
         title.next_to(charts, UP)
         title.to_edge(UP)
-        formula = TexMobject(
+        formula = Tex(
             "P(X=", "k", ")=", 
             "{n \\choose k}", 
             "p", "^k",
@@ -2296,14 +2296,14 @@ class NameBinomial(Scene):
     def add_quiz_questions(self):
         n = 10
         checkmarks = VGroup(*[
-            TexMobject("\\checkmark").set_color(GREEN)
+            Tex("\\checkmark").set_color(GREEN)
             for x in range(n)
         ])
         checkmarks.arrange(DOWN, buff = 0.3)
         crosses = VGroup()
         arrows = VGroup()
         for checkmark in checkmarks:
-            cross = TexMobject("\\times")
+            cross = Tex("\\times")
             cross.set_color(RED)
             cross.next_to(checkmark, RIGHT, LARGE_BUFF)
             crosses.add(cross)
@@ -2392,7 +2392,7 @@ class NameBinomial(Scene):
 
         female = self.get_female()
         female.move_to(checkmark)
-        new_p_mob = TexMobject("0.49")
+        new_p_mob = Tex("0.49")
         new_p_mob.move_to(p_mob, LEFT)
 
         dist = get_binomial_distribution(10, 0.49)
@@ -2426,7 +2426,7 @@ class NameBinomial(Scene):
             buff = SMALL_BUFF
         )
 
-        prob = TexMobject(
+        prob = Tex(
             "P(", "\\# \\text{Girls}", "=", "6", ")"
         )
         prob.set_color_by_tex("Girls", MAROON_B)
@@ -2494,10 +2494,10 @@ class NameBinomial(Scene):
     ##
 
     def get_male(self):
-        return TexMobject("\\male").scale(1.3).set_color(BLUE)
+        return Tex("\\male").scale(1.3).set_color(BLUE)
 
     def get_female(self):
-        return TexMobject("\\female").scale(1.3).set_color(MAROON_B)
+        return Tex("\\female").scale(1.3).set_color(MAROON_B)
 
 class CycleThroughPatterns(NameBinomial):
     CONFIG = {
@@ -2509,7 +2509,7 @@ class CycleThroughPatterns(NameBinomial):
     def construct(self):
         n = self.n
         k = self.k
-        question = TextMobject(
+        question = TexText(
             "How many patterns have \\\\ %d "%k, 
             "$\\female$",
             " and %d "%(n-k),
@@ -2579,17 +2579,17 @@ class Compute6of10GirlsProbability(CycleThroughPatterns):
     def write_n_choose_k(self):
         brace = Brace(self.pattern_rect, DOWN)
         ten_choose_six = brace.get_tex("{10 \\choose 6}")
-        see_chapter_one = TextMobject("(See chapter 1)")
+        see_chapter_one = TexText("(See chapter 1)")
         see_chapter_one.next_to(ten_choose_six, DOWN)
         see_chapter_one.set_color(GREEN)
-        computation = TexMobject(
+        computation = Tex(
             "=\\frac{%s}{%s}"%(
                  "\\cdot ".join(map(str, list(range(10, 4, -1)))),
                  "\\cdot ".join(map(str, list(range(1, 7)))),
             )
         )
         computation.move_to(ten_choose_six, UP)
-        rhs = TexMobject("=", "210")
+        rhs = Tex("=", "210")
         rhs.next_to(computation, RIGHT)
 
         self.play(
@@ -2614,7 +2614,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         self.write_total_probability()
 
     def write_total_count(self):
-        count = TextMobject(
+        count = TexText(
             "${10 \\choose 6}$", " $= 210$",
             "total patterns."
         )
@@ -2624,19 +2624,19 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         self.count = count
 
     def write_example_probability(self):
-        prob = TexMobject("P\\big(", "O "*15, "\\big)", "=")
+        prob = Tex("P\\big(", "O "*15, "\\big)", "=")
         indices = [1, 2, 4, 6, 8, 9]
         pattern = self.get_pattern(indices)
         pattern.replace(prob[1], dim_to_match = 0)
         prob.submobjects[1] = pattern
         prob.next_to(self.count, DOWN, LARGE_BUFF)
 
-        gp = TexMobject("P(\\female)")
+        gp = Tex("P(\\female)")
         gp[2].set_color(MAROON_B)
-        bp = TexMobject("P(\\male)")
+        bp = Tex("P(\\male)")
         bp[2].set_color(BLUE)
-        gp_num = TexMobject("(0.49)").set_color(MAROON_B)
-        bp_num = TexMobject("(0.51)").set_color(BLUE)
+        gp_num = Tex("(0.49)").set_color(MAROON_B)
+        bp_num = Tex("(0.51)").set_color(BLUE)
         gp_nums = VGroup()
         bp_nums = VGroup()
         factored = VGroup()
@@ -2658,7 +2658,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         gp_nums.save_state()
         bp_nums.save_state()
 
-        final_probability = TexMobject(
+        final_probability = Tex(
             "(0.49)^6", "(0.51)^4"
         )
         final_probability.set_color_by_tex("0.49", MAROON_B)
@@ -2697,7 +2697,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         ten_choose_six = self.count[0].copy()
         ten_choose_six.generate_target()
         ten_choose_six.target.move_to(self.final_probability)
-        p_tex = TexMobject("P(", "\\text{6 Girls}", ")", "=")
+        p_tex = Tex("P(", "\\text{6 Girls}", ")", "=")
         p_tex.set_color_by_tex("Girls", MAROON_B)
         p_tex.next_to(ten_choose_six.target, LEFT)
 
@@ -2801,7 +2801,7 @@ class GeneralBinomialDistributionValues(Scene):
         ])
         ten_choose_ks = VGroup()
         for k, mob in enumerate(last_row):
-            ten_choose_k = TexMobject("10 \\choose %s"%k)
+            ten_choose_k = Tex("10 \\choose %s"%k)
             ten_choose_k.scale(0.5)
             ten_choose_k.stretch(0.8, 0)
             ten_choose_k.next_to(mob, DOWN)
@@ -2899,7 +2899,7 @@ class GeneralBinomialDistributionValues(Scene):
         )
         triangle.set_height(0.25)
         triangle.move_to(interval.number_to_point(p), DOWN)
-        p_mob = TexMobject("p")
+        p_mob = Tex("p")
         p_mob.set_color(MAROON_B)
         p_mob.next_to(triangle, UP, SMALL_BUFF)
         triangle.add(p_mob)
@@ -2935,7 +2935,7 @@ class GeneralBinomialDistributionValues(Scene):
             p, "^%s"%k,
             q, "^{%s"%n, "-", "%s}"%k,
         ]
-        result = TexMobject(*args, arg_separator = "")
+        result = Tex(*args, arg_separator = "")
         color_map = {
             "Girls" : MAROON_B,
             n : WHITE,
@@ -3154,7 +3154,7 @@ class AssumeOrderDoesntMatter(Scene):
         self.coming_soon()
 
     def add_title(self):
-        title = TextMobject(
+        title = TexText(
             "Softer simplifying assumption: " +\
             "Order doesn't matter"
         )
@@ -3174,7 +3174,7 @@ class AssumeOrderDoesntMatter(Scene):
         ])
         for prob_group in prob_groups:
             for prob in prob_group[:-1]:
-                equals = TexMobject("=")
+                equals = Tex("=")
                 equals.next_to(prob, RIGHT)
                 prob.add(equals)
             prob_group.arrange(RIGHT)
@@ -3201,7 +3201,7 @@ class AssumeOrderDoesntMatter(Scene):
 
     def mention_correlation(self):
         assumption_group = VGroup(*self.get_top_level_mobjects())
-        question = TextMobject(
+        question = TexText(
             "But what is ", "``correlation''", "?",
             arg_separator = ""
         )
@@ -3304,7 +3304,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
     def show_binomial(self):
         binomial = self.get_binomial()
         binomial.next_to(self.teacher.get_corner(UP+LEFT), UP)
-        title = TextMobject("Probable scores")
+        title = TexText("Probable scores")
         title.scale(0.85)
         title.next_to(binomial.bars, UP, 1.5*LARGE_BUFF)
 
@@ -3424,7 +3424,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
             bar_colors = [RED, YELLOW]
         )
         chart.set_height(self.chart_height)
-        title = TextMobject(
+        title = TexText(
             "Poisson distribution \\\\",
             "$e^{-\\lambda}\\frac{\\lambda^k}{k!}$"
         )
@@ -3448,7 +3448,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
         graph.set_width(axes.get_width())
         graph.move_to(axes[0], DOWN)
 
-        title = TextMobject(
+        title = TexText(
             "Gaussian distribution \\\\ ",
             "$\\frac{1}{\\sqrt{2\\pi \\sigma^2}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}$"
         )
@@ -3544,7 +3544,7 @@ class Thumbnail(DangerInProbability):
         self.add(warning)
 
 
-        words = TextMobject("Independence")
+        words = TexText("Independence")
         words.scale(2.5)
         words.next_to(warning, DOWN)
         self.add(words)

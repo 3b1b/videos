@@ -143,11 +143,11 @@ class Histogram(VMobject):
             
             self.bars.add(bar)
 
-            x_label = TextMobject(self.x_labels[i])
+            x_label = TexText(self.x_labels[i])
             x_label.next_to(bar,DOWN)
             self.x_labels_group.add(x_label)
 
-            y_label = TextMobject(self.y_labels[i])
+            y_label = TexText(self.y_labels[i])
             if self.y_label_position == "top":
                 y_label.next_to(bar, UP)
             elif self.y_label_position == "center":

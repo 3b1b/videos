@@ -23,7 +23,7 @@ class IntroduceIMO(Scene):
         self.isolate_usa()
 
     def add_title(self):
-        title = TextMobject(
+        title = TexText(
             "International ", "Mathematical ", "Olympiad",
         )
         title.scale(1.25)
@@ -107,7 +107,7 @@ class IntroduceIMO(Scene):
         title = self.title
         logo = self.logo
 
-        new_title = TextMobject("IMO")
+        new_title = TexText("IMO")
         new_title.match_height(title)
 
         logo.generate_target()
@@ -228,7 +228,7 @@ class IntroduceIMO(Scene):
                 image = ImageMobject(os.path.join("flags", short_code))
                 image.set_width(1)
                 label = VGroup(*[
-                    TextMobject(l)
+                    TexText(l)
                     for l in country_to_code3[country].upper()
                 ])
                 label.arrange(RIGHT, buff=0.05, aligned_edge=DOWN)
@@ -278,7 +278,7 @@ class ShowTinyTao(IntroduceIMO):
         self.revert_to_original_skipping_status()
 
         image = ImageMobject("TerryTaoIMO")
-        label = TextMobject("Terence Tao at 12")
+        label = TexText("Terence Tao at 12")
         label.match_width(image)
         label.next_to(image, DOWN, SMALL_BUFF)
         image.add(label)
@@ -298,7 +298,7 @@ class ShowTinyTao(IntroduceIMO):
 
 class FootnoteToIMOIntro(Scene):
     def construct(self):
-        words = TextMobject("$^*$Based on data from 2019 test")
+        words = TexText("$^*$Based on data from 2019 test")
         self.play(FadeIn(words, UP))
         self.wait()
 
@@ -314,8 +314,8 @@ class ShowTest(Scene):
 
         # Time label
         time_labels = VGroup(
-            TextMobject("Day 1", ": 4.5 hours"),
-            TextMobject("Day 2", ": 4.5 hours"),
+            TexText("Day 1", ": 4.5 hours"),
+            TexText("Day 2", ": 4.5 hours"),
         )
         time_labels.scale(1.5)
         day_labels = VGroup()
@@ -332,7 +332,7 @@ class ShowTest(Scene):
         problem_rects = self.get_problem_rects(test.target[0])
         proof_words = VGroup()
         for rect in problem_rects:
-            word = TextMobject("Proof")
+            word = TexText("Proof")
             word.scale(2)
             word.next_to(rect, RIGHT, buff=3)
             word.set_color(BLUE)
@@ -348,7 +348,7 @@ class ShowTest(Scene):
 
         scores = VGroup()
         for word in proof_words:
-            score = VGroup(Integer(0), TexMobject("/"), Integer(7))
+            score = VGroup(Integer(0), Tex("/"), Integer(7))
             score.arrange(RIGHT, buff=SMALL_BUFF)
             score.scale(2)
             score.move_to(word)
@@ -454,7 +454,7 @@ class USProcessAlt(IntroduceIMO):
         flag = ImageMobject("flags/us")
         flag.set_height(1)
         flag.to_corner(UL)
-        label = VGroup(*map(TextMobject, "USA"))
+        label = VGroup(*map(TexText, "USA"))
         label.arrange(RIGHT, buff=0.05, aligned_edge=DOWN)
         label.set_width(0.8 * flag.get_width())
         label.next_to(flag, DOWN, buff=0.2 * flag.get_height())
@@ -566,7 +566,7 @@ class USProcessAlt(IntroduceIMO):
         tests = self.tests
         logo = ImageMobject("imo_logo")
         logo.set_height(1)
-        name = TextMobject("IMO")
+        name = TexText("IMO")
         name.scale(2)
         group = Group(logo, name)
         group.arrange(RIGHT)
@@ -632,20 +632,20 @@ class USProcessAlt(IntroduceIMO):
         T_COLOR = GREEN_B
         Q_COLOR = YELLOW
 
-        name = TextMobject(*name_parts)
-        short_name = TextMobject(*[np[0] for np in name_parts])
+        name = TexText(*name_parts)
+        short_name = TexText(*[np[0] for np in name_parts])
         if n_questions:
             nq_label = VGroup(
                 Integer(n_questions),
-                TextMobject("questions")
+                TexText("questions")
             )
             nq_label.arrange(RIGHT)
         else:
-            nq_label = TextMobject("Lots of training")
+            nq_label = TexText("Lots of training")
         nq_label.set_color(Q_COLOR)
 
         if time_string:
-            t_label = TextMobject(time_string)
+            t_label = TexText(time_string)
             t_label.set_color(T_COLOR)
         else:
             t_label = Integer(0).set_opacity(0)
@@ -665,7 +665,7 @@ class USProcessAlt(IntroduceIMO):
             sector.set_stroke(T_COLOR, 2)
             clock.add(sector)
             if hours == 4.5:
-                plus = TexMobject("+").scale(2)
+                plus = Tex("+").scale(2)
                 plus.next_to(clock, RIGHT)
                 clock_copy = clock.copy()
                 clock_copy.next_to(plus, RIGHT)
@@ -676,7 +676,7 @@ class USProcessAlt(IntroduceIMO):
         clock.next_to(t_label, RIGHT, buff=MED_LARGE_BUFF)
         t_label.add(clock)
 
-        ns_label = TextMobject("$\\sim${:,} students".format(n_students))
+        ns_label = TexText("$\\sim${:,} students".format(n_students))
 
         result = VGroup(
             name,
@@ -735,9 +735,9 @@ class Describe2011IMO(IntroduceIMO):
         self.show_top_three_scorers()
 
     def add_title(self):
-        year = TexMobject("2011")
+        year = Tex("2011")
         logo = ImageMobject("imo_logo")
-        imo = TextMobject("IMO")
+        imo = TexText("IMO")
         group = Group(year, logo, imo)
         group.scale(1.25)
         logo.set_height(1)
@@ -785,7 +785,7 @@ class Describe2011IMO(IntroduceIMO):
         # Counters
         student_counter = VGroup(
             Integer(0),
-            TextMobject("Participants"),
+            TexText("Participants"),
         )
         student_counter.set = all_students
         student_counter.next_to(self.title, LEFT, MED_LARGE_BUFF)
@@ -801,7 +801,7 @@ class Describe2011IMO(IntroduceIMO):
 
         flag_counter = VGroup(
             Integer(0),
-            TextMobject("Countries")
+            TexText("Countries")
         )
         flag_counter.set = flags
         flag_counter.next_to(student_counter, LEFT, buff=0.75)
@@ -846,7 +846,7 @@ class Describe2011IMO(IntroduceIMO):
         randy.look_at(numbers)
 
         words = VGroup(*[
-            TextMobject("Prime").next_to(line, DOWN)
+            TexText("Prime").next_to(line, DOWN)
             for line in reversed(lines)
         ])
         words.match_color(lines)
@@ -969,7 +969,7 @@ class Describe2011IMO(IntroduceIMO):
 
         # Combine students with flags
         students = VGroup(*[
-            TextMobject(row[1])
+            TexText(row[1])
             for row in data
         ])
         flags = Group(*[
@@ -994,7 +994,7 @@ class Describe2011IMO(IntroduceIMO):
             VectorizedPoint(),
             VectorizedPoint(),
             *[
-                TextMobject("P{}".format(i))
+                TexText("P{}".format(i))
                 for i in range(1, 7)
             ]
         ])
@@ -1045,11 +1045,11 @@ class AskWhatsOnTest(ShowTest, MovingCameraScene):
         arrows = self.proof_arrows
         proof_words = self.proof_words
 
-        question = TextMobject("What kind \\\\ of problems?")
+        question = TexText("What kind \\\\ of problems?")
         question.scale(1.5)
         question.move_to(proof_words, LEFT)
 
-        research = TextMobject("Research-lite")
+        research = TexText("Research-lite")
         research.scale(1.5)
         research.move_to(question, LEFT)
         research.shift(MED_SMALL_BUFF * RIGHT)
@@ -1468,7 +1468,7 @@ class IntroduceWindmill(WindmillScene):
         group.set_height(4)
         group.center().to_edge(DOWN)
 
-        S, eq = S_eq = TexMobject("\\mathcal{S}", "=")
+        S, eq = S_eq = Tex("\\mathcal{S}", "=")
         S_eq.scale(2)
         S_eq.next_to(braces, LEFT)
 
@@ -1498,7 +1498,7 @@ class IntroduceWindmill(WindmillScene):
         line.scale(1.5)
         line.set_stroke(WHITE)
 
-        words = TextMobject("Not allowed!")
+        words = TexText("Not allowed!")
         words.scale(2)
         words.set_color(RED)
         words.next_to(line.get_center(), RIGHT)
@@ -1532,9 +1532,9 @@ class IntroduceWindmill(WindmillScene):
         windmill = self.get_windmill(points, p0, angle=60 * DEGREES)
         pivot_dot = self.get_pivot_dot(windmill)
 
-        l_label = TexMobject("\\ell")
+        l_label = Tex("\\ell")
         l_label.scale(1.5)
-        p_label = TexMobject("P")
+        p_label = Tex("P")
 
         l_label.next_to(
             p0 + 2 * normalize(windmill.get_vector()),
@@ -1600,7 +1600,7 @@ class IntroduceWindmill(WindmillScene):
         p_label = self.p_label
         arcs = self.arcs
 
-        q_label = TexMobject("Q")
+        q_label = Tex("Q")
         q_label.set_color(YELLOW)
         q_label.next_to(pivot2, DR, buff=SMALL_BUFF)
 
@@ -1622,11 +1622,11 @@ class IntroduceWindmill(WindmillScene):
         windmill = self.windmill
         pivot_dot = self.pivot_dot
 
-        p_label = TexMobject("P")
+        p_label = Tex("P")
         p_label.match_color(pivot_dot)
         p_label.next_to(pivot_dot, DR, buff=0)
 
-        l_label = TexMobject("\\ell")
+        l_label = Tex("\\ell")
         l_label.scale(1.5)
         l_label.match_color(windmill)
         l_label.next_to(
@@ -1743,7 +1743,7 @@ class WindmillExample15Points(WindmillExample30Points):
 
 class TheQuestion(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Will each point be hit infinitely many times?"
         )
         words.set_width(FRAME_WIDTH - 1)
@@ -1757,7 +1757,7 @@ class SpiritOfIMO(PiCreatureScene):
         randy = self.pi_creature
 
         problems = VGroup(*[
-            TextMobject("P{})".format(i))
+            TexText("P{})".format(i))
             for i in range(1, 7)
         ])
         problems.arrange_in_grid(n_cols=2, buff=LARGE_BUFF)
@@ -1824,7 +1824,7 @@ class HowToPrepareForThis(Scene):
 
 class HarderThanExpected(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Unusual aspect \\#2")
+        title = TexText("Unusual aspect \\#2")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -1832,7 +1832,7 @@ class HarderThanExpected(TeacherStudentsScene):
         line.match_width(title)
         line.next_to(title, DOWN)
 
-        words = TextMobject("Harder than expected")
+        words = TexText("Harder than expected")
         words.set_color(RED)
         words.scale(1.5)
         words.next_to(line, DOWN, LARGE_BUFF)
@@ -1869,22 +1869,22 @@ class TraditionalDifficulty(ContrastToOtherOlympiadProblems):
 
         p_labels = VGroup()
         for i, rect in enumerate(rects):
-            p_label = TextMobject("P{}".format(i + 1))
+            p_label = TexText("P{}".format(i + 1))
             p_label.next_to(rect, LEFT)
             p_labels.add(p_label)
 
         arrow = Vector(3 * DOWN)
         arrow.next_to(test[0], RIGHT)
         arrow.match_y(rects)
-        harder_words = TextMobject("Get harder")
+        harder_words = TexText("Get harder")
         harder_words.scale(2)
         harder_words.next_to(arrow, RIGHT)
         harder_words.set_color(RED)
 
         p_words = VGroup(
-            TextMobject("Doable", color=GREEN),
-            TextMobject("Challenging", color=YELLOW),
-            TextMobject("Brutal", color=RED),
+            TexText("Doable", color=GREEN),
+            TexText("Challenging", color=YELLOW),
+            TexText("Brutal", color=RED),
         )
         p_words.add(*p_words.copy())
         for rect, word, label in zip(rects, p_words, p_labels):
@@ -1962,7 +1962,7 @@ class PerfectScoreData(Describe2011IMO):
         bar = self.get_bar(self.n_students, ORIGIN)
         bar.next_to(title, DOWN, buff=0.3)
         counter = self.get_bar_counter(bar)
-        counter_label = TextMobject("Students")
+        counter_label = TexText("Students")
         counter_label.add_updater(
             lambda m: m.next_to(counter, RIGHT)
         )
@@ -1977,7 +1977,7 @@ class PerfectScoreData(Describe2011IMO):
     def add_subtitle(self):
         title = self.title
 
-        subtitle = TextMobject(
+        subtitle = TexText(
             "Number of perfect scores on each problem:"
         )
         subtitle.scale(1.25)
@@ -1985,7 +1985,7 @@ class PerfectScoreData(Describe2011IMO):
         subtitle.next_to(title, DOWN, buff=LARGE_BUFF)
 
         problems = VGroup(*[
-            TextMobject("P{})".format(i))
+            TexText("P{})".format(i))
             for i in range(1, 7)
         ])
         problems.arrange_in_grid(n_cols=2, buff=LARGE_BUFF)
@@ -2118,10 +2118,10 @@ class SixOnSix(Describe2011IMO):
         grid.h_lines.stretch(0.93, 0, about_edge=RIGHT)
 
         sf = 1.25
-        title = TextMobject("Only 6 solved P6")
+        title = TexText("Only 6 solved P6")
         title.scale(sf)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
-        subtitle = TextMobject("P2 evaded 5 of them")
+        subtitle = TexText("P2 evaded 5 of them")
         subtitle.set_color(YELLOW)
         subtitle.scale(sf)
         subtitle.next_to(title, DOWN)
@@ -2199,7 +2199,7 @@ class TryOutSimplestExamples(WindmillScene):
         windmill = self.windmill
         dot = self.get_dots([ORIGIN])
         dot.move_to(DOWN + 2 * RIGHT)
-        words = TextMobject("Never hit!")
+        words = TexText("Never hit!")
         words.set_color(RED)
         words.scale(0.75)
         words.move_to(0.7 * DOWN, DOWN)
@@ -2315,11 +2315,11 @@ class WhereItStartsItEnds(WindmillScene):
         pivot_dot = self.get_pivot_dot(windmill)
 
         sf = 1.25
-        start_words = TextMobject("Starts in the ", "``middle''")
+        start_words = TexText("Starts in the ", "``middle''")
         start_words.scale(sf)
         start_words.next_to(windmill, UP, MED_SMALL_BUFF)
         start_words.to_edge(RIGHT)
-        end_words = TextMobject("Stays in the ", "``middle''")
+        end_words = TexText("Stays in the ", "``middle''")
         end_words.scale(sf)
         end_words.next_to(windmill, DOWN, MED_SMALL_BUFF)
         end_words.to_edge(RIGHT)
@@ -2350,13 +2350,13 @@ class WhereItStartsItEnds(WindmillScene):
     def ask_about_proof(self):
         sf = 1.25
         middle_rects = self.get_middle_rects()
-        middle_words = TextMobject("Can you formalize this?")
+        middle_words = TexText("Can you formalize this?")
         middle_words.scale(sf)
         middle_words.next_to(middle_rects, DOWN, MED_LARGE_BUFF)
         middle_words.to_edge(RIGHT)
         middle_words.match_color(middle_rects)
 
-        proof_words = TextMobject("Can you prove this?")
+        proof_words = TexText("Can you prove this?")
         proof_words.next_to(
             self.end_words.get_left(),
             DL,
@@ -2369,7 +2369,7 @@ class WhereItStartsItEnds(WindmillScene):
             self.end_words.get_corner(DL),
             buff=SMALL_BUFF,
         )
-        proof_words2 = TextMobject("Then prove the result?")
+        proof_words2 = TexText("Then prove the result?")
         proof_words2.scale(sf)
         proof_words2.next_to(middle_words, DOWN, MED_LARGE_BUFF)
         proof_words2.to_edge(RIGHT)
@@ -2432,7 +2432,7 @@ class FormalizeMiddle(WhereItStartsItEnds):
         mid_words.save_state()
 
         sf = 1.25
-        pst = TextMobject("Problem-solving tip:")
+        pst = TexText("Problem-solving tip:")
         pst.scale(sf)
         underline = Line(LEFT, RIGHT)
         underline.match_width(pst)
@@ -2442,9 +2442,9 @@ class FormalizeMiddle(WhereItStartsItEnds):
         # pst.set_color(YELLOW)
 
         steps = VGroup(
-            TextMobject("Vague idea"),
-            TextMobject("Put numbers to it"),
-            TextMobject("Ask about those numbers"),
+            TexText("Vague idea"),
+            TexText("Put numbers to it"),
+            TexText("Ask about those numbers"),
         )
         steps.scale(sf)
         steps.arrange(DOWN, buff=LARGE_BUFF)
@@ -2579,7 +2579,7 @@ class FormalizeMiddle(WhereItStartsItEnds):
             counters.next_to, mid_words, DOWN, LARGE_BUFF,
             FadeOut(label_sets),
         )
-        eq = TexMobject("=")
+        eq = Tex("=")
         eq.scale(2)
         eq.move_to(counters)
         self.play(FadeIn(eq))
@@ -2594,13 +2594,13 @@ class FormalizeMiddle(WhereItStartsItEnds):
         counters = self.counters
 
         sf = 1.0
-        words = TextMobject(
+        words = TexText(
             "Assume odd \\# points"
         )
         words.scale(sf)
         words.to_corner(UL)
         example = VGroup(
-            TextMobject("Example:"),
+            TexText("Example:"),
             Integer(0)
         )
         example.arrange(RIGHT)
@@ -2682,8 +2682,8 @@ class SecondColoringExample(WindmillScene):
         self.add_dot_color_updater(dots, windmill)
 
         counts = VGroup(
-            TextMobject("\\# Blues = 4"),
-            TextMobject("\\# Browns = 4"),
+            TexText("\\# Blues = 4"),
+            TexText("\\# Browns = 4"),
         )
         counts.arrange(DOWN, aligned_edge=LEFT, buff=MED_LARGE_BUFF)
         counts.to_corner(UL)
@@ -2692,7 +2692,7 @@ class SecondColoringExample(WindmillScene):
         counts[0].set_stroke(BLACK, 5, background=True)
         counts[1].set_stroke(BLACK, 5, background=True)
 
-        const_words = TextMobject("Stay constant$\\dots$why?")
+        const_words = TexText("Stay constant$\\dots$why?")
         const_words.next_to(counts, RIGHT, buff=1.5, aligned_edge=UP)
         arrows = VGroup(*[
             Arrow(
@@ -2745,7 +2745,7 @@ class TalkThroughPivotChange(WindmillScene):
         windmill = self.windmill
 
         new_pivot, angle = self.next_pivot_and_angle(windmill)
-        words = TextMobject("Think about\\\\pivot change")
+        words = TexText("Think about\\\\pivot change")
         words.next_to(new_pivot, UP, buff=2)
         words.to_edge(LEFT)
         arrow = Arrow(words.get_bottom(), new_pivot, buff=0.2)
@@ -2775,8 +2775,8 @@ class TalkThroughPivotChange(WindmillScene):
         low_half.set_stroke(PINK, 3)
         halves = VGroup(top_half, low_half)
 
-        top_words = TextMobject("Above pivot")
-        low_words = TextMobject("Below pivot")
+        top_words = TexText("Above pivot")
+        low_words = TexText("Below pivot")
         all_words = VGroup(top_words, low_words)
         for words, half in zip(all_words, halves):
             words.next_to(ORIGIN, DOWN)
@@ -2808,9 +2808,9 @@ class TalkThroughPivotChange(WindmillScene):
 
         blue_rect = SurroundingRectangle(dots[3])
         blue_rect.set_color(BLUE)
-        new_pivot_word = TextMobject("New pivot")
+        new_pivot_word = TexText("New pivot")
         new_pivot_word.next_to(blue_rect, LEFT)
-        old_pivot_word = TextMobject("Old pivot")
+        old_pivot_word = TexText("Old pivot")
         old_pivot = windmill.pivot
         old_pivot_word.next_to(
             old_pivot, LEFT,
@@ -2865,7 +2865,7 @@ class TalkThroughPivotChange(WindmillScene):
 
 class InsightNumber1(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Key insight 1: ",
             "\\# Points on either side is constant"
         )
@@ -2906,7 +2906,7 @@ class Rotate180Argument(WindmillScene):
         self.add_dot_color_updater(self.dots, self.windmill)
         self.rects = self.get_left_right_colorings(self.windmill)
 
-        p_label = TexMobject("P_0")
+        p_label = Tex("P_0")
         p_label.next_to(mid_point, RIGHT, SMALL_BUFF)
         self.p_label = p_label
 
@@ -2921,7 +2921,7 @@ class Rotate180Argument(WindmillScene):
     def add_total_rotation_label(self):
         windmill = self.windmill
 
-        words = TextMobject("Total rotation:")
+        words = TexText("Total rotation:")
         counter = Integer(0, unit="^\\circ")
         title = VGroup(words, counter)
         title.arrange(RIGHT)
@@ -3059,10 +3059,10 @@ class EvenCase(Rotate180Argument):
 
         dot_rects = VGroup(*map(SurroundingRectangle, dots))
 
-        question = TextMobject("What about an even number?")
+        question = TexText("What about an even number?")
         # question.to_corner(UL)
         question.to_edge(UP)
-        counter_label = TextMobject("\\# Points", ":")
+        counter_label = TexText("\\# Points", ":")
         counter = Integer(0)
         counter_group = VGroup(counter_label, counter)
         counter_group.arrange(RIGHT)
@@ -3101,11 +3101,11 @@ class EvenCase(Rotate180Argument):
         pivot_rect = dot_rects[3]
         pivot_rect.set_color(GREY_BROWN)
 
-        blues_label = TextMobject("\\# Blues", ":")
+        blues_label = TexText("\\# Blues", ":")
         blues_counter = Integer(len(blue_rects))
         blues_group = VGroup(blues_label, blues_counter)
         blues_group.set_color(BLUE)
-        browns_label = TextMobject("\\# Browns", ":")
+        browns_label = TexText("\\# Browns", ":")
         browns_counter = Integer(len(brown_rects))
         browns_group = VGroup(browns_label, browns_counter)
         browns_group.set_color(interpolate_color(GREY_BROWN, WHITE, 0.5))
@@ -3127,7 +3127,7 @@ class EvenCase(Rotate180Argument):
         self.wait()
 
         # Pivot counts as brown
-        pivot_words = TextMobject("Pivot counts as brown")
+        pivot_words = TexText("Pivot counts as brown")
         arrow = Vector(LEFT)
         arrow.next_to(pivot_dot, RIGHT, SMALL_BUFF)
         pivot_words.next_to(arrow, RIGHT, SMALL_BUFF)
@@ -3177,7 +3177,7 @@ class EvenCase(Rotate180Argument):
         points = self.points
         n = self.n_points
 
-        p_label = TexMobject("P_0")
+        p_label = Tex("P_0")
         p_label.next_to(points[n // 2], RIGHT, SMALL_BUFF)
 
         pivot_tracker = VectorizedPoint(windmill.pivot)
@@ -3208,7 +3208,7 @@ class EvenCase(Rotate180Argument):
 
 class TwoTakeaways(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Two takeaways")
+        title = TexText("Two takeaways")
         title.scale(2)
         title.to_edge(UP)
 
@@ -3217,8 +3217,8 @@ class TwoTakeaways(TeacherStudentsScene):
         line.next_to(title, DOWN, SMALL_BUFF)
 
         items = VGroup(*[
-            TextMobject("1) Social"),
-            TextMobject("2) Mathematical"),
+            TexText("1) Social"),
+            TexText("2) Mathematical"),
         ])
         items.scale(1.5)
         items.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
@@ -3265,7 +3265,7 @@ class EasyToFoolYourself(PiCreatureScene):
             part.shift(2 * i * SMALL_BUFF * DOWN)
         bubble.pin_to(morty)
 
-        fool_word = TextMobject("Fool")
+        fool_word = TexText("Fool")
         fool_word.scale(1.5)
         fool_arrow = Vector(LEFT)
         fool_arrow.next_to(morty, RIGHT, buff=0)
@@ -3294,7 +3294,7 @@ class EasyToFoolYourself(PiCreatureScene):
         self.wait(4)
 
         #
-        words = TextMobject("No it's not!")
+        words = TexText("No it's not!")
         words.scale(1.5)
         words.set_color(RED)
         words.next_to(morty.bubble, RIGHT, LARGE_BUFF)
@@ -3330,7 +3330,7 @@ class FailureToEmpathize(PiCreatureScene):
         big_bubble.set_fill(GREY_E)
         big_bubble.to_corner(UR)
 
-        equation = TexMobject(
+        equation = Tex(
             "\\sum_{k=1}^n (2k - 1) = n^2"
         )
         self.pi_creature_thinks(
@@ -3390,7 +3390,7 @@ class DifficultyEstimateVsReality(Scene):
         axes.center()
         axes.x_axis.tick_marks.set_opacity(0)
 
-        y_label = TextMobject("Average score")
+        y_label = TexText("Average score")
         y_label.scale(1.25)
         y_label.rotate(90 * DEGREES)
         y_label.next_to(axes.y_axis, LEFT, SMALL_BUFF)
@@ -3428,13 +3428,13 @@ class DifficultyEstimateVsReality(Scene):
                 bar.stretch(0, 1, about_edge=DOWN)
 
         x_labels = VGroup(*[
-            TextMobject("Q{}".format(i)).next_to(bp, DOWN)
+            TexText("Q{}".format(i)).next_to(bp, DOWN)
             for i, bp in zip(it.count(1), bar_pairs)
         ])
 
         data_labels = VGroup(
-            TextMobject("Estimated average"),
-            TextMobject("Actual average"),
+            TexText("Estimated average"),
+            TexText("Actual average"),
         )
         data_labels.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         data_labels.to_edge(UP)
@@ -3495,7 +3495,7 @@ class KeepInMindWhenTeaching(TeacherStudentsScene):
 class VastSpaceOfConsiderations(Scene):
     def construct(self):
         considerations = VGroup(*[
-            TextMobject(phrase)
+            TexText(phrase)
             for phrase in [
                 "Define ``outer'' points",
                 "Convex hulls",
@@ -3527,8 +3527,8 @@ class WhatStaysConstantWrapper(Scene):
         rect.set_height(6)
         rect.set_stroke(WHITE, 2)
         rect.set_fill(BLACK, 1)
-        title1 = TextMobject("What stays constant?")
-        title2 = TextMobject("Find an ", "``invariant''")
+        title1 = TexText("What stays constant?")
+        title2 = TexText("Find an ", "``invariant''")
         title2[1].set_color(YELLOW)
         for title in [title1, title2]:
             title.scale(2)
@@ -3548,24 +3548,24 @@ class WhatStaysConstantWrapper(Scene):
 class CountHoles(Scene):
     def construct(self):
         labels = VGroup(
-            TextMobject("Genus ", "0"),
-            TextMobject("Genus ", "1"),
-            TextMobject("Genus ", "2"),
+            TexText("Genus ", "0"),
+            TexText("Genus ", "1"),
+            TexText("Genus ", "2"),
         )
 
         labels.scale(2)
         labels.arrange(RIGHT, buff=1.5)
         labels.move_to(2 * DOWN)
 
-        equation = TexMobject("y^2 = x^3 + ax + b")
+        equation = Tex("y^2 = x^3 + ax + b")
         equation.scale(1.5)
         equation.shift(UP)
         equation.to_edge(LEFT)
-        # arrow = TexMobject("\\approx").scale(2)
+        # arrow = Tex("\\approx").scale(2)
         arrow = Vector(2 * RIGHT)
         arrow.next_to(equation, RIGHT)
 
-        equation_text = TextMobject("Some other problem")
+        equation_text = TexText("Some other problem")
         equation_text.next_to(equation, DOWN, MED_LARGE_BUFF)
         equation_text.match_width(equation)
         equation_text.set_color(YELLOW)
@@ -3605,7 +3605,7 @@ class LorenzTransform(Scene):
         c_lines.scale(FRAME_HEIGHT)
         c_lines.set_stroke(YELLOW, 3)
 
-        equation = TexMobject(
+        equation = Tex(
             "d\\tau^2 = dt^2 - dx^2"
         )
         equation.scale(1.7)
@@ -3628,9 +3628,9 @@ class LorenzTransform(Scene):
 
 class OnceACleverDiscovery(Scene):
     def construct(self):
-        energy = TextMobject("energy")
+        energy = TexText("energy")
         rect = SurroundingRectangle(energy)
-        words = TextMobject("Once a clever discovery")
+        words = TexText("Once a clever discovery")
         vect = Vector(DR)
         vect.next_to(rect.get_top(), UL, SMALL_BUFF)
         words.next_to(vect.get_start(), UP)
@@ -3649,7 +3649,7 @@ class TerryTaoQuote(Scene):
     def construct(self):
         image = ImageMobject("TerryTao")
         image.set_height(4)
-        name = TextMobject("Terence Tao")
+        name = TexText("Terence Tao")
         name.scale(1.5)
         name.next_to(image, DOWN, buff=0.2)
         tao = Group(image, name)
@@ -3695,7 +3695,7 @@ class TerryTaoQuote(Scene):
 
     def get_quote(self):
         story_words = "fables, stories, and anecdotes"
-        quote = TextMobject(
+        quote = TexText(
             """
             \\Large
             ``Mathematical problems, or puzzles, are important to real mathematics
@@ -3750,7 +3750,7 @@ class SolveAProblemOneDay(SpiritOfIMO, PiCreatureScene):
         bubble = ThoughtBubble()
         bubble.pin_to(randy)
 
-        you = TextMobject("You")
+        you = TexText("You")
         you.scale(1.5)
         arrow = Vector(LEFT)
         arrow.next_to(randy, RIGHT)
@@ -4048,8 +4048,8 @@ class Thumbnail(WindmillScene):
         self.add(flash.mobject)
         self.add_dot_color_updater(dots, windmill, color2=WHITE)
 
-        words = TextMobject("Next\\\\", "pivot")
-        words2 = TextMobject("Next\\\\", "next\\\\", "pivot", alignment="")
+        words = TexText("Next\\\\", "pivot")
+        words2 = TexText("Next\\\\", "next\\\\", "pivot", alignment="")
         words.scale(2)
         words2.scale(2)
         # words.next_to(windmill.pivot, RIGHT)
@@ -4115,7 +4115,7 @@ class ThumbanailAnimated(Thumbnail):
 
 class Thumbnail2(Scene):
     def construct(self):
-        words = TextMobject("Olympics\\\\", "for\\\\", "math", alignment="")
+        words = TexText("Olympics\\\\", "for\\\\", "math", alignment="")
         # words.arrange(DOWN, aligned_edge=LEFT)
 
         words.set_height(FRAME_HEIGHT - 1.5)

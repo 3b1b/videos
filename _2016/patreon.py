@@ -14,9 +14,9 @@ class SideGigToFullTime(Scene):
     def side_project(self, morty):
         rect = PictureInPictureFrame()
         rect.next_to(morty, UP+LEFT)
-        side_project = TextMobject("Side project")
+        side_project = TexText("Side project")
         side_project.next_to(rect, UP)
-        dollar_sign = TexMobject("\\$")
+        dollar_sign = Tex("\\$")
         cross = VGroup(*[
             Line(vect, -vect, color = RED)
             for vect in (UP+RIGHT, UP+LEFT)
@@ -44,7 +44,7 @@ class SideGigToFullTime(Scene):
 
     def income(self, morty):
         dollar_signs = VGroup(*[
-            TexMobject("\\$")
+            Tex("\\$")
             for x in range(10)
         ])
         dollar_signs.arrange(RIGHT, buff = LARGE_BUFF)
@@ -77,9 +77,9 @@ class SideGigToFullTime(Scene):
         self.play(Blink(morty))
 
     def full_time(self, morty):
-        new_title = TextMobject("Full time")
+        new_title = TexText("Full time")
         new_title.move_to(self.screen_title)
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.next_to(self.cross)
         q_mark.set_color(GREEN)
 
@@ -116,13 +116,13 @@ class GrowingToDoList(Scene):
         morty = Mortimer()
         morty.flip()
         morty.next_to(ORIGIN, DOWN+LEFT)
-        title = TextMobject("3blue1brown to-do list")
+        title = TexText("3blue1brown to-do list")
         title.next_to(ORIGIN, RIGHT)
         title.to_edge(UP)
         underline = Line(title.get_left(), title.get_right())
         underline.next_to(title, DOWN)
 
-        lines = VGroup(*list(map(TextMobject, [
+        lines = VGroup(*list(map(TexText, [
             "That one on topology",
             "Something with quaternions",
             "Solving puzzles with binary counting",
@@ -169,17 +169,17 @@ class GrowingToDoList(Scene):
 class TwoTypesOfVideos(Scene):
     def construct(self):
         morty = Mortimer().shift(2*DOWN)
-        stand_alone = TextMobject("Standalone videos")
+        stand_alone = TexText("Standalone videos")
         stand_alone.shift(FRAME_X_RADIUS*LEFT/2)
         stand_alone.to_edge(UP)
-        series = TextMobject("Series")
+        series = TexText("Series")
         series.shift(FRAME_X_RADIUS*RIGHT/2)
         series.to_edge(UP)
         box = Rectangle(width = 16, height = 9, color = WHITE)
         box.set_height(3)
         box.next_to(stand_alone, DOWN)
         series_list = VGroup(*[  
-            TextMobject("Essence of %s"%s)
+            TexText("Essence of %s"%s)
             for s in [
                 "linear algebra",
                 "calculus",
@@ -194,8 +194,8 @@ class TwoTypesOfVideos(Scene):
         series_list.next_to(series, DOWN, buff = MED_SMALL_BUFF)
         series_list.to_edge(RIGHT)
 
-        fridays = TextMobject("Every other friday")
-        when_done = TextMobject("When series is done")
+        fridays = TexText("Every other friday")
+        when_done = TexText("When series is done")
         for words, vect in (fridays, LEFT), (when_done, RIGHT):
             words.set_color(YELLOW)
             words.next_to(
@@ -203,7 +203,7 @@ class TwoTypesOfVideos(Scene):
                 buff = MED_SMALL_BUFF, 
                 aligned_edge = UP
             )
-        unless = TextMobject("""
+        unless = TexText("""
             Unless you're
             a patron \\dots
         """)
@@ -325,7 +325,7 @@ class GrowRonaksSierpinski(Scene):
             ))
             # if n == 2:
             #     dot = dot_layer[1]
-            #     words = TextMobject("Stop growth at pink")
+            #     words = TexText("Stop growth at pink")
             #     words.next_to(dot, DOWN, 2)
             #     arrow = Arrow(words, dot)
             #     self.play(
@@ -396,11 +396,11 @@ class GrowRonaksSierpinski(Scene):
 
 class PatreonLogo(Scene):
     def construct(self):
-        words1 = TextMobject(
+        words1 = TexText(
             "Support future\\\\",
             "3blue1brown videos"
         )
-        words2 = TextMobject(
+        words2 = TexText(
             "Early access to\\\\",
             "``Essence of'' series"
         )
@@ -427,9 +427,9 @@ class PythagoreanTransformation(Scene):
             tri1.copy().rotate(-i*np.pi/2)
             for i in range(1, 4)
         ]
-        a = TexMobject("a").next_to(tri1[0], DOWN, buff = MED_SMALL_BUFF)
-        b = TexMobject("b").next_to(tri1[2], LEFT, buff = MED_SMALL_BUFF)
-        c = TexMobject("c").next_to(tri1[1].get_center(), UP+RIGHT)
+        a = Tex("a").next_to(tri1[0], DOWN, buff = MED_SMALL_BUFF)
+        b = Tex("b").next_to(tri1[2], LEFT, buff = MED_SMALL_BUFF)
+        c = Tex("c").next_to(tri1[1].get_center(), UP+RIGHT)
 
         c_square = Polygon(*[
             tri[1].get_end()
@@ -437,7 +437,7 @@ class PythagoreanTransformation(Scene):
         ])
         c_square.set_stroke(width = 0)
         c_square.set_fill(color = YELLOW, opacity = 0.5)
-        c_square_tex = TexMobject("c^2")
+        c_square_tex = Tex("c^2")
         big_square = Polygon(*[
             tri[0].get_start()
             for tri in [tri1] + copies
@@ -447,7 +447,7 @@ class PythagoreanTransformation(Scene):
         a_square.shift(1.5*(LEFT+UP))
         a_square.set_stroke(width = 0)
         a_square.set_fill(color = BLUE, opacity = 0.5)
-        a_square_tex = TexMobject("a^2")
+        a_square_tex = Tex("a^2")
         a_square_tex.move_to(a_square)
         b_square = Square(side_length = 3)
         b_square.move_to(
@@ -456,7 +456,7 @@ class PythagoreanTransformation(Scene):
         )
         b_square.set_stroke(width = 0)
         b_square.set_fill(color = MAROON_B, opacity = 0.5)
-        b_square_tex = TexMobject("b^2")
+        b_square_tex = Tex("b^2")
         b_square_tex.move_to(b_square)
 
         self.play(ShowCreation(tri1, run_time = 2))
@@ -497,7 +497,7 @@ class KindWordsOnEoLA(TeacherStudentsScene):
     def construct(self):
         rect = Rectangle(width = 16, height = 9, color = WHITE)
         rect.set_height(4)
-        title = TextMobject("Essence of linear algebra")
+        title = TexText("Essence of linear algebra")
         title.to_edge(UP)
         rect.next_to(title, DOWN)
         self.play(
@@ -588,7 +588,7 @@ class IntegrationByParts(Scene):
         v_lines.set_color(BLUE_E)
         h_lines.set_color(GREEN_E)
 
-        equation = TexMobject(
+        equation = Tex(
             "\\int_0^1 g\\,df", 
             "+\\int_0^1 f\\,dg",
             "= \\big(fg \\big)_0^1"
@@ -638,7 +638,7 @@ class IntegrationByParts(Scene):
         self.wait()
 
     def draw_curve(self, curve):
-        lp, lnum, comma, rnum, rp = coords = TexMobject(
+        lp, lnum, comma, rnum, rp = coords = Tex(
             "\\big(f(", "t", "), g(", "t", ")\\big)"
         )
         coords.set_color_by_tex("0.00", BLACK)

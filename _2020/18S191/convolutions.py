@@ -42,7 +42,7 @@ class ConvolutionIntroduction(ThreeDScene):
                     square.set_fill(BLACK, 0)
                     square.set_stroke(BLUE, 2)
                     if tex:
-                        value = TexMobject(tex)
+                        value = Tex(tex)
                     else:
                         value = DecimalNumber(x, num_decimal_places=3)
                     value.set_width(square.get_width() * 0.7)

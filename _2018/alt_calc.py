@@ -16,7 +16,7 @@ def apply_function_to_points(point_func, mobject):
 
 def get_nested_one_plus_one_over_x(n_terms, bottom_term="x"):
     tex = "1+ {1 \\over" * n_terms + bottom_term + "}" * n_terms
-    return TexMobject(tex, isolate=["1", "\\over", bottom_term])
+    return Tex(tex, isolate=["1", "\\over", bottom_term])
 
 
 def get_phi_continued_fraction(n_terms):
@@ -25,7 +25,7 @@ def get_phi_continued_fraction(n_terms):
 
 def get_nested_f(n_terms, arg="x"):
     terms = ["f("] * n_terms + [arg] + [")"] * n_terms
-    return TexMobject(*terms)
+    return Tex(*terms)
 
 
 # Scene types
@@ -87,7 +87,7 @@ class NumberlineTransformationScene(ZoomedScene):
 
     def setup_titles(self):
         input_title, output_title = self.titles = VGroup(*[
-            TextMobject(word)
+            TexText(word)
             for word in ("Inputs", "Outputs")
         ])
         vects = [UP, DOWN]
@@ -449,7 +449,7 @@ class WriteOpeningWords(Scene):
         raw_string2 = "You're about to go through your first course. Like " + \
                       "any new topic, it will take some hard work to understand,"
         words1, words2 = [
-            TextMobject("\\Large", *rs.split(" "))
+            TexText("\\Large", *rs.split(" "))
             for rs in (raw_string1, raw_string2)
         ]
         words1.next_to(words2, UP, aligned_edge=LEFT, buff=LARGE_BUFF)
@@ -486,7 +486,7 @@ class StartingCalc101(PiCreatureScene):
     def show_you(self):
         randy = self.pi_creature
         title = self.title = Title("Calculus 101")
-        you = TextMobject("You")
+        you = TexText("You")
         arrow = Vector(DL, color=WHITE)
         arrow.next_to(randy, UR)
         you.next_to(arrow.get_start(), UP)
@@ -568,7 +568,7 @@ class StartingCalc101(PiCreatureScene):
         im_mob.replace(mystery_box, stretch=True)
         mystery_box.add(im_mob)
 
-        q_marks = TexMobject("???").scale(3)
+        q_marks = Tex("???").scale(3)
         q_marks.space_out_submobjects(1.5)
         q_marks.set_stroke(BLACK, 1)
         q_marks.move_to(mystery_box)
@@ -638,7 +638,7 @@ class StartingCalc101(PiCreatureScene):
         new_randy = self.pi_creature.copy()
         new_randy.change_mode("telepath")
         bubble = new_randy.get_bubble(height=3.5, width=4)
-        bubble.add_content(TexMobject("\\frac{d}{dx}(\\sin(\\sqrt{x}))"))
+        bubble.add_content(Tex("\\frac{d}{dx}(\\sin(\\sqrt{x}))"))
         bubble.add(bubble.content)  # Remove?
 
         return VGroup(new_randy, bubble)
@@ -649,7 +649,7 @@ class StartingCalc101(PiCreatureScene):
             fill_color=BLUE_E,
             fill_opacity=1
         )
-        area = TexMobject("\\pi r^2")
+        area = Tex("\\pi r^2")
         area.move_to(filled_circle)
         unfilled_circle = Circle(
             stroke_width=3,
@@ -658,9 +658,9 @@ class StartingCalc101(PiCreatureScene):
         )
         unfilled_circle.next_to(filled_circle, RIGHT)
         circles = VGroup(filled_circle, unfilled_circle)
-        circumference = TexMobject("2\\pi r")
+        circumference = Tex("2\\pi r")
         circumference.move_to(unfilled_circle)
-        equation = TexMobject(
+        equation = Tex(
             "{d (\\pi r^2) \\over dr}  = 2\\pi r",
             tex_to_color_map={
                 "\\pi r^2": BLUE_D,
@@ -676,7 +676,7 @@ class StartingCalc101(PiCreatureScene):
         )
 
     def get_not_so_neat_example_image(self):
-        return TexMobject("\\int x \\cos(x) \\, dx")
+        return Tex("\\int x \\cos(x) \\, dx")
 
     def get_physics_image(self):
         t_max = 6.5
@@ -732,12 +732,12 @@ class StartingCalc101(PiCreatureScene):
         return group
 
     def get_piles_of_formulas_image(self):
-        return TexMobject("(f/g)' = \\frac{gf' - fg'}{g^2}")
+        return Tex("(f/g)' = \\frac{gf' - fg'}{g^2}")
 
     def get_getting_stuck_image(self):
         creature = self.pi_creature.copy()
         creature.change_mode("angry")
-        equation = TexMobject("\\frac{d}{dx}(x^x)")
+        equation = Tex("\\frac{d}{dx}(x^x)")
         equation.set_height(creature.get_height() / 2)
         equation.next_to(creature, RIGHT, aligned_edge=UP)
         creature.look_at(equation)
@@ -806,12 +806,12 @@ class GraphicalIntuitions(GraphScene):
             graph, x_min=2, x_max=8, dx=0.01, stroke_width=0
         )
 
-        deriv_text = TextMobject(
+        deriv_text = TexText(
             "Derivative $\\rightarrow$ slope",
             tex_to_color_map={"slope": ss_group.secant_line.get_color()}
         )
         deriv_text.to_edge(UP)
-        integral_text = TextMobject(
+        integral_text = TexText(
             "Integral $\\rightarrow$ area",
             tex_to_color_map={"area": rects[0].get_color()}
         )
@@ -844,12 +844,12 @@ class GraphicalIntuitions(GraphScene):
 
     def get_graph_words_anim(self):
         words = VGroup(
-            TextMobject("Graphs,"),
-            TextMobject("graphs,"),
-            TextMobject("non-stop graphs"),
-            TextMobject("all day"),
-            TextMobject("every day"),
-            TextMobject("as if to visualize is to graph"),
+            TexText("Graphs,"),
+            TexText("graphs,"),
+            TexText("non-stop graphs"),
+            TexText("all day"),
+            TexText("every day"),
+            TexText("as if to visualize is to graph"),
         )
         for word in words:
             word.add_background_rectangle()
@@ -874,7 +874,7 @@ class Wrapper(Scene):
 
     def construct(self):
         rect = self.rect = ScreenRectangle(height=self.screen_height)
-        title = self.title = TextMobject(self.title, **self.title_kwargs)
+        title = self.title = TexText(self.title, **self.title_kwargs)
         title.to_edge(UP)
         rect.next_to(title, DOWN)
 
@@ -983,15 +983,15 @@ class ChangingVectorField(Scene):
 
 class MoreTopics(Scene):
     def construct(self):
-        calculus = TextMobject("Calculus")
+        calculus = TexText("Calculus")
         calculus.next_to(LEFT, LEFT)
         calculus.set_color(YELLOW)
         calculus.add_background_rectangle()
         others = VGroup(
-            TextMobject("Multivariable calculus"),
-            TextMobject("Complex analysis"),
-            TextMobject("Differential geometry"),
-            TextMobject("$\\vdots$")
+            TexText("Multivariable calculus"),
+            TexText("Complex analysis"),
+            TexText("Differential geometry"),
+            TexText("$\\vdots$")
         )
         for word in others:
             word.add_background_rectangle()
@@ -1028,8 +1028,8 @@ class TransformationalViewWrapper(Wrapper):
 
 class SetTheStage(TeacherStudentsScene):
     def construct(self):
-        ordinary = TextMobject("Ordinary visual")
-        transformational = TextMobject("Transformational visual")
+        ordinary = TexText("Ordinary visual")
+        transformational = TexText("Transformational visual")
         for word in ordinary, transformational:
             word.move_to(self.hold_up_spot, DOWN)
             word.shift_onto_screen()
@@ -1065,7 +1065,7 @@ class StandardDerivativeVisual(GraphScene):
         self.show_sensitivity()
 
     def add_title(self):
-        title = self.title = TextMobject("Standard derivative visual")
+        title = self.title = TexText("Standard derivative visual")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(FRAME_WIDTH - 2 * LARGE_BUFF)
@@ -1119,12 +1119,12 @@ class StandardDerivativeVisual(GraphScene):
             lambda m: m.move_to(get_y_point(), RIGHT)
         )
 
-        x_label = TexMobject("x")
+        x_label = Tex("x")
         x_label_update = Mobject.add_updater(
             x_label, lambda m: m.next_to(input_triangle, DOWN, SMALL_BUFF)
         )
 
-        output_label = TexMobject("f(x)")
+        output_label = Tex("f(x)")
         output_label_update = Mobject.add_updater(
             output_label, lambda m: m.next_to(
                 output_triangle, LEFT, SMALL_BUFF)
@@ -1200,7 +1200,7 @@ class StandardDerivativeVisual(GraphScene):
         def position_deriv_label(deriv_label):
             deriv_label.next_to(slope_line, UP)
             return deriv_label
-        deriv_label = TexMobject(
+        deriv_label = Tex(
             "\\frac{df}{dx}(x) =", "\\text{Slope}", "="
         )
         deriv_label.get_part_by_tex("Slope").match_color(slope_line)
@@ -1341,7 +1341,7 @@ class IntroduceTransformationView(NumberlineTransformationScene):
         self.show_zoomed_transformation()
 
     def add_title(self):
-        title = self.title = TextMobject("$f(x)$ as a transformation")
+        title = self.title = TexText("$f(x)$ as a transformation")
         title.to_edge(UP)
         self.add(title)
 
@@ -1414,7 +1414,7 @@ class IntroduceTransformationView(NumberlineTransformationScene):
         lower_brace_anim = UpdateFromFunc(lower_brace, update_lower_brace)
         upper_brace_anim = UpdateFromFunc(upper_brace, update_upper_brace)
 
-        new_title = TextMobject(
+        new_title = TexText(
             "$\\frac{df}{dx}(x)$ measures stretch/squishing"
         )
         new_title.move_to(self.title, UP)
@@ -1478,7 +1478,7 @@ class IntroduceTransformationView(NumberlineTransformationScene):
 class ExamplePlease(TeacherStudentsScene):
     def construct(self):
         self.student_says("Example?", student_index=0)
-        self.teacher_holds_up(TexMobject("f(x) = x^2").scale(1.5))
+        self.teacher_holds_up(Tex("f(x) = x^2").scale(1.5))
         self.wait(2)
 
 
@@ -1501,7 +1501,7 @@ class TalkThroughXSquaredExample(IntroduceTransformationView):
         self.show_specific_points_mapping()
 
     def add_title(self):
-        title = self.title = TextMobject("$f(x) = x^2$")
+        title = self.title = TexText("$f(x) = x^2$")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(title)
 
@@ -1523,7 +1523,7 @@ class TalkThroughXSquaredExample(IntroduceTransformationView):
         numbers = self.input_line.numbers
         numbers.next_to(self.input_line, UP, SMALL_BUFF)
         self.titles[0].next_to(numbers, UP, MED_SMALL_BUFF, LEFT)
-        # map(TexMobject.add_background_rectangle, numbers)
+        # map(Tex.add_background_rectangle, numbers)
         # self.add_foreground_mobject(numbers)
 
         for dot, dot_ghost, arrow in zip(int_dots, int_dot_ghosts, int_arrows):
@@ -1555,12 +1555,12 @@ class TalkThroughXSquaredExample(IntroduceTransformationView):
 
     def get_stretch_words(self, factor, color=RED, less_than_one=False):
         factor_str = "$%s$" % str(factor)
-        result = TextMobject(
+        result = TexText(
             "Scale \\\\ by", factor_str,
             tex_to_color_map={factor_str: color}
         )
         result.scale(0.7)
-        la, ra = TexMobject("\\leftarrow \\rightarrow")
+        la, ra = Tex("\\leftarrow \\rightarrow")
         if less_than_one:
             la, ra = ra, la
         if factor < 0:
@@ -1582,7 +1582,7 @@ class TalkThroughXSquaredExample(IntroduceTransformationView):
         return result
 
     def get_deriv_equation(self, x, rhs, color=RED):
-        deriv_equation = self.deriv_equation = TexMobject(
+        deriv_equation = self.deriv_equation = Tex(
             "\\frac{df}{dx}(", str(x), ")", "=", str(rhs),
             tex_to_color_map={str(x): color, str(rhs): color}
         )
@@ -1599,7 +1599,7 @@ class ZoomInOnXSquaredNearOne(TalkThroughXSquaredExample):
         self.revert_to_original_skipping_status()
 
     def construct(self):
-        zoom_words = TextMobject("Zoomed view \\\\ near 1")
+        zoom_words = TexText("Zoomed view \\\\ near 1")
         zoom_words.next_to(self.zoomed_display, DOWN)
         # zoom_words.shift_onto_screen()
 
@@ -1699,7 +1699,7 @@ class ZoomInOnXSquaredNearThree(ZoomInOnXSquaredNearOne):
     }
 
     def construct(self):
-        zoom_words = TextMobject("Zoomed view \\\\ near 3")
+        zoom_words = TexText("Zoomed view \\\\ near 3")
         zoom_words.next_to(self.zoomed_display, DOWN)
 
         x = 3
@@ -1744,7 +1744,7 @@ class ZoomInOnXSquaredNearOneFourth(ZoomInOnXSquaredNearOne):
     def construct(self):
         # Much copy-pasting from previous scenes.  Not great, but
         # the fastest way to get the ease-of-tweaking I'd like.
-        zoom_words = TextMobject("Zoomed view \\\\ near $1/4$")
+        zoom_words = TexText("Zoomed view \\\\ near $1/4$")
         zoom_words.next_to(self.zoomed_display, DOWN)
 
         x = 0.25
@@ -1768,7 +1768,7 @@ class ZoomInOnXSquaredNearOneFourth(ZoomInOnXSquaredNearOne):
         one_fourth_arrow.stem.stretch(0.75, 0)
         one_fourth_arrow.tip.scale(0.75, about_edge=DOWN)
         one_fourth_arrow.next_to(one_fourth_point, DOWN, SMALL_BUFF)
-        one_fourth_label = TexMobject("0.25")
+        one_fourth_label = Tex("0.25")
         one_fourth_label.match_height(self.input_line.numbers)
         one_fourth_label.next_to(one_fourth_arrow, DOWN, SMALL_BUFF)
 
@@ -1805,7 +1805,7 @@ class ZoomInOnXSquaredNearZero(ZoomInOnXSquaredNearOne):
     }
 
     def construct(self):
-        zoom_words = TextMobject(
+        zoom_words = TexText(
             "Zoomed %sx \\\\ near 0" % "{:,}".format(int(1.0 / self.zoom_factor))
         )
         zoom_words.next_to(self.zoomed_display, DOWN)
@@ -1872,7 +1872,7 @@ class ZoomInMoreAndMoreToZero(ZoomInOnXSquaredNearZero):
             frame.save_state()
             frame.set_height(factor * zoomed_display_height)
             self.local_coordinate_num_decimal_places = int(-np.log10(factor))
-            zoom_words = TextMobject(
+            zoom_words = TexText(
                 "Zoomed", "{:,}x \\\\".format(int(1.0 / factor)),
                 "near 0",
             )
@@ -2056,7 +2056,7 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
             show_ellipsis=True,
         )
         rhs.set_color(YELLOW)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(frac.get_part_by_tex("\\over"), RIGHT)
         rhs.next_to(equals, RIGHT)
         group = VGroup(frac, equals, rhs)
@@ -2114,9 +2114,9 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
         )
         inner_frac_group = VGroup(inner_frac, inner_frac_rect)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(frac[3], RIGHT)
-        x, new_x = [TexMobject("x") for i in range(2)]
+        x, new_x = [Tex("x") for i in range(2)]
         xs = VGroup(x, new_x)
         xs.set_color(YELLOW)
         xs.scale(1.3)
@@ -2124,8 +2124,8 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
         new_x.next_to(frac[3], DOWN, 2 * SMALL_BUFF)
 
         fixed_point_words = VGroup(
-            TextMobject("Fixed point of"),
-            TexMobject(
+            TexText("Fixed point of"),
+            Tex(
                 "f(x) = 1 + \\frac{1}{x}",
                 tex_to_color_map={"x": YELLOW}
             )
@@ -2187,7 +2187,7 @@ class GraphOnePlusOneOverX(GraphScene):
         self.show_solutions()
 
     def add_title(self):
-        title = self.title = TexMobject(
+        title = self.title = Tex(
             "\\text{Solve: }", "1 + \\frac{1}{x}", "=", "x",
         )
         title.set_color_by_tex("x", self.identity_graph_color, substring=False)
@@ -2284,7 +2284,7 @@ class GraphOnePlusOneOverX(GraphScene):
             phi_decimal[:4].get_top(), phi_line.get_bottom(),
             **arrow_kwargs
         )
-        phi_label = TexMobject("=", "\\varphi")
+        phi_label = Tex("=", "\\varphi")
         phi_label.next_to(phi_decimal, RIGHT)
         phi_label.set_color_by_tex("\\varphi", YELLOW)
 
@@ -2296,7 +2296,7 @@ class GraphOnePlusOneOverX(GraphScene):
             **arrow_kwargs
         )
 
-        brother_words = TextMobject(
+        brother_words = TexText(
             "$\\varphi$'s little brother",
             tex_to_color_map={"$\\varphi$": YELLOW},
             arg_separator=""
@@ -2395,7 +2395,7 @@ class ThinkAboutWithRepeatedApplication(IntroduceContinuedFractionPuzzle):
         frac = self.frac
         arrow = Vector(LEFT, color=RED)
         arrow.next_to(frac, RIGHT)
-        question = TextMobject("What does this \\\\ actually mean?")
+        question = TexText("What does this \\\\ actually mean?")
         question.set_color(RED)
         question.next_to(arrow, RIGHT)
 
@@ -2423,13 +2423,13 @@ class ThinkAboutWithRepeatedApplication(IntroduceContinuedFractionPuzzle):
         value_labels = VGroup()
         for n_terms in range(5):
             lhs = get_nested_f(n_terms, arg="c")
-            equals = TexMobject("=")
+            equals = Tex("=")
             rhs = get_nested_one_plus_one_over_x(n_terms, bottom_term=value_str)
             equals.next_to(rhs[0], LEFT)
             lhs.next_to(equals, LEFT)
             lines.add(VGroup(lhs, equals, rhs))
 
-            value_label = TexMobject("= %.3f\\dots" % value)
+            value_label = Tex("= %.3f\\dots" % value)
             value = func(value)
             value_labels.add(value_label)
 
@@ -2454,7 +2454,7 @@ class ThinkAboutWithRepeatedApplication(IntroduceContinuedFractionPuzzle):
 
         arrow = Vector(0.5 * DOWN, color=WHITE)
         arrow.next_to(value_labels[-1], DOWN)
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.next_to(arrow, DOWN)
 
         self.play(
@@ -2536,7 +2536,7 @@ class RepeatedApplicationWithNegativeSeed(RepeatedApplicationWithPhiBro, MovingC
         RepeatedApplicationWithPhiBro.construct(self)
 
         rect = SurroundingRectangle(self.top_line)
-        question = TextMobject("What about a negative seed?")
+        question = TexText("What about a negative seed?")
         question.match_color(rect)
         question.next_to(rect, UP)
         self.play(ShowCreation(rect))
@@ -2563,8 +2563,8 @@ class ShowRepeatedApplication(Scene):
 
     def add_func_title(self):
         title = self.title = VGroup(
-            TexMobject("f(", "x", ")"),
-            TexMobject("="),
+            Tex("f(", "x", ")"),
+            Tex("="),
             get_nested_one_plus_one_over_x(1)
         )
         title.arrange(RIGHT)
@@ -2589,10 +2589,10 @@ class ShowRepeatedApplication(Scene):
         last_term = initial_term
 
         def get_arrow():
-            arrow = TexMobject("\\rightarrow")
+            arrow = Tex("\\rightarrow")
             arrow.stretch(1.5, 0)
             arrow.next_to(line[-1], RIGHT)
-            tex = TexMobject("f(x)")
+            tex = Tex("f(x)")
             tex.set_color(YELLOW)
             tex.match_width(arrow)
             tex.next_to(arrow, UP, SMALL_BUFF)
@@ -2611,7 +2611,7 @@ class ShowRepeatedApplication(Scene):
             line.add(new_term)
 
         line.add(get_arrow())
-        line.add(TexMobject("\\dots\\dots").next_to(line[-1][0], RIGHT))
+        line.add(Tex("\\dots\\dots").next_to(line[-1][0], RIGHT))
         num_phi_mob = DecimalNumber(phi, **decimal_kwargs)
         line.add(num_phi_mob.next_to(line[-1], RIGHT))
         line.move_to(DOWN)
@@ -2718,14 +2718,14 @@ class NumericalPlayOnNumberLineFromOne(Scene):
         phi_dot = Dot(phi_point, color=YELLOW)
         arrow = Vector(DL)
         arrow.next_to(phi_point, UR, SMALL_BUFF)
-        phi_label = TexMobject("\\varphi = 1.618\\dots")
+        phi_label = Tex("\\varphi = 1.618\\dots")
         phi_label.set_color(YELLOW)
         phi_label.next_to(arrow.get_start(), UP, SMALL_BUFF)
 
         self.add(phi_dot, phi_label, arrow)
 
     def add_title(self):
-        title = TexMobject("x \\rightarrow 1 + \\frac{1}{x}")
+        title = Tex("x \\rightarrow 1 + \\frac{1}{x}")
         title.to_corner(UL)
         self.add(title)
 
@@ -2738,7 +2738,7 @@ class NumericalPlayOnNumberLineFromOne(Scene):
         arrow = Vector(DR)
         arrow.next_to(point, UL, buff=SMALL_BUFF)
         arrow.match_color(dot)
-        start_here = TextMobject("Start here")
+        start_here = TexText("Start here")
         start_here.next_to(arrow.get_start(), UP, SMALL_BUFF)
         start_here.match_color(dot)
 
@@ -2809,7 +2809,7 @@ class NumericalPlayOnNumberLineFromMinusPhi(NumericalPlayOnNumberLineFromOne):
         arrow = Vector(DR)
         arrow.next_to(new_point, UL, SMALL_BUFF)
         arrow.set_color(RED)
-        new_label = TexMobject("-\\frac{1}{\\varphi} = -0.618\\dots")
+        new_label = Tex("-\\frac{1}{\\varphi} = -0.618\\dots")
         new_label.set_color(RED)
         new_label.next_to(arrow.get_start(), UP, SMALL_BUFF)
         new_label.shift(RIGHT)
@@ -2939,7 +2939,7 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
             VGroup(line, line.tick_marks).set_stroke(width=2)
 
     def add_function_title(self):
-        title = TexMobject("f(x)", "=", "1 +", "\\frac{1}{x}")
+        title = Tex("f(x)", "=", "1 +", "\\frac{1}{x}")
         title.to_edge(UP)
         self.add(title)
         self.title = title
@@ -3047,9 +3047,9 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
         phi_bro_tick = tick.copy().move_to(input_phi_bro_point, DOWN)
         VGroup(phi_tick, phi_bro_tick).shift(SMALL_BUFF * DOWN)
 
-        phi_label = TexMobject("1.618\\dots")
+        phi_label = Tex("1.618\\dots")
         phi_label.next_to(phi_tick, UP)
-        phi_bro_label = TexMobject("-0.618\\dots")
+        phi_bro_label = Tex("-0.618\\dots")
         phi_bro_label.next_to(phi_bro_tick, UP)
         VGroup(phi_label, phi_bro_label).set_color(YELLOW)
 
@@ -3106,7 +3106,7 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
         zcbr_group.add(self.phi_tick)
 
         title = self.title
-        deriv_text = TexMobject(
+        deriv_text = Tex(
             "|", "\\frac{df}{dx}(\\varphi)", "|", "< 1",
             tex_to_color_map={"\\varphi": YELLOW}
         )
@@ -3114,7 +3114,7 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
             deriv_text, stretch=True
         )
         deriv_text.move_to(title, UP)
-        approx_value = TexMobject("\\approx |%.2f|" % (-1 / phi**2))
+        approx_value = Tex("\\approx |%.2f|" % (-1 / phi**2))
         approx_value.move_to(deriv_text)
         deriv_text_lhs = deriv_text[:-1]
         deriv_text_rhs = deriv_text[-1]
@@ -3167,7 +3167,7 @@ class AnalyzeFunctionWithTransformations(NumberlineTransformationScene):
         local_sample_dots = self.get_local_sample_dots(phi_bro)
         local_coordinate_values = [-0.65, -0.6, -0.55]
 
-        deriv_text = TexMobject(
+        deriv_text = Tex(
             "\\left| \\frac{df}{dx}\\left(\\frac{-1}{\\varphi}\\right) \\right|",
             "\\approx |%.2f|" % (-1 / (phi_bro**2)),
             "> 1"
@@ -3229,8 +3229,8 @@ class StabilityAndInstability(AnalyzeFunctionWithTransformations):
     def label_stability(self):
         self.title.to_corner(UL)
 
-        stable_label = TextMobject("Stable fixed point")
-        unstable_label = TextMobject("Unstable fixed point")
+        stable_label = TexText("Stable fixed point")
+        unstable_label = TexText("Unstable fixed point")
         labels = VGroup(stable_label, unstable_label)
         labels.scale(0.8)
         stable_label.next_to(self.phi_label, UP, aligned_edge=ORIGIN)
@@ -3283,7 +3283,7 @@ class StabilityAndInstability(AnalyzeFunctionWithTransformations):
 
         deriv_labels = VGroup()
         for char, label in zip("<>", labels):
-            deriv_label = TexMobject(
+            deriv_label = Tex(
                 "\\big|", "\\frac{df}{dx}(", "x", ")", "\\big|",
                 char, "1"
             )
@@ -3327,14 +3327,14 @@ class StaticAlgebraicObject(Scene):
         frac.to_edge(DOWN)
         frac.set_stroke(WHITE, width=0.5)
 
-        title = TexMobject(
+        title = Tex(
             "\\infty \\ne \\lim",
             tex_to_color_map={"\\ne": RED}
         )
         title.scale(1.5)
         title.to_edge(UP)
 
-        polynomial = TexMobject("x^2 - x - 1 = 0")
+        polynomial = Tex("x^2 - x - 1 = 0")
         polynomial.move_to(title)
 
         self.add(title)
@@ -3393,7 +3393,7 @@ class WhatComesAfterWrapper(Wrapper):
 
     def construct(self):
         Wrapper.construct(self)
-        new_title = TextMobject("Next video")
+        new_title = TexText("Next video")
         new_title.set_color(BLUE)
         new_title.move_to(self.title)
 
@@ -3502,7 +3502,7 @@ class ShowJacobianZoomedIn(LinearTransformationScene, ZoomedScene):
         )
         tiny_grid.replace(frame)
 
-        jacobian_words = TextMobject("Jacobian")
+        jacobian_words = TexText("Jacobian")
         jacobian_words.add_background_rectangle()
         jacobian_words.scale(1.5)
         jacobian_words.move_to(zoomed_display, UP)
@@ -3543,7 +3543,7 @@ class PrinciplesOverlay(PiCreatureScene):
 
     def construct(self):
         morty = self.pi_creature
-        q_marks = VGroup(*[TexMobject("?") for x in range(40)])
+        q_marks = VGroup(*[Tex("?") for x in range(40)])
         q_marks.arrange_in_grid(4, 10)
         q_marks.space_out_submobjects(1.4)
         for mark in q_marks:
@@ -3587,13 +3587,13 @@ class ManyInfiniteExpressions(Scene):
         ]
         radical_str_parts += ["\\cdots"]
         radical_str_parts += ["}"] * n
-        radical = TexMobject("".join(radical_str_parts))
+        radical = Tex("".join(radical_str_parts))
         radical.to_corner(UR)
         radical.to_edge(DOWN)
         radical.set_color_by_gradient(YELLOW, RED)
 
         n = 12
-        power_tower = TexMobject(
+        power_tower = Tex(
             *["\\sqrt{2}^{"] * n + ["\\dots"] + ["}"] * n
         )
         power_tower.to_corner(UR)
@@ -3614,7 +3614,7 @@ class HoldUpPromo(PrinciplesOverlay):
     def construct(self):
         morty = self.pi_creature
 
-        url = TextMobject("https://brilliant.org/3b1b/")
+        url = TexText("https://brilliant.org/3b1b/")
         url.to_corner(UL)
 
         rect = ScreenRectangle(height=5.5)

@@ -75,7 +75,7 @@ class PythagoreanTransformation(Scene):
         ]
         for mob, char in zip(regions, "abc"):
             mob.add(
-                TexMobject("%s^2"%char).shift(mob.get_center())
+                Tex("%s^2"%char).shift(mob.get_center())
             )
 
         square = Square(side_length = 6, color = WHITE)
@@ -127,7 +127,7 @@ class PullCurveStraight(Scene):
             color = BLUE_D
         )
         brace = Brace(line, UP)
-        label = TextMobject("What is this length?")
+        label = TexText("What is this length?")
         label.next_to(brace, UP)
 
         self.play(ShowCreation(parabola))
@@ -148,7 +148,7 @@ class StraghtenCircle(Scene):
         radius = 1.5
         radius_line = Line(ORIGIN, radius*RIGHT, color = RED_D)
         radius_brace = Brace(radius_line, UP)
-        r = TexMobject("r").next_to(radius_brace, UP)
+        r = Tex("r").next_to(radius_brace, UP)
         circle = Circle(radius = radius, color = BLUE_D)
         line = Line(
             np.pi*radius*LEFT, 
@@ -156,7 +156,7 @@ class StraghtenCircle(Scene):
             color = circle.get_color()
         )
         line_brace = Brace(line, UP)
-        two_pi_r = TexMobject("2\\pi r").next_to(line_brace, UP)
+        two_pi_r = Tex("2\\pi r").next_to(line_brace, UP)
 
         self.play(ShowCreation(radius_line))
         self.play(ShimmerIn(r), GrowFromCenter(radius_brace))
@@ -186,12 +186,12 @@ class StraghtenCircle(Scene):
 
 class SingleVariableFunc(Scene):
     def construct(self):
-        start = TexMobject("3").set_color(GREEN)
+        start = Tex("3").set_color(GREEN)
         start.scale(2).shift(5*LEFT+2*UP)
-        end = TexMobject("9").set_color(RED)
+        end = Tex("9").set_color(RED)
         end.scale(2).shift(5*RIGHT+2*DOWN)
         point = Point()
-        func = TexMobject("f(x) = x^2")
+        func = Tex("f(x) = x^2")
         circle = Circle(color = WHITE, radius = func.get_width()/1.5)
 
         self.add(start, circle, func)
@@ -208,12 +208,12 @@ class SingleVariableFunc(Scene):
 
 class MultivariableFunc(Scene):
     def construct(self):
-        start = TexMobject("(1, 2)").set_color(GREEN)
+        start = Tex("(1, 2)").set_color(GREEN)
         start.scale(1.5).shift(5*LEFT, 2*UP)
-        end = TexMobject("(5, -3)").set_color(RED)
+        end = Tex("(5, -3)").set_color(RED)
         end.scale(1.5).shift(5*RIGHT, 2*DOWN)
         point = Point()
-        func = TexMobject("f(x, y) = (x^2+y^2, x^2-y^2)")
+        func = Tex("f(x, y) = (x^2+y^2, x^2-y^2)")
         circle = Circle(color = WHITE)
         circle.stretch_to_fit_width(func.get_width()+1)
 

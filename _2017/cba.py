@@ -25,7 +25,7 @@ class LayersOfAbstraction(EnumerableSaveScene):
         self.circle_certain_pairs()
 
     def add_title(self):
-        title = TextMobject("Layers of abstraction")
+        title = TexText("Layers of abstraction")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         line = Line(LEFT, RIGHT)
@@ -47,11 +47,11 @@ class LayersOfAbstraction(EnumerableSaveScene):
     def show_pairwise_relations(self):
         p1, p2 = [l.get_left() for l in self.layers[2:4]]
         down_arrow = Arrow(p2, p1, path_arc=PI)
-        down_words = TextMobject("``For example''")
+        down_words = TexText("``For example''")
         down_words.scale(0.8)
         down_words.next_to(down_arrow, LEFT)
         up_arrow = Arrow(p1, p2, path_arc=-PI)
-        up_words = TextMobject("``In general''")
+        up_words = TexText("``In general''")
         up_words.scale(0.8)
         up_words.next_to(up_arrow, LEFT)
 
@@ -112,23 +112,23 @@ class LayersOfAbstraction(EnumerableSaveScene):
 
         # Layer 1: Numbers
         numbers = VGroup(
-            TexMobject("3"),
-            TexMobject("3 \\times 4"),
-            TexMobject("1 / 3"),
+            Tex("3"),
+            Tex("3 \\times 4"),
+            Tex("1 / 3"),
         )
         for number, quantity in zip(numbers, quantities):
             number.move_to(quantity)
 
         # Layer 2: Algebra
         algebra = VGroup(
-            TexMobject("x^2 - 1 = (x + 1)(x - 1)")
+            Tex("x^2 - 1 = (x + 1)(x - 1)")
         )
         algebra.set_width(layers.get_width() - MED_LARGE_BUFF)
 
         # Layer 3: Functions
         functions = VGroup(
-            TexMobject("f(x) = 0"),
-            TexMobject("\\frac{df}{dx}"),
+            Tex("f(x) = 0"),
+            Tex("\\frac{df}{dx}"),
         )
         functions.set_height(layers[0].get_height() - 2 * SMALL_BUFF)
         functions.arrange(RIGHT, buff=LARGE_BUFF)
@@ -140,12 +140,12 @@ class LayersOfAbstraction(EnumerableSaveScene):
             "\\textbf{w}": PINK,
         }
         vector_spaces = VGroup(
-            TexMobject(
+            Tex(
                 "\\textbf{v} + \\textbf{w} ="
                 "\\textbf{w} + \\textbf{v}",
                 tex_to_color_map=t2c_map,
             ),
-            TexMobject(
+            Tex(
                 "s(\\textbf{v} + \\textbf{w}) ="
                 "s\\textbf{v} + s\\textbf{w}",
                 tex_to_color_map=t2c_map,
@@ -164,7 +164,7 @@ class LayersOfAbstraction(EnumerableSaveScene):
         vectors.set_stroke(width=2)
         # vector_spaces.add(vectors)
 
-        inner_product = TexMobject(
+        inner_product = Tex(
             "\\langle f, g \\rangle ="
             "\\int f(x)g(x)dx"
         )
@@ -181,9 +181,9 @@ class LayersOfAbstraction(EnumerableSaveScene):
         )
         arrows.set_stroke(width=2)
         arrow_labels = VGroup(
-            TexMobject("m_1").next_to(arrows[0], UP, SMALL_BUFF),
-            TexMobject("m_2").next_to(arrows[1], RIGHT, SMALL_BUFF),
-            TexMobject("m_2 \\circ m_1").rotate(-45 * DEGREES).move_to(
+            Tex("m_1").next_to(arrows[0], UP, SMALL_BUFF),
+            Tex("m_2").next_to(arrows[1], RIGHT, SMALL_BUFF),
+            Tex("m_2 \\circ m_1").rotate(-45 * DEGREES).move_to(
                 arrows[2]
             ).shift(MED_SMALL_BUFF * DL)
         )
@@ -201,7 +201,7 @@ class LayersOfAbstraction(EnumerableSaveScene):
             layer.add(content)
             layer.content = content
 
-        layer_titles = VGroup(*map(TextMobject, [
+        layer_titles = VGroup(*map(TexText, [
             "Quantities",
             "Numbers",
             "Algebra",
@@ -249,17 +249,17 @@ class DifferenceOfSquares(Scene):
         new_squares.next_to(arrow, RIGHT)
         new_squares.align_to(squares, UP)
 
-        x1 = TexMobject("x").set_color(BLUE)
+        x1 = Tex("x").set_color(BLUE)
         x2 = x1.copy()
         x1.next_to(squares, UP)
         x2.next_to(squares, LEFT)
-        y1 = TexMobject("y").set_color(RED)
+        y1 = Tex("y").set_color(RED)
         y2 = y1.copy()
         y1.next_to(squares[-2], RIGHT)
         y2.next_to(squares[-1][-2], DOWN)
 
-        xpy = TexMobject("x", "+", "y")
-        xmy = TexMobject("x", "-", "y")
+        xpy = Tex("x", "+", "y")
+        xmy = Tex("x", "-", "y")
         for mob in xpy, xmy:
             mob[0].set_color(BLUE)
             mob[2].set_color(RED)
@@ -399,7 +399,7 @@ class Test(Scene):
         randy.set_height(6)
         randy.look(RIGHT)
         self.add(randy)
-        # eq = TexMobject("143", "=", "11 \\cdot 13")
+        # eq = Tex("143", "=", "11 \\cdot 13")
         # eq[0].set_color(YELLOW)
         # eq.scale(0.7)
         # self.add(eq)

@@ -3,13 +3,13 @@ from manim_imports_ext import *
 
 class OnAnsweringTwice(TeacherStudentsScene):
     def construct(self):
-        question = TextMobject("Why $\\pi$?")
+        question = TexText("Why $\\pi$?")
         question.move_to(self.screen)
         question.to_edge(UP)
         other_questions = VGroup(
-            TextMobject("Frequency of collisions?"),
-            TextMobject("Efficient simulation?"),
-            TextMobject("Time until last collision?"),
+            TexText("Frequency of collisions?"),
+            TexText("Efficient simulation?"),
+            TexText("Time until last collision?"),
         )
         for mob in other_questions:
             mob.move_to(self.hold_up_spot, DOWN)

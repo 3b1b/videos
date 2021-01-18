@@ -8,12 +8,12 @@ from from_3b1b.old.brachistochrone.drawing_images import sort_by_color
 class Intro(Scene):
     def construct(self):
         logo = ImageMobject("LogoGeneration", invert = False)
-        name_mob = TextMobject("3Blue1Brown").center()
+        name_mob = TexText("3Blue1Brown").center()
         name_mob.set_color("grey")
         name_mob.shift(2*DOWN)
         self.add(name_mob, logo)
 
-        new_text = TextMobject(["with ", "Steven Strogatz"])
+        new_text = TexText(["with ", "Steven Strogatz"])
         new_text.next_to(name_mob, DOWN)
         self.play(*[
             ShimmerIn(part)
@@ -35,11 +35,11 @@ class Intro(Scene):
 
 class IntroduceSteve(Scene):
     def construct(self):
-        name = TextMobject("Steven Strogatz")
+        name = TexText("Steven Strogatz")
         name.to_edge(UP)
-        contributions = TextMobject("Frequent Contributions")
+        contributions = TexText("Frequent Contributions")
         contributions.scale(0.5).to_edge(RIGHT).shift(2*UP)
-        books_word = TextMobject("Books")
+        books_word = TexText("Books")
         books_word.scale(0.5).to_edge(LEFT).shift(2*UP)
         radio_lab, sci_fri, cornell, book2, book3, book4 = [
             ImageMobject(filename, invert = False, filter_color = WHITE)
@@ -108,7 +108,7 @@ class ShowTweets(Scene):
 
 class LetsBeHonest(Scene):
     def construct(self):
-        self.play(ShimmerIn(TextMobject("""
+        self.play(ShimmerIn(TexText("""
             Let's be honest about who benefits 
             from this collaboration...
         """)))
@@ -117,7 +117,7 @@ class LetsBeHonest(Scene):
 
 class WhatIsTheBrachistochrone(Scene):
     def construct(self):
-        self.play(ShimmerIn(TextMobject("""
+        self.play(ShimmerIn(TexText("""
             So \\dots what is the Brachistochrone?
         """)))
         self.wait()
@@ -125,13 +125,13 @@ class WhatIsTheBrachistochrone(Scene):
 
 class DisectBrachistochroneWord(Scene):
     def construct(self):
-        word = TextMobject(["Bra", "chis", "to", "chrone"])
+        word = TexText(["Bra", "chis", "to", "chrone"])
         original_word = word.copy()
         dots = []
         for part in word.split():
             if dots:
                 part.next_to(dots[-1], buff = 0.06)
-            dot = TexMobject("\\cdot")
+            dot = Tex("\\cdot")
             dot.next_to(part, buff = 0.06)
             dots.append(dot)
         dots = Mobject(*dots[:-1])
@@ -139,13 +139,13 @@ class DisectBrachistochroneWord(Scene):
         Mobject(word, dots).center()
         overbrace1 = Brace(Mobject(*word.split()[:-1]), UP)
         overbrace2 = Brace(word.split()[-1], UP)
-        shortest = TextMobject("Shortest")
+        shortest = TexText("Shortest")
         shortest.next_to(overbrace1, UP)
         shortest.set_color(YELLOW)
-        time = TextMobject("Time")
+        time = TexText("Time")
         time.next_to(overbrace2, UP)
         time.set_color(YELLOW)
-        chrono_example = TextMobject("""
+        chrono_example = TexText("""
             As in ``Chronological'' \\\\
             or ``Synchronize''
         """)
@@ -158,7 +158,7 @@ class DisectBrachistochroneWord(Scene):
             chrono_example.get_bottom(), 
             color = BLUE_D
         )
-        brachy_example = TextMobject("As in . . . brachydactyly?")
+        brachy_example = TexText("As in . . . brachydactyly?")
         brachy_example.scale(0.5)
         brachy_example.to_edge(LEFT)
         brachy_example.shift(2*DOWN)
@@ -169,17 +169,17 @@ class DisectBrachistochroneWord(Scene):
             color = GREEN
         )
 
-        pronunciation = TextMobject(["/br", "e", "kist","e","kr$\\bar{o}$n/"])
+        pronunciation = TexText(["/br", "e", "kist","e","kr$\\bar{o}$n/"])
         pronunciation.split()[1].rotate(np.pi)
         pronunciation.split()[3].rotate(np.pi) 
         pronunciation.scale(0.7)
         pronunciation.shift(DOWN)
 
-        latin = TextMobject(list("Latin"))
-        greek = TextMobject(list("Greek"))
+        latin = TexText(list("Latin"))
+        greek = TexText(list("Greek"))
         for mob in latin, greek:
             mob.to_edge(LEFT)
-        question_mark = TextMobject("?").next_to(greek, buff = 0.1)
+        question_mark = TexText("?").next_to(greek, buff = 0.1)
         stars = Stars().set_color(BLACK)
         stars.scale(0.5).shift(question_mark.get_center())
 
@@ -212,8 +212,8 @@ class DisectBrachistochroneWord(Scene):
 
 class OneSolutionTwoInsights(Scene):
     def construct(self):
-        one_solution = TextMobject(["One ", "solution"])
-        two_insights = TextMobject(["Two ", " insights"])
+        one_solution = TexText(["One ", "solution"])
+        two_insights = TexText(["Two ", " insights"])
         two, insights = two_insights.split()        
         johann = ImageMobject("Johann_Bernoulli2", invert = False)
         mark = ImageMobject("Mark_Levi", invert = False)
@@ -221,7 +221,7 @@ class OneSolutionTwoInsights(Scene):
             mob.scale(0.4)
         johann.next_to(insights, LEFT)
         mark.next_to(johann, RIGHT)
-        name = TextMobject("Mark Levi").to_edge(UP)
+        name = TexText("Mark Levi").to_edge(UP)
 
         self.play(*list(map(ShimmerIn, one_solution.split())))
         self.wait()
@@ -243,7 +243,7 @@ class OneSolutionTwoInsights(Scene):
 
 class CircleOfIdeas(Scene):
     def construct(self):
-        words = list(map(TextMobject, [
+        words = list(map(TexText, [
             "optics", "calculus", "mechanics", "geometry", "history"
         ]))
         words[0].set_color(YELLOW)
@@ -251,7 +251,7 @@ class CircleOfIdeas(Scene):
         words[2].set_color(GREY)
         words[3].set_color(GREEN)
         words[4].set_color(MAROON)
-        brachistochrone = TextMobject("Brachistochrone")
+        brachistochrone = TexText("Brachistochrone")
         displayed_words = []
         for word in words:
             anims = self.get_spinning_anims(displayed_words)
@@ -292,7 +292,7 @@ class CircleOfIdeas(Scene):
 
 class FermatsPrincipleStatement(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "Fermat's principle:",
             """
             If a beam of light travels
@@ -331,7 +331,7 @@ class VideoProgression(Scene):
     def construct(self):
         spacing = 2*UP
         brachy, optics, light_in_two, snells, multi = words = [
-            TextMobject(text)
+            TexText(text)
             for text in [
                 "Brachistochrone", 
                 "Optics",
@@ -395,13 +395,13 @@ class BalanceCompetingFactors(Scene):
         
     def construct(self, *words):
         factor1, factor2 = [
-            TextMobject("Factor %d"%x).set_color(c)
+            TexText("Factor %d"%x).set_color(c)
             for x, c in [
                 (1, RED_D),
                 (2, BLUE_D)
             ]
         ]
-        real_factor1, real_factor2 = list(map(TextMobject, words))  
+        real_factor1, real_factor2 = list(map(TexText, words))  
         for word in factor1, factor2, real_factor1, real_factor2:
             word.shift(0.2*UP-word.get_bottom())
         for f1 in factor1, real_factor1:
@@ -453,7 +453,7 @@ class BalanceCompetingFactors(Scene):
 
 class Challenge(Scene):
     def construct(self):
-        self.add(TextMobject("""
+        self.add(TexText("""
             Can you find a new solution to the 
             Brachistochrone problem by finding 
             an intuitive reason that time-minimizing
@@ -466,12 +466,12 @@ class Challenge(Scene):
 
 class Section1(Scene):
     def construct(self):
-        self.add(TextMobject("Section 1: Johann Bernoulli's insight"))
+        self.add(TexText("Section 1: Johann Bernoulli's insight"))
         self.wait()
 
 class Section2(Scene):
     def construct(self):
-        self.add(TextMobject(
+        self.add(TexText(
             "Section 2: Mark Levi's insight, and a challenge",
             size = "\\large"
         ))
@@ -481,8 +481,8 @@ class Section2(Scene):
 
 class NarratorInterjection(Scene):
     def construct(self):
-        words1 = TexMobject("<\\text{Narrator interjection}>")
-        words2 = TexMobject("<\\!/\\text{Narrator interjection}>")
+        words1 = Tex("<\\text{Narrator interjection}>")
+        words2 = Tex("<\\!/\\text{Narrator interjection}>")
         self.add(words1)
         self.wait()
         self.clear()
@@ -492,7 +492,7 @@ class NarratorInterjection(Scene):
 
 class ThisCouldBeTheEnd(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "This could be the end\\dots",
             "but\\dots"
         ])
@@ -503,37 +503,37 @@ class ThisCouldBeTheEnd(Scene):
 
 class MyOwnChallenge(Scene):
     def construct(self):
-        self.add(TextMobject("My own challenge:"))
+        self.add(TexText("My own challenge:"))
         self.wait()
 
 
 class WarmupChallenge(Scene):
     def construct(self):
-        self.add(TextMobject("\\large Warm-up challenge: Confirm this for yourself"))
+        self.add(TexText("\\large Warm-up challenge: Confirm this for yourself"))
         self.wait()
 
 class FindAnotherSolution(Scene):
     def construct(self):
-        self.add(TextMobject("Find another brachistochrone solution\\dots"))
+        self.add(TexText("Find another brachistochrone solution\\dots"))
         self.wait()
 
 
 class ProofOfSnellsLaw(Scene):
     def construct(self):
-        self.add(TextMobject("Proof of Snell's law:"))
+        self.add(TexText("Proof of Snell's law:"))
         self.wait()
 
 
 class CondensedVersion(Scene):
     def construct(self):
-        snells = TextMobject("Snell's")
+        snells = TexText("Snell's")
         snells.shift(-snells.get_left())
         snells.to_edge(UP)
         for vect in [RIGHT, RIGHT, LEFT, DOWN, DOWN, DOWN]:
             snells.add(snells.copy().next_to(snells, vect))
         snells.ingest_submobjects()
         snells.show()
-        condensed = TextMobject("condensed")
+        condensed = TexText("condensed")
 
         self.add(snells)
         self.wait()

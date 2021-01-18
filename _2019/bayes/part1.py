@@ -28,7 +28,7 @@ def get_bayes_formula(expand_denominator=False):
     else:
         tex += "P({E})}"
 
-    formula = TexMobject(
+    formula = Tex(
         tex,
         tex_to_color_map=t2c,
         isolate=isolate,
@@ -341,7 +341,7 @@ class Steve(SVGMobject):
             self.add_name()
 
     def add_name(self):
-        self.name = TextMobject(self.name)
+        self.name = TexText(self.name)
         self.name.match_width(self)
         self.name.next_to(self, DOWN, SMALL_BUFF)
         self.add(self.name)
@@ -456,11 +456,11 @@ class IntroduceFormula(Scene):
         H_label = formula.get_part_by_tex("{H}")
         E_label = formula.get_part_by_tex("{E}")
 
-        hyp_label = TextMobject("Hypothesis")
+        hyp_label = TexText("Hypothesis")
         hyp_label.set_color(HYPOTHESIS_COLOR)
         hyp_label.next_to(H_label, UP, LARGE_BUFF)
 
-        evid_label = TextMobject("Evidence")
+        evid_label = TexText("Evidence")
         evid_label.set_color(EVIDENCE_COLOR1)
         evid_label.next_to(E_label, DOWN, LARGE_BUFF)
 
@@ -548,12 +548,12 @@ class StateGoal(PiCreatureScene, Scene):
 
         you.next_to(line.n2p(0), UP)
 
-        you_label = TextMobject("you")
+        you_label = TexText("you")
         you_label.next_to(you, RIGHT, MED_LARGE_BUFF)
         you_arrow = Arrow(you_label.get_left(), you.get_right() + 0.5 * LEFT, buff=0.1)
 
-        now_label = TextMobject("Now")
-        later_label = TextMobject("Later")
+        now_label = TexText("Now")
+        later_label = TexText("Later")
         now_label.next_to(line.n2p(0), DOWN)
         later_label.next_to(line.n2p(10), DOWN)
 
@@ -629,15 +629,15 @@ class StateGoal(PiCreatureScene, Scene):
 
         # Brief Thompson description
         words = VGroup(
-            TextMobject("1988").scale(1.5),
-            TextMobject("Tommy Thompson\\\\and friends"),
+            TexText("1988").scale(1.5),
+            TexText("Tommy Thompson\\\\and friends"),
         )
         words.arrange(DOWN, buff=0.75)
 
         ship = ImageMobject("ss_central_america")
         ship.set_width(4)
         ship.move_to(gold, DL)
-        ship_title = TextMobject("SS Central America")
+        ship_title = TexText("SS Central America")
         ship_title.next_to(ship, UP)
 
         words.next_to(ship, RIGHT)
@@ -659,7 +659,7 @@ class StateGoal(PiCreatureScene, Scene):
         self.play(FadeInFromDown(ship_title))
         self.play(you.change, "thinking", ship)
 
-        amount = TexMobject("> \\$700{,}000{,}000")
+        amount = Tex("> \\$700{,}000{,}000")
         amount.scale(1.5)
         amount.next_to(ship, DOWN, MED_LARGE_BUFF)
         amount.to_edge(LEFT, buff=2)
@@ -693,7 +693,7 @@ class StateGoal(PiCreatureScene, Scene):
             point.set_fill(opacity=0)
         level_points.arrange(DOWN, buff=LARGE_BUFF)
 
-        title = TextMobject("Levels of understanding")
+        title = TexText("Levels of understanding")
         title.scale(1.5)
         title.to_corner(UL)
         underline = Line()
@@ -719,9 +719,9 @@ class StateGoal(PiCreatureScene, Scene):
 
         # Write level 1
         level_labels = VGroup(
-            TextMobject("What is it saying?"),
-            TextMobject("Why is it true?"),
-            TextMobject("When is it useful?"),
+            TexText("What is it saying?"),
+            TexText("Why is it true?"),
+            TexText("When is it useful?"),
         )
         for lp, ll in zip(level_points, level_labels):
             ll.scale(1.25)
@@ -741,7 +741,7 @@ class StateGoal(PiCreatureScene, Scene):
         formula_parts.target.shift(3 * LEFT)
 
         equal_signs = VGroup(*[
-            TextMobject("=").next_to(fp, RIGHT)
+            TexText("=").next_to(fp, RIGHT)
             for fp in formula_parts.target
         ])
 
@@ -753,10 +753,10 @@ class StateGoal(PiCreatureScene, Scene):
             "alignment": "",
         }
         meanings = VGroup(
-            TextMobject("Probability a hypothesis is true\\\\(before any evidence)", **kw),
-            TextMobject("Probability of seeing the evidence \\quad \\\\if the hypothesis is true", **kw),
-            TextMobject("Probability of seeing the evidence", **kw),
-            TextMobject("Probability a hypothesis is true\\\\given some evidence", **kw),
+            TexText("Probability a hypothesis is true\\\\(before any evidence)", **kw),
+            TexText("Probability of seeing the evidence \\quad \\\\if the hypothesis is true", **kw),
+            TexText("Probability of seeing the evidence", **kw),
+            TexText("Probability a hypothesis is true\\\\given some evidence", **kw),
         )
         for meaning, equals in zip(meanings, equal_signs):
             meaning.scale(0.5)
@@ -786,7 +786,7 @@ class StateGoal(PiCreatureScene, Scene):
 
         pe_picture = VGroup(
             diagram.he_rect.copy(),
-            TexMobject("+"),
+            Tex("+"),
             diagram.nhe_rect.copy()
         )
         pe_picture.arrange(RIGHT, buff=SMALL_BUFF)
@@ -955,7 +955,7 @@ class DescriptionOfSteve(Scene):
         )
         for icon, text, half in zip(icons, ["Librarian", "Farmer"], bar.bars):
             icon.set_height(0.7)
-            label = TextMobject(text)
+            label = TexText(text)
             label.next_to(icon, DOWN, buff=SMALL_BUFF)
             label.set_color(
                 interpolate_color(half.get_color(), WHITE, 0.5)
@@ -967,7 +967,7 @@ class DescriptionOfSteve(Scene):
 
         bar.icons.set_opacity(0)
 
-        q_marks = TexMobject(*"???")
+        q_marks = Tex(*"???")
         q_marks.scale(1.5)
         q_marks.space_out_submobjects(1.5)
         q_marks.next_to(bar, DOWN)
@@ -1001,7 +1001,7 @@ class DescriptionOfSteve(Scene):
             )
 
     def get_description(self):
-        return TextMobject(
+        return TexText(
             """
             Steve is very shy and withdrawn,\\\\
             invariably helpful but with very\\\\
@@ -1032,8 +1032,8 @@ class IntroduceKahnemanAndTversky(DescriptionOfSteve, MovingCameraScene):
         images.to_edge(LEFT, buff=MED_LARGE_BUFF)
 
         names = VGroup(
-            TextMobject("Daniel\\\\Kahneman", alignment=""),
-            TextMobject("Amos\\\\Tversky", alignment=""),
+            TexText("Daniel\\\\Kahneman", alignment=""),
+            TexText("Amos\\\\Tversky", alignment=""),
         )
         for name, image in zip(names, images):
             name.scale(1.25)
@@ -1103,7 +1103,7 @@ class IntroduceKahnemanAndTversky(DescriptionOfSteve, MovingCameraScene):
             part.shift(0.05 * i * UR)
         lil_bubble[-1].scale(0.8)
 
-        librarian = TextMobject("Librarian")
+        librarian = TexText("Librarian")
         librarian.set_color(BLUE)
         librarian.scale(0.5)
         librarian.move_to(lil_bubble[-1])
@@ -1167,7 +1167,7 @@ class IntroduceKahnemanAndTversky(DescriptionOfSteve, MovingCameraScene):
             border.set_fill(opacity=0)
             border.set_stroke(YELLOW, 1)
 
-        seems_bookish = TextMobject("Seems\\\\bookish")
+        seems_bookish = TexText("Seems\\\\bookish")
         seems_bookish.match_width(librarian)
         seems_bookish.scale(0.8)
         seems_bookish.move_to(librarian)
@@ -1295,8 +1295,8 @@ class CorrectViewOfFarmersAndLibrarians(Scene):
             for s, m in zip(steves, icons)
         ])
         words = VGroup(
-            TextMobject("Stereotype"),
-            TextMobject("Unexpected"),
+            TexText("Stereotype"),
+            TexText("Unexpected"),
         )
         for arrow, word, vect in zip(arrows, words, [LEFT, RIGHT]):
             word.scale(1.5)
@@ -1443,7 +1443,7 @@ class ComplainAboutNotKnowingTheStats(TeacherStudentsScene):
 
 class SpoilerAlert(Scene):
     def construct(self):
-        sa_words = TextMobject("Spoiler Alert")
+        sa_words = TexText("Spoiler Alert")
         sa_words.scale(2)
         sa_words.to_edge(UP)
         sa_words.set_color(RED)
@@ -1452,7 +1452,7 @@ class SpoilerAlert(Scene):
         alert.set_stroke(RED, 8)
         alert.set_height(sa_words.get_height())
         alert.round_corners(0.1)
-        bang = TextMobject("!")
+        bang = TexText("!")
         bang.set_color(RED)
         bang.scale(1.5)
         bang.move_to(alert)
@@ -1464,7 +1464,7 @@ class SpoilerAlert(Scene):
         sa_words.add(alert)
 
         formula = get_bayes_formula()
-        formula_words = TextMobject("This is secretly ")
+        formula_words = TexText("This is secretly ")
         formula_words.scale(1.5)
         formula_group = VGroup(formula_words, formula)
         formula_group.arrange(DOWN, buff=MED_LARGE_BUFF)
@@ -1638,7 +1638,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
         self.wait()
 
         # Write answer
-        equation = TexMobject(
+        equation = Tex(
             "P\\left(",
             "\\text{Librarian }",
             "\\text{given }",
@@ -1708,7 +1708,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
         )
         axes.center().to_edge(DOWN)
 
-        title = TextMobject("Likelihood of fitting the description")
+        title = TexText("Likelihood of fitting the description")
         title.scale(1.25)
         title.to_edge(UP)
         title.shift(RIGHT)
@@ -1772,7 +1772,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
         self.wait()
 
         # Emphasize prior belief
-        prior_equation = TexMobject(
+        prior_equation = Tex(
             "P\\left(",
             "\\text{Librarian}",
             "\\right)",
@@ -1798,7 +1798,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
             ) * RIGHT
         )
 
-        prior_label = TextMobject("Prior belief")
+        prior_label = TexText("Prior belief")
         prior_label.scale(1.5)
         prior_label.next_to(prior_rect, LEFT, buff=1.5)
         prior_label.to_edge(UP, buff=0.25)
@@ -1890,7 +1890,7 @@ class NewEvidenceUpdatesPriorBeliefs(DescriptionOfSteve):
 
 class HeartOfBayesTheorem(Scene):
     def construct(self):
-        title = TextMobject("Heart of Bayes' theorem")
+        title = TexText("Heart of Bayes' theorem")
         title.scale(1.5)
         title.add(Underline(title))
         title.to_edge(UP)
@@ -1914,8 +1914,8 @@ class HeartOfBayesTheorem(Scene):
 
         diagrams = VGroup(diagram, restricted_diagram)
 
-        label1 = TextMobject("All possibilities")
-        label2 = TextMobject(
+        label1 = TexText("All possibilities")
+        label2 = TexText(
             "All possibilities\\\\", "fitting the evidence",
             tex_to_color_map={"evidence": EVIDENCE_COLOR1},
         )
@@ -1943,7 +1943,7 @@ class HeartOfBayesTheorem(Scene):
             ),
             num_dashes=100,
         ))
-        prob = TexMobject(
+        prob = Tex(
             "P\\left(",
             "{\\text{Librarian }",
             "\\text{given}", "\\over", "\\text{the evidence}}",
@@ -2021,7 +2021,7 @@ class HeartOfBayesTheorem(Scene):
         updaters.suspend_updating()
 
         # Ask about a formula
-        words = TextMobject("Write this more\\\\mathematically")
+        words = TexText("Write this more\\\\mathematically")
         words.scale(1.25)
         words.set_color(RED)
         words.to_corner(UR)
@@ -2073,7 +2073,7 @@ class HeartOfBayesTheorem(Scene):
             Line(LEFT, RIGHT),
             VGroup(
                 diagram.he_rect.copy(),
-                TexMobject("+"),
+                Tex("+"),
                 diagram.nhe_rect.copy(),
             ).arrange(RIGHT, buff=SMALL_BUFF)
         )
@@ -2086,7 +2086,7 @@ class HeartOfBayesTheorem(Scene):
 
 class WhenDoesBayesApply(DescriptionOfSteve):
     def construct(self):
-        title = TextMobject("When to use Bayes' rule")
+        title = TexText("When to use Bayes' rule")
         title.add(Underline(title, buff=-SMALL_BUFF))
         title.scale(1.5)
         title.to_edge(UP)
@@ -2094,9 +2094,9 @@ class WhenDoesBayesApply(DescriptionOfSteve):
 
         # Words
         all_words = VGroup(
-            TextMobject("You have a\\\\", "hypothesis"),
-            TextMobject("You've observed\\\\some ", "evidence"),
-            TexMobject(
+            TexText("You have a\\\\", "hypothesis"),
+            TexText("You've observed\\\\some ", "evidence"),
+            Tex(
                 "\\text{You want}\\\\",
                 "P", "(", "H", "|", "E", ")\\\\",
                 "P", "\\left(",
@@ -2198,7 +2198,7 @@ class WhenDoesBayesApply(DescriptionOfSteve):
     def get_hypothesis_icon(self):
         group = VGroup(
             Steve().set_height(1.5),
-            TexMobject("\\updownarrow"),
+            Tex("\\updownarrow"),
             LibrarianIcon().set_color(YELLOW_D)
         )
         group.arrange(DOWN)
@@ -2237,9 +2237,9 @@ class CreateFormulaFromDiagram(Scene):
         t2c = self.tex_to_color_map
 
         # Add posterior
-        posterior = TexMobject("P(H|E)", tex_to_color_map=t2c)
+        posterior = Tex("P(H|E)", tex_to_color_map=t2c)
         posterior.to_corner(UR)
-        posterior_words = TextMobject("Goal: ")
+        posterior_words = TexText("Goal: ")
         posterior_words.next_to(posterior, LEFT, aligned_edge=UP)
         self.add(posterior)
         self.add(posterior_words)
@@ -2247,23 +2247,23 @@ class CreateFormulaFromDiagram(Scene):
         # Show prior
         diagram = self.get_diagram()
 
-        prior_label = TexMobject("P(H)", tex_to_color_map=t2c)
+        prior_label = Tex("P(H)", tex_to_color_map=t2c)
         prior_label.add_updater(
             lambda m: m.next_to(diagram.h_brace, UP, SMALL_BUFF)
         )
 
-        prior_example = TexMobject("= 1 / 21")
+        prior_example = Tex("= 1 / 21")
         prior_example.add_updater(
             lambda m: m.next_to(prior_label, RIGHT).shift(0.03 * UP)
 
         )
-        # example_words = TextMobject("In our example")
+        # example_words = TexText("In our example")
         # example_words.next_to(prior_example[0][1:], UP, buff=SMALL_BUFF, aligned_edge=LEFT)
         # prior_example.add(example_words)
 
         prior_arrow = Vector(0.7 * RIGHT)
         prior_arrow.next_to(prior_label, LEFT, SMALL_BUFF)
-        prior_word = TextMobject("``Prior''")
+        prior_word = TexText("``Prior''")
         prior_word.next_to(prior_arrow, LEFT, SMALL_BUFF)
         prior_word.align_to(prior_label[0], DOWN)
         prior_word.set_color(HYPOTHESIS_COLOR)
@@ -2297,19 +2297,19 @@ class CreateFormulaFromDiagram(Scene):
         )
 
         # First likelihood split
-        like_example = TexMobject("= 0.4")
+        like_example = Tex("= 0.4")
         like_example.add_updater(
             lambda m: m.next_to(diagram.he_brace, LEFT)
         )
         like_example.update()
 
-        like_label = TexMobject("P(E|H)", tex_to_color_map=t2c)
+        like_label = Tex("P(E|H)", tex_to_color_map=t2c)
         like_label.add_updater(
             lambda m: m.next_to(like_example, LEFT)
         )
         like_label.update()
 
-        like_word = TextMobject("``Likelihood''")
+        like_word = TexText("``Likelihood''")
         like_word.next_to(like_label, UP, buff=LARGE_BUFF, aligned_edge=LEFT)
         like_arrow = Arrow(
             like_word.get_bottom(),
@@ -2320,7 +2320,7 @@ class CreateFormulaFromDiagram(Scene):
         limit_arrow = Vector(0.5 * UP)
         limit_arrow.next_to(like_label.get_part_by_tex("|"), UP, SMALL_BUFF)
         limit_arrow.set_stroke(WHITE, 4)
-        limit_word = TextMobject("Limit\\\\your\\\\view")
+        limit_word = TexText("Limit\\\\your\\\\view")
         limit_word.next_to(limit_arrow, UP)
 
         hne_people = diagram.people[:6]
@@ -2374,12 +2374,12 @@ class CreateFormulaFromDiagram(Scene):
         self.wait()
 
         # Show anti-likelihood
-        anti_label = TexMobject("P(E| \\neg H)", tex_to_color_map=t2c)
+        anti_label = Tex("P(E| \\neg H)", tex_to_color_map=t2c)
         anti_label.add_updater(
             lambda m: m.next_to(diagram.nhe_brace, RIGHT)
         )
 
-        anti_example = TexMobject("= 0.1")
+        anti_example = Tex("= 0.1")
         anti_example.add_updater(
             lambda m: m.next_to(anti_label, RIGHT).align_to(anti_label[0], DOWN)
         )
@@ -2387,7 +2387,7 @@ class CreateFormulaFromDiagram(Scene):
         neg_sym = anti_label.get_part_by_tex("\\neg").copy()
         neg_sym.generate_target()
         neg_sym.target.scale(2.5)
-        not_word = TextMobject("means ", "``not''")
+        not_word = TexText("means ", "``not''")
         not_word[1].set_color(RED)
         neg_group = VGroup(neg_sym.target, not_word)
         neg_group.arrange(RIGHT)
@@ -2436,7 +2436,7 @@ class CreateFormulaFromDiagram(Scene):
 
         denom = VGroup(
             he_group.copy(),
-            TexMobject("+"),
+            Tex("+"),
             nhe_group.copy(),
         )
         denom.arrange(RIGHT)
@@ -2450,14 +2450,14 @@ class CreateFormulaFromDiagram(Scene):
         answer.to_edge(UP, MED_SMALL_BUFF)
         answer.shift(LEFT)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         posterior.generate_target()
 
         post_group = VGroup(posterior.target, equals, answer)
         post_group.arrange(RIGHT)
         post_group.to_corner(UL)
 
-        post_word = TextMobject("``Posterior''")
+        post_word = TexText("``Posterior''")
         post_word.set_color(YELLOW)
         post_word.to_corner(UL, buff=MED_SMALL_BUFF)
 
@@ -2507,7 +2507,7 @@ class CreateFormulaFromDiagram(Scene):
         self.wait()
 
         # Write final answer, as a formula
-        formula = TexMobject(
+        formula = Tex(
             "=", "{P(H) P(E | H)", "\\over",
             "P(H) P(E | H) + P(\\neg H) P(E | \\neg H)}",
             tex_to_color_map=t2c
@@ -2526,7 +2526,7 @@ class CreateFormulaFromDiagram(Scene):
         parts = VGroup(ph, peh, ph2, peh2, pnh, penh)
         parts.save_state()
 
-        np1 = TexMobject("(\\# I )")[0]
+        np1 = Tex("(\\# I )")[0]
         person = Person()
         person.replace(np1[2], dim_to_match=1)
         person.scale(1.5)
@@ -2572,8 +2572,8 @@ class CreateFormulaFromDiagram(Scene):
         diagram.refresh_braces()
         nh_group = VGroup(
             diagram.nh_brace,
-            TexMobject("P(\\neg H)", tex_to_color_map=t2c),
-            TexMobject("= 20 / 21"),
+            Tex("P(\\neg H)", tex_to_color_map=t2c),
+            Tex("= 20 / 21"),
         )
         nh_group[1].next_to(nh_group[0], UP, SMALL_BUFF)
         nh_group[2].next_to(nh_group[1], RIGHT, SMALL_BUFF)
@@ -2670,7 +2670,7 @@ class CreateFormulaFromDiagram(Scene):
         formula_rect = SurroundingRectangle(formula[1:])
         formula_rect.set_stroke(TEAL, 2)
 
-        bayes_words = TextMobject("Bayes' theorem")
+        bayes_words = TexText("Bayes' theorem")
         bayes_words.scale(1.5)
         bayes_words.next_to(formula_rect, UP, SMALL_BUFF)
         bayes_words.match_color(formula_rect)
@@ -2835,7 +2835,7 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
     def construct(self):
         # Show smaller denominator
         t2c = self.tex_to_color_map
-        formula = TexMobject(
+        formula = Tex(
             "P(H | E)", "=",
             "{P(H) P(E | H)", "\\over",
             "P(H) P(E | H) + P(\\neg H) P(E | \\neg H)}",
@@ -2848,7 +2848,7 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
         lhs.next_to(equals, LEFT)
         formula.to_corner(UL)
 
-        alt_rhs = TexMobject(
+        alt_rhs = Tex(
             "{P(H)P(E|H)", "\\over", "P(E)}",
             "=",
             tex_to_color_map=t2c,
@@ -2885,7 +2885,7 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
         )
 
         h_label, he_label, nhe_label = labels = [
-            TexMobject(tex, tex_to_color_map=t2c)
+            Tex(tex, tex_to_color_map=t2c)
             for tex in ["P(H)", "P(E|H)", "P(E|\\neg H)"]
         ]
         h_label.add_updater(lambda m: m.next_to(diagram.h_brace, DOWN))
@@ -2921,8 +2921,8 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
         big_rect.set_stroke(WHITE, 2)
         big_rect.set_fill(BLACK, 0)
 
-        words1 = TextMobject("Don't memorize\\\\this")
-        words2 = TextMobject("Remember\\\\this")
+        words1 = TexText("Don't memorize\\\\this")
+        words2 = TexText("Remember\\\\this")
         for words in words1, words2:
             words.scale(1.5)
             words.to_edge(RIGHT)
@@ -2975,8 +2975,8 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
         )
         sides.set_stroke(YELLOW, 4)
         ones = VGroup(
-            TexMobject("1").next_to(diagram.square, UP),
-            TexMobject("1").next_to(diagram.square, LEFT),
+            Tex("1").next_to(diagram.square, UP),
+            Tex("1").next_to(diagram.square, LEFT),
         )
 
         self.play(
@@ -3021,7 +3021,7 @@ class DiscussFormulaAndAreaModel(CreateFormulaFromDiagram):
                 diagram.nhe_rect,
             )
         )
-        post_label = TexMobject("P(H|E)", tex_to_color_map=t2c)
+        post_label = Tex("P(H|E)", tex_to_color_map=t2c)
         post_label.add_updater(lambda m: m.next_to(post_bar.brace, DOWN))
 
         self.play(
@@ -3143,7 +3143,7 @@ class RandomShapes(Scene):
         h_rect = diagram.h_rect
         h_rect.set_fill(YELLOW, 1)
 
-        pi = TexMobject("\\pi")
+        pi = Tex("\\pi")
         pi.set_height(2)
         pi.set_stroke(GREEN, 2)
         pi.set_fill(GREEN, 0.5)
@@ -3271,7 +3271,7 @@ class UsesOfBayesTheorem(Scene):
 
 class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject("What makes probability\\\\more intuitive?")
+        words = TexText("What makes probability\\\\more intuitive?")
         words.move_to(self.hold_up_spot, DOWN)
         words.shift_onto_screen()
 
@@ -3360,8 +3360,8 @@ class IntroduceLinda(DescriptionOfSteve):
 
         # Ask question
         options = VGroup(
-            TextMobject("1) Linda is a bank teller."),
-            TextMobject(
+            TexText("1) Linda is a bank teller."),
+            TexText(
                 "2) Linda is a bank teller and is active\\\\",
                 "\\phantom{2)} in the feminist movement.",
                 alignment="",
@@ -3390,7 +3390,7 @@ class IntroduceLinda(DescriptionOfSteve):
 
         result = VGroup(
             Integer(85, unit="\\%"),
-            TextMobject("chose this!")
+            TexText("chose this!")
         )
         result.arrange(RIGHT)
         result.scale(1.25)
@@ -3410,7 +3410,7 @@ class IntroduceLinda(DescriptionOfSteve):
         self.wait()
 
         # Show subsets
-        fb_words = TextMobject("Active feminist\\\\bank tellers")
+        fb_words = TexText("Active feminist\\\\bank tellers")
         fb_words.scale(0.5)
         fb_words.set_stroke(BLACK, 0, background=True)
         fb_set = Circle()
@@ -3429,7 +3429,7 @@ class IntroduceLinda(DescriptionOfSteve):
         b_set.scale(3, about_edge=RIGHT)
         b_set.stretch(1.5, 1)
         b_set.to_corner(UR)
-        b_words = TextMobject("Bank\\\\tellers")
+        b_words = TexText("Bank\\\\tellers")
         b_words.next_to(b_set.get_left(), RIGHT, LARGE_BUFF)
 
         self.play(
@@ -3486,12 +3486,12 @@ class IntroduceLinda(DescriptionOfSteve):
         )
 
         # New options
-        words = TextMobject("100 people fit this description.  How many are:")
+        words = TexText("100 people fit this description.  How many are:")
         words.set_color(BLUE_B)
         kw = {"tex_to_color_map": {"\\underline{\\qquad}": WHITE}}
         new_options = VGroup(
-            TextMobject("1) Bank tellers? \\underline{\\qquad} of 100", **kw),
-            TextMobject(
+            TexText("1) Bank tellers? \\underline{\\qquad} of 100", **kw),
+            TexText(
                 "2) Bank tellers and active in the",
                 " feminist movement? \\underline{\\qquad} of 100",
                 **kw
@@ -3530,8 +3530,8 @@ class IntroduceLinda(DescriptionOfSteve):
         images.to_edge(LEFT, buff=MED_LARGE_BUFF)
 
         names = VGroup(
-            TextMobject("Kahneman", alignment=""),
-            TextMobject("Tversky", alignment=""),
+            TexText("Kahneman", alignment=""),
+            TexText("Tversky", alignment=""),
         )
         for name, image in zip(names, images):
             name.next_to(image, DOWN)
@@ -3543,7 +3543,7 @@ class IntroduceLinda(DescriptionOfSteve):
         return images
 
     def get_linda_description(self):
-        result = TextMobject(
+        result = TexText(
             "Linda is 31 years old, single, outspoken, and\\\\",
             "very bright. She majored in philosophy. As a \\\\",
             "student, she was deeply concerned with issues\\\\",
@@ -3595,10 +3595,10 @@ class AlternatePhrasings(PiCreatureScene):
         randy = self.pi_creature
 
         phrases = VGroup(
-            TextMobject("40 out of 100"),
-            TexMobject("40\\%"),
-            TexMobject("0.4"),
-            TextMobject("What's more likely$\\dots$"),
+            TexText("40 out of 100"),
+            Tex("40\\%"),
+            Tex("0.4"),
+            TexText("What's more likely$\\dots$"),
         )
         for phrase in phrases:
             phrase.scale(1.5)
@@ -3627,13 +3627,13 @@ class AlternatePhrasings(PiCreatureScene):
 
         steve = Steve()
         steve.set_height(1)
-        steve_words = TextMobject("seems bookish...")
+        steve_words = TexText("seems bookish...")
         steve_words.next_to(steve, RIGHT, MED_LARGE_BUFF)
         steve.add(steve_words)
 
         linda = Linda()
         linda.set_height(1)
-        linda_words = TextMobject("seems activist...")
+        linda_words = TexText("seems activist...")
         linda_words.next_to(linda, RIGHT, MED_LARGE_BUFF)
         linda.add(linda_words)
 
@@ -3718,13 +3718,13 @@ class WhenDiscreteChunksArentSoClean(Scene):
             )
             partial_rects.add(partial_rect)
 
-            q_mark = TexMobject("?")
+            q_mark = Tex("?")
             q_mark.replace(partial_rect, dim_to_match=0)
             q_mark.scale(0.8)
             q_marks.add(q_mark)
 
         p_label = VGroup(
-            TexMobject("P", "(", "\\text{Rain}", ")", "="),
+            Tex("P", "(", "\\text{Rain}", ")", "="),
             DecimalNumber(40, unit="\\%", num_decimal_places=2)
         )
         percentage = p_label[1]
@@ -3810,16 +3810,16 @@ class WhenDiscreteChunksArentSoClean(Scene):
 
 class RandomnessVsProportions(Scene):
     def construct(self):
-        prob_word = TextMobject("Probability")
-        unc_word = TextMobject("Uncertainty")
-        prop_word = TextMobject("Proportions")
+        prob_word = TexText("Probability")
+        unc_word = TexText("Uncertainty")
+        prop_word = TexText("Proportions")
         words = VGroup(prop_word, prob_word, unc_word)
         words.arrange(RIGHT, buff=LARGE_BUFF)
         words.set_width(FRAME_WIDTH - 1)
         words.to_edge(UP)
         arrows = VGroup()
         for w1, w2 in zip(words, words[1:]):
-            arrow = TexMobject("\\rightarrow")
+            arrow = Tex("\\rightarrow")
             arrow.move_to(midpoint(w1.get_right(), w2.get_left()))
             arrows.add(arrow)
 
@@ -3844,7 +3844,7 @@ class RandomnessVsProportions(Scene):
         border.add_updater(update_border)
 
         example = VGroup(
-            TextMobject("P(X = 5)", tex_to_color_map={"5": YELLOW}),
+            TexText("P(X = 5)", tex_to_color_map={"5": YELLOW}),
             Line(LEFT, RIGHT)
         )
         example.arrange(RIGHT)
@@ -4004,12 +4004,12 @@ class BayesTheoremOnProportions(Scene):
         formula = get_bayes_formula()
         formula.scale(1.5)
 
-        title = TextMobject("Bayes' theorem")
+        title = TexText("Bayes' theorem")
         title.scale(2)
         title.next_to(formula, UP, LARGE_BUFF)
         group = VGroup(formula, title)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(formula, RIGHT)
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(4)
@@ -4065,14 +4065,14 @@ class BayesTheoremOnProportions(Scene):
 
         E_arrow = Vector(UP, color=BLUE)
         E_arrow.next_to(E_part[0], DOWN)
-        E_words = TextMobject(
+        E_words = TexText(
             "...among cases where\\\\$E$ is True",
             tex_to_color_map={"$E$": BLUE},
         )
         E_words.next_to(E_arrow, DOWN)
         H_arrow = Vector(DOWN, color=YELLOW)
         H_arrow.next_to(H_part[0], UP)
-        H_words = TextMobject(
+        H_words = TexText(
             "How often is\\\\$H$ True...",
             tex_to_color_map={"$H$": YELLOW},
         )
@@ -4178,7 +4178,7 @@ class GlimpseOfNextVideo(GraphScene):
         self.wait()
 
     def get_formula(self):
-        formula = TexMobject(
+        formula = Tex(
             "p(H) p(E|H) \\over p(E)",
             tex_to_color_map={
                 "H": HYPOTHESIS_COLOR,
@@ -4207,7 +4207,7 @@ class ComingUp(Scene):
         rect.set_fill(BLACK, 1)
         rect.set_stroke(WHITE, 2)
 
-        words = TextMobject("Later...")
+        words = TexText("Later...")
         words.scale(2)
         words.to_edge(UP)
         rect.next_to(words, DOWN)
@@ -4404,7 +4404,7 @@ class QuestionSteveConclusion(HeartOfBayesTheorem, DescriptionOfSteve):
 
 class WhoAreYou(Scene):
     def construct(self):
-        words = TextMobject("Who are you?")
+        words = TexText("Who are you?")
         self.add(words)
 
 
@@ -4437,7 +4437,7 @@ class ReprogrammingThought(Scene):
         group.arrange(RIGHT)
         group.center()
 
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.scale(1.5)
         q_marks.next_to(arrow, UP, SMALL_BUFF)
 
@@ -4544,7 +4544,7 @@ class MassOfEarthEstimates(GlimpseOfNextVideo):
         earth.add_to_back(circle)
         earth.set_height(0.75)
 
-        words = TextMobject("Mass of ")
+        words = TexText("Mass of ")
         words.next_to(earth, LEFT)
         group = VGroup(words, earth)
 
@@ -4552,7 +4552,7 @@ class MassOfEarthEstimates(GlimpseOfNextVideo):
         self.add(group)
 
     def get_formula(self):
-        formula = TexMobject(
+        formula = Tex(
             "p(M) p(\\text{data}|M) \\over p(\\text{data})",
             tex_to_color_map={
                 "M": HYPOTHESIS_COLOR,
@@ -4783,9 +4783,9 @@ class Thumbnail(Scene):
             }
         }
         labels = VGroup(
-            TexMobject("P(H)", **kw),
-            TexMobject("P(E|H)", **kw),
-            TexMobject("P(E|\\neg H)", **kw),
+            Tex("P(H)", **kw),
+            Tex("P(E|H)", **kw),
+            Tex("P(E|\\neg H)", **kw),
         )
         labels.scale(1)
 
@@ -4815,12 +4815,12 @@ class Thumbnail(Scene):
             Line(ORIGIN, 4 * RIGHT).set_stroke(WHITE, 3),
             VGroup(
                 diagram.he_rect.copy(),
-                TexMobject("+"),
+                Tex("+"),
                 diagram.nhe_rect.copy(),
             ).arrange(RIGHT)
         )
         frac.arrange(DOWN)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(formula, RIGHT)
         frac.next_to(equals, RIGHT)
 

@@ -3,7 +3,7 @@ from functools import reduce
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "Lisa:",
             "Well, where's my dad?\\\\ \\\\",
             "Frink:",
@@ -55,19 +55,19 @@ class SymbolicThreeDTransform(Scene):
         out_vect = Matrix(self.output_coords)
         in_vect.set_color(BLUE)
         out_vect.set_color(GREEN)
-        func = TexMobject("L(\\vec{\\textbf{v}})")
+        func = Tex("L(\\vec{\\textbf{v}})")
         point = VectorizedPoint(func.get_center())
         in_vect.next_to(func, LEFT, buff = 1)
         out_vect.next_to(func, RIGHT, buff = 1)
-        in_words = TextMobject("Input")
+        in_words = TexText("Input")
         in_words.next_to(in_vect, DOWN)
         in_words.set_color(BLUE_C)
-        out_words = TextMobject("Output")
+        out_words = TexText("Output")
         out_words.next_to(out_vect, DOWN)
         out_words.set_color(GREEN_C)
 
 
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.to_edge(UP)
         self.add(title)
 
@@ -88,10 +88,10 @@ class SingleVectorToOutput(Scene):
 
 class InputWordOutputWord(Scene):
     def construct(self):
-        self.add(TextMobject("Input").scale(2))
+        self.add(TexText("Input").scale(2))
         self.wait()
         self.clear()
-        self.add(TextMobject("Output").scale(2))
+        self.add(TexText("Output").scale(2))
         self.wait()
 
 class TransformOnlyBasisVectors(Scene):
@@ -100,7 +100,7 @@ class TransformOnlyBasisVectors(Scene):
 class IHatJHatKHatWritten(Scene):
     def construct(self):
         for char, color in zip(["\\imath", "\\jmath", "k"], [X_COLOR, Y_COLOR, Z_COLOR]):
-            sym = TexMobject("{\\hat{%s}}"%char)
+            sym = Tex("{\\hat{%s}}"%char)
             sym.scale(3)
             sym.set_color(color)
             self.play(Write(sym))
@@ -114,16 +114,16 @@ class PutTogether3x3Matrix(Scene):
         "col3" : [1, 0, 1],
     }
     def construct(self):
-        i_to = TexMobject("\\hat{\\imath} \\to").set_color(X_COLOR)
-        j_to = TexMobject("\\hat{\\jmath} \\to").set_color(Y_COLOR)
-        k_to = TexMobject("\\hat{k} \\to").set_color(Z_COLOR)
+        i_to = Tex("\\hat{\\imath} \\to").set_color(X_COLOR)
+        j_to = Tex("\\hat{\\jmath} \\to").set_color(Y_COLOR)
+        k_to = Tex("\\hat{k} \\to").set_color(Z_COLOR)
         i_array = Matrix(self.col1)
         j_array = Matrix(self.col2)
         k_array = Matrix(self.col3)
         everything = VMobject(
-            i_to, i_array, TexMobject("=").set_color(BLACK),
-            j_to, j_array, TexMobject("=").set_color(BLACK),
-            k_to, k_array, TexMobject("=").set_color(BLACK),
+            i_to, i_array, Tex("=").set_color(BLACK),
+            j_to, j_array, Tex("=").set_color(BLACK),
+            k_to, k_array, Tex("=").set_color(BLACK),
         )
         everything.arrange(RIGHT, buff = 0.1)
         everything.set_width(FRAME_WIDTH-1)
@@ -181,13 +181,13 @@ class ShowVCoordinateMeaning(Scene):
         "post_transform" : False,
     }
     def construct(self):
-        v = TexMobject(self.v_str)
+        v = Tex(self.v_str)
         v.set_color(YELLOW)
-        eq = TexMobject("=")
+        eq = Tex("=")
         coords = Matrix(["x", "y", "z"])
         eq2 = eq.copy()
         if self.post_transform:
-            L, l_paren, r_paren = list(map(TexMobject, "L()"))
+            L, l_paren, r_paren = list(map(Tex, "L()"))
             parens = VMobject(l_paren, r_paren)
             parens.scale(2)
             parens.stretch_to_fit_height(
@@ -196,7 +196,7 @@ class ShowVCoordinateMeaning(Scene):
             VMobject(L, l_paren, coords, r_paren).arrange(buff = 0.1)
             coords.submobjects = [L, l_paren] + coords.submobjects + [r_paren]
 
-        lin_comb = VMobject(*list(map(TexMobject, [
+        lin_comb = VMobject(*list(map(Tex, [
             "x", self.i_str, "+",
             "y", self.j_str, "+",
             "z", self.k_str,
@@ -256,7 +256,7 @@ class ShowMatrixVectorMultiplication(Scene):
             for col in matrix.copy().get_mob_matrix().transpose()
         ]
         coords = x, y, z = [m.copy() for m in vect.get_entries().split()]
-        eq, plus1, plus2 = list(map(TexMobject, list("=++")))
+        eq, plus1, plus2 = list(map(Tex, list("=++")))
         everything = VMobject(
             matrix, vect, eq,
             x, col1, plus1,
@@ -275,7 +275,7 @@ class ShowMatrixVectorMultiplication(Scene):
         braces = []
         for mob, direction, text in trips:
             brace = Brace(mob, direction)
-            words = TextMobject(text)
+            words = TexText(text)
             words.next_to(brace, direction)
             brace.add(words)
             braces.append(brace)
@@ -332,7 +332,7 @@ class ShowMatrixMultiplication(Scene):
         braces = []
         for mob, direction, text in trips:
             brace = Brace(mob, direction)
-            words = TextMobject(text)
+            words = TexText(text)
             words.next_to(brace, direction)
             brace.add(words)
             braces.append(brace)
@@ -351,8 +351,8 @@ class ApplyTwoSuccessiveTransforms(Scene):
 class ComputerGraphicsAndRobotics(Scene):
     def construct(self):
         mob = VMobject(
-            TextMobject("Computer graphics"),
-            TextMobject("Robotics")
+            TexText("Computer graphics"),
+            TexText("Robotics")
         )
         mob.arrange(DOWN, buff = 1)
         self.play(Write(mob, run_time = 1))
@@ -380,10 +380,10 @@ class SymbolicThreeDToTwoDTransform(SymbolicThreeDTransform):
 
 class QuestionsToPonder(Scene):
     def construct(self):
-        title = TextMobject("Questions to ponder")
+        title = TexText("Questions to ponder")
         title.set_color(YELLOW).to_edge(UP)
         self.add(title)
-        questions = VMobject(*list(map(TextMobject, [
+        questions = VMobject(*list(map(TexText, [
             "1. Can you visualize these transformations?",
             "2. Can you represent them with matrices?",
             "3. How many rows and columns?",
@@ -397,7 +397,7 @@ class QuestionsToPonder(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("""
+        title = TexText("""
             Next video: The determinant
         """)
         title.set_width(FRAME_WIDTH - 2)

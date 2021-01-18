@@ -44,8 +44,8 @@ class IntroSceneWrapper(PiCreatureScene):
         h_line.shift(0.5*DOWN)
 
         main_topic, meta_topic = topics = VGroup(
-            TextMobject("Main topic"),
-            TextMobject("Meta topic"),
+            TexText("Main topic"),
+            TexText("Meta topic"),
         )
         topics.next_to(morty, UP)
         topics.shift_onto_screen()
@@ -77,7 +77,7 @@ class IntroSceneWrapper(PiCreatureScene):
         main_topic = self.main_topic
         meta_topic = self.meta_topic
 
-        solver = TextMobject("2d equation solver")
+        solver = TexText("2d equation solver")
         solver.match_width(h_line)
         solver.next_to(h_line, DOWN)
         rainbow_solver1 = solver.copy()
@@ -87,7 +87,7 @@ class IntroSceneWrapper(PiCreatureScene):
         rainbow_solver2.set_color_by_gradient(*reversed(colors))
 
 
-        xy_equation = TexMobject("""
+        xy_equation = Tex("""
             \\left[\\begin{array}{c}
                 ye^x \\\\
                 \\sin(|xy|)
@@ -104,11 +104,11 @@ class IntroSceneWrapper(PiCreatureScene):
         xy_equation.scale(0.8)
         xy_equation.next_to(solver, DOWN, MED_LARGE_BUFF)
 
-        z_equation = TexMobject("z", "^5", "+", "z", "+", "1", "=", "0")
+        z_equation = Tex("z", "^5", "+", "z", "+", "1", "=", "0")
         z_equation.set_color_by_tex("z", GREEN)
         z_equation.move_to(xy_equation, UP)
 
-        zeta = TexMobject("\\zeta(s) = 0")
+        zeta = Tex("\\zeta(s) = 0")
         zeta[2].set_color(GREEN)
         zeta.next_to(z_equation, DOWN, MED_LARGE_BUFF)
 
@@ -151,7 +151,7 @@ class IntroSceneWrapper(PiCreatureScene):
         h_line = self.h_line
         morty = self.pi_creature
 
-        words = TextMobject("Seek constructs which \\\\ compose nicely")
+        words = TexText("Seek constructs which \\\\ compose nicely")
         words.scale(0.7)
         words.next_to(h_line, DOWN)
 
@@ -190,10 +190,10 @@ class Introduce1DFunctionCase(Scene):
         axes.y_axis.label_direction = LEFT
         axes.y_axis.add_numbers(-1, *list(range(1, 5)))
 
-        inputs = TextMobject("Inputs")
+        inputs = TexText("Inputs")
         inputs.next_to(axes.x_axis, UP, aligned_edge = RIGHT)
 
-        outputs = TextMobject("Outputs")
+        outputs = TexText("Outputs")
         outputs.next_to(axes.y_axis, UP, SMALL_BUFF)
 
         self.play(
@@ -224,11 +224,11 @@ class Introduce1DFunctionCase(Scene):
         )
 
         label_x_corod = 2
-        f_label = TexMobject("f(x)")
+        f_label = Tex("f(x)")
         f_label.match_color(f_graph)
         f_label.next_to(axes.input_to_graph_point(label_x_corod, f_graph), LEFT)
 
-        g_label = TexMobject("g(x)")
+        g_label = Tex("g(x)")
         g_label.match_color(g_graph)
         g_label.next_to(
             axes.input_to_graph_point(label_x_corod, g_graph), UP, SMALL_BUFF
@@ -244,7 +244,7 @@ class Introduce1DFunctionCase(Scene):
             for x in (axes.x_min, axes.x_max, solution)
         ]
 
-        equation = TexMobject("f(x)", "=", "g(x)")
+        equation = Tex("f(x)", "=", "g(x)")
         equation[0].match_color(f_label)
         equation[2].match_color(g_label)
         equation.next_to(cross_point, UP, buff = 1.5, aligned_edge = LEFT)
@@ -253,7 +253,7 @@ class Introduce1DFunctionCase(Scene):
             buff = SMALL_BUFF,
             color = WHITE
         )
-        equation.target = TexMobject("x^2", "=", "2")
+        equation.target = Tex("x^2", "=", "2")
         equation.target.match_style(equation)
         equation.target.to_edge(UP)
 
@@ -309,18 +309,18 @@ class Introduce1DFunctionCase(Scene):
         two_graph = axes.get_graph(lambda x : 2)
         two_graph.match_style(g_graph)
 
-        squared_label = TexMobject("f(x)", "=", "x^2")
+        squared_label = Tex("f(x)", "=", "x^2")
         squared_label.next_to(
             axes.input_to_graph_point(2, squared_graph), RIGHT
         )
         squared_label.match_color(squared_graph)
-        two_label = TexMobject("g(x)", "=", "2")
+        two_label = Tex("g(x)", "=", "2")
         two_label.next_to(
             axes.input_to_graph_point(3, two_graph), UP,
         )
         two_label.match_color(two_graph)
 
-        find_sqrt_2 = self.find_sqrt_2 = TextMobject("(Find $\\sqrt{2}$)")
+        find_sqrt_2 = self.find_sqrt_2 = TexText("(Find $\\sqrt{2}$)")
         find_sqrt_2.next_to(self.equation, DOWN)
 
         self.play(
@@ -515,12 +515,12 @@ class Introduce1DFunctionCase(Scene):
 
         if mention_signs:
             if too_high:
-                sign_word = TextMobject("Positive")
+                sign_word = TexText("Positive")
                 sign_word.set_color(GREEN)
                 sign_word.scale(0.7)
                 sign_word.next_to(arrow.get_end(), RIGHT)
             else:
-                sign_word = TextMobject("Negative")
+                sign_word = TexText("Negative")
                 sign_word.set_color(RED)
                 sign_word.scale(0.7)
                 sign_word.next_to(arrow.get_end(), LEFT)
@@ -564,7 +564,7 @@ class TransitionFromEquationSolverToZeroFinder(Introduce1DFunctionCase):
         axes = self.axes
         equation = x_squared, equals, two = self.equation
         for s in "-", "0":
-            tex_mob = TexMobject(s)
+            tex_mob = Tex(s)
             tex_mob.scale(0.01)
             tex_mob.fade(1)
             tex_mob.move_to(equation.get_right())
@@ -584,7 +584,7 @@ class TransitionFromEquationSolverToZeroFinder(Introduce1DFunctionCase):
 
         f_label = self.squared_label
         g_label = self.two_label
-        new_label = TexMobject("f(x)", "-", "g(x)")
+        new_label = Tex("f(x)", "-", "g(x)")
         new_label[0].match_color(f_label)
         new_label[2].match_color(g_label)
         new_label.next_to(
@@ -597,7 +597,7 @@ class TransitionFromEquationSolverToZeroFinder(Introduce1DFunctionCase):
         fg_labels.target.arrange(DOWN, aligned_edge = LEFT)
         fg_labels.target.to_corner(UP+RIGHT)
 
-        new_equation = TexMobject("x^2", "-", "2", "=", "0")
+        new_equation = Tex("x^2", "-", "2", "=", "0")
         new_equation[0].match_style(equation[0])
         new_equation[2].match_style(equation[2])
         new_equation.move_to(equation, RIGHT)
@@ -637,8 +637,8 @@ class TransitionFromEquationSolverToZeroFinder(Introduce1DFunctionCase):
 class RewriteEquationWithTeacher(AltTeacherStudentsScene):
     def construct(self):
         root_two_equations = VGroup(
-            TexMobject("x^2", "", "=", "2", ""),
-            TexMobject("x^2", "-", "2", "=", "0"),
+            Tex("x^2", "", "=", "2", ""),
+            Tex("x^2", "-", "2", "=", "0"),
         )
         for equation in root_two_equations:
             equation.sort_alphabetically()
@@ -668,7 +668,7 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
 
         #
         to_remove = VGroup(root_two_equations[0], brace, f_equals_0)
-        two_d_equation = TexMobject("""
+        two_d_equation = Tex("""
             \\left[\\begin{array}{c}
                 ye^x \\\\
                 \\sin(xy)
@@ -678,8 +678,8 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
                 3y - x
             \\end{array}\\right]
         """)
-        complex_equation = TexMobject("z", "^5 + ", "z", " + 1 = 0")
-        z_def = TextMobject(
+        complex_equation = Tex("z", "^5 + ", "z", " + 1 = 0")
+        z_def = TexText(
             "(", "$z$", " is complex, ", "$a + bi$", ")",
             arg_separator = ""
         )
@@ -788,7 +788,7 @@ class InputOutputScene(Scene):
             plane.coordinate_labels.set_background_stroke(width=0)
             plane.lines_to_fade = VGroup(planes, plane.secondary_lines)
             plane.move_to(vect*FRAME_X_RADIUS/2 + self.y_shift*DOWN)
-            label = TextMobject(text)
+            label = TexText(text)
             label.scale(1.5)
             label.add_background_rectangle()
             label.move_to(plane)
@@ -796,7 +796,7 @@ class InputOutputScene(Scene):
             plane.add(label)
             plane.label = label
             for submob in plane.get_family():
-                if isinstance(submob, TexMobject) and hasattr(submob, "background_rectangle"):
+                if isinstance(submob, Tex) and hasattr(submob, "background_rectangle"):
                     submob.remove(submob.background_rectangle)
 
         return planes
@@ -858,7 +858,7 @@ class IntroduceInputOutputScene(InputOutputScene):
 
         input_label_arrow = Vector(DOWN+RIGHT)
         input_label_arrow.next_to(in_dot, UP+LEFT, SMALL_BUFF)
-        input_label = TextMobject("Input point")
+        input_label = TexText("Input point")
         input_label.next_to(input_label_arrow.get_start(), UP, SMALL_BUFF)
         for mob in input_label, input_label_arrow:
             mob.match_color(in_dot)
@@ -866,7 +866,7 @@ class IntroduceInputOutputScene(InputOutputScene):
         
         output_label_arrow = Vector(DOWN+LEFT)
         output_label_arrow.next_to(out_dot, UP+RIGHT, SMALL_BUFF)
-        output_label = TextMobject("Output point")
+        output_label = TexText("Output point")
         output_label.next_to(output_label_arrow.get_start(), UP, SMALL_BUFF)
         for mob in output_label, output_label_arrow:
             mob.match_color(out_dot)
@@ -880,7 +880,7 @@ class IntroduceInputOutputScene(InputOutputScene):
             color = WHITE,
         )
         curved_arrow.pointwise_become_partial(curved_arrow, 0, 0.95)
-        function_label = TexMobject("f(", "\\text{2d input}", ")")
+        function_label = Tex("f(", "\\text{2d input}", ")")
         function_label.next_to(curved_arrow, UP)
         function_label.add_background_rectangle()
 
@@ -1073,8 +1073,8 @@ class TwoDScreenInOurThreeDWorld(AltTeacherStudentsScene, ThreeDScene):
         in_plane.set_height(3)
         out_plane = in_plane.copy()
 
-        in_text = TextMobject("Input space")
-        out_text = TextMobject("Output space")
+        in_text = TexText("Input space")
+        out_text = TexText("Output space")
         VGroup(in_text, out_text).scale(0.75)
         in_text.next_to(in_plane, UP, SMALL_BUFF)
         out_text.next_to(out_plane, UP, SMALL_BUFF)
@@ -1165,7 +1165,7 @@ class EveryOutputPointHasAColor(ColorMappedObjectsScene):
         full_rect.set_stroke(WHITE, 0)
         full_rect.color_using_background_image(self.background_image_file)
 
-        title = TextMobject("Output Space")
+        title = TexText("Output Space")
         title.scale(1.5)
         title.to_edge(UP, buff = MED_SMALL_BUFF)
         title.set_stroke(BLACK, 1)
@@ -1287,7 +1287,7 @@ class DotsHoppingToColor(InputOutputScene):
         inspector_image_update_anim = UpdateFromFunc(
             inspector_image, update_inspector_image
         )
-        pink_points_label = TextMobject("Pink points")
+        pink_points_label = TexText("Pink points")
         pink_points_label.scale(0.7)
         pink_points_label.set_color(BLACK)
 
@@ -1369,7 +1369,7 @@ class DotsHoppingToColor(InputOutputScene):
         ))
 
         # Ask about whether a region contains a zero
-        question = TextMobject("Does this region \\\\ contain a zero?")
+        question = TexText("Does this region \\\\ contain a zero?")
         question.add_background_rectangle(opacity = 1)
         question.next_to(input_plane.label, DOWN)
         square = Square()
@@ -1416,8 +1416,8 @@ class Rearrange2DEquation(AltTeacherStudentsScene):
         ]
         zero_tex = "\\vec{\\textbf{0}}"
         equations = VGroup(
-            TexMobject(g_tex, "", "=", h_tex, ""),
-            TexMobject(g_tex, "-", h_tex, "=", zero_tex),
+            Tex(g_tex, "", "=", h_tex, ""),
+            Tex(g_tex, "-", h_tex, "=", zero_tex),
         )
         equations.move_to(self.hold_up_spot, DOWN)
         equations.shift_onto_screen()
@@ -1457,7 +1457,7 @@ class SearchForZerosInInputSpace(ColorMappedObjectsScene):
     }
     def construct(self):
         ColorMappedObjectsScene.construct(self)
-        title = TextMobject("Input space")
+        title = TexText("Input space")
         title.scale(2)
         title.to_edge(UP)
         title.set_stroke(BLACK, 1)
@@ -1473,7 +1473,7 @@ class SearchForZerosInInputSpace(ColorMappedObjectsScene):
         looking_glass.set_stroke(WHITE, 3)
         looking_glass.set_fill(WHITE, 0.6)
         looking_glass.color_using_background_image(self.background_image_file)
-        question = TextMobject("Which points go to 0?")
+        question = TexText("Which points go to 0?")
         question.next_to(looking_glass, DOWN)
         question.add_background_rectangle()
 
@@ -1504,9 +1504,9 @@ class OneDRegionBoundary(Scene):
         axes.center()
         axes.set_stroke(width = 2)
 
-        input_word = TextMobject("Input")
+        input_word = TexText("Input")
         input_word.next_to(axes.x_axis, UP, SMALL_BUFF, RIGHT)
-        output_word = TextMobject("Output")
+        output_word = TexText("Output")
         output_word.next_to(axes.y_axis, UP)
         axes.add(input_word, output_word)
         self.add(axes)
@@ -1534,7 +1534,7 @@ class OneDRegionBoundary(Scene):
         region.match_width(line, stretch = True)
         region.move_to(line)
 
-        region_words = TextMobject("Input region")
+        region_words = TexText("Input region")
         region_words.set_width(0.8*region.get_width())
         region_words.next_to(region, UP)
 
@@ -1547,10 +1547,10 @@ class OneDRegionBoundary(Scene):
             )
             for x, fx, color in [(x0, fx0, RED), (x1, fx1, GREEN)]
         ])
-        minus = TexMobject("-")
+        minus = Tex("-")
         minus.match_color(x0_arrow)
         minus.next_to(x0_arrow, UP)
-        plus = TexMobject("+")
+        plus = Tex("+")
         plus.match_color(x1_arrow)
         plus.next_to(x1_arrow, DOWN)
         signs = VGroup(plus, minus)
@@ -1684,7 +1684,7 @@ class AskAboutHowToGeneralizeSigns(AltTeacherStudentsScene):
         plane.add_coordinates()
 
         dot = Dot(color = YELLOW)
-        label = TextMobject("Sign?")
+        label = TexText("Sign?")
         label.add_background_rectangle()
         label.scale(0.5)
         label.next_to(dot, UP, SMALL_BUFF)
@@ -1694,7 +1694,7 @@ class AskAboutHowToGeneralizeSigns(AltTeacherStudentsScene):
         dot.fade(1)
         dot.center()
 
-        question = TextMobject(
+        question = TexText(
             "Wait...what would \\\\ positive and negative \\\\ be in 2d?",
         )
         # question.set_color_by_tex_to_color_map({
@@ -1732,7 +1732,7 @@ class HypothesisAboutFullyColoredBoundary(ColorMappedObjectsScene):
         ColorMappedObjectsScene.construct(self)
         square = Square(side_length = 4)
         square.color_using_background_image(self.background_image_file)
-        hypothesis = TextMobject(
+        hypothesis = TexText(
            "Working Hypothesis: \\\\",
            "If a 2d function hits outputs of all possible colors \\\\" + 
            "on the boundary of a 2d region,", 
@@ -1766,7 +1766,7 @@ class PiCreatureAsksWhatWentWrong(PiCreatureScene):
         randy.set_color(YELLOW_E)
         randy.flip()
         randy.to_corner(DOWN+LEFT)
-        question = TextMobject("What went wrong?")
+        question = TexText("What went wrong?")
         question.next_to(randy, UP)
         question.shift_onto_screen()
         question.save_state()
@@ -1941,24 +1941,24 @@ class FailureOfComposition(ColorMappedObjectsScene):
             square.set_color(WHITE)
             square.color_using_background_image(self.background_image_file)
 
-        question = TextMobject("Does my border go through every color?")
+        question = TexText("Does my border go through every color?")
         question.to_edge(UP)
         no_answers = VGroup()
         yes_answers = VGroup()
         for square in all_squares:
             if square is big_square:
-                square.answer = TextMobject("Yes")
+                square.answer = TexText("Yes")
                 square.answer.set_color(GREEN)
                 yes_answers.add(square.answer)
             else:
-                square.answer = TextMobject("No")
+                square.answer = TexText("No")
                 square.answer.set_color(RED)
                 no_answers.add(square.answer)
             square.answer.move_to(square)
 
         no_answers_in_equation = no_answers.copy()
         yes_answers_in_equation = yes_answers.copy()
-        plus, equals = plus_equals = TexMobject("+=")
+        plus, equals = plus_equals = Tex("+=")
         equation = VGroup(
             no_answers_in_equation[0], plus,
             no_answers_in_equation[1], equals,
@@ -1966,7 +1966,7 @@ class FailureOfComposition(ColorMappedObjectsScene):
         )
         equation.arrange(RIGHT, buff = SMALL_BUFF)
         equation.next_to(big_square, RIGHT, MED_LARGE_BUFF)
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.next_to(equals, UP)
 
 
@@ -2018,7 +2018,7 @@ class FailureOfComposition(ColorMappedObjectsScene):
             FadeOut(yes_answers),
         )
 
-        x, plus, y = x_plus_y = TexMobject("x+y")
+        x, plus, y = x_plus_y = Tex("x+y")
         x_plus_y.move_to(big_square)
         x_plus_y.save_state()
         x.move_to(no_answers_copy[0])
@@ -2113,7 +2113,7 @@ class PathContainingZero(InputOutputScene, PiCreatureScene):
     def comment_on_zero(self):
         morty = self.pi_creature
 
-        words = TextMobject(
+        words = TexText(
             "Output is zero \\\\",
             "which has no direction"
         )
@@ -2137,7 +2137,7 @@ class PathContainingZero(InputOutputScene, PiCreatureScene):
             circles.add(circle)
         in_circle, out_circle = circles
 
-        new_words = TextMobject(
+        new_words = TexText(
             "But we want $\\vec{\\textbf{x}}$ \\\\",
             "where $f(\\vec{\\textbf{x}}) = 0$",
         )
@@ -2195,7 +2195,7 @@ class TransitionFromPathsToBoundaries(ColorMappedObjectsScene):
         #Setup path braces
         for mob, tex in (path1, "x"), (path2, "y"), (joint_path, "x+y"):
             mob.brace = Brace(mob, DOWN)
-            label = TextMobject("Winding =", "$%s$"%tex)
+            label = TexText("Winding =", "$%s$"%tex)
             label.next_to(mob.brace, DOWN)
             mob.brace.add(label)
 
@@ -2205,7 +2205,7 @@ class TransitionFromPathsToBoundaries(ColorMappedObjectsScene):
         if self.include_question_mark:
             sum_tex += "\\, ?"
         for square, tex in (left_square, "x"), (right_square, "y"), (joint_rect, sum_tex):
-            square.label = TextMobject("Winding = ", "$%s$"%tex)
+            square.label = TexText("Winding = ", "$%s$"%tex)
             square.label.move_to(square)
 
         #Add paths
@@ -2364,13 +2364,13 @@ class BreakDownLoopWithNonzeroWinding(TransitionFromPathsToBoundaries):
         dot = self.get_dot_and_add_continual_animations()
 
         for rect, tex in (left_square, "x"), (right_square, "y"), (joint_rect, "3"):
-            rect.label = TextMobject("Winding = ", "$%s$"%tex)
+            rect.label = TexText("Winding = ", "$%s$"%tex)
             rect.label.move_to(rect)
-        sum_label = TexMobject("x", "+", "y", "=", "3")
+        sum_label = Tex("x", "+", "y", "=", "3")
         x, plus, y, equals, three = sum_label
         sum_label.next_to(joint_rect, UP)
 
-        both_cannot_be_zero = TextMobject("These cannot both be 0")
+        both_cannot_be_zero = TexText("These cannot both be 0")
         both_cannot_be_zero.move_to(plus)
         both_cannot_be_zero.to_edge(UP)
         arrows = VGroup(*[
@@ -2438,7 +2438,7 @@ class MonomialTerm(PathContainingZero):
     def relabel_planes(self):
         for plane in self.input_plane, self.output_plane:
             for mob in plane:
-                if isinstance(mob, TexMobject):
+                if isinstance(mob, Tex):
                     plane.remove(mob)
 
             if hasattr(plane, "numbers_to_show"):
@@ -2448,7 +2448,7 @@ class MonomialTerm(PathContainingZero):
             for x in _range:
                 if x == 0:
                     continue
-                label = TexMobject(str(x))
+                label = Tex(str(x))
                 label.scale(0.5)
                 point = plane.coords_to_point(x, 0)
                 label.next_to(point, DOWN, MED_SMALL_BUFF)
@@ -2460,7 +2460,7 @@ class MonomialTerm(PathContainingZero):
             for y in _range:
                 if y == 0:
                     continue
-                label = TexMobject("%di"%y)
+                label = Tex("%di"%y)
                 label.scale(0.5)
                 point = plane.coords_to_point(0, y)
                 label.next_to(point, LEFT, MED_SMALL_BUFF)
@@ -2472,7 +2472,7 @@ class MonomialTerm(PathContainingZero):
         self.add(self.input_plane, self.output_plane)
 
     def add_function_label(self):
-        label = TexMobject(self.full_func_label)
+        label = Tex(self.full_func_label)
         label.add_background_rectangle(opacity = 1, buff = SMALL_BUFF)
         arrow = Arrow(
             2*LEFT, 2*RIGHT, path_arc = -TAU/3,
@@ -2511,8 +2511,8 @@ class MonomialTerm(PathContainingZero):
                     self.label_move_to_corner
                 )
             )
-        x = TexMobject("x")
-        fx = TexMobject(self.func_label)
+        x = Tex("x")
+        fx = Tex(self.func_label)
         update_x = generate_label_update(x, get_in_point, in_origin)
         update_fx = generate_label_update(fx, get_out_point, out_origin)
 
@@ -2726,7 +2726,7 @@ class ShowComplexFunction(Scene):
         plane.coordinate_labels.remove(four_i)
         plane.remove(four_i)
 
-        title = TextMobject("Complex Plane")
+        title = TexText("Complex Plane")
         title.to_edge(UP, buff = MED_SMALL_BUFF)
         rect = BackgroundRectangle(title, fill_opacity = 1, buff = MED_SMALL_BUFF)
 
@@ -2745,11 +2745,11 @@ class ShowComplexFunction(Scene):
         )
         arrow.pointwise_become_partial(arrow, 0, 0.95)
 
-        x_label = TexMobject("x = %d+%.1fi"%(x.real, x.imag))
+        x_label = Tex("x = %d+%.1fi"%(x.real, x.imag))
         x_label.next_to(x_dot, RIGHT)
         x_label.add_background_rectangle()
 
-        fx_label = TexMobject("f(x) = x^5 - x - 1")
+        fx_label = Tex("f(x) = x^5 - x - 1")
         fx_label.next_to(fx_dot, DOWN, SMALL_BUFF)
         fx_label.set_color(YELLOW)
         fx_label.add_background_rectangle()
@@ -2823,7 +2823,7 @@ class WindingNumbersInInputOutputContext(PathContainingZero):
         )
         self.add(update_out_arrow, update_out_arrow_color)
 
-        words = TextMobject(
+        words = TexText(
             "How many times does \\\\ the output wind around?"
         )
         label = self.output_plane.label
@@ -2871,7 +2871,7 @@ class SolveX5SkipToEnd(SolveX5MinusXMinus1):
 class ZeroFoundOnBoundary(Scene):
     def construct(self):
         arrow = Vector(DOWN+LEFT, color = WHITE)
-        words = TextMobject("Found zero on boundary!")
+        words = TexText("Found zero on boundary!")
         words.next_to(arrow.get_start(), UP)
         words.shift(1.5*RIGHT)
 
@@ -2911,7 +2911,7 @@ class AllOfTheVideos(Scene):
 
 class EndingCredits(Scene):
     def construct(self):
-        text = TextMobject(
+        text = TexText(
             "Written and animated by: \\\\",
             "Sridhar Ramesh \\\\",
             "Grant Sanderson"
@@ -2932,7 +2932,7 @@ class EndingCredits(Scene):
 
 class MentionQAndA(Scene):
     def construct(self):
-        title = TextMobject("Q\\&A with ", "Ben", "and", "Sridhar\\\\", "at", "Patreon")
+        title = TexText("Q\\&A with ", "Ben", "and", "Sridhar\\\\", "at", "Patreon")
         title.set_color_by_tex_to_color_map({
             "Ben" : MAROON,
             "Sridhar" : YELLOW,
@@ -2947,7 +2947,7 @@ class MentionQAndA(Scene):
         title.to_edge(UP)
         self.add(title)
 
-        questions = VGroup(*list(map(TextMobject, [
+        questions = VGroup(*list(map(TexText, [
             "If you think of the current videos as short stories, \\\\ what is the novel that you want to write?",
             "How did you get into mathematics?",
             "What motivated you to join 3b1b?",
@@ -2988,10 +2988,10 @@ class InfiniteListOfTopics(Scene):
     def construct(self):
         rect = Rectangle(width = 5, height = 7)
         rect.to_edge(RIGHT)
-        title = TextMobject("Infinite list \\\\ of topics")
+        title = TexText("Infinite list \\\\ of topics")
         title.next_to(rect.get_top(), DOWN)
         lines = VGroup(*[
-            TextMobject(words).scale(0.5)
+            TexText(words).scale(0.5)
             for words in [
                 "Winding number",
                 "Laplace transform",
@@ -3002,7 +3002,7 @@ class InfiniteListOfTopics(Scene):
                 "Convolutional neural networks",
                 "Fixed points",
             ]
-        ] + [TexMobject("\\vdots")])
+        ] + [Tex("\\vdots")])
         lines.arrange(DOWN, buff = MED_SMALL_BUFF, aligned_edge = LEFT)
         lines.next_to(title, DOWN, MED_LARGE_BUFF)
         lines[-1].next_to(lines[-2], DOWN)
@@ -3014,7 +3014,7 @@ class InfiniteListOfTopics(Scene):
 class ManyIterations(Scene):
     def construct(self):
         words = VGroup(*[
-            TextMobject(word, alignment = "")
+            TexText(word, alignment = "")
             for word in [
                 "Winding numbers, v1",
                 "Winding numbers, v2 \\\\ (center on domain coloring)",
@@ -3046,9 +3046,9 @@ class MentionFree(PiCreatureScene):
         morty.shift(RIGHT)
 
         items = VGroup(
-            TextMobject("Movie:", "$>\\$10.00$"),
-            TextMobject("College course:", "$>\\$1{,}000.00$"),
-            TextMobject("YouTube video:", "$=\\$0.00$"),
+            TexText("Movie:", "$>\\$10.00$"),
+            TexText("College course:", "$>\\$1{,}000.00$"),
+            TexText("YouTube video:", "$=\\$0.00$"),
         )
         # items.arrange(DOWN, buff = MED_LARGE_BUFF)
         items.next_to(morty, UP, LARGE_BUFF)

@@ -10,7 +10,7 @@ class ConnectionToOptics(Scene):
         for g1, g2 in zip(k_groups, o_groups):
             g2.align_to(g1, UP)
             g2.to_edge(RIGHT)
-            arrow = TexMobject("\\Rightarrow")
+            arrow = Tex("\\Rightarrow")
             arrow.scale(1.5)
             arrow.move_to(interpolate(
                 g1[0].get_right(), g2[0].get_left(), 0.5
@@ -34,8 +34,8 @@ class ConnectionToOptics(Scene):
             rect.to_edge(DOWN, buff=SMALL_BUFF)
             rects.add(rect)
         titles = VGroup(
-            TextMobject("Kinematics"),
-            TextMobject("Optics"),
+            TexText("Kinematics"),
+            TexText("Optics"),
         )
         titles.scale(1.5)
         for title, rect in zip(titles, rects):
@@ -73,21 +73,21 @@ class ConnectionToOptics(Scene):
             "v_1": RED,
             "v_2": RED,
         }
-        energy_eq = TexMobject(
+        energy_eq = Tex(
             "\\frac{1}{2} m_1 (v_1)^2 + "
             "\\frac{1}{2} m_2 (v_2)^2 = "
             "\\text{const.}",
             tex_to_color_map=tex_to_color_map
         )
         energy_eq.scale(0.8)
-        momentum_eq = TexMobject(
+        momentum_eq = Tex(
             "m_1 v_1 + m_2 v_2 = \\text{const.}",
             tex_to_color_map=tex_to_color_map
         )
-        energy_label = TextMobject(
+        energy_label = TexText(
             "Conservation of energy"
         )
-        momentum_label = TextMobject(
+        momentum_label = TexText(
             "Conservation of momentum"
         )
         energy_group = VGroup(energy_label, energy_eq)
@@ -112,7 +112,7 @@ class ConnectionToOptics(Scene):
         )
 
     def get_speed_group(self):
-        speed_label = TextMobject("Constant speed of light")
+        speed_label = TexText("Constant speed of light")
         speed_label.set_color(YELLOW)
         speed_light_template = Line(LEFT, RIGHT)
         speed_light_template.fade(1)
@@ -143,7 +143,7 @@ class ConnectionToOptics(Scene):
         return result
 
     def get_angle_group(self):
-        title = VGroup(*map(TextMobject, [
+        title = VGroup(*map(TexText, [
             "Angle of\\\\Incidence",
             "=",
             "Angle of\\\\Reflection",
@@ -174,7 +174,7 @@ class ConnectionToOptics(Scene):
         arcs.set_stroke(WHITE, 2)
         thetas = VGroup()
         for v in LEFT, RIGHT:
-            theta = TexMobject("\\theta")
+            theta = Tex("\\theta")
             theta.next_to(arcs, v, aligned_edge=DOWN)
             theta.shift(SMALL_BUFF * UP)
             thetas.add(theta)
@@ -250,7 +250,7 @@ class RearrangeMomentumEquation(ShowMomentumConservation):
         simple_dot_product = self.simple_dot_product
         momentum_equation = self.momentum_equation
 
-        new_equation = TexMobject(
+        new_equation = Tex(
             "\\sqrt{m_1}",
             "\\left(", "\\sqrt{m_1}", "v_1", "\\right)",
             "+", "\\sqrt{m_2}",

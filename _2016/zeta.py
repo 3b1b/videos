@@ -171,12 +171,12 @@ class IntroduceZeta(ZetaTransformationScene):
         }
     }
     def construct(self):
-        title = TextMobject("Riemann zeta function")
+        title = TexText("Riemann zeta function")
         title.add_background_rectangle()
         title.to_corner(UP+LEFT)
         func_mob = VGroup(
-            TexMobject("\\zeta(s) = "),
-            TexMobject("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
+            Tex("\\zeta(s) = "),
+            Tex("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
         )
         func_mob.arrange(RIGHT, buff = 0)
         for submob in func_mob:
@@ -206,22 +206,22 @@ class IntroduceZeta(ZetaTransformationScene):
 
 class WhyPeopleMayKnowIt(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Riemann zeta function")
+        title = TexText("Riemann zeta function")
         title.to_corner(UP+LEFT)
-        func_mob = TexMobject(
+        func_mob = Tex(
             "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}"
         )
         func_mob.next_to(title, DOWN, aligned_edge = LEFT)
         self.add(title, func_mob)
 
         mercenary_thought = VGroup(
-            TexMobject("\\$1{,}000{,}000").set_color_by_gradient(GREEN_B, GREEN_D),
-            TexMobject("\\zeta(s) = 0")
+            Tex("\\$1{,}000{,}000").set_color_by_gradient(GREEN_B, GREEN_D),
+            Tex("\\zeta(s) = 0")
         )
         mercenary_thought.arrange(DOWN)
         divergent_sum = VGroup(
-            TexMobject("1+2+3+4+\\cdots = -\\frac{1}{12}"),
-            TexMobject("\\zeta(-1) = -\\frac{1}{12}")
+            Tex("1+2+3+4+\\cdots = -\\frac{1}{12}"),
+            Tex("\\zeta(-1) = -\\frac{1}{12}")
         )
         divergent_sum.arrange(DOWN)
         divergent_sum[0].set_color_by_gradient(YELLOW, MAROON_B)
@@ -263,7 +263,7 @@ class WhyPeopleMayKnowIt(TeacherStudentsScene):
 
         #Ask about continuation
         self.student_says(
-            TextMobject("Can you explain \\\\" , "``analytic continuation''?"),
+            TexText("Can you explain \\\\" , "``analytic continuation''?"),
             student_index = 1,
             target_mode = "raise_right_hand"
         )
@@ -283,7 +283,7 @@ class WhyPeopleMayKnowIt(TeacherStudentsScene):
 
 class ComplexValuedFunctions(ComplexTransformationScene):
     def construct(self):
-        title = TextMobject("Complex-valued function")
+        title = TexText("Complex-valued function")
         title.scale(1.5)
         title.add_background_rectangle()
         title.to_edge(UP)
@@ -293,9 +293,9 @@ class ComplexValuedFunctions(ComplexTransformationScene):
         z_out = Dot(4*RIGHT + 2*UP, color = MAROON_B)
         arrow = Arrow(z_in, z_out, buff = 0.1)
         arrow.set_color(WHITE)
-        z = TexMobject("z").next_to(z_in, DOWN+LEFT, buff = SMALL_BUFF)
+        z = Tex("z").next_to(z_in, DOWN+LEFT, buff = SMALL_BUFF)
         z.set_color(z_in.get_color())
-        f_z = TexMobject("f(z)").next_to(z_out, UP+RIGHT, buff = SMALL_BUFF)
+        f_z = Tex("f(z)").next_to(z_out, UP+RIGHT, buff = SMALL_BUFF)
         f_z.set_color(z_out.get_color())
 
         self.add(z_in, z)
@@ -319,7 +319,7 @@ class PreviewZetaAndContinuation(ZetaTransformationScene):
         reflected_plane = self.get_reflected_plane()
 
         titles = [
-            TextMobject(
+            TexText(
                 "What does", "%s"%s,
                 "look like?",
                 alignment = "",
@@ -360,7 +360,7 @@ class AssumeKnowledgeOfComplexNumbers(ComplexTransformationScene):
         x_line = Line(ORIGIN, z.real*RIGHT, color = GREEN_B)
         y_line = Line(ORIGIN, z.imag*UP, color = RED)
         y_line.shift(z.real*RIGHT)
-        complex_number_label = TexMobject(
+        complex_number_label = Tex(
             "%d+%di"%(int(z.real), int(z.imag))
         )
         complex_number_label[0].set_color(x_line.get_color())
@@ -368,10 +368,10 @@ class AssumeKnowledgeOfComplexNumbers(ComplexTransformationScene):
         complex_number_label.next_to(dot, UP)
 
         text = VGroup(
-            TextMobject("Assumed knowledge:"),
-            TextMobject("1) What complex numbers are."),
-            TextMobject("2) How to work with them."),
-            TextMobject("3) Maybe derivatives?"),
+            TexText("Assumed knowledge:"),
+            TexText("1) What complex numbers are."),
+            TexText("2) How to work with them."),
+            TexText("3) Maybe derivatives?"),
         )
         text.arrange(DOWN, aligned_edge = LEFT)
         for words in text:
@@ -448,7 +448,7 @@ class DefineForRealS(PiCreatureScene):
 
         lines, braces, dots, pi_dot = self.get_sum_lines(2)
         fracs = VGroup(*[
-            TexMobject("\\frac{1}{%d}"%((d+1)**2)).scale(0.7)
+            Tex("\\frac{1}{%d}"%((d+1)**2)).scale(0.7)
             for d, brace in enumerate(braces)
         ])
         for frac, brace, line in zip(fracs, braces, lines):
@@ -464,13 +464,13 @@ class DefineForRealS(PiCreatureScene):
                 arrow.set_color(line.get_color())
                 frac.add(arrow)
 
-        pi_term = TexMobject("= \\frac{\\pi^2}{6}")
+        pi_term = Tex("= \\frac{\\pi^2}{6}")
         pi_term.next_to(zeta_def[1], RIGHT)
         pi_arrow = Arrow(
             pi_term[-1].get_bottom(), pi_dot,
             color = pi_dot.get_color()
         )
-        approx = TexMobject("\\approx 1.645")
+        approx = Tex("\\approx 1.645")
         approx.next_to(pi_term)
 
         self.play(Transform(zeta_def, two_def))
@@ -520,7 +520,7 @@ class DefineForRealS(PiCreatureScene):
 
         arrow = Arrow(sum_terms.get_left(), sum_terms.get_right())
         arrow.next_to(sum_terms, DOWN)
-        smaller_words = TextMobject("Getting smaller")
+        smaller_words = TexText("Getting smaller")
         smaller_words.next_to(arrow, DOWN)
         self.arrow, self.smaller_words = arrow, smaller_words
 
@@ -536,7 +536,7 @@ class DefineForRealS(PiCreatureScene):
         zeta_s, sum_terms, brace, sigma = zeta_def
         arrow = self.arrow
         smaller_words = self.smaller_words
-        bigger_words = TextMobject("Getting \\emph{bigger}?")
+        bigger_words = TexText("Getting \\emph{bigger}?")
         bigger_words.move_to(self.smaller_words)
 
         #plug in -1
@@ -545,7 +545,7 @@ class DefineForRealS(PiCreatureScene):
             Transform(self.smaller_words, bigger_words),
             self.pi_creature.change_mode, "confused"
         )
-        new_sum_terms = TexMobject(
+        new_sum_terms = Tex(
             list("1+2+3+4+") + ["\\cdots"]
         )
         new_sum_terms.move_to(sum_terms, LEFT)
@@ -564,14 +564,14 @@ class DefineForRealS(PiCreatureScene):
         self.wait(3)
 
         #plug in -2
-        new_sum_terms = TexMobject(
+        new_sum_terms = Tex(
             list("1+4+9+16+") + ["\\cdots"]
         )
         new_sum_terms.move_to(sum_terms, LEFT)
         new_zeta_def, ignore = self.get_definition("-2")
         zeta_minus_two, ignore, ignore, new_sigma = new_zeta_def
         new_sigma.next_to(brace, UP)
-        new_final_sum = TexMobject("=0")
+        new_final_sum = Tex("=0")
         new_final_sum.next_to(new_sum_terms)
         lines, braces, dots, final_dot = self.get_sum_lines(-2)
 
@@ -592,26 +592,26 @@ class DefineForRealS(PiCreatureScene):
         num_shown_terms = 4
         n_input_chars = len(input_string)
 
-        zeta_s_eq = TexMobject("\\zeta(%s) = "%input_string)
+        zeta_s_eq = Tex("\\zeta(%s) = "%input_string)
         zeta_s_eq.to_edge(LEFT, buff = LARGE_BUFF)
         zeta_s_eq.shift(0.5*UP)
         inputs.add(*zeta_s_eq[2:2+n_input_chars])
 
-        sum_terms = TexMobject(*it.chain(*list(zip(
+        sum_terms = Tex(*it.chain(*list(zip(
             [
                 "\\frac{1}{%d^{%s}}"%(d, input_string)
                 for d in range(1, 1+num_shown_terms)
             ],
             it.cycle(["+"])
         ))))
-        sum_terms.add(TexMobject("\\cdots").next_to(sum_terms))
+        sum_terms.add(Tex("\\cdots").next_to(sum_terms))
         sum_terms.next_to(zeta_s_eq, RIGHT)
         for x in range(num_shown_terms):
             inputs.add(*sum_terms[2*x][-n_input_chars:])
 
 
         brace = Brace(sum_terms, UP)
-        sigma = TexMobject(
+        sigma = Tex(
             "\\sum_{n=1}^\\infty \\frac{1}{n^{%s}}"%input_string
         )
         sigma.next_to(brace, UP)
@@ -642,7 +642,7 @@ class DefineForRealS(PiCreatureScene):
             Brace(line, UP)
             for line in lines[:4]
         ])
-        dots = TexMobject("...")
+        dots = Tex("...")
         dots.stretch_to_fit_width(
             0.8 * VGroup(*lines[4:]).get_width()
         )
@@ -658,7 +658,7 @@ class DefineForRealS(PiCreatureScene):
     def transition_to_new_input(self, zeta_def, exponent, final_sum):
         new_zeta_def = self.get_definition(str(exponent))[0]
         lines, braces, dots, final_dot = self.get_sum_lines(exponent)
-        final_sum = TexMobject("=" + final_sum)
+        final_sum = Tex("=" + final_sum)
         final_sum.next_to(new_zeta_def[1][-1])
         final_sum.shift(SMALL_BUFF*UP)
         self.play(
@@ -684,7 +684,7 @@ class ReadIntoZetaFunction(Scene):
         paper.set_color(WHITE)
         max_width = 0.8*paper.get_width()
 
-        title = TextMobject("$\\zeta(s)$ manual")
+        title = TexText("$\\zeta(s)$ manual")
         title.next_to(paper.get_top(), DOWN)
         title.set_color(YELLOW)
         paper.add(title)
@@ -698,7 +698,7 @@ class ReadIntoZetaFunction(Scene):
         paper.add(paragraph_lines)
         max_height = 1.5*paragraph_lines.get_height()
 
-        statement = TextMobject(self.statement)
+        statement = TexText(self.statement)
         if statement.get_width() > max_width:
             statement.set_width(max_width)
         if statement.get_height() > max_height:
@@ -732,7 +732,7 @@ class ReadIntoZetaFunctionAnalyticContinuation(ReadIntoZetaFunction):
 
 class IgnoreNegatives(TeacherStudentsScene):
     def construct(self):
-        definition = TexMobject("""
+        definition = Tex("""
             \\zeta(s) = \\sum_{n=1}^{\\infty} \\frac{1}{n^s}
         """)
         VGroup(definition[2], definition[-1]).set_color(YELLOW)
@@ -747,7 +747,7 @@ class IgnoreNegatives(TeacherStudentsScene):
 
 
         self.change_student_modes(*["confused"]*3)
-        words = TextMobject(
+        words = TexText(
             "Ignore $s \\le 1$ \\dots \\\\",
             "For now."
         )
@@ -768,7 +768,7 @@ class IgnoreNegatives(TeacherStudentsScene):
 
 class RiemannFatherOfComplex(ComplexTransformationScene):
     def construct(self):
-        name = TextMobject(
+        name = TexText(
             "Bernhard Riemann $\\rightarrow$ Complex analysis"
         )
         name.to_corner(UP+LEFT)
@@ -794,7 +794,7 @@ class RiemannFatherOfComplex(ComplexTransformationScene):
             color = MAROON_B
         )
         for dot, tex in (input_dot, "z"), (output_dot, "f(z)"):
-            dot.label = TexMobject(tex)
+            dot.label = Tex(tex)
             dot.label.add_background_rectangle()
             dot.label.next_to(dot, DOWN+RIGHT, buff = SMALL_BUFF)
             dot.label.set_color(dot.get_color())
@@ -895,7 +895,7 @@ class FromRealToComplex(ComplexTransformationScene):
         input_dot.target.move_to(
             self.background.num_pair_to_point((2, 1))
         )
-        input_label = TexMobject("2+i")
+        input_label = Tex("2+i")
         input_label.set_color(YELLOW)
         input_label.next_to(input_dot.target, DOWN+RIGHT, buff = SMALL_BUFF)
         input_label.add_background_rectangle()
@@ -929,7 +929,7 @@ class FromRealToComplex(ComplexTransformationScene):
         frac.generate_target()
         frac.target.scale(frac_scale_factor)
         bubble.add_content(frac.target)
-        new_frac = TexMobject(
+        new_frac = Tex(
             "\\Big(", "\\frac{1}{2}", "\\Big)", "^{2+i}"
         )
         new_frac[-1].set_color(YELLOW)
@@ -937,12 +937,12 @@ class FromRealToComplex(ComplexTransformationScene):
         new_frac.move_to(frac.target)
         new_frac.shift(LEFT+0.2*UP)
 
-        words = TextMobject("Not repeated \\\\", " multiplication")
+        words = TexText("Not repeated \\\\", " multiplication")
         words.scale(0.8)
         words.set_color(RED)
         words.next_to(new_frac, RIGHT)
 
-        new_words = TextMobject("Not \\emph{super} \\\\", "crucial to know...")
+        new_words = TexText("Not \\emph{super} \\\\", "crucial to know...")
         new_words.replace(words)
         new_words.scale(1.3)
 
@@ -1069,14 +1069,14 @@ class FromRealToComplex(ComplexTransformationScene):
         )
         anti_domain.to_edge(LEFT, buff = 0)
 
-        domain_words = TextMobject("""
+        domain_words = TexText("""
             $\\zeta(s)$ happily
             converges and
             makes sense
         """)
         domain_words.to_corner(UP+RIGHT, buff = MED_LARGE_BUFF)
 
-        anti_domain_words = TextMobject("""
+        anti_domain_words = TexText("""
             Not so much...
         """)
         anti_domain_words.next_to(ORIGIN, LEFT, buff = LARGE_BUFF)
@@ -1130,13 +1130,13 @@ class FromRealToComplex(ComplexTransformationScene):
         num_shown_terms = 4
         n_input_chars = len(input_string)
 
-        zeta_s_eq = TexMobject("\\zeta(%s) = "%input_string)
+        zeta_s_eq = Tex("\\zeta(%s) = "%input_string)
         zeta_s_eq.to_edge(LEFT, buff = LARGE_BUFF)
         zeta_s_eq.shift(0.5*UP)
         inputs.add(*zeta_s_eq[2:2+n_input_chars])
 
 
-        raw_sum_terms = TexMobject(*[
+        raw_sum_terms = Tex(*[
             "\\frac{1}{%d^{%s}} + "%(d, input_string)
             for d in range(1, 1+num_shown_terms)
         ])
@@ -1148,12 +1148,12 @@ class FromRealToComplex(ComplexTransformationScene):
             ]
             for term in raw_sum_terms
         ]))
-        sum_terms.add(TexMobject("\\cdots").next_to(sum_terms[-1]))
+        sum_terms.add(Tex("\\cdots").next_to(sum_terms[-1]))
         sum_terms.next_to(zeta_s_eq, RIGHT)
         for x in range(num_shown_terms):
             inputs.add(*sum_terms[3*x+1])
 
-        output = TexMobject("= \\," + output_string)
+        output = Tex("= \\," + output_string)
         output.next_to(sum_terms, RIGHT)
         output.set_color(self.output_color)
 
@@ -1190,7 +1190,7 @@ class FromRealToComplex(ComplexTransformationScene):
 class TerritoryOfExponents(ComplexTransformationScene):
     def construct(self):
         self.add_title()
-        familiar_territory = TextMobject("Familiar territory")
+        familiar_territory = TexText("Familiar territory")
         familiar_territory.set_color(YELLOW)
         familiar_territory.next_to(ORIGIN, UP+RIGHT)
         familiar_territory.shift(2*UP)
@@ -1200,7 +1200,7 @@ class TerritoryOfExponents(ComplexTransformationScene):
         arrow2 = Arrow(familiar_territory.get_bottom(), real_line.get_right())
         VGroup(arrow1, arrow2).set_color(WHITE)
 
-        extended_realm = TextMobject("Extended realm")
+        extended_realm = TexText("Extended realm")
         extended_realm.move_to(familiar_territory)
         full_plane = Rectangle(
             width = FRAME_WIDTH,
@@ -1223,7 +1223,7 @@ class TerritoryOfExponents(ComplexTransformationScene):
         )
 
     def add_title(self):
-        exponent = TexMobject(
+        exponent = Tex(
             "\\left(\\frac{1}{2}\\right)^s"
         )
         exponent[-1].set_color(YELLOW)
@@ -1237,10 +1237,10 @@ class ComplexExponentiation(Scene):
         self.show_imaginary_powers()
 
     def extract_pure_imaginary_part(self):
-        original = TexMobject(
+        original = Tex(
             "\\left(\\frac{1}{2}\\right)", "^{2+i}"
         )
-        split = TexMobject(
+        split = Tex(
              "\\left(\\frac{1}{2}\\right)", "^{2}",
              "\\left(\\frac{1}{2}\\right)", "^{i}",
         )
@@ -1289,7 +1289,7 @@ class ComplexExponentiation(Scene):
         imag_line.set_color(YELLOW).fade(0.3)
         imag_line.move_to(left_plane.get_center())
         left_plane.add(imag_line)
-        left_title = TextMobject("Input space")
+        left_title = TexText("Input space")
         left_title.add_background_rectangle()
         left_title.set_color(YELLOW)
         left_title.next_to(left_plane.get_top(), DOWN)
@@ -1300,7 +1300,7 @@ class ComplexExponentiation(Scene):
         unit_circle.set_color(MAROON_B).fade(0.3)
         unit_circle.shift(right_plane.get_center())
         right_plane.add(unit_circle)
-        right_title = TextMobject("Output space")
+        right_title = TexText("Output space")
         right_title.add_background_rectangle()
         right_title.set_color(MAROON_B)
         right_title.next_to(right_plane.get_top(), DOWN)
@@ -1308,13 +1308,13 @@ class ComplexExponentiation(Scene):
         for plane in left_plane, right_plane:
             labels = VGroup()
             for x in range(-2, 3):
-                label = TexMobject(str(x))
+                label = Tex(str(x))
                 label.move_to(plane.num_pair_to_point((x, 0)))
                 labels.add(label)
             for y in range(-3, 4):
                 if y == 0:
                     continue
-                label = TexMobject(str(y) + "i")
+                label = Tex(str(y) + "i")
                 label.move_to(plane.num_pair_to_point((0, y)))
                 labels.add(label)
             for label in labels:
@@ -1370,12 +1370,12 @@ class ComplexExponentiation(Scene):
                 )
 
         exp = self.imag_exponent[-1]
-        new_exp = TexMobject("ti")
+        new_exp = Tex("ti")
         new_exp.set_color(exp.get_color())
         new_exp.set_height(exp.get_height())
         new_exp.move_to(exp, LEFT)
 
-        nine = TexMobject("9")
+        nine = Tex("9")
         nine.set_color(BLUE)
         denom = self.imag_exponent[0][3]
         denom.save_state()
@@ -1403,10 +1403,10 @@ class ComplexExponentiation(Scene):
 
 class SizeAndRotationBreakdown(Scene):
     def construct(self):
-        original = TexMobject(
+        original = Tex(
             "\\left(\\frac{1}{2}\\right)", "^{2+i}"
         )
-        split = TexMobject(
+        split = Tex(
              "\\left(\\frac{1}{2}\\right)", "^{2}",
              "\\left(\\frac{1}{2}\\right)", "^{i}",
         )
@@ -1459,10 +1459,10 @@ class ShowMultiplicationOfRealAndImaginaryExponentialParts(FromRealToComplex):
         self.show_multiplication()
 
     def break_up_exponent(self):
-        original = TexMobject(
+        original = Tex(
             "\\left(\\frac{1}{2}\\right)", "^{2+i}"
         )
-        split = TexMobject(
+        split = Tex(
              "\\left(\\frac{1}{2}\\right)", "^{2}",
              "\\left(\\frac{1}{2}\\right)", "^{i}",
         )
@@ -1509,7 +1509,7 @@ class ShowMultiplicationOfRealAndImaginaryExponentialParts(FromRealToComplex):
         imag_power_line = Line(ORIGIN, imag_power_point)
         VGroup(imag_power_dot, imag_power_line).set_color(MAROON_B)
 
-        full_power_tex = TexMobject(
+        full_power_tex = Tex(
             "\\left(\\frac{1}{2}\\right)", "^{2+i}"
         )
         full_power_tex[-1].set_color(YELLOW)
@@ -1568,7 +1568,7 @@ class ComplexFunctionsAsTransformations(ComplexTransformationScene):
 
 
     def add_title(self):
-        title = TextMobject("Complex functions as transformations")
+        title = TexText("Complex functions as transformations")
         title.add_background_rectangle()
         title.to_edge(UP)
         self.add(title)
@@ -1600,12 +1600,12 @@ class ComplexFunctionsAsTransformations(ComplexTransformationScene):
             for in_dot, out_dot, in zip(input_dots, output_dots)
         ])
         for i, dot in enumerate(input_dots):
-            label = TexMobject("s_%d"%i)
+            label = Tex("s_%d"%i)
             label.set_color(dot.get_color())
             label.next_to(dot, DOWN+LEFT, buff = SMALL_BUFF)
             dot.add(label)
         for i, dot in enumerate(output_dots):
-            label = TexMobject("f(s_%d)"%i)
+            label = Tex("f(s_%d)"%i)
             label.set_color(dot.get_color())
             label.next_to(dot, UP+RIGHT, buff = SMALL_BUFF)
             dot.add(label)
@@ -1624,7 +1624,7 @@ class VisualizingSSquared(ComplexTransformationScene):
         self.comment_on_two_dimensions()
 
     def add_title(self):
-        title = TexMobject("f(", "s", ") = ", "s", "^2")
+        title = Tex("f(", "s", ") = ", "s", "^2")
         title.set_color_by_tex("s", YELLOW)
         title.add_background_rectangle()
         title.scale(1.5)
@@ -1744,7 +1744,7 @@ class ShowZetaOnHalfPlane(ZetaTransformationScene):
 
 
     def add_title(self):
-        zeta = TexMobject(
+        zeta = Tex(
             "\\zeta(", "s", ")=",
             *[
                 "\\frac{1}{%d^s} + "%d
@@ -1795,7 +1795,7 @@ class ShowZetaOnHalfPlane(ZetaTransformationScene):
         self.play(FadeOut(morty))
 
     def show_cutoff(self):
-        words = TextMobject("Such an abrupt stop...")
+        words = TexText("Such an abrupt stop...")
         words.add_background_rectangle()
         words.next_to(ORIGIN, UP+LEFT)
         words.shift(LEFT+UP)
@@ -1883,7 +1883,7 @@ class ShowZetaOnHalfPlane(ZetaTransformationScene):
         """, buff = SMALL_BUFF)
         words.add_background_rectangle()
         words.scale(0.8)
-        divergent_sum = TexMobject("1+2+3+4+\\cdots")
+        divergent_sum = Tex("1+2+3+4+\\cdots")
         divergent_sum.next_to(ORIGIN, UP)
         divergent_sum.to_edge(LEFT)
         divergent_sum.add_background_rectangle()
@@ -1908,13 +1908,13 @@ class ShowZetaOnHalfPlane(ZetaTransformationScene):
 
 class ShowConditionalDefinition(Scene):
     def construct(self):
-        zeta = TexMobject("\\zeta(s)=")
+        zeta = Tex("\\zeta(s)=")
         zeta[2].set_color(YELLOW)
-        sigma = TexMobject("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
+        sigma = Tex("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
         sigma[-1].set_color(YELLOW)
-        something_else = TextMobject("Something else...")
+        something_else = TexText("Something else...")
         conditions = VGroup(*[
-            TextMobject("if Re$(s) %s 1$"%s)
+            TexText("if Re$(s) %s 1$"%s)
             for s in (">", "\\le")
         ])
         definitions = VGroup(sigma, something_else)
@@ -1992,7 +1992,7 @@ class SquiggleOnExtensions(ZetaTransformationScene):
     def note_point(self, z, label_tex):
         dot = Dot(self.z_to_point(z))
         dot.set_color(YELLOW)
-        label = TexMobject(label_tex)
+        label = Tex(label_tex)
         label.add_background_rectangle()
         label.next_to(dot, UP+LEFT, buff = SMALL_BUFF)
         label.shift(LEFT)
@@ -2076,7 +2076,7 @@ class SquiggleOnExtensions(ZetaTransformationScene):
         self.wait()
 
     def lock_into_place(self):
-        words = TextMobject(
+        words = TexText(
             """Only one extension
             has a """,
             "\\emph{derivative}",
@@ -2135,7 +2135,7 @@ class IntroduceAnglePreservation(VisualizingSSquared):
         self.name_analytic()
 
     def add_title(self):
-        title = TexMobject("f(", "s", ")=", "s", "^2")
+        title = Tex("f(", "s", ")=", "s", "^2")
         title.set_color_by_tex("s", YELLOW)
         title.scale(1.5)
         title.to_corner(UP+LEFT)
@@ -2229,8 +2229,8 @@ class IntroduceAnglePreservation(VisualizingSSquared):
         self.wait()
 
     def name_analytic(self):
-        equiv = TextMobject("``Analytic'' $\\Leftrightarrow$ Angle-preserving")
-        kind_of = TextMobject("...kind of")
+        equiv = TexText("``Analytic'' $\\Leftrightarrow$ Angle-preserving")
+        kind_of = TexText("...kind of")
         for text in equiv, kind_of:
             text.scale(1.2)
             text.add_background_rectangle()
@@ -2287,7 +2287,7 @@ class IntroduceAnglePreservation(VisualizingSSquared):
         arc.target.scale_about_point(1./scale_factor, intersection_point)
         arc.target.apply_complex_function(lambda z : z**2)
 
-        angle_tex = TexMobject(
+        angle_tex = Tex(
             "%d^\\circ"%abs(int((angle2-angle1)*180/np.pi))
         )
         angle_tex.set_color(arc.get_color())
@@ -2364,12 +2364,12 @@ class AngleAtZeroDerivativePoints(IntroduceAnglePreservation):
         self.wait()
 
     def add_title(self):
-        title = TexMobject("f(", "s", ")=", "s", "^2")
+        title = Tex("f(", "s", ")=", "s", "^2")
         title.set_color_by_tex("s", YELLOW)
         title.scale(1.5)
         title.to_corner(UP+LEFT)
         title.add_background_rectangle()
-        derivative = TexMobject("f'(0) = 0")
+        derivative = Tex("f'(0) = 0")
         derivative.set_color(RED)
         derivative.scale(1.2)
         derivative.add_background_rectangle()
@@ -2383,7 +2383,7 @@ class AngleAtZeroDerivativePoints(IntroduceAnglePreservation):
             self, angle_tex, arc
         )
         if not self.is_before_transformation:
-            two_dot = TexMobject("2 \\times ")
+            two_dot = Tex("2 \\times ")
             two_dot.set_color(angle_tex.get_color())
             two_dot.next_to(angle_tex, LEFT, buff = SMALL_BUFF)
             two_dot.add_background_rectangle()
@@ -2430,12 +2430,12 @@ class AnglePreservationAtAnyPairOfPoints(IntroduceAnglePreservation):
         ]))
 
     def show_example_analytic_functions(self):
-        words = TextMobject("Examples of analytic functions:")
+        words = TexText("Examples of analytic functions:")
         words.shift(2*UP)
         words.set_color(YELLOW)
         words.add_background_rectangle()
         words.next_to(UP, UP).to_edge(LEFT)
-        functions = TextMobject(
+        functions = TexText(
             "$e^x$, ",
             "$\\sin(x)$, ",
             "any polynomial, "
@@ -2463,7 +2463,7 @@ class NoteZetaFunctionAnalyticOnRightHalf(ZetaTransformationScene):
         self.note_right_angles()
 
     def add_title(self):
-        title = TexMobject(
+        title = Tex(
             "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}"
         )
         title[2].set_color(YELLOW)
@@ -2527,7 +2527,7 @@ class InfiniteContinuousJigsawPuzzle(ZetaTransformationScene):
         self.pieces = pieces
 
     def add_title(self):
-        title = TextMobject("Infinite ", "continuous ", "jigsaw puzzle")
+        title = TexText("Infinite ", "continuous ", "jigsaw puzzle")
         title.scale(1.5)
         title.to_edge(UP)
         for word in title:
@@ -2543,7 +2543,7 @@ class InfiniteContinuousJigsawPuzzle(ZetaTransformationScene):
         self.wait()
 
     def name_analytic_continuation(self):
-        words = TextMobject("``Analytic continuation''")
+        words = TexText("``Analytic continuation''")
         words.set_color(YELLOW)
         words.scale(1.5)
         words.next_to(self.title, DOWN, buff = LARGE_BUFF)
@@ -2562,7 +2562,7 @@ class ThatsHowZetaIsDefined(TeacherStudentsScene):
         self.random_blink(2)
 
     def add_zeta_definition(self):
-        zeta = TexMobject(
+        zeta = Tex(
             "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}"
         )
         VGroup(zeta[2], zeta[-1]).set_color(YELLOW)
@@ -2613,9 +2613,9 @@ class ManyIntersectingLinesPreZeta(ZetaTransformationScene):
 
     def add_title(self):
         if self.apply_zeta:
-            title = TextMobject("After \\\\ transformation")
+            title = TexText("After \\\\ transformation")
         else:
-            title = TextMobject("Before \\\\ transformation")
+            title = TexText("Before \\\\ transformation")
         title.add_background_rectangle()
         title.to_edge(UP)
         self.add_foreground_mobjects(title)
@@ -2699,7 +2699,7 @@ class ButWhatIsTheExensions(TeacherStudentsScene):
 
 class MathematiciansLookingAtFunctionEquation(Scene):
     def construct(self):
-        equation = TexMobject(
+        equation = Tex(
             "\\zeta(s)",
             "= 2^s \\pi ^{s-1}",
             "\\sin\\left(\\frac{\\pi s}{2}\\right)",
@@ -2754,14 +2754,14 @@ class DiscussZeros(ZetaTransformationScene):
         ])
         dots.set_color(YELLOW)
         q_marks = VGroup(*[
-            TexMobject("?").next_to(dot, UP)
+            Tex("?").next_to(dot, UP)
             for dot in dots
         ])
         arrows = VGroup(*[
             Arrow(dot, ORIGIN, buff = 0.2, tip_length = 0.1)
             for dot in dots
         ])
-        question = TextMobject("Which numbers go to $0$?")
+        question = TexText("Which numbers go to $0$?")
         question.add_background_rectangle()
         question.to_edge(UP)
 
@@ -2782,7 +2782,7 @@ class DiscussZeros(ZetaTransformationScene):
         self.dots = dots
 
     def show_trivial_zeros(self):
-        trivial_zero_words = TextMobject("``Trivial'' zeros")
+        trivial_zero_words = TexText("``Trivial'' zeros")
         trivial_zero_words.next_to(ORIGIN, UP)
         trivial_zero_words.to_edge(LEFT)
 
@@ -2837,12 +2837,12 @@ class DiscussZeros(ZetaTransformationScene):
         strip.next_to(ORIGIN, RIGHT, buff = 0)
         strip.set_stroke(width = 0)
         strip.set_fill(YELLOW, opacity = 0.3)
-        name = TextMobject("Critical strip")
+        name = TexText("Critical strip")
         name.add_background_rectangle()
         name.next_to(ORIGIN, LEFT)
         name.to_edge(UP)
         arrow = Arrow(name.get_bottom(), 0.5*RIGHT+UP)
-        primes = TexMobject("2, 3, 5, 7, 11, 13, 17, \\dots")
+        primes = Tex("2, 3, 5, 7, 11, 13, 17, \\dots")
         primes.to_corner(UP+RIGHT)
         # photo = Square()
         photo = ImageMobject("Riemann", invert = False)
@@ -2901,7 +2901,7 @@ class DiscussZeros(ZetaTransformationScene):
         self.wandering_path = ParametricCurve(func)
         for i, dot in enumerate(self.dots):
             dot.target = dot.copy()
-            q_mark = TexMobject("?")
+            q_mark = Tex("?")
             q_mark.next_to(dot.target, UP)
             dot.target.add(q_mark)
             dot.target.move_to(self.wandering_path.point_from_proportion(
@@ -2974,7 +2974,7 @@ class AskAboutRelationToPrimes(TeacherStudentsScene):
 class HighlightCriticalLineAgain(DiscussZeros):
     def construct(self):
         self.establish_plane()
-        title = TexMobject("\\zeta(", "s", ") = 0")
+        title = Tex("\\zeta(", "s", ") = 0")
         title.set_color_by_tex("s", YELLOW)
         title.add_background_rectangle()
         title.to_corner(UP+LEFT)
@@ -2993,7 +2993,7 @@ class HighlightCriticalLineAgain(DiscussZeros):
             color = YELLOW
         )
         randy = Randolph().to_corner(DOWN+LEFT)
-        million = TexMobject("\\$1{,}000{,}000")
+        million = Tex("\\$1{,}000{,}000")
         million.set_color(GREEN_B)
         million.next_to(ORIGIN, UP+LEFT)
         million.shift(2*LEFT)
@@ -3025,13 +3025,13 @@ class HighlightCriticalLineAgain(DiscussZeros):
 
 class DiscussSumOfNaturals(Scene):
     def construct(self):
-        title = TexMobject(
+        title = Tex(
             "\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}"
         )
         VGroup(title[2], title[-1]).set_color(YELLOW)
         title.to_corner(UP+LEFT)
 
-        neg_twelfth, eq, zeta_neg_1, sum_naturals = equation = TexMobject(
+        neg_twelfth, eq, zeta_neg_1, sum_naturals = equation = Tex(
             "-\\frac{1}{12}",
             "=",
             "\\zeta(-1)",
@@ -3039,24 +3039,24 @@ class DiscussSumOfNaturals(Scene):
         )
         neg_twelfth.set_color(GREEN_B)
         VGroup(*zeta_neg_1[2:4]).set_color(YELLOW)
-        q_mark = TexMobject("?").next_to(sum_naturals[0], UP)
+        q_mark = Tex("?").next_to(sum_naturals[0], UP)
         q_mark.set_color(RED)
         randy = Randolph()
         randy.to_corner(DOWN+LEFT)
-        analytic_continuation = TextMobject("Analytic continuation")
+        analytic_continuation = TexText("Analytic continuation")
         analytic_continuation.next_to(title, RIGHT, 3*LARGE_BUFF)
 
         sum_to_zeta = Arrow(title.get_corner(DOWN+RIGHT), zeta_neg_1)
         sum_to_ac = Arrow(title.get_right(), analytic_continuation)
         ac_to_zeta = Arrow(analytic_continuation.get_bottom(), zeta_neg_1.get_top())
-        cross = TexMobject("\\times")
+        cross = Tex("\\times")
         cross.scale(2)
         cross.set_color(RED)
         cross.rotate(np.pi/6)
         cross.move_to(sum_to_zeta.get_center())
 
         brace = Brace(VGroup(zeta_neg_1, sum_naturals))
-        words = TextMobject(
+        words = TexText(
             "If not equal, at least connected",
             "\\\\(see links in description)"
         )
@@ -3102,9 +3102,9 @@ class InventingMathPreview(Scene):
     def construct(self):
         rect = Rectangle(height = 9, width = 16)
         rect.set_height(4)
-        title = TextMobject("What does it feel like to invent math?")
+        title = TexText("What does it feel like to invent math?")
         title.next_to(rect, UP)
-        sum_tex = TexMobject("1+2+4+8+\\cdots = -1")
+        sum_tex = Tex("1+2+4+8+\\cdots = -1")
         sum_tex.set_width(rect.get_width()-1)
 
         self.play(
@@ -3159,17 +3159,17 @@ class PatreonThanks(Scene):
         morty.next_to(ORIGIN, DOWN)
 
         n_patrons = len(self.specific_patrons)
-        special_thanks = TextMobject("Special thanks to:")
+        special_thanks = TexText("Special thanks to:")
         special_thanks.set_color(YELLOW)
         special_thanks.shift(3*UP)
         patreon_logo = ImageMobject("patreon", invert = False)
         patreon_logo.set_height(1.5)
         patreon_logo.next_to(special_thanks, DOWN)
 
-        left_patrons = VGroup(*list(map(TextMobject,
+        left_patrons = VGroup(*list(map(TexText,
             self.specific_patrons[:n_patrons/2]
         )))
-        right_patrons = VGroup(*list(map(TextMobject,
+        right_patrons = VGroup(*list(map(TexText,
             self.specific_patrons[n_patrons/2:]
         )))
         for patrons, vect in (left_patrons, LEFT), (right_patrons, RIGHT):
@@ -3208,7 +3208,7 @@ class CreditTwo(Scene):
         headphones.move_to(morty.eyes, aligned_edge = DOWN)
         headphones.shift(0.1*DOWN)
 
-        url = TextMobject("www.audible.com/3blue1brown")
+        url = TexText("www.audible.com/3blue1brown")
         url.to_corner(UP+RIGHT, buff = LARGE_BUFF)
 
         self.add(morty)
@@ -3249,7 +3249,7 @@ class FinalAnimation(ZetaTransformationScene):
         self.add_transformable_plane()
         self.add_extra_plane_lines_for_zeta()
         self.add_reflected_plane()
-        title = TexMobject("s", "\\to \\frac{d\\zeta}{ds}(", "s", ")")
+        title = Tex("s", "\\to \\frac{d\\zeta}{ds}(", "s", ")")
         title.set_color_by_tex("s", YELLOW)
         title.add_background_rectangle()
         title.scale(1.5)
@@ -3276,7 +3276,7 @@ class Thumbnail(ZetaTransformationScene):
         # self.apply_zeta_function()
         self.plane.set_stroke(width = 4)
 
-        div_sum = TexMobject("-\\frac{1}{12} = ", "1+2+3+4+\\cdots")
+        div_sum = Tex("-\\frac{1}{12} = ", "1+2+3+4+\\cdots")
         div_sum.set_width(FRAME_WIDTH-1)
         div_sum.to_edge(DOWN)
         div_sum.set_color(YELLOW)
@@ -3284,11 +3284,11 @@ class Thumbnail(ZetaTransformationScene):
         # for mob in div_sum.submobjects:
         #     mob.add_to_back(BackgroundRectangle(mob))
 
-        zeta = TexMobject("\\zeta(s)")
+        zeta = Tex("\\zeta(s)")
         zeta.set_height(FRAME_Y_RADIUS-1)
         zeta.to_corner(UP+LEFT)
 
-        million = TexMobject("\\$1{,}000{,}000")
+        million = Tex("\\$1{,}000{,}000")
         million.set_width(FRAME_X_RADIUS+1)
         million.to_edge(UP+RIGHT)
         million.set_color(GREEN_B)
@@ -3308,12 +3308,12 @@ class ZetaPartialSums(ZetaTransformationScene):
         self.prepare_for_transformation(self.plane)
 
         N_list = [2**k for k in range(self.num_partial_sums)]
-        sigma = TexMobject(
+        sigma = Tex(
             "\\sum_{n = 1}^N \\frac{1}{n^s}"
         )
         sigmas = []
         for N in N_list + ["\\infty"]:
-            tex = TexMobject(str(N))
+            tex = Tex(str(N))
             tex.set_color(YELLOW)
             new_sigma = sigma.copy()
             top = new_sigma[0]
@@ -3332,7 +3332,7 @@ class ZetaPartialSums(ZetaTransformationScene):
             for N in N_list
         ]
         interim_planes.append(self.plane.copy().apply_complex_function(zeta))
-        symbol = VGroup(TexMobject("s"))
+        symbol = VGroup(Tex("s"))
         symbol.scale(2)
         symbol.set_color(YELLOW)
         symbol.to_corner(UP+LEFT)

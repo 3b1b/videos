@@ -36,11 +36,11 @@ class FormulasAreLies(PiCreatureScene):
             "\\sqrt{\\,": WHITE,
         }
         kwargs = {"tex_to_color_map": t2c}
-        period_eq = TexMobject(
+        period_eq = Tex(
             "\\text{Period} = 2\\pi \\sqrt{\\,{L} / {g}}",
             **kwargs
         )
-        theta_eq = TexMobject(
+        theta_eq = Tex(
             "\\theta(t) = \\theta_0 \\cos\\left("
             "\\sqrt{\\,{L} / {g}} \\cdot t"
             "\\right)",
@@ -54,7 +54,7 @@ class FormulasAreLies(PiCreatureScene):
             eq.sqrt_part = eq[i:i + 4]
 
         theta0 = theta_eq.get_part_by_tex("\\theta_0")
-        theta0_words = TextMobject("Starting angle")
+        theta0_words = TexText("Starting angle")
         theta0_words.next_to(theta0, UL)
         theta0_words.shift(UP + 0.5 * RIGHT)
         arrow = Arrow(
@@ -140,31 +140,31 @@ class ProveTeacherWrong(TeacherStudentsScene):
                 "{\\ddot\\theta}": RED,
             }
         }
-        func = TexMobject(
+        func = Tex(
             "{\\theta}(t)", "=",
             "\\theta_0", "\\cos(\\sqrt{g / L} \\cdot t)",
             **tex_config,
         )
-        d_func = TexMobject(
+        d_func = Tex(
             "{\\dot\\theta}(t)", "=",
             "-\\left(\\sqrt{g / L}\\right)",
             "\\theta_0", "\\sin(\\sqrt{g / L} \\cdot t)",
             **tex_config,
         )
-        dd_func = TexMobject(
+        dd_func = Tex(
             "{\\ddot\\theta}(t)", "=",
             "-\\left(g / L\\right)",
             "\\theta_0", "\\cos(\\sqrt{g / L} \\cdot t)",
             **tex_config,
         )
-        # ode = TexMobject(
+        # ode = Tex(
         #     "\\ddot {\\theta}({t})", "=",
         #     "-\\mu \\dot {\\theta}({t})",
         #     "-{g \\over L} \\sin\\big({\\theta}({t})\\big)",
         #     **tex_config,
         # )
         ode = get_ode()
-        arrows = [TexMobject("\\Downarrow") for x in range(2)]
+        arrows = [Tex("\\Downarrow") for x in range(2)]
 
         VGroup(func, d_func, dd_func, ode, *arrows).scale(0.7)
 
@@ -186,7 +186,7 @@ class ProveTeacherWrong(TeacherStudentsScene):
             path_arc=PI / 2,
         )
         q_marks = VGroup(*[
-            TexMobject("?").scale(1.5).next_to(
+            Tex("?").scale(1.5).next_to(
                 arrow.point_from_proportion(a),
                 UP
             )
@@ -233,7 +233,7 @@ class ProveTeacherWrong(TeacherStudentsScene):
 class PhysicistPhaseSpace(PiCreatureScene):
     def construct(self):
         physy = self.pi_creature
-        name = TextMobject("Physicist")
+        name = TexText("Physicist")
         name.scale(1.5)
         name.to_corner(DL, buff=MED_SMALL_BUFF)
         physy.next_to(name, UP, SMALL_BUFF)
@@ -249,12 +249,12 @@ class PhysicistPhaseSpace(PiCreatureScene):
         axes.next_to(physy, RIGHT)
         axes.to_edge(UP)
         axes.set_stroke(width=1)
-        x_label = TextMobject("Position")
+        x_label = TexText("Position")
         x_label.next_to(axes.x_axis.get_right(), UP)
-        y_label = TextMobject("Momentum")
+        y_label = TexText("Momentum")
         y_label.next_to(axes.y_axis.get_top(), RIGHT)
 
-        title = TextMobject("Phase space")
+        title = TexText("Phase space")
         title.scale(1.5)
         title.set_color(YELLOW)
         title.move_to(axes)
@@ -324,7 +324,7 @@ class HungerForExactness(TeacherStudentsScene):
         friction_part = ode[5:11]
         self.add(ode)
 
-        proposed_solution = TexMobject(
+        proposed_solution = Tex(
             "\\theta_0\\cos((\\sqrt{g/L})t)e^{-\\mu t}"
         )
         proposed_solution.next_to(
@@ -336,7 +336,7 @@ class HungerForExactness(TeacherStudentsScene):
         proposed_solution_rect.set_color(BLUE)
         proposed_solution_rect.round_corners()
 
-        solution_p1 = TexMobject(
+        solution_p1 = Tex(
             """
             \\theta(t) = 2\\text{am}\\left(
                 \\frac{\\sqrt{2g + Lc_1} (t + c_2)}{2\\sqrt{L}},
@@ -345,31 +345,31 @@ class HungerForExactness(TeacherStudentsScene):
             """,
         )
         solution_p1.to_corner(UL)
-        solution_p2 = TexMobject(
+        solution_p2 = Tex(
             "c_1, c_2 = \\text{Constants depending on initial conditions}"
         )
         solution_p2.set_color(GREY_B)
         solution_p2.scale(0.75)
-        solution_p3 = TexMobject(
+        solution_p3 = Tex(
             """
             \\text{am}(u, k) =
             \\int_0^u \\text{dn}(v, k)\\,dv
             """
         )
-        solution_p3.name = TextMobject(
+        solution_p3.name = TexText(
             "(Jacobi amplitude function)"
         )
-        solution_p4 = TexMobject(
+        solution_p4 = Tex(
             """
             \\text{dn}(u, k) =
             \\sqrt{1 - k^2 \\sin^2(\\phi)}
             """
         )
-        solution_p4.name = TextMobject(
+        solution_p4.name = TexText(
             "(Jacobi elliptic function)"
         )
-        solution_p5 = TextMobject("Where $\\phi$ satisfies")
-        solution_p6 = TexMobject(
+        solution_p5 = TexText("Where $\\phi$ satisfies")
+        solution_p6 = Tex(
             """
             u = \\int_0^\\phi \\frac{dt}{\\sqrt{1 - k^2 \\sin^2(t)}}
             """
@@ -467,7 +467,7 @@ class HungerForExactness(TeacherStudentsScene):
         )
         self.wait(3)
 
-        mystery = TexMobject(
+        mystery = Tex(
             "\\theta(t) = ???",
             tex_to_color_map={"\\theta": BLUE},
         )

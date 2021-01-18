@@ -52,14 +52,14 @@ class ProbabilityDistributions(PiCreatureScene):
         text_scale =  0.7
 
         brace_rain = Brace(rain_rect, UP)
-        p_rain_label = TextMobject("$P($rain$)=$").scale(text_scale)
+        p_rain_label = TexText("$P($rain$)=$").scale(text_scale)
         p_rain_decimal = DecimalNumber(p_rain).scale(text_scale)
         p_rain_decimal.next_to(p_rain_label)
         p_rain_whole_label = VGroup(p_rain_label, p_rain_decimal)
         p_rain_whole_label.next_to(brace_rain, UP)
 
         brace_sun = Brace(sun_rect, DOWN)
-        p_sun_label = TextMobject("$P($sunshine$)=$").scale(text_scale)
+        p_sun_label = TexText("$P($sunshine$)=$").scale(text_scale)
         p_sun_decimal = DecimalNumber(p_sun).scale(text_scale)
         p_sun_decimal.next_to(p_sun_label)
         p_sun_whole_label = VGroup(p_sun_label, p_sun_decimal)
@@ -91,7 +91,7 @@ class ProbabilityDistributions(PiCreatureScene):
         # new_sun.move_to(new_sun_rect)
 
         # new_brace_rain = Brace(new_rain_rect, UP)
-        # new_p_rain_label = TextMobject("$P($rain$)=$").scale(text_scale)
+        # new_p_rain_label = TexText("$P($rain$)=$").scale(text_scale)
         # new_p_rain_decimal = DecimalNumber(new_p_rain).scale(text_scale)
         # new_p_rain_decimal.next_to(new_p_rain_label)
         # new_p_rain_whole_label = VGroup(new_p_rain_label, new_p_rain_decimal)
@@ -99,7 +99,7 @@ class ProbabilityDistributions(PiCreatureScene):
 
         
         # new_brace_sun = Brace(new_sun_rect, DOWN)
-        # new_p_sun_label = TextMobject("$P($sunshine$)=$").scale(text_scale)
+        # new_p_sun_label = TexText("$P($sunshine$)=$").scale(text_scale)
         # new_p_sun_decimal = DecimalNumber(new_p_sun).scale(text_scale)
         # new_p_sun_decimal.next_to(new_p_sun_label)
         # new_p_sun_whole_label = VGroup(new_p_sun_label, new_p_sun_decimal)
@@ -233,7 +233,7 @@ class ProbabilityDistributions(PiCreatureScene):
 
 # TITLE
 
-        text = TextMobject("Probability distributions")
+        text = TexText("Probability distributions")
         text.to_edge(UP)
         text_rect = SurroundingRectangle(text, buff=MED_SMALL_BUFF)
         text_rect.match_color(text)
@@ -266,7 +266,7 @@ class ProbabilityDistributions(PiCreatureScene):
         braces = VGroup()
         labels = VGroup()
         for (rect, count) in zip(brick_row.rects, counts):
-            label = TexMobject("{" + str(count) + "\\over 8}").scale(0.5)
+            label = Tex("{" + str(count) + "\\over 8}").scale(0.5)
             brace = Brace(rect, DOWN)
             label.next_to(brace, DOWN)
             braces.add(brace)
@@ -290,7 +290,7 @@ class ProbabilityDistributions(PiCreatureScene):
             Brace(outcome, DOWN) for outcome in outcomes
         ])
         outcome_labels = VGroup(*[
-            TexMobject("{1\over 8}").scale(0.5).next_to(brace, DOWN)
+            Tex("{1\over 8}").scale(0.5).next_to(brace, DOWN)
             for brace in outcome_braces
         ])
 

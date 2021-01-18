@@ -28,9 +28,9 @@ class Thumbnail1(Scene):
         }
         kw = {"tex_to_color_map": t2c}
         text = VGroup(
-            TextMobject(f"{p1} with {n1} reviews", **kw),
-            TextMobject("vs.", **kw),
-            TextMobject(f"{p2} with {n2} reviews", **kw),
+            TexText(f"{p1} with {n1} reviews", **kw),
+            TexText("vs.", **kw),
+            TexText(f"{p2} with {n2} reviews", **kw),
         )
         text.scale(2)
         text.arrange(DOWN, buff=LARGE_BUFF)
@@ -59,7 +59,7 @@ class AltThumbnail1(Scene):
         hist.bars.set_submobject_colors_by_gradient(YELLOW, YELLOW, GREEN, BLUE)
         hist.bars.set_stroke(WHITE, 2)
 
-        title = TextMobject("Binomial distribution")
+        title = TexText("Binomial distribution")
         title.set_width(12)
         title.to_corner(UR, buff=0.8)
         title.add_background_rectangle()
@@ -96,7 +96,7 @@ class Thumbnail2(Scene):
         )
         self.add(arrow)
 
-        formula = TexMobject(
+        formula = Tex(
             "P(H|D) = {P(H)P(D|H) \\over P(D)}",
             tex_to_color_map={
                 "H": YELLOW,
@@ -128,7 +128,7 @@ class Thumbnail3(Thumbnail2):
         self.add(axes)
         self.add(graph)
 
-        label = TexMobject(
+        label = Tex(
             "\\text{Beta}(10, 3)",
             tex_to_color_map={
                 "10": GREEN,
@@ -177,7 +177,7 @@ class HighlightReviewParts(Scene):
 
         review_labels = VGroup()
         for rect, rating, nr, color in zip(rects, ratings, n_reviews, colors):
-            label = TexMobject(
+            label = Tex(
                 f"{nr}", "\\text{ reviews }",
                 f"{rating}", "\\%",
             )
@@ -300,7 +300,7 @@ class ShowThreeCases(Scene):
                 m1.replace(m2)
 
         alt_percents = VGroup(*[
-            TexMobject(str(10 * (10 - k)) + "\\%")
+            Tex(str(10 * (10 - k)) + "\\%")
             for k in alt_negs
         ])
         hundo = titles[0][0]
@@ -350,7 +350,7 @@ class ShowThreeCases(Scene):
             run_time=2,
         )
 
-        greater_than = TexMobject(">")
+        greater_than = Tex(">")
         greater_than.scale(2)
         greater_than.move_to(midpoint(
             reviews[2].get_right(),
@@ -392,15 +392,15 @@ class ShowThreeCases(Scene):
 
     def get_titles(self):
         titles = VGroup(
-            TextMobject(
+            TexText(
                 "$100\\%$ \\\\",
                 "10 reviews"
             ),
-            TextMobject(
+            TexText(
                 "$96\\%$ \\\\",
                 "50 reviews"
             ),
-            TextMobject(
+            TexText(
                 "$93\\%$ \\\\",
                 "200 reviews"
             ),
@@ -429,8 +429,8 @@ class ShowThreeCases(Scene):
         )
 
     def get_plusses_and_minuses(self, title, n_rows, n_cols, n_minus):
-        check = TexMobject(CMARK_TEX, color=GREEN)
-        cross = TexMobject(XMARK_TEX, color=RED)
+        check = Tex(CMARK_TEX, color=GREEN)
+        cross = Tex(XMARK_TEX, color=RED)
         checks = VGroup(*[
             check.copy() for x in range(n_rows * n_cols)
         ])
@@ -452,9 +452,9 @@ class PreviewThreeVideos(Scene):
     def construct(self):
         # Write equations
         equations = VGroup(
-            TexMobject("{10", "\\over", "10}", "=", "100\\%"),
-            TexMobject("{48", "\\over", "50}", "=", "96\\%"),
-            TexMobject("{186", "\\over", "200}", "=", "93\\%"),
+            Tex("{10", "\\over", "10}", "=", "100\\%"),
+            Tex("{48", "\\over", "50}", "=", "96\\%"),
+            Tex("{186", "\\over", "200}", "=", "93\\%"),
         )
         equations.arrange(RIGHT, buff=3)
         equations.to_edge(UP)
@@ -464,7 +464,7 @@ class PreviewThreeVideos(Scene):
             eq[-1].set_color(color)
             fix_percent(eq[-1][-1])
 
-        vs_labels = VGroup(*[TextMobject("vs.") for x in range(2)])
+        vs_labels = VGroup(*[TexText("vs.") for x in range(2)])
         for eq1, eq2, vs in zip(equations, equations[1:], vs_labels):
             vs.move_to(midpoint(eq1.get_right(), eq2.get_left()))
 
@@ -472,17 +472,17 @@ class PreviewThreeVideos(Scene):
         self.add(vs_labels)
 
         # Show topics
-        title = TextMobject("To be explained:")
+        title = TexText("To be explained:")
         title.set_height(0.7)
         title.next_to(equations, DOWN, LARGE_BUFF)
         title.to_edge(LEFT)
         title.add(Underline(title))
 
         topics = VGroup(
-            TextMobject("Binomial distributions"),
-            TextMobject("Bayesian updating"),
-            TextMobject("Probability density functions"),
-            TextMobject("Beta distribution"),
+            TexText("Binomial distributions"),
+            TexText("Bayesian updating"),
+            TexText("Probability density functions"),
+            TexText("Beta distribution"),
         )
         topics.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         topics.next_to(title, DOWN, MED_LARGE_BUFF)
@@ -549,8 +549,8 @@ class PreviewThreeVideos(Scene):
             Group(thumbnails[2], topics[3]),
         )
 
-        setup_words = TextMobject("Set up the model")
-        analysis_words = TextMobject("Analysis")
+        setup_words = TexText("Set up the model")
+        analysis_words = TexText("Analysis")
         for words in [setup_words, analysis_words]:
             words.scale(topics[0][0].get_height() / words[0][0].get_height())
             words.set_color(YELLOW)
@@ -613,7 +613,7 @@ class LetsLookAtOneAnswer(TeacherStudentsScene):
 class LaplacesRuleOfSuccession(Scene):
     def construct(self):
         # Setup
-        title = TextMobject("How to read a rating")
+        title = TexText("How to read a rating")
         title.set_height(0.75)
         title.to_edge(UP)
         underline = Underline(title)
@@ -630,7 +630,7 @@ class LaplacesRuleOfSuccession(Scene):
         def get_review_label(num, denom):
             result = VGroup(
                 Integer(num, color=GREEN),
-                TextMobject("out of"),
+                TexText("out of"),
                 Integer(denom),
             )
             result.arrange(RIGHT)
@@ -656,7 +656,7 @@ class LaplacesRuleOfSuccession(Scene):
         fd_rect.set_stroke(WHITE, 2)
         fd_rect.set_fill(GREY_E, 1)
 
-        fd_label = TextMobject("Pretend you see\\\\two more")
+        fd_label = TexText("Pretend you see\\\\two more")
         fd_label.next_to(fd_rect, DOWN)
         fd_label.shift_onto_screen()
 
@@ -672,13 +672,13 @@ class LaplacesRuleOfSuccession(Scene):
 
         # Update rating
         review_center = VectorizedPoint(review_label.get_center())
-        pretend_label = TextMobject("Pretend that it's")
+        pretend_label = TexText("Pretend that it's")
         pretend_label.match_width(review_label)
         pretend_label.next_to(review_label, UP, MED_LARGE_BUFF)
         pretend_label.match_x(data)
         pretend_label.set_color(BLUE_D)
 
-        old_review_label = VGroup(Integer(0), TextMobject("out of"), Integer(0))
+        old_review_label = VGroup(Integer(0), TexText("out of"), Integer(0))
         old_review_label.become(review_label)
 
         self.add(old_review_label, review_label)
@@ -701,7 +701,7 @@ class LaplacesRuleOfSuccession(Scene):
         self.wait()
 
         # Show fraction
-        eq = TexMobject(
+        eq = Tex(
             "{11", "\\over", "12}",
             "\\approx", "91.7\\%"
         )
@@ -787,7 +787,7 @@ class LaplacesRuleOfSuccession(Scene):
         self.wait()
 
         # Pretend it's 49 / 52
-        old_review_label = VGroup(Integer(0), TextMobject("out of"), Integer(0))
+        old_review_label = VGroup(Integer(0), TexText("out of"), Integer(0))
         old_review_label.become(review_label)
         review_center = VectorizedPoint(review_label.get_center())
 
@@ -810,7 +810,7 @@ class LaplacesRuleOfSuccession(Scene):
         arrow2 = Vector(0.5 * RIGHT)
         arrow2.next_to(old_review_label, RIGHT)
 
-        eq2 = TexMobject(
+        eq2 = Tex(
             "{49", "\\over", "52}",
             "\\approx", "94.2\\%"
         )
@@ -874,7 +874,7 @@ class LaplacesRuleOfSuccession(Scene):
         arrow3 = Vector(0.5 * RIGHT)
         arrow3.next_to(final_review_label, RIGHT)
 
-        eq3 = TexMobject(
+        eq3 = Tex(
             "{187", "\\over", "202}",
             "\\approx", "92.6\\%"
         )
@@ -906,7 +906,7 @@ class LaplacesRuleOfSuccession(Scene):
         self.wait()
 
         # Retitle
-        name = TextMobject("Laplace's rule of succession")
+        name = TexText("Laplace's rule of succession")
         name.match_height(title)
         name.move_to(title)
         name.set_color(TEAL)
@@ -945,7 +945,7 @@ class AskWhy(TeacherStudentsScene):
 
 class BinomialName(Scene):
     def construct(self):
-        text = TextMobject("Probabilities of probabilities\\\\", "Part 1")
+        text = TexText("Probabilities of probabilities\\\\", "Part 1")
         text.set_width(FRAME_WIDTH - 1)
         text[0].set_color(BLUE)
         self.add(text[0])
@@ -971,8 +971,8 @@ class WhatsTheModel(Scene):
 
     def add_questions(self):
         questions = VGroup(
-            TextMobject("What's the model?"),
-            TextMobject("What are you optimizing?"),
+            TexText("What's the model?"),
+            TexText("What are you optimizing?"),
         )
         for question, vect in zip(questions, [LEFT, RIGHT]):
             question.move_to(vect * FRAME_WIDTH / 4)
@@ -1001,11 +1001,11 @@ class WhatsTheModel(Scene):
 
         seller = Randolph(mode="coin_flip_1")
         seller.to_edge(LEFT)
-        seller.label = TextMobject("Seller")
+        seller.label = TexText("Seller")
 
         buyer = Mortimer()
         buyer.to_edge(RIGHT)
-        buyer.label = TextMobject("Buyer")
+        buyer.label = TexText("Buyer")
 
         VGroup(buyer, seller).shift(DOWN)
 
@@ -1034,7 +1034,7 @@ class WhatsTheModel(Scene):
         buyer = self.buyer
 
         label = get_prob_positive_experience_label()
-        label.add(TexMobject("=").next_to(label, RIGHT))
+        label.add(Tex("=").next_to(label, RIGHT))
         rhs = DecimalNumber(0.75)
         rhs.next_to(label, RIGHT)
         rhs.align_to(label[0], DOWN)
@@ -1067,7 +1067,7 @@ class WhatsTheModel(Scene):
         grey_box = SurroundingRectangle(rhs, buff=SMALL_BUFF)
         grey_box.set_stroke(GREY_E, 0.5)
         grey_box.set_fill(GREY_D, 1)
-        lil_q_marks = TexMobject("???")
+        lil_q_marks = Tex("???")
         lil_q_marks.scale(0.5)
         lil_q_marks.next_to(buyer, UP)
 
@@ -1116,7 +1116,7 @@ class WhatsTheModel(Scene):
     #
     def experience_animations(self, seller, buyer, arc=-30 * DEGREES, p=0.75):
         positive = (random.random() < p)
-        words = TextMobject(
+        words = TexText(
             "Positive\\\\experience"
             if positive else
             "Negative\\\\experience"
@@ -1162,7 +1162,7 @@ class IsSellerOne100(Scene):
         self.show_simulated_reviews()
 
     def add_review(self):
-        reviews = VGroup(*[TexMobject(CMARK_TEX) for x in range(10)])
+        reviews = VGroup(*[Tex(CMARK_TEX) for x in range(10)])
         reviews.arrange(RIGHT)
         reviews.scale(2)
         reviews.set_color(GREEN)
@@ -1174,7 +1174,7 @@ class IsSellerOne100(Scene):
         ])
         blanks.shift(0.25 * reviews[0].get_width() * LEFT)
 
-        label = TextMobject(
+        label = TexText(
             " out of ",
         )
         tens = VGroup(*[Integer(10) for x in range(2)])
@@ -1207,7 +1207,7 @@ class IsSellerOne100(Scene):
         review_group = self.review_group
 
         prob_label = get_prob_positive_experience_label()
-        prob_label.add(TexMobject("=").next_to(prob_label, RIGHT))
+        prob_label.add(Tex("=").next_to(prob_label, RIGHT))
         rhs = DecimalNumber(1)
         rhs.next_to(prob_label, RIGHT)
         rhs.set_color(YELLOW)
@@ -1215,7 +1215,7 @@ class IsSellerOne100(Scene):
         prob_label.scale(2)
         prob_label.to_corner(UL)
 
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.set_color(YELLOW)
         q_mark.match_height(rhs)
         q_mark.reference = rhs
@@ -1224,7 +1224,7 @@ class IsSellerOne100(Scene):
         rhs_rect = SurroundingRectangle(rhs, buff=0.2)
         rhs_rect.set_color(RED)
 
-        not_necessarily = TextMobject("Not necessarily!")
+        not_necessarily = TexText("Not necessarily!")
         not_necessarily.set_color(RED)
         not_necessarily.scale(1.5)
         not_necessarily.next_to(prob_label, DOWN, 1.5)
@@ -1295,7 +1295,7 @@ class IsSellerOne100(Scene):
         decimals[1].set_value(0.97)
         decimals[1].set_color(RED)
 
-        random_label = TextMobject("Random number\\\\in [0, 1]")
+        random_label = TexText("Random number\\\\in [0, 1]")
         random_label.scale(0.7)
         random_label.next_to(decimals[0], DOWN)
         random_label.set_color(GREY_B)
@@ -1311,10 +1311,10 @@ class IsSellerOne100(Scene):
             marks = VGroup()
             for dec, arrow in zip(decs, arrows):
                 if dec.get_value() < 0.95:
-                    mark = TexMobject(CMARK_TEX)
+                    mark = Tex(CMARK_TEX)
                     mark.set_color(GREEN)
                 else:
-                    mark = TexMobject(XMARK_TEX)
+                    mark = Tex(XMARK_TEX)
                     mark.set_color(RED)
                 mark.set_height(0.5)
                 mark.next_to(arrow, UP)
@@ -1323,8 +1323,8 @@ class IsSellerOne100(Scene):
 
         marks = get_marks(decimals, arrows)
 
-        lt_p95 = TexMobject("< 0.95")
-        gte_p95 = TexMobject("\\ge 0.95")
+        lt_p95 = Tex("< 0.95")
+        gte_p95 = Tex("\\ge 0.95")
         for label in lt_p95, gte_p95:
             label.match_height(decimals[0])
 
@@ -1573,11 +1573,11 @@ class LookAtAllPossibleSuccessRates(Scene):
             seller[1].set_opacity(0)
             seller[2].replace(label, dim_to_match=1)
 
-        x_label = TextMobject("All possible success rates")
+        x_label = TexText("All possible success rates")
         x_label.next_to(axes.c2p(0.5, 0), UP)
         x_label.shift(2 * LEFT)
 
-        y_axis_label = TextMobject(
+        y_axis_label = TexText(
             "A kind of probability\\\\",
             "of probabilities"
         )
@@ -1586,7 +1586,7 @@ class LookAtAllPossibleSuccessRates(Scene):
         y_axis_label.to_edge(UP)
         y_axis_label[1].set_color(YELLOW)
 
-        graph_label = TextMobject(
+        graph_label = TexText(
             "Some notion of likelihood\\\\",
             "for each one"
         )
@@ -1663,7 +1663,7 @@ class LookAtAllPossibleSuccessRates(Scene):
 
     def get_example_seller(self, success_rate):
         randy = Randolph(mode="coin_flip_1", height=1)
-        label = TexMobject("s = ")
+        label = Tex("s = ")
         decimal = DecimalNumber(success_rate)
         decimal.match_height(label)
         decimal.next_to(label[-1], RIGHT)
@@ -1700,9 +1700,9 @@ class AskAboutUnknownProbabilities(Scene):
         processes_rect.set_fill(BLACK, 1)
 
         prob_labels = VGroup(
-            TexMobject("P(", "00", ")", "=", "1 / 2"),
-            TexMobject("P(", "00", ")", "=", "1 / 6}"),
-            TexMobject("P(", "00", ")", "=", "1 / 52}"),
+            Tex("P(", "00", ")", "=", "1 / 2"),
+            Tex("P(", "00", ")", "=", "1 / 6}"),
+            Tex("P(", "00", ")", "=", "1 / 52}"),
         )
         prob_labels.scale(1.5)
         prob_labels.arrange(DOWN, aligned_edge=LEFT)
@@ -1803,7 +1803,7 @@ class AskAboutUnknownProbabilities(Scene):
 
         arrow = Vector(UP)
         arrow.next_to(half, DOWN)
-        question = TextMobject("What exactly does\\\\this mean?")
+        question = TexText("What exactly does\\\\this mean?")
         question.next_to(arrow, DOWN)
 
         self.play(
@@ -1822,7 +1822,7 @@ class AskAboutUnknownProbabilities(Scene):
         self.show_many_coins(40, 100)
 
         # Make probability itself unknown
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.set_color(YELLOW)
         q_marks.replace(half, dim_to_match=0)
 
@@ -1841,8 +1841,8 @@ class AskAboutUnknownProbabilities(Scene):
         # self.embed()
 
     def get_titles(self):
-        unknown_label = TextMobject("Random process")
-        prob_label = TextMobject("Long-run frequency")
+        unknown_label = TexText("Random process")
+        prob_label = TexText("Long-run frequency")
         titles = VGroup(unknown_label, prob_label)
         titles.scale(1.25)
 
@@ -1898,10 +1898,10 @@ class AskAboutUnknownProbabilities(Scene):
 class AskProbabilityOfCoins(Scene):
     def construct(self):
         condition = VGroup(
-            TextMobject("If you've seen"),
+            TexText("If you've seen"),
             Integer(80, color=BLUE_C),
             get_coin("H").set_height(0.5),
-            TextMobject("and"),
+            TexText("and"),
             Integer(20, color=RED_C),
             get_coin("T").set_height(0.5),
         )
@@ -1909,7 +1909,7 @@ class AskProbabilityOfCoins(Scene):
         condition.to_edge(UP)
         self.add(condition)
 
-        question = TexMobject(
+        question = Tex(
             "\\text{What is }",
             "P(", "00", ")", "?"
         )
@@ -2012,13 +2012,13 @@ class RunCarFactory(Scene):
 class CarFactoryNumbers(Scene):
     def construct(self):
         # Test words
-        denom_words = TextMobject(
+        denom_words = TexText(
             "in a test of 100 cars",
             tex_to_color_map={"100": BLUE},
         )
         denom_words.to_corner(UR)
 
-        numer_words = TextMobject(
+        numer_words = TexText(
             "2 defects found",
             tex_to_color_map={"2": RED}
         )
@@ -2034,10 +2034,10 @@ class CarFactoryNumbers(Scene):
 
         # Question words
         question = VGroup(
-            TextMobject("How do you plan"),
-            TextMobject("for"),
+            TexText("How do you plan"),
+            TexText("for"),
             Integer(int(1e6), color=BLUE),
-            TextMobject("cars?")
+            TexText("cars?")
         )
         question[1:].arrange(RIGHT, aligned_edge=DOWN)
         question[2].shift(
@@ -2130,7 +2130,7 @@ class ComplainAboutSimplisticModel(TeacherStudentsScene):
         )
         axes.set_stroke(GREY_B, 1)
         axes.set_height(3)
-        y_label = TextMobject("Experience quality")
+        y_label = TexText("Experience quality")
         y_label.scale(0.5)
         y_label.next_to(axes.y_axis.get_top(), RIGHT, SMALL_BUFF)
         axes.add(y_label)
@@ -2164,7 +2164,7 @@ class ComingUpWrapper(Scene):
         background = FullScreenFadeRectangle()
         background.set_fill(GREY_E, 1)
 
-        title = TextMobject("What's coming...")
+        title = TexText("What's coming...")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -2305,7 +2305,7 @@ class AskInverseQuestion(WhatsTheModel):
         self.wait(2)
 
         # Succinct
-        short_label = TexMobject(
+        short_label = Tex(
             "P(\\text{data} | s)",
             tex_to_color_map={
                 "\\text{data}": GREY_B,
@@ -2326,7 +2326,7 @@ class AskInverseQuestion(WhatsTheModel):
         self.wait()
 
     def get_prob_review_label(self, n_positive, n_negative):
-        label = TexMobject(
+        label = Tex(
             "P(",
             f"{n_positive}\\,{CMARK_TEX}", ",\\,",
             f"{n_negative}\\,{XMARK_TEX}",
@@ -2351,7 +2351,7 @@ class SimulationsOf10Reviews(Scene):
 
     def construct(self):
         # Add s label
-        s_label = TexMobject("s = 0.95")
+        s_label = Tex("s = 0.95")
         s_label.set_height(0.3)
         s_label.to_corner(UL, buff=MED_SMALL_BUFF)
         s_label.set_color(YELLOW)
@@ -2546,7 +2546,7 @@ class SimulationsOf50Reviews(Scene):
         arrow.next_to(histogram.bars[10], UP, SMALL_BUFF)
 
         total_data_label = VGroup(
-            TextMobject("Total samples: "),
+            TexText("Total samples: "),
             Integer(1),
         )
         total_data_label.arrange(RIGHT)
@@ -2596,7 +2596,7 @@ class SimulationsOf50Reviews(Scene):
             axes.c2p(0, y),
             axes.c2p(51, y),
         )
-        label = TexMobject("{:.1f}\\%".format(100 * y))
+        label = Tex("{:.1f}\\%".format(100 * y))
         fix_percent(label.family_members_with_points()[-1])
         label.next_to(line, RIGHT)
 
@@ -2606,7 +2606,7 @@ class SimulationsOf50Reviews(Scene):
         )
 
     def add_s_label(self):
-        s_label = TexMobject("s = 0.95")
+        s_label = Tex("s = 0.95")
         s_label.set_height(0.3)
         s_label.to_corner(UL, buff=MED_SMALL_BUFF)
         s_label.shift(0.8 * DOWN)
@@ -2662,7 +2662,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
 
         # Formula
         prob_label = get_prob_review_label(48, 2)
-        eq = TexMobject("=")
+        eq = Tex("=")
         formula = get_binomial_formula(50, 48, self.s)
 
         equation = VGroup(
@@ -2708,7 +2708,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
             self.play(FadeOut(rect))
 
         # Show numerical answer
-        eq2 = TexMobject("=")
+        eq2 = Tex("=")
         value = DecimalNumber(dist.pmf(48), num_decimal_places=5)
         rhs = VGroup(eq2, value)
         rhs.arrange(RIGHT)
@@ -2743,7 +2743,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
 
         # Name it as the Binomial distribution
         long_equation = VGroup(prob_label, eq, formula, eq2, value)
-        bin_name = TextMobject("Binomial", " Distribution")
+        bin_name = TexText("Binomial", " Distribution")
         bin_name.scale(1.5)
         bin_name.next_to(histogram, UP, MED_LARGE_BUFF)
 
@@ -2768,13 +2768,13 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
         self.wait()
 
         # Show likelihood and posterior labels
-        likelihood_label = TexMobject(
+        likelihood_label = Tex(
             "P(",
             "\\text{data}", "\\,|\\,",
             "\\text{success rate}",
             ")",
         )
-        posterior_label = TexMobject(
+        posterior_label = Tex(
             "P(",
             "\\text{success rate}",
             "\\,|\\,",
@@ -2793,7 +2793,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
 
         right_arrow = Vector(RIGHT)
         right_arrow.next_to(likelihood_label, RIGHT)
-        ra_label = TextMobject("But we want")
+        ra_label = TexText("But we want")
         ra_label.match_width(right_arrow)
         ra_label.next_to(right_arrow, UP, SMALL_BUFF)
         posterior_label.next_to(right_arrow, RIGHT)
@@ -2855,7 +2855,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
         #     ),
         #     ShowCreationThenDestruction(underline),
         # )
-        # num_checks = TexMobject("\\# " + CMARK_TEX)
+        # num_checks = Tex("\\# " + CMARK_TEX)
         # num_checks.set_color(GREEN)
         # num_checks.next_to(
         #     x_labels, RIGHT,
@@ -3019,7 +3019,7 @@ class ShowBinomialFormula(SimulationsOf50Reviews):
             self.wait()
 
         # Write formula
-        clean_form = TexMobject(
+        clean_form = Tex(
             "P(", "\\text{data}", "\\,|\\,", "{s}", ")", "=",
             "c", "\\cdot",
             "{s}", "^{\\#" + CMARK_TEX + "}",
@@ -3259,7 +3259,7 @@ class StateIndependence(Scene):
             arrow.set_color(YELLOW)
             arrows.add(arrow)
 
-        words = TextMobject("No influence")
+        words = TexText("No influence")
         words.set_height(0.25)
         words.next_to(arrows[0], DOWN)
 
@@ -3301,7 +3301,7 @@ class IllustrateBinomialSetupWithCoins(Scene):
         brace = Brace(coin_row, UP)
         brace_label = brace.get_text("$N$ times")
 
-        prob_label = TexMobject(
+        prob_label = Tex(
             "P(\\# 00 = k)",
             tex_to_color_map={
                 "00": WHITE,
@@ -3340,7 +3340,7 @@ class IllustrateBinomialSetupWithCoins(Scene):
 
 class WriteLikelihoodFunction(Scene):
     def construct(self):
-        formula = TexMobject(
+        formula = Tex(
             "f({s}) = (\\text{const.})",
             "{s}^{\\#" + CMARK_TEX + "}",
             "(1 - {s})^{\\#" + XMARK_TEX, "}",
@@ -3373,7 +3373,7 @@ class Guess96Percent(Scene):
 
         bubble = SpeechBubble(height=2, width=3)
         bubble.pin_to(randy)
-        words = TextMobject("96$\\%$, right?")
+        words = TexText("96$\\%$, right?")
         fix_percent(words[0][2])
         bubble.add_content(words)
 
@@ -3419,7 +3419,7 @@ class LikelihoodGraphFor10of10(ShowBinomialFormula):
         histogram.bars[10].set_fill(GREEN)
         histogram.to_edge(UP)
 
-        x_label = TexMobject("\\#" + CMARK_TEX)
+        x_label = Tex("\\#" + CMARK_TEX)
         x_label.set_color(GREEN)
         x_label.next_to(histogram.axes.x_axis.get_end(), RIGHT)
         histogram.add(x_label)
@@ -3431,9 +3431,9 @@ class LikelihoodGraphFor10of10(ShowBinomialFormula):
 
         # Add formula
         prob_label = get_prob_review_label(10, 0)
-        eq = TexMobject("=")
+        eq = Tex("=")
         formula = get_binomial_formula(10, 10, self.s)
-        eq2 = TexMobject("=")
+        eq2 = Tex("=")
         value = DecimalNumber(dist.pmf(10), num_decimal_places=2)
 
         equation = VGroup(prob_label, eq, formula, eq2, value)
@@ -3484,7 +3484,7 @@ class LikelihoodGraphFor10of10(ShowBinomialFormula):
 
         # Show simpler formula
         brace = Brace(formula, DOWN, buff=SMALL_BUFF)
-        simpler_formula = TexMobject("s", "^{10}")
+        simpler_formula = Tex("s", "^{10}")
         simpler_formula.set_color_by_tex("s", YELLOW)
         simpler_formula.set_color_by_tex("10", GREEN)
         simpler_formula.next_to(brace, DOWN)

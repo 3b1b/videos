@@ -32,7 +32,7 @@ class GenericMorphBrickRowIntoHistogram(Scene):
                 brick.set_stroke(width = 3)
 
         if self.show_nb_flips:
-            nb_flips_text = TextMobject("\# of flips: " + str(self.level))
+            nb_flips_text = TexText("\# of flips: " + str(self.level))
             nb_flips_text.to_corner(UR)
             self.add(nb_flips_text)
 
@@ -98,7 +98,7 @@ class MorphBrickRowIntoHistogram3(GenericMorphBrickRowIntoHistogram):
 
         x_axis = Line(ORIGIN, 10 * RIGHT, color = WHITE, buff = 0)
         x_axis.next_to(self.bars, DOWN, buff = 0)
-        #x_labels = VMobject(*[TexMobject(str(i)) for i in range(4)])
+        #x_labels = VMobject(*[Tex(str(i)) for i in range(4)])
         x_labels = VMobject()
 
         for (i, bar) in enumerate(self.bars):
@@ -106,7 +106,7 @@ class MorphBrickRowIntoHistogram3(GenericMorphBrickRowIntoHistogram):
             label.next_to(self.bar_anchors[i], DOWN)
             x_labels.add(label)
 
-        nb_tails_label = TextMobject("\# of tails")
+        nb_tails_label = TexText("\# of tails")
         nb_tails_label.next_to(x_labels[-1], RIGHT, MED_LARGE_BUFF)
 
 
@@ -117,7 +117,7 @@ class MorphBrickRowIntoHistogram3(GenericMorphBrickRowIntoHistogram):
         for i in range(0,self.prob_denominator + 1):
             y_guide = Line(5 * LEFT, 5 * RIGHT, stroke_color = GREY)
             y_guide.move_to(self.bar_anchor_height * UP + i * float(self.row.width) / self.prob_denominator * UP)
-            y_guide_label = TexMobject("{" + str(i) + "\over " + str(self.prob_denominator) + "}", color = GREY)
+            y_guide_label = Tex("{" + str(i) + "\over " + str(self.prob_denominator) + "}", color = GREY)
             y_guide_label.scale(0.7)
             y_guide_label.next_to(y_guide, LEFT)
             if i != 0:
@@ -141,7 +141,7 @@ class MorphBrickRowIntoHistogram3(GenericMorphBrickRowIntoHistogram):
         self.add_foreground_mobject(nb_tails_label)
         area_color = YELLOW
 
-        total_area_text = TextMobject("total area =", color = area_color)
+        total_area_text = TexText("total area =", color = area_color)
         area_decimal = DecimalNumber(0, color = area_color, num_decimal_places = 3)
         area_decimal.next_to(total_area_text, RIGHT)
 
@@ -196,7 +196,7 @@ class MorphBrickRowIntoHistogram20(GenericMorphBrickRowIntoHistogram):
 
         x_axis = Line(ORIGIN, 10 * RIGHT, color = WHITE, buff = 0)
         x_axis.next_to(self.bars, DOWN, buff = 0)
-        #x_labels = VMobject(*[TexMobject(str(i)) for i in range(4)])
+        #x_labels = VMobject(*[Tex(str(i)) for i in range(4)])
         x_labels = VMobject()
         for (i, bar) in enumerate(self.bars):
             if i % self.x_ticks != 0:
@@ -205,7 +205,7 @@ class MorphBrickRowIntoHistogram20(GenericMorphBrickRowIntoHistogram):
             label.next_to(self.bar_anchors[i], DOWN)
             x_labels.add(label)
 
-        nb_tails_label = TextMobject("\# of tails")
+        nb_tails_label = TexText("\# of tails")
         nb_tails_label.move_to(5 * RIGHT + 2.5 * DOWN)
         self.wait()
 

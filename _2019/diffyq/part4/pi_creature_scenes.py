@@ -66,7 +66,7 @@ class HangOnThere(TeacherStudentsScene):
         )
         axes1.set_stroke(width=2)
         axes2 = axes1.deepcopy()
-        neq = TexMobject("\\neq")
+        neq = Tex("\\neq")
         neq.scale(2)
 
         group = VGroup(axes1, neq, axes2)
@@ -184,8 +184,8 @@ class YouSaidThisWasEasier(TeacherStudentsScene):
 class LooseWithLanguage(TeacherStudentsScene):
     def construct(self):
         terms = VGroup(
-            TextMobject("``Complex number''"),
-            TextMobject("``Vector''"),
+            TexText("``Complex number''"),
+            TexText("``Vector''"),
         )
         colors = [YELLOW, BLUE]
         for term, color in zip(terms, colors):
@@ -216,7 +216,7 @@ class LooseWithLanguage(TeacherStudentsScene):
 
 class FormulaOutOfContext(TeacherStudentsScene):
     def construct(self):
-        formula = TexMobject(
+        formula = Tex(
             "c_{n} = \\int_0^1 e^{-2\\pi i {n} {t}}f({t}){dt}",
             tex_to_color_map={
                 "{n}": YELLOW,

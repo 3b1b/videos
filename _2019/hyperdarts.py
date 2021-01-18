@@ -376,7 +376,7 @@ class HyperdartScene(MovingCameraScene):
 
     def show_miss(self, point, with_dart=True):
         square = self.square
-        miss = TextMobject("Miss!")
+        miss = TexText("Miss!")
         miss.next_to(point, UP)
         to_fade = VGroup(miss)
 
@@ -397,7 +397,7 @@ class HyperdartScene(MovingCameraScene):
         return to_fade
 
     def show_game_over(self):
-        game_over = TextMobject("GAME OVER")
+        game_over = TexText("GAME OVER")
         game_over.set_width(FRAME_WIDTH - 1)
         rect = FullScreenFadeRectangle(opacity=0.25)
 
@@ -462,10 +462,10 @@ class TableOfContents(Scene):
         self.add(rect)
 
         parts = VGroup(
-            TextMobject("The game"),
-            TextMobject("The puzzle"),
-            TextMobject("The micropuzzles"),
-            TextMobject("The answer"),
+            TexText("The game"),
+            TexText("The puzzle"),
+            TexText("The micropuzzles"),
+            TexText("The answer"),
         )
 
         parts.scale(1.5)
@@ -511,7 +511,7 @@ class ShowGiantBullseye(HyperdartScene):
         self.add(board)
 
         # Label
-        label = TextMobject("``", "Bullseye", "''")
+        label = TexText("``", "Bullseye", "''")
         label.scale(1.5)
         label.next_to(square, LEFT, aligned_edge=UP)
         label.set_color(RED)
@@ -555,10 +555,10 @@ class ShowExampleHit(HyperdartScene):
         # Draw lines (with labels)
         lines = self.get_all_hit_lines(point)
         h_line, chord, elbow = lines
-        h_label = TexMobject("h")
+        h_label = Tex("h")
         h_label.next_to(h_line, LEFT, SMALL_BUFF)
 
-        chord_word = TextMobject("Chord")
+        chord_word = TexText("Chord")
         chord_word.next_to(chord.get_center(), UR, SMALL_BUFF)
 
         self.add(h_line, dot)
@@ -580,7 +580,7 @@ class ShowExampleHit(HyperdartScene):
         new_circle.match_width(chord_copy)
         new_circle.move_to(ORIGIN)
 
-        new_diam_word = TextMobject("New diameter")
+        new_diam_word = TexText("New diameter")
         new_diam_word.next_to(chord_copy, DOWN, SMALL_BUFF)
 
         outline = VGroup(
@@ -693,7 +693,7 @@ class SquareAroundTheDartBoard(HyperdartScene):
         board = Dartboard()
         board.replace(square)
 
-        title = TextMobject("Square around the dart board")
+        title = TexText("Square around the dart board")
         title.scale(1.5)
         title.next_to(square, UP, MED_LARGE_BUFF)
 
@@ -721,10 +721,10 @@ class ContrastDistributions(HyperdartScene):
 
         v_line = DashedLine(FRAME_HEIGHT * UP / 2, FRAME_HEIGHT * DOWN / 2)
 
-        left_label = TextMobject("Our distribution\\\\(uniform in the square)")
+        left_label = TexText("Our distribution\\\\(uniform in the square)")
         left_label.match_x(group)
         left_label.to_edge(UP)
-        right_label = TextMobject("More realistic distribution")
+        right_label = TexText("More realistic distribution")
         right_label.match_x(group_copy)
         right_label.to_edge(UP)
 
@@ -824,13 +824,13 @@ class ChooseXThenYUniformly(Scene):
         x_tip.add_updater(lambda m: m.move_to(axes.c2p(get_x(), 0), UP))
         y_tip.add_updater(lambda m: m.move_to(axes.c2p(0, get_y()), RIGHT))
 
-        x_eq = VGroup(TexMobject("x = "), DecimalNumber(0))
+        x_eq = VGroup(Tex("x = "), DecimalNumber(0))
         x_eq.arrange(RIGHT, SMALL_BUFF)
         x_eq[1].match_y(x_eq[0][0][1])
         x_eq[1].add_updater(lambda m: m.set_value(get_x()))
         x_eq.match_color(x_tip)
 
-        y_eq = VGroup(TexMobject("y = "), DecimalNumber(0))
+        y_eq = VGroup(Tex("y = "), DecimalNumber(0))
         y_eq.arrange(RIGHT, SMALL_BUFF)
         y_eq[1].match_y(y_eq[0][0][1])
         y_eq[1].add_updater(lambda m: m.set_value(get_y()))
@@ -938,7 +938,7 @@ class ShowDistributionOfScores(Scene):
 
         # Add score label
         score_label = VGroup(
-            TextMobject("Last score: "),
+            TexText("Last score: "),
             Integer(1)
         )
         score_label.scale(1.5)
@@ -953,7 +953,7 @@ class ShowDistributionOfScores(Scene):
         )
 
         n_trials_label = VGroup(
-            TextMobject("\\# Games: "),
+            TexText("\\# Games: "),
             Integer(0),
         )
         n_trials_label.scale(1.5)
@@ -991,7 +991,7 @@ class ShowDistributionOfScores(Scene):
             lambda m: m.move_to(axes.c2p(get_mean(), 0), DOWN)
         )
         mean_label = VGroup(
-            TextMobject("Mean = "),
+            TexText("Mean = "),
             DecimalNumber(num_decimal_places=3),
         )
         mean_label.arrange(RIGHT)
@@ -1032,12 +1032,12 @@ class ShowDistributionOfScores(Scene):
                 "unit": "\\%"
             }
         )
-        x_label = TextMobject("Score")
+        x_label = TexText("Score")
         x_label.next_to(axes.x_axis.get_right(), UR, buff=0.5)
         x_label.shift_onto_screen()
         axes.x_axis.add(x_label)
 
-        y_label = TextMobject("Relative proportion")
+        y_label = TexText("Relative proportion")
         y_label.next_to(axes.y_axis.get_top(), RIGHT, buff=0.75)
         y_label.to_edge(UP, buff=MED_SMALL_BUFF)
         axes.y_axis.add(y_label)
@@ -1113,7 +1113,7 @@ class ShowProbabilityForFirstShot(HyperdartScene):
         VGroup(square, circle).to_edge(LEFT)
 
         r_line = DashedLine(circle.get_center(), circle.get_right())
-        r_label = TexMobject("r = 1")
+        r_label = Tex("r = 1")
         r_label.next_to(r_line, DOWN, SMALL_BUFF)
         self.add(r_line, r_label)
 
@@ -1121,14 +1121,14 @@ class ShowProbabilityForFirstShot(HyperdartScene):
         dots = VGroup(*[Dot(point, radius=0.02) for point in points])
         dots.set_fill(WHITE, 0.5)
 
-        p_label = TexMobject("P", "(S > 1)", "= ")
+        p_label = Tex("P", "(S > 1)", "= ")
         square_frac = VGroup(
             circle.copy().set_height(0.5),
             Line(LEFT, RIGHT).set_width(0.7),
             square.copy().set_height(0.5).set_stroke(width=0)
         )
         square_frac.arrange(DOWN, buff=SMALL_BUFF)
-        result = TexMobject("=", "{\\pi \\over 4}")
+        result = Tex("=", "{\\pi \\over 4}")
 
         equation = VGroup(p_label, square_frac, result)
         equation.arrange(RIGHT)
@@ -1192,7 +1192,7 @@ class SamplingFourRandomNumbers(Scene):
 
         # Title
         if self.include_title:
-            title = TexMobject(
+            title = Tex(
                 self.title_tex,
                 tex_to_color_map=t2c
             )
@@ -1237,7 +1237,7 @@ class SamplingFourRandomNumbers(Scene):
             for color in colors
         ])
         labels = VGroup(*[
-            TexMobject(tex)
+            Tex(tex)
             for tex in texs
         ])
 
@@ -1258,7 +1258,7 @@ class SamplingFourRandomNumbers(Scene):
 
         # Write bit sum
         summands = VGroup(*[
-            TexMobject("\\big(", "+0.00", "\\big)^2").set_color(color)
+            Tex("\\big(", "+0.00", "\\big)^2").set_color(color)
             for color in colors
         ])
         summands.arrange(DOWN)
@@ -1274,7 +1274,7 @@ class SamplingFourRandomNumbers(Scene):
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(3)
         h_line.next_to(summands, DOWN, aligned_edge=RIGHT)
-        plus = TexMobject("+")
+        plus = Tex("+")
         plus.next_to(h_line.get_left(), UR)
         h_line.add(plus)
 
@@ -1291,8 +1291,8 @@ class SamplingFourRandomNumbers(Scene):
 
         # < or > 1
         lt, gt = signs = VGroup(
-            TexMobject("< 1 \\quad \\checkmark"),
-            TexMobject("\\ge 1 \\quad"),
+            Tex("< 1 \\quad \\checkmark"),
+            Tex("\\ge 1 \\quad"),
         )
         for sign in signs:
             sign.scale(1.5)
@@ -1459,9 +1459,9 @@ class SamplePointIn3d(SpecialThreeDScene):
         return lines
 
     def get_labels(self, lines):
-        x_label = TexMobject("x")
-        y_label = TexMobject("y")
-        z_label = TexMobject("z")
+        x_label = Tex("x")
+        y_label = Tex("y")
+        z_label = Tex("z")
         result = VGroup(x_label, y_label, z_label)
         result.rotate(90 * DEGREES, RIGHT)
         result.set_shade_in_3d(True)
@@ -1486,7 +1486,7 @@ class OverlayToPointIn3d(Scene):
             "{y}": RED,
             "{z}": BLUE,
         }
-        ineq = TexMobject(
+        ineq = Tex(
             "{x}^2 + {y}^2 + {z}^2 < 1",
             tex_to_color_map=t2c,
         )
@@ -1494,11 +1494,11 @@ class OverlayToPointIn3d(Scene):
         ineq.move_to(FRAME_WIDTH * LEFT / 4)
         ineq.to_edge(UP)
 
-        equiv = TexMobject("\\Leftrightarrow")
+        equiv = Tex("\\Leftrightarrow")
         equiv.scale(2)
         equiv.match_y(ineq)
 
-        rhs = TextMobject(
+        rhs = TexText(
             "$({x}, {y}, {z})$",
             " lies within a\\\\sphere with radius 1"
         )
@@ -1551,25 +1551,25 @@ class TwoDPlusTwoDEqualsFourD(HyperdartScene):
             }
         }
         title1 = VGroup(
-            TextMobject("First shot"),
-            TexMobject("(x_0, y_0)", **kw),
+            TexText("First shot"),
+            Tex("(x_0, y_0)", **kw),
         )
         title2 = VGroup(
-            TextMobject("Second shot"),
-            TexMobject("(x_1, y_1)", **kw),
+            TexText("Second shot"),
+            Tex("(x_1, y_1)", **kw),
         )
         title3 = VGroup(
-            TextMobject("Point in 4d space"),
-            TexMobject("(x_0, y_0, x_1, y_1)", **kw)
+            TexText("Point in 4d space"),
+            Tex("(x_0, y_0, x_1, y_1)", **kw)
         )
         titles = VGroup(title1, title2, title3)
         for title in titles:
             title.arrange(DOWN)
-        plus = TexMobject("+").scale(2)
-        equals = TexMobject("=").scale(2)
+        plus = Tex("+").scale(2)
+        equals = Tex("=").scale(2)
 
-        label1 = TexMobject("(x_0, y_0)")
-        label2 = TexMobject("(x_1, y_1)")
+        label1 = Tex("(x_0, y_0)")
+        label2 = Tex("(x_1, y_1)")
         VGroup(label1, label2).scale(0.8)
 
         title1.next_to(board, UP)
@@ -1656,7 +1656,7 @@ class ExpectedValueComputation(Scene):
             "4": RED,
         }
 
-        line1 = TexMobject(
+        line1 = Tex(
             "E[S]", "=",
             "1 \\cdot", "P(S = 1)", "+",
             "2 \\cdot", "P(S = 2)", "+",
@@ -1664,7 +1664,7 @@ class ExpectedValueComputation(Scene):
             "\\cdots",
             tex_to_color_map=t2c
         )
-        line2 = TexMobject(
+        line2 = Tex(
             "=&\\phantom{-}",
             "1 \\cdot", "\\big(", "P(S > 0)", "-", "P(S > 1)", "\\big)", "\\\\&+",
             "2 \\cdot", "\\big(", "P(S > 1)", "-", "P(S > 2)", "\\big)", "\\\\&+",
@@ -1673,7 +1673,7 @@ class ExpectedValueComputation(Scene):
             tex_to_color_map=t2c
         )
         line2[1:12].align_to(line2[13], LEFT)
-        line3 = TexMobject(
+        line3 = Tex(
             "=",
             "P(S > 0)", "+",
             "P(S > 1)", "+",
@@ -1853,7 +1853,7 @@ class SubtractHistogramParts(ShowDistributionOfScores):
             p2_arrow,
         )
 
-        p2_label = TexMobject("P(S = 2)")
+        p2_label = Tex("P(S = 2)")
         p2_label.next_to(p2_arrow, UP, SMALL_BUFF)
         p2_label.set_color(bars[1].get_fill_color())
 
@@ -1866,7 +1866,7 @@ class SubtractHistogramParts(ShowDistributionOfScores):
         self.wait()
 
         # Culumative probabilities
-        rhs = TexMobject("=", "P(S > 1)", "-", "P(S > 2)")
+        rhs = Tex("=", "P(S > 1)", "-", "P(S > 2)")
         rhs[1].set_color(YELLOW)
         rhs[3].set_color(bars[2].get_fill_color())
         rhs[2:].set_opacity(0.2)
@@ -1930,7 +1930,7 @@ class GameWithSpecifiedScore(HyperdartScene):
         board.to_edge(DOWN, buff=0.5)
 
         score_label = VGroup(
-            TextMobject("Score: "),
+            TexText("Score: "),
             Integer(1)
         )
         score_label.scale(2)
@@ -2016,7 +2016,7 @@ class HistogramScene(ShowDistributionOfScores):
         mean = np.mean(self.scores)
         mean_line.move_to(self.axes.c2p(mean, 0), DOWN)
         mean_label = VGroup(
-            *TextMobject("E[S]", "="),
+            *TexText("E[S]", "="),
             DecimalNumber(mean, num_decimal_places=3),
         )
         mean_label.arrange(RIGHT)
@@ -2036,7 +2036,7 @@ class ExpectedValueFromBars(HistogramScene):
         mean_label = self.get_mean_label()
         mean_label.remove(mean_label[-1])
 
-        equation = TexMobject(
+        equation = Tex(
             "P(S = 1)", "\\cdot", "1", "+",
             "P(S = 2)", "\\cdot", "2", "+",
             "P(S = 3)", "\\cdot", "3", "+",
@@ -2162,9 +2162,9 @@ class ProbabilitySGtOne(HistogramScene):
         geo_frac.arrange(DOWN, SMALL_BUFF, buff=SMALL_BUFF)
 
         rhs = VGroup(
-            TexMobject("="),
+            Tex("="),
             geo_frac,
-            TexMobject("= \\frac{\\pi}{4}")
+            Tex("= \\frac{\\pi}{4}")
         )
         rhs.arrange(RIGHT)
         rhs.next_to(label)
@@ -2187,7 +2187,7 @@ class ProbabilitySGtOne(HistogramScene):
         )
         self.add(new_brace)
 
-        new_label = TexMobject(
+        new_label = Tex(
             "P(S > 2)", "=", "\\,???"
         )
         new_label.next_to(new_brace[0][2], UP)
@@ -2205,7 +2205,7 @@ class ProbabilitySGtOne(HistogramScene):
         )
         self.wait()
 
-        new_rhs = TexMobject(
+        new_rhs = Tex(
             "{\\text{4d ball}", " \\over", " \\text{4d cube}}",
             # "=",
             # "{\\pi^2 / 2", "\\over", "2^4}"
@@ -2237,7 +2237,7 @@ class ProbabilitySGtOne(HistogramScene):
         )
         self.add(final_brace)
 
-        final_label = TexMobject("P(S > 3)")
+        final_label = Tex("P(S > 3)")
         final_label.next_to(final_brace[0][2], UP, SMALL_BUFF)
 
         self.play(
@@ -2258,7 +2258,7 @@ class ProbabilitySGtOne(HistogramScene):
 class VolumsOfNBalls(Scene):
     def construct(self):
         title, alt_title = [
-            TextMobject(
+            TexText(
                 "Volumes of " + tex + "-dimensional balls",
                 tex_to_color_map={tex: YELLOW},
             )
@@ -2269,7 +2269,7 @@ class VolumsOfNBalls(Scene):
             mob.to_edge(UP)
 
         formulas = VGroup(*[
-            TexMobject(
+            Tex(
                 tex,
                 tex_to_color_map={"R": WHITE}
             )
@@ -2296,7 +2296,7 @@ class VolumsOfNBalls(Scene):
         lines = VGroup()
         d_labels = VGroup()
         for dim, formula in zip(it.count(1), formulas):
-            label = VGroup(Integer(dim), TexMobject("D"))
+            label = VGroup(Integer(dim), Tex("D"))
             label.arrange(RIGHT, buff=0, aligned_edge=DOWN)
             label[0].set_color(YELLOW)
             label.move_to(formula)
@@ -2358,7 +2358,7 @@ class VolumsOfNBalls(Scene):
             Brace(formula, DOWN)
             for formula in formulas[1::2]
         ])
-        gen_form = TexMobject("{\\pi^n \\over n!}", "R^{2n}")
+        gen_form = Tex("{\\pi^n \\over n!}", "R^{2n}")
         gen_form[0].set_color(BLUE_B)
         gen_form.scale(1.5)
         gen_form.to_edge(DOWN)
@@ -2401,7 +2401,7 @@ class IntroduceGame(HyperdartScene):
         square = self.square
         circle = self.circle
 
-        title = TextMobject("Hyperdarts")
+        title = TexText("Hyperdarts")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -2453,7 +2453,7 @@ class IntroduceGame(HyperdartScene):
         square = self.square
 
         labels = VGroup(*[
-            TextMobject("2 ft").next_to(
+            TexText("2 ft").next_to(
                 square.get_edge_center(vect), vect,
             )
             for vect in [DOWN, RIGHT]
@@ -2485,7 +2485,7 @@ class IntroduceGame(HyperdartScene):
         circle.save_state()
         circle.replace(board[-1])
 
-        label = TextMobject("Bullseye")
+        label = TexText("Bullseye")
         label.scale(1.5)
         label.next_to(square, LEFT, aligned_edge=UP)
         label.set_color(RED)
@@ -2499,7 +2499,7 @@ class IntroduceGame(HyperdartScene):
             square.get_left(),
             stroke_width=2,
         )
-        radius_label = TextMobject("1 ft")
+        radius_label = TexText("1 ft")
         radius_label.next_to(radius, DOWN, SMALL_BUFF)
 
         self.add(circle, self.square_dimensions)
@@ -2548,7 +2548,7 @@ class IntroduceGame(HyperdartScene):
         square = self.square
         point = square.get_corner(UL) + 0.5 * DR
 
-        miss_word = TextMobject("Miss!")
+        miss_word = TexText("Miss!")
         miss_word.scale(1.5)
         miss_word.next_to(point, UP, LARGE_BUFF)
 
@@ -2570,7 +2570,7 @@ class IntroduceGame(HyperdartScene):
         self.wait()
 
         # Close to border
-        label = TextMobject("Bad shot $\\Rightarrow$ much shrinkage")
+        label = TexText("Bad shot $\\Rightarrow$ much shrinkage")
         label.scale(1.5)
         label.to_edge(UP)
 
@@ -2582,7 +2582,7 @@ class IntroduceGame(HyperdartScene):
         self.play(Restore(circle))
 
         # Close to center
-        new_label = TextMobject("Good shot $\\Rightarrow$ less shrinkage")
+        new_label = TexText("Good shot $\\Rightarrow$ less shrinkage")
         new_label.scale(1.5)
         new_label.to_edge(UP)
         point = 0.2 * circle.point_from_proportion(3 / 8)
@@ -2616,7 +2616,7 @@ class ShowScoring(HyperdartScene):
 
     def comment_on_score(self):
         score_label = self.score_label
-        comment = TextMobject("\\# Bullseyes")
+        comment = TexText("\\# Bullseyes")
         # rect = SurroundingRectangle(comment)
         # rect.set_stroke(width=1)
         # comment.add(rect)
@@ -2649,7 +2649,7 @@ class ShowScoring(HyperdartScene):
     def add_score_counter(self):
         score = Integer(0)
         score_label = VGroup(
-            TextMobject("Score: "),
+            TexText("Score: "),
             score
         )
         score_label.arrange(RIGHT, aligned_edge=DOWN)
@@ -2767,11 +2767,11 @@ class ShowUniformDistribution(HyperdartScene):
 
     def add_title(self):
         # square = self.square
-        title = TextMobject("All points in the square are equally likely")
+        title = TexText("All points in the square are equally likely")
         title.scale(1.5)
         title.to_edge(UP)
 
-        new_title = TextMobject("``Uniform distribution'' on the square")
+        new_title = TexText("``Uniform distribution'' on the square")
         new_title.scale(1.5)
         new_title.to_edge(UP)
 
@@ -2810,13 +2810,13 @@ class ShowUniformDistribution(HyperdartScene):
 
 class ExpectedScoreEqualsQMark(Scene):
     def construct(self):
-        equation = TextMobject(
+        equation = TexText(
             "\\textbf{E}[Score] = ???",
             tex_to_color_map={
                 "???": YELLOW,
             }
         )
-        aka = TextMobject("a.k.a. Long-term average")
+        aka = TexText("a.k.a. Long-term average")
         aka.next_to(equation, DOWN)
 
         self.play(Write(equation))

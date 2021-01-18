@@ -125,7 +125,7 @@ def get_charged_particles(color, sign, radius=0.1):
         fill_opacity=0.8,
         radius=radius
     )
-    sign = TexMobject(sign)
+    sign = Tex(sign)
     sign.set_stroke(WHITE, 1)
     sign.set_width(0.5 * result.get_width())
     sign.move_to(result)
@@ -244,7 +244,7 @@ class Introduction(MovingCameraScene):
         self.wait()
 
     def get_title(self, word):
-        title = TextMobject(word)
+        title = TexText(word)
         title.scale(2)
         title.to_edge(UP)
         title.add_background_rectangle()
@@ -316,13 +316,13 @@ class ShowWritingTrajectory(TeacherStudentsScene):
 
         arrow = Vector(LEFT, color=WHITE)
         arrow.next_to(screen, RIGHT)
-        prev_words = TextMobject("Previous video")
+        prev_words = TexText("Previous video")
         prev_words.next_to(arrow, RIGHT)
 
         screen.generate_target()
         screen.target.set_height(3.75)
         screen.target.to_corner(UR)
-        complex_words = TextMobject("Complex derivatives")
+        complex_words = TexText("Complex derivatives")
         complex_words.next_to(
             screen.target, LEFT,
             buff=2 * SMALL_BUFF + arrow.get_length()
@@ -416,7 +416,7 @@ class CylinderModel(Scene):
         self.add(self.plane)
 
     def add_title(self):
-        title = TextMobject("Complex Plane")
+        title = TexText("Complex Plane")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         title.add_background_rectangle()
         self.title = title
@@ -435,7 +435,7 @@ class CylinderModel(Scene):
         dot_update = UpdateFromFunc(
             dot, lambda d: d.move_to(unit_circle.point_from_proportion(1))
         )
-        exp_tex = TexMobject("e^{", "0.00", "i}")
+        exp_tex = Tex("e^{", "0.00", "i}")
         zero = exp_tex.get_part_by_tex("0.00")
         zero.fade(1)
         exp_tex_update = UpdateFromFunc(
@@ -589,7 +589,7 @@ class CylinderModel(Scene):
     # Helpers
 
     def get_func_label(self):
-        func_label = self.func_label = TexMobject("f(z) = z + 1 / z")
+        func_label = self.func_label = Tex("f(z) = z + 1 / z")
         func_label.add_background_rectangle()
         func_label.next_to(self.title, DOWN, MED_SMALL_BUFF)
         return func_label
@@ -656,7 +656,7 @@ class CylinderModel(Scene):
 
 class OkayNotToUnderstand(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "It's okay not to \\\\ understand this just yet."
         )
         morty = Mortimer()
@@ -866,10 +866,10 @@ class ElectricField(CylinderModel, MovingCameraScene):
 
 class AskQuestions(TeacherStudentsScene):
     def construct(self):
-        div_tex = TexMobject("\\nabla \\cdot", vec_tex("v"))
-        curl_tex = TexMobject("\\nabla \\times", vec_tex("v"))
-        div_name = TextMobject("Divergence")
-        curl_name = TextMobject("Curl")
+        div_tex = Tex("\\nabla \\cdot", vec_tex("v"))
+        curl_tex = Tex("\\nabla \\times", vec_tex("v"))
+        div_name = TexText("Divergence")
+        curl_name = TexText("Curl")
         div = VGroup(div_name, div_tex)
         curl = VGroup(curl_name, curl_tex)
         for group in div, curl:
@@ -911,11 +911,11 @@ class AskQuestions(TeacherStudentsScene):
 
         topics.generate_target()
         topics.target.to_edge(LEFT, buff=LARGE_BUFF)
-        arrow = TexMobject("\\leftrightarrow")
+        arrow = Tex("\\leftrightarrow")
         arrow.scale(2)
         arrow.next_to(topics.target, RIGHT, buff=LARGE_BUFF)
         screen.next_to(arrow, RIGHT, LARGE_BUFF)
-        complex_analysis = TextMobject("Complex analysis")
+        complex_analysis = TexText("Complex analysis")
         complex_analysis.next_to(screen, UP)
 
         self.play(
@@ -945,7 +945,7 @@ class ScopeMeiosis(PiCreatureScene):
 
     def construct(self):
         morty = self.pi_creature
-        section_titles = VGroup(*list(map(TextMobject, [
+        section_titles = VGroup(*list(map(TexText, [
             "Background on div/curl",
             "Conformal maps",
             "Conformal map $\\Rightarrow" +
@@ -1035,7 +1035,7 @@ class TopicsAndConnections(Scene):
             for n in range(5)
         ])
         topics = VGroup(*[
-            TextMobject(word).next_to(
+            TexText(word).next_to(
                 dot, RIGHT, SMALL_BUFF
             )
             for dot, word in zip(dots, [
@@ -1089,7 +1089,7 @@ class TopicsAndConnections(Scene):
 
 class OnToTheLesson(Scene):
     def construct(self):
-        words = TextMobject("On to the lesson!")
+        words = TexText("On to the lesson!")
         words.scale(1.5)
         self.add(words)
         self.play(FadeInFromDown(words))
@@ -1135,7 +1135,7 @@ class IntroduceVectorField(Scene):
         self.add(plane)
 
     def add_title(self):
-        title = TextMobject("Vector field")
+        title = TexText("Vector field")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         title.add_background_rectangle(opacity=1, buff=SMALL_BUFF)
@@ -1225,7 +1225,7 @@ class IntroduceVectorField(Scene):
         ])
         magnet.arrange(RIGHT, buff=0)
         for char, vect in ("S", LEFT), ("N", RIGHT):
-            letter = TextMobject(char)
+            letter = TexText(char)
             edge = magnet.get_edge_center(vect)
             letter.next_to(edge, -vect, buff=MED_LARGE_BUFF)
             magnet.add(letter)
@@ -1373,7 +1373,7 @@ class GravityFluidFlow(IntroduceVectorField):
 
 class TotallyToScale(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Totally drawn to scale. \\\\ Don't even worry about it."
         )
         words.set_width(FRAME_WIDTH - 1)
@@ -1543,7 +1543,7 @@ class DefineDivergence(ChangingElectricField):
         circle.add(Dot(circle.get_center(), radius=0.02))
         circle.move_to(positive_points[0])
 
-        div_tex = TexMobject(
+        div_tex = Tex(
             "\\text{div} \\, \\textbf{F}(x, y) = "
         )
         div_tex.add_background_rectangle()
@@ -1604,7 +1604,7 @@ class DefineDivergenceJustFlow(DefineDivergence):
 
 class DefineDivergenceSymbols(Scene):
     def construct(self):
-        tex_mob = TexMobject(
+        tex_mob = Tex(
             "\\text{div}",
             "\\textbf{F}",
             "(x, y)",
@@ -1681,14 +1681,14 @@ class DivergenceAtSlowFastPoint(Scene):
         )
 
         circle = Circle(color=WHITE)
-        slow_words = TextMobject("Slow flow in")
-        fast_words = TextMobject("Fast flow out")
+        slow_words = TexText("Slow flow in")
+        fast_words = TexText("Fast flow out")
         words = VGroup(slow_words, fast_words)
         for word, vect in zip(words, [LEFT, RIGHT]):
             word.add_background_rectangle()
             word.next_to(circle, vect)
 
-        div_tex = TexMobject(
+        div_tex = Tex(
             "\\text{div}\\,\\textbf{F}(x, y) > 0"
         )
         div_tex.add_background_rectangle()
@@ -1744,7 +1744,7 @@ class DivergenceAsNewFunction(Scene):
             return unscaled_vector_field.get_vector(get_input())
 
         # Tex
-        func_tex = TexMobject(
+        func_tex = Tex(
             "\\textbf{F}(", "+0.00", ",", "+0.00", ")", "=",
         )
         dummy_in_x, dummy_in_y = func_tex.get_parts_by_tex("+0.00")
@@ -1902,7 +1902,7 @@ class DivergenceAsNewFunction(Scene):
         out_x, out_y = self.out_x, self.out_y
         out_x_update = self.out_x_update
         out_y_update = self.out_y_update
-        div_tex = TexMobject("\\text{div}")
+        div_tex = Tex("\\text{div}")
         div_tex.add_background_rectangle()
         div_tex.move_to(func_tex, LEFT)
         div_tex.shift(2 * SMALL_BUFF * RIGHT)
@@ -1960,11 +1960,11 @@ class DivergenceAsNewFunction(Scene):
 
 class DivergenceZeroCondition(Scene):
     def construct(self):
-        title = TextMobject(
+        title = TexText(
             "For actual (incompressible) fluid flow:"
         )
         title.to_edge(UP)
-        equation = TexMobject(
+        equation = Tex(
             "\\text{div} \\, \\textbf{F} = 0 \\quad \\text{everywhere}"
         )
         equation.next_to(title, DOWN)
@@ -2124,7 +2124,7 @@ class IntroduceCurl(IntroduceVectorField):
 
         for group, u in (counterclockwise_arrows, +1), (clockwise_arrows, -1):
             for arrows in group:
-                label = TexMobject(
+                label = Tex(
                     "\\text{curl} \\, \\textbf{F}",
                     ">" if u > 0 else "<",
                     "0"
@@ -2193,8 +2193,8 @@ class ShearCurl(IntroduceCurl):
         self.play(ShowCreation(circle))
 
         slow_words, fast_words = words = [
-            TextMobject("Slow flow below"),
-            TextMobject("Fast flow above")
+            TexText("Slow flow below"),
+            TexText("Fast flow above")
         ]
         for word, vect in zip(words, [DOWN, UP]):
             word.add_background_rectangle(buff=SMALL_BUFF)
@@ -2293,7 +2293,7 @@ class ShowCurlAtVariousPoints(IntroduceCurl):
             lambda m: m.move_to(dot)
         )
 
-        curl_tex = TexMobject(
+        curl_tex = Tex(
             "\\text{curl} \\, \\textbf{F}(x, y) = "
         )
         curl_tex.add_background_rectangle(buff=0.025)
@@ -2340,11 +2340,11 @@ class IllustrationUseVennDiagram(Scene):
         title = Title("Divergence \\& Curl")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
 
-        useful_for = TextMobject("Useful for")
+        useful_for = TexText("Useful for")
         useful_for.next_to(title, DOWN)
         useful_for.set_color(BLUE)
 
-        fluid_flow = TextMobject("Fluid \\\\ flow")
+        fluid_flow = TexText("Fluid \\\\ flow")
         fluid_flow.next_to(ORIGIN, UL)
         ff_circle = Circle(color=YELLOW)
         ff_circle.surround(fluid_flow, stretch=True)
@@ -2359,7 +2359,7 @@ class IllustrationUseVennDiagram(Scene):
         big_circle.stretch_to_fit_height(6)
         big_circle.next_to(useful_for, DOWN, SMALL_BUFF)
 
-        illustrated_by = TextMobject("Illustrated by")
+        illustrated_by = TexText("Illustrated by")
         illustrated_by.next_to(
             big_circle.point_from_proportion(3. / 8), UL
         )
@@ -2375,10 +2375,10 @@ class IllustrationUseVennDiagram(Scene):
         )
 
         examples = VGroup(
-            TextMobject("Electricity"),
-            TextMobject("Magnetism"),
-            TextMobject("Phase flow"),
-            TextMobject("Stokes' theorem"),
+            TexText("Electricity"),
+            TexText("Magnetism"),
+            TexText("Phase flow"),
+            TexText("Stokes' theorem"),
         )
         points = [
             2 * RIGHT + 0.5 * UP,
@@ -2435,7 +2435,7 @@ class MaxwellsEquations(Scene):
         }
 
         equations = self.equations = VGroup(*[
-            TexMobject(
+            Tex(
                 tex, tex_to_color_map=tex_to_color_map
             )
             for tex in [
@@ -2463,7 +2463,7 @@ class MaxwellsEquations(Scene):
         )
 
         field_definitions = VGroup(*[
-            TexMobject(text, tex_to_color_map=tex_to_color_map)
+            Tex(text, tex_to_color_map=tex_to_color_map)
             for text in [
                 "\\text{Electric field: } \\textbf{E}",
                 "\\text{Magnetic field: } \\textbf{B}",
@@ -2492,10 +2492,10 @@ class MaxwellsEquations(Scene):
         rho = equation.get_part_by_tex("\\rho")
         sub_rect = SurroundingRectangle(rho)
         sub_rect.match_color(rect)
-        rho_label = TextMobject("Charge density")
+        rho_label = TexText("Charge density")
         rho_label.next_to(sub_rect, RIGHT)
         rho_label.match_color(sub_rect)
-        gauss_law = TextMobject("Gauss's law")
+        gauss_law = TexText("Gauss's law")
         gauss_law.next_to(rect, RIGHT)
 
         self.play(
@@ -2564,7 +2564,7 @@ class MaxwellsEquations(Scene):
 
 class ThatWeKnowOf(Scene):
     def construct(self):
-        words = TextMobject("*That we know of!")
+        words = TexText("*That we know of!")
         self.add(words)
 
 
@@ -2660,7 +2660,7 @@ class IllustrateGaussMagnetic(IllustrateGaussLaw):
             )
             for x in range(2)
         ]
-        top.add(TexMobject("\\times").scale(0.5))
+        top.add(Tex("\\times").scale(0.5))
         bottom.add(Dot().scale(0.5))
         top.move_to(1 * UP)
         bottom.move_to(1 * DOWN)
@@ -2745,8 +2745,8 @@ class ShowTwoPopulations(Scene):
         examples.arrange(LEFT, buff=2)
 
         preditor, prey = words = VGroup(
-            TextMobject("Predator"),
-            TextMobject("Prey")
+            TexText("Predator"),
+            TexText("Prey")
         )
         for mob, word in zip(examples, words):
             word.scale(1.5)
@@ -2877,8 +2877,8 @@ class ShowTwoPopulations(Scene):
 
     def get_pop_labels(self):
         labels = VGroup(
-            TextMobject("\\# Foxes: "),
-            TextMobject("\\# Rabbits: "),
+            TexText("\\# Foxes: "),
+            TexText("\\# Rabbits: "),
         )
         for label in labels:
             label.scale(self.count_word_scale_val)
@@ -2936,7 +2936,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         axes_labels = self.axes_labels = VGroup(*[
             VGroup(
                 method().set_height(0.75),
-                TextMobject("Population"),
+                TexText("Population"),
             ).arrange(RIGHT, buff=MED_SMALL_BUFF)
             for method in (self.get_rabbit, self.get_fox)
         ])
@@ -2962,7 +2962,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         h_line.set_color(GREY_B)
         dot = Dot(point)
 
-        coord_pair = TexMobject(
+        coord_pair = Tex(
             "(10, 10)", isolate=["10"]
         )
         pop_sizes = VGroup(Integer(10), Integer(10))
@@ -2985,7 +2985,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         )
         pop_sizes_updates = [get_pop_size_update(i) for i in (0, 1)]
 
-        phase_space = TextMobject("``Phase space''")
+        phase_space = TexText("``Phase space''")
         phase_space.set_color(YELLOW)
         phase_space.scale(1.5)
         phase_space.to_edge(UP)
@@ -3023,7 +3023,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
         equations.shift(2 * DOWN)
         rect = SurroundingRectangle(equations, color=YELLOW)
         rect.set_fill(BLACK, 0.8)
-        title = TextMobject("Differential equations")
+        title = TexText("Differential equations")
         title.next_to(rect, UP)
         title.set_color(rect.get_stroke_color())
         self.differential_equation_group = VGroup(
@@ -3166,7 +3166,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
     #
     def get_equations(self):
         variables = ["X", "YY"]
-        equations = TexMobject(
+        equations = Tex(
             """
                 {dX \\over dt} =
                 X \\cdot (\\alpha - \\beta YY \\,) \\\\
@@ -3188,7 +3188,7 @@ class PhaseSpaceOfPopulationModel(ShowTwoPopulations, PiCreatureScene, MovingCam
 
 class PhaseFlowWords(Scene):
     def construct(self):
-        words = TextMobject("``Phase flow''")
+        words = TexText("``Phase flow''")
         words.scale(2)
         self.play(Write(words))
         self.wait()
@@ -3197,11 +3197,11 @@ class PhaseFlowWords(Scene):
 class PhaseFlowQuestions(Scene):
     def construct(self):
         questions = VGroup(
-            TextMobject(
+            TexText(
                 "Which points does the flow \\\\" +
                 "converge to?  Diverge away from?",
             ),
-            TextMobject("Where are there cycles?"),
+            TexText("Where are there cycles?"),
         )
         questions.arrange(DOWN, buff=LARGE_BUFF)
         questions.to_corner(UR)
@@ -3220,16 +3220,16 @@ class ToolsBeyondDivAndCurlForODEs(PiCreatureScene):
 
     def construct(self):
         morty = self.pi_creature
-        div_curl = TextMobject("div \\\\", "curl")
+        div_curl = TexText("div \\\\", "curl")
         div_curl.set_color_by_tex("div", BLUE)
         div_curl.set_color_by_tex("curl", YELLOW)
         div_curl.next_to(morty.get_corner(UL), UP, MED_LARGE_BUFF)
 
-        jacobian = TextMobject("Analyze the \\\\ Jacobian")
+        jacobian = TexText("Analyze the \\\\ Jacobian")
         jacobian.set_color(GREEN)
         jacobian.next_to(morty.get_corner(UR), UP, MED_LARGE_BUFF)
 
-        flow_intuitions = TextMobject("Flow-based intuitions")
+        flow_intuitions = TexText("Flow-based intuitions")
         flow_intuitions.next_to(
             VGroup(div_curl, jacobian),
             UP, buff=1.5
@@ -3288,7 +3288,7 @@ class AskAboutComputation(TeacherStudentsScene):
 
 class QuickWordsOnNotation(Scene):
     def construct(self):
-        words = TextMobject("Quick words on notation:")
+        words = TexText("Quick words on notation:")
         words.scale(1.5)
         self.play(FadeInFromDown(words))
         self.wait()
@@ -3320,12 +3320,12 @@ class NablaNotation(PiCreatureScene, MovingCameraScene):
             "\\text{curl}": YELLOW,
             "\\nabla \\times": YELLOW,
         }
-        div_equation = TexMobject(
+        div_equation = Tex(
             "\\text{div} \\, \\textbf{F} = \\nabla \\cdot \\textbf{F}",
             tex_to_color_map=tex_to_color_map
         )
         div_nabla = div_equation.get_part_by_tex("\\nabla")
-        curl_equation = TexMobject(
+        curl_equation = Tex(
             "\\text{curl} \\, \\textbf{F} = \\nabla \\times \\textbf{F}",
             tex_to_color_map=tex_to_color_map
         )
@@ -3369,9 +3369,9 @@ class NablaNotation(PiCreatureScene, MovingCameraScene):
         div_lhs, curl_lhs = lhs_groups = VGroup(*[
             VGroup(
                 nabla_vector.deepcopy(),
-                TexMobject(tex).scale(1.5),
+                Tex(tex).scale(1.5),
                 F_vector.copy(),
-                TexMobject("=")
+                Tex("=")
             )
             for tex in ("\\cdot", "\\times")
         ])
@@ -3382,11 +3382,11 @@ class NablaNotation(PiCreatureScene, MovingCameraScene):
         div_lhs.to_edge(UP)
         curl_lhs.next_to(div_lhs, DOWN, buff=LARGE_BUFF)
 
-        div_rhs = TexMobject(
+        div_rhs = Tex(
             "{\\partial F_x \\over \\partial x} + " +
             "{\\partial F_y \\over \\partial y}"
         )
-        curl_rhs = TexMobject(
+        curl_rhs = Tex(
             "{\\partial F_y \\over \\partial x} - " +
             "{\\partial F_x \\over \\partial y}"
         )
@@ -3396,7 +3396,7 @@ class NablaNotation(PiCreatureScene, MovingCameraScene):
 
         for rhs, tex, color in zip(rhs_groups, ["div", "curl"], colors):
             rhs.rect = SurroundingRectangle(rhs, color=color)
-            rhs.label = TexMobject(
+            rhs.label = Tex(
                 "\\text{%s}" % tex,
                 "\\, \\textbf{F}"
             )
@@ -3443,7 +3443,7 @@ class NablaNotation(PiCreatureScene, MovingCameraScene):
         screen_rect = self.camera_frame.copy()
         screen_rect.set_stroke(WHITE, 3)
         screen_rect.scale(1.01)
-        words = TextMobject("Something deeper at play...")
+        words = TexText("Something deeper at play...")
         words.scale(1.3)
         words.next_to(screen_rect, UP)
 
@@ -3464,7 +3464,7 @@ class DivCurlDotCross(Scene):
         ])
         rects.arrange_in_grid(n_rows=2, buff=LARGE_BUFF)
         rects[2:].shift(MED_LARGE_BUFF * DOWN)
-        titles = VGroup(*list(map(TextMobject, [
+        titles = VGroup(*list(map(TexText, [
             "Divergence", "Curl",
             "Dot product", "Cross product"
         ])))
@@ -3484,7 +3484,7 @@ class ShowDotProduct(MovingCameraScene):
         v1 = Vector(RIGHT, color=BLUE)
         v2 = Vector(UP, color=YELLOW)
 
-        dot_product = TexMobject(
+        dot_product = Tex(
             "\\vec{\\textbf{v}}", self.prod_tex,
             "\\vec{\\textbf{w}}", "="
         )
@@ -3605,9 +3605,9 @@ class DivergenceTinyNudgesView(MovingCameraScene):
         vector = vector_field.get_vector(point)
 
         input_dot = Dot(point).scale(sf)
-        input_words = TextMobject("$(x_0, y_0)$").scale(sf)
+        input_words = TexText("$(x_0, y_0)$").scale(sf)
         input_words.next_to(input_dot, DL, SMALL_BUFF * sf)
-        output_words = TextMobject("Output").scale(sf)
+        output_words = TexText("Output").scale(sf)
         output_words.add_background_rectangle()
         output_words.next_to(vector.get_top(), UP, sf * SMALL_BUFF)
         output_words.match_color(vector)
@@ -3657,15 +3657,15 @@ class DivergenceTinyNudgesView(MovingCameraScene):
         )
         step_vector.set_stroke(BLACK, 0.5)
 
-        new_output_words = TextMobject("New output").scale(sf)
+        new_output_words = TexText("New output").scale(sf)
         new_output_words.add_background_rectangle()
         new_output_words.next_to(new_vector.get_end(), UP, sf * SMALL_BUFF)
         new_output_words.match_color(new_vector)
-        step_words = TextMobject("Step").scale(sf)
+        step_words = TexText("Step").scale(sf)
         step_words.next_to(step_vector, UP, buff=0)
         step_words.set_color(step_vector.get_fill_color())
         step_words.add_background_rectangle()
-        small_step_words = TextMobject("(think tiny step)").scale(sf)
+        small_step_words = TexText("(think tiny step)").scale(sf)
         small_step_words.next_to(
             step_words, RIGHT,
             buff=sf * MED_SMALL_BUFF,
@@ -3681,7 +3681,7 @@ class DivergenceTinyNudgesView(MovingCameraScene):
             color=RED,
             **vector_field.vector_config
         )
-        diff_words = TextMobject("Difference").scale(sf)
+        diff_words = TexText("Difference").scale(sf)
         diff_words.add_background_rectangle()
         diff_words.next_to(diff_vector.get_start(), UR, buff=2 * sf * SMALL_BUFF)
         diff_words.match_color(diff_vector)
@@ -3768,7 +3768,7 @@ class DivergenceTinyNudgesView(MovingCameraScene):
         copies = VGroup(step_words_copy, diff_words_copy)
 
         substrings = ["Step", "Difference"]
-        dot_product = TextMobject(
+        dot_product = TexText(
             "(Step) $\\cdot$ (Difference)",
             isolate=substrings,
             arg_separator="",
@@ -3905,7 +3905,7 @@ class DivergenceTinyNudgesView(MovingCameraScene):
         dot_product = self.dot_product
 
         curl_text = self.get_operator_text("curl")
-        cross_product = TextMobject(
+        cross_product = TexText(
             "(Step) $\\times$ (Difference)",
             tex_to_color_map={
                 "Step": TEAL,
@@ -3967,7 +3967,7 @@ class DivergenceTinyNudgesView(MovingCameraScene):
     # Helpers
 
     def get_operator_text(self, operator):
-        text = TextMobject(
+        text = TexText(
             operator + "\\,",
             "$\\textbf{F}(x_0, y_0)\\,$",
             "corresponds to average of",
@@ -4032,11 +4032,11 @@ class ZToHalfFlowNearWall(ComplexTransformationScene, MovingCameraScene):
             label.set_stroke(width=0)
             label.scale(0.75, about_edge=UR)
 
-        words = TextMobject("(Idealized) Flow \\\\", "near a wall")
+        words = TexText("(Idealized) Flow \\\\", "near a wall")
         words.scale(0.75)
         words.add_background_rectangle_to_submobjects()
         words.next_to(0.75 * UP, LEFT, MED_LARGE_BUFF)
-        equation = TexMobject("z \\rightarrow z^{1/2}")
+        equation = Tex("z \\rightarrow z^{1/2}")
         equation.scale(0.75)
         equation.add_background_rectangle()
         equation.next_to(words, UP)
@@ -4072,10 +4072,10 @@ class ZToHalfFlowNearWall(ComplexTransformationScene, MovingCameraScene):
 
 class IncmpressibleAndIrrotational(Scene):
     def construct(self):
-        div_0 = TextMobject("div$\\textbf{F} = 0$")
-        curl_0 = TextMobject("curl$\\textbf{F}$ = 0")
-        incompressible = TextMobject("Incompressible")
-        irrotational = TextMobject("Irrotational")
+        div_0 = TexText("div$\\textbf{F} = 0$")
+        curl_0 = TexText("curl$\\textbf{F}$ = 0")
+        incompressible = TexText("Incompressible")
+        irrotational = TexText("Irrotational")
 
         for text in [div_0, curl_0, incompressible, irrotational]:
             self.stylize_word_for_background(text)
@@ -4104,7 +4104,7 @@ class IncmpressibleAndIrrotational(Scene):
         self.wait()
 
         rect = SurroundingRectangle(VGroup(curl_0, irrotational))
-        question = TextMobject("Does this actually happen?")
+        question = TexText("Does this actually happen?")
         question.next_to(rect, DOWN)
         question.match_color(rect)
         self.stylize_word_for_background(question)
@@ -4125,7 +4125,7 @@ class NoChargesOverlay(Scene):
         circle.rotate(135 * DEGREES)
         rect.add_subpath(circle.get_points())
 
-        words = TextMobject("No charges outside wire")
+        words = TexText("No charges outside wire")
         words.scale(1.5)
         words.to_edge(UP)
 
@@ -4143,10 +4143,10 @@ class BroughtToYouBy(PiCreatureScene):
         self.just_you_and_me()
 
     def brought_to_you_by(self):
-        so_words = TextMobject("So", "...", arg_separator="")
+        so_words = TexText("So", "...", arg_separator="")
         so_words.scale(2)
 
-        btyb = TextMobject("Brought to you", "by")
+        btyb = TexText("Brought to you", "by")
         btyb.scale(1.5)
         btyb_line = Line(LEFT, RIGHT)
         btyb_line.next_to(btyb, RIGHT, SMALL_BUFF)
@@ -4154,13 +4154,13 @@ class BroughtToYouBy(PiCreatureScene):
         btyb_group = VGroup(btyb, btyb_line)
         btyb_group.center()
 
-        you_word = TextMobject("\\emph{you}")
+        you_word = TexText("\\emph{you}")
         you_word.set_color(YELLOW)
         you_word.scale(1.75)
         you_word.move_to(btyb_line)
         you_word.align_to(btyb, DOWN)
 
-        only_word = TextMobject("(only)")
+        only_word = TexText("(only)")
         only_word.scale(1.25)
         only_brace = Brace(only_word, DOWN, buff=SMALL_BUFF)
         only_group = VGroup(only_word, only_brace)
@@ -4211,7 +4211,7 @@ class BroughtToYouBy(PiCreatureScene):
         randy, morty = self.pi_creatures
         for pi in self.pi_creatures:
             pi.change("pondering")
-        math = TexMobject("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
+        math = Tex("\\sum_{n=1}^\\infty \\frac{1}{n^s}")
         math.scale(2)
         math.move_to(self.pi_creatures)
 
@@ -4277,15 +4277,15 @@ class ThoughtsOnAds(Scene):
         arrows.arrange(RIGHT, buff=2)
         arrows.next_to(line, DOWN)
 
-        misaligned = TextMobject("Misaligned")
+        misaligned = TexText("Misaligned")
         misaligned.next_to(arrows[0], DOWN)
-        aligned = TextMobject("Well-aligned")
+        aligned = TexText("Well-aligned")
         aligned.next_to(arrows[1], DOWN)
 
         VGroup(arrows[0], misaligned).set_color(RED)
         VGroup(arrows[1], aligned).set_color(BLUE)
 
-        left_text = TextMobject(
+        left_text = TexText(
             "Any website presented \\\\",
             "as a click-maximizing \\\\ slideshow"
         )
@@ -4294,7 +4294,7 @@ class ThoughtsOnAds(Scene):
         left_text.to_edge(LEFT)
 
         viewer, brand, creator = vcb = VGroup(
-            *list(map(TextMobject, ["viewer", "brand", "creator"]))
+            *list(map(TexText, ["viewer", "brand", "creator"]))
         )
         brand.next_to(creator, LEFT, LARGE_BUFF)
         viewer.next_to(vcb[1:], UP, LARGE_BUFF)
@@ -4336,10 +4336,10 @@ class ThoughtsOnAds(Scene):
         right_rect.move_to(line, RIGHT)
         right_rect_label = Group(
             ImageMobject("3b1b_logo", height=1),
-            TextMobject("(hopefully)").scale(0.8)
+            TexText("(hopefully)").scale(0.8)
         )
         right_rect_label.arrange(DOWN, buff=SMALL_BUFF)
-        # TextMobject(
+        # TexText(
         #     "Where I hope \\\\ I've been"
         # )
         right_rect_label.next_to(
@@ -4401,7 +4401,7 @@ class HoldUpPreviousPromo(PiCreatureScene):
 
 class GoalWrapper(Scene):
     def construct(self):
-        goal = TextMobject(
+        goal = TexText(
             "Goal: Teach/remind people \\\\ that they love math"
         )
         goal.to_edge(UP)
@@ -4460,14 +4460,14 @@ class PeopleValueGraph(GraphScene):
             buff=SMALL_BUFF,
             aligned_edge=RIGHT
         )
-        reach_words = TextMobject("Maximize reach?")
+        reach_words = TexText("Maximize reach?")
         reach_words.next_to(reach_arrow, DOWN, buff=SMALL_BUFF)
         reach_words.match_color(reach_arrow)
 
         area = self.area = self.get_riemann_rectangles(
             self.graph, **self.riemann_rectangles_config
         )
-        area_words = TextMobject("Maximize this area")
+        area_words = TexText("Maximize this area")
         area_words.set_color(BLUE)
         area_words.move_to(self.coords_to_point(4, 5))
         area_arrow = Arrow(

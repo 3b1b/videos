@@ -31,7 +31,7 @@ def get_time_line():
 
 class SectionTwo(Scene):
     def construct(self):
-        self.add(TextMobject("Section 2: Filling space"))
+        self.add(TexText("Section 2: Filling space"))
         self.wait()
 
 class HilbertCurveIsPerfect(Scene):
@@ -113,7 +113,7 @@ class TimeLineAboutSpaceFilling(Scene):
             ),
             UP
         )
-        words = TextMobject("""
+        words = TexText("""
             Cantor drives himself (and the \\\\
             mathematical community at large) \\\\
             crazy with research on infinity.
@@ -148,9 +148,9 @@ class NotPixelatedSpace(Scene):
         line.set_color_by_gradient(curve.start_color, curve.end_color)
         for mob in grid, space_mobject:
             mob.sort_points(get_norm)
-        infinitely = TextMobject("Infinitely")
-        detailed = TextMobject("detailed")
-        extending = TextMobject("extending")
+        infinitely = TexText("Infinitely")
+        detailed = TexText("detailed")
+        extending = TexText("extending")
         detailed.next_to(infinitely, RIGHT)
         extending.next_to(infinitely, RIGHT)
         Mobject(extending, infinitely, detailed).center()
@@ -204,9 +204,9 @@ class HistoryOfDiscover(Scene):
             point[1] = 0.2
             arrow = Arrow(point+2*vect, point, buff = 0.1)
             arrow.set_color_by_gradient(curve.start_color, curve.end_color)
-            year_mob = TexMobject(str(year))
+            year_mob = Tex(str(year))
             year_mob.next_to(arrow, vect)
-            words = TextMobject(text)
+            words = TexText(text)
             words.next_to(year_mob, vect)
 
             self.play(
@@ -226,7 +226,7 @@ class HistoryOfDiscover(Scene):
 
 class DefinitionOfCurve(Scene):
     def construct(self):
-        start_words = TextMobject([
+        start_words = TexText([
             "``", "Space Filling", "Curve ''",
         ]).to_edge(TOP, buff = 0.25)
         quote, space_filling, curve_quote = start_words.copy().split()
@@ -238,7 +238,7 @@ class DefinitionOfCurve(Scene):
         end_words = Mobject(*[
             quote, space_filling, curve_quote
         ]).center().to_edge(TOP, buff = 0.25)
-        space_filling_fractal = TextMobject("""
+        space_filling_fractal = TexText("""
             ``Space Filling Fractal''
         """).to_edge(UP)
         curve = HilbertCurve(order = 2).shift(DOWN)
@@ -334,18 +334,18 @@ class HilbertCurveIsLimit(Scene):
 
 class DefiningCurves(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             ["One does not simply define the limit \\\\ \
             of a sequence of","curves","\\dots"]
         )
-        top_words = TextMobject([
+        top_words = TexText([
             "curves", "are functions"
         ]).to_edge(UP)
         curves1 = words.split()[1]
         curves2 = top_words.split()[0]
         words.ingest_submobjects()
-        number = TexMobject("0.27")
-        pair = TexMobject("(0.53, 0.02)")
+        number = Tex("0.27")
+        pair = Tex("(0.53, 0.02)")
         pair.next_to(number, buff = 2)
         arrow = Arrow(number, pair)
         Mobject(number, arrow, pair).center().shift(UP)
@@ -394,12 +394,12 @@ class PseudoHilbertCurveAsFunctionExample(Scene):
         elif order == 3:
             result_tex = "(0.0758,  0.6875)"
 
-        phc, arg, result = TexMobject([
+        phc, arg, result = Tex([
             "\\text{PHC}_%d"%order, 
             "(0.3)", 
             "= %s"%result_tex
         ]).to_edge(UP).split()
-        function = TextMobject("Function", size = "\\normal")
+        function = TexText("Function", size = "\\normal")
         function.shift(phc.get_center()+DOWN+2*LEFT)
         function_arrow = Arrow(function, phc)
 
@@ -449,7 +449,7 @@ class PseudoHilbertCurveAsFunctionExample(Scene):
 
 class ContinuityRequired(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "A function must be",
             "\\emph{continuous}", 
             "if it is to represent a curve."
@@ -540,10 +540,10 @@ class FormalDefinitionOfContinuity(Scene):
 
 
     def label_spaces(self):
-        input_space = TextMobject("Input Space")
+        input_space = TexText("Input Space")
         input_space.to_edge(UP)        
         input_space.shift(LEFT*FRAME_X_RADIUS/2)
-        output_space = TextMobject("Output Space")
+        output_space = TexText("Output Space")
         output_space.to_edge(UP)
         output_space.shift(RIGHT*FRAME_X_RADIUS/2)
         line = Line(
@@ -576,7 +576,7 @@ class FormalDefinitionOfContinuity(Scene):
             Point(self.spiril2.get_points()[0])
         )
         self.brace = Brace(jump_points, RIGHT)
-        self.jump = TextMobject("Jump")
+        self.jump = TexText("Jump")
         self.jump.next_to(self.brace, RIGHT)
         self.play(
             GrowFromCenter(self.brace),
@@ -600,13 +600,13 @@ class FormalDefinitionOfContinuity(Scene):
         )
 
         A, B = list(map(Mobject.get_center, [self.input_dot, self.output_dot]))
-        A_text = TextMobject("A")
+        A_text = TexText("A")
         A_text.shift(A+2*(LEFT+UP))
         A_arrow = Arrow(
             A_text, self.input_dot,
             color = self.input_color
         )
-        B_text = TextMobject("B")
+        B_text = TexText("B")
         B_text.shift(B+2*RIGHT+DOWN)
         B_arrow = Arrow(
             B_text, self.output_dot,
@@ -653,7 +653,7 @@ class FormalDefinitionOfContinuity(Scene):
         )
         self.play(vary_circles)
         self.wait()
-        text = TextMobject("Function is ``Continuous at A''")
+        text = TexText("Function is ``Continuous at A''")
         text.shift(2*UP).to_edge(LEFT)
         arrow = Arrow(text, self.input_dot)
         self.play(
@@ -664,16 +664,16 @@ class FormalDefinitionOfContinuity(Scene):
         self.remove(vary_circles.mobject, text, arrow)
 
     def discontinuous_point(self):
-        point_description = TextMobject(
+        point_description = TexText(
             "Point where the function jumps"
         )
         point_description.shift(3*RIGHT)        
-        discontinuous_at_A = TextMobject(
+        discontinuous_at_A = TexText(
             "``Discontinuous at A''",
             size = "\\Large"
         )
         discontinuous_at_A.shift(2*UP).to_edge(LEFT)
-        text = TextMobject("""
+        text = TexText("""
             Circle around ouput \\\\ 
             points can never \\\\
             be smaller than \\\\
@@ -755,8 +755,8 @@ class VaryCircles(Animation):
 
 class FunctionIsContinuousText(Scene):
     def construct(self):
-        all_points = TextMobject("$f$ is continuous at every input point")
-        continuous = TextMobject("$f$ is continuous")
+        all_points = TexText("$f$ is continuous at every input point")
+        continuous = TexText("$f$ is continuous")
         all_points.shift(UP)
         continuous.shift(DOWN)
         arrow = Arrow(all_points, continuous)
@@ -769,7 +769,7 @@ class FunctionIsContinuousText(Scene):
 
 class DefineActualHilbertCurveText(Scene):
     def construct(self):
-        self.add(TextMobject("""
+        self.add(TexText("""
             Finally define a Hilbert Curve\\dots
         """))
         self.wait()
@@ -777,7 +777,7 @@ class DefineActualHilbertCurveText(Scene):
 
 class ReliesOnWonderfulProperty(Scene):
     def construct(self):
-        self.add(TextMobject("""
+        self.add(TexText("""
             \\dots which relies on a certain property
             of Pseudo-Hilbert-curves.
         """))
@@ -787,7 +787,7 @@ class ReliesOnWonderfulProperty(Scene):
 class WonderfulPropertyOfPseudoHilbertCurves(Scene):
     def construct(self):
         val = 0.3
-        text = TextMobject([
+        text = TexText([
             "PHC", "$_n", "(", "%3.1f"%val, ")$", 
             " has a ", "limit point ", "as $n \\to \\infty$"
         ])
@@ -818,7 +818,7 @@ class WonderfulPropertyOfPseudoHilbertCurves(Scene):
             new_curve = HilbertCurve(order = num)
             new_curve.scale(0.8)
             new_dot = Dot(new_curve.get_points()[int(val*new_curve.get_num_points())])
-            new_num_str = TexMobject(str(num)).replace(num_str)
+            new_num_str = Tex(str(num)).replace(num_str)
             self.play(
                 Transform(curve, new_curve),
                 Transform(dot, new_dot),
@@ -841,7 +841,7 @@ class WonderfulPropertyOfPseudoHilbertCurves(Scene):
 
 class FollowManyPoints(Scene):
     def construct(self):
-        text = TextMobject([
+        text = TexText([
             "PHC", "_n", "(", "x", ")$", 
             " has a limit point ", "as $n \\to \\infty$",
             "\\\\ for all $x$"
@@ -887,7 +887,7 @@ class FollowManyPoints(Scene):
 class FormalDefinitionOfHilbertCurve(Scene):
     def construct(self):
         val = 0.7
-        text = TexMobject([
+        text = Tex([
             "\\text{HC}(", "x", ")",
             "=\\lim_{n \\to \\infty}\\text{PHC}_n(", "x", ")"
         ])
@@ -895,7 +895,7 @@ class FormalDefinitionOfHilbertCurve(Scene):
         x1 = text.split()[1]
         x2 = text.split()[-2]
         x2.set_color(BLUE)
-        explanation = TextMobject("Actual Hilbert curve function")
+        explanation = TexText("Actual Hilbert curve function")
         exp_arrow = Arrow(explanation, text.split()[0])
         curve = UnitInterval()
         dot = Dot(curve.number_to_point(val))
@@ -933,7 +933,7 @@ class FormalDefinitionOfHilbertCurve(Scene):
 
 class CouldNotDefineForSnakeCurve(Scene):
     def construct(self):
-        self.add(TextMobject("""
+        self.add(TexText("""
             You could not define a limit curve from
             snake curves.
         """))
@@ -941,18 +941,18 @@ class CouldNotDefineForSnakeCurve(Scene):
 
 class ThreeThingsToProve(Scene):
     def construct(self):
-        definition = TexMobject([
+        definition = Tex([
             "\\text{HC}(", "x", ")",
             "=\\lim_{n \\to \\infty}\\text{PHC}_n(", "x", ")"
         ])
         definition.to_edge(UP)
         definition.split()[1].set_color(BLUE)
         definition.split()[-2].set_color(BLUE)
-        intro = TextMobject("Three things need to be proven")
-        prove_that = TextMobject("Prove that HC is $\\dots$")
+        intro = TexText("Three things need to be proven")
+        prove_that = TexText("Prove that HC is $\\dots$")
         prove_that.scale(0.7)
         prove_that.to_edge(LEFT)
-        items = TextMobject([
+        items = TexText([
             "\\begin{enumerate}",
             "\\item Well-defined: ",
             "Points on Pseudo-Hilbert-curves really do converge",

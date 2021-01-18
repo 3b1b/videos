@@ -8,7 +8,7 @@ from manim_imports_ext import *
 
 class GradientDescentWrapper(Scene):
     def construct(self):
-        title = TextMobject("Gradient descent")
+        title = TexText("Gradient descent")
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
         rect.next_to(title, DOWN)
@@ -22,12 +22,12 @@ class ShowSimpleMultivariableFunction(Scene):
     def construct(self):
         scale_val = 1.5
 
-        func_tex = TexMobject(
+        func_tex = Tex(
             "C(", "x_1,", "x_2,", "\\dots,", "x_n", ")", "=",
         )
         func_tex.scale(scale_val)
         func_tex.shift(2 * LEFT)
-        alt_func_tex = TexMobject(
+        alt_func_tex = Tex(
             "C(", "x,", "y", ")", "="
         )
         alt_func_tex.scale(scale_val)
@@ -40,7 +40,7 @@ class ShowSimpleMultivariableFunction(Scene):
         inputs = func_tex[1:-2]
         self.add(func_tex)
 
-        many_inputs = TexMobject(*[
+        many_inputs = Tex(*[
             "x_{%d}, " % d for d in range(1, 25)
         ])
         many_inputs.set_width(FRAME_WIDTH)
@@ -99,7 +99,7 @@ class ShowGraphWithVectors(ExternallyAnimatedScene):
 
 class ShowFunction(Scene):
     def construct(self):
-        func = TexMobject(
+        func = Tex(
             "f(x, y) = e^{-x^2 + \\cos(2y)}",
             tex_to_color_map={
                 "x": BLUE,
@@ -117,7 +117,7 @@ class ShowExampleFunctionGraph(ExternallyAnimatedScene):
 
 class ShowGradient(Scene):
     def construct(self):
-        lhs = TexMobject(
+        lhs = Tex(
             "\\nabla f(x, y)=",
             tex_to_color_map={"x": BLUE, "y": RED}
         )
@@ -175,18 +175,18 @@ class TakePartialDerivatives(Scene):
             "x": BLUE,
             "y": RED,
         }
-        func_tex = TexMobject(
+        func_tex = Tex(
             "f", "(", "x", ",", "y", ")", "=",
             "e^{", "-x^2", "+ \\cos(2y)}",
             tex_to_color_map=tex_to_color_map
         )
-        partial_x = TexMobject(
+        partial_x = Tex(
             "{\\partial", "f", "\\over", "\\partial", "x}", "=",
             "\\left(", "e^", "{-x^2", "+ \\cos(2y)}", "\\right)",
             "(", "-2", "x", ")",
             tex_to_color_map=tex_to_color_map,
         )
-        partial_y = TexMobject(
+        partial_y = Tex(
             "{\\partial", "f", "\\over", "\\partial", "y}", "=",
             "\\left(", "e^", "{-x^2", "+ \\cos(", "2", "y)}", "\\right)",
             "(", "-\\sin(", "2", "y)", "\\cdot 2", ")",
@@ -219,7 +219,7 @@ class TakePartialDerivatives(Scene):
                 Vector(0.5 * DOWN).next_to(rect, UP, SMALL_BUFF)
                 for rect in terms.rects
             ])
-        treat_as_constant = TextMobject("Treat as a constant")
+        treat_as_constant = TexText("Treat as a constant")
         treat_as_constant.next_to(ys.arrows[1], UP)
 
         # Start to show partial_x
@@ -324,12 +324,12 @@ class ShowDerivativeAtExamplePoint(Scene):
             "x": BLUE,
             "y": RED,
         }
-        func_tex = TexMobject(
+        func_tex = Tex(
             "f", "(", "x", ",", "y", ")", "=",
             "e^{", "-x^2", "+ \\cos(2y)}",
             tex_to_color_map=tex_to_color_map
         )
-        gradient_tex = TexMobject(
+        gradient_tex = Tex(
             "\\nabla", "f", "(", "x", ",", "y", ")", "=",
             tex_to_color_map=tex_to_color_map
         )
@@ -345,7 +345,7 @@ class ShowDerivativeAtExamplePoint(Scene):
         gradient = VGroup(
             gradient_tex,
             partial_vect,
-            TexMobject("="),
+            Tex("="),
             result_vector
         )
         gradient.arrange(RIGHT, buff=SMALL_BUFF)
@@ -353,7 +353,7 @@ class ShowDerivativeAtExamplePoint(Scene):
         func_tex.to_edge(UP)
         gradient.next_to(func_tex, DOWN, buff=LARGE_BUFF)
 
-        example_lhs = TexMobject(
+        example_lhs = Tex(
             "\\nabla", "f", "(", "1", ",", "3", ")", "=",
             tex_to_color_map={"1": BLUE, "3": RED},
         )
@@ -362,7 +362,7 @@ class ShowDerivativeAtExamplePoint(Scene):
         example = VGroup(
             example_lhs,
             example_result_vector,
-            TexMobject("="),
+            Tex("="),
             example_rhs,
         )
         example.arrange(RIGHT, buff=SMALL_BUFF)

@@ -36,7 +36,7 @@ def get_size_bars(mob, stroke_width=3, buff=SMALL_BUFF):
 
 
 def get_monster_size_label():
-    size_label = TextMobject("{:,}".format(MONSTER_SIZE))[0]
+    size_label = TexText("{:,}".format(MONSTER_SIZE))[0]
     size_parts = VGroup(*[
         size_label[i:i + 12]
         for i in range(0, len(size_label), 12)
@@ -179,7 +179,7 @@ def get_named_image(name, height=3):
     image = ImageMobject(name)
     image.set_height(height)
 
-    name = TextMobject(name)
+    name = TexText(name)
     name.match_width(image)
     name.next_to(image, DOWN)
     group = Group(image, name)
@@ -196,9 +196,9 @@ class Thumbnail(Scene):
         monster.set_gloss(0.2)
 
         words = VGroup(
-            TextMobject("The"),
-            TextMobject("Monster"),
-            TextMobject("Group"),
+            TexText("The"),
+            TexText("Monster"),
+            TexText("Group"),
         )
         words.scale(3.5)
         words.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
@@ -217,7 +217,7 @@ class AskAboutFavoriteMegaNumber(TeacherStudentsScene):
     def construct(self):
         self.remove(self.pi_creatures)
         # YouTubers
-        title = TextMobject("What's your favorite number $> 1{,}000{,}000$?")
+        title = TexText("What's your favorite number $> 1{,}000{,}000$?")
         title.set_width(FRAME_WIDTH - 1)
         title.to_edge(UP)
 
@@ -270,7 +270,7 @@ class IntroduceMonsterSize(Scene):
     def construct(self):
         # Show number
         max_width = FRAME_WIDTH - 1
-        size_label = TextMobject("{:,}".format(MONSTER_SIZE))[0]
+        size_label = TexText("{:,}".format(MONSTER_SIZE))[0]
         size_label.set_width(max_width)
 
         n_syms = len(size_label)
@@ -297,11 +297,11 @@ class IntroduceMonsterSize(Scene):
         self.wait()
 
         # Show factorization
-        factors = TexMobject(
+        factors = Tex(
             r"= 2^{46} \cdot 3^{20} \cdot 5^{9} \cdot 7^{6} \cdot 11^{2} \cdot 13^{3} \cdot 17 \cdot 19 \cdot 23 \cdot 29 \cdot 31 \cdot 41 \cdot 47 \cdot 59 \cdot 71"
         )
         factors.set_width(max_width)
-        approx = TexMobject("\\approx 8\\times 10^{53}")
+        approx = Tex("\\approx 8\\times 10^{53}")
         approx.set_height(0.8)
         approx.move_to(DOWN)
         factors.next_to(approx, UP, buff=MED_LARGE_BUFF)
@@ -343,10 +343,10 @@ class IntroduceMonsterSize(Scene):
         server.set_fill(GREY, 1)
         server.set_gloss(0.5)
 
-        alien_words = TextMobject("Interesting!")
+        alien_words = TexText("Interesting!")
         alien_words.set_color(GREEN)
         alien_words.next_to(alien, UR, buff=-MED_SMALL_BUFF)
-        server_words = TextMobject("Very interesting\\\\indeed!")
+        server_words = TexText("Very interesting\\\\indeed!")
         server_words.next_to(server, LEFT)
 
         self.play(
@@ -360,7 +360,7 @@ class IntroduceMonsterSize(Scene):
             self.wait()
 
         # What is it?
-        question = TextMobject("What is it?")
+        question = TexText("What is it?")
         question.scale(2)
         question.move_to(UP)
 
@@ -396,11 +396,11 @@ class IntroduceMonsterSize(Scene):
 class IntroduceGroupTheory(Scene):
     def construct(self):
         # Title
-        over_title = TextMobject("An introduction\\\\to")
+        over_title = TexText("An introduction\\\\to")
         over_title.scale(2.5)
         over_title.move_to(ORIGIN, DOWN)
 
-        title = TextMobject("Group theory")
+        title = TexText("Group theory")
         title.scale(2.5)
         title.next_to(over_title, DOWN, buff=0.5)
 
@@ -439,7 +439,7 @@ class IntroduceGroupTheory(Scene):
         face = ImageMobject("average_face")
         face.set_height(5)
 
-        sym_word = TextMobject("Symmetric")
+        sym_word = TexText("Symmetric")
         sym_word.scale(2)
         sym_word.to_edge(UP)
         face.next_to(sym_word, DOWN, buff=MED_LARGE_BUFF)
@@ -447,7 +447,7 @@ class IntroduceGroupTheory(Scene):
         sym_word.replace(sym_amb)
         sym_word.set_opacity(0)
 
-        face_citation = TextMobject("``Average face'' from the Face Research Lab\\\\DeBruine, Lisa \\& Jones, Benedict (2017)")
+        face_citation = TexText("``Average face'' from the Face Research Lab\\\\DeBruine, Lisa \\& Jones, Benedict (2017)")
         face_citation.set_height(0.4)
         face_citation.next_to(face, DOWN)
         face_citation.to_corner(DL)
@@ -471,7 +471,7 @@ class IntroduceGroupTheory(Scene):
         self.play(ApplyMethod(face.stretch, -1, 0, run_time=2))
         self.wait()
 
-        sym_to_action = TextMobject("Symmetry", " $\\Rightarrow$ ", "\\emph{Action}")
+        sym_to_action = TexText("Symmetry", " $\\Rightarrow$ ", "\\emph{Action}")
         sym_to_action.set_color_by_tex("Action", YELLOW)
         sym_to_action.replace(sym_word, dim_to_match=1)
         self.play(
@@ -580,10 +580,10 @@ class IntroduceGroupTheory(Scene):
         self.wait()
 
         # Name groups
-        group_name = TextMobject("Group", "$^*$")
+        group_name = TexText("Group", "$^*$")
         group_name.scale(2)
         group_name.to_edge(UP)
-        footnote = TextMobject("$^*$er...kind of.  Keep watching")
+        footnote = TexText("$^*$er...kind of.  Keep watching")
         footnote.set_height(0.3)
         footnote.to_corner(UR)
         footnote.add(group_name[1])
@@ -618,7 +618,7 @@ class IntroduceGroupTheory(Scene):
 
         # Identity
         id_rect = SurroundingRectangle(d6_group[0])
-        id_words = TextMobject("The do-nothing", "\\\\action", alignment="")
+        id_words = TexText("The do-nothing", "\\\\action", alignment="")
         id_words.to_corner(UL)
         id_arrow = Arrow(id_words[1].get_bottom(), id_rect.get_top(), buff=0.2)
         id_arrow.match_color(id_rect)
@@ -648,7 +648,7 @@ class IntroduceGroupTheory(Scene):
         )
         self.wait()
 
-        d6_name = TexMobject("D_6")
+        d6_name = Tex("D_6")
         d6_name.scale(2)
         d6_name.move_to(counter)
         d6_name.set_color(BLUE)
@@ -683,7 +683,7 @@ class IntroduceGroupTheory(Scene):
         self.play(face_group[1].stretch, -1, 0)
         self.wait()
 
-        z2_name = TexMobject("C_2")
+        z2_name = Tex("C_2")
         z2_name.match_color(d6_name)
         z2_name.match_height(d6_name)
         z2_name.next_to(d6_rect, DOWN, MED_LARGE_BUFF)
@@ -709,7 +709,7 @@ class ZooOfGroups(ThreeDScene):
         )
         k4_axes.set_height(3)
 
-        quat_group = TexMobject("\\{1, -1, i , -i\\\\j, -j, k, -k\\}")
+        quat_group = Tex("\\{1, -1, i , -i\\\\j, -j, k, -k\\}")
 
         cube = get_cube(color=BLUE_D, opacity=1)
         cube.rotate(15 * DEGREES, OUT)
@@ -730,13 +730,13 @@ class ZooOfGroups(ThreeDScene):
         circle = Circle()
         circle.set_height(3)
 
-        monster_object = TexMobject("196{,}", "883")
+        monster_object = Tex("196{,}", "883")
         monster_object.arrange(DOWN, buff=0, aligned_edge=LEFT)
         monster_object.set_height(1.5)
         monster_object.add(Eyes(monster_object))
         monster_object[-1].scale(0.8, about_edge=DR)
 
-        qubit = TexMobject(
+        qubit = Tex(
             "\\alpha|0\\rangle + \\beta|1\\rangle",
             tex_to_color_map={"\\alpha": BLUE, "\\beta": YELLOW}
         )
@@ -744,14 +744,14 @@ class ZooOfGroups(ThreeDScene):
         qubit.set_height(1)
 
         groups = Group(
-            Group(TexMobject("C_2"), dot_pair),
-            Group(TexMobject("D_6"), snowflake),
-            Group(TexMobject("K_4"), k4_axes),
-            Group(TexMobject("Q_8"), quat_group),
-            Group(TexMobject("S_4"), cube),
-            Group(TexMobject("SO(3)"), sphere),
-            Group(TexMobject("\\mathds{R}^+ / \\mathds{Z}"), circle),
-            Group(TexMobject("SU(2)"), qubit),
+            Group(Tex("C_2"), dot_pair),
+            Group(Tex("D_6"), snowflake),
+            Group(Tex("K_4"), k4_axes),
+            Group(Tex("Q_8"), quat_group),
+            Group(Tex("S_4"), cube),
+            Group(Tex("SO(3)"), sphere),
+            Group(Tex("\\mathds{R}^+ / \\mathds{Z}"), circle),
+            Group(Tex("SU(2)"), qubit),
             Group(get_monster(), monster_object),
         )
 
@@ -826,7 +826,7 @@ class SymmetriesOfACube(ThreeDScene):
         self.add(cube)
 
         # Ask about structure
-        question = TextMobject("What structure is being preserved?")
+        question = TexText("What structure is being preserved?")
         question.set_height(0.7)
         question.to_edge(UP)
         question.fix_in_frame()
@@ -849,7 +849,7 @@ class SymmetriesOfACube(ThreeDScene):
             self.wait()
 
         # Count cube symmetries
-        count_label = TextMobject("24 ", "symmetries")
+        count_label = TexText("24 ", "symmetries")
         count_label.set_color_by_tex("24", YELLOW)
         count_label.set_height(0.7)
         count_label.fix_in_frame()
@@ -877,7 +877,7 @@ class SymmetriesOfACube(ThreeDScene):
 
         cross24 = Cross(count_label[0])
         cross24.fix_in_frame()
-        label48 = TexMobject("48")
+        label48 = Tex("48")
         label48.set_color(GREEN)
         label48.match_height(count_label[0])
         label48.move_to(count_label[0], DOWN)
@@ -993,11 +993,11 @@ class WeirdCubeSymmetryUnderbrace(Scene):
 class PermutationGroups(Scene):
     def construct(self):
         # Setup
-        question = TextMobject("What about no structure?")
+        question = TexText("What about no structure?")
         question.scale(1.5)
         question.to_edge(UP)
 
-        perm_words = TextMobject("All ", "permutations")
+        perm_words = TexText("All ", "permutations")
         perm_words.scale(1.5)
         perm_words.next_to(question, DOWN, buff=0.7)
         perm_words.set_color(BLUE)
@@ -1038,7 +1038,7 @@ class PermutationGroups(Scene):
         self.wait(10)
 
         # Count perms
-        perm_count = TexMobject("6!")
+        perm_count = Tex("6!")
         perm_count.match_height(perm_words[0])
         perm_count.match_color(perm_words[0])
         perm_count.move_to(perm_words[0], RIGHT)
@@ -1047,7 +1047,7 @@ class PermutationGroups(Scene):
         full_count.move_to(perm_count, DR)
         full_count.shift(0.7 * RIGHT)
         full_count.match_color(perm_count)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.scale(1.5)
         equals.next_to(full_count, LEFT)
         equals.match_color(perm_count)
@@ -1140,10 +1140,10 @@ class PermutationGroups(Scene):
         new_dots.shift(1.5 * DOWN)
 
         new_perm_label = VGroup(
-            TexMobject("12!"),
-            TexMobject("="),
+            Tex("12!"),
+            Tex("="),
             Integer(math.factorial(12)),
-            TextMobject("permutations")[0],
+            TexText("permutations")[0],
         )
         new_perm_label.arrange(RIGHT)
         new_perm_label.match_height(perm_label)
@@ -1188,10 +1188,10 @@ class PermutationGroups(Scene):
 
         # Show 101 dots
         new_perm_label = VGroup(
-            TexMobject("101!"),
-            TexMobject("\\approx"),
-            TexMobject("9.43 \\times 10^{159}"),
-            TextMobject("permutations")[0]
+            Tex("101!"),
+            Tex("\\approx"),
+            Tex("9.43 \\times 10^{159}"),
+            TexText("permutations")[0]
         )
         new_perm_label.arrange(RIGHT)
         new_perm_label.match_height(perm_label)
@@ -1234,7 +1234,7 @@ class PermutationGroups(Scene):
         # Name S_n
         perm_label[3].generate_target()
         new_perm_label = VGroup(
-            TexMobject("n!").match_height(perm_label[0]),
+            Tex("n!").match_height(perm_label[0]),
             perm_label[3].target,
         )
         new_perm_label.arrange(RIGHT, buff=MED_LARGE_BUFF)
@@ -1244,7 +1244,7 @@ class PermutationGroups(Scene):
         new_perm_label[0].replace(perm_label[0], stretch=True)
         new_perm_label[0].set_opacity(0)
 
-        Sn_name = TexMobject("S_n")
+        Sn_name = Tex("S_n")
         Sn_name.match_height(new_perm_label)
         Sn_name.next_to(new_perm_label, RIGHT, buff=LARGE_BUFF)
         Sn_name.set_color(YELLOW)
@@ -1302,7 +1302,7 @@ class SolutionsToPolynomials(Scene):
     def construct(self):
         # Show quintic shuffling
         colors = list(Color(BLUE).range_to(YELLOW, 5))
-        quintic = TexMobject(
+        quintic = Tex(
             "x^5 - x - 1",
             "=",
             "(x - r_0)",
@@ -1369,7 +1369,7 @@ class SolutionsToPolynomials(Scene):
         )
 
         # Down to quadratic
-        quadratic_lhs = TexMobject("x^2 - x - 1")
+        quadratic_lhs = Tex("x^2 - x - 1")
         quadratic_lhs.match_height(quintic[0])
         quadratic_lhs.move_to(quintic[0], RIGHT)
 
@@ -1396,13 +1396,13 @@ class SolutionsToPolynomials(Scene):
         self.wait()
 
         # Quadratic formula
-        quadratic_formula = TexMobject(
+        quadratic_formula = Tex(
             "{-b \\pm \\sqrt{\\,b^2 - 4ac} \\over 2a}",
         )
         quadratic_formula.set_height(1.5)
         quadratic_formula.to_edge(RIGHT, buff=LARGE_BUFF)
 
-        quad_form_name = TextMobject("Quadratic formula")
+        quad_form_name = TexText("Quadratic formula")
         quad_form_name.set_height(0.5)
         quad_form_name.next_to(quadratic_formula, DOWN, LARGE_BUFF)
         quad_form_name.set_color(GREY_B)
@@ -1414,7 +1414,7 @@ class SolutionsToPolynomials(Scene):
         self.wait()
 
         # Cubic
-        cubic_lhs = TexMobject("x^3 - x - 1")
+        cubic_lhs = Tex("x^3 - x - 1")
         cubic_lhs.replace(quadratic_lhs)
 
         cubic_root_dots = get_root_dots([
@@ -1423,14 +1423,14 @@ class SolutionsToPolynomials(Scene):
             -0.66236 - 0.56228j,
         ])
 
-        cubic_formula = TexMobject(
+        cubic_formula = Tex(
             r"\sqrt[3]{-\frac{q}{2}+\sqrt{\frac{q^{2}}{4}+\frac{p^{3}}{27}}}+\sqrt[3]{-\frac{q}{2}-\sqrt{\frac{q^{2}}{4}+\frac{p^{3}}{27}}}",
         )
         cubic_formula.replace(quadratic_formula, dim_to_match=1)
         cubic_formula.to_edge(RIGHT, buff=MED_SMALL_BUFF)
         cubic_formula.scale(0.8, about_edge=RIGHT)
 
-        cubic_form_name = TextMobject("Cubic formula (reduced)")
+        cubic_form_name = TexText("Cubic formula (reduced)")
         cubic_form_name.replace(quad_form_name, dim_to_match=1)
         cubic_form_name.match_style(quad_form_name)
 
@@ -1453,7 +1453,7 @@ class SolutionsToPolynomials(Scene):
         self.wait()
 
         # Quartic (largely copied from above)
-        quartic_lhs = TexMobject("x^4 - x - 1")
+        quartic_lhs = Tex("x^4 - x - 1")
         quartic_lhs.replace(quadratic_lhs)
 
         quartic_root_dots = get_root_dots([
@@ -1463,7 +1463,7 @@ class SolutionsToPolynomials(Scene):
             -0.24813 - 1.0340j,
         ])
 
-        quartic_formula = TexMobject(r"""
+        quartic_formula = Tex(r"""
             r_{i}&=-\frac{b}{4 a}-S \pm \frac{1}{2} \sqrt{-4 S^{2}-2 p \pm \frac{q}{S}}\\\\
             &\text{Where}\\\\
             p&=\frac{8 a c-3 b^{2}}{8 a^{2}} \qquad \qquad
@@ -1519,7 +1519,7 @@ class SolutionsToPolynomials(Scene):
         mathy.add_updater(lambda m, sym=root_syms[3]: m.look_at(sym))
 
         # Show a few permutations
-        s5_name = TexMobject("S_5")
+        s5_name = Tex("S_5")
         s5_name.scale(1.5)
         s5_name.next_to(plane, RIGHT, MED_LARGE_BUFF, aligned_edge=UP)
         s5_name.shift(DOWN)
@@ -1560,7 +1560,7 @@ class SolutionsToPolynomials(Scene):
         )
 
         # No formula
-        r0_value = TexMobject(
+        r0_value = Tex(
             "r_0", "=", "1.1673\\dots",
         )
         r0_value.set_color_by_tex("r_0", BLUE)
@@ -1584,7 +1584,7 @@ class SolutionsToPolynomials(Scene):
 
         # Arithmetic symbols
         symbols = VGroup(*[
-            TexMobject(s)
+            Tex(s)
             for s in ["+", "-", "\\times", "/", "\\sqrt[n]{\\qquad}"]
         ])
         symbols[:4].arrange_in_grid(2, 2)
@@ -1619,7 +1619,7 @@ class MentionGroupsInPhysics(TeacherStudentsScene):
         noether.set_height(3)
         noether.to_corner(UL)
 
-        nt_label = TextMobject("Noether's theorem")
+        nt_label = TexText("Noether's theorem")
         nt_label.set_height(0.5)
         nt_label.move_to(self.hold_up_spot, DOWN)
 
@@ -1635,9 +1635,9 @@ class MentionGroupsInPhysics(TeacherStudentsScene):
         nt_label.generate_target()
         nt_label.target.center().to_edge(UP)
         rule = VGroup(
-            TextMobject("Conservation law", color=BLUE),
-            TexMobject("\\Leftrightarrow"),
-            TextMobject("Symmetry", color=YELLOW),
+            TexText("Conservation law", color=BLUE),
+            Tex("\\Leftrightarrow"),
+            TexText("Symmetry", color=YELLOW),
         )
         rule.set_height(0.5)
         rule.arrange(RIGHT)
@@ -1658,8 +1658,8 @@ class MentionGroupsInPhysics(TeacherStudentsScene):
 
         # Examples
         examples = VGroup(
-            TextMobject("Momentum", " $\\Leftrightarrow$ ", "Translation in space"),
-            TextMobject("Energy", " $\\Leftrightarrow$ ", "Translation in time"),
+            TexText("Momentum", " $\\Leftrightarrow$ ", "Translation in space"),
+            TexText("Energy", " $\\Leftrightarrow$ ", "Translation in time"),
         )
         examples.arrange(DOWN, buff=MED_LARGE_BUFF)
         examples.next_to(rule, DOWN, buff=MED_LARGE_BUFF)
@@ -1689,8 +1689,8 @@ class AmbientDodecSymmetries(ThreeDScene):
 class NotGroupsGroupAction(Scene):
     def construct(self):
         words = VGroup(
-            TextMobject("Group"),
-            TextMobject("Group", " action"),
+            TexText("Group"),
+            TexText("Group", " action"),
         )
         words.scale(2)
         words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
@@ -1753,8 +1753,8 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         rot_icon = get_rot_icon(60, snowflake)
         inclusion = VGroup(
             rot_icon,
-            TexMobject("\\in").scale(2),
-            TexMobject("D_6").scale(2),
+            Tex("\\in").scale(2),
+            Tex("D_6").scale(2),
         )
         inclusion.arrange(RIGHT)
         inclusion.next_to(self.hold_up_spot, UL, MED_LARGE_BUFF)
@@ -1776,7 +1776,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
 
         rot_icon.generate_target()
         rot_icon.target.to_corner(UL)
-        r_sym = TexMobject("r").scale(2)
+        r_sym = Tex("r").scale(2)
         r_sym.move_to(rot_icon, RIGHT)
 
         self.look_at(
@@ -1808,8 +1808,8 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         self.wait(2)
 
         # Operations
-        add = TexMobject("3", "+", "5", "=", "8")
-        mult = TexMobject("3", "\\cdot", "5", "=", "15")
+        add = Tex("3", "+", "5", "=", "8")
+        mult = Tex("3", "\\cdot", "5", "=", "15")
         ops = VGroup(add, mult)
         ops.match_height(numeral)
         ops.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
@@ -1896,9 +1896,9 @@ class ElementsAsAbstractions(TeacherStudentsScene):
 
         group_prod = VGroup(
             rot_icon.target,
-            TexMobject("\\times").scale(2),
+            Tex("\\times").scale(2),
             flip_icon,
-            TexMobject("=").scale(2),
+            Tex("=").scale(2),
             rhs_icon
         )
         group_prod.set_gloss(0)
@@ -2106,14 +2106,14 @@ class MultiplicationTable(Scene):
 
         # Symbolically
         symbols = VGroup(
-            TexMobject("1"),
-            TexMobject("r"),
-            TexMobject("r^2"),
-            TexMobject("r^3"),
-            TexMobject("s"),
-            TexMobject("rs"),
-            TexMobject("r^2 s"),
-            TexMobject("r^3 s"),
+            Tex("1"),
+            Tex("r"),
+            Tex("r^2"),
+            Tex("r^3"),
+            Tex("s"),
+            Tex("rs"),
+            Tex("r^2 s"),
+            Tex("r^3 s"),
         )
         symbols.set_height(0.4 * grid[0].get_height())
 
@@ -2176,9 +2176,9 @@ class UsualMultiplicationTable(Scene):
         grid.to_edge(DOWN, buff=0.5)
         grid.set_fill(GREY_E, 1)
         dots = VGroup(
-            *[TexMobject("\\dots").scale(2).next_to(row, RIGHT) for row in grid[:-1]],
-            *[TexMobject("\\vdots").scale(2).next_to(square, DOWN) for square in grid[-1][:-1]],
-            TexMobject("\\ddots").scale(2).next_to(grid[-1][-1], DR),
+            *[Tex("\\dots").scale(2).next_to(row, RIGHT) for row in grid[:-1]],
+            *[Tex("\\vdots").scale(2).next_to(square, DOWN) for square in grid[-1][:-1]],
+            Tex("\\ddots").scale(2).next_to(grid[-1][-1], DR),
         )
 
         self.add(grid)
@@ -2268,9 +2268,9 @@ class UsualMultiplicationTable(Scene):
         frame.target.scale(1.1)
 
         benefit = VGroup(
-            TextMobject("Abstraction").scale(1.5),
+            TexText("Abstraction").scale(1.5),
             Vector(DOWN),
-            TextMobject("Less cumbersome").scale(1.5),
+            TexText("Less cumbersome").scale(1.5),
         )
         benefit.arrange(DOWN)
         benefit.next_to(grid, RIGHT, buff=LARGE_BUFF)
@@ -2308,7 +2308,7 @@ class MentionTheMonster(Scene):
 
 class FrustratedAtGroups(TeacherStudentsScene):
     def construct(self):
-        formula = TexMobject(r"|G|=|Z(G)|+\sum i\left[G: C_{G}\left(x_{i}\right)\right]")
+        formula = Tex(r"|G|=|Z(G)|+\sum i\left[G: C_{G}\left(x_{i}\right)\right]")
         formula.move_to(self.hold_up_spot, DOWN)
         formula.shift(0.5 * UL)
 
@@ -2331,7 +2331,7 @@ class AnalogyWithCounts(Scene):
     def construct(self):
         # Setup
         line = Line(LEFT, RIGHT)
-        words = TextMobject("Abstraction of")
+        words = TexText("Abstraction of")
         words.match_width(line)
         words.scale(0.9)
         words.next_to(line, UP, SMALL_BUFF)
@@ -2342,10 +2342,10 @@ class AnalogyWithCounts(Scene):
         diagrams = VGroup(*[
             VGroup(mob1, line.copy(), mob2)
             for mob1, mob2 in [
-                (TextMobject("Groups"), TextMobject("Symmetry actions")),
-                (TexMobject("D_6"), get_snowflake(height=1)),
-                (TextMobject("Numbers"), TextMobject("Counts")),
-                (TexMobject("9").scale(1.5), VGroup(*[Dot() for x in range(9)]).arrange_in_grid(buff=SMALL_BUFF)),
+                (TexText("Groups"), TexText("Symmetry actions")),
+                (Tex("D_6"), get_snowflake(height=1)),
+                (TexText("Numbers"), TexText("Counts")),
+                (Tex("9").scale(1.5), VGroup(*[Dot() for x in range(9)]).arrange_in_grid(buff=SMALL_BUFF)),
             ]
         ])
         for diagram, vect in zip(diagrams, [LEFT, LEFT, RIGHT, RIGHT]):
@@ -2616,9 +2616,9 @@ class Isomorphism(Scene):
 
         rot_icon_equation = Group(
             get_rot_icon(90 * DEGREES, UP),
-            TexMobject("\\times").scale(2),
+            Tex("\\times").scale(2),
             get_rot_icon(90 * DEGREES, RIGHT),
-            TexMobject("=").scale(2),
+            Tex("=").scale(2),
             get_rot_icon(0, OUT),
         )
         rot_icons = rot_icon_equation[0::2]
@@ -2626,7 +2626,7 @@ class Isomorphism(Scene):
         rot_icon_equation.shift(1.5 * UP)
 
         icon_labels = VGroup(*[
-            TextMobject(f"$180^\\circ$ about\\\\{axis} axis")
+            TexText(f"$180^\\circ$ about\\\\{axis} axis")
             for axis in "xyz"
         ])
         for icon, label in zip(rot_icon_equation[0::2], icon_labels):
@@ -2660,9 +2660,9 @@ class Isomorphism(Scene):
             perm_terms.add(perm_term)
         perm_equation = VGroup(
             perm_terms[0],
-            TexMobject("\\times").scale(2),
+            Tex("\\times").scale(2),
             perm_terms[1],
-            TexMobject("=").scale(2),
+            Tex("=").scale(2),
             perm_terms[2],
         )
         perm_equation.arrange(RIGHT, buff=LARGE_BUFF)
@@ -2723,7 +2723,7 @@ class Isomorphism(Scene):
 
 class IsomorphismWord(Scene):
     def construct(self):
-        word = TextMobject("``Isomorphism''")
+        word = TexText("``Isomorphism''")
         word.scale(2)
         word.to_edge(UP)
         self.play(FadeIn(word, DOWN))
@@ -2805,7 +2805,7 @@ class S4WithMultipleChildren(Scene):
         s_rects.move_to(DOWN)
         self.add(s_rects)
 
-        s4_label = TexMobject("S_4")
+        s4_label = Tex("S_4")
         s4_label.scale(2)
         s4_label.to_edge(UP)
 
@@ -2863,7 +2863,7 @@ class S4WithMultipleChildren(Scene):
 
 class AutQ8(Scene):
     def construct(self):
-        tex = TexMobject("\\text{Aut}(Q_8)", tex_to_color_map={"Q_8": BLUE})
+        tex = Tex("\\text{Aut}(Q_8)", tex_to_color_map={"Q_8": BLUE})
         tex.scale(2)
         self.play(Write(tex))
         self.wait()
@@ -2871,9 +2871,9 @@ class AutQ8(Scene):
 
 class GroupsBeyondActions(Scene):
     def construct(self):
-        groups = TextMobject("Groups")
-        sym_acts = TextMobject("Symmetric\\\\Actions")
-        others = TextMobject("Other things\\\\which ``multiply''")
+        groups = TexText("Groups")
+        sym_acts = TexText("Symmetric\\\\Actions")
+        others = TexText("Other things\\\\which ``multiply''")
         VGroup(groups, sym_acts, others).scale(1.5)
         line = Line(UP, DOWN)
 
@@ -2911,7 +2911,7 @@ class RAddToRMult(ExternallyAnimatedScene):
 class AskAboutAllTheGroups(TeacherStudentsScene):
     def construct(self):
         # Ask
-        question = TextMobject("What are all the groups", "?")
+        question = TexText("What are all the groups", "?")
         self.teacher_holds_up(question)
         self.change_student_modes("pondering", "thinking", "erm")
         self.wait(2)
@@ -2939,7 +2939,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
         )
 
         # Add up to isomorphism
-        caveat = TextMobject("up to \\emph{isomorphism}")
+        caveat = TexText("up to \\emph{isomorphism}")
         caveat.next_to(question, DOWN)
         caveat.set_color(YELLOW)
 
@@ -2956,7 +2956,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
         self.look_at(question)
 
         # Alt question
-        sym_question = TextMobject("What are all the\\\\", "symmetric", " things", "?")
+        sym_question = TexText("What are all the\\\\", "symmetric", " things", "?")
         self.teacher_holds_up(sym_question)
 
         cross = Cross(sym_question)
@@ -2969,7 +2969,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
         )
         self.wait()
 
-        abs_question = TextMobject("What are all the", " \\emph{ways}\\\\", "things ", "can be ", "symmetric", "?")
+        abs_question = TexText("What are all the", " \\emph{ways}\\\\", "things ", "can be ", "symmetric", "?")
         new_words = VGroup(abs_question[1], abs_question[3])
         new_words.match_color(caveat)
         abs_question.move_to(sym_question)
@@ -2991,7 +2991,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
 
         # Formula
         suggestions = VGroup(*[
-            TextMobject("Some ", word, "?", tex_to_color_map={word: color})
+            TexText("Some ", word, "?", tex_to_color_map={word: color})
             for word, color in [
                 ("formula", RED),
                 ("procedure", MAROON_B),
@@ -3038,7 +3038,7 @@ class ThisQuestionIsHard(Scene):
             Arrow(line.n2p(0.5), line.n2p(1), fill_color=RED),
         )
         arrows.shift(2.5 * DOWN)
-        words = VGroup(TextMobject("Easier"), TextMobject("Harder"))
+        words = VGroup(TexText("Easier"), TexText("Harder"))
         for word, arrow in zip(words, arrows):
             word.match_color(arrow)
             word.next_to(arrow, DOWN, SMALL_BUFF)
@@ -3049,19 +3049,19 @@ class ThisQuestionIsHard(Scene):
 
         # Add problems
         problems = VGroup(
-            TexMobject("1 + 1"),
+            Tex("1 + 1"),
             VGroup(
-                TexMobject("\\frac{2^{289}+1}{2^{17}+1}=2^{a_{1}}+\\ldots+2^{a_{k}}"),
-                TexMobject("a_1 < \\ldots < a_k"),
-                TexMobject("a_1, \\dots, a_k \\in \\mathds{Z}^+"),
+                Tex("\\frac{2^{289}+1}{2^{17}+1}=2^{a_{1}}+\\ldots+2^{a_{k}}"),
+                Tex("a_1 < \\ldots < a_k"),
+                Tex("a_1, \\dots, a_k \\in \\mathds{Z}^+"),
             ),
             VGroup(
-                TexMobject("{a \\over b + c} + {b \\over c + a} + {c \\over b + c} = 4"),
-                TexMobject("a, b, c \\in \\mathds{Z}^+"),
+                Tex("{a \\over b + c} + {b \\over c + a} + {c \\over b + c} = 4"),
+                Tex("a, b, c \\in \\mathds{Z}^+"),
             ),
             VGroup(
-                TexMobject("x^n + y^n = z^n"),
-                TexMobject("x, y, z \\in \\mathds{Z}"),
+                Tex("x^n + y^n = z^n"),
+                Tex("x, y, z \\in \\mathds{Z}"),
             ),
         )
         colors = Color(GREEN).range_to(RED, 4)
@@ -3085,7 +3085,7 @@ class ThisQuestionIsHard(Scene):
         tri.set_stroke(width=0)
         tri.set_fill(GREY_B, 1)
         tri.move_to(line.n2p(0.5), DOWN)
-        question = TextMobject("What are all\\\\the groups?")
+        question = TexText("What are all\\\\the groups?")
         question.next_to(tri, UP)
 
         ext_line = line.copy()
@@ -3110,7 +3110,7 @@ class ThisQuestionIsHard(Scene):
 
 class AmbientSnowflakeSymmetries(Scene):
     def construct(self):
-        title = TexMobject("D_6")
+        title = Tex("D_6")
         title.scale(3)
         title.to_edge(LEFT, buff=1)
         title.set_color(BLUE)
@@ -3143,11 +3143,11 @@ class IntroduceSimpleGroups(Scene):
         bg_rect = FullScreenFadeRectangle(fill_color=GREY_E, fill_opacity=1)
         self.add(bg_rect)
 
-        groups = TextMobject("Groups")
+        groups = TexText("Groups")
         groups.scale(2)
         groups.to_edge(UP)
-        inf_groups = TextMobject("Infinite groups")
-        fin_groups = TextMobject("Finite groups")
+        inf_groups = TexText("Infinite groups")
+        fin_groups = TexText("Finite groups")
         children = VGroup(inf_groups, fin_groups)
         children.scale(1.5)
         children.arrange(RIGHT, buff=2)
@@ -3209,12 +3209,12 @@ class IntroduceSimpleGroups(Scene):
 
         fin_groups.generate_target()
         titles = VGroup(
-            TextMobject("Integers").scale(1.5),
-            TextMobject("Molecules").scale(1.5),
+            TexText("Integers").scale(1.5),
+            TexText("Molecules").scale(1.5),
             fin_groups.target,
         )
         sub_titles = VGroup(*[
-            TextMobject("break down into\\\\", word)
+            TexText("break down into\\\\", word)
             for word in ("primes", "atoms", "simple groups")
         ])
 
@@ -3231,14 +3231,14 @@ class IntroduceSimpleGroups(Scene):
         H_sphere.set_color(RED)
         H_atom = Group(
             H_sphere,
-            TextMobject("H").scale(0.5).move_to(H_sphere)
+            TexText("H").scale(0.5).move_to(H_sphere)
         )
         O_sphere = Sphere()
         O_sphere.set_height(1)
         O_sphere.set_color(BLUE)
         O_atom = Group(
             O_sphere,
-            TextMobject("O").scale(0.75).move_to(O_sphere)
+            TexText("O").scale(0.75).move_to(O_sphere)
         )
         H2O = Group(
             O_atom.copy(),
@@ -3256,9 +3256,9 @@ class IntroduceSimpleGroups(Scene):
                 Group(H_atom.copy(), H_atom.copy(), O_atom.copy())
             ),
             VGroup(
-                TexMobject("S_4"),
+                Tex("S_4"),
                 VGroup(*[
-                    TexMobject(
+                    Tex(
                         "C_" + str(n),
                         fill_color=(RED_B if n == 2 else BLUE)
                     )
@@ -3307,7 +3307,7 @@ class IntroduceSimpleGroups(Scene):
             self.wait()
 
         # Theorem
-        theorem_name = TextMobject("(Jordan–Hölder Theorem)")
+        theorem_name = TexText("(Jordan–Hölder Theorem)")
         theorem_name.scale(0.7)
         theorem_name.next_to(sub_titles[2], DOWN)
         self.play(Write(theorem_name, run_time=1))
@@ -3330,8 +3330,8 @@ class SymmetriesOfCirleAndLine(Scene):
         circle.next_to(line, DOWN, buff=2)
         circle.shift(RIGHT)
 
-        R_label = TexMobject("\\mathds{R}")
-        RmodZ = TexMobject("\\mathds{R} / \\mathds{Z}")
+        R_label = Tex("\\mathds{R}")
+        RmodZ = Tex("\\mathds{R} / \\mathds{Z}")
         R_label.set_height(0.9)
         R_label.next_to(line, UP, MED_LARGE_BUFF)
         RmodZ.set_height(0.9)
@@ -3359,10 +3359,10 @@ class SymmetriesOfCirleAndLine(Scene):
 class QuinticImpliesCyclicDecomposition(Scene):
     def construct(self):
         # Title
-        title = TextMobject("Quintic formula")
+        title = TexText("Quintic formula")
         title.scale(1.5)
         title.to_edge(UP)
-        details = TextMobject(
+        details = TexText(
             "Solve ",
             "$a_5 x^5 + a_4 x^4 + a_3 x^3 + a_2 x^2 + a_1 x + a_0$\\\\",
             " using only ",
@@ -3383,21 +3383,21 @@ class QuinticImpliesCyclicDecomposition(Scene):
         full_title = VGroup(title, details)
 
         # Show Implication
-        implies = TexMobject("\\Downarrow").scale(2)
+        implies = Tex("\\Downarrow").scale(2)
         implies.next_to(details, DOWN, LARGE_BUFF)
 
-        s5 = TexMobject("S_5")
+        s5 = Tex("S_5")
         prime_children = VGroup(
-            TexMobject("C_{p_1}"),
-            TexMobject("C_{p_2}"),
-            TexMobject("\\vdots"),
-            TexMobject("C_{p_n}"),
+            Tex("C_{p_1}"),
+            Tex("C_{p_2}"),
+            Tex("\\vdots"),
+            Tex("C_{p_n}"),
         )
         prime_children.set_color(RED_B)
 
         real_children = VGroup(
-            TexMobject("A_5"),
-            TexMobject("C_2"),
+            Tex("A_5"),
+            Tex("C_2"),
         )
         real_children.set_color(GREEN)
 
@@ -3450,7 +3450,7 @@ class QuinticImpliesCyclicDecomposition(Scene):
         # Reverse implication
         title_rect = SurroundingRectangle(full_title)
         title_rect.set_stroke(RED, 2)
-        not_exists = TextMobject("No\\\\such\\\\thing")
+        not_exists = TexText("No\\\\such\\\\thing")
         not_exists.match_height(title_rect)
         not_exists.set_color(RED)
         not_exists.next_to(title_rect, LEFT)
@@ -3476,11 +3476,11 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
         self.change_student_modes("maybe", "tired", look_at_arg=self.screen)
         self.wait(4)
 
-        fp_words = TextMobject("Fact about\\\\polynomials")
+        fp_words = TexText("Fact about\\\\polynomials")
         fp_words.scale(1.25)
-        as_words = TextMobject("``Atomic structure''\\\\of a group")
+        as_words = TexText("``Atomic structure''\\\\of a group")
         as_words.scale(1.25)
-        implies = TexMobject("\\Rightarrow").scale(2)
+        implies = Tex("\\Rightarrow").scale(2)
 
         self.teacher_holds_up(
             fp_words,
@@ -3504,14 +3504,14 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
 class TwoStepsToAllFiniteGroups(Scene):
     def construct(self):
         # List
-        title = TextMobject("How to categorize all finite groups")
+        title = TexText("How to categorize all finite groups")
         title.scale(1.5)
         title.add(Underline(title))
         title.to_edge(UP)
 
         steps = VGroup(
-            TextMobject("1. ", "Find all the ", "simple groups", "."),
-            TextMobject("2. ", "Find all the ", "ways to\\\\", "combine ", "simple groups", "."),
+            TexText("1. ", "Find all the ", "simple groups", "."),
+            TexText("2. ", "Find all the ", "ways to\\\\", "combine ", "simple groups", "."),
         )
         steps[1][3:].next_to(steps[1][1], DOWN, SMALL_BUFF, aligned_edge=LEFT)
         steps.arrange(DOWN, aligned_edge=LEFT, buff=2)
@@ -3562,7 +3562,7 @@ class TwoStepsToAllFiniteGroups(Scene):
         self.wait()
 
         # Chemistry
-        chem_words = TextMobject("All of chemistry")
+        chem_words = TexText("All of chemistry")
         chem_words.match_y(steps[1])
         chem_words.match_x(table)
         chem_words.set_color(RED)
@@ -3598,7 +3598,7 @@ class TwoStepsToAllFiniteGroups(Scene):
         self.play(Write(check))
         self.wait()
 
-        proof_words = TextMobject("(prove you have them all.)")
+        proof_words = TexText("(prove you have them all.)")
         proof_words.next_to(steps[0], DOWN)
         proof_words.set_color(GREY_A)
         self.play(Write(proof_words, run_time=2))
@@ -3606,10 +3606,10 @@ class TwoStepsToAllFiniteGroups(Scene):
 
         # What was involved
         stats = VGroup(
-            TextMobject("1955-2004"),
-            TextMobject("$10{,}000+$ pages"),
-            TextMobject("100's of mathematicians"),
-            TextMobject("Plenty of computation"),
+            TexText("1955-2004"),
+            TexText("$10{,}000+$ pages"),
+            TexText("100's of mathematicians"),
+            TexText("Plenty of computation"),
         )
         stats.arrange_in_grid(buff=1.5, aligned_edge=LEFT)
         stats.next_to(top_rect, DOWN, buff=LARGE_BUFF)
@@ -3630,7 +3630,7 @@ class TwoStepsToAllFiniteGroups(Scene):
         stats.target.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         stats.target.move_to(stats, UL)
 
-        last_paper = TextMobject(
+        last_paper = TexText(
             "The Classification of Quasithin Groups\\\\",
             "Aschbacher and Smith (2004)\\\\",
             "(12{,}000 pages!)",
@@ -3647,7 +3647,7 @@ class TwoStepsToAllFiniteGroups(Scene):
         self.wait()
 
         # Quote
-        quote = TextMobject(
+        quote = TexText(
             """
             ``...undoubtedly one of the most\\\\
             extraordinary theorems that pure\\\\
@@ -3671,7 +3671,7 @@ class TwoStepsToAllFiniteGroups(Scene):
 class ClassificationOfSimpleGroups(Scene):
     def construct(self):
         # Title
-        class_title = TextMobject("Classification of finite simple groups")
+        class_title = TexText("Classification of finite simple groups")
         class_title.set_width(FRAME_WIDTH - 4)
         class_title.add(Underline(class_title).set_color(GREY_B))
         class_title.to_edge(UP)
@@ -3687,14 +3687,14 @@ class ClassificationOfSimpleGroups(Scene):
         ])
         for family in families_grid:
             family.arrange(DOWN, buff=0)
-            dots = TexMobject("\\vdots")
+            dots = Tex("\\vdots")
             dots.next_to(family, DOWN)
             family.add(dots)
         families_grid.arrange(RIGHT, buff=MED_SMALL_BUFF)
         families_grid.to_edge(LEFT)
         families_grid.set_y(-1)
 
-        families_title = TextMobject("18 infinite families")
+        families_title = TexText("18 infinite families")
         families_title.set_color(BLUE)
         families_title.next_to(families_grid, UP, MED_LARGE_BUFF)
 
@@ -3730,8 +3730,8 @@ class ClassificationOfSimpleGroups(Scene):
         sporadics.next_to(families_grid, RIGHT, buff=1.5, aligned_edge=UP)
         sporadics.set_fill(YELLOW_E)
 
-        pre_sporadics_title = TextMobject("26", " leftovers")
-        sporadics_title = TextMobject("26", " ``sporadic''\\\\groups")
+        pre_sporadics_title = TexText("26", " leftovers")
+        sporadics_title = TexText("26", " ``sporadic''\\\\groups")
         for title in pre_sporadics_title, sporadics_title:
             title.set_color(YELLOW)
             title.next_to(sporadics, UP, MED_LARGE_BUFF)
@@ -3773,7 +3773,7 @@ class ClassificationOfSimpleGroups(Scene):
 
         # C5
         c_names = VGroup(*[
-            TexMobject(f"C_{{{p}}}")
+            Tex(f"C_{{{p}}}")
             for p in [2, 3, 5, 7, 11, 13, 17, 19]
         ])
 
@@ -3835,7 +3835,7 @@ class ClassificationOfSimpleGroups(Scene):
         )
 
         a_names = VGroup(*[
-            TexMobject(f"A_{{{n}}}")
+            Tex(f"A_{{{n}}}")
             for n in range(5, 5 + len(column) - 1)
         ])
         put_names_in_column(a_names, column)
@@ -3895,7 +3895,7 @@ class ClassificationOfSimpleGroups(Scene):
         # Others
         others_rect = SurroundingRectangle(families_grid[2:])
         others_rect.set_stroke(YELLOW, 2)
-        others_name = TextMobject("Groups of\\\\Lie type")
+        others_name = TexText("Groups of\\\\Lie type")
         others_name.set_color(YELLOW)
         others_name.next_to(others_rect, RIGHT)
         self.play(ShowCreation(others_rect))
@@ -3932,12 +3932,12 @@ class ClassificationOfSimpleGroups(Scene):
         # Monster
         monster = get_monster()
         put_in_square(monster, sporadics[0], 0.9)
-        monster_name = TextMobject("Monster", " group")
+        monster_name = TexText("Monster", " group")
         monster_name.next_to(sporadics[0], UP, LARGE_BUFF)
         monster_name.shift_onto_screen()
         monster_arrow = Arrow(monster_name.get_bottom(), monster.get_top())
 
-        size_label = TextMobject("{:,}".format(MONSTER_SIZE))[0]
+        size_label = TexText("{:,}".format(MONSTER_SIZE))[0]
         size_label.scale(0.8)
         size_label.move_to(monster_name, LEFT)
 
@@ -3968,11 +3968,11 @@ class ClassificationOfSimpleGroups(Scene):
         full_monster_label.target.to_edge(UP, buff=MED_SMALL_BUFF)
         full_monster_label.target.set_opacity(0.7)
 
-        baby_name = TextMobject("Baby monster group")
+        baby_name = TexText("Baby monster group")
         baby_name.move_to(size_label, LEFT)
         baby_arrow = Arrow(baby_name.get_bottom(), sporadics[1].get_corner(UR) + SMALL_BUFF * DL)
         baby_arrow.set_stroke(BLACK, 6, background=True)
-        baby_size_label = TextMobject("{:,}".format(BABY_MONSTER_SIZE))[0]
+        baby_size_label = TexText("{:,}".format(BABY_MONSTER_SIZE))[0]
         baby_size_label.scale(0.8)
         baby_size_label.move_to(baby_name, LEFT)
 
@@ -4018,7 +4018,7 @@ class ClassificationOfSimpleGroups(Scene):
         monster_name.target.arrange(DOWN, buff=MED_SMALL_BUFF, aligned_edge=LEFT)
         monster_name.target.next_to(sporadics[0], UP, SMALL_BUFF, aligned_edge=LEFT)
 
-        happy_family_name = TextMobject("``Happy family''")
+        happy_family_name = TexText("``Happy family''")
         happy_family_name.set_height(0.7)
         happy_family_name.to_edge(UP)
         happy_family_name.set_color(GREEN)
@@ -4031,7 +4031,7 @@ class ClassificationOfSimpleGroups(Scene):
         self.wait()
 
         pariahs = sporadics[20:]
-        pariahs_name = TextMobject("``Pariahs''")
+        pariahs_name = TexText("``Pariahs''")
         pariahs_name.set_height(0.7)
         pariahs_name.next_to(pariahs, UP, MED_LARGE_BUFF)
         pariahs_name.set_color(YELLOW)
@@ -4071,7 +4071,7 @@ class TellMeTheresAChildrensBook(TeacherStudentsScene):
 class AskWhatTheMonsterActsOn(Scene):
     def construct(self):
         # Setup
-        question = TextMobject(
+        question = TexText(
             "The monster group describes the symmetries of ",
             "$\\underline{\\qquad\\qquad\\qquad}$",
         )
@@ -4088,7 +4088,7 @@ class AskWhatTheMonsterActsOn(Scene):
 
         # Dimension counts
         dim_words = VGroup(*[
-            TextMobject(
+            TexText(
                 "Something in\\\\",
                 "{:,}".format(n),
                 " dimensions",
@@ -4145,7 +4145,7 @@ class AskWhatTheMonsterActsOn(Scene):
         self.wait()
 
         # Elements of the monster
-        in_sym = TexMobject("\\in")
+        in_sym = Tex("\\in")
         in_sym.scale(2.5)
 
         monster.generate_target()
@@ -4169,9 +4169,9 @@ class AskWhatTheMonsterActsOn(Scene):
 
         mob_matrix = matrix.get_mob_matrix()
         groups_to_dots = [
-            (mob_matrix[4, :4], TexMobject("\\vdots")),
-            (mob_matrix[:4, 4], TexMobject("\\ldots")),
-            (VGroup(mob_matrix[4, 4]), TexMobject("\\ddots")),
+            (mob_matrix[4, :4], Tex("\\vdots")),
+            (mob_matrix[:4, 4], Tex("\\ldots")),
+            (VGroup(mob_matrix[4, 4]), Tex("\\ddots")),
         ]
         for group, dots in groups_to_dots:
             for elem in group:
@@ -4188,7 +4188,7 @@ class AskWhatTheMonsterActsOn(Scene):
             brace.add(brace.get_text("196{,}882"))
         braces.set_color(BLUE)
 
-        gigs_label = TextMobject("Each element $\\approx$ 4.5 Gigabytes of data!")
+        gigs_label = TexText("Each element $\\approx$ 4.5 Gigabytes of data!")
         gigs_label.next_to(matrix, UP, MED_LARGE_BUFF)
 
         self.play(Write(matrix, run_time=1))
@@ -4208,7 +4208,7 @@ class MonsterQuotes(Scene):
         ]
 
         quotes = [
-            TextMobject(
+            TexText(
                 """
                 ``Nothing has given me the feeling\\\\
                 that I understand why the monster\\\\
@@ -4216,7 +4216,7 @@ class MonsterQuotes(Scene):
                 """,
                 alignment="",
             ),
-            TextMobject(
+            TexText(
                 """
                 ``The monster simple group . . . appears\\\\
                 to rely on numerous bizarre coincidences\\\\
@@ -4282,8 +4282,8 @@ class MonstrousMoonshine(Scene):
         self.wait()
 
         theories = VGroup(
-            TextMobject("Finite group theory"),
-            TextMobject("Galois theory"),
+            TexText("Finite group theory"),
+            TexText("Galois theory"),
         )
         theories.arrange(RIGHT, buff=1.5)
         theories.next_to(mckay, RIGHT, LARGE_BUFF)
@@ -4309,7 +4309,7 @@ class MonstrousMoonshine(Scene):
         theories_group = VGroup(theories, theories_arrow)
 
         # j function
-        j_func = TexMobject(
+        j_func = Tex(
             "j(\\tau)  =q^{-1}+744+196{,}884 q+21{,}493{,}760 q^{2}+864{,}299{,}970 q^{3}+\\cdots\\\\",
             "\\big(q = e^{2\\pi i \\tau}\\big)",
             tex_to_color_map={
@@ -4354,7 +4354,7 @@ class MonstrousMoonshine(Scene):
         conway[0].flip()
         conway.move_to(mckay)
         conway.to_edge(RIGHT)
-        moonshine = TextMobject("Moonshine!")
+        moonshine = TexText("Moonshine!")
         moonshine.set_height(0.6)
         moonshine.next_to(conway, LEFT, MED_LARGE_BUFF, aligned_edge=UP)
         moonshine.set_color(YELLOW)
@@ -4370,11 +4370,11 @@ class MonstrousMoonshine(Scene):
         self.wait()
 
         # Conjecture
-        conjecture = TextMobject("Monstrous ", "moonshine\\\\", " conjecture")
+        conjecture = TexText("Monstrous ", "moonshine\\\\", " conjecture")
         conjecture_icon = VGroup(
             get_monster().set_height(1),
-            TexMobject("\\leftrightarrow"),
-            TexMobject("j(\\tau)", tex_to_color_map={"\\tau": TEAL}),
+            Tex("\\leftrightarrow"),
+            Tex("j(\\tau)", tex_to_color_map={"\\tau": TEAL}),
         )
         conjecture_icon.arrange(RIGHT, buff=SMALL_BUFF)
         conjecture_icon.set_height(1.5)
@@ -4432,7 +4432,7 @@ class StringTheory(Scene):
     def construct(self):
         monster = get_monster()
         monster.set_height(4)
-        arrow = TexMobject("\\leftrightarrow").scale(2)
+        arrow = Tex("\\leftrightarrow").scale(2)
 
         n = 10
         points = compass_directions(n)
@@ -4453,11 +4453,11 @@ class StringTheory(Scene):
         # self.camera.frame.move_to(arrow)
         self.camera.frame.scale(0.5)
 
-        st_name = TextMobject("String theory")
+        st_name = TexText("String theory")
         st_name.scale(1.5)
         st_name.next_to(string, UP, LARGE_BUFF)
 
-        sg_name = TextMobject("Sporadic groups")
+        sg_name = TexText("Sporadic groups")
         sg_name.scale(1.5)
         sg_name.next_to(monster, DOWN)
 

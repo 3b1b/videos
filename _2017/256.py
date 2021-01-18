@@ -16,7 +16,7 @@ def get_google_logo():
 
 class LastVideo(Scene):
     def construct(self):
-        title = TextMobject("Crypto", "currencies", arg_separator = "")
+        title = TexText("Crypto", "currencies", arg_separator = "")
         title[0].set_color(YELLOW)
         title.scale(1.5)
         title.to_edge(UP)
@@ -38,7 +38,7 @@ class BreakUp2To256(PiCreatureScene):
     def initialize_bits(self):
         bits = bit_string_to_mobject("")
         bits.to_corner(UP+LEFT)
-        one = TexMobject("1")[0]
+        one = Tex("1")[0]
         one.replace(bits[0], dim_to_match = 1)
         self.add(bits)
         self.add_foreground_mobject(VGroup(*bits[-15:]))
@@ -50,13 +50,13 @@ class BreakUp2To256(PiCreatureScene):
     def add_number(self):
         brace = Brace(self.bits, RIGHT)
 
-        number, possibilities = expression = TextMobject(
+        number, possibilities = expression = TexText(
             "$2^{256}$", "possibilities"
         )
         number.set_color(YELLOW)
         expression.next_to(brace, RIGHT)
 
-        words = TextMobject("Seems big...I guess...")
+        words = TexText("Seems big...I guess...")
         words.next_to(self.pi_creature.get_corner(UP+LEFT), UP)
 
         self.play(
@@ -89,7 +89,7 @@ class BreakUp2To256(PiCreatureScene):
         subexpressions = VGroup()
         for i, subgroup in enumerate(subgroups):
             subgroup.shift(i*MED_LARGE_BUFF*DOWN)
-            subexpression = TextMobject(
+            subexpression = TexText(
                 "$2^{32}$", "possibilities"
             )
             subexpression[0].set_color(GREEN)
@@ -113,7 +113,7 @@ class BreakUp2To256(PiCreatureScene):
     def break_up_as_four_billions(self):
         new_subexpressions = VGroup()
         for subexpression in self.subexpressions:
-            new_subexpression = TextMobject(
+            new_subexpression = TexText(
                 "4 Billion", "possibilities"
             )
             new_subexpression[0].set_color(YELLOW)
@@ -132,7 +132,7 @@ class BreakUp2To256(PiCreatureScene):
 
     def reorganize_four_billions(self):
         target = VGroup(*[
-            TextMobject(
+            TexText(
                 "$\\big($", "4 Billion", "$\\big)$",
                 arg_separator = ""
             )
@@ -180,7 +180,7 @@ class BreakUp2To256(PiCreatureScene):
 
 class ShowTwoTo32(Scene):
     def construct(self):
-        mob = TexMobject("2^{32} = 4{,}294{,}967{,}296")
+        mob = Tex("2^{32} = 4{,}294{,}967{,}296")
         mob.scale(1.5)
         self.add(mob)
         self.wait()
@@ -204,7 +204,7 @@ class MainBreakdown(Scene):
         top_line = VGroup()
         four_billions = VGroup()
         for x in range(8):
-            mob = TextMobject(
+            mob = TexText(
                 "$\\big($", "4 Billion", "$\\big)$",
                 arg_separator = ""
             )
@@ -229,14 +229,14 @@ class MainBreakdown(Scene):
             height = 1,
             fill_color = GREY_B,
         )
-        name = TextMobject("Graphics", "Processing", "Unit")
+        name = TexText("Graphics", "Processing", "Unit")
         for word in name:
             word[0].set_color(BLUE)
         name.to_edge(LEFT)
         gpu.next_to(name, UP)
 
         hash_names = VGroup(*[
-            TextMobject("hash")
+            TexText("hash")
             for x in range(10)
         ])
         hash_names.arrange(DOWN, buff = MED_SMALL_BUFF)
@@ -270,7 +270,7 @@ class MainBreakdown(Scene):
                 time_width = 0.7,
                 run_time = 2,
             )
-        rate_words = TextMobject(
+        rate_words = TexText(
             "$<$ 1 Billion", "Hashes/sec"
         )
         rate_words.next_to(name, DOWN)
@@ -307,12 +307,12 @@ class MainBreakdown(Scene):
         laptop = Laptop()
         laptop.next_to(rate_words, RIGHT)
         laptop.to_edge(RIGHT)
-        new_rate_words = TextMobject("4 Billion", "Hashes/sec")
+        new_rate_words = TexText("4 Billion", "Hashes/sec")
         new_rate_words.move_to(rate_words)
         new_rate_words[0].set_color(BLUE)
 
         hps, h_line, target_laptop = self.get_fraction(
-            0, TextMobject("H/s"), Laptop()
+            0, TexText("H/s"), Laptop()
         )
         hps.scale(0.7)
 
@@ -364,12 +364,12 @@ class MainBreakdown(Scene):
             aligned_edge = LEFT
         )
         google.shift(RIGHT)
-        millions = TextMobject("$\\sim$ Millions of servers")
+        millions = TexText("$\\sim$ Millions of servers")
         millions.next_to(google, RIGHT)
-        plus_plus = TexMobject("++")
+        plus_plus = Tex("++")
         plus_plus.next_to(google, RIGHT, SMALL_BUFF)
         plus_plus.set_stroke(width = 2)
-        kilo = TextMobject("Kilo")
+        kilo = TexText("Kilo")
         kilo.scale(1.5)
         kilo.next_to(google[-1], LEFT, SMALL_BUFF, DOWN)
         kilogoogle = VGroup(kilo, google, plus_plus)
@@ -406,7 +406,7 @@ class MainBreakdown(Scene):
 
     def half_all_people_on_earth(self):
         earth = self.get_earth()
-        people = TextMobject("7.3 Billion people")
+        people = TexText("7.3 Billion people")
         people.next_to(earth, RIGHT)
         group = VGroup(earth, people)
         group.next_to(self.four_billions, DOWN, MED_LARGE_BUFF)
@@ -442,7 +442,7 @@ class MainBreakdown(Scene):
         milky_way.to_edge(LEFT, buff = 0)
         milky_way.shift(DOWN)
 
-        n_stars_estimate = TextMobject("100 to 400 \\\\ billion stars")
+        n_stars_estimate = TexText("100 to 400 \\\\ billion stars")
         n_stars_estimate.next_to(milky_way, RIGHT)
         n_stars_estimate.shift(UP)
 
@@ -477,10 +477,10 @@ class MainBreakdown(Scene):
     def four_billion_galxies(self):
         self.create_four_billion_copies(4, self.get_galaxy())
         num, h_line, denom = fraction = self.get_fraction(
-            4, self.get_galaxy(), TextMobject("GGSC").set_color(BLUE)
+            4, self.get_galaxy(), TexText("GGSC").set_color(BLUE)
         )
 
-        name = TextMobject(
+        name = TexText(
             "Giga", "Galactic \\\\", " Super", " Computer",
             arg_separator = ""
         )
@@ -506,16 +506,16 @@ class MainBreakdown(Scene):
 
     def show_time_scale(self):
         fb1, fb2 = self.four_billions[5:7]
-        seconds_to_years = TextMobject("seconds $\\approx$ 126.8 years")
+        seconds_to_years = TexText("seconds $\\approx$ 126.8 years")
         seconds_to_years.shift(LEFT)
-        years_to_eons = TextMobject(
+        years_to_eons = TexText(
             "$\\times$ 126.8 years", "$\\approx$ 507 Billion years", 
         )
         years_to_eons.next_to(
             seconds_to_years, DOWN, 
             aligned_edge = LEFT,
         )
-        universe_lifetimes = TextMobject("$\\approx 37 \\times$ Age of universe")
+        universe_lifetimes = TexText("$\\approx 37 \\times$ Age of universe")
         universe_lifetimes.next_to(
             years_to_eons[1], DOWN, 
             aligned_edge = LEFT
@@ -534,7 +534,7 @@ class MainBreakdown(Scene):
 
     def show_probability(self):
         four_billion = self.four_billions[7]
-        words = TextMobject(
+        words = TexText(
             "1 in ", "4 Billion\\\\",
             "chance of success"
         )
@@ -563,7 +563,7 @@ class MainBreakdown(Scene):
             ]).arrange(DOWN, buff = SMALL_BUFF)
             for y in range(self.n_group_cols-1)
         ])
-        dots = TexMobject("\\dots")
+        dots = Tex("\\dots")
         group.add(dots)
         group.add(*[group[0].copy() for x in range(2)])
         group.arrange(RIGHT, buff = SMALL_BUFF)
@@ -616,10 +616,10 @@ class MainBreakdown(Scene):
 
     def get_kilogoogle(self):
         G = self.get_google_logo()[-1]
-        kilo = TextMobject("K")
+        kilo = TexText("K")
         kilo.scale(1.5)
         kilo.next_to(G[-1], LEFT, SMALL_BUFF, DOWN)
-        plus_plus = TexMobject("++")
+        plus_plus = Tex("++")
         plus_plus.set_stroke(width = 1)
         plus_plus.next_to(G, RIGHT, SMALL_BUFF)
         return VGroup(kilo, G, plus_plus)
@@ -651,7 +651,7 @@ class MainBreakdown(Scene):
         
 class WriteTWoTo160(Scene):
     def construct(self):
-        mob = TextMobject("$2^{160}$ ", "Hashes/sec")
+        mob = TexText("$2^{160}$ ", "Hashes/sec")
         mob[0].set_color(BLUE)
         mob.scale(2)
         self.play(Write(mob))
@@ -659,24 +659,24 @@ class WriteTWoTo160(Scene):
 
 class StateOfBitcoin(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Total", "B", "mining")
+        title = TexText("Total", "B", "mining")
         title.to_edge(UP)
         bitcoin_logo = BitcoinLogo()
         bitcoin_logo.set_height(0.5)
         bitcoin_logo.move_to(title[1])
         title.remove(title[1])
 
-        rate = TextMobject(
+        rate = TexText(
             "5 Billion Billion", 
             "$\\frac{\\text{Hashes}}{\\text{Second}}$"
         )
         rate.next_to(title, DOWN, MED_LARGE_BUFF)
 
         google = get_google_logo()
-        kilo = TextMobject("Kilo")
+        kilo = TexText("Kilo")
         kilo.scale(1.5)
         kilo.next_to(google[-1], LEFT, SMALL_BUFF, DOWN)
-        third = TexMobject("1 \\over 3")
+        third = Tex("1 \\over 3")
         third.next_to(kilo, LEFT)
         kilogoogle = VGroup(*it.chain(third, kilo, google))
         kilogoogle.sort()
@@ -694,7 +694,7 @@ class StateOfBitcoin(TeacherStudentsScene):
             fill_color = GREY_B,
         )
         gpu.shift(0.5*FRAME_X_RADIUS*RIGHT)
-        gpu_name = TextMobject("GPU")
+        gpu_name = TexText("GPU")
         gpu_name.set_color(BLUE)
         gpu_name.next_to(gpu, UP)
         gpu_group = VGroup(gpu, gpu_name)
@@ -702,7 +702,7 @@ class StateOfBitcoin(TeacherStudentsScene):
         cross = Cross(gpu_group)
         gpu_group.add(cross)
 
-        asic = TextMobject(
+        asic = TexText(
             "Application", "Specific\\\\", "Integrated", "Circuit"
         )
         for word in asic:
@@ -718,7 +718,7 @@ class StateOfBitcoin(TeacherStudentsScene):
         random.shuffle(circuit.submobjects)
         circuit.set_color_by_gradient(WHITE, GREY)
         circuit.next_to(asic, RIGHT)
-        asic_rate = TextMobject("Trillion hashes/sec")
+        asic_rate = TexText("Trillion hashes/sec")
         asic_rate.next_to(asic, DOWN, MED_LARGE_BUFF)
         asic_rate.set_color(GREEN)
 
@@ -770,22 +770,22 @@ class QAndA(PiCreatureScene):
         self.pi_creature.center().to_edge(DOWN)
         self.show_powers_of_two()
 
-        num_subscriber_words = TexMobject(
+        num_subscriber_words = Tex(
             "> 2^{18} = 262{,}144", "\\text{ subscribers}"
         )
         num_subscriber_words.to_edge(UP)
         num_subscriber_words.shift(RIGHT)
         num_subscriber_words.set_color_by_tex("subscribers", RED)
 
-        q_and_a = TextMobject("Q\\&A")
+        q_and_a = TexText("Q\\&A")
         q_and_a.next_to(self.pi_creature.get_corner(UP+LEFT), UP)
         q_and_a.save_state()
         q_and_a.shift(DOWN)
         q_and_a.set_fill(opacity = 0)
 
-        reddit = TextMobject("reddit.com/r/3blue1brown")
+        reddit = TexText("reddit.com/r/3blue1brown")
         reddit.next_to(num_subscriber_words, DOWN, LARGE_BUFF)
-        twitter = TextMobject("@3blue1brown")
+        twitter = TexText("@3blue1brown")
         twitter.set_color(BLUE_C)
         twitter.next_to(reddit, DOWN)
 
@@ -852,7 +852,7 @@ class QAndA(PiCreatureScene):
 
 class Thumbnail(Scene):
     def construct(self):
-        num = TexMobject("2^{256}")
+        num = Tex("2^{256}")
         num.set_height(2)
         num.set_color(BLUE_C)
         num.set_stroke(BLUE_B, 3)
@@ -870,11 +870,11 @@ class Thumbnail(Scene):
             #     new_str += "{,}"
             if i%(n_chars/4) == 0:
                 new_str += " \\\\ "
-        background_num = TexMobject(new_str)
+        background_num = Tex(new_str)
         background_num.set_width(FRAME_WIDTH - LARGE_BUFF)
         background_num.set_fill(opacity = 0.2)
 
-        secure = TextMobject("Secure?")
+        secure = TexText("Secure?")
         secure.scale(4)
         secure.shift(FRAME_Y_RADIUS*DOWN/2)
         secure.set_color(RED)

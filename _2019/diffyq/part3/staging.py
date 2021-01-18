@@ -10,16 +10,16 @@ class FourierNameIntro(Scene):
         self.show_paper()
 
     def show_two_titles(self):
-        lt = TextMobject("Fourier", "Series")
-        rt = TextMobject("Fourier", "Transform")
+        lt = TexText("Fourier", "Series")
+        rt = TexText("Fourier", "Transform")
         lt_variants = VGroup(
-            TextMobject("Complex", "Fourier Series"),
-            TextMobject("Discrete", "Fourier Series"),
+            TexText("Complex", "Fourier Series"),
+            TexText("Discrete", "Fourier Series"),
         )
         rt_variants = VGroup(
-            TextMobject("Discrete", "Fourier Transform"),
-            TextMobject("Fast", "Fourier Transform"),
-            TextMobject("Quantum", "Fourier Transform"),
+            TexText("Discrete", "Fourier Transform"),
+            TexText("Fast", "Fourier Transform"),
+            TexText("Quantum", "Fourier Transform"),
         )
 
         titles = VGroup(lt, rt)
@@ -84,7 +84,7 @@ class FourierNameIntro(Scene):
         frame = Rectangle()
         frame.replace(image, stretch=True)
 
-        name = TextMobject("Joseph", "Fourier")
+        name = TexText("Joseph", "Fourier")
         fourier_part = name.get_part_by_tex("Fourier")
         fourier_part.set_color(YELLOW)
         F_sym = fourier_part[0]
@@ -119,8 +119,8 @@ class FourierNameIntro(Scene):
         big_F.shift(DOWN)
         equivalence = VGroup(
             fourier_part.copy().scale(1.25),
-            TexMobject("\\Leftrightarrow").scale(1.5),
-            TextMobject("Break down into\\\\pure frequencies"),
+            Tex("\\Leftrightarrow").scale(1.5),
+            TexText("Break down into\\\\pure frequencies"),
         )
         equivalence.arrange(RIGHT)
         equivalence.move_to(big_F)
@@ -143,7 +143,7 @@ class FourierNameIntro(Scene):
         paper.match_height(image)
         paper.next_to(image, RIGHT, MED_LARGE_BUFF)
 
-        date = TexMobject("1822")
+        date = Tex("1822")
         date.next_to(paper, DOWN)
         date_rect = SurroundingRectangle(date)
         date_rect.scale(0.3)
@@ -157,7 +157,7 @@ class FourierNameIntro(Scene):
         )
 
         heat_rect = SurroundingRectangle(
-            TextMobject("CHALEUR")
+            TexText("CHALEUR")
         )
         heat_rect.set_color(RED)
         heat_rect.scale(0.6)
@@ -165,7 +165,7 @@ class FourierNameIntro(Scene):
             paper.get_top() +
             1.22 * DOWN + 0.37 * RIGHT
         )
-        heat_word = TextMobject("Heat")
+        heat_word = TexText("Heat")
         heat_word.scale(1.5)
         heat_word.next_to(paper, UP)
         heat_word.shift(paper.get_width() * RIGHT)
@@ -203,13 +203,13 @@ class FourierNameIntro(Scene):
 class ManyCousinsOfFourierThings(Scene):
     def construct(self):
         series_variants = VGroup(
-            TextMobject("Complex", "Fourier Series"),
-            TextMobject("Discrete", "Fourier Series"),
+            TexText("Complex", "Fourier Series"),
+            TexText("Discrete", "Fourier Series"),
         )
         transform_variants = VGroup(
-            TextMobject("Discrete", "Fourier Transform"),
-            TextMobject("Fast", "Fourier Transform"),
-            TextMobject("Quantum", "Fourier Transform"),
+            TexText("Discrete", "Fourier Transform"),
+            TexText("Fast", "Fourier Transform"),
+            TexText("Quantum", "Fourier Transform"),
         )
         groups = VGroup(series_variants, transform_variants)
         for group, vect in zip(groups, [LEFT, RIGHT]):
@@ -263,7 +263,7 @@ class FourierSeriesIllustraiton(Scene):
         sum_tex = self.get_sum_tex()
         sum_tex.next_to(axes1, DOWN, LARGE_BUFF)
         sum_tex.shift(RIGHT)
-        eq = TexMobject("=")
+        eq = Tex("=")
         target_func_tex = self.get_target_func_tex()
         target_func_tex.next_to(axes2, DOWN)
         target_func_tex.match_y(sum_tex)
@@ -272,7 +272,7 @@ class FourierSeriesIllustraiton(Scene):
             sum_tex.get_right()
         ))
 
-        range_words = TextMobject(
+        range_words = TexText(
             "For $0 \\le x \\le 1$"
         )
         range_words.next_to(
@@ -354,7 +354,7 @@ class FourierSeriesIllustraiton(Scene):
         return partial_sums
 
     def get_sum_tex(self):
-        return TexMobject(
+        return Tex(
             "\\frac{4}{\\pi} \\left(",
             "\\frac{\\cos(\\pi x)}{1}",
             "-\\frac{\\cos(3\\pi x)}{3}",
@@ -366,7 +366,7 @@ class FourierSeriesIllustraiton(Scene):
         return sum_tex[1:4]
 
     def get_target_func_tex(self):
-        step_tex = TexMobject(
+        step_tex = Tex(
             """
             1 \\quad \\text{if $x < 0.5$} \\\\
             0 \\quad \\text{if $x = 0.5$} \\\\
@@ -419,7 +419,7 @@ class FourierSeriesOfLineIllustration(FourierSeriesIllustraiton):
     }
 
     def get_sum_tex(self):
-        return TexMobject(
+        return Tex(
             "\\frac{8}{\\pi^2} \\left(",
             "\\frac{\\cos(\\pi x)}{1^2}",
             "+\\frac{\\cos(3\\pi x)}{3^2}",
@@ -431,7 +431,7 @@ class FourierSeriesOfLineIllustration(FourierSeriesIllustraiton):
     #     return sum_tex[1:4]
 
     def get_target_func_tex(self):
-        result = TexMobject("1 - 2x")
+        result = Tex("1 - 2x")
         result.scale(1.5)
         point = VectorizedPoint()
         point.next_to(result, RIGHT, 1.5 * LARGE_BUFF)
@@ -469,7 +469,7 @@ class CircleAnimationOfF(FourierOfTrebleClef):
 
     def get_shape(self):
         path = VMobject()
-        shape = TextMobject("F")
+        shape = TexText("F")
         for sp in shape.family_members_with_points():
             path.append_points(sp.get_points())
         return path
@@ -495,7 +495,7 @@ class ExponentialDecay(PiCreatureScene):
         )
         bubble.pin_to(randy)
         bubble.set_fill(GREY_E)
-        exp = TexMobject(
+        exp = Tex(
             "Ce^{", mk_tex, "t}",
             tex_to_color_map=t2c,
         )
@@ -516,12 +516,12 @@ class ExponentialDecay(PiCreatureScene):
         axes.y_axis.add_numbers()
         axes.y_axis.add_numbers(0)
         axes.x_axis.add(
-            TextMobject("Time").next_to(
+            TexText("Time").next_to(
                 axes.x_axis.get_end(), DR,
             )
         )
         axes.y_axis.add(
-            TexMobject("f").next_to(
+            Tex("f").next_to(
                 axes.y_axis.get_corner(UR), RIGHT,
             ).set_color(YELLOW)
         )
@@ -583,7 +583,7 @@ class ExponentialDecay(PiCreatureScene):
         graph = TracedPath(tip.get_left)
 
         # Equation
-        ode = TexMobject(
+        ode = Tex(
             "{d{f} \\over dt}(t)",
             "=", mk_tex, "\\cdot {f}(t)",
             tex_to_color_map={
@@ -633,15 +633,15 @@ class ExponentialDecay(PiCreatureScene):
         self.wait(4)
 
         # Show derivative of exponential
-        eq = TexMobject("=")
+        eq = Tex("=")
         eq.next_to(ode.get_part_by_tex("="), DOWN, LARGE_BUFF)
         exp.generate_target()
         exp.target.next_to(eq, LEFT)
-        d_dt = TexMobject("{d \\over dt}")
+        d_dt = Tex("{d \\over dt}")
         d_dt.next_to(exp.target, LEFT)
-        const = TexMobject(mk_tex)
+        const = Tex(mk_tex)
         const.set_color(mk_tex_color)
-        dot = TexMobject("\\cdot")
+        dot = Tex("\\cdot")
         const.next_to(eq, RIGHT)
         dot.next_to(const, RIGHT, 2 * SMALL_BUFF)
         exp_copy = exp.copy()
@@ -703,14 +703,14 @@ class InvestmentGrowth(Scene):
         )
         axes.to_corner(DL, buff=LARGE_BUFF)
 
-        time_label = TextMobject("Time")
+        time_label = TexText("Time")
         time_label.next_to(
             axes.x_axis.get_right(),
             UP, MED_LARGE_BUFF
         )
         time_label.shift_onto_screen()
         axes.x_axis.add(time_label)
-        money_label = TexMobject(self.output_tex)
+        money_label = Tex(self.output_tex)
         money_label.set_color(self.output_color)
         money_label.next_to(
             axes.y_axis.get_top(),
@@ -740,7 +740,7 @@ class InvestmentGrowth(Scene):
                 self.initial_value_tex: BLUE,
             }
         }
-        ode = TexMobject(
+        ode = Tex(
             "{d",
             "\\over dt}",
             self.output_tex,
@@ -750,7 +750,7 @@ class InvestmentGrowth(Scene):
             **tex_kwargs
         )
         ode.to_edge(UP)
-        exp = TexMobject(
+        exp = Tex(
             self.output_tex,
             "(t) =", self.initial_value_tex,
             "e^{", self.k_tex, "t}",
@@ -810,7 +810,7 @@ class GrowingPileOfMoney(InvestmentGrowth):
 
         final_count = initial_count * np.exp(k * total_time)
         dollar_signs = VGroup(*[
-            TexMobject("\\$")
+            Tex("\\$")
             for x in range(int(final_count))
         ])
         dollar_signs.set_color(GREEN)
@@ -1067,7 +1067,7 @@ class BoundaryConditionInterlude(Scene):
         rect.set_stroke(WHITE, 0)
         border.set_stroke(WHITE, 2)
 
-        text_mob = TextMobject(text)
+        text_mob = TexText(text)
         text_mob.set_stroke(BLACK, 5, background=True)
         text_mob.next_to(rect.get_top(), DOWN, SMALL_BUFF)
 
@@ -1084,7 +1084,7 @@ class GiantCross(Scene):
         cross = Cross(rect)
         cross.set_stroke(RED, 25)
 
-        words = TextMobject("This wouldn't\\\\happen!")
+        words = TexText("This wouldn't\\\\happen!")
         words.scale(2)
         words.set_color(RED)
         words.to_edge(UP)

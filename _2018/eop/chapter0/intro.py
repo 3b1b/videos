@@ -25,7 +25,7 @@ class Introduction(TeacherStudentsScene):
         self.this_video = this_video
 
 
-        words = TextMobject(
+        words = TexText(
             "Welcome to \\\\",
             "Essence of Probability"
         )

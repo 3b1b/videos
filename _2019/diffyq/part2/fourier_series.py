@@ -363,7 +363,7 @@ class FourierOfPiSymbol(FourierCirclesScene):
         return circles
 
     def get_path(self):
-        tex_mob = TexMobject(self.tex)
+        tex_mob = Tex(self.tex)
         tex_mob.set_height(6)
         path = tex_mob.family_members_with_points()[0]
         path.set_fill(opacity=0)
@@ -382,7 +382,7 @@ class FourierOfTexPaths(FourierOfPiSymbol, MovingCameraScene):
     }
 
     def construct(self):
-        name = TextMobject(self.animated_name)
+        name = TexText(self.animated_name)
         max_width = FRAME_WIDTH - 2
         max_height = FRAME_HEIGHT - 2
         name.set_width(max_width)
@@ -514,7 +514,7 @@ class FourierOfN(FourierOfTrebleClef):
     }
 
     def get_shape(self):
-        return TexMobject("N")
+        return Tex("N")
 
 
 class FourierNailAndGear(FourierOfTrebleClef):
@@ -586,7 +586,7 @@ class FourierNDQ(FourierOfTrebleClef):
 
     def get_shape(self):
         path = VMobject()
-        shape = TexMobject("NDQ")
+        shape = Tex("NDQ")
         for sp in shape.family_members_with_points():
             path.append_points(sp.get_points())
         return path
@@ -699,7 +699,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
             ct.circle.number = number
 
         ld, rd = [
-            TexMobject("\\dots")
+            Tex("\\dots")
             for x in range(2)
         ]
         ld.next_to(freq_numbers, LEFT, MED_LARGE_BUFF)
@@ -707,7 +707,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
         freq_numbers.add_to_back(ld)
         freq_numbers.add(rd)
 
-        freq_word = TextMobject("Frequencies")
+        freq_word = TexText("Frequencies")
         freq_word.scale(1.5)
         freq_word.set_color(YELLOW)
         freq_word.next_to(freq_numbers, DOWN, MED_LARGE_BUFF)
@@ -919,7 +919,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
         return path
 
     def get_path(self):
-        tex = TexMobject("f")
+        tex = Tex("f")
         path = tex.family_members_with_points()[0]
         self.configure_path(path)
         return path

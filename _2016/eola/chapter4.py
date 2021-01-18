@@ -4,7 +4,7 @@ from _2016.eola.chapter3 import MatrixVectorMultiplicationAbstract
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "It is my experience that proofs involving",
             "matrices",
             "can be shortened by 50\\% if one",
@@ -14,7 +14,7 @@ class OpeningQuote(Scene):
         words.to_edge(UP)
         words.split()[1].set_color(GREEN)
         words.split()[3].set_color(BLUE)
-        author = TextMobject("-Emil Artin")
+        author = TexText("-Emil Artin")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -107,7 +107,7 @@ class FollowLinearCombination(LinearTransformationScene):
         )
         vect = self.add_vector(vect_coords)
         vect_array = Matrix(["x", "y"], add_background_rectangles_to_entries = True)
-        v_equals = TexMobject(["\\vec{\\textbf{v}}", "="])
+        v_equals = Tex(["\\vec{\\textbf{v}}", "="])
         v_equals.split()[0].set_color(YELLOW)
         v_equals.next_to(vect_array, LEFT)
         vect_array.add(v_equals)
@@ -184,7 +184,7 @@ class FollowLinearCombination(LinearTransformationScene):
         self.wait()
         x, y = vect_array.get_entries().split()
         pre_formula = VMobject(
-            x, i_label, TexMobject("+"),
+            x, i_label, Tex("+"),
             y, j_label
         )
         post_formula = pre_formula.copy()
@@ -235,8 +235,8 @@ class RotationThenShear(LinearTransformationScene):
     }
     def construct(self):
         self.setup()
-        rot_words = TextMobject("$90^\\circ$ rotation counterclockwise")
-        shear_words = TextMobject("followed by a shear")
+        rot_words = TexText("$90^\\circ$ rotation counterclockwise")
+        shear_words = TexText("followed by a shear")
         rot_words.set_color(YELLOW)
         shear_words.set_color(PINK)
         VMobject(rot_words, shear_words).arrange(DOWN).to_edge(UP)
@@ -260,7 +260,7 @@ class IntroduceIdeaOfComposition(RotationThenShear):
         self.show_overall_effect(matrix)
 
     def show_composition(self):
-        words = TextMobject([
+        words = TexText([
             "``Composition''",
             "of a",
             "rotation",
@@ -285,7 +285,7 @@ class IntroduceIdeaOfComposition(RotationThenShear):
 
     def track_basis_vectors(self):
         last_words = self.get_mobjects_from_last_animation()[1]
-        words = TextMobject([
+        words = TexText([
             "Record where",
             "$\\hat{\\imath}$",
             "and",
@@ -382,7 +382,7 @@ class ExplainWhyItsMatrixMultiplication(Scene):
         rot_matrix.set_color(TEAL)
         shear_matrix = Matrix([[1, 1], [0, 1]])
         shear_matrix.set_color(PINK)
-        l_paren, r_paren = list(map(TexMobject, ["\\Big(", "\\Big)"]))
+        l_paren, r_paren = list(map(Tex, ["\\Big(", "\\Big)"]))
         for p in l_paren, r_paren:
             p.set_height(1.4*vect.get_height())
         long_way = VMobject(
@@ -391,7 +391,7 @@ class ExplainWhyItsMatrixMultiplication(Scene):
         long_way.arrange(buff = 0.1)
         long_way.to_edge(LEFT).shift(UP)
 
-        equals = TexMobject("=").next_to(long_way, RIGHT)
+        equals = Tex("=").next_to(long_way, RIGHT)
 
         comp_matrix = Matrix([[1, -1], [1, 0]])
         comp_matrix.set_column_colors(X_COLOR, Y_COLOR)
@@ -407,7 +407,7 @@ class ExplainWhyItsMatrixMultiplication(Scene):
         ]
         for matrix, word in pairs:
             brace = Brace(matrix)
-            text = TextMobject(word).next_to(brace, DOWN)
+            text = TexText(word).next_to(brace, DOWN)
             brace.set_color(matrix.get_color())
             text.set_color(matrix.get_color())
             matrix.add(brace, text)
@@ -433,10 +433,10 @@ class ExplainWhyItsMatrixMultiplication(Scene):
 
         arrow = Arrow(rot_matrix.get_right(), shear_matrix.get_left())
         arrow.shift((rot_matrix.get_top()[1]+0.2)*UP)
-        words = TextMobject("Read right to left")
+        words = TexText("Read right to left")
         words.submobjects.reverse()
         words.next_to(arrow, UP)
-        functions = TexMobject("f(g(x))")
+        functions = Tex("f(g(x))")
         functions.next_to(words, UP)
 
         self.play(ShowCreation(arrow))
@@ -505,7 +505,7 @@ class MoreComplicatedExampleVisually(LinearTransformationScene):
         m2_mob.set_color(PINK)
         comp_matrix.get_entries().set_submobject_colors_by_gradient(YELLOW, PINK)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(comp_matrix, LEFT)
         comp_matrix.add(equals)
         m1_mob = VMobject(BackgroundRectangle(m1_mob), m1_mob)
@@ -517,7 +517,7 @@ class MoreComplicatedExampleVisually(LinearTransformationScene):
 
         for i, mob in enumerate([m1_mob, m2_mob]):
             brace = Brace(mob, UP)
-            text = TexMobject("M_%d"%(i+1))
+            text = Tex("M_%d"%(i+1))
             text.next_to(brace, UP)
             brace.add_background_rectangle()
             text.add_background_rectangle()
@@ -555,20 +555,20 @@ class MoreComplicatedExampleNumerically(MoreComplicatedExampleVisually):
         for i, (col, char, color) in enumerate(triplets):
             self.add(col)
             start_state = self.get_mobjects()
-            question = TextMobject(
+            question = TexText(
                 "Where does $\\hat{\\%smath}$ go?"%char 
             )
             question.split()[-4].set_color(color)
             question.split()[-5].set_color(color)
             question.scale(1.2)
             question.shift(DOWN)
-            first = TextMobject("First here")
+            first = TexText("First here")
             first.set_color(color)
             first.shift(DOWN+LEFT)
             first_arrow = Arrow(
                 first, col.circle.get_bottom(), color = color
             )
-            second = TextMobject("Then to whatever this is")
+            second = TexText("Then to whatever this is")
             second.set_color(color)
             second.to_edge(RIGHT).shift(DOWN)
 
@@ -582,13 +582,13 @@ class MoreComplicatedExampleNumerically(MoreComplicatedExampleVisually):
 
             new_m2_copy = m2_mob.copy().split()[1]
             intermediate = VMobject(
-                TexMobject("="),
+                Tex("="),
                 col_vect.copy().get_entries().split()[0],
                 Matrix(new_m2_copy.get_mob_matrix()[:,0]),
-                TexMobject("+"),
+                Tex("+"),
                 col_vect.copy().get_entries().split()[1],
                 Matrix(new_m2_copy.get_mob_matrix()[:,1]),
-                TexMobject("=")
+                Tex("=")
             )
             intermediate.arrange(buff = 0.1)
             intermediate.next_to(col_vect, RIGHT)
@@ -639,7 +639,7 @@ class MoreComplicatedExampleNumerically(MoreComplicatedExampleVisually):
 
 class GeneralMultiplication(MoreComplicatedExampleNumerically):
     def get_result(self):
-        entries = list(map(TexMobject, [
+        entries = list(map(Tex, [
             "ae+bg", "af+bh", "ce+dg", "cf+dh"
         ]))
         for mob in entries:
@@ -659,15 +659,15 @@ class GeneralMultiplication(MoreComplicatedExampleNumerically):
         m1_entries = m1.split()[1].get_entries()
         m2_entries = m2.split()[1].get_entries()
         m2_entries_target = VMobject(*[
-            TexMobject(char).move_to(entry).set_color(entry.get_color())
+            Tex(char).move_to(entry).set_color(entry.get_color())
             for entry, char in zip(m2_entries.split(), "abcd")
         ])
         m1_entries_target = VMobject(*[
-            TexMobject(char).move_to(entry).set_color(entry.get_color())
+            Tex(char).move_to(entry).set_color(entry.get_color())
             for entry, char in zip(m1_entries.split(), "efgh")
         ])
 
-        words = TextMobject("This method works generally")
+        words = TexText("This method works generally")
         self.play(Write(words, run_time = 2))
         self.play(Transform(
             m1_entries, m1_entries_target, 
@@ -738,15 +738,15 @@ class NeverForget(TeacherStudentsScene):
 
 class AskAboutCommutativity(Scene):
     def construct(self):
-        l_m1, l_m2, eq, r_m2, r_m1 = TexMobject([
+        l_m1, l_m2, eq, r_m2, r_m1 = Tex([
             "M_1",  "M_2", "=", "M_2", "M_1"
         ]).scale(1.5).split()
         VMobject(l_m1, r_m1).set_color(YELLOW)
         VMobject(l_m2, r_m2).set_color(PINK)
-        q_marks = TextMobject("???")
+        q_marks = TexText("???")
         q_marks.set_color(TEAL)
         q_marks.next_to(eq, UP)
-        neq = TexMobject("\\neq")
+        neq = Tex("\\neq")
         neq.move_to(eq)
         
         self.play(*list(map(Write, [l_m1, l_m2, eq])))
@@ -773,7 +773,7 @@ class ShowShear(LinearTransformationScene):
     }
     def construct(self):
         self.setup()
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.scale(1.5).to_edge(UP)
         title.set_color(self.title_color)
         title.add_background_rectangle()
@@ -804,7 +804,7 @@ class FirstShearThenRotation(LinearTransformationScene):
     def construct(self):
         self.setup()
         title_parts = self.title.split(" ")
-        title = TextMobject(title_parts)
+        title = TexText(title_parts)
         for i, part in enumerate(title_parts):
             if part == "rotation":
                 title.split()[i].set_color(YELLOW)
@@ -857,10 +857,10 @@ class AskAssociativityQuestion(Scene):
         morty.scale(0.8)
         morty.to_corner(DOWN+RIGHT)
         morty.shift(0.5*LEFT)
-        title = TextMobject("Associativity:")
+        title = TexText("Associativity:")
         title.to_corner(UP+LEFT)
 
-        lhs = TexMobject(list("(AB)C"))
+        lhs = Tex(list("(AB)C"))
         lp, a, b, rp, c = lhs.split()
         rhs = VMobject(*[m.copy() for m in (a, lp, b, c, rp)])
         point = VectorizedPoint()
@@ -869,8 +869,8 @@ class AskAssociativityQuestion(Scene):
             mob.arrange(buff = 0.1)
         a, lp, b, c, rp = rhs.split()
         rhs = VMobject(lp, a, b, rp, c)##Align order to lhs
-        eq = TexMobject("=")
-        q_marks = TextMobject("???")
+        eq = Tex("=")
+        q_marks = TexText("???")
         q_marks.set_submobject_colors_by_gradient(TEAL_B, TEAL_D)
         q_marks.next_to(eq, UP)
         lhs.next_to(eq, LEFT)
@@ -921,7 +921,7 @@ class AskAssociativityQuestion(Scene):
 
     def move_matrix_parentheses(self, morty, matrices):
         m1, m2, m3 = matrices
-        parens = TexMobject(["(", ")"])
+        parens = Tex(["(", ")"])
         parens.set_height(1.2*m1.get_height())
         lp, rp = parens.split()
         state1 = VMobject(
@@ -960,7 +960,7 @@ class ThreeSuccessiveTransformations(LinearTransformationScene):
     }
     def construct(self):
         self.setup()
-        symbols = TexMobject(list(self.symbols_str))
+        symbols = Tex(list(self.symbols_str))
         symbols.scale(1.5)
         symbols.to_edge(UP)
         a, b, c = None, None, None
@@ -976,7 +976,7 @@ class ThreeSuccessiveTransformations(LinearTransformationScene):
         self.add_foreground_mobject(symbols)
 
         brace = Brace(c, DOWN)
-        words = TextMobject("Apply this transformation")
+        words = TexText("Apply this transformation")
         words.add_background_rectangle()
         words.next_to(brace, DOWN)
         brace.add(words)
@@ -1007,11 +1007,11 @@ class ThreeSuccessiveTransformationsSimple(ThreeSuccessiveTransformations):
 
 class ExplanationTrumpsProof(Scene):
     def construct(self):
-        greater = TexMobject(">")
+        greater = Tex(">")
         greater.shift(RIGHT)
-        explanation = TextMobject("Good explanation")
+        explanation = TexText("Good explanation")
         explanation.set_color(BLUE)
-        proof = TextMobject("Symbolic proof")
+        proof = TexText("Symbolic proof")
         proof.set_color(LIGHT_BROWN)
         explanation.next_to(greater, LEFT)
         proof.next_to(greater, RIGHT)
@@ -1054,7 +1054,7 @@ class GoPlay(TeacherStudentsScene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("""
+        title = TexText("""
             Next video: Linear transformations in three dimensions
         """)
         title.set_width(FRAME_WIDTH - 2)

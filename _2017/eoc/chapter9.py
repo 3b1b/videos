@@ -39,7 +39,7 @@ class AverageOfContinuousVariable(GraphScene):
             self.bounds[0], graph, color = YELLOW,
         )
 
-        question = TextMobject(
+        question = TexText(
             "What is the average \\\\ value of $f(x)$?"
         )
         question.next_to(boundary_lines, UP)
@@ -126,7 +126,7 @@ class AverageOfSineStart(AverageOfContinuousVariable):
 
     def ask_about_average(self):
         half_period_graph = self.get_graph_portion_between_bounds()
-        question = TextMobject("Average height?")
+        question = TexText("Average height?")
         question.to_edge(UP)
         arrow = Arrow(question.get_bottom(), half_period_graph.get_top())
         midpoint = np.mean(self.bounds)
@@ -172,7 +172,7 @@ class AverageOfSineStart(AverageOfContinuousVariable):
         ]
         self.x_axis_labels = VGroup()
         for label, x in labels_and_x_values:
-            tex_mob = TexMobject(label)
+            tex_mob = Tex(label)
             tex_mob.scale(self.x_label_scale_val)
             tex_mob.move_to(
                 self.coords_to_point(x, -3*self.x_axis.tick_size), 
@@ -215,7 +215,7 @@ class LengthOfDayGraph(GraphScene):
             lambda x : 2.7*np.sin((2*np.pi)*x/365 ) + 12.4,
             color = GREEN,
         )
-        graph_label = TexMobject("2.7\\sin(2\\pi x/365) + 12.4")
+        graph_label = Tex("2.7\\sin(2\\pi x/365) + 12.4")
         graph_label.to_corner(UP+RIGHT).shift(LEFT)
         VGroup(*graph_label[3:6]).set_color(graph.get_color())
         graph_label[9].set_color(YELLOW)
@@ -307,7 +307,7 @@ class LengthOfDayGraph(GraphScene):
 
 
         summer_words, winter_words = [
-            TextMobject("%s \\\\ months"%s).move_to(rect)
+            TexText("%s \\\\ months"%s).move_to(rect)
             for s, rect in [
                 ("Summer", summer_rect),
                 ("Winter", winter_rect),
@@ -375,12 +375,12 @@ class AverageOfFiniteSet(Scene):
         brace = Brace(lines.target, UP)
 
         labels = VGroup(*[
-            TexMobject(str(d)).next_to(line, UP).set_color(line.get_color())
+            Tex(str(d)).next_to(line, UP).set_color(line.get_color())
             for d, line in zip(lengths, lines)
         ])
-        plusses = [TexMobject("+") for x in range(len(lengths)-1)]
+        plusses = [Tex("+") for x in range(len(lengths)-1)]
         symbols = VGroup(*
-            plusses + [TexMobject("=")]
+            plusses + [Tex("=")]
         )
         symbols.set_fill(opacity = 0)
 
@@ -391,7 +391,7 @@ class AverageOfFiniteSet(Scene):
         sum_eq.arrange(RIGHT)
         sum_eq.next_to(brace, UP)
 
-        sum_mob = TexMobject(str(sum(lengths)))
+        sum_mob = Tex(str(sum(lengths)))
         sum_mob.next_to(sum_eq, RIGHT)
 
         dividing_lines = VGroup(*[
@@ -472,7 +472,7 @@ class TryToAddInfinitelyManyPoints(AverageOfSineStart):
         start_lines = VGroup(*v_lines.target[:15])
         end_lines = VGroup(*v_lines.target[15:])
 
-        plusses = VGroup(*[TexMobject("+") for x in start_lines])
+        plusses = VGroup(*[Tex("+") for x in start_lines])
         sum_eq = VGroup(*it.chain(*list(zip(start_lines, plusses))))
         sum_eq.add(*end_lines)
         sum_eq.arrange(RIGHT)
@@ -484,7 +484,7 @@ class TryToAddInfinitelyManyPoints(AverageOfSineStart):
         h_line.set_color(WHITE)
         h_line.next_to(sum_eq, DOWN, aligned_edge = LEFT)
 
-        infinity = TexMobject("\\infty")
+        infinity = Tex("\\infty")
         infinity.next_to(h_line, DOWN)
 
         self.play(ShowCreation(
@@ -567,7 +567,7 @@ class FiniteSample(TryToAddInfinitelyManyPoints):
         v_lines = self.get_sample_lines(dx = self.dx)
         summed_v_lines = v_lines.copy()
         plusses = VGroup(*[
-            TexMobject("+").scale(0.75)
+            Tex("+").scale(0.75)
             for l in v_lines
         ])
         numerator = VGroup(*it.chain(*list(zip(summed_v_lines, plusses))))
@@ -582,10 +582,10 @@ class FiniteSample(TryToAddInfinitelyManyPoints):
         numerator.scale(0.5)
         numerator.move_to(self.coords_to_point(3*np.pi/2, 0))
         numerator.to_edge(UP)
-        frac_line = TexMobject("\\over \\,")
+        frac_line = Tex("\\over \\,")
         frac_line.stretch_to_fit_width(numerator.get_width())
         frac_line.next_to(numerator, DOWN)
-        denominator = TextMobject("(Num. samples)")
+        denominator = TexText("(Num. samples)")
         denominator.next_to(frac_line, DOWN)
 
         self.play(ShowCreation(v_lines, run_time = 3))
@@ -671,7 +671,7 @@ class IntegralOfSine(FiniteSample):
         )
 
     def write_integral(self):
-        integral = TexMobject("\\int_0^\\pi", "\\sin(x)", "\\,dx")
+        integral = Tex("\\int_0^\\pi", "\\sin(x)", "\\,dx")
         integral.move_to(self.graph_portion_between_bounds)
         integral.to_edge(UP)
 
@@ -710,7 +710,7 @@ class IntegralOfSine(FiniteSample):
         start_rect = rects[start_index]
         side_brace = Brace(start_rect, LEFT, buff = SMALL_BUFF)
         bottom_brace = Brace(start_rect, DOWN, buff = SMALL_BUFF)
-        sin_x = TexMobject("\\sin(x)")
+        sin_x = Tex("\\sin(x)")
         sin_x.next_to(side_brace, LEFT, SMALL_BUFF)
         dx = bottom_brace.get_text("$dx$", buff = SMALL_BUFF)
 
@@ -779,7 +779,7 @@ class IntegralOfSine(FiniteSample):
     def bring_back_average(self):
         num_samples = self.average[-1]
 
-        example_dx = TexMobject("0.1")
+        example_dx = Tex("0.1")
         example_dx.move_to(self.dx_label)
 
         input_range = Line(*[
@@ -837,7 +837,7 @@ class IntegralOfSine(FiniteSample):
         #Count number of samples
         num_samples_copy.generate_target()
         num_samples_copy.target.shift(DOWN + 0.5*LEFT)
-        rhs = TexMobject("\\approx", "\\pi", "/", "0.1")
+        rhs = Tex("\\approx", "\\pi", "/", "0.1")
         rhs.next_to(num_samples_copy.target, RIGHT)
         self.play(
             MoveToTarget(num_samples_copy),
@@ -864,7 +864,7 @@ class IntegralOfSine(FiniteSample):
         ))
         dx = rhs.get_part_by_tex("0.1") 
         self.play(Transform(
-            dx, TexMobject("dx").move_to(dx)
+            dx, Tex("dx").move_to(dx)
         ))
         self.wait(2)
         approx = rhs.get_part_by_tex("approx")
@@ -885,7 +885,7 @@ class IntegralOfSine(FiniteSample):
         integral = self.integral
 
         dx.generate_target()
-        lp, rp = parens = TexMobject("()")
+        lp, rp = parens = Tex("()")
         parens.set_height(numerator.get_height())
         lp.next_to(numerator, LEFT)
         rp.next_to(numerator, RIGHT)
@@ -903,7 +903,7 @@ class IntegralOfSine(FiniteSample):
 
         average = VGroup(parens, numerator, dx, frac_line, pi)
         integral.generate_target()
-        over_pi = TexMobject("\\frac{\\phantom{\\int \\sin(x)\\dx}}{\\pi}")
+        over_pi = Tex("\\frac{\\phantom{\\int \\sin(x)\\dx}}{\\pi}")
         integral.target.set_width(over_pi.get_width())
         integral.target.next_to(over_pi, UP)
         integral_over_pi = VGroup(integral.target, over_pi)
@@ -932,8 +932,8 @@ class IntegralOfSine(FiniteSample):
             *list(map(FadeOut, [self.average, self.average_arrow]))
         )
 
-        average_height = TextMobject("Average height = ")
-        area_over_width = TexMobject(
+        average_height = TexText("Average height = ")
+        area_over_width = Tex(
             "{\\text{Area}", "\\over\\,", "\\text{Width}}", "="
         )
         area_over_width.get_part_by_tex("Area").set_color_by_gradient(
@@ -962,7 +962,7 @@ class IntegralOfSine(FiniteSample):
 
 class Approx31(Scene):
     def construct(self):
-        tex = TexMobject("\\approx 31")
+        tex = Tex("\\approx 31")
         tex.set_width(FRAME_WIDTH - LARGE_BUFF)
         tex.to_edge(LEFT)
         self.play(Write(tex))
@@ -970,11 +970,11 @@ class Approx31(Scene):
 
 class LetsSolveThis(TeacherStudentsScene):
     def construct(self):
-        expression = TexMobject(
+        expression = Tex(
             "{\\int_0^\\pi ", " \\sin(x)", "\\,dx \\over \\pi}"
         )
         expression.to_corner(UP+LEFT)
-        question = TextMobject(
+        question = TexText(
             "What's the antiderivative \\\\ of",
             "$\\sin(x)$",
             "?"
@@ -1039,7 +1039,7 @@ class Antiderivative(AverageOfSineStart):
 
         derivs = []
         for F, f in ("\\cos", "-\\sin"), ("-\\cos", "\\sin"):
-            deriv = TexMobject(
+            deriv = Tex(
                 "{d(", F, ")", "\\over\\,", "dx}", "(x)", 
                 "=", f, "(x)"
             )
@@ -1136,10 +1136,10 @@ class Antiderivative(AverageOfSineStart):
 
     def apply_ftoc(self):
         deriv = self.deriv
-        integral = TexMobject(
+        integral = Tex(
             "\\int", "^\\pi", "_0", "\\sin(x)", "\\,dx"
         )
-        rhs = TexMobject(
+        rhs = Tex(
             "=", "\\big(", "-\\cos", "(", "\\pi", ")", "\\big)",
             "-", "\\big(", "-\\cos", "(", "0", ")", "\\big)",
         )
@@ -1247,7 +1247,7 @@ class Antiderivative(AverageOfSineStart):
             x_min = self.bounds[0],
             x_max = self.bounds[1],
         )
-        area_two = TexMobject("2").replace(
+        area_two = Tex("2").replace(
             self.two_height_label
         )
 
@@ -1265,7 +1265,7 @@ class Antiderivative(AverageOfSineStart):
         equals = rhs[0]
         rhs_without_eq = VGroup(*rhs[1:])
         frac_lines = VGroup(*[
-            TexMobject("\\over\\,").stretch_to_fit_width(
+            Tex("\\over\\,").stretch_to_fit_width(
                 mob.get_width()
             ).move_to(mob)
             for mob in (integral, rhs_without_eq)
@@ -1274,14 +1274,14 @@ class Antiderivative(AverageOfSineStart):
             (integral.get_height()/2 + SMALL_BUFF)*DOWN
         )
         pi_minus_zeros = VGroup(*[
-            TexMobject("\\pi", "-", "0").next_to(line, DOWN)
+            Tex("\\pi", "-", "0").next_to(line, DOWN)
             for line in frac_lines
         ])
         for tex_mob in pi_minus_zeros:
             for tex in "pi", "0":
                 tex_mob.set_color_by_tex(tex, YELLOW)
 
-        answer = TexMobject(" = \\frac{2}{\\pi}")
+        answer = Tex(" = \\frac{2}{\\pi}")
         answer.next_to(
             frac_lines, RIGHT,
             align_using_submobjects = True
@@ -1375,7 +1375,7 @@ class Antiderivative(AverageOfSineStart):
         new_v_line = self.v_line.copy().set_color(RED)
         new_h_line = self.h_line.copy().set_color(RED)
 
-        pi = TexMobject("\\pi")
+        pi = Tex("\\pi")
         pi.next_to(self.h_line, DOWN)
 
         self.play(
@@ -1445,7 +1445,7 @@ class GeneralAverage(AverageOfContinuousVariable):
         ])
         for line, color in zip(v_lines, self.bound_colors):
             line.set_color(color)
-        labels = list(map(TexMobject, "ab"))
+        labels = list(map(Tex, "ab"))
         for line, label in zip(v_lines, labels):
             vect = line.get_start()-line.get_end()
             label.next_to(line, vect/get_norm(vect))
@@ -1479,8 +1479,8 @@ class GeneralAverage(AverageOfContinuousVariable):
             line_class = DashedLine,
             color = WHITE
         )
-        average = TextMobject("Average = ")
-        fraction = TexMobject(
+        average = TexText("Average = ")
+        fraction = Tex(
             "{\\displaystyle \\int", "^b", "_a", "f(x)", "\\,dx",
             "\\over", "b", "-", "a}"
         )
@@ -1566,9 +1566,9 @@ class GeneralAverage(AverageOfContinuousVariable):
             stroke_width = 0.25,
         )
         rects = rect_list[0]
-        plus = TexMobject("+")
+        plus = Tex("+")
         plus.move_to(self.coords_to_point(2, 2))
-        minus = TexMobject("-")
+        minus = Tex("-")
         minus.move_to(self.coords_to_point(5.24, -1))
 
         self.play(FadeIn(
@@ -1608,9 +1608,9 @@ class GeneralAverage(AverageOfContinuousVariable):
         brace = Brace(line_pair, DOWN)
         dx = brace.get_text("$dx$")
 
-        num_samples = TextMobject("Num. samples")
-        approx = TexMobject("\\approx")
-        rhs = TexMobject("{b", "-", "a", "\\over", "dx}")
+        num_samples = TexText("Num. samples")
+        approx = Tex("\\approx")
+        rhs = Tex("{b", "-", "a", "\\over", "dx}")
         for tex, color in zip("ab", self.bound_colors):
             rhs.set_color_by_tex(tex, color)
         expression = VGroup(num_samples, approx, rhs)
@@ -1620,7 +1620,7 @@ class GeneralAverage(AverageOfContinuousVariable):
 
         f_brace = Brace(line_pair, LEFT, buff = 0)
         f_x = f_brace.get_text("$f(x)$")
-        add_up_f_over = TexMobject("\\text{Add up $f(x)$}", "\\over")
+        add_up_f_over = Tex("\\text{Add up $f(x)$}", "\\over")
         add_up_f_over.next_to(num_samples, UP)
         add_up_f_over.to_edge(UP)
 
@@ -1673,7 +1673,7 @@ class GeneralAverage(AverageOfContinuousVariable):
         int_fraction.generate_target()
         int_fraction.target.next_to(add_up_f_over, RIGHT, LARGE_BUFF)
         int_fraction.target.shift_onto_screen()
-        double_arrow = TexMobject("\\Leftrightarrow")
+        double_arrow = Tex("\\Leftrightarrow")
         double_arrow.next_to(
             int_fraction.target.get_part_by_tex("over"), LEFT
         )
@@ -1741,7 +1741,7 @@ class GeneralAntiderivative(GeneralAverage):
         self.bound_lines.fade(0.3)
 
     def add_fraction(self):
-        fraction = TexMobject(
+        fraction = Tex(
             "{\\displaystyle \\int", "^b", "_a", "f(x)", "\\,dx",
             "\\over", "b", "-", "a}"
         )
@@ -1771,7 +1771,7 @@ class GeneralAntiderivative(GeneralAverage):
             x_val = x_max
         )
 
-        deriv = TexMobject(
+        deriv = Tex(
             "{dF", "\\over", "dx}", "(x)", "=", "f(x)"
         )
         deriv.set_color_by_tex("dF", antideriv_graph.get_color())
@@ -1795,7 +1795,7 @@ class GeneralAntiderivative(GeneralAverage):
         self.antideriv_graph = antideriv_graph
 
     def show_average_in_terms_of_F(self):
-        new_fraction = TexMobject(
+        new_fraction = Tex(
             "=", 
             "{F", "(", "b", ")", "-", "F", "(", "a", ")",
             "\\over",
@@ -1930,7 +1930,7 @@ class GeneralAntiderivative(GeneralAverage):
 
 class LastVideoWrapper(Scene):
     def construct(self):
-        title = TextMobject("Chapter 8: Integrals")
+        title = TexText("Chapter 8: Integrals")
         title.to_edge(UP)
         rect = Rectangle(height = 9, width = 16)
         rect.set_stroke(WHITE)
@@ -1942,7 +1942,7 @@ class LastVideoWrapper(Scene):
 
 class ASecondIntegralSensation(TeacherStudentsScene):
     def construct(self):
-        finite_average = TexMobject("{1+5+4+2 \\over 4}")
+        finite_average = Tex("{1+5+4+2 \\over 4}")
         numbers = VGroup(*finite_average[0:7:2])
         plusses = VGroup(*finite_average[1:7:2])
         denominator = VGroup(*finite_average[7:])
@@ -1959,7 +1959,7 @@ class ASecondIntegralSensation(TeacherStudentsScene):
         arrow = Arrow(DOWN+RIGHT, ORIGIN)
         arrow.next_to(line.get_start(), DOWN+RIGHT, SMALL_BUFF)
 
-        sigma_to_integral = TexMobject(
+        sigma_to_integral = Tex(
             "\\sum \\Leftrightarrow \\int"
         )
         sigma_to_integral.next_to(
@@ -2077,7 +2077,7 @@ class Thumbnail(GraphScene):
         sine.to_corner(UP+LEFT, buff = SMALL_BUFF)
         sine.scale(0.9)
 
-        area = TextMobject("Area")
+        area = TexText("Area")
         area.scale(3)
         area.move_to(rects)
 
@@ -2093,7 +2093,7 @@ class Thumbnail(GraphScene):
         cosine.scale(0.7)
         cosine.to_corner(DOWN+RIGHT, buff = MED_SMALL_BUFF)
 
-        slope = TextMobject("Slope")
+        slope = TexText("Slope")
         slope.scale(3)
         # slope.next_to(cosine, LEFT, buff = 0)
         # slope.to_edge(DOWN)

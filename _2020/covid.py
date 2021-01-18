@@ -187,7 +187,7 @@ class IntroducePlot(Scene):
             line.set_stroke(PINK, 2)
 
             label = VGroup(
-                TexMobject("\\times"),
+                Tex("\\times"),
                 DecimalNumber(
                     axes.y_axis.p2n(d2.get_center()) /
                     axes.y_axis.p2n(d1.get_center()),
@@ -219,7 +219,7 @@ class IntroducePlot(Scene):
 
     #
     def get_title(self, axes):
-        title = TextMobject(
+        title = TexText(
             "Recorded COVID-19 cases\\\\outside mainland China",
             tex_to_color_map={"COVID-19": RED}
         )
@@ -250,7 +250,7 @@ class IntroducePlot(Scene):
         labels = VGroup()
         extra_ticks = VGroup()
         for text, pos in text_pos_pairs:
-            label = TextMobject(text)
+            label = TexText(text)
             label.set_height(0.2)
             label.rotate(45 * DEGREES)
             axis_point = axes.c2p(n_cases + pos, 0)
@@ -278,7 +278,7 @@ class IntroducePlot(Scene):
             labels = VGroup()
             for y in y_values:
                 try:
-                    label = TextMobject(f"{y}k")
+                    label = TexText(f"{y}k")
                     label.set_height(0.25)
                     tick = axes.y_axis.ticks[y]
                     always(label.next_to, tick, LEFT, SMALL_BUFF)
@@ -350,26 +350,26 @@ class Thumbnail(IntroducePlot):
 
         self.add(dots)
 
-        title = TextMobject("COVID-19")
+        title = TexText("COVID-19")
         title.set_height(1)
         title.set_color(RED)
         title.to_edge(UP, buff=LARGE_BUFF)
 
-        subtitle = TextMobject("and exponential growth")
+        subtitle = TexText("and exponential growth")
         subtitle.match_width(title)
         subtitle.next_to(title, DOWN)
 
         # self.add(title)
         # self.add(subtitle)
 
-        title = TextMobject("The early warning\\\\of ", "COVID-19\\\\")
+        title = TexText("The early warning\\\\of ", "COVID-19\\\\")
         title.set_color_by_tex("COVID", RED)
         title.set_height(2.5)
         title.to_edge(UP, buff=LARGE_BUFF)
         self.add(title)
 
         # self.remove(words)
-        # words = TextMobject("Exponential growth")
+        # words = TexText("Exponential growth")
         # words.move_to(ORIGIN, DL)
         # words.apply_function(
         #     lambda p: [
@@ -384,10 +384,10 @@ class Thumbnail(IntroducePlot):
 class IntroQuestion(Scene):
     def construct(self):
         questions = VGroup(
-            TextMobject("What is exponential growth?"),
-            TextMobject("Where does it come from?"),
-            TextMobject("What does it imply?"),
-            TextMobject("When does it stop?"),
+            TexText("What is exponential growth?"),
+            TexText("Where does it come from?"),
+            TexText("What does it imply?"),
+            TexText("When does it stop?"),
         )
         questions.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
 
@@ -501,9 +501,9 @@ class ViralSpreadModel(Scene):
 class GrowthEquation(Scene):
     def construct(self):
         # Add labels
-        N_label = TextMobject("$N_d$", " = Number of cases on a given day", )
-        E_label = TextMobject("$E$", " = Average number of people someone infected is exposed to each day")
-        p_label = TextMobject("$p$", " = Probability of each exposure becoming an infection")
+        N_label = TexText("$N_d$", " = Number of cases on a given day", )
+        E_label = TexText("$E$", " = Average number of people someone infected is exposed to each day")
+        p_label = TexText("$p$", " = Probability of each exposure becoming an infection")
 
         N_label[0].set_color(YELLOW)
         E_label[0].set_color(BLUE)
@@ -522,16 +522,16 @@ class GrowthEquation(Scene):
             self.play(FadeInFromDown(label))
             self.wait()
 
-        delta_N = TexMobject("\\Delta", "N_d")
+        delta_N = Tex("\\Delta", "N_d")
         delta_N.set_color(YELLOW)
-        eq = TexMobject("=")
+        eq = Tex("=")
         eq.center()
         delta_N.next_to(eq, LEFT)
 
         delta_N_brace = Brace(delta_N, DOWN)
         delta_N_text = delta_N_brace.get_text("Change over a day")
 
-        nep = TexMobject("E", "\\cdot", "p", "\\cdot", "N_d")
+        nep = Tex("E", "\\cdot", "p", "\\cdot", "N_d")
         nep[4].match_color(N_label[0])
         nep[0].match_color(E_label[0])
         nep[2].match_color(p_label[0])
@@ -559,14 +559,14 @@ class GrowthEquation(Scene):
         ))
 
         # Recursive equation
-        lhs = TexMobject("N_{d + 1}", "=")
+        lhs = Tex("N_{d + 1}", "=")
         lhs[0].set_color(YELLOW)
         lhs.move_to(eq, RIGHT)
         lhs.shift(DOWN)
 
         rhs = VGroup(
             nep[-1].copy(),
-            TexMobject("+"),
+            Tex("+"),
             nep.copy(),
         )
         rhs.arrange(RIGHT)
@@ -581,7 +581,7 @@ class GrowthEquation(Scene):
         self.play(TransformFromCopy(nep, rhs[2]))
         self.wait()
 
-        alt_rhs = TexMobject(
+        alt_rhs = Tex(
             "(", "1", "+", "E", "\\cdot", "p", ")", "N_d",
             tex_to_color_map={
                 "E": BLUE,
@@ -611,7 +611,7 @@ class GrowthEquation(Scene):
 
         # Comment on factor
         brace = Brace(alt_rhs[:7], DOWN)
-        text = TextMobject("For example, ", "1.15")
+        text = TexText("For example, ", "1.15")
         text.next_to(brace, DOWN)
         self.play(
             GrowFromCenter(brace),
@@ -641,7 +641,7 @@ class GrowthEquation(Scene):
         self.wait()
         self.play(eq_group.to_edge, LEFT, LARGE_BUFF)
 
-        exp_eq = TexMobject(
+        exp_eq = Tex(
             "N_d = (1 + E \\cdot p)^{d} \\cdot N_0",
             tex_to_color_map={
                 "N_d": YELLOW,
@@ -665,7 +665,7 @@ class GrowthEquation(Scene):
         ep_rect = SurroundingRectangle(ep)
         ep_rect.set_stroke(RED, 2)
 
-        ep_label = TextMobject("This factor will decrease")
+        ep_label = TexText("This factor will decrease")
         ep_label.next_to(ep_rect, UP, aligned_edge=LEFT)
         ep_label.set_color(RED)
 
@@ -680,7 +680,7 @@ class GrowthEquation(Scene):
         )
 
         # Add carrying capacity factor to p
-        p_factors = TexMobject(
+        p_factors = Tex(
             "\\left(1 - {N_d \\over \\text{pop. size}} \\right)",
             tex_to_color_map={"N_d": YELLOW},
         )
@@ -708,7 +708,7 @@ class GrowthEquation(Scene):
         )
 
         # Ask about ep shrinking
-        ep_question = TextMobject("What makes this shrink?")
+        ep_question = TexText("What makes this shrink?")
         ep_question.set_color(RED)
         ep_question.next_to(ep_rect, UP, aligned_edge=LEFT)
 
@@ -739,8 +739,8 @@ class GrowthEquation(Scene):
             text[1].next_to, brace, DOWN,
         )
 
-        eq1 = TexMobject("(", "1.15", ")", "^{61}", "\\cdot", "21{,}000", "=")
-        eq2 = TexMobject("(", "1.05", ")", "^{61}", "\\cdot", "21{,}000", "=")
+        eq1 = Tex("(", "1.15", ")", "^{61}", "\\cdot", "21{,}000", "=")
+        eq2 = Tex("(", "1.05", ")", "^{61}", "\\cdot", "21{,}000", "=")
         eq1_rhs = Integer((1.15**61) * (21000))
         eq2_rhs = Integer((1.05**61) * (21000))
 
@@ -772,7 +772,7 @@ class GrowthEquation(Scene):
             FadeIn(eq2),
         )
 
-        new_text = TextMobject("1.05")
+        new_text = TexText("1.05")
         new_text.move_to(text[1])
         self.play(
             ChangeDecimalToValue(ep_value, 0.05),
@@ -847,13 +847,13 @@ class RescaleToLogarithmic(IntroducePlot):
         ]
         log_y_labels = VGroup()
         for text, tick in zip(labels_text, log_y_axis.tick_marks[1:]):
-            label = TextMobject(text)
+            label = TexText(text)
             label.set_height(0.25)
             always(label.next_to, tick, LEFT, SMALL_BUFF)
             log_y_labels.add(label)
 
         # Animate the rescaling to a logarithmic plot
-        logarithm_title = TextMobject("(Logarithmic scale)")
+        logarithm_title = TexText("(Logarithmic scale)")
         logarithm_title.set_color(TEAL)
         logarithm_title.next_to(title, DOWN)
         logarithm_title.add_background_rectangle()
@@ -945,7 +945,7 @@ class RescaleToLogarithmic(IntroducePlot):
             rect.set_fill(TEAL, 0.5)
             rect.set_stroke(width=0)
             rect.replace(line, stretch=True)
-            label = TextMobject(f"{j - i} days")
+            label = TexText(f"{j - i} days")
             label.next_to(rect, UP, SMALL_BUFF)
             label.set_color(TEAL)
 
@@ -992,7 +992,7 @@ class RescaleToLogarithmic(IntroducePlot):
         )
 
         # Describe linear regression
-        reg_label = TextMobject("Linear regression")
+        reg_label = TexText("Linear regression")
         reg_label.move_to(c2p(25, 10), DOWN)
         reg_arrows = VGroup()
         for prop in [0.4, 0.6, 0.5]:
@@ -1014,7 +1014,7 @@ class RescaleToLogarithmic(IntroducePlot):
         self.wait()
 
         # Label slope
-        slope_label = TextMobject("$\\times 10$ every $16$ days (on average)")
+        slope_label = TexText("$\\times 10$ every $16$ days (on average)")
         slope_label.set_color(BLUE)
         slope_label.set_stroke(BLACK, 8, background=True)
         slope_label.rotate(reg_line.get_angle())
@@ -1026,7 +1026,7 @@ class RescaleToLogarithmic(IntroducePlot):
 
         # R^2 label
         R2_label = VGroup(
-            TexMobject("R^2 = "),
+            Tex("R^2 = "),
             DecimalNumber(0, num_decimal_places=3)
         )
         R2_label.arrange(RIGHT, aligned_edge=DOWN)
@@ -1101,11 +1101,11 @@ class RescaleToLogarithmic(IntroducePlot):
             rect = Rectangle().replace(line, stretch=True)
             rect.set_stroke(width=0)
             rect.set_fill(TEAL, 0.5)
-            label = TextMobject(f"{int(x) - axes.x_max} days")
+            label = TexText(f"{int(x) - axes.x_max} days")
             label.scale(1.5)
             label.next_to(rect, UP, SMALL_BUFF)
 
-            date_label = TextMobject(date_label_text)
+            date_label = TexText(date_label_text)
             date_label.set_height(0.25)
             date_label.rotate(45 * DEGREES)
             axis_point = axes.c2p(int(x), 0)
@@ -1203,7 +1203,7 @@ class RescaleToLogarithmic(IntroducePlot):
 
 class LinRegNote(Scene):
     def construct(self):
-        text = TextMobject("(Starting from when\\\\there were 100 cases)")
+        text = TexText("(Starting from when\\\\there were 100 cases)")
         text.set_stroke(BLACK, 8, background=True)
         self.add(text)
 
@@ -1221,7 +1221,7 @@ class CompareCountries(Scene):
         labels = VGroup()
         case_numbers = [6593, 64]
         for flag, cn in zip(flags, case_numbers):
-            label = VGroup(Integer(cn), TextMobject("cases"))
+            label = VGroup(Integer(cn), TexText("cases"))
             label.arrange(RIGHT, buff=MED_SMALL_BUFF)
             label[1].align_to(label[0][-1], DOWN)
             label.scale(1.5)
@@ -1246,11 +1246,11 @@ class CompareCountries(Scene):
             labels[0][0].get_bottom(),
             path_arc=-90 * DEGREES,
         )
-        arrow_label = TextMobject("100x better")
+        arrow_label = TexText("100x better")
         arrow_label.set_color(YELLOW)
         arrow_label.next_to(arrow, DOWN)
 
-        alt_arrow_label = TextMobject("1 month behind")
+        alt_arrow_label = TexText("1 month behind")
         alt_arrow_label.set_color(RED)
         alt_arrow_label.next_to(arrow, DOWN)
 
@@ -1267,8 +1267,8 @@ class CompareCountries(Scene):
 class SARSvs1918(Scene):
     def construct(self):
         titles = VGroup(
-            TextMobject("2002 SARS outbreak"),
-            TextMobject("1918 Spanish flu"),
+            TexText("2002 SARS outbreak"),
+            TexText("1918 Spanish flu"),
         )
         images = Group(
             ImageMobject("sars_icon"),
@@ -1288,8 +1288,8 @@ class SARSvs1918(Scene):
         titles[1].underline.match_y(titles[0].underline)
 
         n_cases_labels = VGroup(
-            TextMobject("8,096 cases"),
-            TextMobject("$\\sim$513{,}000{,}000 cases"),
+            TexText("8,096 cases"),
+            TexText("$\\sim$513{,}000{,}000 cases"),
         )
 
         for n_cases_label, title in zip(n_cases_labels, titles):
@@ -1460,7 +1460,7 @@ class ShowLogisticCurve(Scene):
         self.add(axes)
 
         # Add ODE
-        ode = TexMobject(
+        ode = Tex(
             "{dN \\over dt} =",
             "c",
             "\\left(1 - {N \\over \\text{pop.}}\\right)",
@@ -1479,7 +1479,7 @@ class ShowLogisticCurve(Scene):
         )
         curve.set_stroke(YELLOW, 3)
 
-        curve_title = TextMobject("Logistic curve")
+        curve_title = TexText("Logistic curve")
         curve_title.set_height(0.75)
         curve_title.next_to(curve.get_end(), UL)
 
@@ -1537,7 +1537,7 @@ class ShowLogisticCurve(Scene):
         pre_dot = curve.copy()
         pre_dot.pointwise_become_partial(curve, 0.375, 0.425)
 
-        infl_name = TextMobject("Inflection point")
+        infl_name = TexText("Inflection point")
         infl_name.next_to(infl_dot, LEFT)
 
         self.play(ReplacementTransform(pre_dot, infl_dot, path_arc=90 * DEGREES))
@@ -1591,7 +1591,7 @@ class ShowLogisticCurve(Scene):
         self.wait()
 
         # Define growth factor
-        gf_label = TexMobject(
+        gf_label = Tex(
             "\\text{Growth factor} =",
             "{\\Delta N_d \\over \\Delta N_{d - 1}}",
             tex_to_color_map={
@@ -1602,8 +1602,8 @@ class ShowLogisticCurve(Scene):
         )
         gf_label.next_to(infl_dot, RIGHT, LARGE_BUFF)
 
-        numer_label = TextMobject("New cases one day")
-        denom_label = TextMobject("New cases the\\\\previous day")
+        numer_label = TexText("New cases one day")
+        denom_label = TexText("New cases the\\\\previous day")
 
         for label, tex, vect in (numer_label, "N_d", UL), (denom_label, "N_{d - 1}", DL):
             part = gf_label.get_part_by_tex(tex)
@@ -1631,7 +1631,7 @@ class ShowLogisticCurve(Scene):
         # Show example growth factors
         self.play(x_tracker.set_value, 1)
 
-        eq = TexMobject("=")
+        eq = Tex("=")
         eq.next_to(gf_label, RIGHT)
         gf = DecimalNumber(1.15)
         gf.set_height(0.4)
@@ -1676,9 +1676,9 @@ class ShowLogisticCurve(Scene):
         axes.center()
         axes.to_edge(DOWN)
 
-        x_label = TextMobject("Time")
+        x_label = TexText("Time")
         x_label.next_to(axes.x_axis, UP, aligned_edge=RIGHT)
-        y_label = TextMobject("N cases")
+        y_label = TexText("N cases")
         y_label.next_to(axes.y_axis, RIGHT, aligned_edge=UP)
         axes.add(x_label, y_label)
         return axes
@@ -1687,7 +1687,7 @@ class ShowLogisticCurve(Scene):
 class SubtltyOfGrowthFactorShift(Scene):
     def construct(self):
         # Set up totals
-        total_title = TextMobject("Totals")
+        total_title = TexText("Totals")
         total_title.add(Underline(total_title))
         total_title.to_edge(UP)
         total_title.scale(1.25)
@@ -1705,10 +1705,10 @@ class SubtltyOfGrowthFactorShift(Scene):
 
         # Set up dates
         dates = VGroup(
-            TextMobject("March 3, 2020"),
-            TextMobject("March 4, 2020"),
-            TextMobject("March 5, 2020"),
-            TextMobject("March 6, 2020"),
+            TexText("March 3, 2020"),
+            TexText("March 4, 2020"),
+            TexText("March 5, 2020"),
+            TexText("March 6, 2020"),
         )
         for date, total in zip(dates, totals):
             date.scale(0.75)
@@ -1738,7 +1738,7 @@ class SubtltyOfGrowthFactorShift(Scene):
 
         change_labels[-1].set_color(BLUE)
 
-        change_title = TextMobject("Changes")
+        change_title = TexText("Changes")
         change_title.add(Underline(change_title).shift(0.128 * UP))
         change_title.scale(1.25)
         change_title.set_color(GREEN)
@@ -1768,13 +1768,13 @@ class SubtltyOfGrowthFactorShift(Scene):
             frac.arrange(DOWN, buff=SMALL_BUFF)
             frac.scale(0.7)
             frac.next_to(arrow, RIGHT)
-            eq = TexMobject("=")
+            eq = Tex("=")
             eq.next_to(frac, RIGHT)
             gf = DecimalNumber(c2.get_value() / c1.get_value())
             gf.next_to(eq, RIGHT)
             gf_labels.add(VGroup(frac, eq, gf))
 
-        gf_title = TextMobject("Growth factors")
+        gf_title = TexText("Growth factors")
         gf_title.add(Underline(gf_title))
         gf_title.scale(1.25)
         gf_title.move_to(gf_labels[0][-1])
@@ -1844,8 +1844,8 @@ class ContrastRandomShufflingWithClustersAndTravel(Scene):
         self.add(squares)
 
         titles = VGroup(
-            TextMobject("Random shuffling"),
-            TextMobject("Clusters with travel"),
+            TexText("Random shuffling"),
+            TexText("Clusters with travel"),
         )
         for title, square in zip(titles, squares):
             title.scale(1.4)

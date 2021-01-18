@@ -38,9 +38,9 @@ class IllustrateAreaModelBayes(Scene):
         ).next_to(rect_A, RIGHT, buff = 0)
 
         brace_A = Brace(rect_A, DOWN)
-        label_A = TexMobject("P(A)").next_to(brace_A, DOWN).scale(0.7)
+        label_A = Tex("P(A)").next_to(brace_A, DOWN).scale(0.7)
         brace_not_A = Brace(rect_not_A, DOWN)
-        label_not_A = TexMobject("P(\\text{not }A)").next_to(brace_not_A, DOWN).scale(0.7)
+        label_not_A = Tex("P(\\text{not }A)").next_to(brace_not_A, DOWN).scale(0.7)
 
         # self.play(
         #     LaggedStartMap(FadeIn, VGroup(rect_A, rect_not_A))
@@ -70,9 +70,9 @@ class IllustrateAreaModelBayes(Scene):
         VGroup(rect_B, rect_not_B).move_to(VGroup(rect_A, rect_not_A))
 
         brace_B = Brace(rect_B, LEFT)
-        label_B = TexMobject("P(B)").next_to(brace_B, LEFT).scale(0.7)
+        label_B = Tex("P(B)").next_to(brace_B, LEFT).scale(0.7)
         brace_not_B = Brace(rect_not_B, LEFT)
-        label_not_B = TexMobject("P(\\text{not }B)").next_to(brace_not_B, LEFT).scale(0.7)
+        label_not_B = Tex("P(\\text{not }B)").next_to(brace_not_B, LEFT).scale(0.7)
 
         # self.play(
         #     LaggedStartMap(FadeIn, VGroup(rect_B, rect_not_B))
@@ -88,14 +88,14 @@ class IllustrateAreaModelBayes(Scene):
             stroke_width = 3,
             fill_opacity = 0.0
         ).align_to(rect_A, DOWN).align_to(rect_A,LEFT)
-        label_A_and_B = TexMobject("P(A\\text{ and }B)").scale(0.7)
+        label_A_and_B = Tex("P(A\\text{ and }B)").scale(0.7)
         label_A_and_B.move_to(rect_A_and_B)
 
         # self.play(
         #     ShowCreation(rect_A_and_B)
         # )
 
-        indep_formula = TexMobject("P(A\\text{ and }B)", "=", "P(A)", "\cdot", "P(B)")
+        indep_formula = Tex("P(A\\text{ and }B)", "=", "P(A)", "\cdot", "P(B)")
         indep_formula = indep_formula.scale(0.7)
         label_p_of_b = indep_formula.get_part_by_tex("P(B)")
 
@@ -179,7 +179,7 @@ class IllustrateAreaModelBayes(Scene):
         ).next_to(rect_A_and_B.target, UP, buff = 0)
 
         brace_B.target = Brace(rect_A_and_B.target, LEFT)
-        label_B.target = TexMobject("P(B\mid A)").scale(0.7).next_to(brace_B.target, LEFT)
+        label_B.target = Tex("P(B\mid A)").scale(0.7).next_to(brace_B.target, LEFT)
 
 
         self.play(
@@ -203,7 +203,7 @@ class IllustrateAreaModelBayes(Scene):
 
         # solve formula for P(B|A)
 
-        rearranged_formula = TexMobject("P(B\mid A)", "=", "{P(A\\text{ and }B) \over P(A)}")
+        rearranged_formula = Tex("P(B\mid A)", "=", "{P(A\\text{ and }B) \over P(A)}")
         rearranged_formula.move_to(indep_formula)
 
         self.wait()

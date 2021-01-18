@@ -7,7 +7,7 @@ class RandyIsSickOrNot(Scene):
 
 
     def construct(self):
-        title = TextMobject("1 in 200")
+        title = TexText("1 in 200")
         title.to_edge(UP)
 
         
@@ -20,7 +20,7 @@ class RandyIsSickOrNot(Scene):
 
         self.add(randy)
 
-        p_sick = TexMobject("p(","\\text{sick}",") = 0.5\%").scale(1.7)
+        p_sick = Tex("p(","\\text{sick}",") = 0.5\%").scale(1.7)
         p_sick.set_color_by_tex("sick", SICKLY_GREEN)
         p_sick.next_to(randy, UP, buff = LARGE_BUFF)
         self.add(p_sick)
@@ -59,7 +59,7 @@ class RandyIsSickOrNot(Scene):
 
 class OneIn200HasDisease(Scene):
     def construct(self):
-        title = TextMobject("1 in 200")
+        title = TexText("1 in 200")
         title.to_edge(UP)
         creature = PiCreature()
 
@@ -84,7 +84,7 @@ class OneIn200HasDisease(Scene):
 
         self.add(randy)
 
-        #p_sick = TexMobject("p(","\\text{sick}",") = 0.5\%")
+        #p_sick = Tex("p(","\\text{sick}",") = 0.5\%")
         #p_sick.set_color_by_tex("sick", SICKLY_GREEN)
         #p_sick.next_to(randy, RIGHT+UP)
         #self.add(p_sick)

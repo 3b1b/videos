@@ -11,7 +11,7 @@ class Test(Scene):
 
 class Announcements(PiCreatureScene):
     def construct(self):
-        title = TextMobject("Announcements!")
+        title = TexText("Announcements!")
         title.scale(1.5)
         title.to_edge(UP)
         title.shift(LEFT)
@@ -20,7 +20,7 @@ class Announcements(PiCreatureScene):
         underline.next_to(title, DOWN)
 
         announcements = VGroup(*[
-            TextMobject("$\\cdot$ %s"%s)
+            TexText("$\\cdot$ %s"%s)
             for s in [
                 "Q\\&A Round 2",
                 "The case against Net Neutrality?",
@@ -47,7 +47,7 @@ class Announcements(PiCreatureScene):
 class PowersOfTwo(Scene):
     def construct(self):
         powers_of_2 = VGroup(*[
-            TexMobject("2^{%d}"%n, "=", "{:,}".format(2**n))
+            Tex("2^{%d}"%n, "=", "{:,}".format(2**n))
             for n in range(20)
         ])
         powers_of_2.to_edge(UP)
@@ -135,8 +135,8 @@ class PiHoldingScreen(PiCreatureScene):
         screen.to_edge(LEFT)
 
         words = VGroup(
-            TextMobject("Ben Eater"),
-            TextMobject("The Case Against Net Neutrality?"),
+            TexText("Ben Eater"),
+            TexText("The Case Against Net Neutrality?"),
         )
         words.next_to(screen, UP, SMALL_BUFF)
 
@@ -158,7 +158,7 @@ class PiHoldingScreen(PiCreatureScene):
 
 class QuestionsLink(Scene):
     def construct(self):
-        link = TextMobject("https://3b1b.co/questions")
+        link = TexText("https://3b1b.co/questions")
         link.set_width(FRAME_WIDTH)
         link.to_edge(DOWN)
         self.play(Write(link))
@@ -166,11 +166,11 @@ class QuestionsLink(Scene):
 
 class Thumbnail(Scene):
     def construct(self):
-        equation = TexMobject("2^{19} = " + "{:,}".format(2**19))
+        equation = Tex("2^{19} = " + "{:,}".format(2**19))
         equation.set_width(FRAME_X_RADIUS)
         equation.to_edge(DOWN, buff = LARGE_BUFF)
 
-        q_and_a = TextMobject("Q\\&A \\\\ Round 2")
+        q_and_a = TexText("Q\\&A \\\\ Round 2")
         q_and_a.set_color_by_gradient(BLUE, YELLOW)
         q_and_a.set_width(FRAME_X_RADIUS)
         q_and_a.to_edge(UP, buff = LARGE_BUFF)

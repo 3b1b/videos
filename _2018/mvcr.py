@@ -3,7 +3,7 @@ from manim_imports_ext import *
 
 class HoldUpMultivariableChainRule(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Multivariable chain rule")
+        title = TexText("Multivariable chain rule")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         screen = ScreenRectangle()
         screen.next_to(title, DOWN)
@@ -45,10 +45,10 @@ class ComputationalNetwork(MovingCameraScene):
         self.discuss_meaning_of_result()
 
     def draw_network(self):
-        x = TexMobject("x")
-        f_formula = TexMobject("f", "=", "x", "^2")
-        g_formula = TexMobject("g", "=", "\\cos(\\pi", "x", ")")
-        h_formula = TexMobject("h", "=", "f", "^2", "g")
+        x = Tex("x")
+        f_formula = Tex("f", "=", "x", "^2")
+        g_formula = Tex("g", "=", "\\cos(\\pi", "x", ")")
+        h_formula = Tex("h", "=", "f", "^2", "g")
 
         self.tex_to_color_map = {
             "x": self.x_color,
@@ -156,7 +156,7 @@ class ComputationalNetwork(MovingCameraScene):
         self.wait()
 
     def write_dh_dx_goal(self):
-        deriv = TexMobject(
+        deriv = Tex(
             "{dh", "\\over", "dx}", "(", "2", ")"
         )
         deriv.set_color_by_tex_to_color_map(
@@ -181,7 +181,7 @@ class ComputationalNetwork(MovingCameraScene):
         values = [2, 4, 1, 16]
         value_labels = VGroup()
         for formula_group, value in zip(formula_groups, values):
-            label = TexMobject("=", str(value))
+            label = Tex("=", str(value))
             eq, value_mob = label
             eq.rotate(90 * DEGREES)
             eq.next_to(value_mob, UP, SMALL_BUFF)
@@ -318,7 +318,7 @@ class ComputationalNetwork(MovingCameraScene):
 
         deriv = self.dh_dx_at_two
 
-        expanded_formula = TexMobject(
+        expanded_formula = Tex(
             "h = x^4 \\cos(\\pi x)",
             tex_to_color_map=self.tex_to_color_map
         )
@@ -346,10 +346,10 @@ class ComputationalNetwork(MovingCameraScene):
         lines = self.graph_edges
         xf_line, xg_line, fh_line, gh_line = lines
 
-        df_dx = TexMobject("df", "\\over", "dx")
-        dg_dx = TexMobject("dg", "\\over", "dx")
-        dh_df = TexMobject("\\partial h", "\\over", "\\partial f")
-        dh_dg = TexMobject("\\partial h", "\\over", "\\partial g")
+        df_dx = Tex("df", "\\over", "dx")
+        dg_dx = Tex("dg", "\\over", "dx")
+        dh_df = Tex("\\partial h", "\\over", "\\partial f")
+        dh_dg = Tex("\\partial h", "\\over", "\\partial g")
         derivatives = VGroup(df_dx, dg_dx, dh_df, dh_dg)
 
         df_dx.next_to(xf_line.get_center(), UP, SMALL_BUFF)
@@ -408,9 +408,9 @@ class ComputationalNetwork(MovingCameraScene):
         for deriv in derivatives:
             deriv.generate_target()
         rhs = VGroup(
-            TexMobject("="),
+            Tex("="),
             df_dx.target, dh_df.target,
-            TexMobject("+"),
+            Tex("+"),
             dg_dx.target, dh_dg.target
         )
         rhs.arrange(
@@ -457,7 +457,7 @@ class ComputationalNetwork(MovingCameraScene):
                 color=TEAL
             )
 
-        del_h_sub_f = TexMobject("f")
+        del_h_sub_f = Tex("f")
         del_h_sub_f.scale(0.5)
         del_h_sub_f.next_to(del_h1.get_corner(DR), RIGHT, buff=0)
         del_h_sub_f.set_color(self.f_color)
@@ -571,7 +571,7 @@ class ComputationalNetwork(MovingCameraScene):
         formulas = self.formulas
         x, f_formula, g_formula, h_formula = formulas
 
-        full_derivative = TexMobject(
+        full_derivative = Tex(
             "=",
             "(", "2", "x", ")",
             "(", "2", "f", "g", ")",
@@ -669,7 +669,7 @@ class ComputationalNetwork(MovingCameraScene):
         full_derivative = self.full_derivative
         value_labels = self.value_labels
 
-        rhs = TexMobject(
+        rhs = Tex(
             """
             =
             (2 \\cdot 2)
@@ -685,7 +685,7 @@ class ComputationalNetwork(MovingCameraScene):
         )
         rhs.next_to(full_derivative, DOWN, aligned_edge=LEFT)
 
-        result = TexMobject("=", "32", "+", "0")
+        result = Tex("=", "32", "+", "0")
         result.next_to(rhs, DOWN, aligned_edge=LEFT)
 
         self.play(LaggedStartMap(Write, value_labels))

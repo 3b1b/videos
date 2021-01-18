@@ -32,7 +32,7 @@ class Introduction(TeacherStudentsScene):
         rect.to_edge(UP)
         randy = Randolph()
         randy.scale(0.7)
-        name = TextMobject(r"""
+        name = TexText(r"""
             Bayes' theorem \\
             disease example
         """)
@@ -57,9 +57,9 @@ class Introduction(TeacherStudentsScene):
         self.example = example
 
     def write_counter_intuitive(self):
-        bayes = TextMobject("Bayes")
-        arrow = TexMobject("\\leftrightarrow")
-        intuition = TextMobject("Intuition")
+        bayes = TexText("Bayes")
+        arrow = Tex("\\leftrightarrow")
+        intuition = TexText("Intuition")
 
         group = VGroup(bayes, arrow, intuition)
         group.arrange(RIGHT, buff = SMALL_BUFF)
@@ -117,12 +117,12 @@ class Introduction(TeacherStudentsScene):
         music_example.next_to(poker_example, RIGHT)
         examples = VGroup(poker_example, music_example)
         brace = Brace(examples, UP)
-        bayes_to_intuition = VGroup(*list(map(TextMobject, [
+        bayes_to_intuition = VGroup(*list(map(TexText, [
             "Bayes", "$\\leftrightarrow$", "Intuition"
         ])))
         bayes_to_intuition.arrange(RIGHT, buff = SMALL_BUFF)
         bayes_to_intuition.next_to(brace, UP, SMALL_BUFF)
-        check = TexMobject("\\checkmark")
+        check = Tex("\\checkmark")
         check.set_color(GREEN)
         check.next_to(bayes_to_intuition[1], UP, SMALL_BUFF)
 
@@ -155,7 +155,7 @@ class Introduction(TeacherStudentsScene):
 
     def other_culprit(self):
         bayes = self.bayes_to_intuition[0]
-        something_else = TextMobject("Something else")
+        something_else = TexText("Something else")
         something_else.set_color(YELLOW)
         something_else.set_height(bayes.get_height())
         something_else.move_to(bayes, RIGHT)
@@ -192,7 +192,7 @@ class Introduction(TeacherStudentsScene):
         cards.set_width(rect.get_width() - 2*SMALL_BUFF)
         cards.next_to(rect.get_bottom(), UP, MED_SMALL_BUFF)
 
-        probability = TexMobject(
+        probability = Tex(
             "P(", "\\text{Flush}", "|", "\\text{High bet}", ")"
         )
         probability.set_color_by_tex("Flush", RED)
@@ -215,7 +215,7 @@ class Introduction(TeacherStudentsScene):
         musician.set_height(0.7*rect.get_height())
         musician.next_to(rect.get_bottom(), UP, SMALL_BUFF)
 
-        probability = TexMobject(
+        probability = Tex(
             "P(", "\\text{Suck }", "|", "\\text{ Good review}", ")"
         )
         probability.set_color_by_tex("Suck", RED)
@@ -232,7 +232,7 @@ class Introduction(TeacherStudentsScene):
 
 class OneInOneThousandHaveDisease(Scene):
     def construct(self):
-        title = TextMobject("1 in 1{,}000")
+        title = TexText("1 in 1{,}000")
         title.to_edge(UP)
         creature = PiCreature()
         all_creatures = VGroup(*[
@@ -270,7 +270,7 @@ class OneInOneThousandHaveDisease(Scene):
 class TestScene(PiCreatureScene):
     def get_result(self, creature, word, color):
         arrow = self.get_test_arrow()
-        test_result = TextMobject(word)
+        test_result = TexText(word)
         test_result.set_color(color)
         test_result.next_to(arrow.get_end(), RIGHT)
         group = VGroup(arrow, test_result)
@@ -288,7 +288,7 @@ class TestScene(PiCreatureScene):
             LEFT, RIGHT, 
             color = WHITE,
         )
-        word = TextMobject("Test")
+        word = TexText("Test")
         word.scale(0.8)
         word.next_to(arrow, UP, buff = 0)
         arrow.add(word)
@@ -305,7 +305,7 @@ class TestDiseaseCase(TestScene):
         randy.change_mode("sick")
         randy.set_color(SICKLY_GREEN)
         result = self.get_positive_result(randy)
-        accuracy = TextMobject("100\\% Accuracy")
+        accuracy = TexText("100\\% Accuracy")
         accuracy.next_to(VGroup(randy, result), UP)
         accuracy.to_edge(UP)
 
@@ -321,7 +321,7 @@ class TestNonDiseaseCase(TestScene):
         randy.change_mode("happy")
         randy.next_to(ORIGIN, LEFT)
         result = self.get_negative_result(randy)
-        accuracy = TextMobject("99\\% Accuracy")
+        accuracy = TexText("99\\% Accuracy")
         accuracy.next_to(VGroup(randy, result), UP)
         accuracy.to_edge(UP)
 
@@ -353,7 +353,7 @@ class TestNonDiseaseCase(TestScene):
             last_guy.next_to, all_creatures, RIGHT
         )
         result = self.get_positive_result(last_guy)
-        false_positive = TextMobject("False positive")
+        false_positive = TexText("False positive")
         false_positive.scale(0.8)
         false_positive.next_to(result, UP, LARGE_BUFF)
         false_positive.to_edge(RIGHT)
@@ -373,12 +373,12 @@ class TestNonDiseaseCase(TestScene):
 
 class ReceivePositiveResults(TestScene):
     def construct(self):
-        status = TextMobject("Health status: ???")
+        status = TexText("Health status: ???")
         status.to_edge(UP)
 
         randy = self.pi_creature
         result = self.get_positive_result(randy)
-        accuracy = TextMobject("99\% Accuracy")
+        accuracy = TexText("99\% Accuracy")
         accuracy.next_to(result[1], DOWN, LARGE_BUFF)
         accuracy.set_color(YELLOW)
 
@@ -406,7 +406,7 @@ class AskAboutRephrasingQuestion(TeacherStudentsScene):
 
 class RephraseQuestion(Scene):
     def construct(self):
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             r"1 in $1{,000}$ chance \\ of having disease",
             r"1 in $100$ \\ false positive rate.",
             r"""\underline{\phantom{1 in 10}} chance \\
@@ -417,13 +417,13 @@ class RephraseQuestion(Scene):
         words.arrange(RIGHT, buff = LARGE_BUFF)
         words.set_width(2*(FRAME_X_RADIUS - MED_LARGE_BUFF))
 
-        prior = TextMobject("Prior")
+        prior = TexText("Prior")
         prior.set_color(GREEN)
         prior.next_to(words[0], UP, 1.5*LARGE_BUFF)
         prior_arrow = Arrow(prior, words[0])
         prior_arrow.set_color(prior.get_color())
 
-        posterior = TextMobject("Posterior")
+        posterior = TexText("Posterior")
         posterior.next_to(words[2], UP)
         posterior.shift(
             (prior.get_center() - posterior.get_center())[1]*UP
@@ -458,7 +458,7 @@ class TryUnitSquareVisual(SampleSpaceScene):
         prior_label = sample_space.horizontal_parts.labels[0]
         final_labels = self.final_labels
 
-        hard_to_see = TextMobject("Hard to see")
+        hard_to_see = TexText("Hard to see")
         hard_to_see.scale(0.7)
         hard_to_see.next_to(prior_label, UP)
         hard_to_see.to_edge(UP)
@@ -483,8 +483,8 @@ class TryUnitSquareVisual(SampleSpaceScene):
         sample_space.divide_horizontally(0.1)
         initial_labels, final_labels = [
             VGroup(
-                TexMobject("P(\\text{Disease})", s1),
-                TexMobject("P(\\text{Not disease})", s2),
+                Tex("P(\\text{Disease})", s1),
+                Tex("P(\\text{Not disease})", s2),
             ).scale(0.7)
             for s1, s2 in (("", ""), ("= 0.001", "= 0.999"))
         ]
@@ -498,7 +498,7 @@ class TryUnitSquareVisual(SampleSpaceScene):
         top_part, bottom_part = sample_space.horizontal_parts
 
         top_brace = Brace(top_part, UP)
-        top_label = TexMobject(
+        top_label = Tex(
             "P(", "+", "|", "\\text{Disease}", ")", "=", "1"
         )
         top_label.scale(0.7)
@@ -512,7 +512,7 @@ class TryUnitSquareVisual(SampleSpaceScene):
         bottom_part.divide_vertically(
             0.95, colors = [BLUE_E, YELLOW_E]
         )
-        bottom_label = TexMobject(
+        bottom_label = Tex(
             "P(", "+", "|", "\\text{Not disease}", ")", "=", "1"
         )
         bottom_label.scale(0.7)
@@ -546,14 +546,14 @@ class ShowRestrictedSpace(Scene):
         self.contrast_with_prior()
 
     def add_all_creatures(self):
-        title = TextMobject("$1{,}000$ individuals")
+        title = TexText("$1{,}000$ individuals")
         title.to_edge(UP)
         all_creatures = self.get_all_creatures()
         sick_one = all_creatures.sick_one
         healthy_creatures = all_creatures.healthy_creatures
 
         sick_one.save_state()
-        sick_one_words = TextMobject("1 sick")
+        sick_one_words = TexText("1 sick")
         sick_one_words.next_to(sick_one, RIGHT)
         sick_one_words.to_edge(RIGHT)
         sick_one_words.set_color(SICKLY_GREEN)
@@ -562,7 +562,7 @@ class ShowRestrictedSpace(Scene):
             color = SICKLY_GREEN
         )
 
-        healthy_words = TextMobject("999 healthy")
+        healthy_words = TexText("999 healthy")
         healthy_words.next_to(sick_one_words, UP, MED_LARGE_BUFF)
         healthy_words.shift_onto_screen()
         healthy_words.set_color(BLUE)
@@ -599,7 +599,7 @@ class ShowRestrictedSpace(Scene):
         self.healthy_ones_label = healthy_words
 
     def show_accurate_positive_result(self):
-        equation = TexMobject(
+        equation = Tex(
             "P(", "\\text{Test positive }", "|", 
             "\\text{ sick}", ")", "=", "100\\%"
         )
@@ -613,7 +613,7 @@ class ShowRestrictedSpace(Scene):
         self.disease_conditional = equation
 
     def show_false_positive_conditional(self):
-        equation = TexMobject(
+        equation = Tex(
             "P(", "\\text{Test positive }", "|", 
             "\\text{ healthy}", ")", "=", "1\\%"
         )
@@ -635,7 +635,7 @@ class ShowRestrictedSpace(Scene):
         )
         self.healthy_creatures.remove(*false_positives)
         brace = Brace(false_positives, RIGHT)
-        words = TextMobject("10 False positives")
+        words = TexText("10 False positives")
         words.scale(0.8)
         words.next_to(brace, RIGHT)
 
@@ -668,7 +668,7 @@ class ShowRestrictedSpace(Scene):
         movers.target.shift(DOWN)
         brace = Brace(VGroup(*movers.target[1:]))
 
-        words = TextMobject("You are one of these")
+        words = TexText("You are one of these")
         words.to_edge(UP)
         arrows = [
             Arrow(words.get_bottom(), movers.target[i].get_top())
@@ -693,7 +693,7 @@ class ShowRestrictedSpace(Scene):
         self.brace = brace
 
     def show_posterior_probability(self):
-        posterior = TexMobject(
+        posterior = Tex(
             "P(", "\\text{Sick }", "|", 
             "\\text{ Positive test result}", ")",
             "\\approx \\frac{1}{11}", "\\approx 9\\%"
@@ -709,7 +709,7 @@ class ShowRestrictedSpace(Scene):
         self.posterior = posterior
 
     def contrast_with_prior(self):
-        prior = TexMobject(
+        prior = Tex(
             "P(", "\\text{Sick}", ")", "= 0.1\\%"
         )
         prior.set_color_by_tex("Sick", SICKLY_GREEN)
@@ -724,7 +724,7 @@ class ShowRestrictedSpace(Scene):
             prior.get_right(), self.posterior.get_right(),
             path_arc = -np.pi,
         )
-        times_90 = TexMobject("\\times 90")
+        times_90 = Tex("\\times 90")
         times_90.next_to(arrow, RIGHT)
         self.play(ShowCreation(arrow))
         self.play(Write(times_90, run_time = 1))
@@ -760,19 +760,19 @@ class DepressingForMedicalTestDesigners(TestScene):
         self.reject_test()
 
     def show_99_percent_accuracy(self):
-        title = TextMobject("99\\% Accuracy")
+        title = TexText("99\\% Accuracy")
         title.to_edge(UP)
         title.generate_target()
         title.target.to_corner(UP+LEFT)
 
         checks = VGroup(*[
             VGroup(*[
-                TexMobject("\\checkmark").set_color(GREEN)
+                Tex("\\checkmark").set_color(GREEN)
                 for y in range(10)
             ]).arrange(DOWN)
             for x in range(10)
         ]).arrange(RIGHT)
-        cross = TexMobject("\\times")
+        cross = Tex("\\times")
         cross.replace(checks[-1][-1])
         cross.set_color(RED)
         Transform(checks[-1][-1], cross).update(1)
@@ -889,7 +889,7 @@ class ShowTheFormula(TeacherStudentsScene):
         scale_factor = 0.7
         sick = "\\text{sick}"
         positive = "\\text{positive}"
-        formula = TexMobject(
+        formula = Tex(
             "P(", sick, "\\,|\\,", positive, ")", "=",
             "{\\quad P(", sick, "\\text{ and }", positive, ") \\quad",
             "\\over",
@@ -918,7 +918,7 @@ class ShowTheFormula(TeacherStudentsScene):
         )
         numerator_rect = SurroundingRectangle(numerator)
 
-        alt_numerator = TexMobject(
+        alt_numerator = Tex(
             "P(", sick, ")", "P(", positive, "\\,|\\,", sick, ")"
         )
         alt_numerator.scale(scale_factor)
@@ -926,7 +926,7 @@ class ShowTheFormula(TeacherStudentsScene):
 
         number_fraction = VGroup(*formula[equals_indices[-1]:])
 
-        rhs = TexMobject("\\approx 0.09")
+        rhs = Tex("\\approx 0.09")
         rhs.scale(scale_factor)
         rhs.move_to(equals_group[-1], LEFT)
         rhs.set_color(YELLOW)
@@ -1000,9 +1000,9 @@ class SourceOfConfusion(Scene):
         self.shift_arrow()
 
     def add_progression(self):
-        prior = TexMobject("P(", "S", ")", "= 0.001")
+        prior = Tex("P(", "S", ")", "= 0.001")
         arrow = Arrow(ORIGIN, self.arrow_width*RIGHT)
-        posterior = TexMobject("P(", "S", "|", "+", ")", "= 0.09")
+        posterior = Tex("P(", "S", "|", "+", ")", "= 0.09")
         for mob in prior, posterior:
             mob.set_color_by_tex("S", SICKLY_GREEN)
             mob.set_color_by_tex("+", YELLOW)
@@ -1010,7 +1010,7 @@ class SourceOfConfusion(Scene):
         progression.arrange(RIGHT)
         progression.shift(DOWN)
 
-        bayes_rule_words = TextMobject("Bayes' rule")
+        bayes_rule_words = TexText("Bayes' rule")
         bayes_rule_words.next_to(arrow, UP, buff = 0)
         arrow.add(bayes_rule_words)
 
@@ -1024,7 +1024,7 @@ class SourceOfConfusion(Scene):
         self.bayes_rule_words = bayes_rule_words
 
     def ask_question(self):
-        question = TextMobject(
+        question = TexText(
             "Where do math and \\\\ intuition disagree?"
         )
         question.to_corner(UP+LEFT)
@@ -1044,7 +1044,7 @@ class SourceOfConfusion(Scene):
     def write_bayes_rule(self):
         words = self.bayes_rule_words
         words_rect = SurroundingRectangle(words)
-        rule = TexMobject(
+        rule = Tex(
             "P(", "S", "|", "+", ")", "=", 
             "P(", "S", ")", 
             "{P(", "+", "|", "S", ")", "\\over",
@@ -1090,7 +1090,7 @@ class StatisticsVsEmpathy(PiCreatureScene):
             sick_one, VectorizedPoint(sick_one.get_bottom())
         )
         priors = VGroup(*[
-            TexMobject("%.1f"%p+ "\\%").move_to(ORIGIN, RIGHT)
+            Tex("%.1f"%p+ "\\%").move_to(ORIGIN, RIGHT)
             for p in np.arange(0.1, 2.0, 0.1)
         ])
         priors.next_to(randy, UP+LEFT, LARGE_BUFF)
@@ -1128,7 +1128,7 @@ class StatisticsVsEmpathy(PiCreatureScene):
         )
         self.wait()
 
-        probably_me = TextMobject("That's probably \\\\ me")
+        probably_me = TexText("That's probably \\\\ me")
         probably_me.next_to(sick_one, DOWN)
         target_sick_group = VGroup(
             sick_one.copy(),
@@ -1157,8 +1157,8 @@ class StatisticsVsEmpathy(PiCreatureScene):
 
 class LessMedicalExample(Scene):
     def construct(self):
-        disease = TexMobject("P(\\text{Having a disease})")
-        telepathy = TexMobject("P(\\text{Telepathy})")
+        disease = Tex("P(\\text{Having a disease})")
+        telepathy = Tex("P(\\text{Telepathy})")
         cross = Cross(disease)
 
         self.add(disease)
@@ -1172,12 +1172,12 @@ class LessMedicalExample(Scene):
 
 class PlaneCrashProbability(Scene):
     def construct(self):
-        plane_prob = TexMobject(
+        plane_prob = Tex(
             "P(\\text{Dying in a }", "\\text{plane}", "\\text{ crash})", 
             "\\approx", "1/", "11{,}000{,}000"
         )
         plane_prob.set_color_by_tex("plane", BLUE)
-        car_prob = TexMobject(
+        car_prob = Tex(
             "P(\\text{Dying in a }", "\\text{car}", "\\text{ crash})", 
             "\\approx", "1/", "5{,}000"
         )
@@ -1210,7 +1210,7 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
 
     def show_mind_reading_powers(self):
         randy, morty = self.randy, self.morty
-        title = TextMobject("1 in 1{,}000 read minds")
+        title = TexText("1 in 1{,}000 read minds")
         title.to_edge(UP)
 
         self.add(title)
@@ -1271,7 +1271,7 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
         self.wait()
 
     def ask_about_chances(self):
-        probability = TexMobject(
+        probability = Tex(
             "P(", "\\text{Telepath }", "|", "\\text{ Correct}", ")",
             "=", "???"
         )
@@ -1346,18 +1346,18 @@ class CompareNumbersInBothExamples(Scene):
         h_line.to_edge(UP, buff = 1.25*LARGE_BUFF)
         titles = VGroup()
         for word, vect in ("Disease", LEFT), ("Telepathy", RIGHT):
-            title = TextMobject("%s example"%word)
+            title = TexText("%s example"%word)
             title.shift(vect*FRAME_X_RADIUS/2.0)
             title.to_edge(UP)
             titles.add(title)
         priors = VGroup(*[
-            TexMobject(
+            Tex(
                 "P(", "\\text{%s}"%s, ")", "= 1/1{,}000}"
             )
             for s in ("Sick", "Powers")
         ])
         likelihoods = VGroup(*[
-            TexMobject(
+            Tex(
                 "P(", "\\text{%s}"%s1, "|", 
                 "\\text{Not }", "\\text{%s}"%s2, ")",
                 "=", "1/100"
@@ -1390,7 +1390,7 @@ class NonchalantReactionToPositiveTest(TestScene):
         randy = self.pi_creature
         randy.shift(DOWN+2*RIGHT)
         result = self.get_positive_result(randy)
-        accuracy = TextMobject("99\\% Accuracy")
+        accuracy = TexText("99\\% Accuracy")
         accuracy.set_color(YELLOW)
         accuracy.next_to(result, DOWN, LARGE_BUFF, RIGHT)
 
@@ -1398,7 +1398,7 @@ class NonchalantReactionToPositiveTest(TestScene):
         self.play(Write(result, run_time = 2))
         self.play(randy.change, "pondering", result)
         self.wait()
-        words = TextMobject("Pssht, I'm probably fine.")
+        words = TexText("Pssht, I'm probably fine.")
         words.scale(0.8)
         self.pi_creature_says(
             words,
@@ -1427,7 +1427,7 @@ class ExampleMeasuresDisbeliefInStatistics(Introduction):
         bayes_to_intuition = self.bayes_to_intuition
         cross = bayes_to_intuition[-1]
         bayes_to_intuition.remove(cross)
-        statistics_to_belief = TextMobject(
+        statistics_to_belief = TexText(
             "Statistics ", "$\\leftrightarrow$", " Belief"
         )
         statistics_to_belief.scale(0.8)
@@ -1485,7 +1485,7 @@ class AlwaysPictureTheSpaceOfPossibilities(PiCreatureScene):
 
 class Thumbnail(Scene):
     def construct(self):
-        title = TextMobject("Why is this \\\\ counterintuitive?")
+        title = TexText("Why is this \\\\ counterintuitive?")
         title.scale(2)
         title.to_edge(UP)
 
@@ -1495,7 +1495,7 @@ class Thumbnail(Scene):
         randy.shift(3*LEFT)
         randy.to_edge(DOWN)
 
-        prob = TexMobject("P(", "\\text{Sick}", "|", "\\text{Test+}", ")")
+        prob = Tex("P(", "\\text{Sick}", "|", "\\text{Test+}", ")")
         prob.scale(2)
         prob.set_color_by_tex("Sick", YELLOW)
         prob.set_color_by_tex("Test", GREEN)

@@ -44,21 +44,21 @@ class AboutSpaceFillingCurves(TransformOverIncreasingOrders):
         self.wait()
 
     def show_infinite_objects(self):
-        sigma, summand, equals, result = TexMobject([
+        sigma, summand, equals, result = Tex([
             "\\sum_{n = 1}^{\\infty}",
             "\\dfrac{1}{n^2}",
             "=",
             "\\dfrac{\pi^2}{6}"
         ]).split()
-        alt_summand = TexMobject("n").replace(summand)
-        alt_result = TexMobject("-\\dfrac{1}{12}").replace(result)
+        alt_summand = Tex("n").replace(summand)
+        alt_result = Tex("-\\dfrac{1}{12}").replace(result)
 
-        rationals, other_equals, naturals = TexMobject([
+        rationals, other_equals, naturals = Tex([
             "|\\mathds{Q}|",
             "=",
             "|\\mathds{N}|"
         ]).scale(2).split()
-        infinity = TexMobject("\\infty").scale(2)
+        infinity = Tex("\\infty").scale(2)
         local_mobjects = list(filter(
             lambda m : isinstance(m, Mobject),
             list(locals().values()),
@@ -92,10 +92,10 @@ class AboutSpaceFillingCurves(TransformOverIncreasingOrders):
         self.add(self.bubble)
 
     def pose_question(self):
-        infinity, rightarrow, N = TexMobject([
+        infinity, rightarrow, N = Tex([
             "\\infty", "\\rightarrow", "N"
         ]).scale(2).split()
-        question_mark = TextMobject("?").scale(2)
+        question_mark = TexText("?").scale(2)
 
         self.add(question_mark)
         self.wait()
@@ -111,7 +111,7 @@ class AboutSpaceFillingCurves(TransformOverIncreasingOrders):
 
 class PostponePhilosophizing(Scene):
     def construct(self):
-        abstract, arrow, concrete = TextMobject([
+        abstract, arrow, concrete = TexText([
             "Abstract", " $\\rightarrow$ ", "Concrete"
         ]).scale(2).split()
 
@@ -130,7 +130,7 @@ class PostponePhilosophizing(Scene):
 class GrowHilbertWithName(Scene):
     def construct(self):
         curve = HilbertCurve(order = 1)
-        words = TextMobject("``Hilbert Curve''")
+        words = TexText("``Hilbert Curve''")
         words.to_edge(UP, buff = 0.2)
         self.play(
             ShimmerIn(words),
@@ -146,7 +146,7 @@ class GrowHilbertWithName(Scene):
 
 class SectionOne(Scene):
     def construct(self):
-        self.add(TextMobject("Section 1: Seeing with your ears"))
+        self.add(TexText("Section 1: Seeing with your ears"))
         self.wait()
 
 class WriteSomeSoftware(Scene):
@@ -184,7 +184,7 @@ class ImageToSound(Scene):
 
 class LinksInDescription(Scene):
     def construct(self):
-        text = TextMobject("""
+        text = TexText("""
             See links in the description for more on
             sight via sound.
         """)
@@ -202,7 +202,7 @@ class ImageDataIsTwoDimensional(Scene):
         self.add(image)
         for vect, num in zip([DOWN, RIGHT], [1, 2]):
             brace = Brace(image, vect)
-            words_mob = TextMobject("Dimension %d"%num)
+            words_mob = TexText("Dimension %d"%num)
             words_mob.next_to(image, vect, buff = 1)
             self.play(
                 Transform(Point(brace.get_center()), brace),
@@ -241,7 +241,7 @@ class SoundDataIsOneDimensional(Scene):
         freq_line.shift(floor)
         freq_line.sort_points(get_norm)
         brace = Brace(freq_line, UP)
-        words = TextMobject("Range of frequency values")
+        words = TexText("Range of frequency values")
         words.next_to(brace, UP)
 
 
@@ -286,7 +286,7 @@ class GridOfPixels(Scene):
             mob.replace(grid, stretch = True)
         side_brace = Brace(low_res, LEFT)
         top_brace = Brace(low_res, UP)
-        top_words = TextMobject("256 Px", size = "\\normal")
+        top_words = TexText("256 Px", size = "\\normal")
         side_words = top_words.copy().rotate(np.pi/2)
         top_words.next_to(top_brace, UP)
         side_words.next_to(side_brace, LEFT)
@@ -315,7 +315,7 @@ class ShowFrequencySpace(Scene):
         self.add(freq_line)
         self.wait()
         for tex, vect in zip(["20 Hz", "20{,}000 Hz"], [LEFT, RIGHT]):
-            tex_mob = TextMobject(tex)
+            tex_mob = TexText(tex)
             tex_mob.to_edge(vect)
             tex_mob.shift(UP)
             arrow = Arrow(tex_mob, freq_line.get_edge_center(vect))
@@ -422,7 +422,7 @@ class ListenToAllPixels(Scene):
             )
             for n in range(4)
         ]
-        words = TexMobject("&\\vdots \\\\ \\text{thousands }& \\text{of frequencies} \\\\ &\\vdots")
+        words = Tex("&\\vdots \\\\ \\text{thousands }& \\text{of frequencies} \\\\ &\\vdots")
         words.to_edge(UP, buff = 0.1)
 
         self.add(grid)
@@ -455,7 +455,7 @@ class ListenToAllPixels(Scene):
 
 class LayAsideSpeculation(Scene):
     def construct(self):
-        words = TextMobject("Would this actually work?")
+        words = TexText("Would this actually work?")
         grid = get_grid()
         grid.set_width(6)
         grid.to_edge(LEFT)
@@ -508,13 +508,13 @@ class RandomMapping(Scene):
 
 class DataScrambledAnyway(Scene):
     def construct(self):
-        self.add(TextMobject("Data is scrambled anyway, right?"))
+        self.add(TexText("Data is scrambled anyway, right?"))
         self.wait()
         
 
 class LeverageExistingIntuitions(Scene):
     def construct(self):
-        self.add(TextMobject("Leverage existing intuitions"))
+        self.add(TexText("Leverage existing intuitions"))
         self.wait()
 
 
@@ -640,7 +640,7 @@ class WellPlayedGameOfSnake(Scene):
     def construct(self):
         grid = Grid(16, 16).fade()
         snake_curve = SnakeCurve(order = 4)
-        words = TextMobject("``Snake Curve''")
+        words = TexText("``Snake Curve''")
         words.next_to(grid, UP)
 
         self.add(grid)
@@ -669,7 +669,7 @@ class TellMathematicianFriend(Scene):
         bubble.write("Well, no, it \\emph{is} just one thing, but I need \\\\ \
                       to tell you about a certain infinite family first.")
         words3 =  bubble.content
-        description = TextMobject("Mathematician friend", size = "\\small")
+        description = TexText("Mathematician friend", size = "\\small")
         description.next_to(mathy, buff = 2)
         arrow = Arrow(description, mathy)
 
@@ -711,8 +711,8 @@ class TellMathematicianFriend(Scene):
 
 class Order1PseudoHilbertCurve(Scene):
     def construct(self):
-        words, s = TextMobject(["Pseudo-Hilbert Curve", "s"]).split()
-        pre_words = TextMobject("Order 1")
+        words, s = TexText(["Pseudo-Hilbert Curve", "s"]).split()
+        pre_words = TexText("Order 1")
         pre_words.next_to(words, LEFT, buff = 0.5)
         s.next_to(words, RIGHT, buff = 0.05, aligned_edge = DOWN)
         cluster = Mobject(pre_words, words, s)
@@ -744,7 +744,7 @@ class Order1PseudoHilbertCurve(Scene):
 
 class Order2PseudoHilbertCurve(Scene):
     def construct(self):
-        words = TextMobject("Order 2 Pseudo-Hilbert Curve")
+        words = TexText("Order 2 Pseudo-Hilbert Curve")
         words.to_edge(UP, buff = 0.3)
         words.set_color(GREEN)
         grid2 = Grid(2, 2)
@@ -790,7 +790,7 @@ class Order2PseudoHilbertCurve(Scene):
 
 class Order3PseudoHilbertCurve(Scene):
     def construct(self):
-        words = TextMobject("Order 3 Pseudo-Hilbert Curve")
+        words = TexText("Order 3 Pseudo-Hilbert Curve")
         words.set_color(GREEN)
         words.to_edge(UP)
         grid4 = Mobject(
@@ -874,7 +874,7 @@ class UseOrder8(Scene):
     def construct(self):
         mathy, bubble = get_mathy_and_bubble()
         bubble.write("For a 256x256 pixel array...")
-        words = TextMobject("Order 8 Pseudo-Hilbert Curve")
+        words = TexText("Order 8 Pseudo-Hilbert Curve")
         words.set_color(GREEN)
         words.to_edge(UP, buff = 0.3)
         curve = HilbertCurve(order = 8)
@@ -906,8 +906,8 @@ class HilbertBetterThanSnakeQ(Scene):
             curve.to_edge(LEFT)
         for curve in snake_curves:
             curve.to_edge(RIGHT)
-        greater_than = TexMobject(">")
-        question_mark = TextMobject("?")
+        greater_than = Tex(">")
+        question_mark = TexText("?")
         question_mark.next_to(greater_than, UP)
 
         self.add(greater_than, question_mark)
@@ -923,7 +923,7 @@ class HilbertBetterThanSnakeQ(Scene):
 
 class ImagineItWorks(Scene):
     def construct(self):
-        self.add(TextMobject("Imagine your project succeeds..."))
+        self.add(TexText("Imagine your project succeeds..."))
         self.wait()
 
 
@@ -954,8 +954,8 @@ class IncreaseResolution(Scene):
         grid = grids[0]
         side_brace = Brace(grid, LEFT)
         top_brace = Brace(grid, UP)
-        top_words = TextMobject("256")
-        new_top_words = TextMobject("512")
+        top_words = TexText("256")
+        new_top_words = TexText("512")
         side_words = top_words.copy()
         new_side_words = new_top_words.copy()
         for words in top_words, new_top_words:
@@ -1045,8 +1045,8 @@ class TrackSpecificSnakeCurvePoint(TrackSpecificCurvePoint):
 
 class NeedToRelearn(Scene):
     def construct(self):
-        top_words = TextMobject("Different pixel-frequency association")
-        bottom_words = TextMobject("Need to relearn sight-via-sound")
+        top_words = TexText("Different pixel-frequency association")
+        bottom_words = TexText("Need to relearn sight-via-sound")
         top_words.shift(UP)
         bottom_words.shift(DOWN)
         arrow = Arrow(top_words, bottom_words)

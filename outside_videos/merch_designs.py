@@ -73,7 +73,7 @@ class SquareWave(Scene):
         waves.to_edge(UP)
         self.add(waves)
 
-        tex_mob = TexMobject("""
+        tex_mob = Tex("""
             {4 \\over \\pi}
             \\sum_{n=1,3,5,\\dots} {1 \\over n}\\sin(n\\pi x)
         """)

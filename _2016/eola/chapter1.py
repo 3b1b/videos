@@ -23,13 +23,13 @@ class ComputerScientist(PiCreature):
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "``The introduction of numbers as \\\\ coordinates is an act of violence.''",
         )
         words.to_edge(UP)    
         for mob in words.submobjects[27:27+11]:
             mob.set_color(GREEN)
-        author = TextMobject("-Hermann Weyl")
+        author = TexText("-Hermann Weyl")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -45,9 +45,9 @@ class DifferentConceptions(Scene):
         mathy = Mathematician(mode = "pondering")        
         compy = ComputerScientist()
         creatures = [physy, compy, mathy]
-        physy.title = TextMobject("Physics student").to_corner(DOWN+LEFT)
-        compy.title = TextMobject("CS student").to_corner(DOWN+RIGHT)
-        mathy.title = TextMobject("Mathematician").to_edge(DOWN)
+        physy.title = TexText("Physics student").to_corner(DOWN+LEFT)
+        compy.title = TexText("CS student").to_corner(DOWN+RIGHT)
+        mathy.title = TexText("Mathematician").to_edge(DOWN)
         names = VMobject(physy.title, mathy.title, compy.title)
         names.arrange(RIGHT, buff = 1)
         names.to_corner(DOWN+LEFT)
@@ -72,7 +72,7 @@ class DifferentConceptions(Scene):
         labels = VMobject(*plane.get_coordinate_labels())
         vector = Vector(RIGHT+2*UP, color = YELLOW)
         coordinates = vector_coordinate_label(vector)
-        symbol = TexMobject("\\vec{\\textbf{v}}")
+        symbol = Tex("\\vec{\\textbf{v}}")
         symbol.shift(0.5*(RIGHT+UP))
 
         self.play(ShowCreation(
@@ -106,18 +106,18 @@ class DifferentConceptions(Scene):
         vector = Vector(2*RIGHT)
         vector.next_to(physy, UP+RIGHT)
         brace = Brace(vector, DOWN)
-        length = TextMobject("Length")
+        length = TexText("Length")
         length.next_to(brace, DOWN)
         group = VMobject(vector, brace, length)
         group.rotate(np.pi/6)
         vector.get_center = lambda : vector.get_start()        
 
-        direction = TextMobject("Direction")
+        direction = TexText("Direction")
         direction.next_to(vector, RIGHT)
         direction.shift(UP)
 
-        two_dimensional = TextMobject("Two-dimensional")
-        three_dimensional = TextMobject("Three-dimensional")
+        two_dimensional = TexText("Two-dimensional")
+        three_dimensional = TexText("Three-dimensional")
         two_dimensional.to_corner(UP+RIGHT)
         three_dimensional.to_corner(UP+RIGHT)
 
@@ -179,7 +179,7 @@ class DifferentConceptions(Scene):
         self.fade_all_but(creatures, 1)
         physy, compy, mathy = creatures
 
-        title = TextMobject("Vectors $\\Leftrightarrow$ lists of numbers")
+        title = TexText("Vectors $\\Leftrightarrow$ lists of numbers")
         title.to_edge(UP)
 
         vectors = VMobject(*list(map(matrix_to_mobject, [
@@ -207,10 +207,10 @@ class DifferentConceptions(Scene):
         house.set_fill(BLUE_C, opacity = 1)
         house.set_height(3)
         house.center()
-        square_footage_words = TextMobject("Square footage:")
-        price_words = TextMobject("Price: ")
-        square_footage = TexMobject("2{,}600\\text{ ft}^2")
-        price = TextMobject("\\$300{,}000")
+        square_footage_words = TexText("Square footage:")
+        price_words = TexText("Price: ")
+        square_footage = Tex("2{,}600\\text{ ft}^2")
+        price = TexText("\\$300{,}000")
 
         house.to_edge(LEFT).shift(UP)
         square_footage_words.next_to(house, RIGHT)
@@ -226,16 +226,16 @@ class DifferentConceptions(Scene):
         vector = Matrix([square_footage.copy(), price.copy()])
         vector.next_to(house, RIGHT).shift(0.25*UP)
         new_square_footage, new_price = vector.get_mob_matrix().flatten()
-        not_equals = TexMobject("\\ne")
+        not_equals = Tex("\\ne")
         not_equals.next_to(vector)
         alt_vector = Matrix([
-            TextMobject("300{,}000\\text{ ft}^2").set_color(RED),
-            TextMobject("\\$2{,}600").set_color(GREEN)
+            TexText("300{,}000\\text{ ft}^2").set_color(RED),
+            TexText("\\$2{,}600").set_color(GREEN)
         ])
         alt_vector.next_to(not_equals)
 
         brace = Brace(vector, RIGHT)
-        two_dimensional = TextMobject("2 dimensional")
+        two_dimensional = TexText("2 dimensional")
         two_dimensional.next_to(brace)
         brackets = vector.get_brackets()
 
@@ -300,19 +300,19 @@ class DifferentConceptions(Scene):
         w_array = matrix_to_mobject([2, 1])
         sum_array = matrix_to_mobject(["3+2", "-5+1"])
         arrays = VMobject(
-            v_array, TexMobject("+"), w_array, TexMobject("="), sum_array
+            v_array, Tex("+"), w_array, Tex("="), sum_array
         )
         arrays.arrange(RIGHT)
         arrays.scale(0.75)
         arrays.to_edge(RIGHT).shift(UP)
 
-        v_sym = TexMobject("\\vec{\\textbf{v}}")
-        w_sym = TexMobject("\\vec{\\textbf{w}}")
-        syms = VMobject(v_sym, TexMobject("+"), w_sym)
+        v_sym = Tex("\\vec{\\textbf{v}}")
+        w_sym = Tex("\\vec{\\textbf{w}}")
+        syms = VMobject(v_sym, Tex("+"), w_sym)
         syms.arrange(RIGHT)
         syms.center().shift(2*UP)
 
-        statement = TextMobject("We'll ignore him \\\\ for now")
+        statement = TexText("We'll ignore him \\\\ for now")
         statement.set_color(PINK)
         statement.set_width(arrays.get_width())
         statement.next_to(arrays, DOWN, buff = 1.5)
@@ -343,24 +343,24 @@ class DifferentConceptions(Scene):
 
     def add_scaling(self, arrows, syms, arrays):
         s_arrows = VMobject(
-            TexMobject("2"), Vector([1, 1]).set_color(YELLOW), 
-            TexMobject("="), Vector([2, 2]).set_color(WHITE)
+            Tex("2"), Vector([1, 1]).set_color(YELLOW), 
+            Tex("="), Vector([2, 2]).set_color(WHITE)
         )
         s_arrows.arrange(RIGHT)
         s_arrows.scale(0.75)
         s_arrows.next_to(arrows, DOWN)
 
         s_arrays = VMobject(
-            TexMobject("2"), 
+            Tex("2"), 
             matrix_to_mobject([3, -5]).set_color(YELLOW),
-            TextMobject("="),
+            TexText("="),
             matrix_to_mobject(["2(3)", "2(-5)"])
         )
         s_arrays.arrange(RIGHT)
         s_arrays.scale(0.75)
         s_arrays.next_to(arrays, DOWN)
 
-        s_syms = TexMobject(["2", "\\vec{\\textbf{v}}"])
+        s_syms = Tex(["2", "\\vec{\\textbf{v}}"])
         s_syms.split()[-1].set_color(YELLOW)
         s_syms.next_to(syms, DOWN)
 
@@ -409,13 +409,13 @@ class HelpsToHaveOneThought(Scene):
         randy = randys.split()[1]
 
         speech_bubble = morty.get_bubble(SpeechBubble)
-        words = TextMobject("Think of some vector...")
+        words = TexText("Think of some vector...")
         speech_bubble.position_mobject_inside(words)
         thought_bubble = randy.get_bubble()
         arrow = Vector([2, 1]).scale(0.7)
-        or_word = TextMobject("or")
+        or_word = TexText("or")
         array = Matrix([2, 1]).scale(0.5)
-        q_mark = TextMobject("?")
+        q_mark = TexText("?")
         thought = VMobject(arrow, or_word, array, q_mark)
         thought.arrange(RIGHT, buff = 0.2)
         thought_bubble.position_mobject_inside(thought)
@@ -454,7 +454,7 @@ class HowIWantYouToThinkAboutVectors(Scene):
 
         dot = Dot(radius = 0.1)
         dot.set_color(RED)
-        tail_word = TextMobject("Tail")
+        tail_word = TexText("Tail")
         tail_word.shift(0.5*DOWN+2.5*LEFT)
         line = Line(tail_word, dot)
 
@@ -536,13 +536,13 @@ class CoordinateSystemWalkthrough(VectorScene):
         tick_marks = VMobject(x_tick_marks, y_tick_marks)
         tick_marks.set_color(WHITE)
         plane_lines = [m for m in plane.get_family() if isinstance(m, Line)]
-        origin_words = TextMobject("Origin")
+        origin_words = TexText("Origin")
         origin_words.shift(2*UP+2*LEFT)
         dot = Dot(radius = 0.1).set_color(RED)
         line = Line(origin_words.get_bottom(), dot.get_corner(UP+LEFT))
 
         unit_brace = Brace(Line(RIGHT, 2*RIGHT))
-        one = TexMobject("1").next_to(unit_brace, DOWN)
+        one = Tex("1").next_to(unit_brace, DOWN)
 
         self.add(x_axis, x_label)
         self.wait()
@@ -599,7 +599,7 @@ class CoordinateSystemWalkthrough(VectorScene):
         y_label_copy.set_color(Y_COLOR)
 
         point = Dot(4*LEFT+2*UP)
-        point_word = TextMobject("(-4, 2) as \\\\ a point")
+        point_word = TexText("(-4, 2) as \\\\ a point")
         point_word.scale(0.7)
         point_word.next_to(point, DOWN)
         point.add(point_word)
@@ -632,7 +632,7 @@ class LabeledThreeDVector(Scene):
 
 class WriteZ(Scene):
     def construct(self):
-        z = TexMobject("z").set_color(Z_COLOR)
+        z = Tex("z").set_color(Z_COLOR)
         z.set_height(4)
         self.play(Write(z, run_time = 2))
         self.wait(3)
@@ -676,8 +676,8 @@ class VectorAddition(VectorScene):
         return v1, v2, v_sum
 
     def ask_why(self, v1, v2, v_sum):
-        why = TextMobject("Why?")
-        why_not_this = TextMobject("Why not \\\\ this?")
+        why = TexText("Why?")
+        why_not_this = TexText("Why not \\\\ this?")
         new_v2 = v2.copy().shift(-v2.get_start())
         new_v_sum = v_sum.copy()
         alt_vect_sum = new_v2.get_end() - v1.get_end()
@@ -743,13 +743,13 @@ class AddingNumbersOnNumberLine(Scene):
         seven_vect.shift(0.5*DOWN)
         vects = [two_vect, five_vect, seven_vect]
 
-        two, five, seven = list(map(TexMobject, ["2", "5", "7"]))
+        two, five, seven = list(map(Tex, ["2", "5", "7"]))
         two.next_to(two_vect, UP)
         five.next_to(five_vect, UP)
         seven.next_to(seven_vect, DOWN)
         nums = [two, five, seven]
 
-        sum_mob = TexMobject("2 + 5").shift(3*UP)
+        sum_mob = Tex("2 + 5").shift(3*UP)
 
         self.play(ShowCreation(number_line))
         self.wait()
@@ -765,8 +765,8 @@ class AddingNumbersOnNumberLine(Scene):
 
 class VectorAdditionNumerically(VectorScene):
     def construct(self):
-        plus = TexMobject("+")
-        equals = TexMobject("=")
+        plus = Tex("+")
+        equals = Tex("=")
         randy = Randolph()
         randy.set_height(1)
         randy.shift(-randy.get_bottom())
@@ -810,8 +810,8 @@ class VectorAdditionNumerically(VectorScene):
         self.remove(randy)
         one_brace = Brace(x_line1)
         three_brace = Brace(x_line2)
-        one = TexMobject("1").next_to(one_brace, DOWN)
-        three = TexMobject("3").next_to(three_brace, DOWN)
+        one = Tex("1").next_to(one_brace, DOWN)
+        three = Tex("3").next_to(three_brace, DOWN)
         self.play(
             GrowFromCenter(one_brace),
             GrowFromCenter(three_brace),
@@ -822,10 +822,10 @@ class VectorAdditionNumerically(VectorScene):
         self.wait()
 
         two_brace = Brace(y_line1, RIGHT)
-        two = TexMobject("2").next_to(two_brace, RIGHT)
+        two = Tex("2").next_to(two_brace, RIGHT)
         new_y_line = Line(4*RIGHT, 4*RIGHT+UP, color = Y_COLOR)
         two_minus_one_brace = Brace(new_y_line, RIGHT)
-        two_minus_one = TexMobject("2+(-1)").next_to(two_minus_one_brace, RIGHT)
+        two_minus_one = Tex("2+(-1)").next_to(two_minus_one_brace, RIGHT)
         self.play(
             GrowFromCenter(two_brace),
             Write(two, run_time = 1)
@@ -859,7 +859,7 @@ class VectorAdditionNumerically(VectorScene):
         self.wait(2)
 
         starters = [x1, y1, x2, y2, sum_x_start, sum_y_start]
-        variables = list(map(TexMobject, [
+        variables = list(map(Tex, [
             "x_1", "y_1", "x_2", "y_2", "x_1+y_1", "x_2+y_2"
         ]))
         for i, (var, starter) in enumerate(zip(variables, starters)):
@@ -889,9 +889,9 @@ class VectorAdditionNumerically(VectorScene):
 
 class MultiplicationByANumberIntro(Scene):
     def construct(self):
-        v = TexMobject("\\vec{\\textbf{v}}")
+        v = Tex("\\vec{\\textbf{v}}")
         v.set_color(YELLOW)
-        nums = list(map(TexMobject, ["2", "\\dfrac{1}{3}", "-1.8"]))
+        nums = list(map(Tex, ["2", "\\dfrac{1}{3}", "-1.8"]))
         for mob in [v] + nums:
             mob.scale(1.5)
 
@@ -935,7 +935,7 @@ class ShowScalarMultiplication(VectorScene):
             add_to_vector = False
         )
         self.remove(label)
-        factor_mob = TexMobject(factor_tex)
+        factor_mob = Tex(factor_tex)
         if factor_mob.get_height() > 1:
             factor_mob.set_height(0.9)
         if factor_mob.get_width() > 1:
@@ -968,14 +968,14 @@ class ShowScalarMultiplication(VectorScene):
         long_v = Vector(2*v.get_end())
         long_minus_v = Vector(-2*v.get_end())
         original_v = v.copy()
-        scaling_word = TextMobject("``Scaling''").to_corner(UP+LEFT)
+        scaling_word = TexText("``Scaling''").to_corner(UP+LEFT)
         scaling_word.shift(2*RIGHT)
-        scalars = VMobject(*list(map(TexMobject, [
+        scalars = VMobject(*list(map(Tex, [
             "2,", "\\dfrac{1}{3},", "-1.8,", "\\dots"
         ])))
         scalars.arrange(RIGHT, buff = 0.4)
         scalars.next_to(scaling_word, DOWN, aligned_edge = LEFT)
-        scalars_word = TextMobject("``Scalars''")
+        scalars_word = TexText("``Scalars''")
         scalars_word.next_to(scalars, DOWN, aligned_edge = LEFT)
 
         self.remove(plane)
@@ -994,8 +994,8 @@ class ShowScalarMultiplication(VectorScene):
 
 class ScalingNumerically(VectorScene):
     def construct(self):
-        two_dot = TexMobject("2\\cdot")
-        equals = TexMobject("=")
+        two_dot = Tex("2\\cdot")
+        equals = Tex("=")
         self.add_axes()
         v = self.add_vector([3, 1])
         v_coords, vx_line, vy_line = self.vector_to_coords(v, clean_up = False)
@@ -1019,8 +1019,8 @@ class ScalingNumerically(VectorScene):
 
         x, y = v_coords.get_mob_matrix().flatten()
         two_v_elems = two_v_coords.get_mob_matrix().flatten()
-        x_sym, y_sym = list(map(TexMobject, ["x", "y"]))
-        two_x_sym, two_y_sym = list(map(TexMobject, ["2x", "2y"]))
+        x_sym, y_sym = list(map(Tex, ["x", "y"]))
+        two_x_sym, two_y_sym = list(map(Tex, ["2x", "2y"]))
         VMobject(x_sym, two_x_sym).set_color(X_COLOR)
         VMobject(y_sym, two_y_sym).set_color(Y_COLOR)
         syms = [x_sym, y_sym, two_x_sym, two_y_sym]
@@ -1055,9 +1055,9 @@ class FollowingVideos(UpcomingSeriesOfVidoes):
             Vector([4, 2], color = GREEN),
         )
         scalar_multiplication = VMobject(
-            TexMobject("2 \\cdot "),
+            Tex("2 \\cdot "),
             Vector([1, 1]),
-            TexMobject("="),
+            Tex("="),
             Vector([2, 2], color = WHITE)
         )
         scalar_multiplication.arrange(RIGHT)
@@ -1088,8 +1088,8 @@ class ItDoesntMatterWhich(Scene):
     def construct(self):
         physy = Physicist()
         compy = ComputerScientist()
-        physy.title = TextMobject("Physics student").to_corner(DOWN+LEFT)
-        compy.title = TextMobject("CS student").to_corner(DOWN+RIGHT)
+        physy.title = TexText("Physics student").to_corner(DOWN+LEFT)
+        compy.title = TexText("CS student").to_corner(DOWN+RIGHT)
         for pi in physy, compy:
             pi.next_to(pi.title, UP)
             self.add(pi, pi.title)
@@ -1097,7 +1097,7 @@ class ItDoesntMatterWhich(Scene):
         physy_speech = physy.get_bubble(SpeechBubble)
         arrow = Vector([2, 1])
         array = matrix_to_mobject([2, 1])
-        goes_to = TexMobject("\\Rightarrow")
+        goes_to = Tex("\\Rightarrow")
         physy_statement = VMobject(arrow, goes_to, array)
         physy_statement.arrange(RIGHT)
         compy_statement = physy_statement.copy()
@@ -1108,12 +1108,12 @@ class ItDoesntMatterWhich(Scene):
         new_arrow = Vector([2, 1])
         x_line = Line(ORIGIN, 2*RIGHT, color = X_COLOR)
         y_line = Line(2*RIGHT, 2*RIGHT+UP, color = Y_COLOR)
-        x_mob = TexMobject("2").next_to(x_line, DOWN)
-        y_mob = TexMobject("1").next_to(y_line, RIGHT)
+        x_mob = Tex("2").next_to(x_line, DOWN)
+        y_mob = Tex("1").next_to(y_line, RIGHT)
         new_arrow.add(x_line, y_line, x_mob, y_mob)
         back_and_forth = VMobject(
             new_arrow,
-            TexMobject("\\Leftrightarrow"),
+            Tex("\\Leftrightarrow"),
             matrix_to_mobject([2, 1])
         )
         back_and_forth.arrange(LEFT).center()
@@ -1192,7 +1192,7 @@ class ManipulateSpace(LinearTransformationScene):
     }
 
     def construct(self):
-        matrix_rule = TexMobject("""
+        matrix_rule = Tex("""
             \\left[
                 \\begin{array}{c}
                     x \\\\ y
@@ -1234,7 +1234,7 @@ class CodingMathyAnimation(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("Next video: Linear combinations, span, and bases")
+        title = TexText("Next video: Linear combinations, span, and bases")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(6)

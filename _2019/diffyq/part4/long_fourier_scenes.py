@@ -118,7 +118,7 @@ class SigmaFourierSeriesExampleWithRectForZoom(FourierSeriesExampleWithRectForZo
     }
 
     def get_shape(self):
-        return TexMobject("\\Sigma")
+        return Tex("\\Sigma")
 
 
 class SigmaZoomedInFourierSeriesExample(SigmaFourierSeriesExampleWithRectForZoom, ZoomedInFourierSeriesExample):
@@ -230,7 +230,7 @@ class VideoWrapper(Scene):
 
         boundary = AnimatedBoundary(screen_rect)
 
-        title = TextMobject("Learn the math")
+        title = TexText("Learn the math")
         title.scale(1.5)
         title.next_to(screen_rect, UP)
 

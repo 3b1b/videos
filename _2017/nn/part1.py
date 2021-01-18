@@ -151,7 +151,7 @@ class NetworkMobject(VGroup):
         layer.add(neurons)
 
         if size > n_neurons:
-            dots = TexMobject("\\vdots")
+            dots = Tex("\\vdots")
             dots.move_to(neurons)
             VGroup(*neurons[:len(neurons) // 2]).next_to(
                 dots, UP, MED_SMALL_BUFF
@@ -252,7 +252,7 @@ class NetworkMobject(VGroup):
     def add_output_labels(self):
         self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[-1].neurons):
-            label = TexMobject(str(n))
+            label = Tex(str(n))
             label.set_height(0.75*neuron.get_height())
             label.move_to(neuron)
             label.shift(neuron.get_width()*RIGHT)
@@ -360,7 +360,7 @@ class ExampleThrees(PiCreatureScene):
         three_mob.target.next_to(bubble[-1].get_left(), RIGHT, LARGE_BUFF)
         arrow = Arrow(LEFT, RIGHT, color = BLUE)
         arrow.next_to(three_mob.target, RIGHT)
-        real_three = TexMobject("3")
+        real_three = Tex("3")
         real_three.set_height(0.8)
         real_three.next_to(arrow, RIGHT)
 
@@ -457,7 +457,7 @@ class ExampleThrees(PiCreatureScene):
         randy = self.pi_creature
 
         left_three, right_three = self.remaining_threes
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.move_to(self.arrow)
         for three, vect in (left_three, LEFT), (right_three, RIGHT):
             three.generate_target()
@@ -533,7 +533,7 @@ class BrainAndHow(Scene):
         brain_outline.set_fill(opacity = 0)
         brain_outline.set_stroke(BLUE_B, 3)
 
-        how = TextMobject("How?!?")
+        how = TexText("How?!?")
         how.scale(2)
         how.next_to(brain, UP)
 
@@ -580,7 +580,7 @@ class WriteAProgram(Scene):
         arrow = Arrow(LEFT, RIGHT, color = BLUE)
         arrow.next_to(three, RIGHT)
 
-        choices = VGroup(*[TexMobject(str(n)) for n in range(10)])
+        choices = VGroup(*[Tex(str(n)) for n in range(10)])
         choices.arrange(DOWN)
         choices.set_height(FRAME_HEIGHT - 1)
         choices.next_to(arrow, RIGHT)
@@ -596,7 +596,7 @@ class WriteAProgram(Scene):
         )
 
         rect = SurroundingRectangle(choices[0], buff = SMALL_BUFF)
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.next_to(rect, RIGHT)
         self.play(ShowCreation(rect))
         for n in 8, 1, 5, 3:
@@ -634,8 +634,8 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
 
     def show_words(self):
         words = VGroup(
-            TextMobject("Machine", "learning").set_color(GREEN),
-            TextMobject("Neural network").set_color(BLUE),
+            TexText("Machine", "learning").set_color(GREEN),
+            TexText("Neural network").set_color(BLUE),
         )
         words.next_to(self.teacher.get_corner(UP+LEFT), UP)
         words[0].save_state()
@@ -685,7 +685,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
         self.feed_forward(in_vect)
 
     def show_math(self):
-        equation = TexMobject(
+        equation = Tex(
             "\\textbf{a}_{l+1}", "=",  
             "\\sigma(",
                 "W_l", "\\textbf{a}_l", "+", "b_l",
@@ -749,7 +749,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
     def show_videos(self):
         network_mob = self.network_mob
         learning = self.learning_word
-        structure = TextMobject("Structure")
+        structure = TexText("Structure")
         structure.set_color(YELLOW)
         videos = VGroup(*[
             VideoIcon().set_fill(RED)
@@ -849,12 +849,12 @@ class AlternateNeuralNetworks(PiCreatureScene):
         morty = self.pi_creature
         examples = VGroup(
             VGroup(
-                TextMobject("Convolutional neural network"),
-                TextMobject("Good for image recognition"),
+                TexText("Convolutional neural network"),
+                TexText("Good for image recognition"),
             ),
             VGroup(
-                TextMobject("Long short-term memory network"),
-                TextMobject("Good for speech recognition"),
+                TexText("Long short-term memory network"),
+                TexText("Good for speech recognition"),
             )
         )
         for ex in examples:
@@ -865,7 +865,7 @@ class AlternateNeuralNetworks(PiCreatureScene):
         examples.set_width(FRAME_WIDTH - 1)
         examples.next_to(morty, UP).to_edge(RIGHT)
 
-        maybe_words = TextMobject("Maybe future videos?")
+        maybe_words = TexText("Maybe future videos?")
         maybe_words.scale(0.8)
         maybe_words.next_to(morty, UP)
         maybe_words.to_edge(RIGHT)
@@ -890,8 +890,8 @@ class AlternateNeuralNetworks(PiCreatureScene):
 
 class PlainVanillaWrapper(Scene):
     def construct(self):
-        title = TextMobject("Plain vanilla")
-        subtitle = TextMobject("(aka ``multilayer perceptron'')")
+        title = TexText("Plain vanilla")
+        subtitle = TexText("(aka ``multilayer perceptron'')")
         title.scale(1.5)
         title.to_edge(UP)
         subtitle.next_to(title, DOWN)
@@ -903,7 +903,7 @@ class PlainVanillaWrapper(Scene):
 
 class NotPerfectAddOn(Scene):
     def construct(self):
-        words = TextMobject("Not perfect!")
+        words = TexText("Not perfect!")
         words.scale(1.5)
         arrow = Arrow(UP+RIGHT, DOWN+LEFT, color = RED)
         words.set_color(RED)
@@ -932,13 +932,13 @@ class BreakDownName(Scene):
         self.show_neuron()
 
     def ask_questions(self):
-        name = TextMobject("Neural", "network")
+        name = TexText("Neural", "network")
         name.to_edge(UP)
-        q1 = TextMobject(
+        q1 = TexText(
             "What are \\\\ the ", "neuron", "s?",
             arg_separator = ""
         )
-        q2 = TextMobject("How are \\\\ they connected?")
+        q2 = TexText("How are \\\\ they connected?")
         q1.next_to(name[0].get_bottom(), DOWN, buff = LARGE_BUFF)
         q2.next_to(name[1].get_bottom(), DOWN+RIGHT, buff = LARGE_BUFF)
         a1 = Arrow(q1.get_top(), name[0].get_bottom())
@@ -992,10 +992,10 @@ class BreakDownName(Scene):
         self.neuron_word = q1[1]
 
     def show_neuron(self):
-        neuron_word = TextMobject("Neuron")
-        arrow = TexMobject("\\rightarrow")
+        neuron_word = TexText("Neuron")
+        arrow = Tex("\\rightarrow")
         arrow.shift(LEFT)
-        description = TextMobject("Thing that holds a number")
+        description = TexText("Thing that holds a number")
         neuron_word.set_color(BLUE)
         neuron_word.next_to(arrow, LEFT)
         neuron_word.shift(0.5*SMALL_BUFF*UP)
@@ -1003,7 +1003,7 @@ class BreakDownName(Scene):
 
         neuron = Circle(radius = 0.35, color = BLUE)
         neuron.next_to(neuron_word, UP, MED_LARGE_BUFF)
-        num = TexMobject("0.2")
+        num = Tex("0.2")
         num.set_width(0.7*neuron.get_width())
         num.move_to(neuron)
         num.save_state()
@@ -1025,7 +1025,7 @@ class BreakDownName(Scene):
         )
         self.wait()
         for value in 0.8, 0.4, 0.1, 0.5:
-            mob = TexMobject(str(value))
+            mob = Tex(str(value))
             mob.replace(num)
             self.play(
                 neuron.set_fill, None, value,
@@ -1084,7 +1084,7 @@ class IntroduceEachLayer(PreviewMNistNetwork):
             for brace in braces
         ])
 
-        equation = TexMobject("28", "\\times", "28", "=", "784")
+        equation = Tex("28", "\\times", "28", "=", "784")
         equation.next_to(neurons, RIGHT, LARGE_BUFF, UP)
 
         self.corner_image = MNistMobject(image)
@@ -1167,7 +1167,7 @@ class IntroduceEachLayer(PreviewMNistNetwork):
             self.wait()
 
         rect = SurroundingRectangle(example_num, color = YELLOW)
-        activation = TextMobject("``Activation''")
+        activation = TexText("``Activation''")
         activation.next_to(example_neuron, RIGHT)
         activation.set_color(rect.get_color())
         self.play(ShowCreation(rect))
@@ -1301,18 +1301,18 @@ class IntroduceEachLayer(PreviewMNistNetwork):
     def show_hidden_layers(self):
         hidden_layers = VGroup(*self.network_mob.layers[1:3])
         rect = SurroundingRectangle(hidden_layers, color = YELLOW)
-        name = TextMobject("``Hidden layers''")
+        name = TexText("``Hidden layers''")
         name.next_to(rect, UP, SMALL_BUFF)
         name.set_color(YELLOW)
         q_marks = VGroup()
         for layer in hidden_layers:
             for neuron in layer.neurons:
-                q_mark = TextMobject("?")
+                q_mark = TexText("?")
                 q_mark.set_height(0.8*neuron.get_height())
                 q_mark.move_to(neuron)
                 q_marks.add(q_mark)
         q_marks.set_color_by_gradient(BLUE, YELLOW)
-        q_mark = TextMobject("?").scale(4)
+        q_mark = TexText("?").scale(4)
         q_mark.move_to(hidden_layers)
         q_mark.set_color(YELLOW)
         q_marks.add(q_mark)
@@ -1346,9 +1346,9 @@ class DiscussChoiceForHiddenLayers(TeacherStudentsScene):
         rects = VGroup(*list(map(SurroundingRectangle, layers)))
         self.add(network_mob)
 
-        two_words = TextMobject("2 hidden layers")
+        two_words = TexText("2 hidden layers")
         two_words.set_color(YELLOW)
-        sixteen_words = TextMobject("16 neurons each")
+        sixteen_words = TexText("16 neurons each")
         sixteen_words.set_color(MAROON_B)
         for words in two_words, sixteen_words:
             words.next_to(rects, UP)
@@ -1458,7 +1458,7 @@ class AskAboutLayers(PreviewMNistNetwork):
             self.network_mob.to_edge, DOWN,
         )
 
-        question = TextMobject("Why the", "layers?")
+        question = TexText("Why the", "layers?")
         question.to_edge(UP)
         neuron_groups = [
             layer.neurons
@@ -1674,7 +1674,7 @@ class BreakUpMacroPatterns(IntroduceEachLayer):
 
     def show_upper_loop_activation(self):
         neuron = self.network_mob.layers[-2].neurons[0]
-        words = TextMobject("Upper loop neuron...maybe...")
+        words = TexText("Upper loop neuron...maybe...")
         words.scale(0.8)
         words.next_to(neuron, UP)
         words.shift(RIGHT)
@@ -1718,9 +1718,9 @@ class BreakUpMacroPatterns(IntroduceEachLayer):
 
     def get_equation(self, *mobs):
         equation = VGroup(
-            mobs[0], TexMobject("=").scale(2),
+            mobs[0], Tex("=").scale(2),
             *list(it.chain(*[
-                [m, TexMobject("+").scale(2)]
+                [m, Tex("+").scale(2)]
                 for m in mobs[1:-1]
             ])) + [mobs[-1]]
         )
@@ -1954,7 +1954,7 @@ class SecondLayerIsLittleEdgeLayer(IntroduceEachLayer):
     def describe_second_layer(self):
         layer = self.network_mob.layers[1]
         rect = SurroundingRectangle(layer)
-        words = TextMobject("``Little edge'' layer?")
+        words = TexText("``Little edge'' layer?")
         words.next_to(rect, UP, MED_LARGE_BUFF)
         words.set_color(YELLOW)
 
@@ -2039,11 +2039,11 @@ class SecondLayerIsLittleEdgeLayer(IntroduceEachLayer):
         self.wait(2)
 
     def ask_question(self):
-        question = TextMobject(
+        question = TexText(
             "Does the network \\\\ actually do this?"
         )
         question.to_edge(LEFT)
-        later = TextMobject("We'll get back \\\\ to this")
+        later = TexText("We'll get back \\\\ to this")
         later.to_corner(UP+LEFT)
         later.set_color(BLUE)
         arrow = Arrow(later.get_bottom(), question.get_top())
@@ -2108,12 +2108,12 @@ class EdgeDetection(Scene):
 class ManyTasksBreakDownLikeThis(TeacherStudentsScene):
     def construct(self):
         audio = self.get_wave_form()
-        audio_label = TextMobject("Raw audio")
-        letters = TextMobject(" ".join("recognition"))
-        syllables = TextMobject("$\\cdot$".join([
+        audio_label = TexText("Raw audio")
+        letters = TexText(" ".join("recognition"))
+        syllables = TexText("$\\cdot$".join([
             "re", "cog", "ni", "tion"
         ]))
-        word = TextMobject(
+        word = TexText(
             "re", "cognition",
             arg_separator = ""
         )
@@ -2210,7 +2210,7 @@ class AskAboutWhatEdgesAreDoing(IntroduceEachLayer):
         edge_groups = self.network_mob.edge_groups
         self.remove_random_edges(0.7)
 
-        question = TextMobject(
+        question = TexText(
             "What are these connections actually doing?"
         )
         question.to_edge(UP)
@@ -2307,7 +2307,7 @@ class IntroduceWeights(IntroduceEachLayer):
         pixels_group = self.pixels_group
         neuron = self.neuron
 
-        question = TextMobject("What", "parameters", "should exist?")
+        question = TexText("What", "parameters", "should exist?")
         parameter_word = question.get_part_by_tex("parameters")
         parameter_word.set_color(self.weights_color)
         question.move_to(neuron.edges_in.get_top(), LEFT)
@@ -2318,9 +2318,9 @@ class IntroduceWeights(IntroduceEachLayer):
         )
 
         p_labels = VGroup(*[
-            TexMobject("p_%d\\!:"%(i+1)).set_color(self.weights_color)
+            Tex("p_%d\\!:"%(i+1)).set_color(self.weights_color)
             for i in range(8)
-        ] + [TexMobject("\\vdots")])
+        ] + [Tex("\\vdots")])
         p_labels.arrange(DOWN, aligned_edge = LEFT)
         p_labels.next_to(parameter_word, DOWN, LARGE_BUFF)
         p_labels[-1].shift(SMALL_BUFF*RIGHT)
@@ -2379,13 +2379,13 @@ class IntroduceWeights(IntroduceEachLayer):
 
         parameter_word = question.get_part_by_tex("parameters")
         question.remove(parameter_word)
-        weights_word = TextMobject("Weights", "")[0]
+        weights_word = TexText("Weights", "")[0]
         weights_word.set_color(self.weights_color)
         weights_word.move_to(parameter_word)
 
         w_labels = VGroup()
         for p_label in p_labels:
-            w_label = TexMobject(
+            w_label = Tex(
                 p_label.get_tex().replace("p", "w")
             )
             w_label.set_color(self.weights_color)
@@ -2438,19 +2438,19 @@ class IntroduceWeights(IntroduceEachLayer):
         active_layer = self.network_mob.get_active_layer(0, a_vect)
 
         a_labels = VGroup(*[
-            TexMobject("a_%d"%d)
+            Tex("a_%d"%d)
             for d in range(1, 5)
         ])
 
         weighted_sum = VGroup(*it.chain(*[
-            [w, a, TexMobject("+")]
+            [w, a, Tex("+")]
             for w, a in zip(w_labels, a_labels)
         ]))
         weighted_sum.add(
-            TexMobject("\\cdots"),
-            TexMobject("+"),
-            TexMobject("w_n").set_color(self.weights_color),
-            TexMobject("a_n")
+            Tex("\\cdots"),
+            Tex("+"),
+            Tex("w_n").set_color(self.weights_color),
+            Tex("a_n")
         )
         weighted_sum.arrange(RIGHT, buff = SMALL_BUFF)
         weighted_sum.to_edge(UP)
@@ -2624,7 +2624,7 @@ class MotivateSquishing(Scene):
         self.squish_into_interval()
 
     def add_weighted_sum(self):
-        weighted_sum = TexMobject(*it.chain(*[
+        weighted_sum = Tex(*it.chain(*[
             ["w_%d"%d, "a_%d"%d, "+"]
             for d in range(1, 5)
         ] + [
@@ -2671,7 +2671,7 @@ class MotivateSquishing(Scene):
             stroke_width = 5
         )
         brace = Brace(interval, DOWN, buff = 0.7)
-        words = TextMobject("Activations should be in this range")
+        words = TexText("Activations should be in this range")
         words.next_to(brace, DOWN, SMALL_BUFF)
 
         self.play(ReplacementTransform(
@@ -2735,11 +2735,11 @@ class IntroduceSigmoid(GraphScene):
         self.show_part(-2, 2, BLUE)
 
     def add_title(self):
-        name = TextMobject("Sigmoid")
+        name = TexText("Sigmoid")
         name.next_to(ORIGIN, RIGHT, LARGE_BUFF)
         name.to_edge(UP)
         char = self.x_axis_label.replace("$", "")
-        equation = TexMobject(
+        equation = Tex(
             "\\sigma(%s) = \\frac{1}{1+e^{-%s}}"%(char, char)
         )
         equation.next_to(name, DOWN)
@@ -2822,7 +2822,7 @@ class IncludeBias(IntroduceWeights):
         self.weight_grid = weight_grid
 
     def add_sigmoid_label(self):
-        name = TextMobject("Sigmoid")
+        name = TexText("Sigmoid")
         sigma = self.weighted_sum[0][0]
         name.next_to(sigma, UP)
         name.to_edge(UP, SMALL_BUFF)
@@ -2845,11 +2845,11 @@ class IncludeBias(IntroduceWeights):
         neuron = self.neuron
         weighted_sum = self.weighted_sum
 
-        activation_word = TextMobject("Activation")
+        activation_word = TexText("Activation")
         activation_word.next_to(neuron, RIGHT)
         arrow = Arrow(neuron, weighted_sum.get_bottom())
         arrow.set_color(WHITE)
-        words = TextMobject("How positive is this?")
+        words = TexText("How positive is this?")
         words.next_to(self.weighted_sum, UP, SMALL_BUFF)
 
         self.play(
@@ -2874,7 +2874,7 @@ class IncludeBias(IntroduceWeights):
             self.get_surrounding_pixels_for_edge(weight_grid),
         )
 
-        words = TextMobject(
+        words = TexText(
             "Only activate meaningfully \\\\ when",
             "weighted sum", "$> 10$"
         )
@@ -2893,7 +2893,7 @@ class IncludeBias(IntroduceWeights):
         self.gt_ten = words[-1]
 
     def add_bias(self):
-        bias = TexMobject("-10")
+        bias = Tex("-10")
         wn, rp = self.weighted_sum[-2:]
         bias.next_to(wn, RIGHT, SMALL_BUFF)
         bias.shift(0.02*UP)
@@ -2901,7 +2901,7 @@ class IncludeBias(IntroduceWeights):
         rp.target.next_to(bias, RIGHT, SMALL_BUFF)
 
         rect = SurroundingRectangle(bias, buff = 0.5*SMALL_BUFF)
-        name = TextMobject("``bias''")
+        name = TexText("``bias''")
         name.next_to(rect, DOWN)
         VGroup(rect, name).set_color(BLUE)
 
@@ -2947,7 +2947,7 @@ class IncludeBias(IntroduceWeights):
             args += ["w_%d"%d, "a_%d"%d, "+"]
         args += ["\\cdots", "+", "w_n", "a_n"]
         args += ["\\big)"]
-        weighted_sum = TexMobject(*args)
+        weighted_sum = Tex(*args)
         weighted_sum.set_color_by_tex("w_", GREEN)
         weighted_sum.set_color_by_tex("\\big", YELLOW)
         weighted_sum.to_edge(UP, LARGE_BUFF)
@@ -2957,7 +2957,7 @@ class IncludeBias(IntroduceWeights):
 
 class BiasForInactiviyWords(Scene):
     def construct(self):
-        words = TextMobject("Bias for inactivity")
+        words = TexText("Bias for inactivity")
         words.set_color(BLUE)
         words.set_width(FRAME_WIDTH - 1)
         words.to_edge(UP)
@@ -3034,7 +3034,7 @@ class ShowRemainingNetwork(IntroduceWeights):
         neurons = VGroup(*layer.neurons)
         neurons.remove(example_neuron)
 
-        words = TextMobject("784", "weights", "per neuron")
+        words = TexText("784", "weights", "per neuron")
         words.next_to(layer.neurons[0], RIGHT)
         words.to_edge(UP)
 
@@ -3074,7 +3074,7 @@ class ShowRemainingNetwork(IntroduceWeights):
 
     def count_in_biases(self):
         neurons = self.network_mob.layers[1].neurons
-        words = TextMobject("One", "bias","for each")
+        words = TexText("One", "bias","for each")
         words.next_to(neurons, RIGHT, buff = 2)
         arrows = VGroup(*[
             Arrow(
@@ -3103,12 +3103,12 @@ class ShowRemainingNetwork(IntroduceWeights):
         bb1, bb2, bb3 = bias_words = self.bias_words
         bias_arrows = self.bias_arrows
 
-        times_16 = TexMobject("\\times 16")
+        times_16 = Tex("\\times 16")
         times_16.next_to(ww1, RIGHT, SMALL_BUFF)
         ww2.generate_target()
         ww2.target.next_to(times_16, RIGHT)
 
-        bias_count = TextMobject("16", "biases")
+        bias_count = TexText("16", "biases")
         bias_count.next_to(ww2.target, RIGHT, LARGE_BUFF)
 
         self.play(
@@ -3136,7 +3136,7 @@ class ShowRemainingNetwork(IntroduceWeights):
             count.generate_target()
             count.prefix = VGroup(*count.target[:-1])
 
-        added_weights = TexMobject(
+        added_weights = Tex(
             "+16\\!\\times\\! 16 + 16 \\!\\times\\! 10"
         )
         added_weights.to_corner(UP+RIGHT)
@@ -3146,7 +3146,7 @@ class ShowRemainingNetwork(IntroduceWeights):
             DOWN
         )
 
-        added_biases = TexMobject("+ 16 + 10")
+        added_biases = Tex("+ 16 + 10")
         group = VGroup(bias_count.prefix, added_biases)
         group.arrange(RIGHT, SMALL_BUFF)
         group.next_to(weights_count.target[-1], DOWN, LARGE_BUFF)
@@ -3187,7 +3187,7 @@ class ShowRemainingNetwork(IntroduceWeights):
         group.generate_target()
         group.target.scale(0.8)
         rect = SurroundingRectangle(group.target, buff = MED_SMALL_BUFF)
-        num_mob = TexMobject("13{,}002")
+        num_mob = Tex("13{,}002")
         num_mob.scale(1.5)
         num_mob.next_to(rect, DOWN)
 
@@ -3201,8 +3201,8 @@ class ShowRemainingNetwork(IntroduceWeights):
         self.final_number = num_mob
 
     def tweak_weights(self):
-        learning = TextMobject("Learning $\\rightarrow$")
-        finding_words = TextMobject(
+        learning = TexText("Learning $\\rightarrow$")
+        finding_words = TexText(
             "Finding the right \\\\ weights and biases"
         )
         group = VGroup(learning, finding_words)
@@ -3281,7 +3281,7 @@ class WhenTheNetworkFails(MoreHonestMNistNetworkPreview):
             fill_color = BLACK,
             fill_opacity = 0.8,
         )
-        words = TextMobject("...rather than treating this as a black box")
+        words = TexText("...rather than treating this as a black box")
         words.next_to(box, UP, LARGE_BUFF)
 
         self.play(
@@ -3300,13 +3300,13 @@ class WhenTheNetworkFails(MoreHonestMNistNetworkPreview):
                 break
         self.feed_in_image(in_vect)
 
-        wrong = TextMobject("Wrong!")
+        wrong = TexText("Wrong!")
         wrong.set_color(RED)
         wrong.next_to(self.network_mob.layers[-1], UP+RIGHT)
         self.play(Write(wrong, run_time = 1))
 
     def ask_about_weights(self):
-        question = TextMobject(
+        question = TexText(
             "What weights are used here?\\\\",
             "What are they doing?"
         )
@@ -3386,7 +3386,7 @@ class IntroduceWeightMatrix(NetworkScene):
         activations = 0.7*np.random.random(len(layer.neurons))
         active_layer = self.network_mob.get_active_layer(0, activations)
         a_labels = VGroup(*[
-            TexMobject("a^{(0)}_%d"%d)
+            Tex("a^{(0)}_%d"%d)
             for d in range(len(layer.neurons))
         ])
         for label, neuron in zip(a_labels, layer.neurons):
@@ -3405,27 +3405,27 @@ class IntroduceWeightMatrix(NetworkScene):
         a_labels = VGroup(*self.a_labels[:2]).copy()
         a_labels.generate_target()
         w_labels = VGroup(*[
-            TexMobject("w_{0, %d}"%d)
+            Tex("w_{0, %d}"%d)
             for d in range(len(a_labels))
         ])
         weighted_sum = VGroup()
         symbols = VGroup()
         for a_label, w_label in zip(a_labels.target, w_labels):
             a_label.scale(1./0.75)
-            plus =  TexMobject("+")
+            plus =  Tex("+")
             weighted_sum.add(w_label, a_label, plus)
             symbols.add(plus)
         weighted_sum.add(
-            TexMobject("\\cdots"),
-            TexMobject("+"),
-            TexMobject("w_{0, n}"),
-            TexMobject("a^{(0)}_n"),
+            Tex("\\cdots"),
+            Tex("+"),
+            Tex("w_{0, n}"),
+            Tex("a^{(0)}_n"),
         )
 
         weighted_sum.arrange(RIGHT)
-        a1_label = TexMobject("a^{(1)}_0")
+        a1_label = Tex("a^{(1)}_0")
         a1_label.next_to(neuron, RIGHT)
-        equals = TexMobject("=").next_to(a1_label, RIGHT)
+        equals = Tex("=").next_to(a1_label, RIGHT)
         weighted_sum.next_to(equals, RIGHT)
 
         symbols.add(*weighted_sum[-4:-2])
@@ -3464,11 +3464,11 @@ class IntroduceWeightMatrix(NetworkScene):
 
     def add_bias(self):
         weighted_sum = self.weighted_sum
-        bias = TexMobject("+\\,", "b_0")
+        bias = Tex("+\\,", "b_0")
         bias.scale(0.75)
         bias.next_to(weighted_sum, RIGHT, SMALL_BUFF)
         bias.shift(0.5*SMALL_BUFF*DOWN)
-        name = TextMobject("Bias")
+        name = TexText("Bias")
         name.scale(0.75)
         name.next_to(bias, DOWN, MED_LARGE_BUFF)
         arrow = Arrow(name, bias, buff = SMALL_BUFF)
@@ -3488,7 +3488,7 @@ class IntroduceWeightMatrix(NetworkScene):
     def add_sigmoid(self):
         weighted_sum = self.weighted_sum
         weighted_sum.generate_target()
-        sigma, lp, rp = mob = TexMobject("\\sigma\\big(\\big)")
+        sigma, lp, rp = mob = Tex("\\sigma\\big(\\big)")
         # mob.scale(0.75)
         sigma.move_to(weighted_sum.get_left())
         sigma.shift(0.5*SMALL_BUFF*(DOWN+RIGHT))
@@ -3496,7 +3496,7 @@ class IntroduceWeightMatrix(NetworkScene):
         weighted_sum.target.next_to(lp, RIGHT, SMALL_BUFF)
         rp.next_to(weighted_sum.target, RIGHT, SMALL_BUFF)
 
-        name = TextMobject("Sigmoid")
+        name = TexText("Sigmoid")
         name.next_to(sigma, UP, MED_LARGE_BUFF)
         arrow = Arrow(name, sigma, buff = SMALL_BUFF)
         sigmoid_name = VGroup(name, arrow)
@@ -3521,11 +3521,11 @@ class IntroduceWeightMatrix(NetworkScene):
         column = a_labels.target
         a_labels_in_sum = self.a_labels_in_sum
 
-        dots = TexMobject("\\vdots")
+        dots = Tex("\\vdots")
         mid_as = VGroup(*column[2:-1])
         Transform(mid_as, dots).update(1)
         last_a = column[-1]
-        new_last_a = TexMobject(
+        new_last_a = Tex(
             last_a.get_tex().replace("7", "n")
         )
         new_last_a.replace(last_a)
@@ -3579,7 +3579,7 @@ class IntroduceWeightMatrix(NetworkScene):
         lwb.align_to(rwb, UP)
 
         row_1, row_k = [
-            VGroup(*list(map(TexMobject, [
+            VGroup(*list(map(Tex, [
                 "w_{%s, 0}"%i,
                 "w_{%s, 1}"%i,
                 "\\cdots",
@@ -3587,7 +3587,7 @@ class IntroduceWeightMatrix(NetworkScene):
             ])))
             for i in ("1", "k")
         ]
-        dots_row = VGroup(*list(map(TexMobject, [
+        dots_row = VGroup(*list(map(Tex, [
             "\\vdots", "\\vdots", "\\ddots", "\\vdots"
         ])))
 
@@ -3640,17 +3640,17 @@ class IntroduceWeightMatrix(NetworkScene):
 
         column_rect = SurroundingRectangle(a_column)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(a_brackets, RIGHT)
         result_brackets = a_brackets.copy()
         result_terms = VGroup()
         for i in 0, 1, 4, -1:
             a = a_column[i]
             if i == 4:
-                mob = TexMobject("\\vdots")
+                mob = Tex("\\vdots")
             else:
                 # mob = Circle(radius = 0.2, color = YELLOW)
-                mob = TexMobject("?").scale(1.3).set_color(YELLOW)
+                mob = Tex("?").scale(1.3).set_color(YELLOW)
             result_terms.add(mob.move_to(a))
         VGroup(result_brackets, result_terms).next_to(equals, RIGHT)
 
@@ -3745,9 +3745,9 @@ class IntroduceWeightMatrix(NetworkScene):
         a_column_brackets = self.a_column_brackets
         a_column = self.a_column
 
-        plus = TexMobject("+")
+        plus = Tex("+")
         b_brackets = a_column_brackets.copy()
-        b_column = VGroup(*list(map(TexMobject, [
+        b_column = VGroup(*list(map(Tex, [
             "b_0", "b_1", "\\vdots", "b_n",
         ])))
         b_column.scale(0.85)
@@ -3783,7 +3783,7 @@ class IntroduceWeightMatrix(NetworkScene):
         sigma = self.sigma.copy()
         slp, srp = self.sigma_parens.copy()
 
-        big_lp, big_rp = parens = TexMobject("()")
+        big_lp, big_rp = parens = Tex("()")
         parens.scale(3)
         parens.stretch_to_fit_height(expression_bounds.get_height())
         big_lp.next_to(expression_bounds, LEFT, SMALL_BUFF)
@@ -3802,7 +3802,7 @@ class IntroduceWeightMatrix(NetworkScene):
 
     def write_clean_final_expression(self):
         self.fade_weighted_sum()
-        expression = TexMobject(
+        expression = Tex(
             "\\textbf{a}^{(1)}", 
             "=",
             "\\sigma", 
@@ -3879,7 +3879,7 @@ class IntroduceWeightMatrix(NetworkScene):
     ###
 
     def get_brackets(self, mob):
-        lb, rb = both = TexMobject("\\big[\\big]")
+        lb, rb = both = Tex("\\big[\\big]")
         both.set_width(mob.get_width())
         both.stretch_to_fit_height(1.2*mob.get_height())
         lb.next_to(mob, LEFT, SMALL_BUFF)
@@ -3902,7 +3902,7 @@ class HorrifiedMorty(Scene):
 
 class SigmoidAppliedToVector(Scene):
     def construct(self):
-        tex = TexMobject("""
+        tex = Tex("""
             \\sigma \\left(
             \\left[\\begin{array}{c}
                 x \\\\ y \\\\ z
@@ -3931,7 +3931,7 @@ class EoLA3Wrapper(PiCreatureScene):
         rect = ScreenRectangle(height = 5)
         rect.next_to(morty, UP+LEFT)
         rect.to_edge(UP, buff = LARGE_BUFF)
-        title = TextMobject("Essence of linear algebra")
+        title = TexText("Essence of linear algebra")
         title.next_to(rect, UP)
 
         self.play(
@@ -3985,9 +3985,9 @@ class NeuronIsFunction(MoreHonestMNistNetworkPreview):
         self.image_rect, self.curr_image = mnist_mob
 
     def write_neuron_holds_a_number(self):
-        neuron_word = TextMobject("Neuron")
+        neuron_word = TexText("Neuron")
         arrow = Arrow(ORIGIN, DOWN, color = BLUE)
-        thing_words = TextMobject("Thing that holds \\\\ a number")
+        thing_words = TexText("Thing that holds \\\\ a number")
         group = VGroup(neuron_word, arrow, thing_words)
         group.arrange(DOWN)
         group.to_corner(UP+RIGHT, buff = LARGE_BUFF)
@@ -4035,7 +4035,7 @@ class NeuronIsFunction(MoreHonestMNistNetworkPreview):
     def neuron_is_function(self):
         thing_words = self.thing_words
         cross = Cross(thing_words)
-        function_word = TextMobject("Function")
+        function_word = TexText("Function")
         function_word.move_to(thing_words, UP)
 
         self.play(
@@ -4099,11 +4099,11 @@ class NeuronIsFunction(MoreHonestMNistNetworkPreview):
 
     def network_is_a_function(self):
         neuron_word = self.neuron_word
-        network_word = TextMobject("Network")
+        network_word = TexText("Network")
         network_word.set_color(YELLOW)
         network_word.move_to(neuron_word)
 
-        func_tex = TexMobject(
+        func_tex = Tex(
             "f(a_0, \\dots, a_{783}) = ",
             """\\left[
                 \\begin{array}{c} 
@@ -4172,7 +4172,7 @@ class NextVideo(MoreHonestMNistNetworkPreview, PiCreatureScene):
             image = MNistMobject(vect)
             image.set_height(0.7)
             arrow = Arrow(ORIGIN, RIGHT, color = BLUE)
-            num_mob = TexMobject(str(num))
+            num_mob = Tex(str(num))
             group = Group(image, arrow, num_mob)
             group.arrange(RIGHT, buff = SMALL_BUFF)
             group.next_to(ORIGIN, RIGHT)
@@ -4204,7 +4204,7 @@ class NextVideo(MoreHonestMNistNetworkPreview, PiCreatureScene):
         rect.set_stroke(width = 0)
         rect.set_fill(BLACK, 0.5)
 
-        words = TextMobject("On learning")
+        words = TexText("On learning")
         words.next_to(video, UP)
 
         if self.edge_update.internal_time < 1:
@@ -4234,14 +4234,14 @@ class NextVideo(MoreHonestMNistNetworkPreview, PiCreatureScene):
         video = self.video
 
 
-        subscribe_word = TextMobject(
+        subscribe_word = TexText(
             "Subscribe", "!",
             arg_separator = ""
         )
         bang = subscribe_word[1]
         subscribe_word.to_corner(DOWN+RIGHT)
         subscribe_word.shift(3*UP)
-        q_mark = TextMobject("?")
+        q_mark = TexText("?")
         q_mark.move_to(bang, LEFT)
         arrow = Arrow(ORIGIN, DOWN, color = RED, buff = 0)
         arrow.next_to(subscribe_word, DOWN)
@@ -4384,7 +4384,7 @@ class IntroduceReLU(IntroduceSigmoid):
             self.equation
         )
         cross = Cross(sigmoid_title)
-        old_school = TextMobject("Old school")
+        old_school = TexText("Old school")
         old_school.to_corner(UP+RIGHT)
         old_school.set_color(RED)
         arrow = Arrow(
@@ -4427,11 +4427,11 @@ class IntroduceReLU(IntroduceSigmoid):
         )
         graph.set_color(YELLOW)
         char = self.x_axis_label.replace("$", "")
-        equation = TextMobject("ReLU($%s$) = max$(0, %s)$"%(char, char))
+        equation = TexText("ReLU($%s$) = max$(0, %s)$"%(char, char))
         equation.shift(FRAME_X_RADIUS*LEFT/2)
         equation.to_edge(UP)
         equation.add_background_rectangle()
-        name = TextMobject("Rectified linear unit")
+        name = TexText("Rectified linear unit")
         name.move_to(equation)
         name.add_background_rectangle()
 
@@ -4448,11 +4448,11 @@ class IntroduceReLU(IntroduceSigmoid):
 
     def label_input_regions(self):
         l1, l2 = self.ReLU_graph
-        neg_words = TextMobject("Inactive")
+        neg_words = TexText("Inactive")
         neg_words.set_color(RED)
         neg_words.next_to(self.coords_to_point(-2, 0), UP)
 
-        pos_words = TextMobject("Same as $f(a) = a$")
+        pos_words = TexText("Same as $f(a) = a$")
         pos_words.set_color(GREEN)
         pos_words.next_to(
             self.coords_to_point(1, 1),
@@ -4479,11 +4479,11 @@ class CompareSigmoidReLUOnDeepNetworks(PiCreatureScene):
         sigmoid_graph.set_color(YELLOW)
         sigmoid_graph.next_to(lisha, UP+LEFT)
         sigmoid_graph.shift_onto_screen()
-        sigmoid_name = TextMobject("Sigmoid")
+        sigmoid_name = TexText("Sigmoid")
         sigmoid_name.next_to(sigmoid_graph, UP)
         sigmoid_graph.add(sigmoid_name)
 
-        slow_learner = TextMobject("Slow learner")
+        slow_learner = TexText("Slow learner")
         slow_learner.set_color(YELLOW)
         slow_learner.to_corner(UP+LEFT)
         slow_arrow = Arrow(
@@ -4497,7 +4497,7 @@ class CompareSigmoidReLUOnDeepNetworks(PiCreatureScene):
         )
         relu_graph.set_color(BLUE)
         relu_graph.next_to(lisha, UP+RIGHT)
-        relu_name = TextMobject("ReLU")
+        relu_name = TexText("ReLU")
         relu_name.move_to(relu_graph, UP)
         relu_graph.add(relu_name)
 
@@ -4549,7 +4549,7 @@ class ShowAmplify(PiCreatureScene):
         rect = ScreenRectangle(height = 5)
         rect.to_corner(UP+LEFT)
         rect.shift(DOWN)
-        email = TextMobject("3blue1brown@amplifypartners.com")
+        email = TexText("3blue1brown@amplifypartners.com")
         email.next_to(rect, UP)
 
         self.play(
@@ -4578,7 +4578,7 @@ class Thumbnail(NetworkScene):
         network_mob.to_edge(DOWN)
         network_mob.to_edge(LEFT, buff=1)
 
-        subtitle = TextMobject(
+        subtitle = TexText(
             "From the\\\\",
             "ground up\\\\",
         )
@@ -4604,7 +4604,7 @@ class Thumbnail(NetworkScene):
                 mob.set_stroke(width=2)
 
 
-        title = TextMobject("Neural Networks")
+        title = TexText("Neural Networks")
         title.scale(3)
         title.to_edge(UP)
 
@@ -4628,7 +4628,7 @@ class NeuralNetImageAgain(Scene):
         layers.set_height(6.5)
         layers.arrange(RIGHT, buff=2.5)
 
-        dots = TexMobject("\\vdots")
+        dots = Tex("\\vdots")
         dots.move_to(layers[0])
         layers[0][:8].next_to(dots, UP, MED_SMALL_BUFF)
         layers[0][8:].next_to(dots, DOWN, MED_SMALL_BUFF)

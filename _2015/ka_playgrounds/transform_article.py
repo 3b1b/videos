@@ -123,7 +123,7 @@ class LineToPlaneFunction(Scene):
                 point_function(center) - center, 
                 **anim_config 
             ))
-            label = TexMobject(input_tex)
+            label = Tex(input_tex)
             label.shift(center + 2*UP)
             arrow = Arrow(label, dot)
             self.add(label)
@@ -138,7 +138,7 @@ class LineToPlaneFunction(Scene):
 
         for input_tex, output_tex, number in numbers_to_follow:
             point = plane.num_pair_to_point(func(number))
-            label = TexMobject(output_tex)
+            label = Tex(output_tex)
             side_shift = LEFT if number == np.pi else RIGHT
             label.shift(point, 2*UP, side_shift)
             arrow = Arrow(label, point)

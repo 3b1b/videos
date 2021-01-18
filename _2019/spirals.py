@@ -202,7 +202,7 @@ class AltTitle(Scene):
             on properties of those primes.
         """
         words = [w + " " for w in title_text.split(" ") if w]
-        title = TextMobject(*words)
+        title = TexText(*words)
         title.set_width(FRAME_WIDTH - 1)
 
         title[2:5].set_color(TEAL)
@@ -227,7 +227,7 @@ class AltTitle(Scene):
 
 class HoldUpMathExchange(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Mathematics Stack Exchange")
+        title = TexText("Mathematics Stack Exchange")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -242,8 +242,8 @@ class HoldUpMathExchange(TeacherStudentsScene):
 class MathExchangeNames(Scene):
     def construct(self):
         names = VGroup(
-            TextMobject("dwymark"),
-            TextMobject("Greg Martin"),
+            TexText("dwymark"),
+            TexText("Greg Martin"),
         )
         names.arrange(DOWN, buff=1)
         for name in names:
@@ -297,7 +297,7 @@ class PrimesAndPi(Scene):
     def show_rational_approximations(self):
         numbers = self.numbers
 
-        approxs = TexMobject(
+        approxs = Tex(
             "{22 \\over 7} &=", "{:.12}\\dots\\\\".format(22 / 7),
             "{355 \\over 113} &=", "{:.12}\\dots\\\\".format(355 / 113),
             "\\pi &=", "{:.12}\\dots\\\\".format(PI),
@@ -450,10 +450,10 @@ class RefresherOnPolarCoordinates(MovingCameraScene):
             if part not in [r_coord, theta_coord]
         ])
 
-        r_label = TexMobject("r")
+        r_label = Tex("r")
         r_label.set_color(r_color)
         r_label.add_updater(lambda m: m.next_to(r_coord, UP))
-        theta_label = TexMobject("\\theta")
+        theta_label = Tex("\\theta")
         theta_label.set_color(theta_color)
         theta_label.add_updater(lambda m: m.next_to(theta_coord, UP))
 
@@ -501,7 +501,7 @@ class RefresherOnPolarCoordinates(MovingCameraScene):
         self.wait()
 
         degree_cross = Cross(degree_label)
-        radians_word = TextMobject("in radians")
+        radians_word = TexText("in radians")
         radians_word.scale(0.9)
         radians_word.set_color(theta_color)
         radians_word.add_background_rectangle()
@@ -740,7 +740,7 @@ class RefresherOnPolarCoordinates(MovingCameraScene):
             if isinstance(n, numbers.Number):
                 coord = DecimalNumber(n, **decimal_kwargs)
             elif isinstance(n, str):
-                coord = TexMobject(n)
+                coord = Tex(n)
             else:
                 raise Exception("Invalid type")
             coords.add(coord)
@@ -750,9 +750,9 @@ class RefresherOnPolarCoordinates(MovingCameraScene):
         y_coord.set_color(y_color)
 
         coord_label = VGroup(
-            TexMobject("("), x_coord,
-            TexMobject(","), y_coord,
-            TexMobject(")")
+            Tex("("), x_coord,
+            Tex(","), y_coord,
+            Tex(")")
         )
         coord_label.arrange(RIGHT, buff=SMALL_BUFF)
         coord_label[2].align_to(coord_label[0], DOWN)
@@ -789,7 +789,7 @@ class IntroducePolarPlot(RefresherOnPolarCoordinates):
     def construct(self):
         self.plane = NumberPlane()
         grid = self.get_polar_grid()
-        title = TextMobject("Polar coordinates")
+        title = TexText("Polar coordinates")
         title.scale(3)
         title.set_stroke(BLACK, 10, background=True)
         title.to_edge(UP)
@@ -814,7 +814,7 @@ class ReplacePolarCoordinatesWithPrimes(RefresherOnPolarCoordinates):
         p_coords.x_coord.set_color(GREY_B)
         p_coords.y_coord.set_color(GREY_B)
 
-        some_prime = TextMobject("Some prime")
+        some_prime = TexText("Some prime")
         some_prime.scale(1.5)
         some_prime.next_to(p_coords.get_left(), DOWN, buff=1.5)
         arrows = VGroup(*[
@@ -826,7 +826,7 @@ class ReplacePolarCoordinatesWithPrimes(RefresherOnPolarCoordinates):
             for coord in [p_coords.x_coord, p_coords.y_coord]
         ])
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(p_coords, LEFT)
 
         self.add(coords)
@@ -1054,10 +1054,10 @@ class CountRays(CountSpirals):
 
 class AskAboutRelationToPrimes(TeacherStudentsScene):
     def construct(self):
-        numbers = TextMobject("20, 280")
+        numbers = TexText("20, 280")
         arrow = Arrow(LEFT, RIGHT)
-        primes = TextMobject("2, 3, 5, 7, 11, \\dots")
-        q_marks = TextMobject("???")
+        primes = TexText("2, 3, 5, 7, 11, \\dots")
+        q_marks = TexText("???")
         q_marks.set_color(YELLOW)
 
         group = VGroup(primes, arrow, numbers)
@@ -1205,7 +1205,7 @@ class QuestionIsMisleading(TeacherStudentsScene):
 
 class JustPrimesLabel(Scene):
     def construct(self):
-        text = TextMobject("Just the primes")
+        text = TexText("Just the primes")
         text.scale(2)
         text.to_corner(UL)
         self.play(Write(text))
@@ -1217,7 +1217,7 @@ class DirichletComingUp(Scene):
     def construct(self):
         image = ImageMobject("Dirichlet")
         image.set_height(3)
-        words = TextMobject(
+        words = TexText(
             "Coming up: \\\\", "Dirichlet's theorem",
             alignment="",
         )
@@ -1245,7 +1245,7 @@ class ImagineYouFoundIt(TeacherStudentsScene):
         bubble = you.get_bubble(direction=LEFT)
         bubble[-1].set_fill(GREEN_SCREEN, 1)
 
-        you_label = TextMobject("You")
+        you_label = TexText("You")
         arrow = Vector(DOWN)
         arrow.next_to(you, UP)
         you_label.next_to(arrow, UP)
@@ -1390,12 +1390,12 @@ class PrimeSpiralsAtScale1000(SpiralScene):
 
 class SeparateIntoTwoQuestions(Scene):
     def construct(self):
-        top_q = TextMobject("Why do", " primes", " cause", " spirals", "?")
+        top_q = TexText("Why do", " primes", " cause", " spirals", "?")
         top_q.scale(2)
         top_q.to_edge(UP)
 
-        q1 = TextMobject("Where do the\\\\", "spirals", " come from?")
-        q2 = TextMobject("What happens when\\\\", "filtering to", " primes", "?")
+        q1 = TexText("Where do the\\\\", "spirals", " come from?")
+        q2 = TexText("What happens when\\\\", "filtering to", " primes", "?")
         for q in q1, q2:
             q.scale(1.3)
             q.next_to(top_q, DOWN, LARGE_BUFF)
@@ -1434,7 +1434,7 @@ class SeparateIntoTwoQuestions(Scene):
 
 class TopQuestionCross(Scene):
     def construct(self):
-        top_q = TextMobject("Why do", " primes", " cause", " spirals", "?")
+        top_q = TexText("Why do", " primes", " cause", " spirals", "?")
         top_q.scale(2)
         top_q.to_edge(UP)
         cross = Cross(top_q)
@@ -1498,7 +1498,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
         ])
 
         formula = VGroup(
-            *TexMobject("6k", "+"),
+            *Tex("6k", "+"),
             Integer(1)
         )
         formula.arrange(RIGHT, buff=SMALL_BUFF)
@@ -1603,7 +1603,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
 
         # Writing next to the 6
         six = boxes[6][1]
-        rhs = TexMobject(
+        rhs = Tex(
             "\\text{radians}",
             "\\approx",
             "2\\pi",
@@ -1611,7 +1611,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
         )
         rhs.next_to(six, RIGHT, 2 * SMALL_BUFF, aligned_edge=DOWN)
         rhs.add_background_rectangle()
-        tau_value = TexMobject("{:.8}\\dots".format(TAU))
+        tau_value = Tex("{:.8}\\dots".format(TAU))
         tau_value.next_to(rhs[3], UP, aligned_edge=LEFT)
 
         # Animations
@@ -1666,7 +1666,7 @@ class ExplainSixSpirals(ShowSpiralsForWholeNumbers):
             else:
                 non_primes.add(box)
 
-        prime_label = TextMobject("Primes")
+        prime_label = TexText("Primes")
         prime_label.set_color(TEAL)
         prime_label.match_width(VGroup(six_k, m_sym))
         prime_label.move_to(six_k, LEFT)
@@ -1766,13 +1766,13 @@ class IntroduceResidueClassTerminology(Scene):
         self.simple_english()
 
     def add_title(self):
-        title = TextMobject("Overly-fancy ", "terminology")
+        title = TexText("Overly-fancy ", "terminology")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         underline = Line().match_width(title)
         underline.next_to(title, DOWN, SMALL_BUFF)
 
-        pre_title = TextMobject("Terminology")
+        pre_title = TexText("Terminology")
         pre_title.replace(title, dim_to_match=1)
 
         self.play(FadeInFromDown(pre_title))
@@ -1814,10 +1814,10 @@ class IntroduceResidueClassTerminology(Scene):
                 s1.align_to(s2, RIGHT)
             commas = VGroup()
             for num in sequence[:-1]:
-                comma = TextMobject(",")
+                comma = TexText(",")
                 comma.next_to(num.get_corner(DR), RIGHT, SMALL_BUFF)
                 commas.add(comma)
-            dots = TexMobject("\\dots")
+            dots = Tex("\\dots")
             dots.next_to(sequence.get_corner(DR), RIGHT, SMALL_BUFF)
             sequence.numbers = VGroup(*sequence)
             sequence.commas = commas
@@ -1828,7 +1828,7 @@ class IntroduceResidueClassTerminology(Scene):
             sequence.sort(lambda p: p[0])
 
         labels = VGroup(*[
-            TexMobject("6k + {}:".format(r))
+            Tex("6k + {}:".format(r))
             for r in range(6)
         ])
         labels.set_color(YELLOW)
@@ -1854,7 +1854,7 @@ class IntroduceResidueClassTerminology(Scene):
     def add_terms(self):
         sequences = self.sequences
 
-        terms = TextMobject(
+        terms = TexText(
             "``", "Residue\\\\",
             "classes\\\\",
             "mod ", "6''"
@@ -1864,11 +1864,11 @@ class IntroduceResidueClassTerminology(Scene):
         terms.to_edge(RIGHT)
 
         res_brace = Brace(terms.get_part_by_tex("Residue"), UP)
-        remainder = TextMobject("Remainder")
+        remainder = TexText("Remainder")
         remainder.next_to(res_brace, UP, SMALL_BUFF)
 
         mod_brace = Brace(terms.get_part_by_tex("mod"), DOWN)
-        mod_def = TextMobject(
+        mod_def = TexText(
             "``where the thing\\\\you divide by is''"
         )
         mod_def.next_to(mod_brace, DOWN, SMALL_BUFF)
@@ -1942,7 +1942,7 @@ class IntroduceResidueClassTerminology(Scene):
         randy.flip()
         randy.to_corner(DR)
 
-        new_phrase = TextMobject("Everything 2 above\\\\a multiple of 6")
+        new_phrase = TexText("Everything 2 above\\\\a multiple of 6")
         new_phrase.scale(1.2)
         new_phrase.set_color(RED_B)
         new_phrase.next_to(sequences[2])
@@ -2018,7 +2018,7 @@ class SimpleLongDivision(MovingCameraScene):
 
 class ZoomOutWords(Scene):
     def construct(self):
-        words = TextMobject("Zoom out!")
+        words = TexText("Zoom out!")
         words.scale(3)
         self.play(FadeInFromLarge(words))
         self.wait()
@@ -2114,11 +2114,11 @@ class Explain44Spirals(ExplainSixSpirals):
         ff = labels[44].copy()
         ff.generate_target()
 
-        radians = TextMobject("radians")
+        radians = TexText("radians")
         ff.target.scale(1.5)
         ff.target.set_opacity(1)
 
-        unit_conversion = TexMobject(
+        unit_conversion = Tex(
             "/\\,", "\\left(", "2\\pi",
             "{\\text{radians}", "\\over", "\\text{rotations}}",
             "\\right)"
@@ -2130,7 +2130,7 @@ class Explain44Spirals(ExplainSixSpirals):
         ff.target.align_to(radians, DOWN)
         top_line.to_corner(UR, buff=0.4)
 
-        next_line = TexMobject(
+        next_line = Tex(
             "=", "44", "/", "2\\pi",
             "\\text{ rotations}"
         )
@@ -2187,10 +2187,10 @@ class Explain44Spirals(ExplainSixSpirals):
         ra_rect, ra_l1, ra_l2, ra_brace, ra_value = ra
 
         lines = VGroup(
-            TexMobject("{44", "\\over", "2\\pi}", "\\approx", "7"),
-            TexMobject("\\Leftrightarrow"),
-            TexMobject("{44", "\\over", "7}", "\\approx", "2\\pi"),
-            TexMobject("{22", "\\over", "7}", "\\approx", "\\pi"),
+            Tex("{44", "\\over", "2\\pi}", "\\approx", "7"),
+            Tex("\\Leftrightarrow"),
+            Tex("{44", "\\over", "7}", "\\approx", "2\\pi"),
+            Tex("{22", "\\over", "7}", "\\approx", "\\pi"),
         )
         lines.arrange(RIGHT, buff=MED_SMALL_BUFF)
         lines.to_corner(UL)
@@ -2372,7 +2372,7 @@ class Label44Spirals(Explain44Spirals):
             )
             arc.add_tip()
             mid_point = arc.point_from_proportion(0.5)
-            r_label = TextMobject("1 radian")
+            r_label = TexText("1 radian")
             # r_label.rotate(
             #     angle_of_vector(arc.get_end() - arc.get_start()) - PI
             # )
@@ -2398,7 +2398,7 @@ class Label44Spirals(Explain44Spirals):
         mod = 44
         labels = VGroup(*[
             VGroup(
-                *TexMobject("44k", "+"),
+                *Tex("44k", "+"),
                 Integer(n)
             ).arrange(RIGHT, buff=SMALL_BUFF)
             for n in range(mod)
@@ -2417,7 +2417,7 @@ class Label44Spirals(Explain44Spirals):
 
 class ResidueClassMod44Label(Scene):
     def construct(self):
-        text = TextMobject(
+        text = TexText(
             "``Residue class mod 44''"
         )
         text.scale(2)
@@ -2459,7 +2459,7 @@ class EliminateNonPrimativeResidueClassesOf44(Label44Spirals):
             )
             self.play(FadeOut(VGroup(labels[n], spirals[n])))
 
-        words = TextMobject("All even numbers")
+        words = TexText("All even numbers")
         words.scale(1.5)
         words.to_corner(UL)
         self.play(
@@ -2523,7 +2523,7 @@ class EliminateNonPrimativeResidueClassesOf44(Label44Spirals):
             for box in spiral
             if box.n not in primes
         ])
-        words = TextMobject("Just the primes")
+        words = TexText("Just the primes")
         words.set_height(0.1 * frame.get_height())
         words.next_to(frame.get_corner(UL), DR, LARGE_BUFF)
 
@@ -2591,7 +2591,7 @@ class IntroduceTotientJargon(TeacherStudentsScene):
             numbers
         ))
 
-        words = TextMobject(
+        words = TexText(
             "Which ones ", "don't\\\\",
             "share any factors\\\\",
             "with ", "44",
@@ -2637,20 +2637,20 @@ class IntroduceTotientJargon(TeacherStudentsScene):
         example.target.match_height(ff)
         num_pair = VGroup(
             ff.target,
-            TextMobject("and").scale(1.5),
+            TexText("and").scale(1.5),
             example.target,
         )
         num_pair.arrange(RIGHT)
         num_pair.move_to(words.get_top(), DOWN)
         dsf.target.next_to(num_pair, DOWN, MED_LARGE_BUFF)
 
-        phrase1 = TextMobject("are ", "``relatively prime''")
-        phrase2 = TextMobject("are ", "``coprime''")
+        phrase1 = TexText("are ", "``relatively prime''")
+        phrase2 = TexText("are ", "``coprime''")
         for phrase in phrase1, phrase2:
             phrase.scale(1.5)
             phrase.move_to(dsf.target)
             phrase[1].set_color(BLUE)
-            phrase.arrow = TexMobject("\\Updownarrow")
+            phrase.arrow = Tex("\\Updownarrow")
             phrase.arrow.scale(1.5)
             phrase.arrow.next_to(phrase, DOWN, 2 * SMALL_BUFF)
             phrase.rect = SurroundingRectangle(phrase[1])
@@ -2703,7 +2703,7 @@ class IntroduceTotientJargon(TeacherStudentsScene):
         words_to_keep = VGroup(ff, num_pair[1], example, phrase2)
         to_fade = VGroup(phrase2.arrow, phrase1, phrase1.arrow, dsf)
 
-        totient = TexMobject("\\phi", "(", "44", ")", "=", "20")
+        totient = Tex("\\phi", "(", "44", ")", "=", "20")
         totient.set_color_by_tex("44", YELLOW)
         totient.scale(1.5)
         totient.move_to(num_pair, UP)
@@ -2722,7 +2722,7 @@ class IntroduceTotientJargon(TeacherStudentsScene):
 
         # Label totient
         brace = Brace(phi, DOWN)
-        etf = TextMobject("Euler's totient function")
+        etf = TexText("Euler's totient function")
         etf.next_to(brace, DOWN)
         etf.shift(RIGHT)
 
@@ -2758,7 +2758,7 @@ class IntroduceTotientJargon(TeacherStudentsScene):
             totient_group.to_edge, DOWN,
         )
 
-        totatives = TextMobject("``Totatives''")
+        totatives = TexText("``Totatives''")
         totatives.scale(2)
         totatives.set_color(BLUE)
         totatives.move_to(ORIGIN)
@@ -2781,7 +2781,7 @@ class TwoUnrelatedFacts(Scene):
         self.show_columns()
 
     def add_title(self):
-        title = TextMobject("Two (unrelated) bits of number theory")
+        title = TexText("Two (unrelated) bits of number theory")
         title.set_width(FRAME_WIDTH - 1)
         title.to_edge(UP)
         h_line = Line()
@@ -2804,7 +2804,7 @@ class TwoUnrelatedFacts(Scene):
         )
         v_line.match_style(h_line)
 
-        approx = TexMobject(
+        approx = Tex(
             "{44 \\over 7} \\approx 2\\pi"
         )
         approx.scale(1.5)
@@ -2824,7 +2824,7 @@ class TwoUnrelatedFacts(Scene):
                 row = VGroup()
                 for n in range(r, r + n_terms * mod, mod):
                     elem = Integer(n)
-                    comma = TexMobject(",")
+                    comma = Tex(",")
                     comma.next_to(
                         elem.get_corner(DR),
                         RIGHT, SMALL_BUFF
@@ -2836,13 +2836,13 @@ class TwoUnrelatedFacts(Scene):
                     else:
                         non_primes.add(elem)
                 row.arrange(RIGHT, buff=0.3)
-                dots = TexMobject("\\dots")
+                dots = Tex("\\dots")
                 dots.next_to(row.get_corner(DR), RIGHT, SMALL_BUFF)
                 dots.shift(SMALL_BUFF * UP)
                 row.add(dots)
                 row.r = r
             if r == 12:
-                row = TexMobject("\\vdots")
+                row = Tex("\\vdots")
             residue_classes.add(row)
 
         residue_classes.arrange(DOWN)
@@ -2980,14 +2980,14 @@ class ExplainRays(Explain44Spirals):
     def show_arithmetic(self):
         label_710 = self.label_710
 
-        equation = TexMobject(
+        equation = Tex(
             "710", "\\text{ radians}", "=",
             "(710 / 2\\pi)", "\\text{ rotations}",
         )
         equation.to_corner(UL)
         frac = equation.get_part_by_tex("710 / 2\\pi")
         brace = Brace(frac, DOWN, buff=SMALL_BUFF)
-        value = TextMobject("{:.15}".format(710 / TAU))
+        value = TexText("{:.15}".format(710 / TAU))
         value.next_to(brace, DOWN, SMALL_BUFF)
         values = VGroup(*[
             value[0][:n].deepcopy().next_to(brace, DOWN, SMALL_BUFF)
@@ -2999,14 +2999,14 @@ class ExplainRays(Explain44Spirals):
         rect.set_stroke(WHITE, 2)
         rect.set_fill(GREY_D, 1)
 
-        approx = TexMobject(
+        approx = Tex(
             "{710", "\\over", "113}",
             "\\approx", "2\\pi",
         )
         approx.next_to(rect, DOWN)
         approx.align_to(equation, LEFT)
 
-        approx2 = TexMobject(
+        approx2 = Tex(
             "{355", "\\over", "113}",
             "\\approx", "\\pi",
         )
@@ -3067,7 +3067,7 @@ class ExplainRays(Explain44Spirals):
         axes = self.axes
         spiral = self.spiral
 
-        times = TexMobject("\\times")
+        times = Tex("\\times")
         times.next_to(label, LEFT, SMALL_BUFF)
         k_label = Integer(1)
         k_label.match_height(label)
@@ -3122,7 +3122,7 @@ class ExplainRays(Explain44Spirals):
         self.wait()
 
         # Show other residue classes
-        new_label = TexMobject(
+        new_label = Tex(
             "710", "k", "+",
             tex_to_color_map={"k": YELLOW}
         )
@@ -3192,8 +3192,8 @@ class ExplainRays(Explain44Spirals):
 class CompareTauToApprox(Scene):
     def construct(self):
         eqs = VGroup(
-            TexMobject("2\\pi", "=", "{:.10}\\dots".format(TAU)),
-            TexMobject("\\frac{710}{113}", "=", "{:.10}\\dots".format(710 / 113)),
+            Tex("2\\pi", "=", "{:.10}\\dots".format(TAU)),
+            Tex("\\frac{710}{113}", "=", "{:.10}\\dots".format(710 / 113)),
         )
         eqs.arrange(DOWN, buff=LARGE_BUFF)
         eqs[1].shift((eqs[0][2].get_left()[0] - eqs[1][2].get_left()[0]) * RIGHT)
@@ -3217,7 +3217,7 @@ class RecommendedMathologerVideo(Scene):
         full_rect.set_fill(GREY_D, 1)
         self.add(full_rect)
 
-        title = TextMobject("Recommended Mathologer video")
+        title = TexText("Recommended Mathologer video")
         title.set_width(FRAME_WIDTH - 1)
         title.to_edge(UP)
         screen_rect = SurroundingRectangle(ScreenRectangle(height=5.9), buff=SMALL_BUFF)
@@ -3276,7 +3276,7 @@ class ShowClassesOfPrimeRays(SpiralScene):
             ray.set_opacity(0.9)
 
             label = VGroup(
-                *TexMobject("710k", "+"),
+                *Tex("710k", "+"),
                 Integer(r)
             )
             label.arrange(RIGHT, buff=SMALL_BUFF)
@@ -3305,7 +3305,7 @@ class ShowClassesOfPrimeRays(SpiralScene):
 
 class ShowFactorsOf710(Scene):
     def construct(self):
-        equation = TexMobject(
+        equation = Tex(
             "710", "=",
             "71", "\\cdot",
             "5", "\\cdot",
@@ -3313,7 +3313,7 @@ class ShowFactorsOf710(Scene):
         )
         equation.scale(1.5)
         equation.to_corner(UL)
-        ten = TexMobject("10")
+        ten = Tex("10")
         ten.match_height(equation)
         ten.move_to(equation.get_part_by_tex("5"), LEFT)
 
@@ -3355,7 +3355,7 @@ class LookAtRemainderMod710(Scene):
             "n": YELLOW,
             "r": GREEN
         }
-        equation = TexMobject(
+        equation = Tex(
             "n", "=", "710", "k", "+", "r",
             tex_to_color_map=t2c,
         )
@@ -3366,8 +3366,8 @@ class LookAtRemainderMod710(Scene):
         n_arrow.set_color(t2c["n"])
         r_arrow.set_color(t2c["r"])
 
-        n_label = TextMobject("Some\\\\number")
-        r_label = TextMobject("Remainder")
+        n_label = TexText("Some\\\\number")
+        r_label = TexText("Remainder")
         VGroup(n_label, r_label).scale(1.5)
         n_label.next_to(n_arrow, DOWN)
         n_label.match_color(n_arrow)
@@ -3429,7 +3429,7 @@ class EliminateNonPrimative710Residues(ShowClassesOfPrimeRays):
         colors = [RED, BLUE, PINK]
 
         pre_label, r_label = label = VGroup(
-            TexMobject("710k + "),
+            Tex("710k + "),
             Integer(100)
         )
         label.scale(1.5)
@@ -3473,7 +3473,7 @@ class EliminateNonPrimative710Residues(ShowClassesOfPrimeRays):
 
 class Show280Computation(Scene):
     def construct(self):
-        equation = TexMobject(
+        equation = Tex(
             "\\phi(710) = ",
             "710",
             "\\left({1 \\over 2}\\right)",
@@ -3485,9 +3485,9 @@ class Show280Computation(Scene):
         equation.set_width(FRAME_WIDTH - 1)
         equation.move_to(UP)
         words = VGroup(
-            TextMobject("Filter out\\\\evens"),
-            TextMobject("Filter out\\\\multiples of 5"),
-            TextMobject("Filter out\\\\multiples of 71"),
+            TexText("Filter out\\\\evens"),
+            TexText("Filter out\\\\multiples of 5"),
+            TexText("Filter out\\\\multiples of 71"),
         )
         vects = [DOWN, UP, DOWN]
         colors = [RED, BLUE, LIGHT_PINK]
@@ -3501,7 +3501,7 @@ class Show280Computation(Scene):
             word.set_stroke(BLACK, 5, background=True)
         equation.set_stroke(BLACK, 5, background=True)
 
-        etf_label = TextMobject("Euler's totient function")
+        etf_label = TexText("Euler's totient function")
         etf_label.to_corner(UL)
         arrow = Arrow(etf_label.get_bottom(), equation[0][0].get_top())
         equation[0][0].set_color(YELLOW)
@@ -3537,7 +3537,7 @@ class TeacherHoldUp(TeacherStudentsScene):
 class DiscussPrimesMod10(Scene):
     def construct(self):
         labels = VGroup(*[
-            TextMobject(str(n), " mod 10:")
+            TexText(str(n), " mod 10:")
             for n in range(10)
         ])
         labels.arrange(DOWN, buff=0.35, aligned_edge=LEFT)
@@ -3556,9 +3556,9 @@ class DiscussPrimesMod10(Scene):
             sequence.next_to(label, RIGHT, buff=MED_LARGE_BUFF)
             for item in sequence:
                 if item is sequence[-1]:
-                    punc = TexMobject("\\dots")
+                    punc = Tex("\\dots")
                 else:
-                    punc = TextMobject(",")
+                    punc = TexText(",")
                 punc.next_to(item.get_corner(DR), RIGHT, SMALL_BUFF)
                 item.add(punc)
 
@@ -3724,11 +3724,11 @@ class BucketPrimesByLastDigit(Scene):
             y_labels.add(label)
         axes.add(y_labels)
 
-        x_axis_label = TextMobject(self.x_axis_label)
+        x_axis_label = TexText(self.x_axis_label)
         x_axis_label.next_to(axes.x_axis.get_end(), RIGHT, buff=MED_LARGE_BUFF)
         axes.add(x_axis_label)
 
-        y_axis_label = TextMobject("Proportion")
+        y_axis_label = TexText("Proportion")
         y_axis_label.next_to(axes.y_axis.get_end(), UP, buff=MED_LARGE_BUFF)
         # y_axis_label.set_color(self.bar_colors[0])
         axes.add(y_axis_label)
@@ -3838,7 +3838,7 @@ class BucketPrimesByLastDigit(Scene):
 
 class PhraseDirichletsTheoremFor10(TeacherStudentsScene):
     def construct(self):
-        expression = TexMobject(
+        expression = Tex(
             "\\lim_{x \\to \\infty}",
             "\\left(",
             "{\\text{\\# of primes $p$ where $p \\le x$} \\text{ and $p \\equiv 1$ mod 10}",
@@ -3858,7 +3858,7 @@ class PhraseDirichletsTheoremFor10(TeacherStudentsScene):
         num[len(denom):].set_color(YELLOW)
 
         x_example = VGroup(
-            TextMobject("Think, for example, $x = $"),
+            TexText("Think, for example, $x = $"),
             Integer(int(1e6)),
         )
         x_example.arrange(RIGHT)
@@ -3976,7 +3976,7 @@ class DirichletIn1837(MovingCameraScene):
             for date in [1837, 1859, 1896]
         ])
         d_label, rh_label, pnt_label = labels = VGroup(*[
-            TextMobject(text).next_to(arrow, UP)
+            TexText(text).next_to(arrow, UP)
             for arrow, text in zip(arrows, [
                 "Dirichlet's\\\\theorem\\\\1837",
                 "Riemann\\\\hypothesis\\\\1859",
@@ -4033,7 +4033,7 @@ class DirichletIn1837(MovingCameraScene):
 
     def get_title_and_underline(self):
         frame = self.camera_frame
-        title = TextMobject("Dirichlet's theorem")
+        title = TexText("Dirichlet's theorem")
         title.scale(1.5)
         title.next_to(frame.get_top(), DOWN, buff=MED_LARGE_BUFF)
         underline = Line()
@@ -4047,7 +4047,7 @@ class PhraseDirichletsTheorem(DirichletIn1837):
         self.add(*self.get_title_and_underline())
 
         # Copy-pasted, which isn't great
-        expression = TexMobject(
+        expression = Tex(
             "\\lim_{x \\to \\infty}",
             "\\left(",
             "{\\text{\\# of primes $p$ where $p \\le x$} \\text{ and $p \\equiv 1$ mod 10}",
@@ -4068,9 +4068,9 @@ class PhraseDirichletsTheorem(DirichletIn1837):
         one = num[-6]
         four = fourth[-1]
 
-        N = TexMobject("N")
-        r = TexMobject("r")
-        one_over_phi_N = TexMobject("1", "\\over", "\\phi(", "N", ")")
+        N = Tex("N")
+        r = Tex("r")
+        one_over_phi_N = Tex("1", "\\over", "\\phi(", "N", ")")
 
         N.set_color(MAROON_B)
         r.set_color(BLUE)
@@ -4080,16 +4080,16 @@ class PhraseDirichletsTheorem(DirichletIn1837):
         r.move_to(one, DOWN)
         one_over_phi_N.move_to(fourth, LEFT)
 
-        N_label = TextMobject("$N$", " is any number")
+        N_label = TexText("$N$", " is any number")
         N_label.set_color_by_tex("N", N.get_color())
         N_label.next_to(expression, DOWN, LARGE_BUFF)
 
-        r_label = TextMobject("$r$", " is coprime to ", "$N$")
+        r_label = TexText("$r$", " is coprime to ", "$N$")
         r_label[0].set_color(r.get_color())
         r_label[2].set_color(N.get_color())
         r_label.next_to(N_label, DOWN, MED_LARGE_BUFF)
 
-        phi_N_label = TexMobject(
+        phi_N_label = Tex(
             "\\phi({10}) = ",
             "\\#\\{1, 3, 7, 9\\} = 4",
             tex_to_color_map={
@@ -4154,7 +4154,7 @@ class PhraseDirichletsTheorem(DirichletIn1837):
         self.wait()
 
         # Fancier version
-        new_expression = TexMobject(
+        new_expression = Tex(
             "\\lim_{x \\to \\infty}",
             "\\left(",
             "{\\pi(x; {N}, {r})",
@@ -4214,12 +4214,12 @@ class PhraseDirichletsTheorem(DirichletIn1837):
 
 class MoreModestDirichlet(Scene):
     def construct(self):
-        ed = TextMobject(
+        ed = TexText(
             "Each (coprime) residue class ",
             "is equally dense with ",
             "primes."
         )
-        inf = TextMobject(
+        inf = TexText(
             "Each (coprime) residue class ",
             "has infinitely many ",
             "primes."
@@ -4288,7 +4288,7 @@ class TalkAboutProof(TeacherStudentsScene):
         self.wait(3)
 
         # Bring up complex analysis
-        ca = TextMobject("Complex ", "Analysis")
+        ca = TexText("Complex ", "Analysis")
         ca.move_to(self.hold_up_spot, DOWN)
 
         self.play(
@@ -4321,11 +4321,11 @@ class HighlightTwinPrimes(Scene):
         self.show_twin_primes()
 
     def add_paper_titles(self):
-        gpy = TextMobject(
+        gpy = TexText(
             "Goldston, Pintz, Yildirim\\\\",
             "2005",
         )
-        zhang = TextMobject("Zhang\\\\2014")
+        zhang = TexText("Zhang\\\\2014")
 
         gpy.move_to(FRAME_WIDTH * LEFT / 4)
         gpy.to_edge(UP)
@@ -4409,11 +4409,11 @@ class RandomToImportant(PiCreatureScene):
         morty = self.pi_creature
         morty.center().to_edge(DOWN)
 
-        left_comment = TextMobject("Arbitrary question")
+        left_comment = TexText("Arbitrary question")
         left_comment.to_edge(UP)
         left_comment.shift(3.5 * LEFT)
 
-        right_comment = TextMobject("Deep fact")
+        right_comment = TexText("Deep fact")
         right_comment.to_edge(UP)
         right_comment.shift(3.5 * RIGHT)
 
@@ -4545,15 +4545,15 @@ class RandomWalkOfTopics(Scene):
         #     edge.scale((llen - 2 * rad) / llen)
 
         title = VGroup(
-            TextMobject("Important"),
-            TexMobject("\\Leftrightarrow"),
-            TextMobject("Many connections"),
+            TexText("Important"),
+            Tex("\\Leftrightarrow"),
+            TexText("Many connections"),
         )
         title.scale(1.5)
         title.arrange(RIGHT, buff=MED_LARGE_BUFF)
         title.to_edge(UP)
 
-        arrow_words = TextMobject("(in my view)")
+        arrow_words = TexText("(in my view)")
         arrow_words.set_width(2 * title[1].get_width())
         arrow_words.next_to(title[1], UP, SMALL_BUFF)
 
@@ -4912,7 +4912,7 @@ class Thumbnail(SpiralScene):
         dots.set_fill([TEAL_E, TEAL_A])
         dots.set_stroke(BLACK, 1)
 
-        label = TextMobject(
+        label = TexText(
             "($p$, $p$) for all primes $p$,\\\\",
             "in polar coordinates",
             tex_to_color_map={

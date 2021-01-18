@@ -11,10 +11,10 @@ class Intro(TransformOverIncreasingOrders):
         raise Exception("string_to_args Not Implemented!")
 
     def construct(self):
-        words1 = TextMobject(
+        words1 = TexText(
             "If you watched my video about Hilbert's space-filling curve\\dots"
         )
-        words2 = TextMobject(
+        words2 = TexText(
             "\\dots you might be curious to see what a few other space-filling curves look like."
         )
         words2.scale(0.8)
@@ -36,14 +36,14 @@ class Intro(TransformOverIncreasingOrders):
 
 class BringInPeano(Intro):
     def construct(self):
-        words1 = TextMobject("""
+        words1 = TexText("""
             For each one, see if you can figure out what
             the pattern of construction is.
         """)
-        words2 = TextMobject("""
+        words2 = TexText("""
             This one is the Peano curve.
         """)
-        words3 = TextMobject("""
+        words3 = TexText("""
             It is the original space-filling curve.
         """)
         self.setup(PeanoCurve)
@@ -61,11 +61,11 @@ class BringInPeano(Intro):
 
 class FillOtherShapes(Intro):
     def construct(self):
-        words1 = TextMobject("""
+        words1 = TexText("""
             But of course, there's no reason we should limit 
             ourselves to filling in squares.
         """)
-        words2 = TextMobject("""
+        words2 = TexText("""
             Here's a simple triangle-filling curve I defined
             in a style reflective of a Hilbert curve.
         """)
@@ -88,12 +88,12 @@ class SmallerFlowSnake(FlowSnake):
 
 class MostDelightfulName(Intro):
     def construct(self):
-        words1 = TextMobject("""
+        words1 = TexText("""
             This one has the most delightful name, 
             thanks to mathematician/programmer Bill Gosper:
         """)
-        words2 = TextMobject("``Flow Snake''")
-        words3 = TextMobject("""
+        words2 = TexText("``Flow Snake''")
+        words3 = TexText("""
             What makes this one particularly interesting
             is that the boundary itself is a fractal.
         """)
@@ -115,14 +115,14 @@ class MostDelightfulName(Intro):
 
 class SurpriseFractal(Intro):
     def construct(self):
-        words = TextMobject("""
+        words = TexText("""
             It might come as a surprise how some well-known
             fractals can be described with curves.
         """)
         words.to_edge(UP)
 
         self.setup(Sierpinski)
-        self.add(TextMobject("Speaking of other fractals\\dots"))
+        self.add(TexText("Speaking of other fractals\\dots"))
         self.wait(3)
         self.clear()
         self.play(ShimmerIn(words))
@@ -132,7 +132,7 @@ class SurpriseFractal(Intro):
 
 class IntroduceKoch(Intro):
     def construct(self):
-        words = list(map(TextMobject, [
+        words = list(map(TexText, [
             "This is another famous fractal.",
             "The ``Koch Snowflake''",
             "Let's finish things off by seeing how to turn \
@@ -185,7 +185,7 @@ class FromKochToSpaceFilling(Scene):
 
 
     def revisit_koch(self):
-        words = list(map(TextMobject, [
+        words = list(map(TexText, [
             "First, look at how one section of this curve is made.",
             "This pattern of four lines is the ``seed''",
             "With each iteration, every straight line is \
@@ -221,7 +221,7 @@ class FromKochToSpaceFilling(Scene):
 
 
     def show_angles(self):
-        words = TextMobject("""
+        words = TexText("""
             Let's see what happens as we change
             the angle in this seed
         """)
@@ -238,7 +238,7 @@ class FromKochToSpaceFilling(Scene):
             ).shift(curve.get_points()[curve.get_num_points()/2])
             for curve, r in zip(curves, [0.6, 0.7, 0.4])
         ]
-        theta = TexMobject("\\theta")
+        theta = Tex("\\theta")
         theta.shift(arcs[0].get_center()+2.5*DOWN)
         arrow = Arrow(theta, arcs[0])
 
@@ -262,11 +262,11 @@ class FromKochToSpaceFilling(Scene):
 
     def show_change_side_by_side(self):
 
-        seed = TextMobject("Seed")
+        seed = TexText("Seed")
         seed.shift(3*LEFT+2*DOWN)
-        fractal = TextMobject("Fractal")
+        fractal = TexText("Fractal")
         fractal.shift(3*RIGHT+2*DOWN)
-        words = list(map(TextMobject, [
+        words = list(map(TexText, [
             "A sharper angle results in a richer curve",
             "A more obtuse angle gives a sparser curve",
             "And as the angle approaches 0\\dots",

@@ -28,6 +28,7 @@ universal_import_line: "from manim_imports_ext import *"
 style:
   font: "CMU Serif"
   background_color: "#000000"
+window_position: UR
 camera_qualities:
   low:
     resolution: "854x480"

@@ -35,7 +35,7 @@ class ContrastPDEToODE(TeacherStudentsScene):
     def construct(self):
         student = self.students[2]
         pde, ode = words = VGroup(*[
-            TextMobject(
+            TexText(
                 text + "\\\\",
                 "Differential\\\\",
                 "Equation"
@@ -50,7 +50,7 @@ class ContrastPDEToODE(TeacherStudentsScene):
         words.arrange(RIGHT, buff=LARGE_BUFF)
         words.next_to(student.get_corner(UR), UP, MED_LARGE_BUFF)
         words.shift(UR)
-        lt = TexMobject("<")
+        lt = Tex("<")
         lt.scale(1.5)
         lt.move_to(Line(pde.get_right(), ode.get_left()))
 

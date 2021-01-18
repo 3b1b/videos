@@ -55,8 +55,8 @@ class StepFunctionExample(BringTwoRodsTogether, FourierSeriesIllustraiton):
         )
 
         words = VGroup(
-            TextMobject("Hot").next_to(rods[0], DOWN),
-            TextMobject("Cold").next_to(rods[1], DOWN),
+            TexText("Hot").next_to(rods[0], DOWN),
+            TexText("Cold").next_to(rods[1], DOWN),
         )
 
         for pair in rods, words:
@@ -282,11 +282,11 @@ class BreakDownStepFunction(StepFunctionExample):
         ])
         for n, ma in zip(it.count(1, 2), mini_axes):
             if n == 1:
-                t1 = TexMobject("1")
-                t2 = TexMobject("-1")
+                t1 = Tex("1")
+                t2 = Tex("-1")
             else:
-                t1 = TexMobject("1 / " + str(n))
-                t2 = TexMobject("-1 / " + str(n))
+                t1 = Tex("1 / " + str(n))
+                t2 = Tex("-1 / " + str(n))
             VGroup(t1, t2).scale(1.5)
             t1.next_to(ma.y_axis.n2p(1), LEFT, MED_SMALL_BUFF)
             t2.next_to(ma.y_axis.n2p(-1), LEFT, MED_SMALL_BUFF)
@@ -308,7 +308,7 @@ class BreakDownStepFunction(StepFunctionExample):
         # mini_axes.set_width(FRAME_WIDTH - 1.5)
         # mini_axes.to_edge(LEFT)
 
-        dots = TexMobject("\\vdots")
+        dots = Tex("\\vdots")
         dots.next_to(mini_axes, DOWN)
         dots.shift_onto_screen()
 

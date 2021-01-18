@@ -69,7 +69,7 @@ class GeneralizeToComplexFunctions(Scene):
             stroke_width=1,
         ))
 
-        real_words = TextMobject(
+        real_words = TexText(
             "Real number\\\\output"
         )
         real_words.to_edge(LEFT)
@@ -190,7 +190,7 @@ class GeneralizeToComplexFunctions(Scene):
         circle.set_width(2 * v1.get_length())
         circle.move_to(plane.n2p(0))
 
-        formula = TexMobject(
+        formula = Tex(
             # "\\cos(x) ="
             # "{1 \\over 2}e^{ix} +"
             # "{1 \\over 2}e^{-ix}",
@@ -248,7 +248,7 @@ class GeneralizeToComplexFunctions(Scene):
         plane = ComplexPlane(**self.complex_plane_config)
         plane.add_coordinates()
 
-        plane.label = TextMobject("Complex plane")
+        plane.label = TexText("Complex plane")
         plane.label.scale(1.5)
         plane.label.to_corner(UR, buff=MED_SMALL_BUFF)
         return plane
@@ -276,7 +276,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
 
     def setup_plane(self):
         plane = self.get_complex_plane()
-        plane.sublabel = TextMobject("(Output space)")
+        plane.sublabel = TexText("(Output space)")
         plane.sublabel.add_background_rectangle()
         plane.sublabel.next_to(plane.label, DOWN)
         self.add(plane, plane.label)
@@ -287,7 +287,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
         rect.to_corner(UL, buff=SMALL_BUFF)
 
         input_line = self.get_input_line(rect)
-        input_words = TextMobject("Input space")
+        input_words = TexText("Input space")
         input_words.next_to(
             rect.get_bottom(), UP,
             SMALL_BUFF,
@@ -378,7 +378,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
         plane = self.plane
         real_line = plane.x_axis.copy()
         real_line.set_stroke(RED, 4)
-        real_words = TextMobject("Real number line")
+        real_words = TexText("Real number line")
         real_words.next_to(ORIGIN, UP)
         real_words.to_edge(RIGHT)
 
@@ -414,7 +414,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
         self.wait()
 
         # Flatten to 1d
-        real_function_word = TextMobject(
+        real_function_word = TexText(
             "Real-valued function"
         )
         real_function_word.next_to(ORIGIN, DOWN, MED_LARGE_BUFF)
@@ -445,7 +445,7 @@ class ClarifyInputAndOutput(GeneralizeToComplexFunctions):
 
     def get_path(self):
         # mob = SVGMobject("BatmanLogo")
-        mob = TexMobject("\\pi")
+        mob = Tex("\\pi")
         path = mob.family_members_with_points()[0]
         path.set_height(3.5)
         path.move_to(2 * DOWN, DOWN)
@@ -573,7 +573,7 @@ class SimpleComplexExponentExample(ClarifyInputAndOutput):
         )
 
         input_label = VGroup(
-            TexMobject(*self.input_tex_args),
+            Tex(*self.input_tex_args),
             DecimalNumber(),
         )
         input_label[0].set_color_by_tex("t", PINK)
@@ -605,7 +605,7 @@ class SimpleComplexExponentExample(ClarifyInputAndOutput):
             return plane.n2p(get_output())
 
         output_label, static_output_label = [
-            TexMobject(
+            Tex(
                 "e^{i t}" + s,
                 tex_to_color_map={"t": PINK},
                 background_stroke_width=3,

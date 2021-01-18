@@ -72,14 +72,14 @@ class ExampleApproximation(GraphScene):
             for n in self.order_sequence
         ]
 
-        near_text = TextMobject(
+        near_text = TexText(
             "Near %s $= %d$"%(
                 self.x_axis_label, self.center_point
             )
         )
         near_text.to_corner(UP + RIGHT)
         near_text.add_background_rectangle()
-        equation = TexMobject(
+        equation = Tex(
             self.function_tex, 
             "\\approx",
             *self.approximation_terms
@@ -421,7 +421,7 @@ class Pendulum(ReconfigurableScene):
         return brace
 
     def get_height_brace_tex(self, brace):
-        tex_mob = TexMobject(
+        tex_mob = Tex(
             "R", "\\big(1-", "\\cos(", "\\theta", ")", "\\big)"
         )
         tex_mob.set_color_by_tex("theta", YELLOW)
@@ -434,7 +434,7 @@ class Pendulum(ReconfigurableScene):
             angle = self.angle,
             color = YELLOW
         )
-        theta = TexMobject("\\theta")
+        theta = Tex("\\theta")
         theta.set_color(YELLOW)
         theta.next_to(
             arc.point_from_proportion(0.5), 
@@ -445,7 +445,7 @@ class Pendulum(ReconfigurableScene):
         return arc, theta
 
     def get_cosine_approx(self):
-        approx = TexMobject(*self.approx_tex)
+        approx = Tex(*self.approx_tex)
         approx.set_color_by_tex("theta", YELLOW)
         approx.theta_squared_over_two = VGroup(*approx[1:5])
 
@@ -530,7 +530,7 @@ class ExampleApproximationWithCos(ExampleApproximationWithSine):
         ]
         self.x_axis_labels = VGroup()
         for x_val, label in x_val_label_pairs:
-            tex = TexMobject(label)
+            tex = Tex(label)
             tex.next_to(self.coords_to_point(x_val, 0), DOWN)
             self.add(tex)
             self.x_axis_labels.add(tex)
@@ -560,7 +560,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
         self.box_final_answer()
 
     def add_cosine_graph(self):
-        cosine_label = TexMobject("\\cos(x)")
+        cosine_label = Tex("\\cos(x)")
         cosine_label.to_corner(UP+LEFT)
         cosine_graph = self.get_graph(np.cos)
         dot = Dot(color = WHITE)
@@ -598,7 +598,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
     def introduce_quadratic_constants(self):
         quadratic_tex = self.get_quadratic_tex("c_0", "c_1", "c_2")
         const_terms = quadratic_tex.get_parts_by_tex("c")
-        free_to_change = TextMobject("Free to change")
+        free_to_change = TexText("Free to change")
         free_to_change.next_to(const_terms, DOWN, LARGE_BUFF)
         arrows = VGroup(*[
             Arrow(
@@ -649,7 +649,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             self.cosine_label, RIGHT,
             align_using_submobjects = True
         )
-        one = TexMobject("1")
+        one = Tex("1")
         one.next_to(arrow, RIGHT)
         one.save_state()
         one.move_to(self.cosine_label)
@@ -677,7 +677,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             "c_0", "c_1", "c_2", arg = "0"
         )
         poly_at_zero.next_to(self.quadratic_tex, DOWN)
-        equals_c0 = TexMobject("=", "c_0", "+0")
+        equals_c0 = Tex("=", "c_0", "+0")
         equals_c0.set_color_by_tex("c_0", self.colors[0])
         equals_c0.next_to(
             poly_at_zero.get_part_by_tex("="), DOWN,
@@ -690,7 +690,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             self.quadratic_tex,
         )
         poly_group_target = VGroup(
-            TexMobject("=", "1", "+0").set_color_by_tex("1", self.colors[0]),
+            Tex("=", "1", "+0").set_color_by_tex("1", self.colors[0]),
             self.get_quadratic_tex("1", "c_1", "c_2", arg = "0"),
             self.get_quadratic_tex("1", "c_1", "c_2"),
         )
@@ -780,7 +780,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
         derivative_at_zero = self.get_quadratic_derivative(
             "c_1", "c_2", arg = "0"
         )
-        equals_c1 = TexMobject("=", "c_1", "+0")
+        equals_c1 = Tex("=", "c_1", "+0")
         equals_c1.next_to(
             derivative_at_zero.get_part_by_tex("="), DOWN,
             buff = MED_LARGE_BUFF,
@@ -793,7 +793,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             self.quadratic_tex
         )
         poly_group_target = VGroup(
-            TexMobject("=", "0", "+0").set_color_by_tex(
+            Tex("=", "0", "+0").set_color_by_tex(
                 "0", self.colors[1], substring = False
             ),
             self.get_quadratic_derivative("0", "c_2", arg = "0"),
@@ -910,7 +910,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             for c2 in c2s
         ]
         second_derivs = [
-            TexMobject(
+            Tex(
                 "{d^2 P \\over dx^2}", "(x)", "=", "2", c2
             )
             for c2 in c2s
@@ -981,7 +981,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
         )
 
     def get_quadratic_tex(self, c0, c1, c2, arg = "x"):
-        tex_mob = TexMobject(
+        tex_mob = Tex(
             "P(", arg, ")", "=", 
             c0, "+", c1, arg, "+", c2, arg, "^2"
         )
@@ -991,7 +991,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
         return tex_mob
 
     def get_quadratic_derivative(self, c1, c2, arg = "x"):
-        result = TexMobject(
+        result = Tex(
             "{dP \\over dx}", "(", arg, ")", "=",
             c1, "+", "2", c2, arg
         )
@@ -1008,7 +1008,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
 
     def get_arrow_x_equals_0_group(self):
         arrow = Arrow(LEFT, RIGHT)
-        x_equals_0 = TexMobject("x = 0")
+        x_equals_0 = Tex("x = 0")
         x_equals_0.scale(0.75)
         x_equals_0.next_to(arrow.get_center(), UP, 2*SMALL_BUFF)
         x_equals_0.shift(SMALL_BUFF*LEFT)
@@ -1036,9 +1036,9 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
 
     def get_cosine_derivative(self):
         if not hasattr(self, "cosine_label"):
-            self.cosine_label = TexMobject("\\cos(x)")
+            self.cosine_label = Tex("\\cos(x)")
             self.cosine_label.to_corner(UP+LEFT)
-        derivative = TexMobject(
+        derivative = Tex(
             "{d(", "\\cos", ")", "\\over", "dx}", "(0)",
         )
         derivative.set_color_by_tex("\\cos", self.colors[0])
@@ -1048,7 +1048,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             buff = MED_LARGE_BUFF,
             aligned_edge = LEFT
         )
-        rhs = TexMobject("=", "-\\sin(0)", "=", "0")
+        rhs = Tex("=", "-\\sin(0)", "=", "0")
         rhs.set_color_by_tex("\\sin", self.colors[1])
         rhs.scale(0.75)
         rhs.next_to(
@@ -1062,7 +1062,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
     def get_cosine_second_derivative(self):
         if not hasattr(self, "cosine_derivative"):
             self.get_cosine_derivative()
-        second_deriv = TexMobject(
+        second_deriv = Tex(
             "{d^2(", "\\cos", ")", "\\over", "dx^2}", 
             "(", "0", ")",
         )
@@ -1075,7 +1075,7 @@ class ConstructQuadraticApproximation(ExampleApproximationWithCos):
             buff = MED_LARGE_BUFF,
             aligned_edge = LEFT
         )
-        rhs = TexMobject("=", "-\\cos(0)", "=", "-1")
+        rhs = Tex("=", "-\\cos(0)", "=", "-1")
         rhs.set_color_by_tex("cos", self.colors[2])
         rhs.scale(0.8)
         rhs.next_to(
@@ -1097,15 +1097,15 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
 
     def show_example_approximation(self):
         approx_at_x, approx_at_point = [
-            TexMobject(
+            Tex(
                 "\\cos(", s, ")", "\\approx",
                 "1 - \\frac{1}{2}", "(", s, ")", "^2"
             ).next_to(self.get_students(), UP, 2)
             for s in ("x", "0.1",)
         ]
-        approx_rhs = TexMobject("=", "0.995")
+        approx_rhs = Tex("=", "0.995")
         approx_rhs.next_to(approx_at_point, RIGHT)
-        real_result = TexMobject(
+        real_result = Tex(
             "\\cos(", "0.1", ")", "=", 
             "%.7f\\dots"%np.cos(0.1)
         )
@@ -1167,7 +1167,7 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
     def show_c0(self):
         c0 = self.polynomial.get_part_by_tex("c_0")
         c0.save_state()
-        equation = TexMobject("P(0) = \\cos(0)")
+        equation = Tex("P(0) = \\cos(0)")
         equation.to_corner(UP+RIGHT)
         new_polynomial = self.get_polynomial(c0 = "1")
 
@@ -1180,7 +1180,7 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
     def show_c1(self):
         c1 = self.polynomial.get_part_by_tex("c_1")
         c1.save_state()
-        equation = TexMobject(
+        equation = Tex(
             "\\frac{dP}{dx}(0) = \\frac{d(\\cos)}{dx}(0)"
         )
         equation.to_corner(UP+RIGHT)
@@ -1196,7 +1196,7 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
     def show_c2(self):
         c2 = self.polynomial.get_part_by_tex("c_2")
         c2.save_state()
-        equation = TexMobject(
+        equation = Tex(
             "\\frac{d^2 P}{dx^2}(0) = \\frac{d^2(\\cos)}{dx^2}(0)"
         )
         equation.to_corner(UP+RIGHT)
@@ -1216,7 +1216,7 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
     #####
 
     def get_polynomial(self, c0 = "c_0", c1 = "c_1", c2 = "c_2"):
-        polynomial = TexMobject(
+        polynomial = Tex(
             "P(x) = ", c0, "+", c1, "x", "+", c2, "x^2"
         )
         colors = ConstructQuadraticApproximation.CONFIG["colors"]
@@ -1344,7 +1344,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             self.big_rect
         )
 
-        self.cosine_label = TexMobject("\\cos", "(0)", "=1")
+        self.cosine_label = Tex("\\cos", "(0)", "=1")
         self.cosine_label.set_color_by_tex("cos", self.colors[0])
         self.cosine_label.scale(0.75)
         self.cosine_label.to_corner(UP+LEFT)
@@ -1352,7 +1352,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
         self.add(self.get_cosine_derivative())
         self.add(self.get_cosine_second_derivative())
 
-        self.polynomial = TexMobject(
+        self.polynomial = Tex(
             "P(x)=", "1", "-\\frac{1}{2}", "x^2"
         )
         self.polynomial.set_color_by_tex("1", self.colors[0])
@@ -1365,7 +1365,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
 
     def take_third_derivative_of_cubic(self):
         polynomial = self.polynomial
-        plus_cubic_term = TexMobject("+\\,", "c_3", "x^3")
+        plus_cubic_term = Tex("+\\,", "c_3", "x^3")
         plus_cubic_term.next_to(polynomial, RIGHT)
         plus_cubic_term.to_edge(RIGHT, buff = LARGE_BUFF)
         plus_cubic_term.set_color_by_tex("c_3", self.colors[3])
@@ -1382,7 +1382,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
         self.wait()
 
         brace = Brace(polynomial.quadratic_part, DOWN)
-        third_derivative = TexMobject(
+        third_derivative = Tex(
             "\\frac{d^3 P}{dx^3}(x) = ", "0"
         )
         third_derivative.shift(
@@ -1434,7 +1434,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             self.plus_cubic_term.get_part_by_tex("c_3")
         )
         zeros = VGroup(*[
-            TexMobject("0").move_to(c3)
+            Tex("0").move_to(c3)
             for c3 in c3s
         ])
         zeros.set_color(self.colors[3])
@@ -1472,7 +1472,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
 
     def add_quartic_term(self):
         polynomial = self.polynomial
-        plus_quartic_term = TexMobject("+\\,", "c_4", "x^4")
+        plus_quartic_term = Tex("+\\,", "c_4", "x^4")
         plus_quartic_term.next_to(polynomial, RIGHT)
         plus_quartic_term.set_color_by_tex("c_4", self.colors[4])
 
@@ -1498,13 +1498,13 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
 
     def take_fourth_derivative_of_quartic(self):
         quartic_term = VGroup(*self.plus_quartic_term.copy()[1:])
-        fourth_deriv_lhs = TexMobject("{d^4 P \\over dx^4}(x)", "=")
+        fourth_deriv_lhs = Tex("{d^4 P \\over dx^4}(x)", "=")
         fourth_deriv_lhs.next_to(
             self.polynomial, DOWN,
             buff = MED_LARGE_BUFF,
             aligned_edge = LEFT
         )
-        alt_rhs = TexMobject("=", "24 \\cdot", "c_4")
+        alt_rhs = Tex("=", "24 \\cdot", "c_4")
         alt_rhs.next_to(
             fourth_deriv_lhs.get_part_by_tex("="), DOWN,
             buff = LARGE_BUFF,
@@ -1532,7 +1532,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             self.fourth_deriv_rhs[-1],
             self.plus_quartic_term.get_part_by_tex("c_4")
         )
-        fraction = TexMobject("\\text{\\small $\\frac{1}{24}$}")
+        fraction = Tex("\\text{\\small $\\frac{1}{24}$}")
         fraction.set_color(self.colors[4])
         fractions = VGroup(*[
             fraction.copy().move_to(c4, LEFT)
@@ -1589,7 +1589,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
 
     def take_derivatives_of_monomial(self, term, *added_anims):
         """
-        Must be a group of pure TexMobjects,
+        Must be a group of pure Texs,
         last part must be of the form x^n
         """
         n = int(term[-1].get_tex()[-1])
@@ -1598,10 +1598,10 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
         for k in range(n, 0, -1):
             exponent = curr_term[-1][-1]
             exponent_copy = exponent.copy()
-            front_num = TexMobject("%d \\cdot"%k)
+            front_num = Tex("%d \\cdot"%k)
             front_num.move_to(curr_term[0][0], LEFT)
 
-            new_monomial = TexMobject("x^%d"%(k-1))
+            new_monomial = Tex("x^%d"%(k-1))
             new_monomial.replace(curr_term[-1])
             Transform(curr_term[-1], new_monomial).update(1)
             curr_term.generate_target()
@@ -1640,7 +1640,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
     def get_cosine_third_derivative(self):
         if not hasattr(self, "cosine_second_derivative"):
             self.get_cosine_second_derivative()
-        third_deriv = TexMobject(
+        third_deriv = Tex(
             "{d^3(", "\\cos", ")", "\\over", "dx^3}", 
             "(", "0", ")",
         )
@@ -1653,7 +1653,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             buff = MED_LARGE_BUFF,
             aligned_edge = LEFT
         )
-        rhs = TexMobject("=", "\\sin(0)", "=", "0")
+        rhs = Tex("=", "\\sin(0)", "=", "0")
         rhs.set_color_by_tex("sin", self.colors[3])
         rhs.scale(0.8)
         rhs.next_to(
@@ -1669,7 +1669,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
     def get_cosine_fourth_derivative(self):
         if not hasattr(self, "cosine_third_derivative"):
             self.get_cosine_third_derivative()
-        fourth_deriv = TexMobject(
+        fourth_deriv = Tex(
             "{d^4(", "\\cos", ")", "\\over", "dx^4}", 
             "(", "0", ")",
         )
@@ -1681,7 +1681,7 @@ class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
             buff = MED_LARGE_BUFF,
             aligned_edge = LEFT
         )
-        rhs = TexMobject("=", "\\cos(0)", "=", "1")
+        rhs = Tex("=", "\\cos(0)", "=", "1")
         rhs.set_color_by_tex("cos", self.colors[4])
         rhs.scale(0.8)
         rhs.next_to(
@@ -1705,7 +1705,7 @@ class NoticeAFewThings(TeacherStudentsScene):
 class FactorialTerms(CubicAndQuarticApproximations):
     def construct(self):
         lhs_list = [
-            TexMobject(
+            Tex(
                 "{d%s"%s, "\\over", "dx%s}"%s, "(", "c_8", "x^8", ")="
             )
             for i in range(9)
@@ -1723,7 +1723,7 @@ class FactorialTerms(CubicAndQuarticApproximations):
             for start_lhs, target_lhs in zip(lhs_list, lhs_list[1:])
         ]
 
-        term = TexMobject("c_8", "x^8")
+        term = Tex("c_8", "x^8")
         term.next_to(lhs[-1], RIGHT)
         term.set_color_by_tex("c_8", YELLOW)
 
@@ -1736,7 +1736,7 @@ class FactorialTerms(CubicAndQuarticApproximations):
         eight_factorial = brace.get_text("$8!$")
 
         coefficient = result[-1]
-        words = TextMobject(
+        words = TexText(
             "Set", "$c_8$", 
             "$ = \\frac{\\text{Desired derivative value}}{8!}"
         )
@@ -1770,7 +1770,7 @@ class HigherTermsDontMessUpLowerTerms(Scene):
         c2_tex = "\\text{\\small $\\left(-\\frac{1}{2}\\right)$}"
         c4_tex = "c_4"
 
-        polynomial = TexMobject(
+        polynomial = Tex(
             "P(x) = ", 
             c0_tex, "+", 
             c2_tex, "x^2", "+",
@@ -1791,7 +1791,7 @@ class HigherTermsDontMessUpLowerTerms(Scene):
             )
             for c, arc in [(c2, 0.9*np.pi), (c0, np.pi)]
         ])
-        no_affect_words = TextMobject(
+        no_affect_words = TexText(
             "Doesn't affect \\\\ previous terms"
         )
         no_affect_words.next_to(arrows, RIGHT)
@@ -1813,7 +1813,7 @@ class HigherTermsDontMessUpLowerTerms(Scene):
         self.c4_tex = c4_tex
 
     def show_second_derivative(self):
-        second_deriv = TexMobject(
+        second_deriv = Tex(
             "{d^2 P \\over dx^2}(", "0", ")", "=",
             "2", self.c2_tex, "+", 
             "3 \\cdot 4", self.c4_tex, "(", "0", ")", "^2"
@@ -1844,7 +1844,7 @@ class HigherTermsDontMessUpLowerTerms(Scene):
 class EachTermControlsOneDerivative(Scene):
     def construct(self):
         colors = CubicAndQuarticApproximations.CONFIG["colors"]
-        polynomial = TexMobject(
+        polynomial = Tex(
             "P(x) = ", "c_0", "+", "c_1", "x", *it.chain(*[
                 ["+", "c_%d"%n, "x^%d"%n]
                 for n in range(2, 5)
@@ -1852,7 +1852,7 @@ class EachTermControlsOneDerivative(Scene):
         )
         consts = polynomial.get_parts_by_tex("c")
         deriv_words = VGroup(*[
-            TextMobject("Controls \\\\ $%s(0)$"%tex)
+            TexText("Controls \\\\ $%s(0)$"%tex)
             for tex in [
                 "P",
                 "\\frac{dP}{dx}",
@@ -1975,7 +1975,7 @@ class ApproximateNearNewPoint(CubicAndQuarticApproximations):
     ###
 
     def get_polynomial(self, arg, center_tex):
-        result = TexMobject(
+        result = Tex(
             "P_{%s}(x)"%center_tex, "=", "c_0", *it.chain(*[
                 ["+", "c_%d"%d, "%s^%d"%(arg, d)]
                 for d in range(1, 5)
@@ -2027,12 +2027,12 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
         self.add(self.cosine_graph)
 
     def mention_information_exchange(self):
-        deriv_info = TextMobject(
+        deriv_info = TexText(
             "Derivative \\\\ information \\\\ at a point"
         )
         deriv_info.next_to(ORIGIN, LEFT, LARGE_BUFF)
         deriv_info.to_edge(UP)
-        output_info = TextMobject(
+        output_info = TexText(
             "Output \\\\ information \\\\ near that point"
         )
         output_info.next_to(ORIGIN, RIGHT, LARGE_BUFF)
@@ -2095,7 +2095,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
     def show_derivative_pattern(self):
         derivs_at_x, derivs_at_zero = [
             VGroup(*[
-                TexMobject(tex, "(", arg, ")")
+                Tex(tex, "(", arg, ")")
                 for tex in [
                     "\\cos", "-\\sin", 
                     "-\\cos", "\\sin", "\\cos"
@@ -2116,7 +2116,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
             derivs_at_x,
             arrows
         ))))
-        group.add(TexMobject("\\vdots"))
+        group.add(Tex("\\vdots"))
         group.arrange(DOWN, buff = SMALL_BUFF)
         group.set_height(FRAME_HEIGHT - MED_LARGE_BUFF)
         group.to_edge(LEFT)
@@ -2125,7 +2125,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
                 d.set_color(color)
             d0.replace(dx)
         rhs_group = VGroup(*[
-            TexMobject("=", "%d"%d).scale(0.7).next_to(deriv, RIGHT)
+            Tex("=", "%d"%d).scale(0.7).next_to(deriv, RIGHT)
             for deriv, d in zip(derivs_at_zero, [1, 0, -1, 0, 1])
         ])
         derivative_values = VGroup(*[
@@ -2178,7 +2178,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
         polynomial = self.get_polynomial("x", 1, 0, -1, 0, 1)
         polynomial.to_corner(UP+RIGHT)
 
-        monomial = TexMobject("\\frac{1}{4!}", "x^4")
+        monomial = Tex("\\frac{1}{4!}", "x^4")
         monomial = VGroup(VGroup(monomial[0]), monomial[1])
         monomial.next_to(polynomial, DOWN, LARGE_BUFF)
 
@@ -2259,7 +2259,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
     def write_general_function_derivative(self):
         derivs_at_x, derivs_at_zero, derivs_at_a = deriv_lists = [
             VGroup(*[
-                TexMobject("\\text{$%s$}"%args[0], *args[1:])
+                Tex("\\text{$%s$}"%args[0], *args[1:])
                 for args in [
                     ("f", "(", arg, ")"),
                     ("\\frac{df}{dx}", "(", arg, ")"),
@@ -2446,7 +2446,7 @@ class TranslationOfInformation(CubicAndQuarticApproximations):
     #####
 
     def get_polynomial(self, arg, *coefficients):
-        result = TexMobject(
+        result = Tex(
             "P(x) = ", str(coefficients[0]), *list(it.chain(*[
                 ["+", str(c), "{%s"%arg, "^%d"%n, "\\over", "%d!}"%n]
                 for n, c in zip(it.count(1), coefficients[1:])
@@ -2510,7 +2510,7 @@ class ExpPolynomial(TranslationOfInformation, ExampleApproximationWithExp):
         self.e_to_x.generate_target()
         derivs_at_x, derivs_at_zero = [
             VGroup(*[
-                TexMobject("e^%s"%s).set_color(c)
+                Tex("e^%s"%s).set_color(c)
                 for c in self.colors
             ])
             for s in ("x", "0")
@@ -2529,7 +2529,7 @@ class ExpPolynomial(TranslationOfInformation, ExampleApproximationWithExp):
             derivs_at_x,
             arrows
         ))))
-        group.add(TexMobject("\\vdots"))
+        group.add(Tex("\\vdots"))
         group.arrange(DOWN, buff = 2*SMALL_BUFF)
         group.set_height(FRAME_HEIGHT - MED_LARGE_BUFF)
         group.to_edge(LEFT)
@@ -2538,7 +2538,7 @@ class ExpPolynomial(TranslationOfInformation, ExampleApproximationWithExp):
                 d.add_background_rectangle()
             d0.replace(dx)
         rhs_group = VGroup(*[
-            TexMobject("=", "1").scale(0.7).next_to(deriv, RIGHT)
+            Tex("=", "1").scale(0.7).next_to(deriv, RIGHT)
             for deriv in derivs_at_zero
         ])
         derivative_values = VGroup(*[
@@ -2548,7 +2548,7 @@ class ExpPolynomial(TranslationOfInformation, ExampleApproximationWithExp):
             value.set_color(color)
 
         for arrow in arrows:
-            d_dx = TexMobject("d/dx")
+            d_dx = Tex("d/dx")
             d_dx.scale(0.5)
             d_dx.next_to(arrow, RIGHT, SMALL_BUFF)
             d_dx.shift(SMALL_BUFF*UP)
@@ -2608,7 +2608,7 @@ class ExpPolynomial(TranslationOfInformation, ExampleApproximationWithExp):
 class ShowSecondTerm(TeacherStudentsScene):
     def construct(self):
         colors = CubicAndQuarticApproximations.CONFIG["colors"]
-        polynomial = TexMobject(
+        polynomial = Tex(
             "f(a)", "+", 
             "\\frac{df}{dx}(a)", "(x - a)", "+",
             "\\frac{d^2 f}{dx^2}(a)", "(x - a)^2"
@@ -2622,7 +2622,7 @@ class ShowSecondTerm(TeacherStudentsScene):
         box.replace(second_term, stretch = True)
         box.stretch_in_place(1.1, 0)
         box.stretch_in_place(1.2, 1)
-        words = TextMobject("Geometric view")
+        words = TexText("Geometric view")
         words.next_to(box, UP)
 
         self.teacher_says(
@@ -2685,7 +2685,7 @@ class SecondTermIntuition(AreaIsDerivative):
         self.foreground_mobjects.append(graph)
         area = self.area = self.get_area(0, self.t_max)
 
-        func_name = TexMobject("f_{\\text{area}}(x)")
+        func_name = Tex("f_{\\text{area}}(x)")
         func_name.move_to(self.coords_to_point(0.6, 1))
         self.foreground_mobjects.append(func_name)
 
@@ -2701,7 +2701,7 @@ class SecondTermIntuition(AreaIsDerivative):
         self.__name__ = func_name
 
     def write_derivative(self):
-        deriv = TexMobject("\\frac{df_{\\text{area}}}{dx}(x)")
+        deriv = Tex("\\frac{df_{\\text{area}}}{dx}(x)")
         deriv.next_to(
             self.input_to_graph_point(2.7, self.v_graph),
             RIGHT
@@ -2786,14 +2786,14 @@ class SecondTermIntuition(AreaIsDerivative):
 
     def relabel_start_and_end(self):
         dx_label, dx_brace = self.dx_label_group
-        x_minus_a = TexMobject("(x-a)")
+        x_minus_a = Tex("(x-a)")
         x_minus_a.scale(0.7)
         x_minus_a.move_to(dx_label)
         labels = VGroup()
         arrows = VGroup()
         for vect, tex in (LEFT, "a"), (RIGHT, "x"):
             point = self.rect.get_corner(DOWN+vect)
-            label = TexMobject(tex)
+            label = Tex(tex)
             label.next_to(point, DOWN+vect)
             label.shift(LARGE_BUFF*vect)
             arrow = Arrow(
@@ -2829,7 +2829,7 @@ class SecondTermIntuition(AreaIsDerivative):
             for vect in (LEFT, RIGHT)
         ])
         base_line.set_color(RED)
-        base_label = TextMobject("Base = ", "$(x-a)$")
+        base_label = TexText("Base = ", "$(x-a)$")
         base_label.scale(tex_scale_factor)
         base_label.next_to(base_line, DOWN+RIGHT, MED_LARGE_BUFF)
         base_label.shift(SMALL_BUFF*UP)
@@ -2844,7 +2844,7 @@ class SecondTermIntuition(AreaIsDerivative):
 
         height_brace = Brace(triangle, RIGHT, buff = SMALL_BUFF)
         height_labels = [
-            TexMobject("\\text{Height} = ", s, "(x-a)")
+            Tex("\\text{Height} = ", s, "(x-a)")
             for s in [
                 "(\\text{Slope})", 
                 "\\frac{d^2 f_{\\text{area}}}{dx^2}(a)"
@@ -2870,7 +2870,7 @@ class SecondTermIntuition(AreaIsDerivative):
         self.wait(2)
 
         #Show area formula
-        equals_half = TexMobject("=\\frac{1}{2}")
+        equals_half = Tex("=\\frac{1}{2}")
         equals_half.scale(tex_scale_factor)
         group = VGroup(triangle, equals_half, height_term, base_term)
         group.generate_target()
@@ -2882,7 +2882,7 @@ class SecondTermIntuition(AreaIsDerivative):
         )
         group.target[1].shift(0.02*DOWN)
         group.target.to_corner(UP+RIGHT)
-        exp_2 = TexMobject("2").scale(0.8*tex_scale_factor)
+        exp_2 = Tex("2").scale(0.8*tex_scale_factor)
         exp_2.next_to(
             group.target[-2], UP+RIGHT,
             buff = 0,
@@ -2913,16 +2913,16 @@ class SecondTermIntuition(AreaIsDerivative):
         mini_triangle.set_height(0.5)
 
         geometric_taylor = VGroup(
-            TexMobject("f(x) \\approx "), mini_area,
-            TexMobject("+"), mini_rect,
-            TexMobject("+"), mini_triangle,
+            Tex("f(x) \\approx "), mini_area,
+            Tex("+"), mini_rect,
+            Tex("+"), mini_triangle,
         )
         geometric_taylor.arrange(
             RIGHT, buff = MED_SMALL_BUFF
         )
         geometric_taylor.to_corner(UP+LEFT)
 
-        analytic_taylor = TexMobject(
+        analytic_taylor = Tex(
             "f(x) \\approx", "f(a)", "+",
             "\\frac{df}{dx}(a)(x-a)", "+",
             "\\frac{1}{2}\\frac{d^2 f}{dx^2}(a)(x-a)^2"
@@ -2938,7 +2938,7 @@ class SecondTermIntuition(AreaIsDerivative):
         for part in analytic_taylor:
             part.add_to_back(BackgroundRectangle(part))
 
-        new_func_name = TexMobject("f_{\\text{area}}(a)")
+        new_func_name = Tex("f_{\\text{area}}(a)")
         new_func_name.replace(self.__name__)
 
         self.play(FadeIn(
@@ -2996,7 +2996,7 @@ class AskAboutInfiniteSum(TeacherStudentsScene):
             fill_opacity = 0.7,
         )
         randy = self.get_students()[1]
-        series = TexMobject(
+        series = Tex(
             "\\cos(x)", "\\approx", 
             "1 - \\frac{x^2}{2!} + \\frac{x^4}{4!}",
             " - \\frac{x^6}{6!}",
@@ -3007,7 +3007,7 @@ class AskAboutInfiniteSum(TeacherStudentsScene):
         rhs = VGroup(*series[2:])
         arrow = Arrow(rhs.get_left(), rhs.get_right())
         arrow.next_to(rhs, UP)
-        words = TextMobject("Add infinitely many")
+        words = TexText("Add infinitely many")
         words.next_to(arrow, UP)
 
         self.teacher_says(
@@ -3041,10 +3041,10 @@ class AskAboutInfiniteSum(TeacherStudentsScene):
         self.randy = randy
 
     def name_taylor_series(self):
-        series_def = TextMobject(
+        series_def = TexText(
             "Infinite sum $\\Leftrightarrow$ series"
         )
-        taylor_series = TextMobject("Taylor series")
+        taylor_series = TexText("Taylor series")
         for mob in series_def, taylor_series:
             mob.move_to(self.words)
         brace = Brace(self.series.get_part_by_tex("4!"), DOWN)
@@ -3086,7 +3086,7 @@ class ConvergenceExample(Scene):
     def construct(self):
         max_shown_power = 6
         max_computed_power = 13
-        series = TexMobject(*list(it.chain(*[
+        series = Tex(*list(it.chain(*[
             ["\\frac{1}{%d}"%(3**n), "+"]
             for n in range(1, max_shown_power)
         ])) + ["\\cdots"])
@@ -3094,10 +3094,10 @@ class ConvergenceExample(Scene):
         partial_sums = np.cumsum(series_nums)
         braces = self.get_partial_sum_braces(series, partial_sums)
 
-        convergence_words = TextMobject("``Converges'' to $\\frac{1}{2}$")
+        convergence_words = TexText("``Converges'' to $\\frac{1}{2}$")
         convergence_words.next_to(series, UP, LARGE_BUFF)
         convergence_words.set_color(YELLOW)
-        rhs = TexMobject("= \\frac{1}{2}")
+        rhs = Tex("= \\frac{1}{2}")
         rhs.next_to(series, RIGHT)
         rhs.set_color(BLUE)
 
@@ -3144,7 +3144,7 @@ class ExpConvergenceExample(ConvergenceExample):
         brace = braces[1]
 
         for lhs, s in (e_to_x, "x"), (e_to_1, "1"):
-            new_lhs = TexMobject("e^%s"%s, "=")
+            new_lhs = Tex("e^%s"%s, "=")
             new_lhs.move_to(lhs, RIGHT)
             lhs.target = new_lhs
 
@@ -3161,7 +3161,7 @@ class ExpConvergenceExample(ConvergenceExample):
         self.wait(2)
 
     def get_series(self, arg, n_terms = 5):
-        series = TexMobject("1", "+", *list(it.chain(*[
+        series = Tex("1", "+", *list(it.chain(*[
             ["\\frac{%s^%d}{%d!}"%(arg, n, n), "+"]
             for n in range(1, n_terms+1)
         ])) + ["\\cdots"])
@@ -3170,7 +3170,7 @@ class ExpConvergenceExample(ConvergenceExample):
         for term, color in zip(series[::2], colors):
             term.set_color(color)
 
-        lhs = TexMobject("e^%s"%arg, "\\rightarrow")
+        lhs = Tex("e^%s"%arg, "\\rightarrow")
         lhs.arrange(RIGHT, buff = SMALL_BUFF)
         group = VGroup(lhs, series)
         group.arrange(RIGHT, buff = SMALL_BUFF)
@@ -3200,7 +3200,7 @@ class ExpGraphConvergence(ExpPolynomial, ExpConvergenceExample):
         dot = Dot(color = YELLOW)
         dot.to_corner(UP+LEFT)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.replace(self.arrow)
         equals.scale(0.8)
 
@@ -3365,7 +3365,7 @@ class RadiusOfConvergenceForLnX(ExpGraphConvergence):
         self.add(self.graph)
 
     def add_series(self):
-        series = TexMobject(
+        series = Tex(
             "\\ln(x) \\rightarrow", 
             "(x-1)", "-",
             "\\frac{(x-1)^2}{2}", "+",
@@ -3509,7 +3509,7 @@ class RadiusOfConvergenceForLnX(ExpGraphConvergence):
         self.approx_graph = approx_graph
 
     def write_divergence(self):
-        word = TextMobject("``Diverges''")
+        word = TexText("``Diverges''")
         word.next_to(self.approx_dot, RIGHT, LARGE_BUFF)
         word.shift(MED_SMALL_BUFF*DOWN)
         word.add_background_rectangle()
@@ -3555,7 +3555,7 @@ class MoreToBeSaid(TeacherStudentsScene):
         "seconds_to_blink" : 4,
     }
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Lagrange error bounds, ", 
             "convergence tests, ",
             "$\\dots$"
@@ -3653,7 +3653,7 @@ class Thumbnail(ExampleApproximationWithSine):
         quartic.set_stroke(PINK, self.graph_stroke_width)
         self.add(cos_graph, quad_graph, quartic)
 
-        title = TextMobject("Taylor Series")
+        title = TexText("Taylor Series")
         title.set_width(1.5*FRAME_X_RADIUS)
         title.add_background_rectangle()
         title.to_edge(UP)

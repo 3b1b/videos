@@ -17,8 +17,8 @@ class FromPuzzleToSolution(MovingCameraScene):
         rects.arrange(RIGHT, buff=2)
 
         titles = VGroup(
-            TextMobject("Puzzle"),
-            TextMobject("Solution"),
+            TexText("Puzzle"),
+            TexText("Solution"),
         )
 
         images = Group(
@@ -114,7 +114,7 @@ class BlocksAndWallExampleMassMillion(BlocksAndWallExample):
     def add_million_label(self):
         first_label = self.blocks.block1.label
         brace = Brace(first_label[:-2], UP, buff=SMALL_BUFF)
-        new_label = TexMobject("1{,}000{,}000")
+        new_label = Tex("1{,}000{,}000")
         new_label.next_to(brace, UP, buff=SMALL_BUFF)
         new_label.add(brace)
         new_label.set_color(YELLOW)
@@ -147,7 +147,7 @@ class First6DigitsOfPi(DigitsOfPi):
 
 class FavoritesInDescription(Scene):
     def construct(self):
-        words = TextMobject("(See the description for \\\\ some favorites)")
+        words = TexText("(See the description for \\\\ some favorites)")
         words.scale(1.5)
         self.add(words)
 
@@ -155,7 +155,7 @@ class FavoritesInDescription(Scene):
 class V1EqualsV2Line(Scene):
     def construct(self):
         line = Line(LEFT, 7 * RIGHT)
-        eq = TexMobject("v_1", "=", "v_2")
+        eq = Tex("v_1", "=", "v_2")
         eq.set_color_by_tex("v_", RED)
         eq.next_to(RIGHT, UR, SMALL_BUFF)
         self.play(
@@ -167,7 +167,7 @@ class V1EqualsV2Line(Scene):
 
 class PhaseSpaceTitle(Scene):
     def construct(self):
-        title = TextMobject("Phase space")
+        title = TexText("Phase space")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
@@ -275,10 +275,10 @@ class AskAboutFindingNewVelocities(Scene):
     def ask_about_transfer(self):
         energy_expression, momentum_expression = \
             self.get_energy_and_momentum_expressions()
-        energy_words = TextMobject("Conservation of energy:")
+        energy_words = TexText("Conservation of energy:")
         energy_words.move_to(UP)
         energy_words.to_edge(LEFT, buff=1.5)
-        momentum_words = TextMobject("Conservation of momentum:")
+        momentum_words = TexText("Conservation of momentum:")
         momentum_words.next_to(
             energy_words, DOWN,
             buff=0.7,
@@ -487,13 +487,13 @@ class AskAboutFindingNewVelocities(Scene):
             "m_1": BLUE_C,
             "m_2": BLUE_C,
         }
-        energy_expression = TexMobject(
+        energy_expression = Tex(
             "\\frac{1}{2} m_1 (v_1)^2 + ",
             "\\frac{1}{2} m_2 (v_2)^2 = ",
             "\\text{const.}",
             tex_to_color_map=tex_to_color_map,
         )
-        momentum_expression = TexMobject(
+        momentum_expression = Tex(
             "m_1 v_1 + m_2 v_2 =", "\\text{const.}",
             tex_to_color_map=tex_to_color_map
         )
@@ -543,8 +543,8 @@ class AskAboutFindingNewVelocities(Scene):
         v1 = v1 or default_vs[0]
         v2 = v2 or default_vs[1]
         labels = VGroup(
-            TexMobject("v_1 = {:.2f}".format(v1)),
-            TexMobject("v_2 = {:.2f}".format(v2)),
+            Tex("v_1 = {:.2f}".format(v1)),
+            Tex("v_2 = {:.2f}".format(v2)),
         )
         labels.arrange(
             DOWN,
@@ -712,12 +712,12 @@ class IntroduceVelocityPhaseSpace(AskAboutFindingNewVelocities):
 
         # Axes labels
         x_axis_labels = VGroup(
-            TexMobject("x = ", "v_1"),
-            TexMobject("x = ", "\\sqrt{m_1}", "\\cdot", "v_1"),
+            Tex("x = ", "v_1"),
+            Tex("x = ", "\\sqrt{m_1}", "\\cdot", "v_1"),
         )
         y_axis_labels = VGroup(
-            TexMobject("y = ", "v_2"),
-            TexMobject("y = ", "\\sqrt{m_2}", "\\cdot", "v_2"),
+            Tex("y = ", "v_2"),
+            Tex("y = ", "\\sqrt{m_2}", "\\cdot", "v_2"),
         )
         axis_labels = self.axis_labels = VGroup(x_axis_labels, y_axis_labels)
         for label_group in axis_labels:
@@ -824,7 +824,7 @@ class IntroduceVelocityPhaseSpace(AskAboutFindingNewVelocities):
         brief_circle.stretch(np.sqrt(mass_ratio), 0)
         brief_circle.set_stroke(WHITE, 2)
 
-        xy_equation = self.xy_equation = TexMobject(
+        xy_equation = self.xy_equation = Tex(
             "\\frac{1}{2}",
             "\\left(", "x^2", "+", "y^2", "\\right)",
             "=", "\\text{const.}"
@@ -908,7 +908,7 @@ class IntroduceVelocityPhaseSpace(AskAboutFindingNewVelocities):
         momentum_expression.shift(MED_SMALL_BUFF * LEFT)
         xy_equation = self.xy_equation
 
-        momentum_xy_equation = self.momentum_xy_equation = TexMobject(
+        momentum_xy_equation = self.momentum_xy_equation = Tex(
             "\\sqrt{m_1}", "x", "+",
             "\\sqrt{m_2}", "y", "=",
             "\\text{const.}",
@@ -940,7 +940,7 @@ class IntroduceVelocityPhaseSpace(AskAboutFindingNewVelocities):
         line.set_stroke(GREEN, 3)
         line.move_to(vps_dot)
 
-        slope_label = TexMobject(
+        slope_label = Tex(
             "\\text{Slope =}", "-\\sqrt{\\frac{m_1}{m_2}}"
         )
         slope_label.scale(0.8)
@@ -956,7 +956,7 @@ class IntroduceVelocityPhaseSpace(AskAboutFindingNewVelocities):
             self.blocks, self.vps_dot
         )
         for mob in foreground_mobs:
-            if isinstance(mob, TexMobject):
+            if isinstance(mob, Tex):
                 mob.set_stroke(BLACK, 3, background=True)
 
         self.add(line, *foreground_mobs)
@@ -1144,7 +1144,7 @@ class StretchBySqrt10(Scene):
     def construct(self):
         arrow = DoubleArrow(2 * LEFT, 2 * RIGHT)
         arrow.tip[1].shift(0.05 * LEFT)
-        value = TexMobject("\\sqrt{10}")
+        value = Tex("\\sqrt{10}")
         value.next_to(arrow, UP)
         arrow.save_state()
         arrow.stretch(0, 0)
@@ -1327,14 +1327,14 @@ class CircleDiagramFromSlidingBlocks1e4(CircleDiagramFromSlidingBlocks):
 
 class AnnouncePhaseDiagram(CircleDiagramFromSlidingBlocks):
     def construct(self):
-        pd_words = TextMobject("Phase diagram")
+        pd_words = TexText("Phase diagram")
         pd_words.scale(1.5)
         pd_words.move_to(self.hold_up_spot, DOWN)
         pd_words_border = pd_words.copy()
         pd_words_border.set_stroke(YELLOW, 2)
         pd_words_border.set_fill(opacity=0)
 
-        simple_words = TextMobject("Simple but powerful")
+        simple_words = TexText("Simple but powerful")
         simple_words.next_to(pd_words, UP, LARGE_BUFF)
         simple_words.shift(LEFT)
         simple_words.set_color(BLUE)
@@ -1392,7 +1392,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
 
     def add_mass_ratio_label(self, mass_ratio=None):
         mass_ratio = mass_ratio or self.mass_ratio
-        mass_ratio_label = TextMobject(
+        mass_ratio_label = TexText(
             "Mass ratio =", "{:,} : 1".format(mass_ratio)
         )
         mass_ratio_label.to_corner(UL, buff=MED_SMALL_BUFF)
@@ -1410,7 +1410,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
         )
         end_zone = self.get_end_zone()
 
-        end_zone_words = TextMobject("End zone")
+        end_zone_words = TexText("End zone")
         end_zone_words.set_height(0.25)
         end_zone_words.next_to(ORIGIN, UP, SMALL_BUFF)
         end_zone_words.to_edge(RIGHT, buff=MED_SMALL_BUFF)
@@ -1461,7 +1461,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
             arc.target.rotate(-(arc.start_angle - PI + theta))
 
         equal_signs = VGroup(*[
-            TexMobject("=") for x in range(len(lower_arcs))
+            Tex("=") for x in range(len(lower_arcs))
         ])
         equal_signs.scale(0.8)
         for sign in equal_signs:
@@ -1573,7 +1573,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
             angle=theta
         )
         theta_arc.shift(three_points[1])
-        theta_label = TexMobject("\\theta")
+        theta_label = Tex("\\theta")
         theta_label.next_to(theta_arc, DOWN, SMALL_BUFF)
 
         center_lines = VGroup(
@@ -1587,7 +1587,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
             start_angle=(center_lines[0].get_angle() + PI),
             angle=2 * theta
         )
-        two_theta_label = TexMobject("2\\theta")
+        two_theta_label = Tex("2\\theta")
         arc_center = two_theta_arc.point_from_proportion(0.5)
         two_theta_label.next_to(
             arc_center, normalize(arc_center), SMALL_BUFF
@@ -1687,7 +1687,7 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
         two_theta_labels = VGroup()
         wedges = VGroup()
         for arc in arcs:
-            label = TexMobject("2\\theta")
+            label = Tex("2\\theta")
             label.scale(0.8)
             label.move_to(1.1 * arc.point_from_proportion(0.5))
             two_theta_labels.add(label)
@@ -1742,8 +1742,8 @@ class AnalyzeCircleGeometry(CircleDiagramFromSlidingBlocks, MovingCameraScene):
     # Helpers
     def get_axes_labels(self, axes):
         axes_labels = VGroup(
-            TexMobject("x = ", "\\sqrt{m_1}", "\\cdot", "v_1"),
-            TexMobject("y = ", "\\sqrt{m_2}", "\\cdot", "v_2"),
+            Tex("x = ", "\\sqrt{m_1}", "\\cdot", "v_1"),
+            Tex("y = ", "\\sqrt{m_2}", "\\cdot", "v_2"),
         )
         for label in axes_labels:
             label.set_height(0.4)
@@ -1761,7 +1761,7 @@ class InscribedAngleTheorem(Scene):
         self.let_point_vary()
 
     def add_title(self):
-        title = TextMobject("Inscribed angle theorem")
+        title = TexText("Inscribed angle theorem")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
@@ -1841,7 +1841,7 @@ class InscribedAngleTheorem(Scene):
             )
             arc.shift(point)
             arc_center = arc.point_from_proportion(0.5)
-            label = TexMobject(tex)
+            label = Tex(tex)
             vect = (arc_center - point)
             vect = (0.3 + get_norm(vect)) * normalize(vect)
             label.move_to(point + vect)
@@ -1857,7 +1857,7 @@ class InscribedAngleTheorem(Scene):
         lines = get_lines()
         center_lines = get_center_lines()
         labels = VGroup(*[
-            TexMobject("P_{}".format(n + 1))
+            Tex("P_{}".format(n + 1))
             for n in range(3)
         ])
         update_labels(labels)
@@ -1937,7 +1937,7 @@ class InscribedAngleTheorem(Scene):
 
 class SimpleSlopeLabel(Scene):
     def construct(self):
-        label = TexMobject(
+        label = Tex(
             "\\text{Slope}", "=",
             "-\\frac{\\sqrt{m_1}}{\\sqrt{m_2}}"
         )
@@ -1953,7 +1953,7 @@ class SimpleSlopeLabel(Scene):
 
 class AddTwoThetaManyTimes(Scene):
     def construct(self):
-        expression = TexMobject(
+        expression = Tex(
             "2\\theta", "+",
             "2\\theta", "+",
             "2\\theta", "+",
@@ -1993,7 +1993,7 @@ class AddTwoThetaManyTimes(Scene):
         self.show_example()
 
     def get_central_question(self, brace_vect=DOWN):
-        expression = TexMobject(
+        expression = Tex(
             "N", "\\cdot", "\\theta", "<", "\\pi"
         )
         N = expression[0]
@@ -2037,7 +2037,7 @@ class AddTwoThetaManyTimes(Scene):
         int_mob.set_color(BLUE)
         formatter = "({:0." + str(n_decimal_places) + "f})"
         tex_string = tex_string or formatter.format(value)
-        tex_mob = TexMobject("\\cdot", tex_string, "=")
+        tex_mob = Tex("\\cdot", tex_string, "=")
         rhs = DecimalNumber(value, num_decimal_places=n_decimal_places)
 
         def align_number(mob):
@@ -2059,13 +2059,13 @@ class AddTwoThetaManyTimes(Scene):
 
         def get_comp_pi():
             if rhs.get_value() < np.pi:
-                result = TexMobject("< \\pi")
+                result = Tex("< \\pi")
                 result.set_color(GREEN)
             elif rhs.get_value() > np.pi:
-                result = TexMobject("> \\pi")
+                result = Tex("> \\pi")
                 result.set_color(RED)
             else:
-                result = TexMobject("= \\pi")
+                result = Tex("= \\pi")
             result.next_to(rhs, RIGHT, 2 * SMALL_BUFF)
             result[1].scale(1.5, about_edge=LEFT)
             return result
@@ -2121,7 +2121,7 @@ class ComputeThetaFor1e4(AnalyzeCircleGeometry):
             radius=2,
             arc_center=two_lines[0].get_end(),
         )
-        theta_label = TexMobject("\\theta")
+        theta_label = Tex("\\theta")
         theta_label.scale(0.8)
         theta_label.next_to(arc, DOWN, SMALL_BUFF)
 
@@ -2141,7 +2141,7 @@ class ComputeThetaFor1e4(AnalyzeCircleGeometry):
 
     def write_slope(self):
         line = self.two_lines[1]
-        slope_label = TexMobject(
+        slope_label = Tex(
             "\\text{Slope}", "=",
             "\\frac{\\text{rise}}{\\text{run}}", "=",
             "\\frac{-\\sqrt{m_1}}{\\sqrt{m_2}}", "=", "-10"
@@ -2185,7 +2185,7 @@ class ComputeThetaFor1e4(AnalyzeCircleGeometry):
         theta = self.theta
         theta_label_group = self.theta_label_group
 
-        tan_equation = TexMobject(
+        tan_equation = Tex(
             "\\tan", "(", "\\theta", ")", "=",
             "{\\text{run}", "\\over", "-\\text{rise}}", "=",
             "\\frac{1}{10}",
@@ -2207,7 +2207,7 @@ class ComputeThetaFor1e4(AnalyzeCircleGeometry):
         opposite.set_stroke(BLUE, 3)
         adjacent.set_stroke(PINK, 3)
 
-        arctan_equation = TexMobject(
+        arctan_equation = Tex(
             "\\theta", "=", "\\arctan", "(", "1 / 10", ")"
         )
         arctan_equation.next_to(tan_equation, DOWN, MED_LARGE_BUFF)
@@ -2263,9 +2263,9 @@ class ThetaChart(Scene):
 
     def create_columns(self):
         titles = VGroup(*[
-            TextMobject("Mass ratio"),
-            TextMobject("$\\theta$ formula"),
-            TextMobject("$\\theta$ value"),
+            TexText("Mass ratio"),
+            TexText("$\\theta$ formula"),
+            TexText("$\\theta$ value"),
         ])
         titles.scale(1.5)
         titles.arrange(RIGHT, buff=1.5)
@@ -2316,7 +2316,7 @@ class ThetaChart(Scene):
         h_lines = VGroup(top_h_line)
         entry_mobs = VGroup()
         for entry in entries:
-            mobs = VGroup(*map(TextMobject, entry))
+            mobs = VGroup(*map(TexText, entry))
             for mob, x in zip(mobs, x_vals):
                 mob.shift(x * RIGHT)
             delta_y = (mobs.get_height() / 2) + MED_SMALL_BUFF
@@ -2359,7 +2359,7 @@ class ThetaChart(Scene):
         other_entries = VGroup(*entry_mobs[:exp], *entry_mobs[exp + 1:])
 
         value = example[-1]
-        rhs = TexMobject("\\approx {:}".format(10**(-exp)))
+        rhs = Tex("\\approx {:}".format(10**(-exp)))
         rhs.next_to(value, RIGHT)
         rhs.to_edge(RIGHT, buff=MED_SMALL_BUFF)
         value.generate_target()
@@ -2394,7 +2394,7 @@ class CentralQuestionFor1e2(AddTwoThetaManyTimes):
     def construct(self):
         exp = self.exp
         question = self.get_central_question(UP)
-        pi_value = TexMobject(" = {:0.10f}\\dots".format(PI))
+        pi_value = Tex(" = {:0.10f}\\dots".format(PI))
         pi_value.next_to(question[0][-1], RIGHT, SMALL_BUFF)
         pi_value.shift(0.3 * SMALL_BUFF * UP)
         question.add(pi_value)
@@ -2464,11 +2464,11 @@ class AskAboutArctanOfSmallValues(TeacherStudentsScene):
     def construct(self):
         self.add_title()
 
-        equation1 = TexMobject(
+        equation1 = Tex(
             "\\arctan", "(", "x", ")", "\\approx", "x"
         )
         equation1.set_color_by_tex("arctan", YELLOW)
-        equation2 = TexMobject(
+        equation2 = Tex(
             "x", "\\approx", "\\tan", "(", "x", ")",
         )
         equation2.set_color_by_tex("tan", BLUE)
@@ -2505,8 +2505,8 @@ class AskAboutArctanOfSmallValues(TeacherStudentsScene):
         # self.wait(3)
 
     def add_title(self):
-        title = TextMobject("For small $x$")
-        subtitle = TextMobject("(e.g. $x = 0.001$)")
+        title = TexText("For small $x$")
+        subtitle = TexText("(e.g. $x = 0.001$)")
         subtitle.scale(0.75)
         subtitle.next_to(title, DOWN)
         title.add(subtitle)
@@ -2537,10 +2537,10 @@ class ActanAndTanGraphs(GraphScene):
         self.setup_axes()
         axes = self.axes
         labels = VGroup(
-            TexMobject("\\pi / 8"),
-            TexMobject("\\pi / 4"),
-            TexMobject("3\\pi / 8"),
-            TexMobject("\\pi / 2"),
+            Tex("\\pi / 8"),
+            Tex("\\pi / 4"),
+            Tex("3\\pi / 8"),
+            Tex("\\pi / 2"),
         )
         for n, label in zip(it.count(1), labels):
             label.scale(0.75)
@@ -2552,9 +2552,9 @@ class ActanAndTanGraphs(GraphScene):
         tan_graph = self.get_graph(np.tan, x_max=1.5)
         graphs = VGroup(id_graph, arctan_graph, tan_graph)
 
-        id_label = TexMobject("f(x) = x")
-        arctan_label = TexMobject("\\arctan(x)")
-        tan_label = TexMobject("\\tan(x)")
+        id_label = Tex("f(x) = x")
+        arctan_label = Tex("\\arctan(x)")
+        tan_label = Tex("\\tan(x)")
         labels = VGroup(id_label, arctan_label, tan_label)
         for label, graph in zip(labels, graphs):
             label.match_color(graph)
@@ -2621,7 +2621,7 @@ class UnitCircleIntuition(Scene):
 
         radius_line = Line(ORIGIN, axes.coords_to_point(1, 0))
         radius_line.set_color(BLUE)
-        r_label = TexMobject("1")
+        r_label = Tex("1")
         r_label.add_updater(
             lambda m: m.next_to(radius_line.get_center(), DOWN, SMALL_BUFF)
         )
@@ -2643,7 +2643,7 @@ class UnitCircleIntuition(Scene):
     def show_angle(self):
         circle = self.circle
 
-        tan_eq = TexMobject(
+        tan_eq = Tex(
             "\\tan", "(", "\\theta", ")", "=",
             tex_to_color_map={"\\theta": RED},
         )
@@ -2677,7 +2677,7 @@ class UnitCircleIntuition(Scene):
         )
 
         def get_theta_label():
-            label = TexMobject("\\theta")
+            label = Tex("\\theta")
             label.set_height(min(arc.get_height(), 0.3))
             label.set_color(RED)
             center = circle.get_center()
@@ -2710,7 +2710,7 @@ class UnitCircleIntuition(Scene):
         self.width_line = always_redraw(get_width_line)
 
         def get_h_label():
-            label = TexMobject("h")
+            label = Tex("h")
             height_line = self.height_line
             label.match_color(height_line)
             label.set_height(min(height_line.get_height(), 0.3))
@@ -2720,7 +2720,7 @@ class UnitCircleIntuition(Scene):
         self.h_label = always_redraw(get_h_label)
 
         def get_w_label():
-            label = TexMobject("w")
+            label = Tex("w")
             width_line = self.width_line
             label.match_color(width_line)
             label.next_to(width_line, DOWN, SMALL_BUFF)
@@ -2744,7 +2744,7 @@ class UnitCircleIntuition(Scene):
         w_label = self.w_label
         tan_eq = self.tan_eq
 
-        rhs = TexMobject(
+        rhs = Tex(
             "{\\text{height}", "\\over", "\\text{width}}"
         )
         rhs.next_to(tan_eq, RIGHT)
@@ -2773,7 +2773,7 @@ class UnitCircleIntuition(Scene):
 
     def show_fraction_approximation(self):
         theta_tracker = self.theta_tracker
-        approx_rhs = TexMobject(
+        approx_rhs = Tex(
             "\\approx", "{\\theta", "\\over", "1}",
         )
         height, over1, width = self.rhs
@@ -2794,7 +2794,7 @@ class UnitCircleIntuition(Scene):
 
 class TangentTaylorSeries(TeacherStudentsScene):
     def construct(self):
-        series = TexMobject(
+        series = Tex(
             "\\tan", "(", "\\theta", ")", "=", "\\theta", "+",
             "\\frac{1}{3}", "\\theta", "^3", "+",
             "\\frac{2}{15}", "\\theta", "^5", "+", "\\cdots",
@@ -2805,7 +2805,7 @@ class TangentTaylorSeries(TeacherStudentsScene):
         series_error = series[7:]
         series_error_rect = SurroundingRectangle(series_error)
 
-        example = TexMobject(
+        example = Tex(
             "\\tan", "\\left(", "\\frac{1}{100}", "\\right)",
             "=", "\\frac{1}{100}", "+",
             "\\frac{1}{3}", "\\left(",
@@ -2827,7 +2827,7 @@ class TangentTaylorSeries(TeacherStudentsScene):
             num_decimal_places=15,
         )
         error_decimal.next_to(error_rect, DOWN)
-        approx = TexMobject("\\approx")
+        approx = Tex("\\approx")
         approx.next_to(error_decimal, LEFT)
         error_decimal.add(approx)
         error_decimal.match_color(error_rect)
@@ -2868,7 +2868,7 @@ class AnalyzeCircleGeometry1e4(AnalyzeCircleGeometry):
 
 class SumUpWrapper(Scene):
     def construct(self):
-        title = TextMobject("To sum up:")
+        title = TexText("To sum up:")
         title.scale(1.5)
         title.to_edge(UP)
         screen_rect = ScreenRectangle(height=6)
@@ -2887,20 +2887,20 @@ class SumUpWrapper(Scene):
 
 class ConservationLawSummary(Scene):
     def construct(self):
-        energy_eq = TexMobject(
+        energy_eq = Tex(
             "\\frac{1}{2}", "m_1", "(", "v_1", ")", "^2", "+",
             "\\frac{1}{2}", "m_2", "(", "v_2", ")", "^2", "=",
             "\\text{const.}",
         )
-        energy_word = TextMobject("Energy")
+        energy_word = TexText("Energy")
         energy_word.scale(2)
         circle = Circle(color=YELLOW, radius=2)
         energy_group = VGroup(energy_word, energy_eq, circle)
-        momentum_eq = TexMobject(
+        momentum_eq = Tex(
             "m_1", "v_1", "+", "m_2", "v_2", "=",
             "\\text{const.}",
         )
-        momentum_word = TextMobject("Momentum")
+        momentum_word = TexText("Momentum")
         momentum_word.scale(2)
         line = Line(ORIGIN, RIGHT + np.sqrt(10) * DOWN)
         line.set_color(GREEN)
@@ -2957,7 +2957,7 @@ class FinalCommentsOnPhaseSpace(Scene):
         self.puzzle_as_remnant()
 
     def add_title(self):
-        title = self.title = TextMobject("Phase space")
+        title = self.title = TexText("Phase space")
         title.scale(2)
         title.to_edge(UP)
         title.set_color(YELLOW)
@@ -3004,16 +3004,16 @@ class FinalCommentsOnPhaseSpace(Scene):
         self.to_fade = Group(images, arrows)
 
     def state_to_point(self):
-        state = TextMobject("State")
+        state = TexText("State")
         arrow = Arrow(
             2 * LEFT, 2 * RIGHT,
             color=WHITE,
             rectangular_stem_width=0.1,
             tip_length=0.5
         )
-        point = TextMobject("Point")
-        dynamics = TextMobject("Dynamics")
-        geometry = TextMobject("Geometry")
+        point = TexText("Point")
+        dynamics = TexText("Dynamics")
+        geometry = TexText("Geometry")
         words = VGroup(state, point, dynamics, geometry)
         for word in words:
             word.scale(2)
@@ -3191,8 +3191,8 @@ class SolutionThumbnail(Thumbnail):
     }
 
     def add_text(self):
-        word = TextMobject("Solution")
-        question = TextMobject("How many collisions?")
+        word = TexText("Solution")
+        question = TexText("How many collisions?")
         word.set_width(7)
         question.match_width(word)
         question.next_to(word, UP)

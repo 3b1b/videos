@@ -10,13 +10,13 @@ class DontLearnFromSymbols(Scene):
         bubble.add_content(TOP(2, 3, 8).scale(0.7))
         equation = VMobject(
             TOP(2, "x"), 
-            TexMobject("\\times"),
+            Tex("\\times"),
             TOP(2, "y"),
-            TexMobject("="),
+            Tex("="),
             TOP(2, "x+y")
         )
         equation.arrange()
-        q_marks = TextMobject("???")
+        q_marks = TexText("???")
         q_marks.set_color(YELLOW)
         q_marks.next_to(randy, UP)
 
@@ -37,9 +37,9 @@ class DontLearnFromSymbols(Scene):
 
 class NotationReflectsMath(Scene):
     def construct(self):
-        top_expr = TextMobject("Notation $\\Leftrightarrow$ Math")
+        top_expr = TexText("Notation $\\Leftrightarrow$ Math")
         top_expr.shift(2*UP)
-        better_questions = TextMobject("Better questions")
+        better_questions = TexText("Better questions")
         arrow = Arrow(top_expr, better_questions)
 
         self.play(Write(top_expr))
@@ -56,19 +56,19 @@ class NotationReflectsMath(Scene):
 class AsymmetriesInTheMath(Scene):
     def construct(self):
         assyms_of_top = VMobject(
-            TextMobject("Asymmetries of "),
+            TexText("Asymmetries of "),
             TOP("a", "b", "c", radius = 0.75).set_color(BLUE)
         ).arrange()
         assyms_of_top.to_edge(UP)
-        assyms_of_math = TextMobject("""
+        assyms_of_math = TexText("""
             Asymmetries of 
             $\\underbrace{a \\cdot a \\cdots a}_{\\text{$b$ times}} = c$
         """)
         VMobject(*assyms_of_math.split()[13:]).set_color(YELLOW)
         assyms_of_math.next_to(assyms_of_top, DOWN, buff = 2)
-        rad = TexMobject("\\sqrt{\\quad}").to_edge(LEFT).shift(UP)
+        rad = Tex("\\sqrt{\\quad}").to_edge(LEFT).shift(UP)
         rad.set_color(RED)
-        log = TexMobject("\\log").next_to(rad, DOWN)
+        log = Tex("\\log").next_to(rad, DOWN)
         log.set_color(RED)
 
         self.play(FadeIn(assyms_of_top))
@@ -81,12 +81,12 @@ class AsymmetriesInTheMath(Scene):
 class AddedVsOplussed(Scene):
     def construct(self):
         top = TOP()
-        left_times  = top.put_in_vertex(0, TexMobject("\\times"))
+        left_times  = top.put_in_vertex(0, Tex("\\times"))
         left_dot    = top.put_in_vertex(0, Dot())
-        right_times = top.put_in_vertex(2, TexMobject("\\times"))
+        right_times = top.put_in_vertex(2, Tex("\\times"))
         right_dot   = top.put_in_vertex(2, Dot())
-        plus        = top.put_in_vertex(1, TexMobject("+"))
-        oplus       = top.put_in_vertex(1, TexMobject("\\oplus"))
+        plus        = top.put_in_vertex(1, Tex("+"))
+        oplus       = top.put_in_vertex(1, Tex("\\oplus"))
         left_times.set_color(YELLOW)        
         right_times.set_color(YELLOW)        
         plus.set_color(GREEN)        
@@ -133,11 +133,11 @@ class ReciprocalTop(Scene):
 class NotSymbolicPatterns(Scene):
     def construct(self):
         randy = Randolph()
-        symbolic_patterns = TextMobject("Symbolic patterns")
+        symbolic_patterns = TexText("Symbolic patterns")
         symbolic_patterns.to_edge(RIGHT).shift(UP)
         line = Line(LEFT, RIGHT, color = RED, stroke_width = 7)
         line.replace(symbolic_patterns)
-        substantive_reasoning = TextMobject("Substantive reasoning")
+        substantive_reasoning = TexText("Substantive reasoning")
         substantive_reasoning.to_edge(RIGHT).shift(DOWN)
 
         self.add(randy, symbolic_patterns)
@@ -159,7 +159,7 @@ class NotSymbolicPatterns(Scene):
 
 class ChangeWeCanBelieveIn(Scene):
     def construct(self):
-        words = TextMobject("Change we can believe in")
+        words = TexText("Change we can believe in")
         change = VMobject(*words.split()[:6])
         top = TOP(radius = 0.75)
         top.shift(change.get_right()-top.get_right())
@@ -177,13 +177,13 @@ class TriangleOfPowerIsBetter(Scene):
     def construct(self):
         top = TOP("x", "y", "z", radius = 0.75)
         top.set_color(BLUE)
-        alts = VMobject(*list(map(TexMobject, [
+        alts = VMobject(*list(map(Tex, [
             "x^y", "\\log_x(z)", "\\sqrt[y]{z}"
         ])))
         for mob, color in zip(alts.split(), OPERATION_COLORS):
             mob.set_color(color)
         alts.arrange(DOWN)
-        greater_than = TexMobject(">")
+        greater_than = Tex(">")
         top.next_to(greater_than, LEFT)
         alts.next_to(greater_than, RIGHT)
 
@@ -205,7 +205,7 @@ class InYourOwnNotes(Scene):
 
 
     def get_log_anim(self, center):
-        O_log_n = TexMobject(["O(", "\\log(n)", ")"])
+        O_log_n = Tex(["O(", "\\log(n)", ")"])
         O_log_n.shift(center)
         log_n = O_log_n.split()[1]
         #super hacky
@@ -225,7 +225,7 @@ class InYourOwnNotes(Scene):
 
 
     def get_exp_anim(self, center):
-        epii = TexMobject("e^{\\pi i} = -1")
+        epii = Tex("e^{\\pi i} = -1")
         epii.shift(center)
         top = TOP("e", "\\pi i", "-1", radius = 0.75)
         top.shift(center)
@@ -249,15 +249,15 @@ class InYourOwnNotes(Scene):
 class Qwerty(Scene):
     def construct(self):
         qwerty = VMobject(
-            TextMobject(list("QWERTYUIOP")),
-            TextMobject(list("ASDFGHJKL")),
-            TextMobject(list("ZXCVBNM")),
+            TexText(list("QWERTYUIOP")),
+            TexText(list("ASDFGHJKL")),
+            TexText(list("ZXCVBNM")),
         )
         qwerty.arrange(DOWN)
         dvorak = VMobject(
-            TextMobject(list("PYFGCRL")),
-            TextMobject(list("AOEUIDHTNS")),
-            TextMobject(list("QJKXBMWVZ")),
+            TexText(list("PYFGCRL")),
+            TexText(list("AOEUIDHTNS")),
+            TexText(list("QJKXBMWVZ")),
         )
         dvorak.arrange(DOWN)
         d1, d2, d3 = dvorak.split()
@@ -274,12 +274,12 @@ class ShowLog(Scene):
     def construct(self):
         equation = VMobject(*[
             TOP(2, None, "x"), 
-            TexMobject("+"),
+            Tex("+"),
             TOP(2, None, "y"),
-            TexMobject("="),
+            Tex("="),
             TOP(2, None, "xy")
         ]).arrange()
-        old_eq = TexMobject("\\log_2(x) + \\log_2(y) = \\log_2(xy)")
+        old_eq = Tex("\\log_2(x) + \\log_2(y) = \\log_2(xy)")
         old_eq.to_edge(UP)
         
         self.play(FadeIn(equation))
@@ -292,15 +292,15 @@ class NoOneWillActuallyDoThis(Scene):
     def construct(self):
         randy = Randolph().to_corner()
         bubble = SpeechBubble().pin_to(randy)
-        words = TextMobject("No one will actually do this...")
-        tau_v_pi = TexMobject("\\tau > \\pi").scale(2)
+        words = TexText("No one will actually do this...")
+        tau_v_pi = Tex("\\tau > \\pi").scale(2)
         morty = Mortimer("speaking").to_corner(DOWN+RIGHT)
         morty_bubble = SpeechBubble(
             direction = RIGHT, 
             height = 4
         )
         morty_bubble.pin_to(morty)
-        final_words = TextMobject("If this war is won, it will \\\\ not be won with that attitude")
+        final_words = TexText("If this war is won, it will \\\\ not be won with that attitude")
         lil_thought_bubble = ThoughtBubble(height = 3, width = 5)
         lil_thought_bubble.set_fill(BLACK, 1.0)
         lil_thought_bubble.pin_to(randy)

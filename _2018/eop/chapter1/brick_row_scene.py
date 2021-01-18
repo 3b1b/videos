@@ -717,7 +717,7 @@ class BrickRowScene(PiCreatureScene):
 
         braces = VGroup(*[Brace(rect, UP) for rect in self.row.rects])
         counts = [choose(3, i) for i in range(4)]
-        probs = VGroup(*[TexMobject("{" + str(k) + "\over 8}") for k in counts])
+        probs = VGroup(*[Tex("{" + str(k) + "\over 8}") for k in counts])
         for (brace, prob) in zip(braces, probs):
             prob.next_to(brace, UP)
 
@@ -971,7 +971,7 @@ class ShowProbsInBrickRow3(BrickRowScene):
 
         braces = VGroup(*[Brace(rect, UP) for rect in self.row.rects])
         counts = [choose(3, i) for i in range(4)]
-        probs = VGroup(*[TexMobject("{" + str(k) + "\over 8}") for k in counts])
+        probs = VGroup(*[Tex("{" + str(k) + "\over 8}") for k in counts])
         for (brace, prob) in zip(braces, probs):
             prob.next_to(brace, UP)
 

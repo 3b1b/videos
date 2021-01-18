@@ -30,13 +30,13 @@ class IntroduceDFT(Scene):
         self.wait()
 
         # Label signal
-        s_title = TextMobject("List of value: ", "$s$", font_size=72)
+        s_title = TexText("List of value: ", "$s$", font_size=72)
         s_title.to_edge(UP)
         self.play(FadeIn(s_title, UP))
         self.wait()
 
         s_labels = VGroup(*(
-            TexMobject("s", f"[{x}]")
+            Tex("s", f"[{x}]")
             for x in range(N)
         ))
         for label, vector in zip(s_labels, vectors):
@@ -62,13 +62,13 @@ class IntroduceDFT(Scene):
         plusses = VGroup()
         rhs = VGroup()
         for label in s_labels.target:
-            plus = TexMobject("+")
+            plus = Tex("+")
             label.next_to(plusses, RIGHT, buff=0.3)
             plus.next_to(label, buff=0.3)
             plusses.add(plus)
             rhs.add(label, plus)
         plusses[-1].scale(0)
-        lhs = TexMobject("\\hat s", "[0]", "=")
+        lhs = Tex("\\hat s", "[0]", "=")
         lhs.to_corner(UL)
         rhs.next_to(lhs, RIGHT)
 
@@ -112,7 +112,7 @@ class IntroduceDFT(Scene):
         )
 
         # Write first DFT term
-        lhs1 = TexMobject("\\hat s", "[1]", "=")
+        lhs1 = Tex("\\hat s", "[1]", "=")
         lhs1.next_to(lhs, DOWN, MED_LARGE_BUFF)
 
         rhs1 = VGroup()
@@ -120,7 +120,7 @@ class IntroduceDFT(Scene):
             new_s = s_term.copy()
             new_plus = plus.copy()
             top_clump = VGroup(s_term, plus)
-            zeta = TexMobject(f"\\zeta^{{{n}}}")
+            zeta = Tex(f"\\zeta^{{{n}}}")
             zeta.add_background_rectangle()
             clump = VGroup(new_s, zeta, new_plus)
             clump.arrange(RIGHT, buff=0.15)
@@ -155,7 +155,7 @@ class IntroduceDFT(Scene):
         unit_circle.move_to(plane)
         unit_circle.set_stroke(YELLOW, 2)
 
-        zeta_label = TexMobject(
+        zeta_label = Tex(
             "\\zeta = e^{-2\\pi i / N}"
         )
         zeta_label.to_edge(RIGHT, buff=LARGE_BUFF)
@@ -261,7 +261,7 @@ class IntroduceDFT(Scene):
         self.wait()
 
         # Write second DFT term
-        lhs2 = TexMobject("\\hat s", "[2]", "=")
+        lhs2 = Tex("\\hat s", "[2]", "=")
         lhs2.next_to(lhs1, DOWN, MED_LARGE_BUFF)
 
         rhs2 = rhs1.copy()
@@ -337,10 +337,10 @@ class IntroduceDFT(Scene):
         self.wait()
 
         # Show general formula
-        dots = TexMobject("\\vdots")
+        dots = Tex("\\vdots")
         dots.next_to(lhs2[:-1], DOWN, MED_LARGE_BUFF)
 
-        formula = TexMobject(
+        formula = Tex(
             "\\hat s[f] = "
             "\\sum_{n=0}^{N - 1} s[n] \\zeta^{f \\cdot n}"
         )
@@ -355,7 +355,7 @@ class IntroduceDFT(Scene):
 
         # Cycle through
         omega_label = VGroup(
-            TexMobject("f = ", font_size=72),
+            Tex("f = ", font_size=72),
             Integer(2),
         )
         omega_label.arrange(RIGHT)

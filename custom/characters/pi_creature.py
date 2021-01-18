@@ -8,7 +8,7 @@ from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.svg.drawings import ThoughtBubble
 from manimlib.mobject.svg.svg_mobject import SVGMobject
-from manimlib.mobject.svg.tex_mobject import TextMobject
+from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.types.vectorized_mobject import VMobject
 from manimlib.utils.config_ops import digest_config
@@ -226,7 +226,7 @@ class PiCreature(SVGMobject):
         bubble = bubble_class(**kwargs)
         if len(content) > 0:
             if isinstance(content[0], str):
-                content_mob = TextMobject(*content)
+                content_mob = TexText(*content)
             else:
                 content_mob = content[0]
             bubble.add_content(content_mob)

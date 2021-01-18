@@ -11,7 +11,7 @@ from manimlib.mobject.geometry import DashedLine
 from manimlib.mobject.geometry import Line
 from manimlib.mobject.geometry import Rectangle
 from manimlib.mobject.geometry import Square
-from manimlib.mobject.svg.tex_mobject import TextMobject
+from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.scene.scene import Scene
 from manimlib.utils.directories import get_directories
@@ -36,7 +36,7 @@ class PatreonEndScreen(Scene):
 
     def construct(self):
         # Add title
-        title = self.title = TextMobject("Clicky Stuffs")
+        title = self.title = TexText("Clicky Stuffs")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
 
@@ -65,7 +65,7 @@ class PatreonEndScreen(Scene):
         line.move_to(ORIGIN)
 
         # Add thanks
-        thanks = TextMobject(self.thanks_words)
+        thanks = TexText(self.thanks_words)
         thanks.scale(0.9)
         thanks.next_to(black_rect.get_bottom(), UP, SMALL_BUFF)
         thanks.set_color(YELLOW)
@@ -88,7 +88,7 @@ class PatreonEndScreen(Scene):
         else:
             names.sort()
 
-        name_labels = VGroup(*map(TextMobject, names))
+        name_labels = VGroup(*map(TexText, names))
         name_labels.scale(self.patron_scale_val)
         for label in name_labels:
             if label.get_width() > self.max_patron_width:

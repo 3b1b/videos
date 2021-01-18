@@ -8,11 +8,11 @@ class IntroducePutnam(Scene):
         "dont_animate" : False,
     }
     def construct(self):
-        title = TextMobject("Putnam Competition")
+        title = TexText("Putnam Competition")
         title.to_edge(UP, buff = MED_SMALL_BUFF)
         title.set_color(BLUE)
-        six_hours = TextMobject("6", "hours")
-        three_hours = TextMobject("3", "hours")
+        six_hours = TexText("6", "hours")
+        three_hours = TexText("3", "hours")
         for mob in six_hours, three_hours:
             mob.next_to(title, DOWN, MED_LARGE_BUFF)
             # mob.set_color(BLUE)
@@ -22,7 +22,7 @@ class IntroducePutnam(Scene):
 
         question_groups = VGroup(*[
             VGroup(*[
-                TextMobject("%s%d)"%(c, i))
+                TexText("%s%d)"%(c, i))
                 for i in range(1, 7)
             ]).arrange(DOWN, buff = MED_LARGE_BUFF)
             for c in ("A", "B")
@@ -41,24 +41,24 @@ class IntroducePutnam(Scene):
 
         out_of_tens = VGroup()
         for question in flat_questions:
-            out_of_ten = TexMobject("/10")
+            out_of_ten = Tex("/10")
             out_of_ten.set_color(GREEN)
             out_of_ten.move_to(question)
             dist = rects[0].get_width() - 1.2
             out_of_ten.shift(dist*RIGHT)
             out_of_tens.add(out_of_ten)
 
-        out_of_120 = TexMobject("/120")
+        out_of_120 = Tex("/120")
         out_of_120.next_to(title, RIGHT, LARGE_BUFF)
         out_of_120.set_color(GREEN)
 
         out_of_120.generate_target()
         out_of_120.target.to_edge(RIGHT, LARGE_BUFF)
-        median = TexMobject("2")
+        median = Tex("2")
         median.next_to(out_of_120.target, LEFT, SMALL_BUFF)
         median.set_color(RED)
         median.align_to(out_of_120[-1])
-        median_words = TextMobject("Typical median $\\rightarrow$")
+        median_words = TexText("Typical median $\\rightarrow$")
         median_words.next_to(median, LEFT)
 
         difficulty_strings = [
@@ -74,7 +74,7 @@ class IntroducePutnam(Scene):
         for i, s, color in zip(it.count(), difficulty_strings, colors):
             for question_group in question_groups:
                 question = question_group[i]
-                text = TextMobject("\\dots %s \\dots"%s)
+                text = TexText("\\dots %s \\dots"%s)
                 text.scale(0.7)
                 text.next_to(question, RIGHT)
                 text.set_color(color)
@@ -153,7 +153,7 @@ class NatureOf5sAnd6s(TeacherStudentsScene):
         mover.target.next_to(
             self.teacher.get_corner(UP+LEFT), UP,
         )
-        new_words = TextMobject("\\dots Potentially very elegant \\dots")
+        new_words = TexText("\\dots Potentially very elegant \\dots")
         new_words.set_color(GREEN)
         new_words.set_height(mover.target[1].get_height())
         new_words.next_to(mover.target[0], RIGHT, SMALL_BUFF)
@@ -180,7 +180,7 @@ class OtherVideoClips(Scene):
         rect.set_height(6.5)
         rect.center()
         rect.to_edge(DOWN)
-        titles = list(map(TextMobject, [
+        titles = list(map(TexText, [
             "Essence of calculus, chapter 1",
             "Pi hiding in prime regularities",
             "How do cryptocurrencies work?"
@@ -202,16 +202,16 @@ class IntroduceTetrahedron(ExternallyAnimatedScene):
 
 class IntroduceTetrahedronSupplement(Scene):
     def construct(self):
-        title = TextMobject("4", "random$^*$ points on sphere")
+        title = TexText("4", "random$^*$ points on sphere")
         title.set_color(YELLOW)
-        question = TextMobject("Probability that this tetrahedron \\\\ contains the sphere's center?")
+        question = TexText("Probability that this tetrahedron \\\\ contains the sphere's center?")
         question.next_to(title, DOWN, MED_LARGE_BUFF)
         group = VGroup(title, question)
         group.set_width(FRAME_WIDTH-1)
         group.to_edge(DOWN)
 
         for n in range(1, 4):
-            num = TextMobject(str(n))
+            num = TexText(str(n))
             num.replace(title[0], dim_to_match = 1)
             num.set_color(YELLOW)
             self.add(num)
@@ -225,7 +225,7 @@ class IntroduceTetrahedronSupplement(Scene):
 
 class IntroduceTetrahedronFootnote(Scene):
     def construct(self):
-        words = TextMobject("""
+        words = TexText("""
             $^*$Chosen independently with a \\\\
             uniform distribution on the sphere.
         """)
@@ -273,7 +273,7 @@ class TwoDCase(Scene):
         self.overall_probability()
 
     def add_title(self):
-        title = TextMobject("2D Case")
+        title = TexText("2D Case")
         title.to_corner(UP+LEFT)
         self.add(title)
         self.set_variables_as_attrs(title)
@@ -314,7 +314,7 @@ class TwoDCase(Scene):
         for anim in self.update_animations:
             anim.update(0)
 
-        question = TextMobject(
+        question = TexText(
             "Probability that \\\\ this triangle \\\\",
             "contains the center", "?",
             arg_separator = "",
@@ -457,20 +457,20 @@ class TwoDCase(Scene):
 
         arrow = Vector(LEFT, color = BLUE)
         arrow.next_to(arc.get_center(), RIGHT, MED_LARGE_BUFF)
-        question = TextMobject("Probability of landing \\\\ in this arc?")
+        question = TexText("Probability of landing \\\\ in this arc?")
         question.scale(0.8)
         question.next_to(arrow, RIGHT)
         question.shift_onto_screen()
         question.shift(SMALL_BUFF*UP)
 
-        answer = TexMobject(
+        answer = Tex(
             "{\\text{Length of arc}", "\\over",
             "\\text{Circumference}}"
         )
         answer.set_color_by_tex("arc", BLUE)
         answer.scale(0.8)
         answer.next_to(arrow, RIGHT)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.rotate(np.pi/2)
         equals.next_to(answer, UP, buff = 0.35)
 
@@ -515,7 +515,7 @@ class TwoDCase(Scene):
         )
         elbow.scale(0.25)
         elbow.shift(self.center)
-        ninety_degrees = TexMobject("90^\\circ")
+        ninety_degrees = Tex("90^\\circ")
         ninety_degrees.next_to(elbow, DOWN+RIGHT, buff = 0)
         proportion = DecimalNumber(0.25)
         proportion.set_color(self.center_color)
@@ -596,7 +596,7 @@ class TwoDCase(Scene):
         point_mobs = self.point_mobs
         triangle = self.triangle
 
-        one_fourth = TexMobject("1/4")
+        one_fourth = Tex("1/4")
         one_fourth.set_color(BLUE)
         one_fourth.next_to(self.question, DOWN)
 
@@ -633,7 +633,7 @@ class TwoDCase(Scene):
 
     def get_point_mob_labels(self):
         point_labels = VGroup(*[
-            TexMobject("P_%d"%(i+1))
+            Tex("P_%d"%(i+1))
             for i in range(len(self.point_mobs))
         ])
         point_labels.set_color(self.point_mobs.get_color())
@@ -789,7 +789,7 @@ class AverageSizeOfSphericalTriangleSection(ExternallyAnimatedScene):
 
 class AverageSizeOfSphericalTriangleSectionSupplement(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Average size of \\\\", "this section", "?",
             arg_separator = ""
         )
@@ -851,7 +851,7 @@ class RevisitTwoDCase(TwoDCase):
         self.set_variables_as_attrs(circle, center_dot)
 
     def show_probability(self):
-        title = TexMobject(
+        title = Tex(
             "P(\\text{triangle contains the center})",
             "=", "1/4"
         )
@@ -864,7 +864,7 @@ class RevisitTwoDCase(TwoDCase):
 
         self.n_in = 0
         self.n_out = 0
-        frac = TexMobject(
+        frac = Tex(
             "{0", "\\over", "\\quad 0", "+", "0 \\quad}", "="
         )
         placeholders = frac.get_parts_by_tex("0")
@@ -916,8 +916,8 @@ class RevisitTwoDCase(TwoDCase):
         rect = SurroundingRectangle(center_lines.target, buff = MED_SMALL_BUFF)
         rect.set_stroke(WHITE, 2)
 
-        words1 = TextMobject("Helpful new objects")
-        words2 = TextMobject("Reframe problem around these")
+        words1 = TexText("Helpful new objects")
+        words2 = TexText("Reframe problem around these")
         for words in words1, words2:
             words.scale(0.8)
             words.next_to(rect, UP)
@@ -952,7 +952,7 @@ class RevisitTwoDCase(TwoDCase):
         point_mobs = self.point_mobs
         center_lines = self.center_lines 
 
-        random_procedure = TextMobject("Random procedure")
+        random_procedure = TexText("Random procedure")
         underline = Line(LEFT, RIGHT)
         underline.stretch_to_fit_width(random_procedure.get_width())
         underline.scale(1.1)
@@ -960,7 +960,7 @@ class RevisitTwoDCase(TwoDCase):
         group = VGroup(random_procedure, underline)
         group.to_corner(UP+RIGHT)
 
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             "Choose 3 random points",
             "Choose 2 random lines",
             "Flip coin for each line \\\\ to get $P_1$ and $P_2$",
@@ -1185,7 +1185,7 @@ class ContrastTwoRandomProcesses(TwoDCase):
         left_circles.shift(3*LEFT)
         right_circles.shift(3*RIGHT)
 
-        vs = TextMobject("vs.")
+        vs = TexText("vs.")
         self.show_creation_of_circle_group(left_circles)
         self.play(Write(vs))
         self.show_creation_of_circle_group(right_circles)
@@ -1214,7 +1214,7 @@ class ContrastTwoRandomProcesses(TwoDCase):
 
 class Rewrite3DRandomProcedure(Scene):
     def construct(self):
-        random_procedure = TextMobject("Random procedure")
+        random_procedure = TexText("Random procedure")
         underline = Line(LEFT, RIGHT)
         underline.stretch_to_fit_width(random_procedure.get_width())
         underline.scale(1.1)
@@ -1222,7 +1222,7 @@ class Rewrite3DRandomProcedure(Scene):
         group = VGroup(random_procedure, underline)
         group.to_corner(UP+LEFT)
         
-        words = VGroup(*list(map(TextMobject, [
+        words = VGroup(*list(map(TexText, [
             "Choose 4 random points",
             "Choose 3 random lines",
             "Choose $P_4$ at random",
@@ -1253,7 +1253,7 @@ class AntipodalViewOfThreeDCase(ExternallyAnimatedScene):
 
 class ThreeDAnswer(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Probability that the tetrahedron contains center:", 
             "$\\frac{1}{8}$"
         )
@@ -1269,7 +1269,7 @@ class FormalWriteupScreenCapture(ExternallyAnimatedScene):
 
 class Formality(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Write-up by Ralph Howard and Paul Sisson (link below)"
         )
         words.scale(0.7)
@@ -1295,7 +1295,7 @@ class Formality(TeacherStudentsScene):
 
 class ProblemSolvingTakeaways(Scene):
     def construct(self):
-        title = TextMobject("Problem solving takeaways")
+        title = TexText("Problem solving takeaways")
         underline = Line(LEFT, RIGHT)
         underline.set_width(title.get_width()*1.1)
         underline.next_to(title, DOWN)
@@ -1303,7 +1303,7 @@ class ProblemSolvingTakeaways(Scene):
         group.to_corner(UP+LEFT)
 
         points = VGroup(*[
-            TextMobject(string, alignment = "")
+            TexText(string, alignment = "")
             for string in [
                 "Ask a simpler version \\\\ of the question",
                 "Try reframing the question \\\\ around new constructs",
@@ -1354,11 +1354,11 @@ class BrilliantPuzzle(PiCreatureScene):
             s1.arrow = arrow
             arrow.student = s1
 
-        title = TextMobject("Puzzle from Brilliant")
+        title = TexText("Puzzle from Brilliant")
         title.scale(0.75)
         title.to_corner(UP+LEFT)
 
-        question = TextMobject("Expected number of \\\\ circled students?")
+        question = TexText("Expected number of \\\\ circled students?")
         question.to_corner(UP+RIGHT)
 
         self.remove(students)
@@ -1460,7 +1460,7 @@ class Promotion(PiCreatureScene):
         "seconds_to_blink" : 5,
     }
     def construct(self):
-        url = TextMobject("https://brilliant.org/3b1b/")
+        url = TexText("https://brilliant.org/3b1b/")
         url.to_corner(UP+LEFT)
 
         rect = Rectangle(height = 9, width = 16)
@@ -1494,7 +1494,7 @@ class Promotion(PiCreatureScene):
 
 class AddedPromoWords(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "First", "$2^8$", "vistors get",
             "$(e^\\pi - \\pi)\\%$", "off"
         )

@@ -177,7 +177,7 @@ class NLayers(MultilayeredScene):
             ),
             RIGHT
         )
-        n_layers = TextMobject("$n$ layers")
+        n_layers = TexText("$n$ layers")
         n_layers.next_to(brace)
 
         self.wait()
@@ -203,7 +203,7 @@ class ShowLayerVariables(MultilayeredScene, PhotonScene):
         center_paths = []
         braces = []
         for layer, x in zip(self.layers[:3], it.count(1)):
-            eq_mob = TexMobject(
+            eq_mob = Tex(
                 ["v_%d"%x, "=", "\sqrt{\phantom{y_1}}"],
                 size = "\\Large"
             )
@@ -219,7 +219,7 @@ class ShowLayerVariables(MultilayeredScene, PhotonScene):
             brace = Brace(brace_endpoints, RIGHT)
             brace.shift(x*RIGHT)
 
-            start_y = TexMobject("y_%d"%x, size = "\\Large")
+            start_y = Tex("y_%d"%x, size = "\\Large")
             end_y = start_y.copy()
             start_y.next_to(brace, RIGHT)
             end_y.shift(v_eq[-1].get_center())
@@ -369,9 +369,9 @@ class ContinuouslyObeyingSnellsLaw(MultilayeredScene):
 
     def snells_law_at_every_point(self, cycloid, chopped_cycloid):
         square = Square(side_length = 0.2, color = WHITE)
-        words = TextMobject(["Snell's law ", "everywhere"])
+        words = TexText(["Snell's law ", "everywhere"])
         snells, rest = words.split()
-        colon = TextMobject(":")
+        colon = TexText(":")
         words.next_to(square)
         words.shift(0.3*UP)
         combo = Mobject(square, words)
@@ -400,7 +400,7 @@ class ContinuouslyObeyingSnellsLaw(MultilayeredScene):
     def get_marks(self, point1, point2):
         vert_line = Line(2*DOWN, 2*UP)
         tangent_line = vert_line.copy()
-        theta = TexMobject("\\theta")
+        theta = Tex("\\theta")
         theta.scale(0.5)
         angle = angle_of_vector(point1 - point2)
         tangent_line.rotate(
@@ -425,13 +425,13 @@ class ContinuouslyObeyingSnellsLaw(MultilayeredScene):
         arc, theta, vert_line, tangent_line = self.get_marks(
             point1, point2
         )
-        equation = TexMobject([
+        equation = Tex([
             "\\sin(\\theta)",
             "\\over \\sqrt{y}",            
         ])
         sin, sqrt_y = equation.split()
         equation.next_to(ref_mob)
-        const = TexMobject(" = \\text{constant}")
+        const = Tex(" = \\text{constant}")
         const.next_to(equation)
         ceil_point = np.array(point1)
         ceil_point[1] = self.top[1]
@@ -439,7 +439,7 @@ class ContinuouslyObeyingSnellsLaw(MultilayeredScene):
             Mobject(Point(point1), Point(ceil_point)),
             RIGHT
         )
-        y_mob = TexMobject("y").next_to(brace)
+        y_mob = Tex("y").next_to(brace)
 
         self.play(
             GrowFromCenter(sin),

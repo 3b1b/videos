@@ -39,7 +39,7 @@ class RightHand(VMobject):
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "``The purpose of computation is \\\\",
             "insight",
             ", not ",
@@ -50,7 +50,7 @@ class OpeningQuote(Scene):
         words.to_edge(UP)
         words.split()[1].set_color(BLUE)
         words.split()[3].set_color(GREEN)
-        author = TextMobject("-Richard Hamming")
+        author = TexText("-Richard Hamming")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -103,7 +103,7 @@ class SquishingTransformation(LinearTransformationScene):
 class AskAboutStretching(LinearTransformationScene):
     def construct(self):
         self.setup()
-        words = TextMobject("""
+        words = TexText("""
             Exactly how much are 
             things being stretched?
         """)
@@ -124,11 +124,11 @@ class AskAboutStretchingSpecifically(LinearTransformationScene):
         areas.set_color(YELLOW)
         blob = Blob().shift(UP+RIGHT)
 
-        label = TextMobject("Area")
+        label = TexText("Area")
         label.set_color(YELLOW)
         label = VMobject(VectorizedPoint(label.get_left()), label)
         label.move_to(blob)
-        target_label = TexMobject(["c \\cdot", "\\text{Area}"])
+        target_label = Tex(["c \\cdot", "\\text{Area}"])
         target_label.split()[1].set_color(YELLOW)
 
         self.add_transformable_mobject(blob)
@@ -170,8 +170,8 @@ class DiagonalExample(LinearTransformationScene):
 
             bottom_brace = Brace(self.i_hat, DOWN)
             right_brace = Brace(self.square, RIGHT)
-            width = TexMobject(str(self.transposed_matrix[0][0]))
-            height = TexMobject(str(self.transposed_matrix[1][1]))
+            width = Tex(str(self.transposed_matrix[0][0]))
+            height = Tex(str(self.transposed_matrix[1][1]))
             width.next_to(bottom_brace, DOWN)
             height.next_to(right_brace, RIGHT)
             for mob in bottom_brace, width, right_brace, height:
@@ -181,8 +181,8 @@ class DiagonalExample(LinearTransformationScene):
 
             width_target, height_target = width.copy(), height.copy()
             det = np.linalg.det(self.transposed_matrix)
-            times, eq_det = list(map(TexMobject, ["\\times", "=%d"%det]))
-            words = TextMobject("New area $=$")
+            times, eq_det = list(map(Tex, ["\\times", "=%d"%det]))
+            words = TexText("New area $=$")
             equation = VMobject(
                 words, width_target, times, height_target, eq_det
             )
@@ -223,7 +223,7 @@ class ThisSquareTellsEverything(LinearTransformationScene):
     def construct(self):
         self.setup()
         self.add_unit_square()
-        words = TextMobject("""
+        words = TexText("""
             This square gives you
             everything you need.
         """)
@@ -335,14 +335,14 @@ class NameDeterminant(LinearTransformationScene):
         matrix_background, matrix, det_text = self.get_matrix()
         self.add_foreground_mobject(matrix_background, matrix)
 
-        A = TexMobject("A")
+        A = Tex("A")
         area_label = VMobject(A.copy(), A.copy(), A)
         area_label.move_to(self.square)
         det = np.linalg.det(self.t_matrix)
         if np.round(det) == det:
             det = int(det)
         area_label_target = VMobject(
-            TexMobject(str(det)), TexMobject("\\cdot"), A.copy()
+            Tex(str(det)), Tex("\\cdot"), A.copy()
         )
         if det < 1 and det > 0:
             area_label_target.scale(det)
@@ -448,7 +448,7 @@ class NegativeDeterminant(Scene):
         matrix = Matrix(numerical_matrix)
         matrix.set_column_colors(X_COLOR, Y_COLOR)
         det_text = get_det_text(matrix, np.linalg.det(numerical_matrix))
-        words = TextMobject("""
+        words = TexText("""
             How can you scale area
             by a negative number?
         """)
@@ -476,7 +476,7 @@ class FlipSpaceOver(Scene):
         )
         axis = UP
         for word, plane in ("Front", plane1), ("Back", plane2):
-            text = TextMobject(word)
+            text = TexText(word)
             if word == "Back":
                 text.rotate(np.pi, axis = axis)
             text.scale(2)
@@ -549,7 +549,7 @@ class IHatJHatOrientation(NegativeDeterminantTransformation):
         arc = Arc(start_angle = 0, angle = np.pi/2, color = YELLOW)
         arc.shift(0.5*(RIGHT+UP)).scale(1/1.6)
         arc.add_tip()
-        words1 = TextMobject([
+        words1 = TexText([
             "$\\hat{\\jmath}$",
             "is to the",
             "left",
@@ -562,7 +562,7 @@ class IHatJHatOrientation(NegativeDeterminantTransformation):
         words1.add_background_rectangle()
         words1.next_to(arc, UP+RIGHT)
 
-        words2 = TextMobject([
+        words2 = TexText([
             "$L(\\hat{\\jmath})$",
             "is to the \\\\",
             "\\emph{right}",
@@ -589,7 +589,7 @@ class IHatJHatOrientation(NegativeDeterminantTransformation):
             Write(words2, run_time = 2),
         )
         self.wait()
-        title = TextMobject("Orientation has been reversed")
+        title = TexText("Orientation has been reversed")
         title.to_edge(UP)
         title.add_background_rectangle()
         self.play(Write(title, run_time = 1))
@@ -609,7 +609,7 @@ class WriteNegativeDeterminant(NegativeDeterminantTransformation):
         )
         three = VMobject(*det_text.split()[-1].split()[1:])
         for mob in det_text.split():
-            if isinstance(mob, TexMobject):
+            if isinstance(mob, Tex):
                 mob.add_background_rectangle()
         matrix_background = BackgroundRectangle(matrix)
         self.play(
@@ -677,9 +677,9 @@ class DeterminantGraphForRotatingIHat(Scene):
         graph = FunctionGraph(np.cos, x_min = 0, x_max = np.pi)
         graph.next_to(det_axis, RIGHT, buff = 0)
         graph.set_color(YELLOW)
-        det_word = TextMobject("Det")
+        det_word = TexText("Det")
         det_word.next_to(det_axis, RIGHT, aligned_edge = UP)
-        time_word = TextMobject("time")
+        time_word = TexText("time")
         time_word.next_to(t_axis, UP)
         time_word.to_edge(RIGHT)
         everything = VMobject(axes, det_word, time_word, graph)
@@ -707,7 +707,7 @@ class Transforming3DCube(Scene):
 
 class NameParallelepiped(Scene):
     def construct(self):
-        word = TextMobject("``Parallelepiped''")
+        word = TexText("``Parallelepiped''")
         word.scale(2)
         pp_part1 = VMobject(*word.split()[:len(word.split())/2])
         pp_part2 = VMobject(*word.split()[len(word.split())/2:])
@@ -722,9 +722,9 @@ class DeterminantIsVolumeOfParallelepiped(Scene):
         matrix.shift(3*LEFT)
         matrix.set_column_colors(X_COLOR, Y_COLOR, Z_COLOR)
         det_text = get_det_text(matrix)
-        eq = TexMobject("=")
+        eq = Tex("=")
         eq.next_to(det_text, RIGHT)
-        words = TextMobject([
+        words = TexText([
             "Volume of this\\\\",
             "parallelepiped"
         ])
@@ -752,7 +752,7 @@ class WriteZeroDeterminant(Scene):
         matrix.set_column_colors(X_COLOR, Y_COLOR, Z_COLOR)
         det_text = get_det_text(matrix, 0)
         brace = Brace(matrix, DOWN)
-        words = TextMobject("""
+        words = TexText("""
             Columns must be
             linearly dependent
         """)
@@ -800,7 +800,7 @@ class RightHandRule(Scene):
             VMobject(hand, *vects).flip()
 
         v1_label, v2_label, v3_label = [
-            TexMobject(label_tex).scale(1.5)
+            Tex(label_tex).scale(1.5)
             for label_tex in self.labels_tex
         ]
         v1_label.next_to(v1.get_end(), UP)
@@ -840,7 +840,7 @@ class AskHowToCompute(TeacherStudentsScene):
 
 class TwoDDeterminantFormula(Scene):
     def construct(self):
-        eq = TextMobject("=")
+        eq = TexText("=")
         matrix = Matrix([["a", "b"], ["c", "d"]])
         matrix.set_column_colors(X_COLOR, Y_COLOR)
         ma, mb, mc, md = matrix.get_entries().split()
@@ -848,7 +848,7 @@ class TwoDDeterminantFormula(Scene):
         mc.shift(0.7*mc.get_height()*DOWN)
         det_text = get_det_text(matrix)
         VMobject(matrix, det_text).next_to(eq, LEFT)
-        formula = TexMobject(list("ad-bc"))
+        formula = Tex(list("ad-bc"))
         formula.next_to(eq, RIGHT)
         formula.shift(0.1*UP)
 
@@ -858,9 +858,9 @@ class TwoDDeterminantFormula(Scene):
 
         for mob in mb, mc, b, c:
             if mob is c:
-                mob.zero = TexMobject("\\cdot 0")
+                mob.zero = Tex("\\cdot 0")
             else:
-                mob.zero = TexMobject("0")
+                mob.zero = Tex("0")
             mob.zero.move_to(mob, aligned_edge = DOWN+LEFT)
             mob.zero.set_color(mob.get_color())
             mob.original = mob.copy()
@@ -891,7 +891,7 @@ class TwoDDeterminantFormulaIntuition(LinearTransformationScene):
         self.wait()
         self.apply_transposed_matrix([[a, 0], [0, 1]])
         i_brace = Brace(self.i_hat, DOWN)
-        width = TexMobject("a").scale(1.5)
+        width = Tex("a").scale(1.5)
         i_brace.put_at_tip(width)
         width.set_color(X_COLOR)
         width.add_background_rectangle()
@@ -900,7 +900,7 @@ class TwoDDeterminantFormulaIntuition(LinearTransformationScene):
 
         self.apply_transposed_matrix([[1, 0], [0, d]])
         side_brace = Brace(self.square, RIGHT)
-        height = TexMobject("d").scale(1.5)
+        height = Tex("d").scale(1.5)
         side_brace.put_at_tip(height)
         height.set_color(Y_COLOR)
         height.add_background_rectangle()
@@ -965,7 +965,7 @@ class FullFormulaExplanation(LinearTransformationScene):
         for shape, color, tex in shapes_colors_and_tex:
             shape.set_stroke(width = 0)
             shape.set_fill(color = color, opacity = 0.7)
-            tex_mob = TexMobject(tex)
+            tex_mob = Tex(tex)
             tex_mob.scale(0.7)
             tex_mob.move_to(shape.get_center_of_mass())
             everyone.add(shape, tex_mob)
@@ -1011,7 +1011,7 @@ class FullFormulaExplanation(LinearTransformationScene):
         matrix = self.get_matrix()
         det_text = get_det_text(matrix)
         f_str = "=(a+b)(c+d)-ac-bd-2bc=ad-bc"
-        formula = TexMobject(f_str)
+        formula = Tex(f_str)
 
         formula.next_to(det_text, RIGHT)
         everyone = VMobject(det_text, matrix, formula)
@@ -1040,9 +1040,9 @@ class ThreeDDetFormula(Scene):
         a, b, c = matrix.get_entries().split()[:3]
         parts = it.starmap(VMobject, [
             [matrix], 
-            [TexMobject("="), a.copy(), m1], 
-            [TexMobject("-"), b.copy(), m2],
-            [TexMobject("+"), c.copy(), m3],
+            [Tex("="), a.copy(), m1], 
+            [Tex("-"), b.copy(), m2],
+            [Tex("+"), c.copy(), m3],
         ])
         parts = list(parts)
         for part in parts:
@@ -1066,7 +1066,7 @@ class QuizTime(TeacherStudentsScene):
 
 class ProductProperty(Scene):
     def construct(self):
-        lhs = TexMobject([
+        lhs = Tex([
             "\\text{det}(",
             "M_1", 
             "M_2",
@@ -1076,7 +1076,7 @@ class ProductProperty(Scene):
         m1.set_color(TEAL)
         m2.set_color(PINK)
 
-        rhs = TexMobject([
+        rhs = Tex([
             "=\\text{det}(",
             "M_1", 
             ")\\text{det}(",
@@ -1090,7 +1090,7 @@ class ProductProperty(Scene):
         formula = VMobject(lhs, rhs)
         formula.center()
 
-        title = TextMobject("Explain in one sentence")
+        title = TexText("Explain in one sentence")
         title.set_color(YELLOW)
         title.next_to(formula, UP, buff = 0.5)
 
@@ -1105,7 +1105,7 @@ class ProductProperty(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("""
+        title = TexText("""
             Next video: Inverse matrices, column space and null space
         """)
         title.set_width(FRAME_WIDTH - 2)

@@ -12,10 +12,10 @@ from _2017.eoc.eoc.chapter10 import derivative
 
 class Introduce(TeacherStudentsScene):
     def construct(self):
-        words = TextMobject("Next up is \\\\", "Taylor series")
+        words = TexText("Next up is \\\\", "Taylor series")
         words.set_color_by_tex("Taylor", BLUE)
         derivs = VGroup(*[
-            TexMobject(
+            Tex(
                 "{d", "^%d"%n, "f \\over dx", "^%d}"%n
             ).set_color_by_tex(str(n), YELLOW)
             for n in range(2, 5)
@@ -102,7 +102,7 @@ class SecondDerivativeGraphically(GraphScene):
         self.graph_label = graph_label
 
     def show_derivative(self):
-        deriv = TexMobject("\\frac{df}{dx}")
+        deriv = Tex("\\frac{df}{dx}")
         deriv.next_to(self.graph_label, DOWN, MED_LARGE_BUFF)
         deriv.set_color(self.deriv_color)
         ss_group = self.get_secant_slope_group(
@@ -130,14 +130,14 @@ class SecondDerivativeGraphically(GraphScene):
         self.deriv = deriv
 
     def write_second_derivative(self):
-        second_deriv = TexMobject("\\frac{d^2 f}{dx^2}")
+        second_deriv = Tex("\\frac{d^2 f}{dx^2}")
         second_deriv.next_to(self.deriv, DOWN, MED_LARGE_BUFF)
         second_deriv.set_color(self.second_deriv_color)
         points = [
             self.input_to_graph_point(x, self.graph)
             for x in (self.x2, self.x3)
         ]
-        words = TextMobject("Change to \\\\ slope")
+        words = TexText("Change to \\\\ slope")
         words.next_to(
             center_of_mass(points), UP, 1.5*LARGE_BUFF
         )
@@ -242,7 +242,7 @@ class SecondDerivativeGraphically(GraphScene):
             ])
         ]
         arg_rhs_list = [
-            TexMobject("(", str(x0), ")", "=", str(rhs))
+            Tex("(", str(x0), ")", "=", str(rhs))
             for rhs in (10, 0.4, 0)
         ]
         for graph, arg_rhs in zip(graphs, arg_rhs_list):
@@ -259,7 +259,7 @@ class SecondDerivativeGraphically(GraphScene):
             self.coords_to_point(x0, 0),
             self.coords_to_point(x0, y0),
         ])
-        input_label = TexMobject(str(x0))
+        input_label = Tex(str(x0))
         input_label.next_to(v_line, DOWN)
 
         self.play(ShowCreation(graph, run_time = 2))
@@ -302,7 +302,7 @@ class SecondDerivativeGraphically(GraphScene):
 
 class IntroduceNotation(TeacherStudentsScene):
     def construct(self):
-        clunky_deriv = TexMobject(
+        clunky_deriv = Tex(
             "{d", "\\big(", "{df", "\\over", "dx}", "\\big)",
             "\\over", "dx }"
         )
@@ -322,7 +322,7 @@ class IntroduceNotation(TeacherStudentsScene):
         d = clunky_deriv.get_part_by_tex("d")
         d_over_dx = VGroup(d, overs[1], dxs[1])
 
-        d2f_over_dx2 = TexMobject("{d^2 f", "\\over", "dx", "^2}")
+        d2f_over_dx2 = Tex("{d^2 f", "\\over", "dx", "^2}")
         d2f_over_dx2.set_color_by_tex("dx", YELLOW)
 
         for mob in clunky_deriv, d2f_over_dx2:
@@ -333,7 +333,7 @@ class IntroduceNotation(TeacherStudentsScene):
             circle.replace(mob, stretch = True)
             circle.scale(1.3)
             mob.circle = circle
-        dx_to_zero = TexMobject("dx \\to 0")
+        dx_to_zero = Tex("dx \\to 0")
         dx_to_zero.set_color(YELLOW)
         dx_to_zero.next_to(clunky_deriv, UP+LEFT)
 
@@ -448,7 +448,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
             for i in range(2)
         ]
         for brace in braces:
-            brace.dx = TexMobject("dx")
+            brace.dx = Tex("dx")
             max_width = 0.7*brace.get_width()
             if brace.dx.get_width() > max_width:
                 brace.dx.set_width(max_width)
@@ -494,7 +494,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
                 color = YELLOW
             )
             df_lines.add(df_line)
-            df_label = TexMobject("df_%d"%i)
+            df_label = Tex("df_%d"%i)
             df_label.set_color(YELLOW)
             df_label.scale(0.8)
             df_label.next_to(df_line.get_center(), UP+LEFT, MED_LARGE_BUFF)
@@ -580,13 +580,13 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
         ddf = self.ddf.copy()
         ddf.generate_target()
         ddf.target.next_to(self.ddf, UP, LARGE_BUFF)
-        rhs = TexMobject(
+        rhs = Tex(
             "\\approx", "(\\text{Some constant})", "(dx)^2"
         )
         rhs.scale(0.8)
         rhs.next_to(ddf.target, RIGHT)
 
-        example_dx = TexMobject(
+        example_dx = Tex(
             "dx = 0.01 \\Rightarrow (dx)^2 = 0.0001"
         )
         example_dx.scale(0.8)
@@ -603,7 +603,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
         self.dx_squared = rhs.get_part_by_tex("dx")
 
     def write_second_derivative(self):
-        ddf_over_dx_squared = TexMobject(
+        ddf_over_dx_squared = Tex(
             "{d(df)", "\\over", "(dx)^2}"
         )
         ddf_over_dx_squared.scale(0.8)
@@ -619,7 +619,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
         right_shifter = ddf_over_dx_squared[0][0]
         left_shifter = ddf_over_dx_squared[2][4]
 
-        exp_two = TexMobject("2")
+        exp_two = Tex("2")
         exp_two.set_color(self.ddf.get_color())
         exp_two.scale(0.5)
         exp_two.move_to(right_shifter.get_corner(UP+RIGHT), LEFT)
@@ -649,7 +649,7 @@ class HowToReadNotation(GraphScene, ReconfigurableScene):
 
 class Footnote(Scene):
     def construct(self):
-        self.add(TextMobject("""
+        self.add(TexText("""
             Interestingly, there is a notion in math 
             called the ``exterior derivative'' which 
             treats this ``d'' as having a more independent 
@@ -695,7 +695,7 @@ class SecondDerivativeAsAcceleration(Scene):
         self.line = line
 
     def introduce_acceleration(self):
-        a_words = TexMobject(
+        a_words = Tex(
             "{d^2 s \\over dt^2}(t)",  "\\Leftrightarrow",
             "\\text{Acceleration}"
         )
@@ -743,16 +743,16 @@ class SecondDerivativeAsAcceleration(Scene):
             graph.to_corner(UP+LEFT)
             graph.shift(i*DOWN/2.0)
 
-        s_words = TexMobject(
+        s_words = Tex(
             "s(t)", "\\Leftrightarrow", "\\text{Displacement}"
         )
         s_words.set_color_by_tex("s(t)", s_scene.graph.get_color())
-        v_words = TexMobject(
+        v_words = Tex(
             "\\frac{ds}{dt}(t)", "\\Leftrightarrow", 
             "\\text{Velocity}"
         )
         v_words.set_color_by_tex("ds", v_scene.graph.get_color())
-        j_words = TexMobject(
+        j_words = Tex(
             "\\frac{d^3 s}{dt^3}(t)", "\\Leftrightarrow", 
             "\\text{Jerk}"
         )
@@ -861,7 +861,7 @@ class SecondDerivativeAsAcceleration(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("Chapter 10: Taylor series")
+        title = TexText("Chapter 10: Taylor series")
         title.to_edge(UP)
         rect = ScreenRectangle(height = 6)
         rect.next_to(title, DOWN)
@@ -882,7 +882,7 @@ class Thumbnail(SecondDerivativeGraphically):
         self.remove(self.graph_label)
         self.graph.set_stroke(GREEN, width = 8)
 
-        tex = TexMobject("{d^n f", "\\over", "dx^n}")
+        tex = Tex("{d^n f", "\\over", "dx^n}")
         tex.set_color_by_tex("d^n", YELLOW)
         tex.set_color_by_tex("dx", BLUE)
         tex.set_height(4)

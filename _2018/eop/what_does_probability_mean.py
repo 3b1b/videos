@@ -12,7 +12,7 @@ class WhatDoesItReallyMean(TeacherStudentsScene):
 
     def construct(self):
 
-        student_q = TextMobject("What does", "``probability''", "\emph{actually}", "mean?")
+        student_q = TexText("What does", "``probability''", "\emph{actually}", "mean?")
         student_q.set_color_by_tex("probability", YELLOW)
         self.student_says(student_q, target_mode = "sassy")
         self.wait()

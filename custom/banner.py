@@ -1,6 +1,6 @@
 from manimlib.constants import *
 from manimlib.mobject.coordinate_systems import NumberPlane
-from manimlib.mobject.svg.tex_mobject import TextMobject
+from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.scene.scene import Scene
 
@@ -82,21 +82,21 @@ class Banner(Scene):
         )
 
     def get_probabalistic_message(self):
-        return TextMobject(
+        return TexText(
             "New video every day ",
             "(with probability 0.05)",
             tex_to_color_map={"Sunday": YELLOW},
         )
 
     def get_date_message(self):
-        return TextMobject(
+        return TexText(
             self.pre_date_text,
             self.date,
             tex_to_color_map={self.date: YELLOW},
         )
 
     def get_supporter_note(self):
-        return TextMobject(
+        return TexText(
             "(Available to supporters for review now)",
             color="#F96854",
         )

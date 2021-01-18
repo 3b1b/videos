@@ -6,7 +6,7 @@ from manimlib.scene.scene import Scene
 from manimlib.mobject.geometry import AnnularSector
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.geometry import Polygon
-from manimlib.mobject.svg.tex_mobject import TextMobject
+from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.types.vectorized_mobject import VMobject
 from manimlib.utils.bezier import interpolate
@@ -211,7 +211,7 @@ class LogoGenerationTemplate(Scene):
         frame.shift(DOWN)
 
         self.logo = Logo()
-        name = TextMobject("3Blue1Brown")
+        name = TexText("3Blue1Brown")
         name.scale(2.5)
         name.next_to(self.logo, DOWN, buff=MED_LARGE_BUFF)
         name.set_gloss(0.2)
@@ -425,7 +425,7 @@ class LogoGenerationFlurry(LogoGenerationTemplate):
 
 class Vertical3B1B(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "3", "Blue", "1", "Brown",
         )
         words.scale(2)

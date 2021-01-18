@@ -69,7 +69,7 @@ class ShowNewRuleAtDiscreteBoundary(DiscreteSetup):
         r_arrow.move_to(rd.get_right(), LEFT)
         arrows = VGroup(l_arrow, r_arrow)
         q_marks = VGroup(*[
-            TexMobject("?").scale(1.5).next_to(
+            Tex("?").scale(1.5).next_to(
                 arrow, arrow.get_vector()
             )
             for arrow in arrows

@@ -30,7 +30,7 @@ class NameBump(BlocksAndWallExample):
         # Swap, to show first name on the left
         names = [names[1], names[0]]
 
-        name_mobs = VGroup(*map(TextMobject, names))
+        name_mobs = VGroup(*map(TexText, names))
         name_mobs.set_stroke(BLACK, 3, background=True)
         name_mobs.set_fill(GREY_B, 1)
         name_mobs.set_sheen(3, UL)

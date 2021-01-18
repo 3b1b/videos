@@ -61,7 +61,7 @@ def get_fourier_transform(
 
 class Introduction(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject("Fourier Transform")
+        title = TexText("Fourier Transform")
         title.scale(1.2)
         title.to_edge(UP, buff = MED_SMALL_BUFF)
 
@@ -108,7 +108,7 @@ class TODOInsertUnmixingSound(TODOStub):
 
 class OtherContexts(PiCreatureScene):
     def construct(self):
-        items = VGroup(*list(map(TextMobject, [
+        items = VGroup(*list(map(TexText, [
             "Extracting frequencies from sound",
             "Uncertainty principle",
             "Riemann Zeta function and primes",
@@ -170,7 +170,7 @@ class AddingPureFrequencies(PiCreatureScene):
 
     def play_A440(self):
         randy = self.pi_creature
-        A_label = TextMobject("A440")
+        A_label = TexText("A440")
         A_label.set_color(self.A_color)
         A_label.next_to(self.speaker, UP)
 
@@ -207,8 +207,8 @@ class AddingPureFrequencies(PiCreatureScene):
         graph = self.get_wave_graph(frequency, axes)
         func = graph.underlying_function
         graph.set_color(self.A_color)
-        pressure = TextMobject("Pressure")
-        time = TextMobject("Time")
+        pressure = TexText("Pressure")
+        time = TexText("Time")
         for label in pressure, time:
             label.scale(0.8)
         pressure.next_to(axes.y_axis, UP)
@@ -263,7 +263,7 @@ class AddingPureFrequencies(PiCreatureScene):
         graph = self.get_wave_graph(frequency, axes)
         graph.set_color(self.D_color)
 
-        D_label = TextMobject("D294")
+        D_label = TexText("D294")
         D_label.set_color(self.D_color)
         D_label.move_to(self.A_label)
 
@@ -446,8 +446,8 @@ class AddingPureFrequencies(PiCreatureScene):
         C_graph = self.get_wave_graph(self.A_frequency*6.0/5, C_axes)
         C_graph.set_color(self.C_color)
 
-        F_label = TextMobject("F349")
-        C_label = TextMobject("C523")
+        F_label = TexText("F349")
+        C_label = TexText("C523")
         for label, graph in (F_label, F_graph), (C_label, C_graph):
             label.scale(0.5)
             label.set_color(graph.get_stroke_color())
@@ -736,7 +736,7 @@ class MachineThatTreatsOneFrequencyDifferently(Scene):
         self.add(graph, frequency_mob)
 
         arrow1, q_marks, arrow2 = group = VGroup(
-            Vector(DOWN), TextMobject("???").scale(1.5), Vector(DOWN)
+            Vector(DOWN), TexText("???").scale(1.5), Vector(DOWN)
         )
         group.set_color(WHITE)
         group.arrange(DOWN)
@@ -847,8 +847,8 @@ class FourierMachineScene(Scene):
     def get_time_axes(self):
         time_axes = Axes(**self.time_axes_config)
         time_axes.x_axis.add_numbers()
-        time_label = TextMobject("Time")
-        intensity_label = TextMobject("Intensity")
+        time_label = TexText("Time")
+        intensity_label = TexText("Intensity")
         labels = VGroup(time_label, intensity_label)
         for label in labels:
             label.scale(self.text_scale_val)
@@ -890,7 +890,7 @@ class FourierMachineScene(Scene):
         frequency_axes.add(box)
         frequency_axes.to_corner(DOWN+RIGHT, buff = MED_SMALL_BUFF)
 
-        frequency_label = TextMobject("Frequency")
+        frequency_label = TexText("Frequency")
         frequency_label.scale(self.text_scale_val)
         frequency_label.next_to(
             frequency_axes.x_axis.get_right(), DOWN, 
@@ -1274,7 +1274,7 @@ class WrapCosineGraphAroundCircle(FourierMachineScene):
         freq = self.initial_winding_frequency
         winding_freq_label = VGroup(
             DecimalNumber(freq, num_decimal_places=2),
-            TextMobject("cycles/second")
+            TexText("cycles/second")
         )
         winding_freq_label.arrange(RIGHT)
         winding_freq_label.next_to(
@@ -1295,7 +1295,7 @@ class WrapCosineGraphAroundCircle(FourierMachineScene):
 
     def get_bps_label(self, freq = 3):
         braces = VGroup(*self.get_peak_braces()[freq:2*freq])
-        words = TextMobject("%d beats/second"%freq)
+        words = TexText("%d beats/second"%freq)
         words.set_width(0.9*braces.get_width())
         words.move_to(braces, DOWN)
         return words
@@ -1377,7 +1377,7 @@ class DrawFrequencyPlot(WrapCosineGraphAroundCircle, PiCreatureScene):
         arrow = Vector(DOWN+2*LEFT, color = color)
         arrow.next_to(dot.get_center(), UP+RIGHT, buff = SMALL_BUFF)
         dot.move_to(arrow.get_start())
-        words = TextMobject("Center of mass")
+        words = TexText("Center of mass")
         words.next_to(arrow.get_start(), RIGHT)
         words.set_color(color)
 
@@ -1409,7 +1409,7 @@ class DrawFrequencyPlot(WrapCosineGraphAroundCircle, PiCreatureScene):
         com_label = self.center_of_mass_label
         com_label.add_background_rectangle()
         frequency_axes = self.get_frequency_axes()
-        x_coord_label = TextMobject("$x$-coordinate for center of mass")
+        x_coord_label = TexText("$x$-coordinate for center of mass")
         x_coord_label.set_color(self.center_of_mass_color)
         x_coord_label.scale(self.text_scale_val)
         x_coord_label.next_to(
@@ -1562,7 +1562,7 @@ class DrawFrequencyPlot(WrapCosineGraphAroundCircle, PiCreatureScene):
 
     def label_as_almost_fourier(self):
         x_coord_label = self.x_coord_label
-        almost_fourier_label = TextMobject(
+        almost_fourier_label = TexText(
             "``Almost Fourier Transform''",
         )
         almost_fourier_label.move_to(x_coord_label, UP+LEFT)
@@ -1776,7 +1776,7 @@ class ShowLowerFrequency(DrawFrequencyPlot):
         )
         dot.save_state()
         self.center_of_mass_dot = dot
-        com_words = TextMobject("Center of mass")
+        com_words = TexText("Center of mass")
         com_words.add_background_rectangle()
         com_words.move_to(self.circle_plane, DOWN)
         arrow = Arrow(
@@ -1803,7 +1803,7 @@ class ShowLowerFrequency(DrawFrequencyPlot):
         fourier_graph_update = self.get_fourier_graph_drawing_update_anim(
             fourier_graph
         )
-        x_coord_label = TextMobject(
+        x_coord_label = TexText(
             "x-coordinate of center of mass"
         )
         x_coord_label.scale(self.text_scale_val)
@@ -1881,9 +1881,9 @@ class ShowLinearity(DrawFrequencyPlot):
             axes, DOWN, MED_LARGE_BUFF
         )
 
-        low_freq_label = TextMobject("%d Hz"%int(low_freq))
-        high_freq_label = TextMobject("%d Hz"%int(high_freq))
-        sum_label = TextMobject(
+        low_freq_label = TexText("%d Hz"%int(low_freq))
+        high_freq_label = TexText("%d Hz"%int(high_freq))
+        sum_label = TexText(
             "%d Hz"%int(low_freq), "+",
             "%d Hz"%int(high_freq)
         )
@@ -1945,7 +1945,7 @@ class ShowLinearity(DrawFrequencyPlot):
         fourier_graph_update = self.get_fourier_graph_drawing_update_anim(
             fourier_graph
         )
-        x_coord_label = TextMobject(
+        x_coord_label = TexText(
             "x-coordinate of center of mass"
         )
         x_coord_label.scale(self.text_scale_val)
@@ -1955,7 +1955,7 @@ class ShowLinearity(DrawFrequencyPlot):
             ), UP
         )
         x_coord_label.set_color(self.center_of_mass_color)
-        almost_fourier_label = TextMobject(
+        almost_fourier_label = TexText(
             "``Almost-Fourier transform''"
         )
 
@@ -2035,7 +2035,7 @@ class ShowCommutativeDiagram(ShowLinearity):
 
         frequency_axes = Axes(**self.frequency_axes_config)
         frequency_axes.set_color(TEAL)
-        freq_label = TextMobject("Frequency")
+        freq_label = TexText("Frequency")
         freq_label.scale(self.text_scale_val)
         freq_label.next_to(frequency_axes.x_axis, DOWN, SMALL_BUFF, RIGHT)
         frequency_axes.label = freq_label
@@ -2066,9 +2066,9 @@ class ShowCommutativeDiagram(ShowLinearity):
             self.sum_color,
         ]
         labels = [
-            TextMobject("2 Hz"),
-            TextMobject("3 Hz"),
-            # TextMobject("2 Hz", "+", "3 Hz"),
+            TexText("2 Hz"),
+            TexText("3 Hz"),
+            # TexText("2 Hz", "+", "3 Hz"),
             VectorizedPoint()
         ]
         for func, color, label, ta, fa in zip(funcs, colors, labels, ta_group, fa_group):
@@ -2088,7 +2088,7 @@ class ShowCommutativeDiagram(ShowLinearity):
                 color = WHITE,
                 buff = MED_LARGE_BUFF,
             )
-            words = TextMobject("Almost-Fourier \\\\ transform")
+            words = TexText("Almost-Fourier \\\\ transform")
             words.scale(0.6)
             words.next_to(arrow, UP)
             arrow.words = words
@@ -2112,7 +2112,7 @@ class ShowCommutativeDiagram(ShowLinearity):
                 buff = SMALL_BUFF
             )
             arrow.scale(0.8, about_edge = UP)
-            arrow.words = TextMobject("Sum").scale(0.75)
+            arrow.words = TexText("Sum").scale(0.75)
             arrow.words.next_to(arrow, RIGHT, buff = MED_SMALL_BUFF)
             sum_arrows.add(arrow)
 
@@ -2228,7 +2228,7 @@ class PauseAndPonder(TeacherStudentsScene):
 
 class BeforeGettingToTheFullMath(TeacherStudentsScene):
     def construct(self):
-        formula = TexMobject(
+        formula = Tex(
             "\\hat{g}(f) = \\int_{-\\infty}^{\\infty}" + \
             "g(t)e^{-2\\pi i f t}dt"
         )
@@ -2293,8 +2293,8 @@ class FilterOutHighPitch(AddingPureFrequencies, ShowCommutativeDiagram):
         )
         axes.set_stroke(width = 2)
         axes.to_corner(UP+LEFT)
-        time_label = TextMobject("Time")
-        intensity_label = TextMobject("Intensity")
+        time_label = TexText("Time")
+        intensity_label = TexText("Intensity")
         labels = VGroup(time_label, intensity_label)
         labels.scale(0.75)
         time_label.next_to(
@@ -2347,7 +2347,7 @@ class FilterOutHighPitch(AddingPureFrequencies, ShowCommutativeDiagram):
         )
         frequency_axes.set_color(TEAL)
         frequency_axes.next_to(time_axes, DOWN, LARGE_BUFF, LEFT)
-        freq_label = TextMobject("Frequency")
+        freq_label = TexText("Frequency")
         freq_label.scale(0.75)
         freq_label.next_to(frequency_axes.x_axis, DOWN, MED_SMALL_BUFF, RIGHT)
         frequency_axes.label = freq_label
@@ -2366,7 +2366,7 @@ class FilterOutHighPitch(AddingPureFrequencies, ShowCommutativeDiagram):
         frequency_axes.graph = fourier_graph
 
         arrow = Arrow(time_graph, fourier_graph, color = WHITE)
-        ft_words = TextMobject("Fourier \\\\ transform")
+        ft_words = TexText("Fourier \\\\ transform")
         ft_words.next_to(arrow, RIGHT)
 
         spike_rect = self.get_spike_rect(frequency_axes, 3)
@@ -2432,7 +2432,7 @@ class FilterOutHighPitch(AddingPureFrequencies, ShowCommutativeDiagram):
         arrow = to_fourier_arrow.copy()
         arrow.rotate(TAU/2, about_edge = LEFT)
         arrow.shift(MED_SMALL_BUFF*LEFT)
-        inv_fourier_words = TextMobject("Inverse Fourier \\\\ transform")
+        inv_fourier_words = TexText("Inverse Fourier \\\\ transform")
         inv_fourier_words.next_to(arrow, LEFT)
         VGroup(arrow, inv_fourier_words).set_color(MAROON_B)
 
@@ -2688,7 +2688,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         )
         plane = self.circle_plane
         dot = self.center_of_mass_dot
-        complex_plane_title = TextMobject("Complex plane")
+        complex_plane_title = TexText("Complex plane")
         complex_plane_title.add_background_rectangle()
         complex_plane_title.to_edge(UP)
         coordinate_labels = plane.get_coordinate_labels()
@@ -2753,7 +2753,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
                 scalar*np.exp(complex(0, get_t()+t_shift))
             )
         vector = Vector(plane.number_to_point(1), color = GREEN)
-        exp_base = TexMobject("e").scale(1.3)
+        exp_base = Tex("e").scale(1.3)
         exp_base.add_background_rectangle()
         exp_decimal = DecimalNumber(0, unit = "i", include_background_rectangle = True)
         exp_decimal.scale(0.75)
@@ -2837,7 +2837,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         self.wait()
 
         #Write exponential expression
-        exp_expression = TexMobject("e", "^{-", "2\\pi i", "f", "t}")
+        exp_expression = Tex("e", "^{-", "2\\pi i", "f", "t}")
         e, minus, two_pi_i, f, t = exp_expression
         exp_expression.next_to(
             plane.coords_to_point(1, 1), 
@@ -2856,7 +2856,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
 
         labels = VGroup()
         for sym, word in (t, "Time"), (f, "Frequency"):
-            label = TextMobject(word)
+            label = TexText(word)
             label.match_style(sym)
             label.next_to(sym, UP, buff = MED_LARGE_BUFF)
             label.add_background_rectangle()
@@ -2864,7 +2864,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
             label.arrow.match_style(sym)
             labels.add(label)
         time_label, frequency_label = labels
-        example_frequency = TexMobject("f = 1/10")
+        example_frequency = Tex("f = 1/10")
         example_frequency.add_background_rectangle()
         example_frequency.match_style(frequency_label)
         example_frequency.move_to(frequency_label, DOWN)
@@ -2943,7 +2943,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         time_axes_group = self.time_axes_group
         graph = self.graph
         pol_graph = self.get_polarized_mobject(graph, freq = 0.2)
-        g_label = TexMobject("g(t)")
+        g_label = Tex("g(t)")
         g_label.match_color(graph)
         g_label.next_to(graph, UP)
         g_label.add_background_rectangle()
@@ -2993,7 +2993,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         integrand.generate_target()
         integrand.target.to_edge(RIGHT, buff = LARGE_BUFF)
         integrand.target.shift(MED_LARGE_BUFF*DOWN)
-        sum_expr = TexMobject(
+        sum_expr = Tex(
             "{1", "\\over", "N}",
             "\\sum", "_{k = 1}", "^N",
         )
@@ -3001,7 +3001,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         sum_expr.shift(SMALL_BUFF*(UP+5*RIGHT))
         sum_expr.next_to(integrand.target, LEFT)
 
-        integral = TexMobject(
+        integral = Tex(
             "{1", "\\over", "t_2 - t_1}",
             "\\int", "_{t_1}", "^{t_2}"
         )
@@ -3015,7 +3015,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         )
         time_interval.match_style(time_interval_indicator)
         time_interval_indicator.add(time_interval)
-        dt_mob = TexMobject("dt")
+        dt_mob = Tex("dt")
         dt_mob.next_to(integrand.target, RIGHT, SMALL_BUFF, DOWN)
         dt_mob.add_background_rectangle()
 
@@ -3033,7 +3033,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
         t_mobs.save_state()
         t_mobs.generate_target()
         for i, t_mob in enumerate(t_mobs.target):
-            k = TexMobject("k")
+            k = Tex("k")
             k.match_style(t_mob)
             k.match_height(t_mob)
             k.scale(0.5)
@@ -3145,7 +3145,7 @@ class WriteComplexExponentialExpression(DrawFrequencyPlot):
 
 class EulersFormulaViaGroupTheoryWrapper(Scene):
     def construct(self):
-        title = TextMobject("Euler's formula with introductory group theory")
+        title = TexText("Euler's formula with introductory group theory")
         title.to_edge(UP)
         screen_rect = ScreenRectangle(height = 6)
         screen_rect.next_to(title, DOWN)
@@ -3161,7 +3161,7 @@ class WhyAreYouTellingUsThis(TeacherStudentsScene):
 
 class BuildUpExpressionStepByStep(TeacherStudentsScene):
     def construct(self):
-        expression = TexMobject(
+        expression = Tex(
             "\\frac{1}{t_2 - t_1}", "\\int_{t_1}^{t_2}",
             "g(t)", "e", "^{-2\\pi i", "f", "t}", "dt"
         )
@@ -3225,7 +3225,7 @@ class ScaleUpCenterOfMass(WriteComplexExponentialExpression):
         self.add(self.center_of_mass_dot)
 
     def add_expression(self):
-        expression = TexMobject(
+        expression = Tex(
             "\\frac{1}{t_2 - t_1}", "\\int_{t_1}^{t_2}",
             "g(t)", "e", "^{-2\\pi i", "f", "t}", "dt"
         )
@@ -3493,7 +3493,7 @@ class ScaleUpCenterOfMass(WriteComplexExponentialExpression):
             graph.underlying_function, x_min = 1, x_max = 2
         )
         graph_portion.set_color(TEAL)
-        bps_label = TextMobject("2 beats per second")
+        bps_label = TexText("2 beats per second")
         bps_label.scale(0.75)
         bps_label.next_to(graph_portion, UP, aligned_edge = LEFT)
         bps_label.shift(SMALL_BUFF*RIGHT)
@@ -3631,10 +3631,10 @@ class SummarizeTheFullTransform(DrawFrequencyPlot):
         fourier_graph = frequency_axes.get_graph(fourier_func)
         fourier_graph.set_color(RED)
 
-        g_t = TexMobject("g(t)")
+        g_t = Tex("g(t)")
         g_t[-2].match_color(graph)
         g_t.next_to(graph, UP)
-        g_hat_f = TexMobject("\\hat g(f)")
+        g_hat_f = Tex("\\hat g(f)")
         g_hat_f[-2].match_color(fourier_graph)
         g_hat_f.next_to(
             frequency_axes.input_to_graph_point(2, fourier_graph),
@@ -3714,7 +3714,7 @@ class SummarizeTheFullTransform(DrawFrequencyPlot):
             imaginary_fourier_graph.get_points()[-1],
         )
 
-        real_part = TextMobject(
+        real_part = TexText(
             "Real part of", "$\\hat g(f)$"
         )
         real_part[1].match_style(g_hat_f)
@@ -3802,7 +3802,7 @@ class SummarizeFormula(Scene):
         self.wait(2)
 
     def get_expression(self):
-        expression = TexMobject(
+        expression = Tex(
             "\\hat g(", "f", ")", "=", "\\int", "_{t_1}", "^{t_2}",
             "g({}", "t", ")", "e", "^{-2\\pi i", "f", "t}", "dt"
         )
@@ -3843,7 +3843,7 @@ class BoundsAtInfinity(SummarizeFormula):
         ])
         bound_rects.set_color(TEAL)
         inf_bounds = VGroup(*[
-            VGroup(TexMobject(s + "\\infty"))
+            VGroup(Tex(s + "\\infty"))
             for s in ("-", "+")
         ])
         decimal_bounds = VGroup(*[DecimalNumber(0) for x in range(2)])
@@ -3958,7 +3958,7 @@ class MoreToCover(TeacherStudentsScene):
 
 class ShowUncertaintyPrinciple(Scene):
     def construct(self):
-        title = TextMobject("Uncertainty principle")
+        title = TexText("Uncertainty principle")
         self.add(title)
         top_axes = Axes(
             x_min = -FRAME_X_RADIUS,
@@ -3978,7 +3978,7 @@ class ShowUncertaintyPrinciple(Scene):
         group.arrange(DOWN)
         title.shift(MED_SMALL_BUFF*UP)
         group.to_edge(UP)
-        fourier_word = TextMobject("Fourier transform")
+        fourier_word = TexText("Fourier transform")
         fourier_word.next_to(arrow, RIGHT)
         self.add(group, fourier_word)
 
@@ -4019,13 +4019,13 @@ class ShowUncertaintyPrinciple(Scene):
 
 class XCoordinateLabelTypoFix(Scene):
     def construct(self):
-        words = TextMobject("$x$-coordinate for center of mass")
+        words = TexText("$x$-coordinate for center of mass")
         words.set_color(RED)
         self.add(words)
 
 class NextVideoWrapper(Scene):
     def construct(self):
-        title = TextMobject("Next video")
+        title = TexText("Next video")
         title.to_edge(UP)
         screen_rect = ScreenRectangle(height = 6)
         screen_rect.next_to(title, DOWN)
@@ -4037,10 +4037,10 @@ class SubscribeOrBinge(PiCreatureScene):
     def construct(self):
         morty = self.pi_creature
         morty.center().to_edge(DOWN, LARGE_BUFF)
-        subscribe = TextMobject("Subscribe")
+        subscribe = TexText("Subscribe")
         subscribe.set_color(RED)
         subscribe.next_to(morty, UP+RIGHT)
-        binge = TextMobject("Binge")
+        binge = TexText("Binge")
         binge.set_color(BLUE)
         binge.next_to(morty, UP+LEFT)
 
@@ -4098,10 +4098,10 @@ class CloseWithAPuzzle(TeacherStudentsScene):
 class PuzzleDescription(Scene):
     def construct(self):
         lines = VGroup(
-            TextMobject("Convex set", "$C$", "in $\\mathds{R}^3$"),
-            TextMobject("Boundary", "$B$", "$=$", "$\\partial C$"),
-            TextMobject("$D$", "$=\\{p+q | p, q \\in B\\}$"),
-            TextMobject("Prove that", "$D$", "is convex")
+            TexText("Convex set", "$C$", "in $\\mathds{R}^3$"),
+            TexText("Boundary", "$B$", "$=$", "$\\partial C$"),
+            TexText("$D$", "$=\\{p+q | p, q \\in B\\}$"),
+            TexText("Prove that", "$D$", "is convex")
         )
         for line in lines:
             line.set_color_by_tex_to_color_map({
@@ -4128,7 +4128,7 @@ class SponsorScreenGrab(PiCreatureScene):
         screen = ScreenRectangle(height = 5)
         screen.to_corner(UP+LEFT)
         screen.shift(MED_LARGE_BUFF*DOWN)
-        url = TextMobject("janestreet.com/3b1b")
+        url = TexText("janestreet.com/3b1b")
         url.next_to(screen, UP)
 
         self.play(
@@ -4227,7 +4227,7 @@ class FourierEndScreen(PatreonEndScreen):
 
 class Thumbnail(Scene):
     def construct(self):
-        title = TextMobject("Fourier\\\\", "Visualized")
+        title = TexText("Fourier\\\\", "Visualized")
         title.set_color(YELLOW)
         title.set_stroke(RED, 2)
         title.scale(2.5)

@@ -58,7 +58,7 @@ class PascalColored(Scene):
                 color=self.colors[nCk_residue]
             )
             if n <= 9:
-                num = TexMobject(str(nCk_residue))
+                num = Tex(str(nCk_residue))
                 num.set_height(0.5 * dot.get_height())
                 num.move_to(dot)
                 dot.add(num)

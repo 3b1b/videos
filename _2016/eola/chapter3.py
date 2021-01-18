@@ -6,7 +6,7 @@ def curvy_squish(point):
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "Unfortunately, no one can be told what the",
             "Matrix",
             "is. You have to",
@@ -16,10 +16,10 @@ class OpeningQuote(Scene):
         words.to_edge(UP)
         words.split()[1].set_color(GREEN)
         words.split()[3].set_color(BLUE)
-        author = TextMobject("-Morpheus")
+        author = TexText("-Morpheus")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
-        comment = TextMobject("""
+        comment = TexText("""
             (Surprisingly apt words on the importance 
             of understanding matrix operations visually.)
         """)
@@ -34,7 +34,7 @@ class OpeningQuote(Scene):
 
 class Introduction(TeacherStudentsScene):
     def construct(self):
-        title = TextMobject(["Matrices as", "Linear transformations"])
+        title = TexText(["Matrices as", "Linear transformations"])
         title.to_edge(UP)
         title.set_color(YELLOW)
         linear_transformations = title.split()[1]
@@ -79,11 +79,11 @@ class DescribeTransformation(Scene):
         self.show_function()
 
     def add_title(self):
-        title = TextMobject(["Linear", "transformation"])
+        title = TexText(["Linear", "transformation"])
         title.to_edge(UP)
         linear, transformation = title.split()
         brace = Brace(transformation, DOWN)
-        function = TextMobject("function").next_to(brace, DOWN)
+        function = TexText("function").next_to(brace, DOWN)
         function.set_color(YELLOW)
 
         self.play(Write(title))
@@ -95,12 +95,12 @@ class DescribeTransformation(Scene):
         )
 
     def show_function(self):
-        f_of_x = TexMobject("f(x)")
-        L_of_v = TexMobject("L(\\vec{\\textbf{v}})")
+        f_of_x = Tex("f(x)")
+        L_of_v = Tex("L(\\vec{\\textbf{v}})")
         nums = [5, 2, -3]
-        num_inputs = VMobject(*list(map(TexMobject, list(map(str, nums)))))
+        num_inputs = VMobject(*list(map(Tex, list(map(str, nums)))))
         num_outputs = VMobject(*[
-            TexMobject(str(num**2))
+            Tex(str(num**2))
             for num in nums
         ])
         for mob in num_inputs, num_outputs:
@@ -114,10 +114,10 @@ class DescribeTransformation(Scene):
         output_vect = Matrix([2, -3])
         output_vect.next_to(L_of_v, RIGHT, buff = 1)
 
-        vector_input_words = TextMobject("Vector input")
+        vector_input_words = TexText("Vector input")
         vector_input_words.set_color(MAROON_C)
         vector_input_words.next_to(input_vect, DOWN)
-        vector_output_words = TextMobject("Vector output")
+        vector_output_words = TexText("Vector output")
         vector_output_words.set_color(BLUE)
         vector_output_words.next_to(output_vect, DOWN)
 
@@ -159,7 +159,7 @@ class WhyConfuseWithTerminology(TeacherStudentsScene):
         ])
         self.random_blink()
         self.wait()
-        statement = TextMobject([
+        statement = TexText([
             "The word",
             "``transformation''",
             "suggests \\\\ that you think using",
@@ -179,10 +179,10 @@ class ThinkinfOfFunctionsAsGraphs(VectorScene):
     def construct(self):
         axes = self.add_axes()
         graph = FunctionGraph(lambda x : x**2, x_min = -2, x_max = 2)
-        name = TexMobject("f(x) = x^2")
+        name = Tex("f(x) = x^2")
         name.next_to(graph, RIGHT).to_edge(UP)
         point = Dot(graph.point_from_proportion(0.8))
-        point_label = TexMobject("(2, f(2))")
+        point_label = Tex("(2, f(2))")
         point_label.next_to(point.get_center(), DOWN+RIGHT, buff = 0.1)
 
         self.play(ShowCreation(graph))
@@ -205,7 +205,7 @@ class ThinkinfOfFunctionsAsGraphs(VectorScene):
             run_time = 2
         )
         self.clear()
-        words = TextMobject(["Instead think about", "\\emph{movement}"])
+        words = TexText(["Instead think about", "\\emph{movement}"])
         words.split()[-1].set_color(YELLOW)
         self.play(Write(words))
         self.wait()
@@ -221,7 +221,7 @@ class TransformJustOneVector(VectorScene):
             color = PINK
         )
         for v, word in (v1, "Input"), (v2, "Output"):
-            v.label = TextMobject("%s vector"%word)
+            v.label = TexText("%s vector"%word)
             v.label.next_to(v.get_end(), UP)
             v.label.set_color(v.get_color())
             self.play(ShowCreation(v))
@@ -362,17 +362,17 @@ class CrazyTransformation(ApplyComplexFunction):
 
 class LookToWordLinear(Scene):
     def construct(self):
-        title = TextMobject(["Linear ", "transformations"])
+        title = TexText(["Linear ", "transformations"])
         title.to_edge(UP)
         faded_title = title.copy().fade()
         linear, transformation = title.split()
         faded_linear, faded_transformation = faded_title.split()
         linear_brace = Brace(linear, DOWN)
         transformation_brace = Brace(transformation, DOWN)
-        function = TextMobject("function")
+        function = TexText("function")
         function.set_color(YELLOW)
         function.next_to(transformation_brace, DOWN)
-        new_sub_word = TextMobject("What does this mean?")
+        new_sub_word = TexText("What does this mean?")
         new_sub_word.set_color(BLUE)
         new_sub_word.next_to(linear_brace, DOWN)
 
@@ -400,9 +400,9 @@ class IntroduceLinearTransformations(LinearTransformationScene):
         self.apply_transposed_matrix([[2, 1], [1, 2]])
         self.wait()
 
-        lines_rule = TextMobject("Lines remain lines")
+        lines_rule = TexText("Lines remain lines")
         lines_rule.shift(2*UP).to_edge(LEFT)
-        origin_rule = TextMobject("Origin remains fixed")
+        origin_rule = TexText("Origin remains fixed")
         origin_rule.shift(2*UP).to_edge(RIGHT)
         arrow = Arrow(origin_rule, ORIGIN)
         dot = Dot(ORIGIN, radius = 0.1, color = RED)
@@ -423,7 +423,7 @@ class IntroduceLinearTransformations(LinearTransformationScene):
 
 class ToThePedants(Scene):
     def construct(self):
-        words = TextMobject([
+        words = TexText([
             "To the pedants:\\\\",
         """
             Yeah yeah, I know that's not the formal definition
@@ -457,7 +457,7 @@ class SimpleNonlinearTransformationScene(LinearTransformationScene):
         self.setup()
         self.wait()
         self.apply_nonlinear_transformation(self.func)
-        words = TextMobject(self.words)
+        words = TexText(self.words)
         words.to_corner(UP+RIGHT)
         words.set_color(RED)
         words.add_background_rectangle()
@@ -515,7 +515,7 @@ class GridLinesRemainParallel(SimpleLinearTransformationScene):
     }
     def construct(self):
         SimpleLinearTransformationScene.construct(self)
-        text = TextMobject([
+        text = TexText([
             "Grid lines remain",
             "parallel",
             "and",
@@ -549,7 +549,7 @@ class YetAnotherLinearTransformation(SimpleLinearTransformationScene):
     }
     def construct(self):
         SimpleLinearTransformationScene.construct(self)
-        words = TextMobject("""
+        words = TexText("""
             How would you describe 
             one of these numerically?
             """
@@ -557,7 +557,7 @@ class YetAnotherLinearTransformation(SimpleLinearTransformationScene):
         words.add_background_rectangle()
         words.to_edge(UP)
         words.set_color(GREEN)
-        formula = TexMobject([
+        formula = Tex([
             matrix_to_tex_string(["x_\\text{in}", "y_\\text{in}"]),
             "\\rightarrow ???? \\rightarrow",
             matrix_to_tex_string(["x_\\text{out}", "y_{\\text{out}}"])
@@ -684,7 +684,7 @@ class TrackBasisVectorsExample(LinearTransformationScene):
 
 
     def get_v_definition(self):
-        v_def = TexMobject([
+        v_def = Tex([
             "\\vec{\\textbf{v}}",
             " = %s"%self.v_coord_strings[0],
             "\\hat{\\imath}",
@@ -701,7 +701,7 @@ class TrackBasisVectorsExample(LinearTransformationScene):
         return v_def
 
     def write_linear_map_rule(self):
-        rule = TexMobject([
+        rule = Tex([
             "\\text{Transformed } \\vec{\\textbf{v}}",
             " = %s"%self.v_coord_strings[0],
             "(\\text{Transformed }\\hat{\\imath})",
@@ -733,7 +733,7 @@ class TrackBasisVectorsExample(LinearTransformationScene):
         i_coords.next_to(self.i_hat.get_end(), RIGHT)
         j_coords.next_to(self.j_hat.get_end(), RIGHT)
 
-        calculation = TexMobject([
+        calculation = Tex([
             " = %s"%self.v_coord_strings[0],
             matrix_to_tex_string(self.transposed_matrix[0]),
             "+%s"%self.v_coord_strings[1],
@@ -747,7 +747,7 @@ class TrackBasisVectorsExample(LinearTransformationScene):
         calculation.to_edge(LEFT)
         calculation.add_background_rectangle()
 
-        result = TexMobject(self.result_coords_string)
+        result = Tex(self.result_coords_string)
         result.scale(0.8)
         result.add_background_rectangle()
         result.next_to(calculation, DOWN)
@@ -793,7 +793,7 @@ class WatchManyVectorsMove(TransformManyVectors):
 
 class NowWithoutWatching(Scene):
     def construct(self):
-        text = TextMobject("Now without watching...")
+        text = TexText("Now without watching...")
         text.to_edge(UP)
         randy = Randolph(mode = "pondering")
         self.add(randy)
@@ -803,8 +803,8 @@ class NowWithoutWatching(Scene):
 
 class DeduceResultWithGeneralCoordinates(Scene):
     def construct(self):
-        i_hat_to = TexMobject("\\hat{\\imath} \\rightarrow")
-        j_hat_to = TexMobject("\\hat{\\jmath} \\rightarrow")
+        i_hat_to = Tex("\\hat{\\imath} \\rightarrow")
+        j_hat_to = Tex("\\hat{\\jmath} \\rightarrow")
         i_coords = Matrix([1, -2])
         j_coords = Matrix([3, 0])
         i_coords.next_to(i_hat_to, RIGHT, buff = 0.1)
@@ -819,11 +819,11 @@ class DeduceResultWithGeneralCoordinates(Scene):
         vect = Matrix(["x", "y"])
         x, y = vect.get_mob_matrix().flatten()
         VMobject(x, y).set_color(YELLOW)
-        rto = TexMobject("\\rightarrow")
-        equals = TexMobject("=")
-        plus = TexMobject("+")
-        row1 = TexMobject("1x + 3y")
-        row2 = TexMobject("-2x + 0y")
+        rto = Tex("\\rightarrow")
+        equals = Tex("=")
+        plus = Tex("+")
+        row1 = Tex("1x + 3y")
+        row2 = Tex("-2x + 0y")
         VMobject(
             row1.split()[0], row2.split()[0], row2.split()[1]
         ).set_color(X_COLOR)
@@ -917,7 +917,7 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         return concrete_matrix
 
     def label_matrix(self, matrix):
-        title = TextMobject("``2x2 Matrix''")
+        title = TexText("``2x2 Matrix''")
         title.to_edge(UP+LEFT)
         col_circles = []
         for i, color in enumerate([X_COLOR, Y_COLOR]):
@@ -928,8 +928,8 @@ class MatrixVectorMultiplication(LinearTransformationScene):
             col_circle.move_to(col)
             col_circles.append(col_circle)
         i_circle, j_circle = col_circles
-        i_message = TextMobject("Where $\\hat{\\imath}$ lands")
-        j_message = TextMobject("Where $\\hat{\\jmath}$ lands")
+        i_message = TexText("Where $\\hat{\\imath}$ lands")
+        j_message = TexText("Where $\\hat{\\jmath}$ lands")
         i_message.set_color(X_COLOR)
         j_message.set_color(Y_COLOR)
         i_message.next_to(i_circle, DOWN, buff = 2, aligned_edge = RIGHT)
@@ -961,7 +961,7 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         vector.set_height(matrix.get_height())
         vector.next_to(matrix, buff = 2)
         brace = Brace(vector, DOWN)
-        words = TextMobject("Any  ol' vector")
+        words = TexText("Any  ol' vector")
         words.next_to(brace, DOWN)
 
         self.play(
@@ -977,7 +977,7 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         col1 = Matrix(mob_matrix[:,0])
         col2 = Matrix(mob_matrix[:,1])
         formula = VMobject(
-            v1.copy(), col1, TexMobject("+"), v2.copy(), col2
+            v1.copy(), col1, Tex("+"), v2.copy(), col2
         )
         formula.arrange(RIGHT, buff = 0.1)
         formula.center()
@@ -1009,8 +1009,8 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         else:
             row1 = ["3", "(5)", "+", "2", "(7)"]
             row2 = ["-2", "(5)", "+", "1", "(7)"]
-        row1 = VMobject(*list(map(TexMobject, row1)))
-        row2 = VMobject(*list(map(TexMobject, row2)))
+        row1 = VMobject(*list(map(Tex, row1)))
+        row2 = VMobject(*list(map(Tex, row2)))
         for row in row1, row2:
             row.arrange(RIGHT, buff = 0.1)
         final_sum = Matrix([row1, row2])
@@ -1019,7 +1019,7 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         row2.split()[0].set_color(X_COLOR)
         row1.split()[3].set_color(Y_COLOR)
         row2.split()[3].set_color(Y_COLOR)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(formula, RIGHT)
         final_sum.next_to(equals, RIGHT)
 
@@ -1034,11 +1034,11 @@ class MatrixVectorMultiplication(LinearTransformationScene):
         start_state = VMobject(matrix, vector)
         end_state = start_state.copy()
         end_state.arrange(RIGHT, buff = 0.1)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.next_to(formula, LEFT)
         end_state.next_to(equals, LEFT)
         brace = Brace(formula, DOWN)
-        brace_words = TextMobject("Where all the intuition is")
+        brace_words = TexText("Where all the intuition is")
         brace_words.next_to(brace, DOWN)
         brace_words.set_color(YELLOW)
 
@@ -1185,7 +1185,7 @@ class Describe90DegreeRotation(LinearTransformationScene):
     }
     def construct(self):
         self.setup()
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.shift(DOWN)
         title.add_background_rectangle()
         matrix = Matrix(np.array(self.transposed_matrix).transpose())
@@ -1257,8 +1257,8 @@ class DeduceTransformationFromMatrix(ColumnsToBasisVectors):
 class LinearlyDependentColumns(ColumnsToBasisVectors):
     def construct(self):
         self.setup()
-        title = TextMobject("Linearly dependent")
-        subtitle = TextMobject("columns")
+        title = TexText("Linearly dependent")
+        subtitle = TexText("columns")
         title.add_background_rectangle()
         subtitle.add_background_rectangle()
         subtitle.next_to(title, DOWN)
@@ -1270,7 +1270,7 @@ class LinearlyDependentColumns(ColumnsToBasisVectors):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("Next video: Matrix multiplication as composition")
+        title = TexText("Next video: Matrix multiplication as composition")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(6)
@@ -1282,7 +1282,7 @@ class NextVideo(Scene):
 
 class FinalSlide(Scene):
     def construct(self):
-        text = TextMobject("""
+        text = TexText("""
             \\footnotesize 
             Technically, the definition of ``linear'' is as follows: 
             A transformation L is linear if it satisfies these
@@ -1332,7 +1332,7 @@ class RotateIHat(LinearTransformationScene):
 
 class TransformationsAreFunctions(Scene):
     def construct(self):
-        title = TextMobject([
+        title = TexText([
             """Linear transformations are a
             special kind of""",
             "function"
@@ -1341,7 +1341,7 @@ class TransformationsAreFunctions(Scene):
         function.set_color(YELLOW)
         title.to_edge(UP)
 
-        equation = TexMobject([
+        equation = Tex([
             "L",
             "(",
             "\\vec{\\textbf{v}}",
@@ -1355,10 +1355,10 @@ class TransformationsAreFunctions(Scene):
         equation.scale(2)
         equation.next_to(title, DOWN, buff = 1)
 
-        starting_vector = TextMobject("Starting vector")
+        starting_vector = TexText("Starting vector")
         starting_vector.shift(DOWN+3*LEFT)
         starting_vector.set_color(MAROON_C)
-        ending_vector = TextMobject("The vector where it lands")
+        ending_vector = TexText("The vector where it lands")
         ending_vector.shift(DOWN).to_edge(RIGHT)
         ending_vector.set_color(BLUE)
 
@@ -1384,10 +1384,10 @@ class UsedToThinkinfOfFunctionsAsGraphs(VectorScene):
     def show_graph(self):
         axes = self.add_axes()
         graph = FunctionGraph(lambda x : x**2, x_min = -2, x_max = 2)
-        name = TexMobject("f(x) = x^2")
+        name = Tex("f(x) = x^2")
         name.next_to(graph, RIGHT).to_edge(UP)
         point = Dot(graph.point_from_proportion(0.8))
-        point_label = TexMobject("(x, x^2)")
+        point_label = Tex("(x, x^2)")
         point_label.next_to(point, DOWN+RIGHT, buff = 0.1)
 
         self.play(ShowCreation(graph))
@@ -1418,14 +1418,14 @@ class UsedToThinkinfOfFunctionsAsGraphs(VectorScene):
 
     def show_inputs_and_output(self):
         numbers = list(range(-3, 4))
-        inputs = VMobject(*list(map(TexMobject, list(map(str, numbers)))))
+        inputs = VMobject(*list(map(Tex, list(map(str, numbers)))))
         inputs.arrange(DOWN, buff = 0.5, aligned_edge = RIGHT)
         arrows = VMobject(*[
             Arrow(LEFT, RIGHT).next_to(mob)
             for mob in inputs.split()
         ])
         outputs = VMobject(*[
-            TexMobject(str(num**2)).next_to(arrow)
+            Tex(str(num**2)).next_to(arrow)
             for num, arrow in zip(numbers, arrows.split())
         ])
         everyone = VMobject(inputs, arrows, outputs)
@@ -1443,7 +1443,7 @@ class TryingToVisualizeFourDimensions(Scene):
     def construct(self):
         randy = Randolph().to_corner()
         bubble = randy.get_bubble()
-        formula = TexMobject("""
+        formula = Tex("""
             L\\left(\\left[
                 \\begin{array}{c}
                     x \\\\
@@ -1462,7 +1462,7 @@ class TryingToVisualizeFourDimensions(Scene):
         formula.split()[4].set_color(Y_COLOR)
         VMobject(*formula.split()[9:9+4]).set_color(MAROON_C)
         VMobject(*formula.split()[13:13+4]).set_color(BLUE)
-        thought = TextMobject("""
+        thought = TexText("""
             Do I imagine plotting 
             $(x, y, 2x+y, x+2y)$???
         """)
@@ -1537,7 +1537,7 @@ class AdditivityProperty(LinearTransformationScene):
         self.setup()
         added_anims = []
         if self.give_title:
-            title = TextMobject("""
+            title = TexText("""
                 First fundamental property of 
                 linear transformations
             """)
@@ -1584,7 +1584,7 @@ class AdditivityProperty(LinearTransformationScene):
         self.play(ApplyMethod(new_w.shift, v.get_end()))
         self.wait()
         if self.proclaim_sum:
-            text = TextMobject("It's still their sum!")
+            text = TexText("It's still their sum!")
             text.add_background_rectangle()
             text.move_to(new_w.get_end(), aligned_edge = -new_w.get_end())
             text.shift_onto_screen()

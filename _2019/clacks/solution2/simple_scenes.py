@@ -11,7 +11,7 @@ class WrapperScene(Scene):
     }
 
     def construct(self):
-        title = TextMobject(self.title)
+        title = TexText(self.title)
         title.scale(1.5)
         title.to_edge(UP)
         big_rect = self.get_big_rect()
@@ -52,7 +52,7 @@ class LeftEdge(Scene):
     }
 
     def construct(self):
-        words = TextMobject(self.text)
+        words = TexText(self.text)
         arrow = Vector(self.vect)
         arrow.match_width(words)
         arrow.next_to(words, DOWN)
@@ -73,7 +73,7 @@ class RightEdge(LeftEdge):
 
 class NoteOnEnergyLostToSound(Scene):
     def construct(self):
-        self.add(TextMobject(
+        self.add(TexText(
             "Yeah yeah, the clack sound\\\\"
             "would require energy, but\\\\"
             "don't let accuracy get in the\\\\"
@@ -119,9 +119,9 @@ class ShowDotProductMeaning(Scene):
         v_vect.add_updater(update_vect)
         w_vect.add_updater(update_vect)
 
-        v_label = TexMobject("\\vec{\\textbf{v}}")
+        v_label = Tex("\\vec{\\textbf{v}}")
         v_label.vect = v_vect
-        w_label = TexMobject("\\vec{\\textbf{w}}")
+        w_label = Tex("\\vec{\\textbf{w}}")
         w_label.vect = w_vect
         for label in v_label, w_label:
             label.match_color(label.vect)
@@ -135,7 +135,7 @@ class ShowDotProductMeaning(Scene):
         v_label.add_updater(update_label)
         w_label.add_updater(update_label)
 
-        title = TexMobject(
+        title = Tex(
             "\\vec{\\textbf{w}}",
             "\\cdot",
             "\\vec{\\textbf{v}}",
@@ -211,7 +211,7 @@ class ShowDotProductMeaning(Scene):
                 radius=0.5,
                 arc_center=center,
             )
-            theta = TexMobject("\\theta")
+            theta = Tex("\\theta")
             p = arc.point_from_proportion(0.5)
             theta.move_to(
                 center + 1.5 * (p - center)
@@ -263,7 +263,7 @@ class ShowDotProductMeaning(Scene):
 
 class FinalComment(Scene):
     def construct(self):
-        self.add(TextMobject(
+        self.add(TexText(
             "Thoughts on what ending should go here?\\\\"
             "See the Patreon post."
         ))
@@ -362,7 +362,7 @@ class AskAboutAddingThetaToItself(Scene):
         )
         wedge.set_stroke((WHITE, GREY), 2)
         arc = Arc(theta, radius=1)
-        theta_symbol = TexMobject("\\theta")
+        theta_symbol = Tex("\\theta")
         tssv = self.theta_symbol_scale_val
         theta_symbol.scale(tssv)
         theta_symbol.next_to(arc, RIGHT, tssv / 2)
@@ -409,7 +409,7 @@ class AskAboutAddingThetaToItself(Scene):
         )
 
     def get_inequality(self):
-        ineq = TexMobject(
+        ineq = Tex(
             "N", "\\cdot", "\\theta", "<",
             "\\pi", "=", "3.1415926\\dots"
         )
@@ -426,12 +426,12 @@ class AskAboutAddingThetaToItself(Scene):
 
     def get_dynamic_inequality(self, counter):
         multiple = Integer(0)
-        dot = TexMobject("\\cdot")
-        theta_tex = TexMobject("({:.2f})".format(self.theta))
-        eq = TexMobject("=")
+        dot = Tex("\\cdot")
+        theta_tex = Tex("({:.2f})".format(self.theta))
+        eq = Tex("=")
         value = DecimalNumber(0)
-        ineq = TexMobject("<")
-        pi = TexMobject("\\pi", "=", "3.1415926\\dots")
+        ineq = Tex("<")
+        pi = Tex("\\pi", "=", "3.1415926\\dots")
         # pi.set_color(BLUE)
         group = VGroup(
             multiple, dot, theta_tex,
@@ -458,7 +458,7 @@ class AskAboutAddingThetaToItself(Scene):
             return RED if is_greater_than_pi() else YELLOW
 
         def get_ineq():
-            result = TexMobject(
+            result = Tex(
                 ">" if is_greater_than_pi() else "<"
             )
             result.set_color(get_color())
@@ -494,14 +494,14 @@ class AskAboutAddingThetaToItselfThetaPoint2(AskAboutAddingThetaToItself):
 
 class FinalFormula(Scene):
     def construct(self):
-        text = TextMobject("Final answer: ")
+        text = TexText("Final answer: ")
         t2c_map = {
             "\\theta": BLUE,
             "m_1": GREEN,
             "m_2": RED,
         }
 
-        formula = TexMobject(
+        formula = Tex(
             "\\left\\lfloor",
             "{\\pi", "\\over", "\\theta}",
             "\\right\\rfloor"
@@ -517,7 +517,7 @@ class FinalFormula(Scene):
         self.play(ShowCreationThenFadeAround(formula))
         self.wait()
 
-        theta_eq = TexMobject(
+        theta_eq = Tex(
             "\\theta", "=", "\\arctan", "\\left(",
             "\\sqrt",
             "{{m_2", "\\over", "m_1}}",
@@ -557,7 +557,7 @@ class TwoSolutionsWrapper(WrapperScene):
             for x in range(2)
         ])
         screen_rects.arrange(RIGHT, buff=LARGE_BUFF)
-        title = TextMobject("Two solutions")
+        title = TexText("Two solutions")
         title.scale(1.5)
         title.to_edge(UP)
         screen_rects.next_to(title, DOWN, LARGE_BUFF)
@@ -604,7 +604,7 @@ class FinalQuote(Scene):
             is worth 80 IQ points.
         """
         quote_parts = [s for s in quote_text.split(" ") if s]
-        quote = TextMobject(
+        quote = TexText(
             *quote_parts,
         )
         quote.scale(1.2)
@@ -614,7 +614,7 @@ class FinalQuote(Scene):
         image.set_height(6)
         image.to_corner(UL)
         image.shift(2 * LEFT + 0.5 * UP)
-        name = TextMobject("Alan Kay")
+        name = TexText("Alan Kay")
         name.scale(1.5)
         name.next_to(image, DOWN)
         name.shift_onto_screen()
@@ -782,7 +782,7 @@ class ClacksSolution2Thumbnail(Scene):
         self.add(arrow)
         return
 
-        arrow = TexMobject("\\Updownarrow")
+        arrow = Tex("\\Updownarrow")
         arrow.set_height(2)
         arrow.set_color(YELLOW)
         arrow.set_stroke(Color("red"), 2, background=True)
@@ -807,7 +807,7 @@ class ClacksSolution2Thumbnail(Scene):
         black_rect.shift(3.5 * UP)
         self.add(black_rect)
 
-        word = TextMobject("Blocks")
+        word = TexText("Blocks")
         word.set_color(YELLOW)
         word.scale(3)
         word.to_corner(DR, buff=LARGE_BUFF)
@@ -863,7 +863,7 @@ class ClacksSolution2Thumbnail(Scene):
         self.add(trajectories[0].set_stroke(width=2))
         self.add(flashes)
 
-        word = TextMobject("Light beam")
+        word = TexText("Light beam")
         word.scale(3.5)
         word.set_color(YELLOW)
         # word.set_stroke(BLACK, 25, background=True)

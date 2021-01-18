@@ -49,7 +49,7 @@ class LogoGeneration(Scene):
                 lambda point: get_norm(point) < \
                               self.inner_radius_ratio*self.radius
             )
-        self.name_mob = TextMobject("3Blue1Brown").center()
+        self.name_mob = TexText("3Blue1Brown").center()
         self.name_mob.set_color("grey")
         self.name_mob.shift(2*DOWN)
 

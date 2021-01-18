@@ -1,7 +1,7 @@
 from manimlib.animation.creation import Write
 from manimlib.animation.fading import FadeIn
 from manimlib.constants import *
-from manimlib.mobject.svg.tex_mobject import TextMobject
+from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.scene.scene import Scene
 from manimlib.utils.rate_functions import linear
 
@@ -39,17 +39,17 @@ class OpeningQuote(Scene):
         }
         if isinstance(self.quote, str):
             if self.use_quotation_marks:
-                quote = TextMobject("``%s''" %
+                quote = TexText("``%s''" %
                                     self.quote.strip(), **text_mobject_kwargs)
             else:
-                quote = TextMobject("%s" %
+                quote = TexText("%s" %
                                     self.quote.strip(), **text_mobject_kwargs)
         else:
             if self.use_quotation_marks:
                 words = [self.text_size + " ``"] + list(self.quote) + ["''"]
             else:
                 words = [self.text_size] + list(self.quote)
-            quote = TextMobject(*words, **text_mobject_kwargs)
+            quote = TexText(*words, **text_mobject_kwargs)
             # TODO, make less hacky
             if self.quote_arg_separator == " ":
                 quote[0].shift(0.2 * RIGHT)
@@ -62,7 +62,7 @@ class OpeningQuote(Scene):
         return quote
 
     def get_author(self, quote):
-        author = TextMobject(self.text_size + " --" + self.author)
+        author = TexText(self.text_size + " --" + self.author)
         author.next_to(quote, DOWN, buff=self.author_buff)
         author.set_color(YELLOW)
         return author

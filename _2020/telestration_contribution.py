@@ -40,7 +40,7 @@ class TelestrationContribution(Scene):
 
         # Beer makes you stronger
         beer = get_beer()
-        arrow = TexMobject("\\Rightarrow")
+        arrow = Tex("\\Rightarrow")
         arrow.set_width(1)
         muscle = get_muscle()
         imply_group = VGroup(beer, arrow, muscle)
@@ -57,7 +57,7 @@ class TelestrationContribution(Scene):
         lines[-1].stretch(0.5, 0, about_edge=LEFT)
         news.add(lines)
 
-        q_marks = TexMobject("???")[0]
+        q_marks = Tex("???")[0]
         q_marks.space_out_submobjects(1.5)
         q_marks.replace(imply_group, dim_to_match=1)
 
@@ -82,7 +82,7 @@ class TelestrationContribution(Scene):
         randy = Randolph()
         randy.to_corner(DL)
         randy.change("confused")
-        bangs = TexMobject("!?!")
+        bangs = Tex("!?!")
         bangs.scale(2)
         bangs.next_to(randy, UP)
 

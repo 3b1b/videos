@@ -117,12 +117,12 @@ class AskAboutShadowRelation(SpecialThreeDScene):
         pieces.set_color(GREEN)
 
         # radial_line = Line(ORIGIN, sphere.get_right())
-        # R_label = TexMobject("R")
+        # R_label = Tex("R")
         # R_label.set_color(BLUE)
         # R_label.rotate(90 * DEGREES, RIGHT)
         # R_label.next_to(radial_line, OUT, SMALL_BUFF)
 
-        sa_equation = TexMobject(
+        sa_equation = Tex(
             "\\text{Surface area} = 4\\pi R^2",
             tex_to_color_map={"R": BLUE}
         )
@@ -181,7 +181,7 @@ class AskAboutShadowRelation(SpecialThreeDScene):
             shadow.get_right(),
             color=YELLOW
         )
-        R_label = TexMobject("R").set_color(self.R_color)
+        R_label = Tex("R").set_color(self.R_color)
         R_label.scale(0.8)
         R_label.next_to(radial_line, DOWN, SMALL_BUFF)
         shadow.add(radial_line, R_label)
@@ -193,7 +193,7 @@ class AskAboutShadowRelation(SpecialThreeDScene):
         shadows.arrange_in_grid(buff=MED_LARGE_BUFF)
         shadows.to_edge(RIGHT)
 
-        area_label = TexMobject(
+        area_label = Tex(
             "\\pi R^2",
             tex_to_color_map={"R": self.R_color}
         )
@@ -350,7 +350,7 @@ class PreviewTwoMethods(MovingCameraScene):
             ))
         thumbnails.arrange(RIGHT, buff=LARGE_BUFF)
 
-        title = TextMobject("Two proofs")
+        title = TexText("Two proofs")
         title.scale(2)
         title.to_edge(UP)
 
@@ -397,7 +397,7 @@ class MapSphereOntoCylinder(SphereCylinderScene):
         # Get rid of caps
         caps = self.get_cylinder_caps()
         caps[1].set_shade_in_3d(False)
-        label = TextMobject("Label")
+        label = TexText("Label")
         label.scale(1.5)
         label.stretch(0.8, 0)
         label.rotate(90 * DEGREES, RIGHT)
@@ -448,8 +448,8 @@ class MapSphereOntoCylinder(SphereCylinderScene):
         )
         lines = VGroup(top_line, side_line)
         lines.shift(radius * DOWN)
-        two_pi_R = TexMobject("2\\pi R")
-        two_R = TexMobject("2R")
+        two_pi_R = Tex("2\\pi R")
+        two_R = Tex("2R")
         texs = VGroup(two_pi_R, two_R)
         for tex in texs:
             tex.scale(1.5)
@@ -516,7 +516,7 @@ class UnfoldCircles(Scene):
         self.add_four_circles()
 
     def show_rectangle_with_formula(self):
-        TexMobject.CONFIG["background_stroke_width"] = 1
+        Tex.CONFIG["background_stroke_width"] = 1
         R = self.radius
         rect = Rectangle(width=TAU * R, height=2 * R)
         rect.set_fill(BLUE_E, 1)
@@ -526,15 +526,15 @@ class UnfoldCircles(Scene):
         h_line.set_stroke(RED, 3)
         w_line = Line(p1, p2)
         w_line.set_stroke(YELLOW, 3)
-        two_R = TexMobject("2", "R")
+        two_R = Tex("2", "R")
         two_R.next_to(h_line, LEFT)
-        two_pi_R = TexMobject("2", "\\pi", "R")
+        two_pi_R = Tex("2", "\\pi", "R")
         two_pi_R.next_to(w_line, UP)
 
-        pre_area_label = TexMobject(
+        pre_area_label = Tex(
             "2\\cdot", "2", "\\pi", "R", "\\cdot R"
         )
-        area_label = TexMobject("4", "\\pi", "R^2")
+        area_label = Tex("4", "\\pi", "R^2")
         for label in [area_label, pre_area_label]:
             label.next_to(rect.get_center(), UP, SMALL_BUFF)
 
@@ -575,7 +575,7 @@ class UnfoldCircles(Scene):
         radii_lines[2:].shift(RIGHT)
         radii_lines.next_to(rect_group, DOWN, buff=1.3)
         R_labels = VGroup(*[
-            TexMobject("R").next_to(line, LEFT, SMALL_BUFF)
+            Tex("R").next_to(line, LEFT, SMALL_BUFF)
             for line in radii_lines
         ])
 
@@ -996,7 +996,7 @@ class ShowProjection(SphereCylinderScene):
         eq_rects.set_stroke(width=0)
         eq_rects.set_fill(YELLOW, 1)
         eq_rects.scale(2)
-        equals = TexMobject("=")
+        equals = Tex("=")
         equation = VGroup(lhs, equals, rhs)
         equation.arrange(RIGHT)
         equation.to_corner(UR)
@@ -1009,8 +1009,8 @@ class ShowProjection(SphereCylinderScene):
         h_brace.next_to(lhs, LEFT, buff=SMALL_BUFF)
         braces = VGroup(w_brace, h_brace)
 
-        width_label = TextMobject("Width")
-        height_label = TextMobject("Height")
+        width_label = TexText("Width")
+        height_label = TexText("Height")
         labels = VGroup(width_label, height_label)
         labels.scale(0.75)
         width_label.next_to(w_brace, DOWN, SMALL_BUFF)
@@ -1161,7 +1161,7 @@ class JustifyLengthStretch(ShowProjection):
         circle = self.circle
         R_line = Line(ORIGIN, circle.get_right())
         R_line.set_color(self.R_color)
-        R_label = TexMobject("R")
+        R_label = Tex("R")
         R_label.next_to(R_line, IN)
 
         self.add_fixed_orientation_mobjects(R_label)
@@ -1183,7 +1183,7 @@ class JustifyLengthStretch(ShowProjection):
         alt_d_line = self.get_d_line(
             s_rect.get_corner(OUT + LEFT + DOWN)
         )
-        d_label = TexMobject("d")
+        d_label = Tex("d")
         d_label.next_to(d_line, IN)
 
         self.add_fixed_orientation_mobjects(d_label)
@@ -1230,13 +1230,13 @@ class JustifyLengthStretch(ShowProjection):
 
         equation = VGroup(
             triangle.copy().rotate(-3 * DEGREES),
-            TexMobject("\\sim"),
+            Tex("\\sim"),
             big_triangle.copy().rotate(-3 * DEGREES)
         )
         equation.arrange(RIGHT, buff=SMALL_BUFF)
         equation.to_corner(UL)
-        eq_d = TexMobject("d").next_to(equation[0], DOWN, SMALL_BUFF)
-        eq_R = TexMobject("R").next_to(equation[2], DOWN, SMALL_BUFF)
+        eq_d = Tex("d").next_to(equation[0], DOWN, SMALL_BUFF)
+        eq_R = Tex("R").next_to(equation[2], DOWN, SMALL_BUFF)
         VGroup(equation, eq_d, eq_R).rotate(20 * DEGREES, axis=RIGHT)
 
         for mob in [triangle, big_triangle]:
@@ -1346,7 +1346,7 @@ class ProTipNameThings(Scene):
     }
 
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             self.tip_descriptor,
             self.tip,
         )
@@ -1361,7 +1361,7 @@ class ProTipNameThings(Scene):
 
 class WidthScaleLabel(Scene):
     def construct(self):
-        text = TexMobject(
+        text = Tex(
             "\\text{Width scale factor} =",
             "\\frac{R}{d}"
         )
@@ -1371,7 +1371,7 @@ class WidthScaleLabel(Scene):
 
 class HeightSquishLabel(Scene):
     def construct(self):
-        text = TexMobject(
+        text = Tex(
             "\\text{Height squish factor} =",
             "\\frac{R}{d}"
         )
@@ -1469,7 +1469,7 @@ class JustifyHeightSquish(MovingCameraScene):
         )
         R_line = self.get_R_line(90 * DEGREES)
         R_line.set_color(self.R_color)
-        R_label = TexMobject("R")
+        R_label = Tex("R")
         R_label.next_to(R_line, DOWN, SMALL_BUFF)
         d_lines = VGroup(*[
             self.get_d_line(phi)
@@ -1477,7 +1477,7 @@ class JustifyHeightSquish(MovingCameraScene):
         ])
         d_line = d_lines[0]
         d_line.set_color(self.d_color)
-        d_label = TexMobject("d")
+        d_label = Tex("d")
         d_label.next_to(d_line, DOWN, SMALL_BUFF)
 
         proj_lines = VGroup(*[
@@ -1520,8 +1520,8 @@ class JustifyHeightSquish(MovingCameraScene):
         leg = lil_tri.leg2
         leg.rotate(PI)
         VGroup(hyp, leg).set_stroke(YELLOW, 1)
-        hyp_word = TextMobject("Rectangle height $\\rightarrow$")
-        leg_word = TextMobject("$\\leftarrow$ Projection")
+        hyp_word = TexText("Rectangle height $\\rightarrow$")
+        leg_word = TexText("$\\leftarrow$ Projection")
         words = VGroup(hyp_word, leg_word)
         words.set_height(0.4 * lil_tri.get_height())
         words.set_background_stroke(width=0)
@@ -1712,12 +1712,12 @@ class JustifyHeightSquish(MovingCameraScene):
             stroke_width=2,
         )
         beta_arc.shift(circle_point)
-        alpha_label = TexMobject("\\alpha")
+        alpha_label = Tex("\\alpha")
         alpha_label.scale(0.5)
         alpha_label.set_color(self.alpha_color)
         alpha_label.next_to(alpha_arc, UP, buff=SMALL_BUFF)
         alpha_label.shift(0.05 * DR)
-        beta_label = TexMobject("\\beta")
+        beta_label = Tex("\\beta")
         beta_label.scale(0.5)
         beta_label.set_color(self.beta_color)
         beta_label.next_to(beta_arc, LEFT, buff=SMALL_BUFF)
@@ -1728,7 +1728,7 @@ class JustifyHeightSquish(MovingCameraScene):
         elbow.shift(big_tri.get_corner(UL))
         elbow.set_stroke(width=2)
 
-        equation = TexMobject(
+        equation = Tex(
             "\\alpha", "+", "\\beta", "+",
             "90^\\circ", "=", "180^\\circ"
         )
@@ -1800,7 +1800,7 @@ class JustifyHeightSquish(MovingCameraScene):
         )
 
         # Show small triangle angles
-        TexMobject.CONFIG["background_stroke_width"] = 0
+        Tex.CONFIG["background_stroke_width"] = 0
         words = VGroup(self.hyp_word, self.leg_word)
         alpha_arc1 = Arc(
             start_angle=90 * DEGREES + beta,
@@ -1820,15 +1820,15 @@ class JustifyHeightSquish(MovingCameraScene):
             radius=0.3 * 0.2,
             stroke_width=beta_arc.get_stroke_width(),
         ).shift(circle_point)
-        deg90 = TexMobject("90^\\circ")
+        deg90 = Tex("90^\\circ")
         deg90.set_height(0.8 * beta_label.get_height())
         deg90.next_to(self.tangent_elbow, DOWN, buff=0.025)
         # deg90.set_background_stroke(width=0)
-        q_mark = TexMobject("?")
+        q_mark = Tex("?")
         q_mark.set_height(0.5 * beta_label.get_height())
         q_mark.next_to(alpha_arc1, LEFT, buff=0.025)
         q_mark.shift(0.01 * UP)
-        alpha_label1 = TexMobject("\\alpha")
+        alpha_label1 = Tex("\\alpha")
         alpha_label1.set_height(0.7 * q_mark.get_height())
         alpha_label1.move_to(q_mark)
 
@@ -2010,8 +2010,8 @@ class SameEffectAsRotating(Scene):
                 min_num_quads=2,
             )
         )
-        times_R_over_d = TexMobject("\\times \\frac{R}{d}")
-        times_d_over_R = TexMobject("\\times \\frac{d}{R}")
+        times_R_over_d = Tex("\\times \\frac{R}{d}")
+        times_d_over_R = Tex("\\times \\frac{d}{R}")
         times_R_over_d.add_updater(
             lambda m: m.next_to(low_brace, DOWN, SMALL_BUFF)
         )
@@ -2071,9 +2071,9 @@ class ShowParameterization(Scene):
         vector.to_edge(UP)
 
         ranges = VGroup(
-            TexMobject("0 \\le u \\le 2\\pi", **tex_kwargs),
-            TexMobject("0 \\le v \\le \\pi", **tex_kwargs),
-            TextMobject(
+            Tex("0 \\le u \\le 2\\pi", **tex_kwargs),
+            Tex("0 \\le v \\le \\pi", **tex_kwargs),
+            TexText(
                 "Sample $u$ and $v$ with \\\\ the same density",
                 tex_to_color_map={
                     "$u$": u_color,
@@ -2091,9 +2091,9 @@ class ShowParameterization(Scene):
 class RdLabels(Scene):
     def construct(self):
         rect = Rectangle(height=1, width=0.5)
-        cR = TexMobject("cR")
+        cR = Tex("cR")
         cR.next_to(rect, LEFT, SMALL_BUFF)
-        cd = TexMobject("cd")
+        cd = Tex("cd")
         cd.next_to(rect, DOWN, SMALL_BUFF)
 
         labels = VGroup(cd, cR)
@@ -2178,7 +2178,7 @@ class ThinkingCritically(PiCreatureScene):
 
 class WriteNotEquals(Scene):
     def construct(self):
-        symbol = TexMobject("\\ne")
+        symbol = Tex("\\ne")
         symbol.scale(2)
         symbol.set_background_stroke(width=0)
         self.play(Write(symbol))
@@ -2313,7 +2313,7 @@ class SequenceOfSpheres(SphereCylinderScene):
         self.wait()
 
     def get_oriented_tex(self, tex):
-        result = TexMobject(tex)
+        result = Tex(tex)
         result.rotate(90 * DEGREES, RIGHT)
         return result
 
@@ -2324,7 +2324,7 @@ class WhatIsSurfaceArea(SpecialThreeDScene):
     }
 
     def construct(self):
-        title = TextMobject("What is surface area?")
+        title = TexText("What is surface area?")
         title.scale(1.5)
         title.to_edge(UP)
         title.shift(0.035 * RIGHT)
@@ -2401,7 +2401,7 @@ class AltWhatIsSurfaceArea(WhatIsSurfaceArea):
 
 class EoCWrapper(Scene):
     def construct(self):
-        title = TextMobject("Essence of calculus")
+        title = TexText("Essence of calculus")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
@@ -2420,7 +2420,7 @@ class RoleOfCalculus(SpecialThreeDScene):
     }
 
     def construct(self):
-        calc = TexMobject("\\int", "\\int")
+        calc = Tex("\\int", "\\int")
         calc.space_out_submobjects(0.4)
         calc.scale(2)
         arrow = Vector(2 * RIGHT, color=WHITE)
@@ -2460,7 +2460,7 @@ class UnwrappedCircleLogic(UnfoldCircles):
         radius = self.radius
         dr = self.dr
 
-        TexMobject.CONFIG["background_stroke_width"] = 2
+        Tex.CONFIG["background_stroke_width"] = 2
         unwrap_factor_tracker = ValueTracker(0)
         center_tracker = VectorizedPoint()
         highligt_prop_tracker = ValueTracker(0.5)
@@ -2489,7 +2489,7 @@ class UnwrappedCircleLogic(UnfoldCircles):
         circle.clear_updaters()
         R_line = Line(circle.get_center(), circle.get_bottom())
         R_line.set_stroke(WHITE, 2)
-        R_label = TexMobject("R")
+        R_label = Tex("R")
         R_label.next_to(R_line, LEFT)
         circle_group = VGroup(circle, R_line, R_label)
 
@@ -2522,11 +2522,11 @@ class UnwrappedCircleLogic(UnfoldCircles):
                 stroke_color=WHITE,
             ).shift(circle.get_center())
         )
-        r_label = TexMobject("r")
+        r_label = Tex("r")
         r_label.add_updater(
             lambda m: m.next_to(r_line, LEFT, SMALL_BUFF)
         )
-        two_pi_r_label = TexMobject("2\\pi r")
+        two_pi_r_label = Tex("2\\pi r")
         two_pi_r_label.add_updater(
             lambda m: m.next_to(
                 self.get_submob_from_prop(
@@ -2562,14 +2562,14 @@ class UnwrappedCircleLogic(UnfoldCircles):
         ])
         line.set_color(PINK)
         line.set_fill(BLACK, 1)
-        line_word = TextMobject("Line")
+        line_word = TexText("Line")
         line_word.next_to(ORIGIN, UP, SMALL_BUFF)
         line_word.rotate(line.get_angle(), about_point=ORIGIN)
         line_word.shift(line.get_center())
 
         curve = line.copy()
         curve.get_points()[1] = unwrapped_circle.get_corner(DL)
-        not_line = TextMobject("Not line")
+        not_line = TexText("Not line")
         not_line.rotate(line.get_angle() / 2)
         not_line.move_to(line_word)
         not_line.shift(0.3 * DOWN)
@@ -2614,12 +2614,12 @@ class AskAboutDirectConnection(TeacherStudentsScene, SpecialThreeDScene):
         cylinder = Cylinder()
         for mob in sphere, cylinder:
             mob.rotate(70 * DEGREES, LEFT)
-        formula = TexMobject("4\\pi R^2")
+        formula = Tex("4\\pi R^2")
         formula.set_color(BLUE)
         circle = Circle()
         circle.set_stroke(width=0)
         circle.set_fill(GREY_BROWN, 1)
-        area_label = TexMobject("\\pi R^2", background_stroke_width=0)
+        area_label = Tex("\\pi R^2", background_stroke_width=0)
         area_label.scale(1.5)
         circle.add(area_label)
         group = VGroup(
@@ -2643,7 +2643,7 @@ class AskAboutDirectConnection(TeacherStudentsScene, SpecialThreeDScene):
         direct_arrow = Arrow(
             sphere, circle, color=WHITE
         )
-        q_marks = TexMobject(*"???")
+        q_marks = Tex(*"???")
         q_marks.space_out_submobjects(1.5)
         q_marks.scale(1.5)
         q_marks.next_to(direct_arrow, DOWN)
@@ -2681,8 +2681,8 @@ class ExercisesGiveLearning(MovingCameraScene):
     def construct(self):
         bulb = Lightbulb()
         arrow1 = Arrow(ORIGIN, RIGHT, buff=0)
-        lectures = TextMobject("Lectures")
-        exercises = TextMobject("Exercises")
+        lectures = TexText("Lectures")
+        exercises = TexText("Exercises")
         frame = self.camera_frame
         frame.scale(0.7)
 
@@ -2745,7 +2745,7 @@ class NobodyLikesHomework(TeacherStudentsScene):
 
 class ChallengeMode(Scene):
     def construct(self):
-        words = TextMobject("Challenge mode: Predict the proof")
+        words = TexText("Challenge mode: Predict the proof")
         words.scale(1.5)
         words.to_edge(UP)
         self.play(Write(words))
@@ -2834,7 +2834,7 @@ class SecondProof(SpecialThreeDScene):
         radius = self.sphere_config["radius"]
         radial_line = Line(ORIGIN, radius * RIGHT)
         radial_line.set_stroke(RED)
-        R_label = TexMobject("R")
+        R_label = Tex("R")
         R_label.set_background_stroke(width=1)
         R_label.next_to(radial_line, DOWN)
 
@@ -2990,7 +2990,7 @@ class SecondProof(SpecialThreeDScene):
             axis=UP,
             about_point=ORIGIN,
         )
-        brace_label = TexMobject("R\\,d\\theta")
+        brace_label = Tex("R\\,d\\theta")
         brace_label.rotate(90 * DEGREES, RIGHT)
         brace_label.next_to(brace, OUT + RIGHT, buff=0)
         radial_line = self.radial_line
@@ -3250,7 +3250,7 @@ class SecondProof(SpecialThreeDScene):
         )
         arc.rotate(90 * DEGREES, RIGHT, about_point=ORIGIN)
         arc.set_stroke(YELLOW, 2)
-        theta_mob = TexMobject("\\theta")
+        theta_mob = Tex("\\theta")
         theta_mob.rotate(90 * DEGREES, RIGHT)
         vect = np.cos(theta / 2) * OUT + np.sin(theta / 2) * RIGHT
         theta_mob.move_to(
@@ -3310,7 +3310,7 @@ class Question1(Scene):
                 "circumference": RED,
             }
         }
-        question = TextMobject(
+        question = TexText(
             """
             \\small
             Question \\#1: What is the circumference of\\\\
@@ -3318,7 +3318,7 @@ class Question1(Scene):
             """,
             **kwargs
         )
-        prompt = TextMobject(
+        prompt = TexText(
             """
             Multiply this circumference by $R\\,d\\theta$ to \\\\
             get an approximation of the ring's area.
@@ -3362,7 +3362,7 @@ class YouCouldIntegrate(TeacherStudentsScene):
 
 class Question2(Scene):
     def construct(self):
-        question = TextMobject(
+        question = TexText(
             """
             Question \\#2: What is the area of the shadow of\\\\
             one of these rings?  (In terms of $R$, $\\theta$, and $d\\theta$).
@@ -3379,16 +3379,16 @@ class Question2(Scene):
 
 class Question3(Scene):
     def construct(self):
-        question = TextMobject("Question \\#3:")
+        question = TexText("Question \\#3:")
         question.to_edge(LEFT)
-        equation = TextMobject(
+        equation = TexText(
             "(Shadow area)", "=", "$\\frac{1}{2}$",
             "(Area of one of the rings)"
         )
         equation[0][1:-1].set_color(YELLOW)
         equation[3][1:-1].set_color(PINK)
         equation.next_to(question, RIGHT)
-        which_one = TextMobject("Which one?")
+        which_one = TexText("Which one?")
         # which_one.set_color(YELLOW)
         brace = Brace(equation[-1], DOWN, buff=SMALL_BUFF)
         which_one.next_to(brace, DOWN, SMALL_BUFF)
@@ -3405,10 +3405,10 @@ class Question3(Scene):
 
 class ExtraHint(Scene):
     def construct(self):
-        title = TextMobject("Extra hint")
+        title = TexText("Extra hint")
         title.scale(2.5)
         title.shift(UP)
-        equation = TexMobject(
+        equation = Tex(
             "\\sin(2\\theta) = 2\\sin(\\theta)\\cos(\\theta)"
         )
         equation.next_to(title, DOWN)
@@ -3417,7 +3417,7 @@ class ExtraHint(Scene):
 
 class Question4(Scene):
     def construct(self):
-        question = TextMobject(
+        question = TexText(
             "Question \\#4:",
             "Explain how the shadows relate to\\\\"
             "every other ring on the sphere.",
@@ -3435,7 +3435,7 @@ class Question4(Scene):
 
 class Question5(Scene):
     def construct(self):
-        question = TextMobject(
+        question = TexText(
             """
             Question \\#5: Why does this imply that the \\\\
             shadow is $\\frac{1}{4}$ the surface area?
@@ -3574,7 +3574,7 @@ class SpherePatronThanks(Scene):
         self.show_columns()
 
     def add_title(self):
-        title = TextMobject("Funded by the community, with special thanks to:")
+        title = TexText("Funded by the community, with special thanks to:")
         title.set_color(YELLOW)
         title.to_edge(UP)
         underline = Line(LEFT, RIGHT)
@@ -3589,7 +3589,7 @@ class SpherePatronThanks(Scene):
         random.seed(1)
         random.shuffle(self.specific_patrons)
         patrons = VGroup(*[
-            TextMobject(name)
+            TexText(name)
             for name in self.specific_patrons
         ])
         columns = VGroup()
@@ -3627,9 +3627,9 @@ class EndScreen(PatreonEndScreen):
 
 class ForThoseStillAround(Scene):
     def construct(self):
-        words = TextMobject("Still here?")
+        words = TexText("Still here?")
         words.scale(1.5)
-        url = TextMobject("3blue1brown.com/store")
+        url = TexText("3blue1brown.com/store")
         # url.scale(1.5)
         url.to_edge(UP, buff=MED_SMALL_BUFF)
 
@@ -3641,7 +3641,7 @@ class ForThoseStillAround(Scene):
 
 class PatronWords(Scene):
     def construct(self):
-        words = TextMobject("\\$2+ Patrons get \\\\ 50\\% off")
+        words = TexText("\\$2+ Patrons get \\\\ 50\\% off")
         words.to_corner(UL)
         words.set_color(RED)
         self.add(words)
@@ -3680,25 +3680,25 @@ class Thumbnail(SpecialThreeDScene):
         circles[0].set_fill(GREY_BROWN)
         circles.arrange_in_grid()
         for circle in circles:
-            formula = TexMobject("\\pi", "R", "^2")
+            formula = Tex("\\pi", "R", "^2")
             formula.set_color_by_tex("R", YELLOW)
             formula.scale(2)
             formula.move_to(circle)
             circle.add(formula)
 
-        equals = TexMobject("=")
+        equals = Tex("=")
         equals.scale(3)
 
         group = VGroup(sphere, equals, circles)
         group.arrange(RIGHT, buff=MED_SMALL_BUFF)
         equals.shift(3 * SMALL_BUFF * RIGHT)
 
-        why = TextMobject("Why?!")
+        why = TexText("Why?!")
         why.set_color(YELLOW)
         why.scale(2.5)
         why.next_to(sphere, UP)
 
-        sa_formula = TexMobject("4\\pi", "R", "^2")
+        sa_formula = Tex("4\\pi", "R", "^2")
         sa_formula.set_color_by_tex("R", YELLOW)
         sa_formula.scale(2)
         sa_formula.next_to(sphere, DOWN)

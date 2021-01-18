@@ -16,8 +16,8 @@ class PartTwoOfTour(TourOfDifferentialEquations):
         frame = self.camera_frame
         thumbnails = self.thumbnails
 
-        ode = TextMobject("Ordinary\\\\", "Differential Equation")
-        pde = TextMobject("Partial\\\\", "Differential Equation")
+        ode = TexText("Ordinary\\\\", "Differential Equation")
+        pde = TexText("Partial\\\\", "Differential Equation")
         for word, thumbnail, vect in zip([ode, pde], thumbnails, [DOWN, UP]):
             word.match_width(thumbnail)
             word.next_to(thumbnail, vect)
@@ -68,7 +68,7 @@ class BrownianMotion(Scene):
 
     def add_title(self):
         square = Square(side_length=2 * self.L)
-        title = TextMobject("Brownian motion")
+        title = TexText("Brownian motion")
         title.scale(1.5)
         title.next_to(square, UP)
 
@@ -210,11 +210,11 @@ class BlackScholes(AltBrownianMotion):
         self.wait(self.wait_time)
 
     def add_title(self):
-        title = TextMobject("Black-Scholes equations")
+        title = TexText("Black-Scholes equations")
         title.scale(1.5)
         title.next_to(2 * UP, UP)
 
-        equation = TexMobject(
+        equation = Tex(
             "{\\partial V \\over \\partial t}", "+",
             "\\frac{1}{2} \\sigma^2 S^2",
             "{\\partial^2 V \\over \\partial S^2}", "+",
@@ -268,18 +268,18 @@ class ContrastChapters1And2(Scene):
         frames.arrange(RIGHT, buff=LARGE_BUFF)
 
         c1_title, c2_title = titles = VGroup(
-            TextMobject("Chapter 1"),
-            TextMobject("Chapter 2"),
+            TexText("Chapter 1"),
+            TexText("Chapter 2"),
         )
         titles.scale(1.5)
 
         ode, pde = des = VGroup(
-            TextMobject(
+            TexText(
                 "Ordinary",
                 "Differential Equations\\\\",
                 "ODEs",
             ),
-            TextMobject(
+            TexText(
                 "Partial",
                 "Differential Equations\\\\",
                 "PDEs",
@@ -296,11 +296,11 @@ class ContrastChapters1And2(Scene):
             de.match_width(frame)
             de.next_to(frame, DOWN)
 
-        lt = TexMobject("<")
+        lt = Tex("<")
         lt.move_to(Line(ode.get_right(), pde.get_left()))
         lt.scale(2, about_edge=UP)
 
-        c1_words = TextMobject(
+        c1_words = TexText(
             "They're", "really\\\\", "{}",
             "freaking", "hard\\\\",
             "to", "solve\\\\",
@@ -308,7 +308,7 @@ class ContrastChapters1And2(Scene):
         c1_words.set_height(0.5 * c1_frame.get_height())
         c1_words.move_to(c1_frame)
 
-        c2_words = TextMobject(
+        c2_words = TexText(
             "They're", "really", "\\emph{really}\\\\",
             "freaking", "hard\\\\",
             "to", "solve\\\\",
@@ -317,7 +317,7 @@ class ContrastChapters1And2(Scene):
         c2_words.move_to(c2_frame)
         edit_shift = MED_LARGE_BUFF * RIGHT
         c2_edits = VGroup(
-            TextMobject("sometimes").next_to(
+            TexText("sometimes").next_to(
                 c2_words[1:3], UP,
                 aligned_edge=LEFT,
             ),
@@ -326,7 +326,7 @@ class ContrastChapters1And2(Scene):
                 c2_words[2].get_right(),
                 stroke_width=8,
             ),
-            TextMobject("not too").next_to(
+            TexText("not too").next_to(
                 c2_words[3], LEFT,
             ),
             Line(
@@ -469,7 +469,7 @@ class TwoBodyEquations(Scene):
             }
         }
         equations = VGroup(
-            TexMobject(
+            Tex(
                 "{d^2 x_1 \\over dt^2}",
                 "=",
                 "{x_2 - x_1 \\over m_1 \\left(",
@@ -477,7 +477,7 @@ class TwoBodyEquations(Scene):
                 "\\right)^{3/2}",
                 **kw
             ),
-            TexMobject(
+            Tex(
                 "{d^2 y_1 \\over dt^2}",
                 "=",
                 "{y_2 - y_1 \\over m_1 \\left(",
@@ -485,7 +485,7 @@ class TwoBodyEquations(Scene):
                 "\\right)^{3/2}",
                 **kw
             ),
-            TexMobject(
+            Tex(
                 "{d^2 x_2 \\over dt^2}",
                 "=",
                 "{x_1 - x_2 \\over m_2 \\left(",
@@ -493,7 +493,7 @@ class TwoBodyEquations(Scene):
                 "\\right)^{3/2}",
                 **kw
             ),
-            TexMobject(
+            Tex(
                 "{d^2 y_2 \\over dt^2}",
                 "=",
                 "{y_1 - y_2 \\over m_2 \\left(",
@@ -674,7 +674,7 @@ class StrogatzMention(PiCreatureScene):
         steve.set_height(5)
         steve.to_edge(LEFT)
 
-        name = TextMobject("Steven Strogatz")
+        name = TexText("Steven Strogatz")
         name.match_width(steve)
         name.next_to(steve, DOWN)
 
@@ -702,8 +702,8 @@ class StrogatzMention(PiCreatureScene):
 
     def show_motives(self):
         motives = VGroup(
-            TextMobject("1) Scratch and itch"),
-            TextMobject("2) Make people love math"),
+            TexText("1) Scratch and itch"),
+            TexText("2) Make people love math"),
         )
         motives.scale(1.5)
         motives.arrange(
@@ -755,7 +755,7 @@ class Thumbnail(Scene):
         image.to_edge(DOWN, buff=-SMALL_BUFF)
         self.add(image)
 
-        equation = TexMobject(
+        equation = Tex(
             "{\\partial {T} \\over \\partial {t}}", "=",
             "\\alpha", "\\nabla^2 {T}",
             tex_to_color_map={
@@ -770,7 +770,7 @@ class Thumbnail(Scene):
 
         Group(equation, image).shift(1.5 * RIGHT)
 
-        question = TextMobject("What is\\\\this?")
+        question = TexText("What is\\\\this?")
         question.scale(2.5)
         question.to_edge(LEFT)
         arrow = Arrow(

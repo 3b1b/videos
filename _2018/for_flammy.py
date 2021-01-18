@@ -18,14 +18,14 @@ class MadAtMathologer(PiCreatureScene):
 
 class JustTheIntegral(Scene):
     def construct(self):
-        tex = TexMobject("\\int_0^{\\pi / 2} \\cos(\\theta)d\\theta")
+        tex = Tex("\\int_0^{\\pi / 2} \\cos(\\theta)d\\theta")
         tex.scale(2)
         self.add(tex)
 
 
 class SphereVideoWrapper(Scene):
     def construct(self):
-        title = TextMobject("Surface area of a sphere")
+        title = TexText("Surface area of a sphere")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
@@ -97,7 +97,7 @@ class SphereRings(SecondProof):
         brace.rotate(45 * DEGREES, UP)
         brace.move_to(1.5 * (RIGHT + OUT))
         brace.set_stroke(WHITE, 1)
-        word = TextMobject("Thickness")
+        word = TexText("Thickness")
         word.rotate(90 * DEGREES, RIGHT)
         word.next_to(brace, RIGHT + OUT, buff=0)
 
@@ -142,12 +142,12 @@ class SphereRings(SecondProof):
         arc = Arc(angle=theta, radius=0.5)
         arc.rotate(90 * DEGREES, RIGHT, about_point=ORIGIN)
 
-        theta = TexMobject("\\theta")
+        theta = Tex("\\theta")
         theta.rotate(90 * DEGREES, RIGHT)
         theta.next_to(arc, RIGHT)
         theta.shift(SMALL_BUFF * (LEFT + OUT))
 
-        R_label = TexMobject("R")
+        R_label = Tex("R")
         R_label.rotate(90 * DEGREES, RIGHT)
         R_label.next_to(
             R_line.get_center(), OUT + LEFT,
@@ -159,7 +159,7 @@ class SphereRings(SecondProof):
         z_axis_point[:2] = 0
         r_line = DashedLine(z_axis_point, point)
         r_line.set_color(RED)
-        r_label = TexMobject("R\\cos(\\theta)")
+        r_label = Tex("R\\cos(\\theta)")
         r_label.rotate(90 * DEGREES, RIGHT)
         r_label.scale(0.7)
         r_label.match_color(r_line)
@@ -203,7 +203,7 @@ class SphereRings(SecondProof):
 
     def show_thickness(self):
         brace, word = self.thickness_label
-        R_dtheta = TexMobject("R \\, d\\theta")
+        R_dtheta = Tex("R \\, d\\theta")
         R_dtheta.rotate(90 * DEGREES, RIGHT)
         R_dtheta.move_to(word, LEFT)
 
@@ -230,11 +230,11 @@ class SphereRings(SecondProof):
 
 class IntegralSymbols(Scene):
     def construct(self):
-        int_sign = TexMobject("\\displaystyle \\int")
+        int_sign = Tex("\\displaystyle \\int")
         int_sign.set_height(1.5)
         int_sign.move_to(5 * LEFT)
 
-        circumference, times, thickness = ctt = TextMobject(
+        circumference, times, thickness = ctt = TexText(
             "circumference", "$\\times$", "thickness"
         )
         circumference.set_color(MAROON_B)
@@ -242,23 +242,23 @@ class IntegralSymbols(Scene):
         area_brace = Brace(ctt, DOWN)
         area_text = area_brace.get_text("Area of a ring")
 
-        all_rings = TextMobject("All rings")
+        all_rings = TexText("All rings")
         all_rings.scale(0.5)
         all_rings.next_to(int_sign, DOWN, SMALL_BUFF)
         all_rings.shift(SMALL_BUFF * LEFT)
 
-        circum_formula = TexMobject(
+        circum_formula = Tex(
             "2\\pi", "R\\cos(\\theta)",
         )
         circum_formula[1].set_color(RED)
         circum_formula.move_to(circumference)
         circum_brace = Brace(circum_formula, UP)
 
-        R_dtheta = TexMobject("R \\, d\\theta")
+        R_dtheta = Tex("R \\, d\\theta")
         R_dtheta.move_to(thickness, LEFT)
         R_dtheta_brace = Brace(R_dtheta, UP)
 
-        zero, pi_halves = bounds = TexMobject("0", "\\pi / 2")
+        zero, pi_halves = bounds = Tex("0", "\\pi / 2")
         bounds.scale(0.5)
         zero.move_to(all_rings)
         pi_halves.next_to(int_sign, UP, SMALL_BUFF)
@@ -297,7 +297,7 @@ class IntegralSymbols(Scene):
         self.wait()
 
         # RHS
-        rhs = TexMobject(
+        rhs = Tex(
             "\\displaystyle =", "2\\pi R^2", "\\int_0^{\\pi / 2}",
             "\\cos(\\theta)", "d\\theta",
         )
@@ -305,7 +305,7 @@ class IntegralSymbols(Scene):
         rhs.next_to(R_dtheta, RIGHT)
         int_brace = Brace(rhs[2:], DOWN)
         q_marks = int_brace.get_text("???")
-        one = TexMobject("1")
+        one = Tex("1")
         one.move_to(q_marks)
 
         self.play(FadeIn(rhs, 4 * LEFT))

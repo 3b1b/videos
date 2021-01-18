@@ -149,7 +149,7 @@ class SoWeGotNowhere(TeacherStudentsScene):
         )
         self.change_all_student_modes("angry")
         self.wait()
-        text = TexMobject(
+        text = Tex(
             "&\\text{Actually,}\\\\",
             "&\\sin\\left({x}\\right)"
             "e^{-\\alpha {t}}\\\\",

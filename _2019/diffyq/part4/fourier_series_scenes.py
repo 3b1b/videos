@@ -41,7 +41,7 @@ class ComplexFourierSeriesExample(FourierOfTrebleClef):
         self.change_shape()
 
     def write_title(self):
-        title = TextMobject("Complex\\\\Fourier series")
+        title = TexText("Complex\\\\Fourier series")
         title.scale(1.5)
         title.to_edge(LEFT)
         title.match_y(self.path)
@@ -77,7 +77,7 @@ class ComplexFourierSeriesExample(FourierOfTrebleClef):
         self.play(*next_anims)
 
     def change_shape(self):
-        # path_mob = TexMobject("\\pi")
+        # path_mob = Tex("\\pi")
         path_mob = SVGMobject("Nail_And_Gear")
         new_path = path_mob.family_members_with_points()[0]
         new_path.set_height(4)
@@ -179,7 +179,7 @@ class ComplexFourierSeriesExample(FourierOfTrebleClef):
             circle_copies.add(ccopy)
 
         dots = VGroup(*[
-            TexMobject("\\dots").next_to(
+            Tex("\\dots").next_to(
                 circle_copies, direction,
                 MED_LARGE_BUFF,
             )
@@ -299,7 +299,7 @@ class PiFourierSeries(ComplexFourierSeriesExample):
             self.run_one_cycle()
 
     def get_path(self):
-        pi = TexMobject(self.tex)
+        pi = Tex(self.tex)
         path = pi.family_members_with_points()[0]
         path.set_height(self.path_height)
         path.move_to(3 * DOWN, DOWN)
@@ -495,7 +495,7 @@ class LabelRotatingVectors(PiFourierSeries):
         top_row.shift(0.5 * DOWN + 0.25 * RIGHT)
         v_copies, c_copies, dots, labels = top_row
         labels.to_edge(UP, MED_SMALL_BUFF)
-        freq_label = TextMobject("Frequencies:")
+        freq_label = TexText("Frequencies:")
         freq_label.to_edge(LEFT, MED_SMALL_BUFF)
         freq_label.match_y(labels)
         VGroup(freq_label, labels).set_color(YELLOW)
@@ -524,12 +524,12 @@ class LabelRotatingVectors(PiFourierSeries):
     def ask_about_labels(self):
         circles = self.circles
 
-        formulas = TextMobject("Formulas:")
+        formulas = TexText("Formulas:")
         formulas.next_to(circles, DOWN)
         formulas.to_edge(LEFT, MED_SMALL_BUFF)
 
         q_marks = VGroup(*[
-            TexMobject("??").scale(1.0).next_to(circle, DOWN)
+            Tex("??").scale(1.0).next_to(circle, DOWN)
             for circle in circles
         ])
 
@@ -565,7 +565,7 @@ class LabelRotatingVectors(PiFourierSeries):
         zero_circle.match_style(circles[0])
         self.add(zero_circle)
 
-        one_label = TexMobject("1")
+        one_label = Tex("1")
         one_label.move_to(q_marks[0])
 
         self.play(
@@ -861,7 +861,7 @@ class LabelRotatingVectors(PiFourierSeries):
 
         # c0 term
         c0_brace = Brace(cn_terms[0], DOWN, buff=SMALL_BUFF)
-        c0_label = TexMobject("0.5")
+        c0_label = Tex("0.5")
         c0_label.next_to(c0_brace, DOWN, SMALL_BUFF)
         c0_label.add_background_rectangle()
         vip_group0 = self.get_vector_in_plane_group(
@@ -890,13 +890,13 @@ class LabelRotatingVectors(PiFourierSeries):
 
         # c1 term
         c1_brace = Brace(cn_terms[1], DOWN, buff=SMALL_BUFF)
-        c1_label = TexMobject("e^{(\\pi / 4)i}")
+        c1_label = Tex("e^{(\\pi / 4)i}")
         c1_label.next_to(c1_brace, DOWN, SMALL_BUFF)
         c1_decimal = DecimalNumber(
             np.exp(np.complex(0, PI / 4)),
             num_decimal_places=3,
         )
-        approx = TexMobject("\\approx")
+        approx = Tex("\\approx")
         approx.next_to(c1_label, RIGHT, MED_SMALL_BUFF)
         c1_decimal.next_to(approx, RIGHT, MED_SMALL_BUFF)
         scalar = DecimalNumber(0.3)
@@ -1001,7 +1001,7 @@ class LabelRotatingVectors(PiFourierSeries):
         else:
             freq_str = "{" + str(freq) + "}" + "\\cdot"
 
-        result = TexMobject(
+        result = Tex(
             "e^{", freq_str, "2\\pi i {t}}",
             tex_to_color_map={
                 "2\\pi": WHITE,
@@ -1017,7 +1017,7 @@ class LabelRotatingVectors(PiFourierSeries):
         exp_label.target.scale(0.9)
 
         n_str = "{" + str(n) + "}"
-        term = TexMobject("c_", n_str)
+        term = Tex("c_", n_str)
         term.set_color(GREEN)
         term[1].set_color(YELLOW)
         term[1].set_width(0.12)
@@ -1054,7 +1054,7 @@ class LabelRotatingVectors(PiFourierSeries):
         else:
             frac_tex = "\\frac{\\text{cycles}}{\\text{second}}"
 
-        result = TexMobject(
+        result = Tex(
             n_str, frac_tex,
             tex_to_color_map={
                 n_str: YELLOW
@@ -1154,7 +1154,7 @@ class IntegralTrick(LabelRotatingVectors, TRangingFrom0To1):
             terms.add(term)
 
         for vect in [LEFT, RIGHT]:
-            dots = TexMobject("\\cdots")
+            dots = Tex("\\cdots")
             dots.next_to(terms, vect, MED_LARGE_BUFF)
             terms.add(dots)
 
@@ -1162,7 +1162,7 @@ class IntegralTrick(LabelRotatingVectors, TRangingFrom0To1):
         o_terms = VGroup(*terms)
         o_terms.sort(lambda p: p[0])
         for t1, t2 in zip(o_terms, o_terms[1:]):
-            plus = TexMobject("+")
+            plus = Tex("+")
             plus.scale(0.7)
             plus.move_to(midpoint(
                 t1.get_right(),
@@ -1171,7 +1171,7 @@ class IntegralTrick(LabelRotatingVectors, TRangingFrom0To1):
             plusses.add(plus)
         terms[:-2].shift(0.05 * UP)
 
-        ft_eq = TexMobject("f(t)", "= ")
+        ft_eq = Tex("f(t)", "= ")
         ft_eq.next_to(terms, LEFT)
 
         self.add(terms)
@@ -1386,7 +1386,7 @@ class IntegralTrick(LabelRotatingVectors, TRangingFrom0To1):
         t_tracker = self.vector_clock
         path = self.path
 
-        expression = TexMobject(
+        expression = Tex(
             "c_{0}", "="
             "\\int_0^1 f({t}) d{t}",
             tex_to_color_map={
@@ -1474,9 +1474,9 @@ class IncreaseOrderOfApproximation(ComplexFourierSeriesExample):
 
         n_tracker = ValueTracker(2)
         n_label = VGroup(
-            TextMobject("Approximation using"),
+            TexText("Approximation using"),
             Integer(100).set_color(YELLOW),
-            TextMobject("vectors")
+            TexText("vectors")
         )
         n_label.arrange(RIGHT)
         n_label.to_corner(UL)
@@ -1553,7 +1553,7 @@ class ShowStepFunctionIn2dView(SimpleComplexExponentExample, ComplexFourierSerie
         for n in line.numbers:
             n.stretch(1 / sf, 0)
 
-        label = TextMobject("Input space")
+        label = TexText("Input space")
         label.next_to(rect.get_bottom(), UP, SMALL_BUFF)
         self.add(label)
         self.input_space_label = label
@@ -1669,7 +1669,7 @@ class ShowStepFunctionIn2dView(SimpleComplexExponentExample, ComplexFourierSerie
         tip.add_updater(lambda m: m.move_to(
             get_output_point(), DOWN,
         ))
-        output_label = TextMobject("Output")
+        output_label = TexText("Output")
         output_label.add_background_rectangle()
         output_label.add_updater(lambda m: m.next_to(
             tip, UP, SMALL_BUFF,
@@ -1833,11 +1833,11 @@ class DE4Thumbnail(ComplexFourierSeriesExample):
     }
 
     def construct(self):
-        name = TextMobject("Fourier series")
+        name = TexText("Fourier series")
         name.set_width(FRAME_WIDTH - 2)
         name.to_edge(UP)
         name.set_color(YELLOW)
-        subname = TextMobject("a.k.a ``everything is rotations''")
+        subname = TexText("a.k.a ``everything is rotations''")
         subname.match_width(name)
         subname.next_to(name, DOWN)
         VGroup(name, subname).to_edge(DOWN)
@@ -1867,7 +1867,7 @@ class DE4Thumbnail(ComplexFourierSeriesExample):
 
         labels = VGroup()
         for n, approx in zip(ns, approxs):
-            label = TexMobject("n = ", str(n))
+            label = Tex("n = ", str(n))
             label[1].match_color(approx)
             label.scale(2)
             label.next_to(approx, UP)

@@ -599,9 +599,9 @@ class GraphBraces(VGroup):
         ])
         self.braces = VGroup(*[Brace(line, RIGHT) for line in self.lines])
         self.labels = VGroup(
-            TextMobject("Susceptible", color=COLOR_MAP["S"]),
-            TextMobject("Infectious", color=COLOR_MAP["I"]),
-            TextMobject("Removed", color=COLOR_MAP["R"]),
+            TexText("Susceptible", color=COLOR_MAP["S"]),
+            TexText("Infectious", color=COLOR_MAP["I"]),
+            TexText("Removed", color=COLOR_MAP["R"]),
         )
 
         self.max_label_height = graph.get_height() * 0.05
@@ -675,7 +675,7 @@ class ValueSlider(NumberLine):
         # self.label.next_to(self.marker, UP)
         # self.add(self.label)
 
-        self.name = TextMobject(name)
+        self.name = TexText(name)
         self.name.scale(1.25)
         self.name.next_to(self, DOWN)
         self.name.match_color(self.marker)
@@ -769,7 +769,7 @@ class RunSimpleSimulation(Scene):
 
     def add_R_label(self):
         label = VGroup(
-            TexMobject("R = "),
+            Tex("R = "),
             DecimalNumber(),
         )
         label.arrange(RIGHT)
@@ -802,7 +802,7 @@ class RunSimpleSimulation(Scene):
 
     def add_total_cases_label(self):
         label = VGroup(
-            TextMobject("\\# Active cases = "),
+            TexText("\\# Active cases = "),
             Integer(1),
         )
         label.arrange(RIGHT)
@@ -1329,7 +1329,7 @@ class QuarantineInfectious(RunSimpleSimulation):
             buff=0.25 * q_box.get_width()
         )
 
-        label = TextMobject("Quarantine zone")
+        label = TexText("Quarantine zone")
         label.set_color(RED)
         label.match_width(q_box)
         label.next_to(q_box, DOWN, buff=0.1 * q_box.get_width())
@@ -1651,12 +1651,12 @@ class CentralMarketTransitionToLowerInfectionAndLowerFrequency(CentralMarketTran
 class TableOfContents(Scene):
     def construct(self):
         chapters = VGroup(
-            TextMobject("Basic setup"),
-            TextMobject("Identify and isolate"),
-            TextMobject("Social distancing"),
-            TextMobject("Travel restrictions"),
-            TextMobject("$R$"),
-            TextMobject("Central hubs"),
+            TexText("Basic setup"),
+            TexText("Identify and isolate"),
+            TexText("Social distancing"),
+            TexText("Travel restrictions"),
+            TexText("$R$"),
+            TexText("Central hubs"),
         )
         chapters.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         chapters.set_height(FRAME_HEIGHT - 1)
@@ -1688,7 +1688,7 @@ class TableOfContents(Scene):
 class DescribeModel(Scene):
     def construct(self):
         # Setup words
-        words = TextMobject(
+        words = TexText(
             "Susceptible",
             "Infectious",
             "Recovered",
@@ -1714,7 +1714,7 @@ class DescribeModel(Scene):
         initials.arrange(RIGHT, buff=SMALL_BUFF)
         initials.set_color(WHITE)
 
-        title = VGroup(initials, TextMobject("Model"))
+        title = VGroup(initials, TexText("Model"))
         title[1].match_height(title[0])
         title.arrange(RIGHT, buff=MED_LARGE_BUFF)
         title.center()
@@ -1855,7 +1855,7 @@ class DescribeModel(Scene):
         self.play(FadeOut(clock))
 
         # Removed
-        removed = TextMobject("Removed")
+        removed = TexText("Removed")
         removed.match_color(words[2])
         removed.match_height(words[2])
         removed.move_to(words[2], DL)
@@ -1947,7 +1947,7 @@ class CutPInfectionInHalf(Scene):
 
         # Prob label
         eq = VGroup(
-            TexMobject("P(\\text{Infection}) = "),
+            Tex("P(\\text{Infection}) = "),
             DecimalNumber(0.2),
         )
         eq.arrange(RIGHT, buff=0.2)
@@ -2021,7 +2021,7 @@ class CutPInfectionInHalf(Scene):
 class KeyTakeaways(Scene):
     def construct(self):
         takeaways = VGroup(*[
-            TextMobject(
+            TexText(
                 text,
                 alignment="",
             )
@@ -2045,7 +2045,7 @@ class KeyTakeaways(Scene):
                 """,
             ]
         ])
-        takeaway = TextMobject(
+        takeaway = TexText(
             "The growth rate is very sensitive to:\\\\",
             "- \\# Daily interactions\\\\",
             "- Probability of infection\\\\",
@@ -2062,7 +2062,7 @@ class KeyTakeaways(Scene):
 
         titles = VGroup()
         for i in range(len(takeaways)):
-            title = TextMobject("Key takeaway \\#")
+            title = TexText("Key takeaway \\#")
             num = Integer(i + 1)
             num.next_to(title, RIGHT, buff=SMALL_BUFF)
             title.add(num)
@@ -2146,7 +2146,7 @@ class AsymptomaticCases(Scene):
             self.wait(0.1)
         self.wait(2)
 
-        label = TextMobject("Never isolated")
+        label = TexText("Never isolated")
         label.set_height(0.8)
         label.to_edge(UP)
         label.set_color(YELLOW)
@@ -2265,7 +2265,7 @@ class FastForwardBy2(Scene):
         ])
         triangles.arrange(RIGHT, buff=0.01)
 
-        label = VGroup(TexMobject("\\times"), Integer(n))
+        label = VGroup(Tex("\\times"), Integer(n))
         label.set_height(0.4)
         label.arrange(RIGHT, buff=SMALL_BUFF)
         label.next_to(triangles, RIGHT, buff=SMALL_BUFF)
@@ -2296,7 +2296,7 @@ class FastForwardBy4(FastForwardBy2):
 
 class DontLetThisHappen(Scene):
     def construct(self):
-        text = TextMobject("Don't let\\\\this happen!")
+        text = TexText("Don't let\\\\this happen!")
         text.scale(1.5)
         text.set_stroke(BLACK, 5, background=True)
         arrow = Arrow(
@@ -2346,14 +2346,14 @@ class BetweenNothingAndQuarantineWrapper(Scene):
         rects.set_stroke(WHITE, 2)
 
         titles = VGroup(
-            TextMobject("Do nothing"),
-            TextMobject("Quarantine\\\\", "80$\\%$ of cases"),
-            TextMobject("Quarantine\\\\", "all cases"),
+            TexText("Do nothing"),
+            TexText("Quarantine\\\\", "80$\\%$ of cases"),
+            TexText("Quarantine\\\\", "all cases"),
         )
         for title, rect in zip(titles, rects):
             title.next_to(rect, UP)
 
-        q_marks = TexMobject("???")
+        q_marks = Tex("???")
         q_marks.scale(2)
         q_marks.move_to(rects[1])
 
@@ -2369,12 +2369,12 @@ class BetweenNothingAndQuarantineWrapper(Scene):
 
 class DarkerInterpretation(Scene):
     def construct(self):
-        qz = TextMobject("Quarantine zone")
+        qz = TexText("Quarantine zone")
         qz.set_color(RED)
         qz.set_width(2)
         line = Line(qz.get_left(), qz.get_right())
 
-        new_words = TextMobject("Deceased")
+        new_words = TexText("Deceased")
         new_words.replace(qz, dim_to_match=1)
         new_words.set_color(RED)
 
@@ -2396,12 +2396,12 @@ class SARS2002(TeacherStudentsScene):
         image.move_to(self.hold_up_spot, DR)
         image.shift(RIGHT)
 
-        name = TextMobject("2002 SARS Outbreak")
+        name = TexText("2002 SARS Outbreak")
         name.next_to(image, LEFT, MED_LARGE_BUFF, aligned_edge=UP)
 
         n_cases = VGroup(
             Integer(0, edge_to_fix=UR),
-            TextMobject("total cases")
+            TexText("total cases")
         )
         n_cases.arrange(RIGHT)
         n_cases.scale(1.25)
@@ -2456,7 +2456,7 @@ class QuarteringLines(Scene):
 
 class Eradicated(Scene):
     def construct(self):
-        word = TextMobject("Eradicated")
+        word = TexText("Eradicated")
         word.set_color(GREEN)
         self.add(word)
 
@@ -2484,7 +2484,7 @@ class IndicationArrow(Scene):
 
 class REq(Scene):
     def construct(self):
-        mob = TexMobject("R_0 = ")[0]
+        mob = Tex("R_0 = ")[0]
         mob[1].set_color(BLACK)
         mob[2].shift(mob[1].get_width() * LEFT * 0.7)
         self.add(mob)
@@ -2514,7 +2514,7 @@ class IntroduceR0(Scene):
             pis[1].pop_anim(anim)
 
         count = VGroup(
-            TextMobject("Infection count: "),
+            TexText("Infection count: "),
             Integer(0)
         )
         count.arrange(RIGHT, aligned_edge=DOWN)
@@ -2567,7 +2567,7 @@ class IntroduceR0(Scene):
                 zeros.add(zero)
 
         # R label
-        R_label = TextMobject("Average :=", " $R$")
+        R_label = TexText("Average :=", " $R$")
         R_label.set_color_by_tex("R", YELLOW)
         R_label.next_to(count, DOWN, buff=1.5)
 
@@ -2580,7 +2580,7 @@ class IntroduceR0(Scene):
         )
 
         brace = Brace(R_label[1], DOWN)
-        name = TextMobject("``Effective reproductive number''")
+        name = TexText("``Effective reproductive number''")
         name.set_color(YELLOW)
         name.next_to(brace, DOWN)
         name.to_edge(LEFT)
@@ -2591,10 +2591,10 @@ class IntroduceR0(Scene):
         self.wait(5)
 
         # R0
-        brr = TextMobject("``Basic reproductive number''")
+        brr = TexText("``Basic reproductive number''")
         brr.set_color(TEAL)
         brr.move_to(name, LEFT)
-        R0 = TexMobject("R_0")
+        R0 = Tex("R_0")
         R0.move_to(R_label[1], UL)
         R0.set_color(TEAL)
 
@@ -2645,21 +2645,21 @@ class IntroduceR0(Scene):
 class HowR0IsCalculatedHere(Scene):
     def construct(self):
         words = VGroup(
-            TextMobject("Count ", "\\# transfers"),
-            TextMobject("for every infectious case")
+            TexText("Count ", "\\# transfers"),
+            TexText("for every infectious case")
         )
         words.arrange(DOWN)
         words[1].set_color(RED)
         words.to_edge(UP)
 
-        estimate = TextMobject("Estimate")
+        estimate = TexText("Estimate")
         estimate.move_to(words[0][0], RIGHT)
 
-        lp, rp = parens = TexMobject("(", ")")
+        lp, rp = parens = Tex("(", ")")
         parens.match_height(words)
         lp.next_to(words, LEFT, SMALL_BUFF)
         rp.next_to(words, RIGHT, SMALL_BUFF)
-        average = TextMobject("Average")
+        average = TexText("Average")
         average.scale(1.5)
         average.next_to(parens, LEFT, SMALL_BUFF)
 
@@ -2692,7 +2692,7 @@ class HowR0IsCalculatedHere(Scene):
 
 class R0Rect(Scene):
     def construct(self):
-        rect = SurroundingRectangle(TextMobject("R0 = 2.20"))
+        rect = SurroundingRectangle(TexText("R0 = 2.20"))
         rect.set_stroke(YELLOW, 4)
         self.play(ShowCreation(rect))
         self.play(FadeOut(rect))
@@ -2710,7 +2710,7 @@ class DoubleInfectionRadius(Scene):
         c1.next_to(arrow, LEFT)
         c2.next_to(arrow, RIGHT)
 
-        title = TextMobject("Double the\\\\infection radius")
+        title = TexText("Double the\\\\infection radius")
         title.next_to(VGroup(c1, c2), UP)
 
         self.add(c1, title)
@@ -2721,7 +2721,7 @@ class DoubleInfectionRadius(Scene):
         )
         self.wait()
 
-        c2.label = TextMobject("4x area")
+        c2.label = TexText("4x area")
         c2.label.scale(0.5)
         c2.label.next_to(c2, DOWN)
 
@@ -2768,9 +2768,9 @@ class R0Categories(Scene):
     def construct(self):
         # Titles
         titles = VGroup(
-            TexMobject("R > 1", color=RED),
-            TexMobject("R = 1", color=YELLOW),
-            TexMobject("R < 1", color=GREEN),
+            Tex("R > 1", color=RED),
+            Tex("R = 1", color=YELLOW),
+            Tex("R < 1", color=GREEN),
         )
         titles.scale(1.25)
         titles.arrange(RIGHT, buff=2.7)
@@ -2788,9 +2788,9 @@ class R0Categories(Scene):
 
         # Names
         names = VGroup(
-            TextMobject("Epidemic", color=RED),
-            TextMobject("Endemic", color=YELLOW),
-            TextMobject("...Hypodemic?", color=GREEN),
+            TexText("Epidemic", color=RED),
+            TexText("Endemic", color=YELLOW),
+            TexText("...Hypodemic?", color=GREEN),
         )
         for name, title in zip(names, titles):
             name.next_to(title, DOWN, MED_LARGE_BUFF)
@@ -2874,9 +2874,9 @@ class R0Categories(Scene):
 class RealR0Estimates(Scene):
     def construct(self):
         labels = VGroup(
-            TextMobject("COVID-19\\\\", "$R_0 \\approx 2$"),
-            TextMobject("1918 Spanish flu\\\\", "$R_0 \\approx 2$"),
-            TextMobject("Usual seasonal flu\\\\", "$R_0 \\approx 1.3$"),
+            TexText("COVID-19\\\\", "$R_0 \\approx 2$"),
+            TexText("1918 Spanish flu\\\\", "$R_0 \\approx 2$"),
+            TexText("Usual seasonal flu\\\\", "$R_0 \\approx 1.3$"),
         )
         images = Group(
             ImageMobject("COVID-19_Map"),
@@ -2928,7 +2928,7 @@ class WhyChooseJustOne(TeacherStudentsScene):
 
 class NickyCaseMention(Scene):
     def construct(self):
-        words = TextMobject(
+        words = TexText(
             "Artwork by Nicky Case\\\\",
             "...who is awesome."
         )

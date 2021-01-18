@@ -8,9 +8,9 @@ class CircleDivisionImage(Scene):
     }
 
     def construct(self):
-        # tex = TexMobject("e^{\\tau i}")
-        # tex = TexMobject("\\sin(2\\theta) \\over \\sin(\\theta)\\cos(\\theta)")
-        # tex = TexMobject("")
+        # tex = Tex("e^{\\tau i}")
+        # tex = Tex("\\sin(2\\theta) \\over \\sin(\\theta)\\cos(\\theta)")
+        # tex = Tex("")
 
         # tex.set_height(FRAME_HEIGHT - 2)
         # if tex.get_width() > (FRAME_WIDTH - 2):

@@ -26,7 +26,7 @@ def get_ode():
             "{\\mu}": WHITE,
         }
     }
-    ode = TexMobject(
+    ode = Tex(
         "{\\ddot\\theta}({t})", "=",
         "-{\\mu} {\\dot\\theta}({t})",
         "-{g \\over L} \\sin\\big({\\theta}({t})\\big)",
@@ -36,7 +36,7 @@ def get_ode():
 
 
 def get_period_formula():
-    return TexMobject(
+    return Tex(
         "2\\pi", "\\sqrt{\\,", "L", "/", "g", "}",
         tex_to_color_map={
             "L": BLUE,
@@ -82,7 +82,7 @@ def get_heart_var(index):
 def get_heart_var_deriv(index):
     heart = get_heart_var(index)
     filler_tex = "T"
-    deriv = TexMobject("{d", filler_tex, "\\over", "dt}")
+    deriv = Tex("{d", filler_tex, "\\over", "dt}")
     deriv.scale(2)
     filler = deriv.get_part_by_tex(filler_tex)
     heart.match_height(filler)
@@ -97,8 +97,8 @@ def get_heart_var_deriv(index):
 def get_love_equation1():
     equation = VGroup(
         get_heart_var_deriv(1),
-        TexMobject("=").scale(2),
-        TexMobject("a").scale(2),
+        Tex("=").scale(2),
+        Tex("a").scale(2),
         get_heart_var(2)
     )
     equation.arrange(RIGHT)
@@ -109,8 +109,8 @@ def get_love_equation1():
 def get_love_equation2():
     equation = VGroup(
         get_heart_var_deriv(2),
-        TexMobject("=").scale(2),
-        TexMobject("-b").scale(2),
+        Tex("=").scale(2),
+        Tex("-b").scale(2),
         get_heart_var(1),
     )
     equation.arrange(RIGHT)

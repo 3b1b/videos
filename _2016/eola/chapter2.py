@@ -3,7 +3,7 @@ from _2016.eola.chapter1 import plane_wave_homotopy
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TextMobject("""
+        words = TexText("""
             Mathematics requires a small dose, not of genius, 
             but of an imaginative freedom which, in a larger 
             dose, would be insanity.
@@ -11,7 +11,7 @@ class OpeningQuote(Scene):
         words.to_edge(UP)    
         for mob in words.submobjects[49:49+18]:
             mob.set_color(GREEN)
-        author = TextMobject("-Angus K. Rodgers")
+        author = TexText("-Angus K. Rodgers")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -50,7 +50,7 @@ class CoordinatesAsScalars(VectorScene):
     def general_idea_of_scalars(self, array, vector):
         starting_mobjects = self.get_mobjects()
 
-        title = TextMobject("Think of each coordinate as a scalar")
+        title = TexText("Think of each coordinate as a scalar")
         title.to_edge(UP)
 
         x, y = array.get_mob_matrix().flatten()
@@ -152,7 +152,7 @@ class CoordinatesAsScalars(VectorScene):
 
 
     def show_symbolic_sum(self, new_array, vector):
-        new_mob = TexMobject([
+        new_mob = Tex([
             "(%d)\\hat{\\imath}"%self.vector_coords[0], 
             "+", 
             "(%d)\\hat{\\jmath}"%self.vector_coords[1]
@@ -180,7 +180,7 @@ class CoordinatesAsScalarsExample2(CoordinatesAsScalars):
         labels = self.get_basis_vector_labels()
         self.add(*basis_vectors)
         self.add(*labels)
-        text = TextMobject("""
+        text = TexText("""
             $\\hat{\\imath}$ and $\\hat{\\jmath}$ 
             are the ``basis vectors'' \\\\
             of the $xy$ coordinate system
@@ -382,7 +382,7 @@ class ShowVaryingLinearCombinations(VectorScene):
             ApplyMethod(x.set_color, X_COLOR),
             ApplyMethod(y.set_color, Y_COLOR),
         )
-        neq = TexMobject("\\neq")
+        neq = Tex("\\neq")
         neq.next_to(array)
         self.play(
             ApplyMethod(ij_array.next_to, neq),
@@ -431,7 +431,7 @@ class NameLinearCombinations(Scene):
     def construct(self):
         v_color = MAROON_C
         w_color = BLUE
-        words = TextMobject([
+        words = TexText([
             "``Linear combination'' of",
             "$\\vec{\\textbf{v}}$",
             "and",
@@ -442,7 +442,7 @@ class NameLinearCombinations(Scene):
         words.set_width(FRAME_WIDTH - 1)
         words.to_edge(UP)
 
-        equation = TexMobject([
+        equation = Tex([
             "a", "\\vec{\\textbf{v}}", "+", "b", "\\vec{\\textbf{w}}"
         ])
         equation.arrange(buff = 0.1, aligned_edge = DOWN)
@@ -452,7 +452,7 @@ class NameLinearCombinations(Scene):
         equation.scale(2)
         equation.next_to(words, DOWN, buff = 1)
 
-        scalars_word = TextMobject("Scalars")
+        scalars_word = TexText("Scalars")
         scalars_word.scale(1.5)
         scalars_word.next_to(equation, DOWN, buff = 2)
         arrows = [
@@ -575,7 +575,7 @@ class DefineSpan(Scene):
         v_color = MAROON_C
         w_color = BLUE
 
-        definition = TextMobject("""
+        definition = TexText("""
             The ``span'' of $\\vec{\\textbf{v}}$ and 
             $\\vec{\\textbf{w}}$ is the \\\\ set of all their
             linear combinations.
@@ -588,7 +588,7 @@ class DefineSpan(Scene):
         VMobject(*def_mobs[16:16+2]).set_color(w_color)
         VMobject(*def_mobs[-19:-1]).set_color(YELLOW)
 
-        equation = TexMobject([
+        equation = Tex([
             "a", "\\vec{\\textbf{v}}", "+", "b", "\\vec{\\textbf{w}}"
         ])
         equation.arrange(buff = 0.1, aligned_edge = DOWN)
@@ -598,7 +598,7 @@ class DefineSpan(Scene):
         equation.scale(2)
         equation.next_to(definition, DOWN, buff = 1)
 
-        vary_words = TextMobject(
+        vary_words = TexText(
             "Let $a$ and $b$ vary \\\\ over all real numbers"
         )
         vary_words.scale(1.5)
@@ -746,8 +746,8 @@ class HowToThinkVectorsVsPoint(Scene):
     def construct(self):
         randy = Randolph().to_corner()
         bubble = randy.get_bubble(height = 3.8)
-        text1 = TextMobject("Think of individual vectors as arrows")
-        text2 = TextMobject("Think of sets of vectors as points")
+        text1 = TexText("Think of individual vectors as arrows")
+        text2 = TexText("Think of sets of vectors as points")
         for text in text1, text2:
             text.to_edge(UP)
 
@@ -802,7 +802,7 @@ class VaryingLinearCombinationOfThreeVectors(Scene):
 
 class LinearCombinationOfThreeVectorsText(Scene):
     def construct(self):
-        text = TextMobject("""
+        text = TexText("""
             Linear combination of 
             $\\vec{\\textbf{v}}$, 
             $\\vec{\\textbf{w}}$, and
@@ -815,7 +815,7 @@ class LinearCombinationOfThreeVectorsText(Scene):
         text.set_width(FRAME_WIDTH - 1)
         text.to_edge(UP)
 
-        equation = TextMobject("""$
+        equation = TexText("""$
             a\\vec{\\textbf{v}} + 
             b\\vec{\\textbf{w}} + 
             c\\vec{\\textbf{u}}
@@ -829,7 +829,7 @@ class LinearCombinationOfThreeVectorsText(Scene):
         equation.scale(1.5)
         equation.next_to(text, DOWN, buff = 1)
 
-        span_comment = TextMobject("For span, let these constants vary")
+        span_comment = TexText("For span, let these constants vary")
         span_comment.scale(1.5)
         span_comment.next_to(equation, DOWN, buff = 2)
         VMobject(*span_comment.split()[3:7]).set_color(YELLOW)
@@ -856,7 +856,7 @@ class ThirdVectorOutsideSpanOfFirstTwo(Scene):
 
 class SpanCasesWords(Scene):
     def construct(self):
-        words1 = TextMobject("""
+        words1 = TexText("""
             Case 1: $\\vec{\\textbf{u}}$ is in the span of
             $\\vec{\\textbf{v}}$ and $\\vec{\\textbf{u}}$
         """)
@@ -864,7 +864,7 @@ class SpanCasesWords(Scene):
         VMobject(*words1.split()[-7:-5]).set_color(MAROON_C)
         VMobject(*words1.split()[-2:]).set_color(BLUE)
 
-        words2 = TextMobject("""
+        words2 = TexText("""
             Case 2: $\\vec{\\textbf{u}}$ is not in the span of
             $\\vec{\\textbf{v}}$ and $\\vec{\\textbf{u}}$
         """)
@@ -884,7 +884,7 @@ class SpanCasesWords(Scene):
 
 class LinearDependentWords(Scene):
     def construct(self):
-        words1 = TextMobject([
+        words1 = TexText([
             "$\\vec{\\textbf{v}}$", 
             "and",
             "$\\vec{\\textbf{w}}$",
@@ -896,7 +896,7 @@ class LinearDependentWords(Scene):
         w.set_color(BLUE)
         rest.set_color(YELLOW)
 
-        words2 = TextMobject([
+        words2 = TexText([
             "$\\vec{\\textbf{v}}$,", 
             "$\\vec{\\textbf{w}}$",
             "and",
@@ -921,13 +921,13 @@ class LinearDependentWords(Scene):
 
 class LinearDependentEquations(Scene):
     def construct(self):
-        title = TextMobject("``Linearly dependent'' ")
+        title = TexText("``Linearly dependent'' ")
         title.set_color(YELLOW)
         title.scale(2)
         title.to_edge(UP)
         self.add(title)
 
-        equation1 = TexMobject([
+        equation1 = Tex([
             "\\vec{\\textbf{w}}",
             "=",
             "a",
@@ -939,13 +939,13 @@ class LinearDependentEquations(Scene):
         equation1.scale(2)
         eq1_copy = equation1.copy()
 
-        low_words1 = TextMobject("For some value of $a$")
+        low_words1 = TexText("For some value of $a$")
         low_words1.scale(2)
         low_words1.to_edge(DOWN)
         arrow = Arrow(low_words1, a)
         arrow_copy = arrow.copy()
 
-        equation2 = TexMobject([
+        equation2 = Tex([
             "\\vec{\\textbf{u}}",
             "=",
             "a",
@@ -961,7 +961,7 @@ class LinearDependentEquations(Scene):
         equation2.scale(2)
         eq2_copy = equation2.copy()
 
-        low_words2 = TextMobject("For some values of a and b")
+        low_words2 = TexText("For some values of a and b")
         low_words2.scale(2)
         low_words2.to_edge(DOWN)
         arrows = VMobject(*[
@@ -983,17 +983,17 @@ class LinearDependentEquations(Scene):
         )
         self.wait(2)
 
-        new_title = TextMobject("``Linearly independent'' ")
+        new_title = TexText("``Linearly independent'' ")
         new_title.set_color(GREEN)
         new_title.replace(title)
 
         for eq_copy in eq1_copy, eq2_copy:
-            neq = TexMobject("\\neq")
+            neq = Tex("\\neq")
             neq.replace(eq_copy.submobjects[1])
             eq_copy.submobjects[1] = neq
 
-        new_low_words1 = TextMobject(["For", "all", "values of a"])
-        new_low_words2 = TextMobject(["For", "all", "values of a and b"])
+        new_low_words1 = TexText(["For", "all", "values of a"])
+        new_low_words2 = TexText(["For", "all", "values of a and b"])
         for low_words in new_low_words1, new_low_words2:
             low_words.split()[1].set_color(GREEN)
             low_words.scale(2)
@@ -1017,7 +1017,7 @@ class LinearDependentEquations(Scene):
 
 class AlternateDefOfLinearlyDependent(Scene):
     def construct(self):
-        title1 = TextMobject([
+        title1 = TexText([
             "$\\vec{\\textbf{v}}$,",
             "$\\vec{\\textbf{w}}$",
             "and",
@@ -1026,7 +1026,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             "linearly dependent",
             "if",
         ])
-        title2 = TextMobject([
+        title2 = TexText([
             "$\\vec{\\textbf{v}}$,",
             "$\\vec{\\textbf{w}}$",
             "and",
@@ -1044,20 +1044,20 @@ class AlternateDefOfLinearlyDependent(Scene):
         title1.split()[-2].set_color(YELLOW)
         title2.split()[-2].set_color(GREEN)
 
-        subtitle = TextMobject("the only solution to")
+        subtitle = TexText("the only solution to")
         subtitle.next_to(title2, DOWN, aligned_edge = LEFT)
 
         self.add(title1)
 
         equations = self.get_equations()
-        added_words1 = TextMobject(
+        added_words1 = TexText(
             "where at least one of $a$, $b$ and $c$ is not $0$"
         )
-        added_words2 = TextMobject(
+        added_words2 = TexText(
             "is a = b = c = 0"
         )
 
-        scalar_specification = TextMobject(
+        scalar_specification = TexText(
             "For some choice of $a$ and $b$"
         )
         scalar_specification.shift(1.5*DOWN)
@@ -1067,7 +1067,7 @@ class AlternateDefOfLinearlyDependent(Scene):
         ])
 
         brace = Brace(VMobject(*equations[2].split()[2:]))
-        brace_words = TextMobject("Linear combination")
+        brace_words = TexText("Linear combination")
         brace_words.next_to(brace, DOWN)
 
         equation = equations[0]
@@ -1108,7 +1108,7 @@ class AlternateDefOfLinearlyDependent(Scene):
 
 
     def get_equations(self):
-        equation1 = TexMobject([
+        equation1 = Tex([
             "\\vec{\\textbf{u}}",
             "=",
             "a",
@@ -1124,7 +1124,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             [VectorizedPoint(u.get_left())],
             [u]
         ))
-        equation2 = TexMobject([
+        equation2 = Tex([
             "\\left[\\begin{array}{c} 0 \\\\ 0 \\\\ 0 \\end{array} \\right]",
             "=",
             "a",
@@ -1135,7 +1135,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             "-",
             "\\vec{\\textbf{u}}",
         ])
-        equation3 = TexMobject([
+        equation3 = Tex([
             "\\vec{\\textbf{0}}",
             "=",
             "a",
@@ -1146,7 +1146,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             "-",
             "\\vec{\\textbf{u}}",
         ])
-        equation4 = TexMobject([
+        equation4 = Tex([
             "\\vec{\\textbf{0}}",
             "=",
             "0",
@@ -1157,7 +1157,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             "+0",
             "\\vec{\\textbf{u}}",
         ])
-        equation5 = TexMobject([
+        equation5 = Tex([
             "\\vec{\\textbf{0}}",
             "=",
             "a",
@@ -1169,7 +1169,7 @@ class AlternateDefOfLinearlyDependent(Scene):
             "\\vec{\\textbf{u}}",
         ])
         equation5.split()[-2].set_color(YELLOW)
-        equation6 = TexMobject([
+        equation6 = Tex([
             "\\vec{\\textbf{0}}",
             "=",
             "a",
@@ -1216,9 +1216,9 @@ class CheckYourUnderstanding(TeacherStudentsScene):
 
 class TechnicalDefinitionOfBasis(Scene):
     def construct(self):
-        title  = TextMobject("Technical definition of basis:")
+        title  = TexText("Technical definition of basis:")
         title.to_edge(UP)
-        definition = TextMobject([
+        definition = TexText([
             "The",
             "basis",
             "of a vector space is a set of",
@@ -1239,7 +1239,7 @@ class TechnicalDefinitionOfBasis(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TextMobject("Next video: Matrices as linear transformations")
+        title = TexText("Next video: Matrices as linear transformations")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(6)
