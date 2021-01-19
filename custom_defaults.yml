@@ -1,4 +1,5 @@
 directories:
+  mirror_module_path: True
   output: "/Users/grant/Dropbox/3Blue1Brown Team Folder/videos"
   raster_images: "/Users/grant/Dropbox/3Blue1Brown Team Folder/images/raster"
   vector_images: "/Users/grant/Dropbox/3Blue1Brown Team Folder/images/vector"
