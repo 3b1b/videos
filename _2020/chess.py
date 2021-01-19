@@ -233,7 +233,7 @@ class IntroducePuzzle(Scene):
         count_label.fix_in_frame()
 
         # Draw board and coins
-        frame.set_rotation(-25 * DEGREES, 70 * DEGREES, 0)
+        frame.set_euler_angles(-25 * DEGREES, 70 * DEGREES, 0)
         self.play(
             FadeIn(chessboard),
             ShowCreationThenDestruction(grid, lag_ratio=0.01),
@@ -2443,7 +2443,7 @@ class ShowCube(ThreeDScene):
 
         # Transition to 3d case
         frame.generate_target()
-        frame.target.set_rotation(-25 * DEGREES, 70 * DEGREES)
+        frame.target.set_euler_angles(-25 * DEGREES, 70 * DEGREES)
         frame.target.move_to([1, 2, 0])
         frame.target.set_height(10)
         to_grow = Group(*edges[4:], *spheres[4:], *coord_labels[4:])
@@ -2698,7 +2698,7 @@ class ShowCube(ThreeDScene):
         self.remove(board, coins)
         frame.clear_updaters()
         frame.generate_target()
-        frame.target.set_rotation(0, 45 * DEGREES)
+        frame.target.set_euler_angles(0, 45 * DEGREES)
         frame.target.shift(2 * UP)
         self.play(
             count.shift, UP,
@@ -2729,7 +2729,7 @@ class ShowCube(ThreeDScene):
 
         frame.generate_target()
         frame.target.shift(2 * DOWN)
-        frame.target.set_rotation(-15 * DEGREES, 70 * DEGREES)
+        frame.target.set_euler_angles(-15 * DEGREES, 70 * DEGREES)
         self.play(
             MoveToTarget(frame, run_time=3),
             LaggedStartMap(FadeOut, full_board),
@@ -3969,7 +3969,7 @@ class FourDCubeColoringFromTrees(ThreeDScene):
         for tree, original in zip(trees, original_trees):
             anims.append(Transform(tree, original))
         self.play(
-            frame.set_rotation, 20 * DEGREES, 70 * DEGREES,
+            frame.set_euler_angles, 20 * DEGREES, 70 * DEGREES,
             frame.move_to, ORIGIN,
             LaggedStart(*anims, lag_ratio=0.2),
             run_time=8,
@@ -4078,7 +4078,7 @@ class IntroduceHypercube(FourDCubeColoringFromTrees):
         self.play(
             get_cube_intro_anim(3),
             ApplyMethod(
-                frame.set_rotation, -20 * DEGREES, 75 * DEGREES,
+                frame.set_euler_angles, -20 * DEGREES, 75 * DEGREES,
                 run_time=3
             )
         )
@@ -4826,7 +4826,7 @@ class Thumbnail(ThreeDScene):
         Group(board, coins).shift(DOWN + 2 * RIGHT)
 
         frame = self.camera.frame
-        frame.set_rotation(phi=50 * DEGREES)
+        frame.set_euler_angles(phi=50 * DEGREES)
 
         # Title
         title = TexText("Impossible?")

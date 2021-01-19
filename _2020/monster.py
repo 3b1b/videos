@@ -815,7 +815,7 @@ class SymmetriesOfACube(ThreeDScene):
         cube.set_gloss(0.5)
         cube.set_shadow(0.2)
 
-        frame.set_rotation(
+        frame.set_euler_angles(
             phi=70 * DEGREES,
             theta=-30 * DEGREES,
         )
@@ -2423,8 +2423,8 @@ class CubeRotations(ThreeDScene):
     def construct(self):
         # Set frame motion
         frame = self.camera.frame
-        frame.set_rotation(phi=80 * DEGREES)
-        frame.add_updater(lambda m, sc=self: m.set_rotation(theta=-20 * DEGREES * np.cos(0.1 * sc.time)))
+        frame.set_euler_angles(phi=80 * DEGREES)
+        frame.add_updater(lambda m, sc=self: m.set_euler_angles(theta=-20 * DEGREES * np.cos(0.1 * sc.time)))
         self.add(frame)
 
         # Setup cube
@@ -2734,8 +2734,8 @@ class AskAboutCubeDiagonals(QuadrupletShufflings):
     def construct(self):
         # Setup
         frame = self.camera.frame
-        frame.set_rotation(phi=80 * DEGREES)
-        frame.add_updater(lambda m, sc=self: m.set_rotation(theta=-20 * DEGREES * np.cos(0.1 * sc.time)))
+        frame.set_euler_angles(phi=80 * DEGREES)
+        frame.add_updater(lambda m, sc=self: m.set_euler_angles(theta=-20 * DEGREES * np.cos(0.1 * sc.time)))
 
         cube = get_glassy_cube(frame)
         cube.set_height(3)

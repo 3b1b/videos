@@ -87,7 +87,7 @@ class ConvolutionIntroduction(ThreeDScene):
         def walk(start, stop, time=5, surface=None):
             for n in range(start, stop):
                 step(n)
-                if surface:
+                if surface is not None:
                     surface.move_to(kernel_array, IN)
                 self.wait(time / (stop - start))
 

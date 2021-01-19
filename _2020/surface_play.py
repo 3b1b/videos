@@ -20,7 +20,7 @@ class EarthMorph(Scene):
 
         earth = earths[0]
 
-        self.camera.frame.set_rotation(
+        self.camera.frame.set_euler_angles(
             theta=-30 * DEGREES,
             phi=70 * DEGREES,
         )
