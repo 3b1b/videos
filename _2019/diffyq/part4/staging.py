@@ -586,9 +586,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         number_line.move_to(2 * DOWN)
         number_line.add_numbers(
             *np.arange(0, 1.5, 0.5),
-            number_config={
-                "num_decimal_places": 1,
-            },
+            num_decimal_places=1
         )
 
         num_inf_sum = Tex(

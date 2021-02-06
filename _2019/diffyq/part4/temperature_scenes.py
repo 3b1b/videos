@@ -142,16 +142,12 @@ class StepFunctionExample(BringTwoRodsTogether, FourierSeriesIllustraiton):
         x_axis = axes.x_axis
         y_numbers = y_axis.get_number_mobjects(
             *np.arange(-1, 1.5, 0.5),
-            number_config={
-                "unit": "^\\circ",
-                "num_decimal_places": 1,
-            }
+            unit="^\\circ",
+            num_decimal_places=1
         )
         x_numbers = x_axis.get_number_mobjects(
             *np.arange(0.2, 1.2, 0.2),
-            number_config={
-                "num_decimal_places": 1,
-            },
+            num_decimal_places=1,
         )
 
         self.play(FadeIn(y_numbers))

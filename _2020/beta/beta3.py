@@ -856,9 +856,7 @@ class VisualizeBayesRule(Scene):
         axes = get_beta_dist_axes(y_max=1, y_unit=0.1)
         axes.y_axis.add_numbers(
             *np.arange(0.2, 1.2, 0.2),
-            number_config={
-                "num_decimal_places": 1,
-            }
+            num_decimal_places=1,
         )
 
         p_label = Tex(

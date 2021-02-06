@@ -37,7 +37,7 @@ class Diffusion1D(Scene):
         if self.show_y_axis:
             axes.y_axis.add_numbers(
                 np.arange(*y_range) + y_range[2],
-                number_config={'height': 0.2}
+                height=0.2,
             )
         else:
             axes.y_axis.scale(0, about_point=axes.c2p(0, 0))

@@ -3965,7 +3965,7 @@ class DirichletIn1837(MovingCameraScene):
         )
         timeline.add_numbers(
             *dates,
-            number_config={"group_with_commas": False},
+            group_with_commas=False,
         )
         timeline.numbers.shift(SMALL_BUFF * DOWN)
         timeline.to_edge(RIGHT)

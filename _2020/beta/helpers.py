@@ -336,7 +336,7 @@ def get_beta_dist_axes(y_max=20, y_unit=2, label_y=False, **kwargs):
     x_vals = np.arange(0, 1, 0.2) + 0.2
     result.x_axis.add_numbers(
         *x_vals,
-        number_config={"num_decimal_places": 1}
+        num_decimal_places=1
     )
 
     if label_y:

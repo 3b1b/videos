@@ -790,11 +790,11 @@ class ChooseXThenYUniformly(Scene):
         }
         axes.x_axis.add_numbers(
             *numbers,
-            number_config=num_config,
+            **num_config,
         )
         axes.y_axis.add_numbers(
             *numbers,
-            number_config=num_config,
+            **num_config,
             direction=LEFT,
         )
 
@@ -1028,9 +1028,7 @@ class ShowDistributionOfScores(Scene):
         axes.x_axis.add_numbers(*range(1, 12))
         axes.y_axis.add_numbers(
             *range(20, 120, 20),
-            number_config={
-                "unit": "\\%"
-            }
+            unit="\\%"
         )
         x_label = TexText("Score")
         x_label.next_to(axes.x_axis.get_right(), UR, buff=0.5)
@@ -1219,7 +1217,7 @@ class SamplingFourRandomNumbers(Scene):
             if self.include_half_labels:
                 line.add_numbers(
                     -0.5, 0.5,
-                    number_config={"num_decimal_places": 1},
+                    num_decimal_places=1,
                 )
         number_lines.arrange(DOWN, buff=self.nl_to_nl_buff)
         number_lines.to_edge(LEFT, buff=0.5)

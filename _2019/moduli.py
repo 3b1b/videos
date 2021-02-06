@@ -415,8 +415,8 @@ class TriangleModuliSpace(Scene):
         for axis, vect in [(x_axis, DOWN), (y_axis, LEFT)]:
             axis.add_numbers(
                 0.5, 1.0,
-                number_config={"num_decimal_places": 1},
                 direction=vect,
+                num_decimal_places=1,
             )
 
         axes.to_corner(DR, buff=LARGE_BUFF)

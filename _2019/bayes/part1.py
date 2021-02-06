@@ -1704,7 +1704,7 @@ class ReasonByRepresentativeSample(CorrectViewOfFarmersAndLibrarians):
         axes.x_axis.tick_marks.set_opacity(0)
         axes.y_axis.add_numbers(
             *range(20, 120, 20),
-            number_config={"unit": "\\%"}
+            unit="\\%"
         )
         axes.center().to_edge(DOWN)
 
@@ -4128,9 +4128,7 @@ class GlimpseOfNextVideo(GraphScene):
         self.setup_axes()
         self.y_axis.add_numbers(
             0.25, 0.5, 0.75, 1,
-            number_config={
-                "num_decimal_places": 2,
-            },
+            num_decimal_places=2,
             direction=LEFT,
         )
         if self.add_x_coords:

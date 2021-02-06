@@ -267,7 +267,7 @@ class SineWave(Scene):
             }
         )
         wave_axes.y_axis.add_numbers(
-            -1, 1, number_config={"num_decimal_places": 1}
+            -1, 1, num_decimal_places=1
         )
         wave_axes.to_edge(RIGHT, buff=MED_SMALL_BUFF)
 
@@ -947,7 +947,7 @@ class HarmonicSum(Scene):
         axes.x_axis.add_numbers()
         axes.y_axis.add_numbers(
             *np.arange(0.25, 1.25, 0.25),
-            number_config={"num_decimal_places": 2},
+            num_decimal_places=2,
         )
         self.add(axes)
 

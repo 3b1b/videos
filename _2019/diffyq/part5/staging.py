@@ -454,8 +454,8 @@ class IntroducePhysicalModel(IntroductionOfExp):
         ])
         nl.add_numbers(
             *xs1,
-            number_config={"height": 5},
             buff=2,
+            height=5,
         )
 
         # For second zoom
@@ -466,7 +466,7 @@ class IntroducePhysicalModel(IntroductionOfExp):
         ])
         nl.add_numbers(
             *xs2,
-            number_config={"height": 50},
+            height=50,
             buff=20,
         )
 
@@ -478,9 +478,7 @@ class IntroducePhysicalModel(IntroductionOfExp):
         ])
         nl.add_numbers(
             *xs3,
-            number_config={
-                "height": 300,
-            },
+            height=300,
             buff=200,
         )
         for n in nl.numbers:
@@ -652,8 +650,8 @@ class ConstantEquals2(IntroducePhysicalModel):
         ])
         nl.add_numbers(
             *xs1,
-            number_config={"height": 5},
             buff=2,
+            height=5,
         )
 
         # For second zoom
@@ -664,8 +662,8 @@ class ConstantEquals2(IntroducePhysicalModel):
         ])
         nl.add_numbers(
             *xs2,
-            number_config={"height": 50},
             buff=20,
+            height=50,
         )
 
         # For third zoom
@@ -676,10 +674,8 @@ class ConstantEquals2(IntroducePhysicalModel):
         ])
         nl.add_numbers(
             *xs3,
-            number_config={
-                "height": 300,
-            },
             buff=200,
+            height=300,
         )
         for n in nl.numbers:
             n[1].scale(0.5)
@@ -692,10 +688,8 @@ class ConstantEquals2(IntroducePhysicalModel):
         ])
         nl.add_numbers(
             *xs3,
-            number_config={
-                "height": 3000,
-            },
             buff=2000,
+            height=3000,
         )
         for n in nl.numbers:
             n[2].scale(0.5)

@@ -7,6 +7,10 @@ directories:
   sounds: "/Users/grant/Dropbox/3Blue1Brown Team Folder/sounds"
   data: "/Users/grant/Dropbox/3Blue1Brown Team Folder/data"
   temporary_storage: ""
+tex:
+  executable: "xelatex -no-pdf"
+  template_file: "ctex_template.tex"
+  intermediate_filetype: "xdv"
 universal_import_line: "from manim_imports_ext import *"
 style:
   font: "CMU Serif"

@@ -321,12 +321,12 @@ class FourierSeriesIllustraiton(Scene):
         axes1 = Axes(**self.axes_config)
         axes1.x_axis.add_numbers(
             0.5, 1,
-            number_config={"num_decimal_places": 1}
+            num_decimal_places=1
         )
         axes1.y_axis.add_numbers(
             -1, 1,
-            number_config={"num_decimal_places": 1},
             direction=LEFT,
+            num_decimal_places=1,
         )
         axes2 = axes1.deepcopy()
 

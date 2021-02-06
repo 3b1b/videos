@@ -2107,9 +2107,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         axes.z_axis.add_numbers(
             *np.arange(-1, 1.5, 0.5),
             direction=LEFT,
-            number_config={
-                "num_decimal_places": 1,
-            }
+            num_decimal_places=1
         )
         for number in axes.z_axis.numbers:
             number.rotate(90 * DEGREES, RIGHT)

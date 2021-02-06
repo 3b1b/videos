@@ -36,7 +36,7 @@ class GeneralizeToComplexFunctions(Scene):
         y_axis = axes.y_axis
         y_labels = y_axis.get_number_mobjects(
             *range(-2, 3),
-            number_config={"num_decimal_places": 1},
+            num_decimal_places=1
         )
 
         t_tracker = ValueTracker(0)
@@ -488,11 +488,11 @@ class GraphForFlattenedPi(ClarifyInputAndOutput):
 
         axes.x_axis.add_numbers(
             0.5, 1.0,
-            number_config={"num_decimal_places": 1},
+            num_decimal_places=1,
         )
         axes.y_axis.add_numbers(
             -1.0, 1.0,
-            number_config={"num_decimal_places": 1},
+            num_decimal_places=1
         )
 
         def func(t):

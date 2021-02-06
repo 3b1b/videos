@@ -4256,7 +4256,7 @@ class MonstrousMoonshine(Scene):
             tick_size=0.075,
             width=13,
         )
-        timeline.add_numbers(decades, number_config={"group_with_commas": False})
+        timeline.add_numbers(decades, group_with_commas=False)
         timeline.move_to(DOWN)
         self.add(timeline)
 

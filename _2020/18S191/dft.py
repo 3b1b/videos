@@ -16,7 +16,7 @@ class IntroduceDFT(Scene):
             height=4,
         )
         axes.x_axis.add_numbers()
-        axes.y_axis.add_numbers(number_config={"num_decimal_places": 1}, excluding=[0])
+        axes.y_axis.add_numbers(excluding=[0], num_decimal_places=1)
 
         vectors = VGroup(*(
             Arrow(axes.c2p(x, 0), axes.c2p(x, signal[x]), buff=0)
@@ -209,7 +209,7 @@ class IntroduceDFT(Scene):
             axis_config={"include_tip": False}
         )
         side_axes.to_edge(LEFT)
-        side_axes.x_axis.add_numbers(number_config={"height": 0.2})
+        side_axes.x_axis.add_numbers(height=0.2)
         side_vectors = VGroup(*(
             Arrow(
                 side_axes.c2p(x, 0),

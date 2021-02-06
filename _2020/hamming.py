@@ -892,10 +892,8 @@ class TimeLine(Scene):
         )
         timeline.add_numbers(
             decades,
-            number_config={
-                "group_with_commas": False,
-                "height": 0.2,
-            }
+            group_with_commas=False,
+            height=0.2,
         )
         timeline.numbers.set_stroke(BLACK, 4, background=True)
 

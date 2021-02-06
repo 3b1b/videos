@@ -1365,7 +1365,7 @@ class ShowLimitToPdf(Scene):
 
         axes.x_axis.add_numbers(
             *np.arange(0.2, 1.2, 0.2),
-            number_config={"num_decimal_places": 1}
+            num_decimal_places=1
         )
         axes.y_axis.add_numbers(*range(1, 5))
         return axes
