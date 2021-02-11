@@ -4,7 +4,7 @@
 # of fading which are now covered by arguments passed into FadeIn and
 # FadeOut
 
-from manimlib.imports import *
+from manim_imports_ext import *
 
 
 class FadeInFromDown(FadeIn):
