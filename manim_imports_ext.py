@@ -1,4 +1,4 @@
-from manimlib.imports import *
+from manimlib import *
 
 from custom.banner import *
 from custom.characters.pi_creature import *
