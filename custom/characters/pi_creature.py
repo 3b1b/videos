@@ -64,12 +64,15 @@ class PiCreature(SVGMobject):
                 "plain.svg",
             )
         SVGMobject.__init__(self, file_name=svg_file, **kwargs)
-        self.refresh_triangulation()
 
         if self.flip_at_start:
             self.flip()
         if self.start_corner is not None:
             self.to_corner(self.start_corner)
+
+        # Shouldn't need this, remove?
+        self.mouth.insert_n_curves(10)
+        self.mouth.set_stroke(BLACK, 1)
 
     def align_data_and_family(self, mobject):
         # This ensures that after a transform into a different mode,
