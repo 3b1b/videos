@@ -8,10 +8,14 @@ directories:
   data: "/Users/grant/Dropbox/3Blue1Brown Team Folder/data"
   temporary_storage: ""
 universal_import_line: "from manim_imports_ext import *"
+# tex:
+#   executable: "xelatex -no-pdf"
+#   template_file: "ctex_template.tex"
+#   intermediate_filetype: "xdv"
 style:
   font: "CMU Serif"
   background_color: "#000000"
 camera_qualities:
   default_quality: "ultra_high"
 window_position: UL
-window_monitor: 0
+window_monitor: 1
