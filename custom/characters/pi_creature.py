@@ -8,7 +8,7 @@ from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.svg.drawings import ThoughtBubble
 from manimlib.mobject.svg.svg_mobject import SVGMobject
-from manimlib.mobject.svg.tex_mobject import TexText
+from manimlib.mobject.svg.text_mobject import Text
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.types.vectorized_mobject import VMobject
 from manimlib.utils.config_ops import digest_config
@@ -224,14 +224,14 @@ class PiCreature(SVGMobject):
             self.to_corner(DOWN + LEFT, **kwargs)
         return self
 
-    def get_bubble(self, *content, **kwargs):
+    def get_bubble(self, content, **kwargs):
         bubble_class = kwargs.get("bubble_class", ThoughtBubble)
         bubble = bubble_class(**kwargs)
         if len(content) > 0:
             if isinstance(content[0], str):
-                content_mob = TexText(*content)
+                content_mob = Text(content)
             else:
-                content_mob = content[0]
+                content_mob = content
             bubble.add_content(content_mob)
             if "height" not in kwargs and "width" not in kwargs:
                 bubble.resize_to_content()
