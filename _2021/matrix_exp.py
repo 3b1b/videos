@@ -513,161 +513,20 @@ class IntroduceTheComputation(Scene):
         )
         self.wait()
 
-        # Taylor series example
-        ex_rhs = Tex(
-            """
-            {2}^0 +
-            {2}^1 +
-            { {2}^2 \\over 2} +
-            { {2}^3 \\over 6} +
-            { {2}^4 \\over 24} +
-            { {2}^5 \\over 120} +
-            { {2}^6 \\over 720} +
-            { {2}^7 \\over 5040} +
-            \\cdots
-            """,
-            tex_to_color_map={"{2}": YELLOW, "+": WHITE},
-        )
-        ex_rhs.next_to(real_equation[3:], DOWN, buff=0.75)
-
-        ex_parts = VGroup(*(
-            ex_rhs[i:j] for i, j in [
-                (0, 2),
-                (3, 5),
-                (6, 8),
-                (9, 11),
-                (12, 14),
-                (15, 17),
-                (18, 20),
-                (21, 23),
-                (24, 25),
-            ]
-        ))
-        term_brace = Brace(ex_parts[0], DOWN)
-        frac = Tex("1", font_size=36)
-        frac.next_to(term_brace, DOWN, SMALL_BUFF)
-
-        rects = VGroup(*(
-            Rectangle(height=2**n / math.factorial(n), width=1)
-            for n in range(11)
-        ))
-        rects.arrange(RIGHT, buff=0, aligned_edge=DOWN)
-        rects.set_fill(opacity=1)
-        rects.set_submobject_colors_by_gradient(BLUE, GREEN)
-        rects.set_stroke(WHITE, 1)
-        rects.set_width(7)
-        rects.to_edge(DOWN)
-
-        self.play(
-            ReplacementTransform(taylor_brace, term_brace),
-            FadeTransform(real_equation[3:].copy(), ex_rhs),
-            FadeOut(false_group, shift=DOWN),
-            FadeOut(taylor_label, shift=DOWN),
-            FadeIn(frac),
-        )
-        term_values = VGroup()
-        for n in range(11):
-            rect = rects[n]
-            fact = math.factorial(n)
-            ex_part = ex_parts[min(n, len(ex_parts) - 1)]
-            value = DecimalNumber(2**n / fact)
-            value.set_color(GREY_A)
-            max_width = 0.6 * rect.get_width()
-            if value.get_width() > max_width:
-                value.set_width(max_width)
-            value.next_to(rects[n], UP, SMALL_BUFF)
-            new_brace = Brace(ex_part, DOWN)
-            if fact == 1:
-                new_frac = Tex(f"{2**n}", font_size=36)
-            else:
-                new_frac = Tex(f"{2**n} / {fact}", font_size=36)
-            new_frac.next_to(new_brace, DOWN, SMALL_BUFF)
-            self.play(
-                term_brace.animate.become(new_brace),
-                FadeTransform(frac, new_frac),
-            )
-            frac = new_frac
-            rect.save_state()
-            rect.stretch(0, 1, about_edge=DOWN)
-            rect.set_opacity(0)
-            value.set_value(0)
-            self.play(
-                Restore(rect),
-                ChangeDecimalToValue(value, 2**n / math.factorial(n)),
-                UpdateFromAlphaFunc(value, lambda m, a: m.next_to(rect, UP, SMALL_BUFF).set_opacity(a)),
-                randy.animate.look_at(rect),
-                morty.animate.look_at(rect),
-            )
-            term_values.add(value)
-        self.play(FadeOut(frac))
-
-        new_brace = Brace(ex_rhs, DOWN)
-        sum_value = DecimalNumber(math.exp(2), num_decimal_places=4, font_size=36)
-        sum_value.next_to(new_brace, DOWN)
-        self.play(
-            term_brace.animate.become(new_brace),
-            randy.animate.change("thinking", sum_value),
-            morty.animate.change("tease", sum_value),
-            *(FadeTransform(dec.copy().set_opacity(0), sum_value) for dec in term_values)
-        )
-        self.play(Blink(randy))
-
-        lhs = Tex("e \\cdot e =")
-        lhs.match_height(real_equation[0])
-        lhs.next_to(ex_rhs, LEFT)
-        self.play(Write(lhs))
-        self.play(Blink(morty))
-        self.play(Blink(randy))
-
-        # Increment input
-        twos = ex_rhs.get_parts_by_tex("{2}")
-        threes = VGroup(*(
-            Tex("3").set_color(YELLOW).replace(two)
-            for two in twos
-        ))
-        new_lhs = Tex("e \\cdot e \\cdot e = ")
-        new_lhs.match_height(lhs)
-        new_lhs[0].space_out_submobjects(0.8)
-        new_lhs[0][-1].shift(SMALL_BUFF * RIGHT)
-        new_lhs.move_to(lhs, RIGHT)
-
-        anims = []
-        unit_height = 0.7 * rects[0].get_height()
-        for n, rect, value_mob in zip(it.count(0), rects, term_values):
-            rect.generate_target()
-            new_value = 3**n / math.factorial(n)
-            rect.target.set_height(unit_height * new_value, stretch=True, about_edge=DOWN)
-            value_mob.rect = rect
-            anims += [
-                MoveToTarget(rect),
-                ChangeDecimalToValue(value_mob, new_value),
-                UpdateFromFunc(value_mob, lambda m: m.next_to(m.rect, UP, SMALL_BUFF))
-            ]
-
-        self.play(
-            FadeOut(twos, 0.5 * UP),
-            FadeIn(threes, 0.5 * UP),
-        )
-        twos.set_opacity(0)
-        self.play(
-            ChangeDecimalToValue(sum_value, math.exp(3)),
-            *anims,
-        )
-        self.play(
-            FadeOut(lhs, 0.5 * UP),
-            FadeIn(new_lhs, 0.5 * UP),
-        )
-        self.wait()
-
         # Isolate polynomial
         real_lhs = VGroup(real_equation[:3], real_label, real_arrow)
 
         self.play(
-            LaggedStartMap(FadeOut, VGroup(
-                *new_lhs, *threes, *ex_rhs,
-                term_brace, sum_value,
-                *rects, *term_values,
-            )),
+            # LaggedStartMap(FadeOut, VGroup(
+            #     *new_lhs, *threes, *ex_rhs,
+            #     term_brace, sum_value,
+            #     *rects, *term_values,
+            # )),
+            LaggedStart(
+                FadeOut(taylor_brace),
+                FadeOut(taylor_label),
+                FadeOut(false_group, DOWN),
+            ),
             real_lhs.animate.set_opacity(0.2),
             randy.animate.change("erm", real_equation),
             morty.animate.change("thinking", real_equation),
@@ -748,10 +607,6 @@ class IntroduceTheComputation(Scene):
         square_eq.arrange(RIGHT, buff=SMALL_BUFF)
         square_eq.next_to(mat_brace, DOWN)
 
-        m1_terms = square_eq[0][2:11]
-        m2_terms = square_eq[1][2:11]
-        rhs_terms = result.elements
-
         self.play(GrowFromCenter(mat_brace))
         self.play(
             LaggedStart(
@@ -762,52 +617,53 @@ class IntroduceTheComputation(Scene):
             ),
             randy.animate.change("pondering", square_eq),
         )
-        for n in range(9):
-            i = n // 3
-            j = n % 3
-            row = m1_terms[3 * i:3 * i + 3]
-            col = m2_terms[j::3]
-            row_rect = SurroundingRectangle(row, buff=0.05)
-            col_rect = SurroundingRectangle(col, buff=0.05)
-            row_rect.set_stroke(YELLOW, 2)
-            col_rect.set_stroke(YELLOW, 2)
-            right_elem = Integer(matrix_square[i, j])
-            right_elem.replace(rhs_terms[n], dim_to_match=1)
-            right_elem.set_value(0)
-
-            self.add(row_rect, col_rect, right_elem)
-            for k in range(3):
-                self.wait(0.1)
-                right_elem.increment_value(matrix[i, k] * matrix[k, j])
-                row[k].set_color(YELLOW)
-                col[k].set_color(YELLOW)
-            self.remove(right_elem)
-            self.add(rhs_terms[n])
-            self.wait(0.35)
-            m1_terms.set_color(TEAL)
-            m2_terms.set_color(TEAL)
-            self.remove(row_rect, col_rect)
+        self.show_mat_mult(matrix, matrix, square_eq[0][2:11], square_eq[1][2:11], result.elements)
 
         # Show matrix cubed
         mat_brace.generate_target()
         mat_brace.target.next_to(mat_rhs[6], DOWN, SMALL_BUFF)
 
+        mat_squared = result
         mat_cubed = IntegerMatrix(
             np.dot(matrix, matrix_square),
             h_buff=1.8, v_buff=0.7,
             element_alignment_corner=ORIGIN,
         )
         mat_cubed.match_height(mat)
-        cube_eq = VGroup(mat.copy(), mat.copy(), mat.copy(), Tex("="), mat_cubed)
-        cube_eq.arrange(RIGHT, buff=SMALL_BUFF)
+        cube_eq = VGroup(
+            VGroup(mat.copy(), mat.copy(), mat.copy()).arrange(RIGHT, buff=SMALL_BUFF),
+            Tex("=").rotate(90 * DEGREES),
+            VGroup(mat.copy(), mat_squared.deepcopy()).arrange(RIGHT, buff=SMALL_BUFF),
+            Tex("=").rotate(90 * DEGREES),
+            mat_cubed
+        )
+        cube_eq.arrange(DOWN)
         cube_eq.next_to(mat_brace.target, DOWN)
 
         self.play(
             MoveToTarget(mat_brace),
-            ReplacementTransform(square_eq, cube_eq),
+            ReplacementTransform(square_eq[0], cube_eq[0][1]),
+            ReplacementTransform(square_eq[1], cube_eq[0][2]),
+            ReplacementTransform(square_eq[2], cube_eq[1]),
+            ReplacementTransform(square_eq[3], cube_eq[2][1]),
+            randy.animate.change("happy", cube_eq),
         )
-        self.play(randy.animate.change("tease"))
-        self.play(morty.animate.change("happy"))
+        self.play(
+            LaggedStart(
+                FadeIn(cube_eq[0][0]),
+                FadeIn(cube_eq[2][0]),
+                FadeIn(cube_eq[3]),
+                FadeIn(cube_eq[4].brackets),
+            ),
+            randy.animate.change("tease", cube_eq),
+        )
+        self.show_mat_mult(
+            matrix, matrix_square,
+            cube_eq[2][0][2:11],
+            cube_eq[2][1].get_entries(),
+            cube_eq[4].get_entries(),
+            0.1, 0.1,
+        )
         self.play(Blink(morty))
 
         # Scaling
@@ -836,6 +692,7 @@ class IntroduceTheComputation(Scene):
                 VGroup(*factor, *example_matrix),
                 example_scaled_matrix,
             ),
+            randy.animate.change("pondering", example_scaled_matrix),
         )
         self.wait()
 
@@ -864,7 +721,8 @@ class IntroduceTheComputation(Scene):
             FadeOut(example_scaled_matrix, UP),
             FadeIn(sum_eq[:-1], UP),
             FadeIn(sum_eq[-1].brackets, UP),
-            morty.animate.change("raise_right_hand"),
+            morty.animate.change("raise_right_hand", sum_eq),
+            randy.animate.change("thinking", sum_eq),
         )
 
         last_rects = VGroup()
@@ -1026,43 +884,77 @@ class IntroduceTheComputation(Scene):
         )
 
         # Show partial sums
-        new_pi_mat_rhs = Tex(
-            rhs_tex.replace("X", pi_mat_tex),
-            tex_to_color_map={pi_mat_tex: BLUE},
+        new_mat_rhs = Tex(
+            rhs_tex.replace("X", mat_tex),
+            tex_to_color_map={mat_tex: TEAL},
             isolate=["+"]
         )
-        new_pi_mat_rhs.replace(pi_mat_rhs)
-        self.add(new_pi_mat_rhs)
-        self.remove(pi_mat_rhs)
-
-        for psm in partial_sum_mobs:
-            psm.move_to(new_sum_mob)
-
+        new_mat_rhs.replace(mat_rhs)
         self.play(
+            FadeOut(pi_mat_rhs),
+            FadeIn(new_mat_rhs),
+            FadeOut(new_sum_mob, DOWN),
+            brace.animate.become(Brace(new_mat_rhs, DOWN)),
             LaggedStartMap(
                 FadeOut, VGroup(
                     why, epii, later_text,
                 ),
                 shift=DOWN,
             ),
-            FadeOut(curr_sum_mob),
-            FadeIn(partial_sum_mobs[0]),
-            new_pi_mat_rhs[2:].animate.set_opacity(0.2),
-            randy.animate.change("pondering", new_pi_mat_rhs),
-            morty.animate.change("pondering", new_pi_mat_rhs),
+            randy.animate.change("pondering", new_mat_rhs),
+            morty.animate.change("pondering", new_mat_rhs),
         )
+
+        matrix = np.array([[3, 1, 4], [1, 5, 9], [2, 6, 5]])
+        partial_sum_mobs = VGroup()
+        curr_matrix = np.identity(3)
+        partial_sum = np.array(curr_matrix)
+        for n in range(50):
+            psm = DecimalMatrix(
+                partial_sum,
+                element_to_mobject_config={"num_decimal_places": 2},
+                element_alignment_corner=ORIGIN,
+                h_buff=1.5 * DecimalNumber(partial_sum[0, 0]).get_width(),
+            )
+            psm.next_to(brace, DOWN, MED_LARGE_BUFF)
+            partial_sum_mobs.add(psm)
+            curr_matrix = np.dot(curr_matrix, matrix) / (n + 1)
+            partial_sum += curr_matrix
+
+        new_mat_rhs[2:].set_opacity(0.1)
+        self.add(partial_sum_mobs[0])
+        self.wait(0.5)
         for n, k in zip(it.count(1), [5, 9, 13, 19, 21]):
             self.remove(partial_sum_mobs[n - 1])
             self.add(partial_sum_mobs[n])
-            new_pi_mat_rhs[:k].set_opacity(1)
-            self.wait()
-        brace.become(Brace(new_pi_mat_rhs, DOWN))
-        for n in range(6, 18):
+            new_mat_rhs[:k].set_opacity(1)
+            self.wait(0.5)
+        brace.become(Brace(new_mat_rhs, DOWN))
+        n_label = VGroup(Tex("n = "), Integer(n))
+        n_label[1].set_height(n_label[0].get_height() * 1.2)
+        n_label.arrange(RIGHT, SMALL_BUFF)
+        n_label.set_color(GREY_B)
+        n_label.next_to(brace.get_corner(DR), DL, SMALL_BUFF)
+        self.add(n_label)
+        for n in range(6, 50):
             self.remove(partial_sum_mobs[n - 1])
             self.add(partial_sum_mobs[n])
-            self.wait(0.25)
+            n_label[1].set_value(n)
+            n_label[1].set_color(GREY_B)
+            n_label[1].next_to(n_label[0], RIGHT, SMALL_BUFF)
+            self.wait(0.1)
+        self.play(
+            randy.animate.change("erm"),
+            morty.animate.change("tease"),
+            LaggedStartMap(
+                FadeOut, VGroup(brace, n_label, partial_sum_mobs[n]),
+                shift=DOWN,
+            )
+        )
 
         # Describe exp
+        self.clear()
+        self.add(randy, morty, new_mat_rhs)
         mat_rhs.become(original_mat_rhs)
         real_lhs.set_opacity(1)
         real_label.to_corner(UL, buff=MED_SMALL_BUFF)
@@ -1090,9 +982,7 @@ class IntroduceTheComputation(Scene):
             FadeIn(real_label),
             FadeIn(pii_rhs),
             FadeIn(mat_rhs),
-            FadeOut(new_pi_mat_rhs),
-            FadeOut(brace),
-            FadeOut(partial_sum_mobs[n]),
+            FadeOut(new_mat_rhs),
         )
         self.play(
             FadeIn(pii_lhs),
@@ -1190,6 +1080,35 @@ class IntroduceTheComputation(Scene):
             FadeIn(def_label, 0.5 * UP),
         )
         self.wait()
+
+    def show_mat_mult(self, m1, m2, m1_terms, m2_terms, rhs_terms, per_term=0.1, between_terms=0.35):
+        m1_color = m1_terms[0].get_fill_color()
+        m2_color = m2_terms[0].get_fill_color()
+        for n in range(9):
+            i = n // 3
+            j = n % 3
+            row = m1_terms[3 * i:3 * i + 3]
+            col = m2_terms[j::3]
+            row_rect = SurroundingRectangle(row, buff=0.05)
+            col_rect = SurroundingRectangle(col, buff=0.05)
+            row_rect.set_stroke(YELLOW, 2)
+            col_rect.set_stroke(YELLOW, 2)
+            right_elem = Integer(0)
+            right_elem.replace(rhs_terms[n], dim_to_match=1)
+            right_elem.set_value(0)
+
+            self.add(row_rect, col_rect, right_elem)
+            for k in range(3):
+                self.wait(per_term)
+                right_elem.increment_value(m1[i, k] * m2[k, j])
+                row[k].set_color(YELLOW)
+                col[k].set_color(YELLOW)
+            self.remove(right_elem)
+            self.add(rhs_terms[n])
+            self.wait(between_terms)
+            m1_terms.set_color(m1_color)
+            m2_terms.set_color(m2_color)
+            self.remove(row_rect, col_rect)
 
 
 class RomeoAndJuliet(Scene):
@@ -1501,6 +1420,7 @@ class RomeoAndJuliet(Scene):
 
 class DiscussSystem(Scene):
     def construct(self):
+        # Setup equations
         equations = VGroup(
             Tex("{dx \\over dt} {{=}} -{{y(t)}}"),
             Tex("{dy \\over dt} {{=}} {{x(t)}}"),
@@ -1508,13 +1428,382 @@ class DiscussSystem(Scene):
         equations.arrange(RIGHT, buff=LARGE_BUFF)
         equations.to_edge(UP, buff=1.5)
 
-        eq_rect = SurroundingRectangle(equation, stroke_width=2)
+        eq_rect = SurroundingRectangle(equations, stroke_width=2, buff=0.25)
         sys_label = Text("System of differential equations")
         sys_label.next_to(eq_rect, UP)
 
         self.add(equations)
 
-        self.embed()
+        self.play(
+            FadeIn(sys_label, 0.5 * UP),
+            ShowCreation(eq_rect),
+        )
+        style = {"color": BLUE, "time_width": 3, "run_time": 2}
+        self.play(LaggedStart(
+            FlashAround(sys_label.get_part_by_text("differential"), **style),
+            FlashAround(equations[0].get_part_by_tex("dx"), **style),
+            FlashAround(equations[1].get_part_by_tex("dy"), **style),
+        ))
+        self.wait()
+
+        # Ask for explicit solutions
+        solutions = VGroup(
+            Tex("x(t) {{=}} (\\text{expression with } t)"),
+            Tex("y(t) {{=}} (\\text{expression with } t)"),
+        )
+        for solution in solutions:
+            solution.set_color_by_tex("expression", GREY_B)
+        solutions.arrange(DOWN, buff=0.5)
+        solutions.move_to(equations)
+        solutions.set_x(3)
+
+        self.play(
+            sys_label.animate.match_width(eq_rect).to_edge(LEFT),
+            VGroup(equations, eq_rect).animate.to_edge(LEFT),
+            LaggedStartMap(FadeIn, solutions, shift=0.5 * UP, lag_ratio=0.3),
+        )
+        self.wait()
+
+        # Show a guess
+        guess_rhss = VGroup(
+            Tex("\\cos(t)", color=GREY_B)[0],
+            Tex("\\sin(t)", color=GREY_B)[0],
+        )
+        temp_rhss = VGroup()
+        for rhs, solution in zip(guess_rhss, solutions):
+            temp_rhss.add(solution[2])
+            rhs.move_to(solution[2], LEFT)
+
+        bubble = ThoughtBubble(height=4, width=4)
+        bubble.flip()
+        bubble.set_fill(opacity=0)
+        bubble[:3].rotate(30 * DEGREES, about_point=bubble[3].get_center() + 0.2 * RIGHT)
+        bubble.shift(solutions.get_left() + 0.7 * LEFT - bubble[3].get_left())
+
+        self.remove(temp_rhss)
+        self.play(
+            ShowCreation(bubble),
+            *(
+                TransformMatchingShapes(temp_rhs.copy(), guess_rhs)
+                for temp_rhs, guess_rhs in zip(temp_rhss, guess_rhss)
+            ),
+        )
+        self.wait()
+
+        # Not enough!
+        not_enough = Text("Not enough!", font_size=40)
+        not_enough.next_to(bubble[3].get_corner(UR), DR)
+        not_enough.set_color(RED)
+
+        self.play(LaggedStartMap(FadeIn, not_enough, run_time=1, lag_ratio=0.1))
+        self.wait()
+        self.remove(guess_rhss)
+        self.play(
+            LaggedStartMap(FadeOut, VGroup(*bubble, *not_enough)),
+            *(
+                TransformMatchingShapes(guess_rhs.copy(), temp_rhs)
+                for temp_rhs, guess_rhs in zip(temp_rhss, guess_rhss)
+            ),
+        )
+
+        # Initial condition
+        solutions.generate_target()
+        initial_conditions = VGroup(
+            Tex("x(0) = x_0"),
+            Tex("y(0) = y_0"),
+        )
+        full_requirement = VGroup(*solutions.target, *initial_conditions)
+        full_requirement.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        full_requirement.scale(0.8)
+        full_requirement.move_to(solutions)
+        full_requirement.to_edge(UP)
+
+        self.play(
+            MoveToTarget(solutions),
+            LaggedStartMap(FadeIn, initial_conditions, shift=0.1 * UP, lag_ratio=0.3),
+        )
+        self.wait()
+
+        ic_label = Text("Initial condition", font_size=30)
+        ic_label.set_color(BLUE)
+        ic_label.next_to(initial_conditions, RIGHT, buff=1.0)
+        ic_arrows = VGroup(*(
+            Arrow(ic_label.get_left(), eq.get_right(), buff=0.1, fill_color=BLUE, thickness=0.025)
+            for eq in initial_conditions
+        ))
+
+        self.play(
+            FadeIn(ic_label),
+            LaggedStartMap(GrowArrow, ic_arrows, run_time=1)
+        )
+        self.wait()
+
+
+class RomeoJulietVectorSpace(Scene):
+    def construct(self):
+        pass
+
+
+class SchroedingersEquationIntro(Scene):
+    def construct(self):
+        title = Text("Schrödinger equation", font_size=72)
+        title.to_edge(UP)
+        self.add(title)
+
+        t2c = {
+            "|\\psi \\rangle": BLUE,
+            "{H}": GREY_A,
+            "=": WHITE,
+            "i\\hbar": WHITE,
+        }
+        original_equation = Tex(
+            "i\\hbar \\frac{\\partial}{\\partial t} |\\psi \\rangle = {H} |\\psi \\rangle",
+            tex_to_color_map=t2c
+        )
+        equation = Tex(
+            "\\frac{\\partial}{\\partial t} |\\psi \\rangle = \\frac{1}{i\\hbar} {H} |\\psi \\rangle",
+            tex_to_color_map=t2c
+        )
+        VGroup(original_equation, equation).scale(1.5)
+
+        psis = original_equation.get_parts_by_tex("\\psi")
+        state_label = TexText("State of a system \\\\ as a vector", font_size=36)
+        state_label.next_to(psis, DOWN, buff=1.5)
+        state_arrows = VGroup(*(Arrow(state_label, psi) for psi in psis))
+        state_label.match_color(psis[0])
+        state_arrows.match_color(psis[0])
+        psis.set_color(WHITE)
+
+        randy = Randolph(height=2.0, color=BLUE_C)
+        randy.to_corner(DL)
+        randy.set_opacity(0)
+
+        self.play(Write(original_equation, run_time=3))
+        self.wait()
+        self.play(
+            randy.animate.set_opacity(1).change("horrified", original_equation)
+        )
+        self.play(Blink(randy))
+        self.play(
+            randy.animate.change("pondering", state_label),
+            psis.animate.match_color(state_label),
+            FadeIn(state_label, 0.25 * DOWN),
+            *map(GrowArrow, state_arrows),
+        )
+        self.wait()
+        self.play(
+            FlashUnder(title, time_width=1.5, run_time=2),
+            randy.animate.look_at(title),
+        )
+        self.play(Blink(randy))
+        self.wait()
+
+        self.play(
+            ReplacementTransform(original_equation[1:4], equation[0:3]),
+            Write(equation[3]),
+            ReplacementTransform(original_equation[0], equation[4], path_arc=90 * DEGREES),
+            ReplacementTransform(original_equation[4:], equation[5:]),
+            state_arrows.animate.become(
+                VGroup(*(Arrow(state_label, psi) for psi in equation.get_parts_by_tex("\\psi")))
+            ),
+            randy.animate.change("hesitant", equation)
+        )
+        self.play(FlashAround(equation[0], time_width=2, run_time=2))
+        self.play(Blink(randy))
+
+        mat_rect = SurroundingRectangle(equation[3:6], buff=0.05, color=TEAL)
+        mat_label = Text("A certain matrix", font_size=36)
+        mat_label.next_to(mat_rect, UP)
+        mat_label.match_color(mat_rect)
+        self.play(
+            ShowCreation(mat_rect),
+            FadeIn(mat_label, 0.25 * UP),
+        )
+        self.wait()
+        self.play(randy.animate.change("confused", equation))
+        self.play(Blink(randy))
+        self.wait()
+        self.play(FadeOut(randy))
+        self.wait()
+
+
+class SchroedingersComplicatingFactors(TeacherStudentsScene):
+    def construct(self):
+        pass
+
+
+
+# Older
+
+class OldComputationCode(Scene):
+    def construct(self):
+        # Taylor series example
+        ex_rhs = Tex(
+            """
+            {2}^0 +
+            {2}^1 +
+            { {2}^2 \\over 2} +
+            { {2}^3 \\over 6} +
+            { {2}^4 \\over 24} +
+            { {2}^5 \\over 120} +
+            { {2}^6 \\over 720} +
+            { {2}^7 \\over 5040} +
+            \\cdots
+            """,
+            tex_to_color_map={"{2}": YELLOW, "+": WHITE},
+        )
+        ex_rhs.next_to(real_equation[3:], DOWN, buff=0.75)
+
+        ex_parts = VGroup(*(
+            ex_rhs[i:j] for i, j in [
+                (0, 2),
+                (3, 5),
+                (6, 8),
+                (9, 11),
+                (12, 14),
+                (15, 17),
+                (18, 20),
+                (21, 23),
+                (24, 25),
+            ]
+        ))
+        term_brace = Brace(ex_parts[0], DOWN)
+        frac = Tex("1", font_size=36)
+        frac.next_to(term_brace, DOWN, SMALL_BUFF)
+
+        rects = VGroup(*(
+            Rectangle(height=2**n / math.factorial(n), width=1)
+            for n in range(11)
+        ))
+        rects.arrange(RIGHT, buff=0, aligned_edge=DOWN)
+        rects.set_fill(opacity=1)
+        rects.set_submobject_colors_by_gradient(BLUE, GREEN)
+        rects.set_stroke(WHITE, 1)
+        rects.set_width(7)
+        rects.to_edge(DOWN)
+
+        self.play(
+            ReplacementTransform(taylor_brace, term_brace),
+            FadeTransform(real_equation[3:].copy(), ex_rhs),
+            FadeOut(false_group, shift=DOWN),
+            FadeOut(taylor_label, shift=DOWN),
+            FadeIn(frac),
+        )
+        term_values = VGroup()
+        for n in range(11):
+            rect = rects[n]
+            fact = math.factorial(n)
+            ex_part = ex_parts[min(n, len(ex_parts) - 1)]
+            value = DecimalNumber(2**n / fact)
+            value.set_color(GREY_A)
+            max_width = 0.6 * rect.get_width()
+            if value.get_width() > max_width:
+                value.set_width(max_width)
+            value.next_to(rects[n], UP, SMALL_BUFF)
+            new_brace = Brace(ex_part, DOWN)
+            if fact == 1:
+                new_frac = Tex(f"{2**n}", font_size=36)
+            else:
+                new_frac = Tex(f"{2**n} / {fact}", font_size=36)
+            new_frac.next_to(new_brace, DOWN, SMALL_BUFF)
+            self.play(
+                term_brace.animate.become(new_brace),
+                FadeTransform(frac, new_frac),
+            )
+            frac = new_frac
+            rect.save_state()
+            rect.stretch(0, 1, about_edge=DOWN)
+            rect.set_opacity(0)
+            value.set_value(0)
+            self.play(
+                Restore(rect),
+                ChangeDecimalToValue(value, 2**n / math.factorial(n)),
+                UpdateFromAlphaFunc(value, lambda m, a: m.next_to(rect, UP, SMALL_BUFF).set_opacity(a)),
+                randy.animate.look_at(rect),
+                morty.animate.look_at(rect),
+            )
+            term_values.add(value)
+        self.play(FadeOut(frac))
+
+        new_brace = Brace(ex_rhs, DOWN)
+        sum_value = DecimalNumber(math.exp(2), num_decimal_places=4, font_size=36)
+        sum_value.next_to(new_brace, DOWN)
+        self.play(
+            term_brace.animate.become(new_brace),
+            randy.animate.change("thinking", sum_value),
+            morty.animate.change("tease", sum_value),
+            *(FadeTransform(dec.copy().set_opacity(0), sum_value) for dec in term_values)
+        )
+        self.play(Blink(randy))
+
+        lhs = Tex("e \\cdot e =")
+        lhs.match_height(real_equation[0])
+        lhs.next_to(ex_rhs, LEFT)
+        self.play(Write(lhs))
+        self.play(Blink(morty))
+        self.play(Blink(randy))
+
+        # Increment input
+        twos = ex_rhs.get_parts_by_tex("{2}")
+        threes = VGroup(*(
+            Tex("3").set_color(YELLOW).replace(two)
+            for two in twos
+        ))
+        new_lhs = Tex("e \\cdot e \\cdot e = ")
+        new_lhs.match_height(lhs)
+        new_lhs[0].space_out_submobjects(0.8)
+        new_lhs[0][-1].shift(SMALL_BUFF * RIGHT)
+        new_lhs.move_to(lhs, RIGHT)
+
+        anims = []
+        unit_height = 0.7 * rects[0].get_height()
+        for n, rect, value_mob in zip(it.count(0), rects, term_values):
+            rect.generate_target()
+            new_value = 3**n / math.factorial(n)
+            rect.target.set_height(unit_height * new_value, stretch=True, about_edge=DOWN)
+            value_mob.rect = rect
+            anims += [
+                MoveToTarget(rect),
+                ChangeDecimalToValue(value_mob, new_value),
+                UpdateFromFunc(value_mob, lambda m: m.next_to(m.rect, UP, SMALL_BUFF))
+            ]
+
+        self.play(
+            FadeOut(twos, 0.5 * UP),
+            FadeIn(threes, 0.5 * UP),
+        )
+        twos.set_opacity(0)
+        self.play(
+            ChangeDecimalToValue(sum_value, math.exp(3)),
+            *anims,
+        )
+        self.play(
+            FadeOut(lhs, 0.5 * UP),
+            FadeIn(new_lhs, 0.5 * UP),
+        )
+        self.wait()
+
+
+class DefinitionFirstVsLast(Scene):
+    def construct(self):
+        textbook_title = Text("How textbooks often present math")
+        research_title = Text("How math is discovered")
+
+
+        textbook_progression = VGroup(
+            Text("Definition"),
+            Text("Theorem"),
+            Text("Proof"),
+            Text("Examples"),
+        )
+        research_progression = VGroup(
+            Text("Specific problem"),
+            Text("General problems"),
+            Text("General tactics"),
+            Text("Definitions"),
+        )
+        for progression in [textbook_progression, research_progression]:
+            pass
 
 
 class PreviewVisualizationWrapper(Scene):
@@ -1814,117 +2103,3 @@ class VectorChangingInTime(Scene):
         self.wait(10)
         self.play(number_line.animate.scale(0.4, about_edge=LEFT))
         self.wait(5)
-
-
-class SchroedingersEquationIntro(Scene):
-    def construct(self):
-        title = Text("Schrödinger equation", font_size=72)
-        title.to_edge(UP)
-        self.add(title)
-
-        t2c = {
-            "|\\psi \\rangle": BLUE,
-            "{H}": GREY_A,
-            "=": WHITE,
-            "i\\hbar": WHITE,
-        }
-        original_equation = Tex(
-            "i\\hbar \\frac{\\partial}{\\partial t} |\\psi \\rangle = {H} |\\psi \\rangle",
-            tex_to_color_map=t2c
-        )
-        equation = Tex(
-            "\\frac{\\partial}{\\partial t} |\\psi \\rangle = \\frac{1}{i\\hbar} {H} |\\psi \\rangle",
-            tex_to_color_map=t2c
-        )
-        VGroup(original_equation, equation).scale(1.5)
-
-        psis = original_equation.get_parts_by_tex("\\psi")
-        state_label = TexText("State of a system \\\\ as a vector", font_size=36)
-        state_label.next_to(psis, DOWN, buff=1.5)
-        state_arrows = VGroup(*(Arrow(state_label, psi) for psi in psis))
-        state_label.match_color(psis[0])
-        state_arrows.match_color(psis[0])
-        psis.set_color(WHITE)
-
-        randy = Randolph(height=2.0, color=BLUE_C)
-        randy.to_corner(DL)
-        randy.set_opacity(0)
-
-        self.play(Write(original_equation, run_time=3))
-        self.wait()
-        self.play(
-            randy.animate.set_opacity(1).change("horrified", original_equation)
-        )
-        self.play(Blink(randy))
-        self.play(
-            randy.animate.change("pondering", state_label),
-            psis.animate.match_color(state_label),
-            FadeIn(state_label, 0.25 * DOWN),
-            *map(GrowArrow, state_arrows),
-        )
-        self.wait()
-        self.play(
-            FlashUnder(title, time_width=1.5, run_time=2),
-            randy.animate.look_at(title),
-        )
-        self.play(Blink(randy))
-        self.wait()
-
-        self.play(
-            ReplacementTransform(original_equation[1:4], equation[0:3]),
-            Write(equation[3]),
-            ReplacementTransform(original_equation[0], equation[4], path_arc=90 * DEGREES),
-            ReplacementTransform(original_equation[4:], equation[5:]),
-            state_arrows.animate.become(
-                VGroup(*(Arrow(state_label, psi) for psi in equation.get_parts_by_tex("\\psi")))
-            ),
-            randy.animate.change("hesitant", equation)
-        )
-        self.play(FlashAround(equation[0], time_width=2, run_time=2))
-        self.play(Blink(randy))
-
-        mat_rect = SurroundingRectangle(equation[3:6], buff=0.05, color=TEAL)
-        mat_label = Text("A certain matrix", font_size=36)
-        mat_label.next_to(mat_rect, UP)
-        mat_label.match_color(mat_rect)
-        self.play(
-            ShowCreation(mat_rect),
-            FadeIn(mat_label, 0.25 * UP),
-        )
-        self.wait()
-        self.play(randy.animate.change("confused", equation))
-        self.play(Blink(randy))
-        self.wait()
-        self.play(FadeOut(randy))
-        self.wait()
-
-
-class SchroedingersComplicatingFactors(TeacherStudentsScene):
-    def construct(self):
-        pass
-
-
-
-# Older
-
-class DefinitionFirstVsLast(Scene):
-    def construct(self):
-        textbook_title = Text("How textbooks often present math")
-        research_title = Text("How math is discovered")
-
-
-        textbook_progression = VGroup(
-            Text("Definition"),
-            Text("Theorem"),
-            Text("Proof"),
-            Text("Examples"),
-        )
-        research_progression = VGroup(
-            Text("Specific problem"),
-            Text("General problems"),
-            Text("General tactics"),
-            Text("Definitions"),
-        )
-        for progression in [textbook_progression, research_progression]:
-            pass
-
