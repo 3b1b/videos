@@ -513,6 +513,152 @@ class IntroduceTheComputation(Scene):
         )
         self.wait()
 
+        # Taylor series example
+        ex_rhs = Tex(
+            """
+            {2}^0 +
+            {2}^1 +
+            { {2}^2 \\over 2} +
+            { {2}^3 \\over 6} +
+            { {2}^4 \\over 24} +
+            { {2}^5 \\over 120} +
+            { {2}^6 \\over 720} +
+            { {2}^7 \\over 5040} +
+            \\cdots
+            """,
+            tex_to_color_map={"{2}": YELLOW, "+": WHITE},
+        )
+        ex_rhs.next_to(real_equation[3:], DOWN, buff=0.75)
+
+        ex_parts = VGroup(*(
+            ex_rhs[i:j] for i, j in [
+                (0, 2),
+                (3, 5),
+                (6, 8),
+                (9, 11),
+                (12, 14),
+                (15, 17),
+                (18, 20),
+                (21, 23),
+                (24, 25),
+            ]
+        ))
+        term_brace = Brace(ex_parts[0], DOWN)
+        frac = Tex("1", font_size=36)
+        frac.next_to(term_brace, DOWN, SMALL_BUFF)
+
+        rects = VGroup(*(
+            Rectangle(height=2**n / math.factorial(n), width=1)
+            for n in range(11)
+        ))
+        rects.arrange(RIGHT, buff=0, aligned_edge=DOWN)
+        rects.set_fill(opacity=1)
+        rects.set_submobject_colors_by_gradient(BLUE, GREEN)
+        rects.set_stroke(WHITE, 1)
+        rects.set_width(7)
+        rects.to_edge(DOWN)
+
+        self.play(
+            ReplacementTransform(taylor_brace, term_brace),
+            FadeTransform(real_equation[3:].copy(), ex_rhs),
+            FadeOut(false_group, shift=DOWN),
+            FadeOut(taylor_label, shift=DOWN),
+            FadeIn(frac),
+        )
+        term_values = VGroup()
+        for n in range(11):
+            rect = rects[n]
+            fact = math.factorial(n)
+            ex_part = ex_parts[min(n, len(ex_parts) - 1)]
+            value = DecimalNumber(2**n / fact)
+            value.set_color(GREY_A)
+            max_width = 0.6 * rect.get_width()
+            if value.get_width() > max_width:
+                value.set_width(max_width)
+            value.next_to(rects[n], UP, SMALL_BUFF)
+            new_brace = Brace(ex_part, DOWN)
+            if fact == 1:
+                new_frac = Tex(f"{2**n}", font_size=36)
+            else:
+                new_frac = Tex(f"{2**n} / {fact}", font_size=36)
+            new_frac.next_to(new_brace, DOWN, SMALL_BUFF)
+            self.play(
+                term_brace.animate.become(new_brace),
+                FadeTransform(frac, new_frac),
+            )
+            frac = new_frac
+            rect.save_state()
+            rect.stretch(0, 1, about_edge=DOWN)
+            rect.set_opacity(0)
+            value.set_value(0)
+            self.play(
+                Restore(rect),
+                ChangeDecimalToValue(value, 2**n / math.factorial(n)),
+                UpdateFromAlphaFunc(value, lambda m, a: m.next_to(rect, UP, SMALL_BUFF).set_opacity(a)),
+                randy.animate.look_at(rect),
+                morty.animate.look_at(rect),
+            )
+            term_values.add(value)
+        self.play(FadeOut(frac))
+
+        new_brace = Brace(ex_rhs, DOWN)
+        sum_value = DecimalNumber(math.exp(2), num_decimal_places=4, font_size=36)
+        sum_value.next_to(new_brace, DOWN)
+        self.play(
+            term_brace.animate.become(new_brace),
+            randy.animate.change("thinking", sum_value),
+            morty.animate.change("tease", sum_value),
+            *(FadeTransform(dec.copy().set_opacity(0), sum_value) for dec in term_values)
+        )
+        self.play(Blink(randy))
+
+        lhs = Tex("e \\cdot e =")
+        lhs.match_height(real_equation[0])
+        lhs.next_to(ex_rhs, LEFT)
+        self.play(Write(lhs))
+        self.play(Blink(morty))
+        self.play(Blink(randy))
+
+        # Increment input
+        twos = ex_rhs.get_parts_by_tex("{2}")
+        threes = VGroup(*(
+            Tex("3").set_color(YELLOW).replace(two)
+            for two in twos
+        ))
+        new_lhs = Tex("e \\cdot e \\cdot e = ")
+        new_lhs.match_height(lhs)
+        new_lhs[0].space_out_submobjects(0.8)
+        new_lhs[0][-1].shift(SMALL_BUFF * RIGHT)
+        new_lhs.move_to(lhs, RIGHT)
+
+        anims = []
+        unit_height = 0.7 * rects[0].get_height()
+        for n, rect, value_mob in zip(it.count(0), rects, term_values):
+            rect.generate_target()
+            new_value = 3**n / math.factorial(n)
+            rect.target.set_height(unit_height * new_value, stretch=True, about_edge=DOWN)
+            value_mob.rect = rect
+            anims += [
+                MoveToTarget(rect),
+                ChangeDecimalToValue(value_mob, new_value),
+                UpdateFromFunc(value_mob, lambda m: m.next_to(m.rect, UP, SMALL_BUFF))
+            ]
+
+        self.play(
+            FadeOut(twos, 0.5 * UP),
+            FadeIn(threes, 0.5 * UP),
+        )
+        twos.set_opacity(0)
+        self.play(
+            ChangeDecimalToValue(sum_value, math.exp(3)),
+            *anims,
+        )
+        self.play(
+            FadeOut(lhs, 0.5 * UP),
+            FadeIn(new_lhs, 0.5 * UP),
+        )
+        self.wait()
+
         # Isolate polynomial
         real_lhs = VGroup(real_equation[:3], real_label, real_arrow)
 
@@ -697,8 +843,8 @@ class IntroduceTheComputation(Scene):
         self.wait()
 
         # Adding
-        mat1 = np.array([[2, 1, 7], [1, 8, 2], [8, 1, 8]])
-        mat2 = np.array([[2, 8, 4], [5, 9, 0], [4, 5, 2]])
+        mat1 = np.array([[2, 7, 1], [8, 2, 8], [1, 8, 2]])
+        mat2 = np.array([[8, 4, 5], [9, 0, 4], [5, 2, 3]])
 
         sum_eq = VGroup(
             IntegerMatrix(mat1),
@@ -1111,6 +1257,54 @@ class IntroduceTheComputation(Scene):
             self.remove(row_rect, col_rect)
 
 
+class WhyTortureMatrices(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Why...would you\\\\ever want\\\\to do that?"),
+            student_index=2,
+        )
+        self.play(
+            self.get_student_changes("confused", "pondering", "raise_left_hand", look_at_arg=self.screen),
+            self.teacher.animate.change("tease", self.screen)
+        )
+        self.wait(2)
+        self.play(self.students[0].animate.change("erm"))
+        self.wait(3)
+
+
+class DefinitionFirstVsLast(Scene):
+    def construct(self):
+        textbook_title = Text("How textbooks often present math")
+        research_title = Text("How math is discovered")
+
+        textbook_progression = VGroup(
+            Text("Definition"),
+            Text("Theorem"),
+            Text("Proof"),
+            Text("Examples"),
+        )
+        research_progression = VGroup(
+            Text("Specific problem"),
+            Text("General problems"),
+            Text("General tactics"),
+            Text("Definitions"),
+        )
+        progressions = [textbook_progression, research_progression]
+        for progression in progressions:
+            progression.scale(0.7)
+            progression.arrange(RIGHT, buff=1.2)
+
+        progressions.arrange(DOWN, buff=2)
+
+        for progression in progressions:
+            arrows = VGroup()
+            for m1, m2 in zip(progression[:-1], progression[1:]):
+                arrows.add(m1, Arrow(m1, m2))
+            progression.arrows = arrows
+
+        self.embed()
+
+
 class RomeoAndJuliet(Scene):
     def construct(self):
         # Add Romeo and Juliet
@@ -1123,15 +1317,7 @@ class RomeoAndJuliet(Scene):
         self.make_romeo_and_juliet_dynamic(romeo, juliet)
         romeo.love_tracker.set_value(1.5)
         juliet.love_tracker.set_value(1.5)
-
-        name_labels = VGroup(*(
-            Text(name, font_size=36)
-            for name in ["Romeo", "Juliet"]
-        ))
-        for label, creature in zip(name_labels, lovers):
-            label.next_to(creature, DOWN)
-            creature.name_label = label
-        name_labels.space_out_submobjects(1.2)
+        get_romeo_juilet_name_labels(lovers)
 
         for creature in lovers:
             self.play(
@@ -1187,20 +1373,20 @@ class RomeoAndJuliet(Scene):
         self.wait()
         y_rect = SurroundingRectangle(juliet_eq.get_parts_by_tex("y(t)"), buff=0.05)
         y_rect_copy = y_rect.copy()
-        y_rect_copy.replace(romeo.scale.dot, stretch=True)
+        y_rect_copy.replace(romeo.scale_mob.dot, stretch=True)
         self.play(FadeIn(y_rect))
         self.wait()
         self.play(TransformFromCopy(y_rect, y_rect_copy))
-        y_rect_copy.add_updater(lambda m: m.move_to(romeo.scale.dot))
+        y_rect_copy.add_updater(lambda m: m.move_to(romeo.scale_mob.dot))
         self.wait()
         self.play(romeo.love_tracker.animate.set_value(-3))
 
         big_arrow = Arrow(
-            juliet.scale.number_line.get_bottom(),
-            juliet.scale.number_line.get_top(),
+            juliet.scale_mob.number_line.get_bottom(),
+            juliet.scale_mob.number_line.get_top(),
         )
         big_arrow.set_color(GREEN)
-        big_arrow.next_to(juliet.scale.number_line, LEFT)
+        big_arrow.next_to(juliet.scale_mob.number_line, LEFT)
 
         self.play(
             FadeIn(big_arrow),
@@ -1229,17 +1415,17 @@ class RomeoAndJuliet(Scene):
         dy_rect = SurroundingRectangle(romeo_eq.get_part_by_tex("dy"))
         x_rect = SurroundingRectangle(romeo_eq.get_part_by_tex("x(t)"), buff=0.05)
         x_rect_copy = x_rect.copy()
-        x_rect_copy.replace(juliet.scale.dot, stretch=True)
+        x_rect_copy.replace(juliet.scale_mob.dot, stretch=True)
         self.play(ShowCreation(dy_rect))
         self.wait()
         self.play(TransformFromCopy(dy_rect, x_rect))
         self.play(TransformFromCopy(x_rect, x_rect_copy))
         self.wait()
 
-        big_arrow.next_to(romeo.scale.number_line, RIGHT)
+        big_arrow.next_to(romeo.scale_mob.number_line, RIGHT)
         self.play(FadeIn(big_arrow), LaggedStartMap(FadeOut, VGroup(dy_rect, x_rect)))
         self.play(romeo.love_tracker.animate.set_value(-3), run_time=4, rate_func=linear)
-        x_rect_copy.add_updater(lambda m: m.move_to(juliet.scale.dot))
+        x_rect_copy.add_updater(lambda m: m.move_to(juliet.scale_mob.dot))
         juliet.love_tracker.set_value(5)
         self.wait()
         self.play(
@@ -1283,7 +1469,6 @@ class RomeoAndJuliet(Scene):
 
         ps_point = Point(5 * UP)
         curr_time = self.time
-        globals().update(locals())
         ps_point.add_updater(lambda m: m.move_to([
             -5 * np.sin(0.5 * (self.time - curr_time)),
             5 * np.cos(0.5 * (self.time - curr_time)),
@@ -1300,6 +1485,28 @@ class RomeoAndJuliet(Scene):
         )
         # Just let this play out for a long time while other animations are played on top
         self.wait(5 * TAU)
+
+    def get_romeo_and_juliet(self):
+        romeo = PiCreature(color=BLUE_E, flip_at_start=True)
+        juliet = PiCreature(color=BLUE_B)
+        return VGroup(romeo, juliet)
+
+    def make_romeo_and_juliet_dynamic(self, romeo, juliet):
+        cutoff_values = [-5, -3, -1, 0, 1, 3, 5]
+        modes = ["angry", "sassy", "hesitant", "plain", "happy", "hooray", "surprised"]
+        self.make_character_dynamic(romeo, juliet, cutoff_values, modes)
+        self.make_character_dynamic(juliet, romeo, cutoff_values, modes)
+
+    def get_romeo_juilet_name_labels(self, lovers, font_size=36, spacing=1.2):
+        name_labels = VGroup(*(
+            Text(name, font_size=font_size)
+            for name in ["Romeo", "Juliet"]
+        ))
+        for label, creature in zip(name_labels, lovers):
+            label.next_to(creature, DOWN)
+            creature.name_label = label
+        name_labels.space_out_submobjects(spacing)
+        return name_labels
 
     def make_character_dynamic(self, pi_creature, lover, cutoff_values, modes):
         height = pi_creature.get_height()
@@ -1337,7 +1544,7 @@ class RomeoAndJuliet(Scene):
                 for sm, sm1, sm2 in zip(fam, f1, f2):
                     sm.interpolate(sm1, sm2, s_alpha)
 
-            pi.look_at(lover.eyes)
+            pi.look_at(lover.get_top())
             if love < cutoff_values[1]:
                 # Look away from the lover
                 pi.look_at(2 * pi.eyes.get_center() - lover.eyes.get_center() + DOWN)
@@ -1359,6 +1566,7 @@ class RomeoAndJuliet(Scene):
 
         heart_eyes = self.get_heart_eyes(pi_creature)
         heart_eyes.add_updater(update_eyes)
+        pi_creature.heart_eyes = heart_eyes
         self.add(heart_eyes)
         return pi_creature
 
@@ -1374,17 +1582,6 @@ class RomeoAndJuliet(Scene):
             hearts.add(heart)
         hearts.set_opacity(0)
         return hearts
-
-    def make_romeo_and_juliet_dynamic(self, romeo, juliet):
-        cutoff_values = [-5, -3, -1, 0, 1, 3, 5]
-        modes = ["angry", "sassy", "hesitant", "plain", "happy", "hooray", "surprised"]
-        self.make_character_dynamic(romeo, juliet, cutoff_values, modes)
-        self.make_character_dynamic(juliet, romeo, cutoff_values, modes)
-
-    def get_romeo_and_juliet(self):
-        romeo = PiCreature(color=BLUE_E, flip_at_start=True)
-        juliet = PiCreature(color=BLUE_B)
-        return VGroup(romeo, juliet)
 
     def get_love_scale(self, creature, direction, var_name, color):
         number_line = NumberLine((-5, 5))
@@ -1413,7 +1610,7 @@ class RomeoAndJuliet(Scene):
         result.number_line = number_line
         result.dot = dot
         result.label = label
-        creature.scale = result
+        creature.scale_mob = result
 
         return result
 
@@ -1539,9 +1736,397 @@ class DiscussSystem(Scene):
         self.wait()
 
 
-class RomeoJulietVectorSpace(Scene):
+class HowExampleLeadsToMatrixExponents(Scene):
     def construct(self):
-        pass
+        # Screen
+        self.add(FullScreenRectangle())
+        screen = ScreenRectangle()
+        screen.set_height(3)
+        screen.set_fill(BLACK, 1)
+        screen.set_stroke(BLUE_B, 2)
+        screen.to_edge(LEFT)
+        self.add(screen)
+
+        # Mat exp
+        mat_exp = get_matrix_exponential(
+            [["a", "b"], ["c", "d"]],
+            height=2,
+            h_buff=0.75, v_buff=0.5
+        )
+        mat_exp.set_x(FRAME_WIDTH / 4)
+
+        def get_arrow():
+            return Arrow(screen, mat_exp[0])
+
+        arrow = get_arrow()
+
+        self.play(
+            GrowArrow(arrow),
+            FadeIn(mat_exp, RIGHT)
+        )
+        self.wait()
+
+        # New screen
+        screen2 = screen.copy()
+        screen2.set_stroke(GREY_BROWN, 2)
+        screen2.to_corner(DR)
+
+        mat_exp.generate_target()
+        mat_exp.target.to_edge(UP)
+        mat_exp.target.match_x(screen2)
+        double_arrow = VGroup(
+            Arrow(mat_exp.target, screen2),
+            Arrow(screen2, mat_exp.target),
+        )
+        for mob in double_arrow:
+            mob.scale(0.9, about_point=mob.get_end())
+
+        self.play(
+            MoveToTarget(mat_exp),
+            GrowFromCenter(double_arrow),
+            arrow.animate.become(Arrow(screen, screen2)),
+            FadeIn(screen2, DOWN),
+        )
+        self.wait()
+
+
+class RomeoJulietVectorSpace(RomeoAndJuliet):
+    def construct(self):
+        # Set up Romeo and Juliet
+        romeo, juliet = lovers = self.get_romeo_and_juliet()
+        lovers.set_height(2.0)
+        lovers.arrange(LEFT, buff=3)
+        name_labels = self.get_romeo_juilet_name_labels(lovers, font_size=36, spacing=1.1)
+        self.make_romeo_and_juliet_dynamic(*lovers)
+
+        self.add(*lovers)
+        self.add(*name_labels)
+
+        # Scales
+        juliet_scale = self.get_love_scale(juliet, LEFT, "x", BLUE_B)
+        romeo_scale = self.get_love_scale(romeo, RIGHT, "y", BLUE)
+        scales = [juliet_scale, romeo_scale]
+        self.add(*scales)
+
+        # Animate in
+        psp_tracker = Point()
+
+        def get_psp():
+            # Get phase space point
+            return psp_tracker.get_location()
+
+        juliet.love_tracker.add_updater(lambda m: m.set_value(get_psp()[0]))
+        romeo.love_tracker.add_updater(lambda m: m.set_value(get_psp()[1]))
+        self.add(romeo.love_tracker, juliet.love_tracker)
+
+        psp_tracker.move_to([1, -3, 0])
+        self.play(
+            Rotate(psp_tracker, 90 * DEGREES, about_point=ORIGIN, run_time=3, rate_func=linear)
+        )
+
+        # Transition to axes
+        axes = Axes(
+            x_range=(-5, 5),
+            y_range=(-5, 5),
+            height=7,
+            width=7,
+            axis_config={
+                "include_tip": False,
+                "numbers_to_exclude": [],
+            }
+        )
+        axes.set_x(-3)
+
+        for axis in axes:
+            axis.add_numbers(range(-4, 6, 2), color=GREY_B)
+            axis.numbers[2].set_opacity(0)
+
+        for pi in lovers:
+            pi.clear_updaters()
+            pi.generate_target()
+            pi.target.set_height(0.75)
+            pi.name_label.generate_target()
+            pi.name_label.target.scale(0.5)
+            group = VGroup(pi.target, pi.name_label.target)
+            group.arrange(DOWN, buff=SMALL_BUFF)
+            pi.target_group = group
+            pi.scale_mob[2].clear_updaters()
+            self.add(*pi.scale_mob)
+        juliet.target_group.next_to(axes.x_axis.get_end(), RIGHT)
+        romeo.target_group.next_to(axes.y_axis.get_corner(UR), RIGHT)
+        romeo.target_group.shift_onto_screen(buff=MED_SMALL_BUFF)
+        romeo.target.flip()
+        juliet.target.flip()
+        juliet.target.make_eye_contact(romeo.target)
+
+        self.play(LaggedStart(
+            juliet.scale_mob.number_line.animate.become(axes.x_axis),
+            FadeOut(juliet.scale_mob.label),
+            MoveToTarget(juliet),
+            MoveToTarget(juliet.name_label),
+            romeo.scale_mob.number_line.animate.become(axes.y_axis),
+            FadeOut(romeo.scale_mob.label),
+            MoveToTarget(romeo),
+            MoveToTarget(romeo.name_label),
+            run_time=3
+        ))
+        self.add(*romeo.scale_mob[:2], *juliet.scale_mob[:2])
+
+        # Reset pi creatures
+        self.remove(lovers)
+        self.remove(romeo.heart_eyes)
+        self.remove(juliet.heart_eyes)
+        new_lovers = self.get_romeo_and_juliet()
+        for new_pi, pi in zip(new_lovers, lovers):
+            new_pi.flip()
+            new_pi.replace(pi)
+            new_pi.scale_mob = pi.scale_mob
+        lovers = new_lovers
+        romeo, juliet = new_lovers
+        self.add(romeo, juliet)
+        self.make_romeo_and_juliet_dynamic(romeo, juliet)
+        juliet.love_tracker.add_updater(lambda m: m.set_value(get_psp()[0]))
+        romeo.love_tracker.add_updater(lambda m: m.set_value(get_psp()[1]))
+        self.add(romeo.love_tracker, juliet.love_tracker)
+
+        # h_line and v_line
+        ps_dot = Dot(color=BLUE)
+        ps_dot.add_updater(lambda m: m.move_to(axes.c2p(*get_psp()[:2])))
+        v_line = Line().set_stroke(BLUE_D, 2)
+        h_line = Line().set_stroke(BLUE_B, 2)
+        v_line.add_updater(lambda m: m.put_start_and_end_on(
+            axes.x_axis.n2p(get_psp()[0]),
+            axes.c2p(*get_psp()[:2]),
+        ))
+        h_line.add_updater(lambda m: m.put_start_and_end_on(
+            axes.y_axis.n2p(get_psp()[1]),
+            axes.c2p(*get_psp()[:2]),
+        ))
+        x_dec = DecimalNumber(0, font_size=24)
+        x_dec.next_to(h_line, UP, SMALL_BUFF)
+        y_dec = DecimalNumber(0, font_size=24)
+        y_dec.next_to(v_line, RIGHT, SMALL_BUFF)
+
+        romeo.scale_mob.dot.clear_updaters()
+        juliet.scale_mob.dot.clear_updaters()
+        self.play(
+            ShowCreation(h_line.copy().clear_updaters(), remover=True),
+            ShowCreation(v_line.copy().clear_updaters(), remover=True),
+            ReplacementTransform(romeo.scale_mob.dot, ps_dot),
+            ReplacementTransform(juliet.scale_mob.dot, ps_dot),
+            ChangeDecimalToValue(x_dec, get_psp()[0]),
+            VFadeIn(x_dec),
+            ChangeDecimalToValue(y_dec, get_psp()[1]),
+            VFadeIn(y_dec),
+        )
+        self.add(h_line, v_line, ps_dot)
+
+        # Add coordinates
+        equation = VGroup(
+            Matrix([["x"], ["y"]], bracket_h_buff=SMALL_BUFF),
+            Tex("="),
+            DecimalMatrix(
+                np.reshape(get_psp()[:2], (2, 1)),
+                element_to_mobject_config={
+                    "num_decimal_places": 2,
+                    "font_size": 36,
+                    "include_sign": True,
+                }
+            ),
+        )
+        equation[0].match_height(equation[2])
+        equation.arrange(RIGHT)
+        equation.to_corner(UR)
+        equation.shift(MED_SMALL_BUFF * LEFT)
+
+        self.play(
+            FadeIn(equation[:2]),
+            FadeIn(equation[2].get_brackets()),
+            TransformFromCopy(x_dec, equation[2].get_entries()[0]),
+            TransformFromCopy(y_dec, equation[2].get_entries()[1]),
+        )
+        equation[2].get_entries()[0].add_updater(lambda m: m.set_value(get_psp()[0]))
+        equation[2].get_entries()[1].add_updater(lambda m: m.set_value(get_psp()[1]))
+
+        self.play(FadeOut(x_dec), FadeOut(y_dec))
+
+        # Play around in state space
+        self.play(psp_tracker.move_to, [3, -2, 0], path_arc=120 * DEGREES, run_time=3)
+        self.wait()
+        self.play(psp_tracker.move_to, [-5, -2, 0], path_arc=0 * DEGREES, run_time=3, rate_func=there_and_back)
+        self.wait()
+        self.play(psp_tracker.move_to, [3, 5, 0], path_arc=0 * DEGREES, run_time=3, rate_func=there_and_back)
+        self.wait()
+        self.play(psp_tracker.move_to, [5, 3, 0], path_arc=-120 * DEGREES, run_time=2)
+        self.wait()
+
+        # Arrow vs. dot
+        arrow = Arrow(axes.get_origin(), ps_dot.get_center(), buff=0, fill_color=BLUE)
+        arrow.set_stroke(BLACK, 2, background=True)
+        arrow_outline = arrow.copy()
+        arrow_outline.set_fill(opacity=0)
+        arrow_outline.set_stroke(YELLOW, 1)
+        self.play(LaggedStart(
+            FadeIn(arrow),
+            FadeOut(ps_dot),
+            ShowPassingFlash(arrow_outline, run_time=1, time_width=0.5),
+            lag_ratio=0.5,
+        ))
+        self.wait()
+        self.play(LaggedStart(
+            FadeIn(ps_dot),
+            FadeOut(arrow),
+            FlashAround(ps_dot, buff=0.05),
+        ))
+        self.wait()
+        self.play(FlashAround(equation))
+        self.play(psp_tracker.move_to, [4, 3, 0], run_time=2)
+        self.wait()
+
+        # Function of time
+        new_lhs = Matrix([["x(t)"], ["y(t)"]])
+        new_lhs.match_height(equation[0])
+        new_lhs.move_to(equation[0], RIGHT)
+
+        self.play(
+            FadeTransformPieces(equation[0], new_lhs),
+        )
+        self.remove(equation[0])
+        self.add(new_lhs)
+        equation.replace_submobject(0, new_lhs)
+
+        # Initialize rotation
+        curr_time = self.time
+        curr_psp = get_psp()
+        psp_tracker.add_updater(lambda m: m.move_to(np.dot(
+            curr_psp,
+            np.transpose(rotation_about_z(0.25 * (self.time - curr_time))),
+        )))
+        self.wait(5)
+
+        # Rate of change
+        deriv_lhs = Matrix([["x'(t)"], ["y'(t)"]], bracket_h_buff=SMALL_BUFF)
+        deriv_lhs.match_height(equation[0])
+        deriv_lhs.move_to(equation[0])
+        deriv_lhs.set_color(RED_B)
+        deriv_label = Text("Rate of change", font_size=24)
+        deriv_label.match_width(deriv_lhs)
+        deriv_label.match_color(deriv_lhs)
+        deriv_label.next_to(deriv_lhs, DOWN, SMALL_BUFF)
+
+        self.play(
+            FadeIn(deriv_lhs),
+            Write(deriv_label, run_time=1),
+            equation.animate.shift(2.0 * deriv_lhs.get_height() * DOWN)
+        )
+        self.wait(5)
+
+        deriv_vect = Arrow(fill_color=RED_B)
+        deriv_vect.add_updater(
+            lambda m: m.put_start_and_end_on(
+                axes.get_origin(),
+                axes.c2p(-0.5 * get_psp()[1], 0.5 * get_psp()[0])
+            ).shift(
+                ps_dot.get_center() - axes.get_origin()
+            )
+        )
+        pre_vect = Arrow(LEFT, RIGHT)
+        pre_vect.replace(deriv_label, dim_to_match=0)
+        pre_vect.set_fill(RED_B, 0)
+        moving_vect = pre_vect.copy()
+        deriv_vect.set_opacity(0)
+        self.add(deriv_vect)
+        self.play(
+            UpdateFromAlphaFunc(
+                moving_vect,
+                lambda m, a: m.interpolate(pre_vect, deriv_vect, a).set_fill(opacity=a),
+                remover=True
+            )
+        )
+        deriv_vect.set_fill(opacity=1)
+        self.add(deriv_vect, ps_dot)
+        self.wait(8)
+
+        # Show equation
+        rhs = VGroup(
+            Tex("="),
+            Matrix([["-y(t)"], ["x(t)"]], bracket_h_buff=SMALL_BUFF)
+        )
+        rhs.match_height(deriv_lhs)
+        rhs.arrange(RIGHT)
+        rhs.next_to(deriv_lhs, RIGHT)
+
+        self.play(FadeIn(rhs))
+        self.wait()
+        for i in range(2):
+            self.play(FlashAround(
+                VGroup(deriv_lhs.get_entries()[i], rhs[1].get_entries()[i]),
+                run_time=3,
+                time_width=4,
+            ))
+        self.wait(2)
+
+        # Write with a matrix
+        deriv_lhs.generate_target()
+        new_eq = VGroup(
+            deriv_lhs.target,
+            Tex("="),
+            IntegerMatrix([[0, -1], [1, 0]], bracket_v_buff=MED_LARGE_BUFF),
+            Matrix([["x(t)"], ["y(t)"]], bracket_h_buff=SMALL_BUFF),
+        )
+        new_eq[2].match_height(new_eq[0])
+        new_eq[3].match_height(new_eq[0])
+        new_eq.arrange(RIGHT)
+        new_eq.to_corner(UR)
+
+        self.play(
+            MoveToTarget(deriv_lhs),
+            MaintainPositionRelativeTo(deriv_label, deriv_lhs),
+            ReplacementTransform(rhs[0], new_eq[1]),
+            ReplacementTransform(rhs[1].get_brackets(), new_eq[3].get_brackets()),
+            FadeIn(new_eq[2], scale=2),
+            FadeTransform(rhs[1].get_entries()[1], new_eq[3].get_entries()[0]),
+            FadeTransform(rhs[1].get_entries()[0], new_eq[3].get_entries()[1]),
+        )
+        self.wait(3)
+
+        row_rect = SurroundingRectangle(new_eq[2].get_entries()[:2], buff=SMALL_BUFF)
+        col_rect = SurroundingRectangle(new_eq[3].get_entries(), buff=SMALL_BUFF)
+        both_rects = VGroup(row_rect, col_rect)
+        both_rects.set_stroke(YELLOW, 2)
+
+        self.play(*map(ShowCreation, both_rects))
+        self.wait(3)
+        self.play(row_rect.animate.move_to(new_eq[2].get_entries()[2:4]))
+        self.wait(3)
+        self.play(FadeOut(both_rects))
+
+        # Write general form
+        general_form = Tex(
+            "{d \\over dt}",
+            "\\vec{\\textbf{v} }",
+            "(t)",
+            "=",
+            "\\textbf{M}",
+            "\\vec{\\textbf{v} }",
+            "(t)",
+        )
+        general_form.set_color_by_tex("d \\over dt", RED_B)
+        general_form.set_color_by_tex("\\textbf{v}", GREY_B)
+        general_form.scale(1.2)
+        general_form.next_to(new_eq, DOWN, LARGE_BUFF)
+        general_form.shift(0.5 * RIGHT)
+        gf_rect = SurroundingRectangle(general_form, buff=MED_SMALL_BUFF)
+        gf_rect.set_stroke(YELLOW, 2)
+
+        equation.clear_updaters()
+        self.play(
+            FadeIn(general_form),
+            FadeOut(equation),
+        )
+        self.wait()
+        self.play(ShowCreation(gf_rect))
+        self.wait(4 * TAU)
 
 
 class SchroedingersEquationIntro(Scene):
@@ -1630,7 +2215,6 @@ class SchroedingersEquationIntro(Scene):
 class SchroedingersComplicatingFactors(TeacherStudentsScene):
     def construct(self):
         pass
-
 
 
 # Older
@@ -1782,28 +2366,6 @@ class OldComputationCode(Scene):
             FadeIn(new_lhs, 0.5 * UP),
         )
         self.wait()
-
-
-class DefinitionFirstVsLast(Scene):
-    def construct(self):
-        textbook_title = Text("How textbooks often present math")
-        research_title = Text("How math is discovered")
-
-
-        textbook_progression = VGroup(
-            Text("Definition"),
-            Text("Theorem"),
-            Text("Proof"),
-            Text("Examples"),
-        )
-        research_progression = VGroup(
-            Text("Specific problem"),
-            Text("General problems"),
-            Text("General tactics"),
-            Text("Definitions"),
-        )
-        for progression in [textbook_progression, research_progression]:
-            pass
 
 
 class PreviewVisualizationWrapper(Scene):
