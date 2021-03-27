@@ -130,10 +130,7 @@ class PiCreature(SVGMobject):
             )
             new_pupil.move_to(pupil)
             pupil.become(new_pupil)
-            dot.shift(
-                new_pupil.point_from_proportion(3 / 8) -
-                dot.point_from_proportion(3 / 8)
-            )
+            dot.shift(new_pupil.pfp(3 / 8) - dot.pfp(3 / 8))
             pupil.add(dot)
 
     def copy(self):
@@ -170,15 +167,15 @@ class PiCreature(SVGMobject):
             return
         direction /= norm
         self.purposeful_looking_direction = direction
-        for pupil, eye in zip(self.pupils.split(), self.eyes.split()):
-            c = eye.get_center()
-            right = eye.get_right() - c
-            up = eye.get_top() - c
+        for pupil, eye in zip(self.pupils, self.eyes):
+            eye_center = eye.get_center()
+            right = eye.get_right() - eye_center
+            up = eye.get_top() - eye_center
             vect = direction[0] * right + direction[1] * up
             v_norm = get_norm(vect)
-            p_radius = 0.5 * pupil.get_width()
-            vect *= (v_norm - 0.75 * p_radius) / v_norm
-            pupil.move_to(c + vect)
+            pupil_radius = 0.5 * pupil.get_width()
+            vect *= (v_norm - 0.75 * pupil_radius) / v_norm
+            pupil.move_to(eye_center + vect)
         self.pupils[1].align_to(self.pupils[0], DOWN)
         return self
 
@@ -212,7 +209,9 @@ class PiCreature(SVGMobject):
         eye_bottom_y = eye_parts.get_y(DOWN)
 
         for eye_part in eye_parts.family_members_with_points():
-            eye_part.get_points()[:, 1] = eye_bottom_y
+            new_points = eye_part.get_points()
+            new_points[:, 1] = eye_bottom_y
+            eye_part.set_points(new_points)
 
         return self
 
