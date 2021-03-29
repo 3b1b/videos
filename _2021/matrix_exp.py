@@ -106,270 +106,196 @@ def get_2d_equation(matrix=[["a", "b"], ["c", "d"]]):
     equation.arrange(RIGHT)
     return equation
 
-# Generic fLow scenes
 
-
-class ExponentialPhaseFlow(Scene):
-    CONFIG = {
-        "field_config": {
-            "color_by_magnitude": False,
-            "magnitude_range": (0.5, 5),
-            "arc_len": 5,
-        },
-        "plane_config": {
-            "x_range": [-4, 4],
-            "y_range": [-2, 2],
-            "height": 8,
-            "width": 16,
-        },
-        "matrix": [
-            [1, 0],
-            [0, 1],
-        ],
-        "label_height": 3,
-        "run_time": 30,
-        "slow_factor": 0.25,
-    }
+class VideoWrapper(Scene):
+    title = ""
 
     def construct(self):
-        mr = np.array(self.field_config["magnitude_range"])
-        self.field_config["magnitude_range"] = self.slow_factor * mr
-        plane = NumberPlane(**self.plane_config)
-        plane.add_coordinate_labels()
-
-        vector_field, animated_lines = get_vector_field_and_stream_lines(
-            self.func, plane,
-            **self.field_config,
-        )
-
-        box = Square()
-        box.replace(Line(plane.c2p(-1, -1), plane.c2p(1, 1)), stretch=True)
-        box.set_stroke(GREY_A, 1)
-        box.set_fill(BLUE_E, 0.8)
-        move_points_along_vector_field(box, self.func, plane)
-
-        basis_vectors = VGroup(
-            Vector(RIGHT, fill_color=GREEN),
-            Vector(UP, fill_color=RED),
-        )
-        basis_vectors[0].add_updater(lambda m: m.put_start_and_end_on(
-            plane.get_origin(),
-            box.pfp(7 / 8)
-        ))
-        basis_vectors[1].add_updater(lambda m: m.put_start_and_end_on(
-            plane.get_origin(),
-            box.pfp(1 / 8)
-        ))
-
-        self.add(plane)
-        self.add(vector_field)
-        self.add(animated_lines)
-        self.add(box)
-        self.add(*basis_vectors)
-        self.wait(self.run_time)
-
-    def func(self, x, y):
-        return self.slow_factor * np.dot([x, y], np.transpose(self.matrix))
-
-    def get_label(self):
-        exponential = get_matrix_exponential(self.matrix)
-        changing_t = DecimalNumber(0, color=YELLOW)
-        changing_t.match_height(exponential[2])
-        changing_t.move_to(exponential[2], DL)
-        exponential.replace_submobject(2, changing_t)
-
-        equals = Tex("=")
-        rhs = DecimalMatrix(
-            np.zeros((2, 2)),
-            element_to_mobject_config={"num_decimal_places": 3},
-            h_buff=1.8,
-        )
-        rhs.match_height(exponential)
-
-        equation = VGroup(
-            exponential,
-            equals,
-            rhs,
-        )
-        equation.arrange(RIGHT)
-        equation.to_corner(UL)
-
-
-class ExponentialEvaluationWithTime(Scene):
-    flow_scene_class = ExponentialPhaseFlow
-
-    def construct(self):
-        flow_scene_attrs = merge_dicts_recursively(
-            ExponentialPhaseFlow.CONFIG,
-            self.flow_scene_class.CONFIG,
-        )
-        matrix = np.array(flow_scene_attrs["matrix"])
-        slow_factor = flow_scene_attrs["slow_factor"]
-
-        def get_t():
-            return slow_factor * self.time
-
-        exponential = get_matrix_exponential(matrix)
-        dot = Tex("\\cdot")
-        dot.move_to(exponential[2], LEFT)
-        changing_t = DecimalNumber(0)
-        changing_t.match_height(exponential[2])
-        changing_t.next_to(dot, RIGHT, SMALL_BUFF)
-        changing_t.align_to(exponential[1], DOWN)
-        changing_t.add_updater(lambda m: m.set_value(get_t()).set_color(YELLOW))
-        lhs = VGroup(*exponential[:2], dot, changing_t)
-
-        equals = Tex("=")
-        rhs = DecimalMatrix(
-            np.zeros((2, 2)),
-            element_to_mobject_config={"num_decimal_places": 2},
-            element_alignment_corner=ORIGIN,
-            h_buff=2.0,
-        )
-        for mob in rhs.get_entries():
-            mob.edge_to_fix = ORIGIN
-
-        rhs.match_height(lhs)
-
-        def update_rhs(rhs):
-            result = mat_exp(matrix * get_t())
-            for mob, value in zip(rhs.get_entries(), result.flatten()):
-                mob.set_value(value)
-            return rhs
-
-        rhs.add_updater(update_rhs)
-
-        equation = VGroup(lhs, equals, rhs)
-        equation.arrange(RIGHT)
-        equation.center()
-
-        self.add(equation)
-        self.wait(flow_scene_attrs["run_time"])
-        self.embed()
-
-
-class CircularPhaseFlow(ExponentialPhaseFlow):
-    CONFIG = {
-        "matrix": [
-            [0, -1],
-            [1, 0],
-        ]
-    }
-
-
-class CircularFlowEvaluation(ExponentialEvaluationWithTime):
-    flow_scene_class = CircularPhaseFlow
-
-
-class EllipticalPhaseFlow(ExponentialPhaseFlow):
-    CONFIG = {
-        "matrix": [
-            [0, -3],
-            [1, 0],
-        ]
-    }
-
-
-class EllipticalFlowEvaluation(ExponentialEvaluationWithTime):
-    flow_scene_class = EllipticalPhaseFlow
-
-
-class HyperbolicPhaseFlow(ExponentialPhaseFlow):
-    CONFIG = {
-        "field_config": {
-            "sample_freq": 8,
-        },
-        "matrix": [
-            [1, 0],
-            [0, -1],
-        ]
-    }
-
-
-class HyperbolicFlowEvaluation(ExponentialEvaluationWithTime):
-    flow_scene_class = HyperbolicPhaseFlow
-
-
-class ShearPhaseFlow(ExponentialPhaseFlow):
-    CONFIG = {
-        "field_config": {
-            "sample_freq": 2,
-            "magnitude_range": (0.5, 8),
-        },
-        "plane_config": {
-            "x_range": [-8, 8],
-            "y_range": [-4, 4],
-        },
-        "matrix": [
-            [1, 1],
-            [0, 1],
-        ],
-        "slow_factor": 0.1,
-    }
-
-
-class ShearFlowEvaluation(ExponentialEvaluationWithTime):
-    flow_scene_class = ShearPhaseFlow
-
-
-class DampedRotationPhaseFlow(ExponentialPhaseFlow):
-    CONFIG = {
-        "matrix": [
-            [-1, -1],
-            [1, 0],
-        ],
-    }
-
-
-class DampedRotationFlowEvaluation(ExponentialEvaluationWithTime):
-    flow_scene_class = DampedRotationPhaseFlow
-
-
-class FrameForFlow(Scene):
-    def construct(self):
-        self.add(FullScreenRectangle(fill_color=GREY_D))
-        screen_rect = ScreenRectangle()
-        screen_rect.set_height(5.5)
-        screen_rect.set_stroke(WHITE, 3)
+        self.add(FullScreenRectangle())
+        screen_rect = ScreenRectangle(height=6)
+        screen_rect.set_stroke(BLUE_D, 1)
         screen_rect.set_fill(BLACK, 1)
         screen_rect.to_edge(DOWN)
         self.add(screen_rect)
 
+        title = TexText(self.title, font_size=90)
+        if title.get_width() > screen_rect.get_width():
+            title.set_width(screen_rect.get_width())
+        title.next_to(screen_rect, UP)
 
-class PrerequisitesWrapper(Scene):
-    def construct(self):
-        self.add(FullScreenRectangle())
-        title = Text("Helpful background knowledge")
-        title.to_edge(UP)
-        self.add(title)
+        self.play(Write(title))
+        self.wait()
 
-        screens = VGroup(*(ScreenRectangle() for x in range(2)))
-        screens.arrange(RIGHT, buff=LARGE_BUFF)
-        screens.set_width(FRAME_WIDTH - 1)
-        screens.move_to(DOWN)
-        screens.set_fill(BLACK, 1)
-        screens.set_stroke(WHITE, 2)
-
-        topics = VGroup(
-            TexText("Basics of $e^x$"),
-            TexText("How matrices act\\\\as transformations"),
-        )
-        for topic, screen in zip(topics, screens):
-            topic.next_to(screen, UP)
-            topic.set_color(WHITE)
-
-        for topic, screen in zip(topics, screens):
-            sc = screen.copy()
-            sc.set_fill(opacity=0)
-            sc.set_stroke(width=3)
-            self.play(
-                FadeIn(topic, 0.5 * UP),
-                FadeIn(screen),
-                VShowPassingFlash(sc, time_width=1.0, run_time=1.5),
-            )
-            self.wait(2)
 
 # Video scenes
+
+class ArnoldBookClip(ExternallyAnimatedScene):
+    pass
+
+
+class ZoomInOnProblem(Scene):
+    def construct(self):
+        # Highlight problem
+        image = ImageMobject("mat_exp_exercise.png")
+        image.set_height(FRAME_HEIGHT)
+
+        prob_rect = Rectangle(3.25, 0.35)
+        prob_rect.move_to([-2.5, -2.5, 0])
+        prob_rect.set_stroke(BLUE, 2)
+
+        examples_rect = Rectangle(2.0, 0.8)
+        examples_rect.move_to([01.8, 2.8, 0.0])
+        examples_rect.set_stroke(YELLOW, 3)
+        answer_rect = Rectangle(3.0, 2.0)
+        answer_rect.move_to(examples_rect, UR)
+        answer_rect.shift(0.1 * RIGHT)
+
+        full_rect = FullScreenRectangle()
+        full_rect.flip()
+        full_rect.set_fill(BLACK, opacity=0.6)
+        full_rect.append_vectorized_mobject(prob_rect)
+        full_rect2 = full_rect.copy()
+        full_rect3 = full_rect.copy()
+        full_rect.append_vectorized_mobject(examples_rect.copy().scale(1e-6))
+        full_rect2.append_vectorized_mobject(examples_rect)
+        full_rect3.append_vectorized_mobject(answer_rect)
+
+        self.add(image)
+
+        # Write problem
+        problem = TexText(
+            "Compute the {{matrix}} {{$e^{At}$}}\\\\if the {{matrix A}} has the form..."
+        )
+        problem.to_corner(UL)
+        problem.set_stroke(BLACK, 5, background=True)
+        prob_arrow = Arrow(prob_rect, problem)
+        prob_arrow.set_fill(BLUE)
+        mat_underline = Underline(problem.get_part_by_tex("matrix"))
+        mat_underline.set_color(YELLOW)
+
+        self.play(
+            ShowCreation(prob_rect),
+            FadeIn(full_rect),
+            FadeTransform(prob_rect.copy(), problem),
+            GrowArrow(prob_arrow),
+        )
+        self.wait()
+        for part in ["e^{At}", "matrix A"]:
+            self.play(FlashAround(problem.get_part_by_tex(part), run_time=2, time_width=4))
+            self.wait()
+        self.play(ShowCreation(mat_underline))
+        self.wait()
+        mat_underline.rotate(PI)
+        self.play(Uncreate(mat_underline))
+        self.wait()
+
+        # Show inputs
+        examples_label = TexText("Various matrices to\\\\plug in for $A$", font_size=40)
+        examples_label.next_to(examples_rect)
+
+        lhs = Tex("A = ", font_size=96)
+        lhs.set_stroke(BLACK, 5, background=True)
+
+        matrices = VGroup(
+            IntegerMatrix([[1, 0], [0, 2]]),
+            IntegerMatrix([[0, 1], [0, 0]]),
+            IntegerMatrix([[0, 1], [-1, 0]]),
+            IntegerMatrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]]),
+        )
+        eq = VGroup(lhs, matrices[-1])
+        eq.arrange(RIGHT)
+        eq.next_to(examples_rect, DOWN, LARGE_BUFF, aligned_edge=LEFT)
+        eq.shift_onto_screen()
+        for matrix in matrices:
+            matrix.move_to(matrices[-1], LEFT)
+            matrix.set_stroke(BLACK, 5, background=True)
+
+        self.play(
+            Transform(full_rect, full_rect2)
+        )
+        self.play(
+            ShowCreation(examples_rect),
+            FadeIn(examples_label),
+            FadeIn(lhs),
+            FadeIn(matrices[0]),
+        )
+        self.wait()
+        for m1, m2 in zip(matrices, matrices[1:]):
+            self.play(FadeTransform(m1, m2))
+            self.wait()
+
+
+class LeadToPhysicsAndQM(Scene):
+    def construct(self):
+        de_words = TexText("Differential\\\\equations", font_size=60)
+        de_words.set_x(-3).to_edge(UP)
+        mat_exp = get_matrix_exponential([[3, 1, 4], [1, 5, 9], [2, 6, 5]])
+        mat_exp[1].set_color(TEAL)
+        mat_exp.next_to(de_words, DOWN, buff=3)
+
+        qm_words = TexText("Quantum\\\\mechanics", font_size=60)
+        qm_words.set_x(3).to_edge(UP)
+        physics_words = TexText("Physics", font_size=60)
+        physics_words.move_to(qm_words)
+
+        qm_exp = Tex("e^{-i \\hat{H} t / \\hbar}")
+        qm_exp.scale(2)
+        qm_exp.refresh_bounding_box()
+        qm_exp[0][0].set_height(mat_exp[0].get_height(), about_edge=UR)
+        qm_exp[0][0].shift(SMALL_BUFF * DOWN)
+        qm_exp.match_x(qm_words)
+        qm_exp.align_to(mat_exp, DOWN)
+        qm_exp[0][3:5].set_color(TEAL)
+
+        de_arrow = Arrow(de_words, mat_exp)
+        qm_arrow = Arrow(qm_words, qm_exp)
+        top_arrow = Arrow(de_words, qm_words)
+
+        self.add(de_words)
+        self.play(
+            GrowArrow(de_arrow),
+            FadeIn(mat_exp, shift=DOWN),
+        )
+        self.wait()
+        self.play(
+            GrowArrow(top_arrow),
+            FadeIn(physics_words, RIGHT)
+        )
+        self.wait()
+        self.play(
+            FadeOut(physics_words, UP),
+            FadeIn(qm_words, UP),
+        )
+        self.play(
+            TransformFromCopy(de_arrow, qm_arrow),
+            FadeTransform(mat_exp.copy(), qm_exp),
+        )
+        self.wait()
+
+
+class LaterWrapper(VideoWrapper):
+    title = "Later..."
+
+
+class PlanForThisVideo(TeacherStudentsScene):
+    def construct(self):
+        s0, s1, s2 = self.students
+        self.play(
+            PiCreatureSays(s0, TexText("But what\\\\is $e^{M}$?"), target_mode="raise_left_hand"),
+            s1.animate.change("erm", UL),
+            s2.animate.change("pondering", UL),
+        )
+        self.wait()
+        s0.bubble = None
+        self.play(
+            PiCreatureSays(
+                s2, TexText("And who cares?"), target_mode="sassy",
+                bubble_kwargs={"direction": LEFT},
+            ),
+            s1.animate.change("hesitant", UL),
+            self.teacher.animate.change("guilty")
+        )
+        self.wait(3)
 
 
 class IntroduceTheComputation(Scene):
@@ -449,8 +375,6 @@ class IntroduceTheComputation(Scene):
                 run_time=2,
                 rate_func=squish_rate_func(smooth, 0.5, 1),
             ),
-        )
-        self.play(
             randy.animate.change("angry", rhs),
             ShowCreation(bubble),
             Write(bubble.content, run_time=1),
@@ -508,9 +432,11 @@ class IntroduceTheComputation(Scene):
         real_rhs = real_equation[3:]
 
         real_label = Text("Real number", color=YELLOW, font_size=24)
-        real_label.next_to(xs[0], DOWN, buff=0.8)
-        real_label.to_edge(LEFT, buff=MED_SMALL_BUFF)
-        real_arrow = Arrow(real_label, xs[0], buff=0.1, fill_color=GREY_B, thickness=0.025)
+        # real_label.next_to(xs[0], DOWN, buff=0.8)
+        # real_label.to_edge(LEFT, buff=MED_SMALL_BUFF)
+        # real_arrow = Arrow(real_label, xs[0], buff=0.1, fill_color=GREY_B, thickness=0.025)
+        real_label.to_corner(UL, buff=MED_SMALL_BUFF)
+        real_arrow = Arrow(real_label, real_equation[1], buff=0.1)
 
         taylor_brace = Brace(real_rhs, DOWN)
         taylor_label = taylor_brace.get_text("Taylor series")
@@ -694,19 +620,15 @@ class IntroduceTheComputation(Scene):
         real_lhs = VGroup(real_equation[:3], real_label, real_arrow)
 
         self.play(
-            # LaggedStartMap(FadeOut, VGroup(
-            #     *new_lhs, *threes, *ex_rhs,
-            #     term_brace, sum_value,
-            #     *rects, *term_values,
-            # )),
-            LaggedStart(
-                FadeOut(taylor_brace),
-                FadeOut(taylor_label),
-                FadeOut(false_group, DOWN),
-            ),
+            LaggedStartMap(FadeOut, VGroup(
+                *new_lhs, *threes, *ex_rhs,
+                term_brace, sum_value,
+                *rects, *term_values,
+            )),
             real_lhs.animate.set_opacity(0.2),
             randy.animate.change("erm", real_equation),
             morty.animate.change("thinking", real_equation),
+            run_time=1,
         )
         self.play(Blink(morty))
 
@@ -752,8 +674,8 @@ class IntroduceTheComputation(Scene):
         self.play(Blink(randy))
 
         reassurance = VGroup(
-            Text("I know it looks complicated,", font_size=24),
-            Text("don't panic, it'll be okay", font_size=24),
+            Text("I know it looks complicated.", font_size=24),
+            Text("Don't panic.", font_size=24),
         )
         reassurance.arrange(DOWN)
         reassurance.next_to(morty, LEFT, aligned_edge=UP)
@@ -763,17 +685,172 @@ class IntroduceTheComputation(Scene):
             self.play(FadeIn(words))
         self.play(Blink(morty))
 
-        # Matrix powers
-        top_parts = VGroup(real_lhs, real_rhs, pii_rhs)
-        top_parts.save_state()
-        original_mat_rhs = mat_rhs.copy()
+        # Describe exp
+        to_right_group = VGroup(real_lhs, real_rhs, mat_rhs, pii_rhs)
+        to_right_group.generate_target()
+        to_right_group.target.to_edge(RIGHT, buff=SMALL_BUFF)
+        to_right_group.target[2].to_edge(RIGHT, buff=SMALL_BUFF)
+        self.play(
+            MoveToTarget(to_right_group),
+            FadeOut(why),
+            FadeOut(reassurance),
+            randy.animate.change("pondering", mat_rhs),
+            morty.animate.change("tease"),
+        )
+
+        pii_lhs = Tex("\\text{exp}\\left(\\pi i \\right) = ")[0]
+        pii_lhs.next_to(pii_rhs, LEFT)
+        mat_lhs = Tex("\\text{exp}\\left(" + mat_tex + "\\right) = ")[0]
+        mat_lhs.match_height(mat_rhs)
+        mat_lhs[:3].match_height(pii_lhs[:3])
+        mat_lhs[:3].next_to(mat_lhs[3:5], LEFT, SMALL_BUFF)
+        mat_lhs.next_to(mat_rhs, LEFT)
+
+        pii_lhs_pi_part = pii_lhs[4:6]
+        pii_lhs_pi_part.set_color(BLUE)
+        mat_lhs_mat_part = mat_lhs[5:18]
+        mat_lhs_mat_part.set_color(TEAL)
+
+        self.play(
+            FadeIn(pii_lhs),
+            randy.animate.change("thinking", pii_lhs),
+            randy.animate.change("tease", pii_lhs),
+        )
+        self.play(FadeIn(mat_lhs))
+        self.play(Blink(randy))
+        self.play(
+            LaggedStart(
+                FlashAround(pii_lhs[:3]),
+                FlashAround(mat_lhs[:3]),
+                lag_ratio=0.3,
+                run_time=2
+            ),
+            randy.animate.change("raise_left_hand", pii_lhs),
+        )
+        self.wait()
+
+        # Transition to e^x notation
+        crosses = VGroup(*(
+            Cross(lhs[:3], stroke_width=[0, 3, 3, 3, 0]).scale(1.3)
+            for lhs in [pii_lhs, mat_lhs]
+        ))
+        bases = VGroup()
+        powers = VGroup()
+        equals = VGroup()
+        for part, lhs in (pii_lhs_pi_part, pii_lhs), (mat_lhs_mat_part, mat_lhs):
+            power = part.copy()
+            part.set_opacity(0)
+            self.add(power)
+            base = Tex("e", font_size=60)
+            equal = Tex(":=")
+            power.generate_target()
+            if power.target.get_height() > 0.7:
+                power.target.set_height(0.7)
+            power.target.next_to(base, UR, buff=0.05)
+            group = VGroup(base, power.target, equal)
+            equal.next_to(group[:2], RIGHT, MED_SMALL_BUFF)
+            equal.match_y(base)
+            if lhs is mat_lhs:
+                equal.shift(0.1 * UP)
+            group.shift(lhs.get_right() - equal.get_right())
+            bases.add(base)
+            powers.add(power)
+            equals.add(equal)
+
+        self.play(
+            ShowCreation(crosses),
+            randy.animate.change("hesitant", crosses),
+        )
+        self.play(Blink(randy))
+        self.play(real_lhs.animate.set_opacity(1))
+
+        self.play(
+            FadeOut(pii_lhs),
+            FadeOut(mat_lhs),
+            FadeOut(crosses),
+            *(MoveToTarget(power) for power in powers),
+            *(TransformFromCopy(real_equation[0], base) for base in bases),
+            Write(equals),
+            randy.animate.change("sassy", powers),
+        )
+        self.wait()
+
+        # Theorem vs. definition
+        real_part = VGroup(real_lhs, real_rhs)
+        pii_part = VGroup(bases[0], powers[0], equals[0], pii_rhs)
+        mat_part = VGroup(bases[1], powers[1], equals[1], mat_rhs)
+        def_parts = VGroup(pii_part, mat_part)
+
+        self.play(
+            FadeOut(randy, DOWN),
+            FadeOut(morty, DOWN),
+            real_part.animate.set_x(0).shift(DOWN),
+            def_parts.animate.set_x(0).to_edge(DOWN),
+        )
+
+        real_rect = SurroundingRectangle(real_part)
+        real_rect.set_stroke(YELLOW, 2)
+        theorem_label = Text("Theorem")
+        theorem_label.next_to(real_rect, UP)
+
+        def_rect = SurroundingRectangle(def_parts)
+        def_rect.set_stroke(BLUE, 2)
+        def_label = Text("Definition")
+        def_label.next_to(def_rect, UP)
+
+        self.play(
+            ShowCreation(real_rect),
+            FadeIn(theorem_label, 0.5 * UP),
+        )
+        self.wait()
+        self.play(
+            ShowCreation(def_rect),
+            FadeIn(def_label, 0.5 * UP),
+        )
+        self.wait()
+
+        # Abuse?  Or the beauty of discovery...
+        randy2 = Randolph()
+        randy2.set_height(1.5)
+        randy2.next_to(def_rect, UP, SMALL_BUFF, aligned_edge=LEFT)
+
+        self.play(
+            ApplyMethod(randy2.change, "angry", mat_rhs),
+            UpdateFromAlphaFunc(randy2, lambda m, a: m.set_opacity(a)),
+        )
+        self.play(Blink(randy2))
+
+        discovery_label = Text("Discovery")
+        discovery_label.move_to(theorem_label, DOWN)
+        invention_label = Text("Invention")
+        invention_label.move_to(def_label, DOWN)
+
+        self.play(
+            FadeOut(theorem_label, UP),
+            FadeIn(discovery_label, UP),
+            randy2.animate.change("hesitant", theorem_label),
+        )
+        self.play(
+            FadeOut(def_label, UP),
+            FadeIn(invention_label, UP),
+        )
+        self.wait(2)
+
+        # Isolate matrix right hand side
+        to_fade = VGroup(
+            randy2, discovery_label, invention_label,
+            real_rect, def_rect,
+            real_arrow, real_label, real_part, pii_part,
+            bases, powers, equals,
+        )
 
         self.play(
             mat_rhs.animate.set_width(FRAME_WIDTH - 1).center().to_edge(UP),
-            FadeOut(top_parts, shift=2 * UP),
-            LaggedStartMap(FadeOut, VGroup(why, *reassurance), shift=0.1 * LEFT),
+            LaggedStartMap(FadeOut, to_fade),
+            FadeIn(VGroup(randy, morty), run_time=2, rate_func=squish_rate_func(smooth, 0.5, 1))
         )
 
+        # Matrix powers
         mat = mat_rhs[4]
         mat_brace = Brace(VGroup(mat, mat_rhs[5][0]), DOWN, buff=SMALL_BUFF)
         matrix = np.array([[3, 1, 4], [1, 5, 9], [2, 6, 5]])
@@ -978,6 +1055,7 @@ class IntroduceTheComputation(Scene):
             FadeTransform(mat_parts[0].copy(), curr_sum_mob),
             randy.animate.change("erm", curr_sum_mob),
         )
+        self.wait()
 
         last_n_label = VMobject()
         partial_sum_mobs = [curr_sum_mob]
@@ -1007,7 +1085,7 @@ class IntroduceTheComputation(Scene):
             else:
                 sample = DecimalMatrix(curr_sum[0], num_decimal_places=nd)
                 sample.replace(curr_sum_mob.get_entries()[0], 1)
-                h_buff = 1.2 * sample.get_width()
+                h_buff = 1.3 * sample.get_width()
             new_sum_mob = DecimalMatrix(
                 curr_sum,
                 element_alignment_corner=RIGHT,
@@ -1092,6 +1170,7 @@ class IntroduceTheComputation(Scene):
                 element_to_mobject_config={"num_decimal_places": 2},
                 element_alignment_corner=ORIGIN,
                 h_buff=1.5 * DecimalNumber(partial_sum[0, 0]).get_width(),
+                v_buff=1.0,
             )
             psm.next_to(brace, DOWN, MED_LARGE_BUFF)
             partial_sum_mobs.add(psm)
@@ -1123,139 +1202,13 @@ class IntroduceTheComputation(Scene):
         self.play(
             randy.animate.change("erm"),
             morty.animate.change("tease"),
-            LaggedStartMap(
-                FadeOut, VGroup(brace, n_label, partial_sum_mobs[n]),
-                shift=DOWN,
-            )
+            # LaggedStartMap(
+            #     FadeOut, VGroup(brace, n_label, partial_sum_mobs[n]),
+            #     shift=DOWN,
+            # )
         )
-
-        # Describe exp
-        self.clear()
-        self.add(randy, morty, new_mat_rhs)
-        mat_rhs.become(original_mat_rhs)
-        real_lhs.set_opacity(1)
-        real_label.to_corner(UL, buff=MED_SMALL_BUFF)
-        real_arrow.become(Arrow(real_label, real_equation[1], buff=0.1))
-
-        VGroup(real_lhs, real_rhs, mat_rhs, pii_rhs).to_edge(RIGHT, buff=SMALL_BUFF)
-        mat_rhs.to_edge(RIGHT, buff=SMALL_BUFF)
-
-        pii_lhs = Tex("\\text{exp}\\left(\\pi i \\right) = ")[0]
-        pii_lhs.next_to(pii_rhs, LEFT)
-        mat_lhs = Tex("\\text{exp}\\left(" + mat_tex + "\\right) = ")[0]
-        mat_lhs.match_height(mat_rhs)
-        mat_lhs[:3].match_height(pii_lhs[:3])
-        mat_lhs[:3].next_to(mat_lhs[3:5], LEFT, SMALL_BUFF)
-        mat_lhs.next_to(mat_rhs, LEFT)
-
-        pii_lhs_pi_part = pii_lhs[4:6]
-        pii_lhs_pi_part.set_color(BLUE)
-        mat_lhs_mat_part = mat_lhs[5:18]
-        mat_lhs_mat_part.set_color(TEAL)
-
-        self.play(
-            FadeIn(real_equation),
-            FadeIn(real_arrow),
-            FadeIn(real_label),
-            FadeIn(pii_rhs),
-            FadeIn(mat_rhs),
-            FadeOut(new_mat_rhs),
-        )
-        self.play(
-            FadeIn(pii_lhs),
-            randy.animate.change("thinking", pii_lhs),
-            randy.animate.change("tease", pii_lhs),
-        )
-        self.play(FadeIn(mat_lhs))
+        self.play(Blink(morty))
         self.play(Blink(randy))
-        self.play(
-            LaggedStart(
-                FlashAround(pii_lhs[:3]),
-                FlashAround(mat_lhs[:3]),
-                lag_ratio=0.3,
-                run_time=2
-            ),
-            randy.animate.change("raise_left_hand", pii_lhs),
-        )
-        self.wait()
-
-        # Transition to e^x notation
-        crosses = VGroup(*(
-            Cross(lhs[:3], stroke_width=[0, 3, 3, 3, 0]).scale(1.3)
-            for lhs in [pii_lhs, mat_lhs]
-        ))
-        bases = VGroup()
-        powers = VGroup()
-        equals = VGroup()
-        for part, lhs in (pii_lhs_pi_part, pii_lhs), (mat_lhs_mat_part, mat_lhs):
-            power = part.copy()
-            part.set_opacity(0)
-            self.add(power)
-            base = Tex("e", font_size=60)
-            equal = Tex(":=")
-            power.generate_target()
-            if power.target.get_height() > 0.7:
-                power.target.set_height(0.7)
-            power.target.next_to(base, UR, buff=0.05)
-            group = VGroup(base, power.target, equal)
-            equal.next_to(group[:2], RIGHT, MED_SMALL_BUFF)
-            equal.match_y(base)
-            if lhs is mat_lhs:
-                equal.shift(0.1 * UP)
-            group.shift(lhs.get_right() - equal.get_right())
-            bases.add(base)
-            powers.add(power)
-            equals.add(equal)
-
-        self.play(
-            ShowCreation(crosses),
-            randy.animate.change("hesitant", crosses),
-        )
-        self.play(Blink(randy))
-
-        self.play(
-            FadeOut(pii_lhs),
-            FadeOut(mat_lhs),
-            FadeOut(crosses),
-            *(MoveToTarget(power) for power in powers),
-            *(TransformFromCopy(real_equation[0], base) for base in bases),
-            Write(equals),
-            randy.animate.change("sassy", powers),
-        )
-        self.wait()
-
-        # Theorem vs. definition
-        real_part = VGroup(real_lhs, real_rhs)
-        pii_part = VGroup(bases[0], powers[0], equals[0], pii_rhs)
-        mat_part = VGroup(bases[1], powers[1], equals[1], mat_rhs)
-        def_parts = VGroup(pii_part, mat_part)
-
-        self.play(
-            FadeOut(randy, DOWN),
-            FadeOut(morty, DOWN),
-            real_part.animate.set_x(0).shift(DOWN),
-            def_parts.animate.set_x(0).to_edge(DOWN),
-        )
-
-        real_rect = SurroundingRectangle(real_part)
-        real_rect.set_stroke(YELLOW, 2)
-        real_label = Text("Theorem")
-        real_label.next_to(real_rect, UP)
-
-        def_rect = SurroundingRectangle(def_parts)
-        def_rect.set_stroke(BLUE, 2)
-        def_label = Text("Definition")
-        def_label.next_to(def_rect, UP)
-
-        self.play(
-            ShowCreation(real_rect),
-            FadeIn(real_label, 0.5 * UP),
-        )
-        self.wait()
-        self.play(
-            ShowCreation(def_rect),
-            FadeIn(def_label, 0.5 * UP),
-        )
         self.wait()
 
     def show_mat_mult(self, m1, m2, m1_terms, m2_terms, rhs_terms, per_term=0.1, between_terms=0.35):
@@ -1286,6 +1239,12 @@ class IntroduceTheComputation(Scene):
             m1_terms.set_color(m1_color)
             m2_terms.set_color(m2_color)
             self.remove(row_rect, col_rect)
+
+
+class ShowHigherMatrixPowers(IntroduceTheComputation):
+    def construct(self):
+        # Do I want to do this?  A little, honestly.
+        pass
 
 
 class WhyTortureMatrices(TeacherStudentsScene):
@@ -1402,7 +1361,7 @@ class DefinitionFirstVsLast(Scene):
         # Highligh specific example
         full_rect = FullScreenRectangle()
         full_rect.set_fill(BLACK, opacity=0.75)
-        sp = low_prog[0]
+        sp, gp, hc = low_prog[:3].copy()
         self.add(full_rect, sp)
         self.play(FadeIn(full_rect))
         self.wait()
@@ -1630,13 +1589,13 @@ class RomeoAndJuliet(Scene):
         self.make_character_dynamic(romeo, juliet, cutoff_values, modes)
         self.make_character_dynamic(juliet, romeo, cutoff_values, modes)
 
-    def get_romeo_juilet_name_labels(self, lovers, font_size=36, spacing=1.2):
+    def get_romeo_juilet_name_labels(self, lovers, font_size=36, spacing=1.2, buff=MED_SMALL_BUFF):
         name_labels = VGroup(*(
             Text(name, font_size=font_size)
             for name in ["Romeo", "Juliet"]
         ))
         for label, creature in zip(name_labels, lovers):
-            label.next_to(creature, DOWN)
+            label.next_to(creature, DOWN, buff)
             creature.name_label = label
         name_labels.space_out_submobjects(spacing)
         return name_labels
@@ -2315,7 +2274,6 @@ class From2DTo1D(Scene):
             return 0.2 * np.dot([x, y], matrix.T)
 
         move_points_along_vector_field(point, func, plane)
-        globals().update(locals())
         vector.add_updater(lambda m: m.put_start_and_end_on(
             plane.get_origin(), point.get_location(),
         ))
@@ -2875,7 +2833,6 @@ class GraphAndHistoryOfExponential(Scene):
 
         dot1 = Dot(radius=0.05, color=RED)
         dot2 = dot1.copy()
-        globals().update(locals())
         for sec_dot in dot1, dot2:
             sec_dot.x_tracker = ValueTracker(15)
             sec_dot.add_updater(lambda d: d.move_to(axes.input_to_graph_point(
@@ -3034,7 +2991,6 @@ class BernoullisThoughts(Scene):
         dollars.move_to(bubble.get_bubble_center())
 
         dollar = dollars[0].copy()
-        globals().update(locals())
         continuous_money = VGroup(*(
             dollar.copy().shift(smooth(x) * RIGHT * 2.0 + np.exp(smooth(x) - 1) * UP)
             for x in np.linspace(0, 1, 300)
@@ -3200,31 +3156,15 @@ class Compare1DTo2DEquations(Scene):
         self.wait()
 
 
-class EVideoWrapper(Scene):
+class EVideoWrapper(VideoWrapper):
     title = "Video on $e^x$"
-
-    def construct(self):
-        self.add(FullScreenRectangle())
-        screen_rect = ScreenRectangle(height=6)
-        screen_rect.set_stroke(BLUE_D, 1)
-        screen_rect.set_fill(BLACK, 1)
-        screen_rect.to_edge(DOWN)
-        self.add(screen_rect)
-
-        title = TexText(self.title, font_size=90)
-        if title.get_width() > screen_rect.get_width():
-            title.set_width(screen_rect.get_width())
-        title.next_to(screen_rect, UP)
-
-        self.play(Write(title))
-        self.wait()
 
 
 class ManyExponentialForms(ExternallyAnimatedScene):
     pass
 
 
-class ManySolutionsDependingOnInitialCondition(Scene):
+class ManySolutionsDependingOnInitialCondition(VideoWrapper):
     def construct(self):
         # Setup graphs and equations
         axes = Axes(
@@ -3875,7 +3815,7 @@ class ThatsHorrifying(TeacherStudentsScene):
         self.wait(3)
 
 
-class LinearAlgebraWrapper(EVideoWrapper):
+class LinearAlgebraWrapper(VideoWrapper):
     title = "Matrices as linear transformations"
 
 
@@ -4093,10 +4033,1131 @@ class ReadColumnsOfRotationMatrix(Scene):
 
 class AnalyzeRomeoAndJulietSpace(RomeoJulietVectorSpace):
     def construct(self):
+        # Add axes
+        axes = self.get_romeo_juliet_axes()
+        ps_dot = axes.ps_dot
+        ps_dot.set_opacity(0)
+        ps_dot.move_to(axes.c2p(4, 3))
+
+        ps_arrow = self.get_ps_arrow(axes, add_shadow=True)
+        ps_arrow.update()
+        self.add(ps_arrow)
+
+        # Add equation
+        matrix = [["0", "-1"], ["1", "0"]]
+        equation = get_2d_equation(matrix)
+        equation.to_corner(UR)
+
+        implies = Tex("\\Downarrow", font_size=72)
+        implies.next_to(equation, DOWN, buff=0.3)
+
+        initial_condition = Matrix([["x_0"], ["y_0"]], bracket_h_buff=0.1)
+        initial_condition.match_height(equation)
+        initial_condition.set_color(BLUE_B)
+        ic_source = initial_condition.copy()
+        ic_source.scale(0.5)
+        ic_source.next_to(ps_arrow.get_end(), RIGHT, SMALL_BUFF)
+
+        mat_exp = get_matrix_exponential(matrix, h_buff=0.8)
+        solution = VGroup(equation[1].copy(), Tex("="), mat_exp, initial_condition)
+        solution[2][1].set_color(TEAL)
+        solution.arrange(RIGHT)
+        solution.scale(0.8)
+        solution.next_to(implies, DOWN, buff=0.3)
+
+        rot_matrix = Matrix(
+            [["\\cos(t)", "-\\sin(t)"], ["\\sin(t)", "\\cos(t)"]],
+            bracket_h_buff=0.2,
+            h_buff=2.0
+        )
+        for entry in rot_matrix.get_entries():
+            entry[0][-2].set_color(GREY_B)
+        rot_matrix.match_height(solution[0])
+        solution2 = solution.deepcopy()
+        solution2.replace_submobject(2, rot_matrix)
+        solution2.arrange(RIGHT)
+        solution2.next_to(solution, DOWN, buff=0.7)
+
+        rot_matrix_brace = Brace(rot_matrix, DOWN)
+        rot_label = TexText("Rotate by angle $t$")
+        rot_label.next_to(rot_matrix_brace, DOWN, SMALL_BUFF)
+
+        self.add(equation)
+        self.play(FlashAround(equation, run_time=2))
+        self.wait()
+        self.play(
+            Write(implies),
+            TransformFromCopy(equation[1], solution[0], path_arc=-20 * DEGREES),
+            TransformFromCopy(equation[2], solution[1]),
+        )
+        self.play(
+            Write(mat_exp[0]),
+            TransformFromCopy(equation[3], mat_exp[1]),
+        )
+        self.play(Write(mat_exp[2]))
+        self.wait()
+        self.play(
+            FadeIn(ic_source),
+            FlashAround(ic_source),
+        )
+        self.play(TransformFromCopy(ic_source, initial_condition))
+        self.wait()
+        self.play(
+            *(
+                TransformFromCopy(solution[i], solution2[i])
+                for i in [0, 1, 3]
+            ),
+            FadeTransform(mat_exp.copy(), rot_matrix)
+        )
+        self.play(
+            GrowFromCenter(rot_matrix_brace),
+            FadeIn(rot_label),
+        )
+        self.wait()
+
+        # Rotate vector
+        start_angle = ps_arrow.get_angle()
+        t_tracker = ValueTracker(0)
+        get_t = t_tracker.get_value
+
+        def get_arc():
+            curr_time = get_t()
+            arc = ParametricCurve(
+                lambda s: axes.c2p(*tuple((1 + 0.2 * s) * np.array([
+                    math.cos(start_angle + s * curr_time),
+                    math.sin(start_angle + s * curr_time),
+                ]))),
+                t_range=(0, 1, 0.01)
+            )
+            arc.set_stroke(WHITE, 2)
+            return arc
+
+        arc = always_redraw(get_arc)
+        t_label = VGroup(Tex("t = ", font_size=30), DecimalNumber(font_size=24))
+        t_label.arrange(RIGHT, buff=SMALL_BUFF)
+
+        def update_t_label(label):
+            point = arc.pfp(0.5)
+            label[1].set_value(get_t())
+            label.set_stroke(BLACK, 5, background=True)
+            label.set_opacity(min(2 * get_t(), 1))
+            if get_t() < 3.65:
+                target_point = point + 0.75 * (point - axes.get_origin())
+                label.shift(target_point - label[1].get_center())
+
+        t_label.add_updater(update_t_label)
+
+        curr_xy = np.array(axes.p2c(ps_dot.get_center()))
+
+        def update_ps_dot(dot):
+            rot_M = np.array(rotation_matrix_transpose(get_t(), OUT))[:2, :2]
+            new_xy = np.dot(curr_xy, rot_M)
+            dot.move_to(axes.c2p(*new_xy))
+
+        ps_dot.add_updater(update_ps_dot)
+
+        t_tracker.add_updater(lambda m, dt: m.increment_value(0.5 * dt))
+        self.add(arc, t_label, t_tracker, ps_dot)
+        self.play(VFadeIn(t_label))
+        self.wait(16 * PI - 1)
+
+    def get_romeo_juliet_axes(self, height=5):
+        # Largely copied from RomeoJulietVectorSpace
+        romeo, juliet = lovers = self.get_romeo_and_juliet()
+        axes = Axes(
+            x_range=(-5, 5),
+            y_range=(-5, 5),
+            height=height,
+            width=height,
+            axis_config={
+                "include_tip": False,
+                "numbers_to_exclude": [],
+            }
+        )
+        axes.to_edge(LEFT)
+
+        for axis in axes:
+            axis.add_numbers(range(-4, 6, 2), color=GREY_A, font_size=12)
+            axis.numbers[2].set_opacity(0)
+
+        lovers.set_height(0.5)
+        lovers.flip()
+        juliet.next_to(axes.x_axis.get_end(), RIGHT)
+        romeo.next_to(axes.y_axis.get_end(), UP)
+
+        ps_dot = Dot(radius=0.04, fill_color=BLUE)
+        ps_dot.move_to(axes.c2p(3, 1))
+
+        def get_xy():
+            # Get phase space point
+            return axes.p2c(ps_dot.get_center())
+
+        self.make_romeo_and_juliet_dynamic(romeo, juliet)
+        juliet.love_tracker.add_updater(lambda m: m.set_value(get_xy()[0]))
+        romeo.love_tracker.add_updater(lambda m: m.set_value(get_xy()[1]))
+        self.add(romeo.love_tracker, juliet.love_tracker)
+
+        name_labels = self.get_romeo_juilet_name_labels(lovers, font_size=12, spacing=1.0, buff=0.05)
+
+        axes.lovers = lovers
+        axes.name_labels = name_labels
+        axes.ps_dot = ps_dot
+        axes.add(lovers, name_labels, ps_dot)
+
+        self.add(axes)
+        self.add(*lovers)
+        self.add(*(pi.heart_eyes for pi in lovers))
+
+        return axes
+
+    def get_ps_arrow(self, axes, color=BLUE, add_shadow=False):
+        arrow = Arrow(
+            LEFT, RIGHT,
+            fill_color=color,
+            thickness=0.04
+        )
+        arrow.add_updater(lambda m: m.put_start_and_end_on(
+            axes.get_origin(), axes.ps_dot.get_center(),
+        ))
+
+        if add_shadow:
+            ps_arrow_shadow = arrow.copy()
+            ps_arrow_shadow.clear_updaters()
+            ps_arrow_shadow.set_fill(BLUE, 0.5)
+            self.add(ps_arrow_shadow)
+        return arrow
+
+
+class GeometricReasoningForRomeoJuliet(AnalyzeRomeoAndJulietSpace):
+    def construct(self):
+        # Setup
+        axes = self.get_romeo_juliet_axes()
+        ps_dot = axes.ps_dot
+        ps_dot.set_opacity(0)
+        ps_dot.move_to(axes.c2p(4, 3))
+
+        ps_arrow = self.get_ps_arrow(axes)
+        self.add(ps_arrow)
+
+        matrix = [["0", "-1"], ["1", "0"]]
+        equation = get_2d_equation(matrix)
+        ddt, xy1, eq, mat, xy2 = equation
+        equation.to_corner(UR)
+        self.add(equation)
+
+        # Show 90 degree rotation
+        mat_brace = Brace(mat, DOWN, buff=SMALL_BUFF)
+        mat_label = mat_brace.get_text("90-degree rotation matrix", font_size=30)
+        mat_label.set_color(TEAL)
+
+        self.play(
+            GrowFromCenter(mat_brace),
+            Write(mat_label, run_time=1)
+        )
+        self.wait()
+
+        # Spiral around to various points
+        curve = VMobject()
+        curve.set_points_smoothly(
+            [
+                axes.c2p(x, y)
+                for x, y in [(4, 3), (0, 2), (0, -1), (-3, -4), (-3, 2), (3, 1)]
+            ],
+            true_smooth=True
+        )
+        self.play(MoveAlongPath(ps_dot, curve, run_time=5))
+        self.wait()
+
+        # Rate of change
+        deriv_vect = ps_arrow.copy()
+        deriv_vect.clear_updaters()
+        deriv_vect.set_color(RED)
+        deriv_vect.shift(ps_arrow.get_vector())
+
+        deriv_rect = SurroundingRectangle(VGroup(ddt, xy1))
+        deriv_rect.set_stroke(RED, 2)
+
+        d_line = DashedLine(ps_arrow.get_start(), ps_arrow.get_end())
+        d_line.shift(ps_arrow.get_vector())
+        d_line.set_stroke(WHITE, 1)
+
+        arc = Arc(
+            start_angle=ps_arrow.get_angle(),
+            angle=90 * DEGREES,
+            arc_center=ps_arrow.get_end(),
+            radius=0.25
+        )
+        elbow = VMobject()
+        elbow.set_points_as_corners([RIGHT, UR, UP])
+        elbow.scale(0.25, about_point=ORIGIN)
+        elbow.rotate(ps_arrow.get_angle(), about_point=ORIGIN)
+        elbow.shift(ps_arrow.get_end())
+        VGroup(elbow, arc).set_stroke(WHITE, 2)
+
+        self.play(
+            TransformFromCopy(ps_arrow, deriv_vect, path_arc=30 * DEGREES),
+            ShowCreation(deriv_rect),
+        )
+        self.add(d_line, deriv_vect)
+        self.play(
+            ShowCreation(arc),
+            Rotate(deriv_vect, 90 * DEGREES, about_point=ps_arrow.get_end()),
+            run_time=2,
+            rate_func=rush_into,
+        )
+        self.remove(arc)
+        self.add(elbow)
+        self.wait()
+
+        # Show rotation
+        ps_arrow.clear_updaters()
+        ps_dot.add_updater(lambda m: m.move_to(ps_arrow.get_end()))
+        rot_group = VGroup(ps_arrow, d_line, elbow, deriv_vect)
+        circle = Circle(radius=ps_arrow.get_length())
+        circle.set_stroke(GREY, 1)
+        circle.move_to(axes.get_origin())
+
+        self.play(
+            Rotate(
+                rot_group,
+                angle=TAU - ps_arrow.get_angle(),
+                about_point=axes.get_origin(),
+                run_time=6,
+                rate_func=linear,
+            ),
+            FadeIn(circle),
+        )
+        self.wait()
+
+        # Show matching length
+        self.play(
+            deriv_vect.animate.put_start_and_end_on(ps_arrow.get_start(), ps_arrow.get_end()).shift(0.2 * UP),
+            run_time=3,
+            rate_func=there_and_back_with_pause,
+        )
+        self.wait()
+
+        # Show one radian of arc
+        arc = Arc(
+            0, 1,
+            radius=circle.radius,
+            arc_center=axes.get_origin(),
+        )
+        arc.set_stroke(YELLOW, 3)
+        sector = Sector(
+            start_angle=0,
+            angle=1,
+            outer_radius=circle.radius,
+        )
+        sector.shift(axes.get_origin())
+        sector.set_stroke(width=0)
+        sector.set_fill(GREY_D, 1)
+
+        t_label = VGroup(Tex("t = ", font_size=30), DecimalNumber(0, font_size=20))
+        t_label.arrange(RIGHT, buff=SMALL_BUFF)
+        t_label.next_to(arc.pfp(0.5), UR, SMALL_BUFF)
+
+        self.play(
+            Rotate(rot_group, 1, about_point=axes.get_origin()),
+            ShowCreation(arc),
+            ChangeDecimalToValue(t_label[1], 1.0),
+            VFadeIn(t_label),
+            run_time=2,
+            rate_func=linear,
+        )
+        self.add(sector, axes, ps_arrow, arc)
+        self.play(FadeIn(sector))
+        self.wait()
+
+        radius = Line(axes.get_origin(), arc.get_start())
+        radius.set_stroke(RED, 5)
+        self.play(ShowCreation(radius))
+        self.play(Rotate(radius, -PI / 2, about_point=radius.get_end()))
+        radius.rotate(PI)
+        self.play(radius.animate.match_points(arc))
+        self.play(FadeOut(radius))
+        self.wait()
+
+        # One radian per unit time
+        self.play(
+            t_label.animate.shift(UP).scale(2),
+        )
+        t_label[1].data["font_size"] *= 2
+        for x in range(5):
+            VGroup(sector, arc).rotate(1, about_point=axes.get_origin())
+            self.play(
+                Rotate(rot_group, 1, about_point=axes.get_origin()),
+                ChangeDecimalToValue(t_label[1], t_label[1].get_value() + 1),
+                run_time=2,
+                rate_func=linear,
+            )
+        self.play(
+            FadeOut(VGroup(sector, arc)),
+            Rotate(rot_group, TAU - 6, about_point=axes.get_origin()),
+            ChangeDecimalToValue(t_label[1], TAU),
+            run_time=2 * (TAU - 6),
+            rate_func=linear,
+        )
+        self.wait(2)
+
+        t_label[1].set_value(0)
+        self.play(
+            Rotate(rot_group, PI, about_point=axes.get_origin()),
+            ChangeDecimalToValue(t_label[1], PI),
+            run_time=2 * PI,
+            rate_func=linear,
+        )
+        self.wait(2)
+
+
+class Show90DegreeRotation(Scene):
+    def construct(self):
+        plane = NumberPlane()
+        plane.scale(2.5)
+        back_plane = plane.deepcopy()
+        back_plane.set_stroke(color=GREY, opacity=0.5)
+        back_plane.add_coordinate_labels()
+
+        vects = VGroup(
+            Arrow(plane.get_origin(), plane.c2p(1, 0), fill_color=GREEN, buff=0, thickness=0.075),
+            Arrow(plane.get_origin(), plane.c2p(0, 1), fill_color=RED, buff=0, thickness=0.075),
+        )
+        plane.add(*vects)
+        plane.set_stroke(background=True)
+
+        self.add(back_plane, plane)
+        self.wait()
+        self.play(Rotate(plane, 90 * DEGREES, run_time=3))
+        self.wait()
+
+
+class TwoDifferetViewsWrapper(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        screens = VGroup(*(ScreenRectangle() for x in range(2)))
+        screens.arrange(RIGHT)
+        screens.set_width(FRAME_WIDTH - 1)
+        screens.set_fill(BLACK, 1)
+        screens[0].set_stroke(BLUE, 2)
+        screens[1].set_stroke(GREY_BROWN, 2)
+        self.add(screens)
+
+        titles = VGroup(
+            Text("Geometric"),
+            Text("Analytic"),
+        )
+        for title, screen in zip(titles, screens):
+            title.next_to(screen, UP)
+            title.align_to(titles[0], UP)
+            self.play(Write(title))
+            self.wait()
+        self.wait()
+
+
+class EulersFormulaWrapper(VideoWrapper):
+    title = "Video on $e^{it}$"
+
+
+class ImaginaryExponent(ExternallyAnimatedScene):
+    pass
+
+
+class ComplexEquation(Scene):
+    def construct(self):
+        # Equation
+        equation = Tex(
+            """
+            \\frac{d}{d{t} } \\Big[ x(t) + {i}y(t)\\Big] =
+            {i} \\cdot \\Big[ x(t) + {i}y(t) \\Big]
+            """,
+            tex_to_color_map={
+                "x": BLUE_B,
+                "y": BLUE_D,
+                "{t}": GREY_B,
+                "=": WHITE,
+                "\\cdot": WHITE,
+                "{i}": RED,
+            }
+        )
+        equation.move_to(2 * UP)
+
+        braces = VGroup(*(
+            Brace(equation[i:j], UP, buff=SMALL_BUFF)
+            for i, j in [(2, 8), (11, 17)]
+        ))
+        braces.set_fill(GREY_A, 1)
+        for brace in braces:
+            brace.zt = Tex("z(t)", tex_to_color_map={"z": BLUE, "t": GREY_B})
+            brace.zt.next_to(brace, UP, SMALL_BUFF)
+
+        self.add(equation)
+        self.play(
+            *(GrowFromCenter(b) for b in braces),
+            *(FadeIn(b.zt, 0.25 * UP) for b in braces)
+        )
+        self.wait()
+
+        # Show romeo and juilet
+        x_part = equation.get_part_by_tex("x")
+        y_part = equation.get_part_by_tex("y")
+
+        juliet_label = TexText("Juliet's love", font_size=30)
+        juliet_label.next_to(x_part, DOWN, LARGE_BUFF)
+        romeo_label = TexText("Romeo's love", font_size=30)
+        romeo_label.next_to(y_part, DOWN, LARGE_BUFF)
+        juliet_label.align_to(romeo_label, DOWN)
+        VGroup(juliet_label, romeo_label).space_out_submobjects(1.5)
+
+        juliet_arrow = Arrow(x_part, juliet_label, buff=0.1, fill_color=BLUE_B)
+        romeo_arrow = Arrow(y_part, romeo_label, buff=0.1, fill_color=BLUE_D)
+
+        self.play(
+            GrowArrow(juliet_arrow),
+            FadeIn(juliet_label),
+        )
+        self.play(
+            GrowArrow(romeo_arrow),
+            FadeIn(romeo_label),
+        )
+        self.wait()
+
+        # Describe i
+        i_part = equation.get_parts_by_tex("{i}")[1]
+        i_label = TexText("90-degree rotation", font_size=30)
+        i_label.set_color(RED)
+        i_label.next_to(romeo_label, RIGHT, MED_LARGE_BUFF, aligned_edge=DOWN)
+        i_arrow = Arrow(i_part, i_label, fill_color=RED)
+
+        self.play(
+            GrowArrow(i_arrow),
+            FadeIn(i_label, DR),
+        )
+        self.wait()
+
+        all_labels = VGroup(romeo_label, juliet_label, i_label)
+
+        # Show solution
+        solution = Tex(
+            "z(t) = e^{it} z_0",
+            tex_to_color_map={
+                "i": RED,
+                "t": GREY_B,
+                "z": BLUE,
+                "=": WHITE,
+            }
+        )
+        solution.scale(1.5)
+        solution.next_to(all_labels, DOWN, LARGE_BUFF)
+        solution[8:].set_color(BLUE_D)
+
+        self.play(
+            TransformFromCopy(braces[0].zt, solution[:4]),
+            Write(solution[4]),
+        )
+        self.play(
+            Write(solution[5]),
+            TransformFromCopy(equation[9], solution[6]),
+            Write(solution[7]),
+        )
+        self.play(
+            FadeIn(solution[8:], 0.1 * DOWN)
+        )
+        self.wait()
+
+
+class JulietChidingRomeo(Scene):
+    def construct(self):
+        juliet = PiCreature(color=BLUE_B)
+        romeo = PiCreature(color=BLUE_D)
+        romeo.flip()
+        pis = VGroup(juliet, romeo)
+        pis.set_height(2)
+        pis.arrange(RIGHT, buff=LARGE_BUFF)
+        pis.to_edge(DOWN)
+        romeo.make_eye_contact(juliet)
+
+        self.add(pis)
+        self.play(
+            PiCreatureSays(
+                juliet, TexText("It just seems like \\\\ your feelings aren't \\\\ real"),
+                bubble_kwargs={"height": 2.5, "width": 3.5},
+                target_mode="sassy",
+            ),
+            romeo.animate.change("guilty"),
+        )
+        for x in range(2):
+            self.play(Blink(juliet))
+            self.play(Blink(romeo))
+            self.wait()
+
+
+class General90DegreeRotationExponents(Scene):
+    def construct(self):
+        # Setup
+        exps = VGroup(
+            get_matrix_exponential([["0", "-1"], ["1", "0"]]),
+            Tex("e^{it}", tex_to_color_map={"i": RED}),
+            Tex(
+                "e^{(ai + bj + ck)t}",
+                tex_to_color_map={
+                    "i": RED,
+                    "j": GREEN,
+                    "k": BLUE,
+                }
+            ),
+            Tex(
+                "e^{i \\sigma_x t}, \\quad ",
+                "e^{i \\sigma_y t}, \\quad ",
+                "e^{i \\sigma_z t}",
+                tex_to_color_map={
+                    "\\sigma_x": RED,
+                    "\\sigma_y": GREEN,
+                    "\\sigma_z": BLUE,
+                }
+            ),
+        )
+        exps[0][1].set_color(TEAL)
+        exps[0].scale(0.5)
+
+        exps.arrange(DOWN, buff=1.5, aligned_edge=LEFT)
+
+        labels = VGroup(
+            TexText("$90^\\circ$ rotation matrix"),
+            TexText("Imaginary numbers"),
+            TexText("Quaternions"),
+            TexText("Pauli matrices"),
+        )
+        for label, exp in zip(labels, exps):
+            label.scale(0.75)
+            label.next_to(exp, LEFT, LARGE_BUFF, aligned_edge=DOWN)
+            label.align_to(labels[0], LEFT)
+
+        VGroup(exps, labels).to_edge(LEFT)
+
+        quat_note = Tex("(a^2 + b^2 + c^2 = 1)", font_size=24)
+        quat_note.next_to(exps[2], DOWN, aligned_edge=LEFT)
+        exps[2].add(quat_note)
+
+        for exp, label in zip(exps, labels):
+            self.play(
+                FadeIn(exp),
+                FadeIn(label),
+            )
+        self.wait()
+
+
+class RotationIn3dPlane(Scene):
+    def construct(self):
+        # Axes and frame
+        axes = ThreeDAxes()
+        axes.set_stroke(width=2)
+        axes.set_flat_stroke(False)
+
+        frame = self.camera.frame
+        frame.set_height(2.0 * FRAME_HEIGHT)
+        frame.reorient(-40, 70)
+        frame.add_updater(lambda f, dt: f.increment_theta(0.03 * dt))
+
+        self.add(axes, frame)
+
+        # Plane
+        plane = Surface()
+        plane.replace(VGroup(axes.x_axis, axes.y_axis), stretch=True)
+        plane.set_color(GREY_C, opacity=0.75)
+        plane.set_gloss(1)
+        grid = NumberPlane((-6, 6), (-5, 5), faded_line_ratio=0)
+
+        radius = 3
+        p_vect = Vector(radius * RIGHT, fill_color=BLUE)
+        v_vect = p_vect.copy()
+        arc = Arc(0, PI / 2, radius=radius / 4)
+        circle = Circle(radius=radius)
+        circle.set_stroke(WHITE, 2)
+        randy = Randolph(mode="pondering")
+        randy.set_gloss(0.7)
+        rot_group = Group(plane, grid, p_vect, v_vect, arc, circle, randy)
+
+        normal = OUT
+        for angle, axis in [(30 * DEGREES, RIGHT), (20 * DEGREES, UP)]:
+            rot_group.rotate(angle, axis)
+            normal = rotate_vector(normal, angle, axis)
+
+        self.play(
+            ShowCreation(plane),
+            FadeIn(randy),
+        )
+        self.play(GrowArrow(p_vect))
+        self.wait(2)
+        self.play(
+            Rotate(v_vect, PI / 2, axis=normal, about_point=axes.get_origin()),
+            Rotate(randy, PI / 2, axis=normal, about_point=axes.get_origin()),
+            UpdateFromAlphaFunc(v_vect, lambda m, a: m.set_fill(interpolate_color(BLUE, RED, a))),
+            ShowCreation(arc),
+            run_time=2,
+        )
+        self.wait(3)
+        self.play(
+            v_vect.animate.shift(p_vect.get_end() - v_vect.get_start()),
+            FadeOut(arc),
+            FadeOut(randy),
+        )
+        rot_group = VGroup(grid, p_vect, v_vect)
+        rot_group.set_stroke(background=True)
+        self.add(circle, rot_group)
+        self.play(
+            FadeIn(circle),
+            Rotate(
+                rot_group,
+                2 * TAU,
+                axis=normal,
+                about_point=axes.get_origin(),
+                run_time=4 * TAU,
+                rate_func=linear,
+            ),
+            VFadeIn(grid),
+        )
+
+
+class SchrodingerSum(Scene):
+    def construct(self):
+        # Add title
+        equation_label = VGroup(
+            TexText("Schrödinger equation:"),
+            Tex(
+                "{i} \\hbar \\frac{\\partial}{\\partial t} |\\psi(t)\\rangle = \\hat{H} |\\psi(t)\\rangle",
+                tex_to_color_map={
+                    "|\\psi(t)\\rangle": BLUE,
+                    "{i}": WHITE,
+                    "\\frac{\\partial}{\\partial t}": GREY_A,
+                },
+                font_size=36
+            )
+        )
+        equation_label.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        equation_label.set_width(FRAME_WIDTH - 1)
+        equation_label.to_edge(UP)
+        i_part = equation_label[1].get_part_by_tex("{i}")
+        self.add(equation_label)
+
+        # Axes
+        x_range = (-5, 5)
+        axes = Axes(
+            x_range=x_range,
+            y_range=(-1, 1, 0.5),
+            height=1.25,
+            width=4,
+            axis_config={"include_tip": False, "tick_size": 0.05},
+        )
+        lil_axes = VGroup(*(axes.deepcopy() for x in range(3)))
+        lil_axes.arrange(DOWN, buff=MED_LARGE_BUFF)
+        lil_axes.to_corner(DL)
+        brace = Brace(lil_axes, RIGHT, buff=MED_LARGE_BUFF)
+        axes.scale(2)
+        axes.next_to(brace, RIGHT)
+
+        # Graphs
+        def func0(x, t):
+            magnitude = np.exp(-x * x / 2)
+            phase = np.exp(complex(0, 0.5 * t))
+            return magnitude * phase
+
+        def func1(x, t):
+            magnitude = np.exp(-x * x / 2) * 2 * x
+            magnitude *= 1 / math.sqrt(2)
+            phase = np.exp(complex(0, 1.5 * t))
+            return magnitude * phase
+
+        def func2(x, t):
+            magnitude = -1 * np.exp(-x * x / 2) * (2 - 4 * x * x)
+            magnitude *= 1 / math.sqrt(8)
+            phase = np.exp(complex(0, 2.5 * t))
+            return magnitude * phase
+
+        def comb_func(x, t):
+            return (func0(x, t) + func1(x, t) + func2(x, t)) / 3
+
+        t_tracker = ValueTracker()
+        t_tracker.add_updater(lambda m, dt: m.increment_value(dt))
+        self.add(t_tracker)
+        get_t = t_tracker.get_value
+
+        def get_graph(axes, func, color):
+            fade_tracker = ValueTracker(1)
+            result = always_redraw(lambda: ParametricCurve(
+                lambda x: axes.c2p(x, func(x, get_t())),
+                t_range=x_range,
+                color=color,
+                stroke_opacity=fade_tracker.get_value(),
+            ))
+            result.fade_tracker = fade_tracker
+            return result
+
+        graph0, graph1, graph2, comb_graph = graphs = [
+            get_graph(axes, func, color)
+            for axes, func, color in zip(
+                [*lil_axes, axes],
+                [func0, func1, func2, comb_func],
+                [BLUE, TEAL, GREEN, YELLOW]
+            )
+        ]
+
+        lil_axes[1].save_state()
+        lil_axes[1].scale(2)
+        lil_axes[1].move_to(DOWN)
+
+        self.add(lil_axes[1], graph1)
+        self.wait(10)
+        self.add(*graphs)
+        self.play(
+            FadeIn(lil_axes[::2]),
+            FadeIn(axes),
+            Restore(lil_axes[1]),
+            GrowFromCenter(brace),
+            *(
+                UpdateFromAlphaFunc(g.fade_tracker, lambda m, a: m.set_value(a))
+                for g in (*graphs[::2], comb_graph)
+            )
+        )
+        self.wait(15)
+        self.play(
+            FlashAround(i_part, color=RED),
+            i_part.animate.set_color(RED)
+        )
+        self.wait(30)
+
+
+class BasicVectorFieldIdea(Scene):
+    def construct(self):
+        # Equation
+        matrix = np.array([[0, 1], [1, 0]])
+        v_tex = "\\vec{\\textbf{v}}(t)"
+        equation = Tex(
+            "{d \\over dt}", v_tex, "=", "M", v_tex,
+            tex_to_color_map={
+                "M": GREY_A,
+                v_tex: YELLOW,
+            }
+        )
+        equation.set_height(1.5)
+        equation.to_corner(UL, buff=0.25)
+
+        # Plane and field
+        def func(x, y):
+            return 0.25 * np.dot(matrix.T, [x, y])
+
+        plane = NumberPlane()
+        vector_field0 = VectorField(
+            lambda x, y: [x, y], plane,
+            magnitude_range=(0, 7),
+            vector_config={"thickness": 0.025}
+        )
+        vector_field = VectorField(
+            func, plane,
+            magnitude_range=(0, 2),
+            vector_config={"thickness": 0.025}
+        )
+
+        self.add(plane)
+        br1 = SurroundingRectangle(equation, buff=SMALL_BUFF)
+        equation[-1].save_state()
+        equation[-1].move_to(equation[-2], LEFT)
+        equation[-1].align_to(equation[1], UP)
+        br0 = SurroundingRectangle(equation, buff=SMALL_BUFF)
+
+        VGroup(br0, br1).set_fill(BLACK, opacity=0.9).set_stroke(WHITE, 2)
+
+        self.add(vector_field0, br0, equation[:-2], equation[-1])
+        self.play(LaggedStartMap(GrowArrow, vector_field0, run_time=2, lag_ratio=0.01))
+        self.wait()
+        self.play(
+            Transform(br0, br1),
+            Transform(vector_field0, vector_field),
+            Restore(equation[-1]),
+            FadeIn(equation[-2], UP),
+        )
+
+        flow_lines = AnimatedStreamLines(StreamLines(
+            func, plane,
+            step_multiple=0.25,
+            magnitude_range=(0, 2),
+            color_by_magnitude=False,
+            stroke_color=GREY_A,
+            stroke_width=2,
+            stroke_opacity=1,
+        ))
+        self.add(flow_lines, br0, equation)
+        self.wait(15)
+
+
+class JustifyTheClaim(TeacherStudentsScene):
+    def construct(self):
         pass
 
 
+# GENERIC flow scenes
+
+
+class ExponentialPhaseFlow(Scene):
+    CONFIG = {
+        "field_config": {
+            "color_by_magnitude": False,
+            "magnitude_range": (0.5, 5),
+            "arc_len": 5,
+        },
+        "plane_config": {
+            "x_range": [-4, 4],
+            "y_range": [-2, 2],
+            "height": 8,
+            "width": 16,
+        },
+        "matrix": [
+            [1, 0],
+            [0, 1],
+        ],
+        "label_height": 3,
+        "run_time": 30,
+        "slow_factor": 0.25,
+    }
+
+    def construct(self):
+        mr = np.array(self.field_config["magnitude_range"])
+        self.field_config["magnitude_range"] = self.slow_factor * mr
+        plane = NumberPlane(**self.plane_config)
+        plane.add_coordinate_labels()
+
+        vector_field, animated_lines = get_vector_field_and_stream_lines(
+            self.func, plane,
+            **self.field_config,
+        )
+
+        box = Square()
+        box.replace(Line(plane.c2p(-1, -1), plane.c2p(1, 1)), stretch=True)
+        box.set_stroke(GREY_A, 1)
+        box.set_fill(BLUE_E, 0.8)
+        move_points_along_vector_field(box, self.func, plane)
+
+        basis_vectors = VGroup(
+            Vector(RIGHT, fill_color=GREEN),
+            Vector(UP, fill_color=RED),
+        )
+        basis_vectors[0].add_updater(lambda m: m.put_start_and_end_on(
+            plane.get_origin(),
+            box.pfp(7 / 8)
+        ))
+        basis_vectors[1].add_updater(lambda m: m.put_start_and_end_on(
+            plane.get_origin(),
+            box.pfp(1 / 8)
+        ))
+
+        self.add(plane)
+        self.add(vector_field)
+        self.add(animated_lines)
+        self.add(box)
+        self.add(*basis_vectors)
+        self.wait(self.run_time)
+
+    def func(self, x, y):
+        return self.slow_factor * np.dot([x, y], np.transpose(self.matrix))
+
+    def get_label(self):
+        exponential = get_matrix_exponential(self.matrix)
+        changing_t = DecimalNumber(0, color=YELLOW)
+        changing_t.match_height(exponential[2])
+        changing_t.move_to(exponential[2], DL)
+        exponential.replace_submobject(2, changing_t)
+
+        equals = Tex("=")
+        rhs = DecimalMatrix(
+            np.zeros((2, 2)),
+            element_to_mobject_config={"num_decimal_places": 3},
+            h_buff=1.8,
+        )
+        rhs.match_height(exponential)
+
+        equation = VGroup(
+            exponential,
+            equals,
+            rhs,
+        )
+        equation.arrange(RIGHT)
+        equation.to_corner(UL)
+
+
+class ExponentialEvaluationWithTime(Scene):
+    flow_scene_class = ExponentialPhaseFlow
+
+    def construct(self):
+        flow_scene_attrs = merge_dicts_recursively(
+            ExponentialPhaseFlow.CONFIG,
+            self.flow_scene_class.CONFIG,
+        )
+        matrix = np.array(flow_scene_attrs["matrix"])
+        slow_factor = flow_scene_attrs["slow_factor"]
+
+        def get_t():
+            return slow_factor * self.time
+
+        exponential = get_matrix_exponential(matrix)
+        dot = Tex("\\cdot")
+        dot.move_to(exponential[2], LEFT)
+        changing_t = DecimalNumber(0)
+        changing_t.match_height(exponential[2])
+        changing_t.next_to(dot, RIGHT, SMALL_BUFF)
+        changing_t.align_to(exponential[1], DOWN)
+        changing_t.add_updater(lambda m: m.set_value(get_t()).set_color(YELLOW))
+        lhs = VGroup(*exponential[:2], dot, changing_t)
+
+        equals = Tex("=")
+        rhs = DecimalMatrix(
+            np.zeros((2, 2)),
+            element_to_mobject_config={"num_decimal_places": 2},
+            element_alignment_corner=ORIGIN,
+            h_buff=2.0,
+        )
+        for mob in rhs.get_entries():
+            mob.edge_to_fix = ORIGIN
+
+        rhs.match_height(lhs)
+
+        def update_rhs(rhs):
+            result = mat_exp(matrix * get_t())
+            for mob, value in zip(rhs.get_entries(), result.flatten()):
+                mob.set_value(value)
+            return rhs
+
+        rhs.add_updater(update_rhs)
+
+        equation = VGroup(lhs, equals, rhs)
+        equation.arrange(RIGHT)
+        equation.center()
+
+        self.add(equation)
+        self.wait(flow_scene_attrs["run_time"])
+        self.embed()
+
+
+class CircularPhaseFlow(ExponentialPhaseFlow):
+    CONFIG = {
+        "matrix": [
+            [0, -1],
+            [1, 0],
+        ]
+    }
+
+
+class CircularFlowEvaluation(ExponentialEvaluationWithTime):
+    flow_scene_class = CircularPhaseFlow
+
+
+class EllipticalPhaseFlow(ExponentialPhaseFlow):
+    CONFIG = {
+        "matrix": [
+            [0, -3],
+            [1, 0],
+        ]
+    }
+
+
+class EllipticalFlowEvaluation(ExponentialEvaluationWithTime):
+    flow_scene_class = EllipticalPhaseFlow
+
+
+class HyperbolicPhaseFlow(ExponentialPhaseFlow):
+    CONFIG = {
+        "field_config": {
+            "sample_freq": 8,
+        },
+        "matrix": [
+            [1, 0],
+            [0, -1],
+        ]
+    }
+
+
+class HyperbolicFlowEvaluation(ExponentialEvaluationWithTime):
+    flow_scene_class = HyperbolicPhaseFlow
+
+
+class ShearPhaseFlow(ExponentialPhaseFlow):
+    CONFIG = {
+        "field_config": {
+            "sample_freq": 2,
+            "magnitude_range": (0.5, 8),
+        },
+        "plane_config": {
+            "x_range": [-8, 8],
+            "y_range": [-4, 4],
+        },
+        "matrix": [
+            [1, 1],
+            [0, 1],
+        ],
+        "slow_factor": 0.1,
+    }
+
+
+class ShearFlowEvaluation(ExponentialEvaluationWithTime):
+    flow_scene_class = ShearPhaseFlow
+
+
+class DampedRotationPhaseFlow(ExponentialPhaseFlow):
+    CONFIG = {
+        "matrix": [
+            [-1, -1],
+            [1, 0],
+        ],
+    }
+
+
+class DampedRotationFlowEvaluation(ExponentialEvaluationWithTime):
+    flow_scene_class = DampedRotationPhaseFlow
+
+
+class FrameForFlow(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle(fill_color=GREY_D))
+        screen_rect = ScreenRectangle()
+        screen_rect.set_height(5.5)
+        screen_rect.set_stroke(WHITE, 3)
+        screen_rect.set_fill(BLACK, 1)
+        screen_rect.to_edge(DOWN)
+        self.add(screen_rect)
+
+
 # Older
+
+class PrerequisitesWrapper(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        title = Text("Helpful background knowledge")
+        title.to_edge(UP)
+        self.add(title)
+
+        screens = VGroup(*(ScreenRectangle() for x in range(2)))
+        screens.arrange(RIGHT, buff=LARGE_BUFF)
+        screens.set_width(FRAME_WIDTH - 1)
+        screens.move_to(DOWN)
+        screens.set_fill(BLACK, 1)
+        screens.set_stroke(WHITE, 2)
+
+        topics = VGroup(
+            TexText("Basics of $e^x$"),
+            TexText("How matrices act\\\\as transformations"),
+        )
+        for topic, screen in zip(topics, screens):
+            topic.next_to(screen, UP)
+            topic.set_color(WHITE)
+
+        for topic, screen in zip(topics, screens):
+            sc = screen.copy()
+            sc.set_fill(opacity=0)
+            sc.set_stroke(width=3)
+            self.play(
+                FadeIn(topic, 0.5 * UP),
+                FadeIn(screen),
+                VShowPassingFlash(sc, time_width=1.0, run_time=1.5),
+            )
+            self.wait(2)
 
 
 class SchroedingersComplicatingFactors(TeacherStudentsScene):
@@ -4304,4 +5365,3 @@ class PreviewVisualizationWrapper(Scene):
             FadeIn(titles[2].get_parts_by_text("solves?"))
         )
         self.wait(2)
-
