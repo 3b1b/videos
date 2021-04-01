@@ -6207,7 +6207,7 @@ class Thumbnail(DampedRotationPhaseFlow):
         rect.set_opacity(0.5)
         self.add(rect)
 
-        exp = get_matrix_exponential([[-1, -1], [-1, 0]], scalar_tex="")
+        exp = get_matrix_exponential([[-1, -1], [1, 0]], scalar_tex="")
         exp.set_height(5)
         exp.set_stroke(BLACK, 30, background=True)
         self.add(exp)
