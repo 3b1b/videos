@@ -339,6 +339,78 @@ class Thumbnail(Scene):
         self.add(group)
 
 
+class AltThumbnail(Scene):
+    def construct(self):
+        background = self.get_background()
+        self.add(background)
+
+        bits = get_bit_grid(4, 4)
+        bits.arrange_in_grid(h_buff=0.7, v_buff=0.5)
+        boxes = get_bit_grid_boxes(bits)
+        boxes.set_fill(BLACK, 1)
+
+        boxes[0].set_fill(TEAL_E)
+        parity_boxes = VGroup(*(boxes[2**n] for n in range(4)))
+        parity_boxes.set_fill(BLUE_E, 1)
+        group = VGroup(boxes, bits)
+        group.to_edge(DOWN, buff=LARGE_BUFF)
+
+        grouped_blocks = VGroup(*(boxes.copy() for x in range(4)))
+        grouped_blocks.arrange_in_grid(buff_ratio=0.4)
+        grouped_blocks.match_height(boxes)
+        grouped_blocks.match_y(boxes)
+        for n, gb in enumerate(grouped_blocks):
+            gb.set_fill(BLACK)
+            for k, box in enumerate(gb):
+                if (k & (2**n)):
+                    box.set_fill(BLUE_E)
+        grouped_blocks.to_edge(RIGHT, LARGE_BUFF)
+
+        VGroup(group, grouped_blocks).arrange(RIGHT, buff=1.5).to_edge(DOWN, LARGE_BUFF)
+
+        self.add(group)
+        self.add(grouped_blocks)
+
+        title = Text("Hamming codes", font_size=72)
+        title.to_edge(UP)
+        shadow = VGroup()
+        for w in np.linspace(50, 0, 50):
+            tc = title.copy()
+            tc.set_stroke(BLACK, width=w, opacity=0.02)
+            tc.set_fill(opacity=0)
+            shadow.add(tc)
+
+        self.add(shadow)
+        self.add(title)
+        return
+
+
+        #
+        words = TexText("Parity bits", font_size=72)
+        words.next_to(boxes, LEFT, LARGE_BUFF)
+        words.to_edge(UP)
+
+        words.move_to(boxes.get_corner(UL), DR)
+        words.shift(0.5 * UL)
+
+        lines = VGroup()
+        for n, v in zip(range(4), [UP, UP, LEFT, LEFT]):
+            lines.add(Line(words.get_corner(DR), boxes[2**n].get_corner(v), buff=0.0))
+
+        lines.set_stroke(BLUE_B)
+
+        self.add(words)
+        self.add(lines)
+
+    def get_background(self, n=25, k=100):
+        choices = (Integer(0), Integer(1))
+        background = VGroup(*(random.choice(choices).copy() for x in range(n * k)))
+        background.arrange_in_grid(n, k)
+        background.set_height(FRAME_HEIGHT)
+        background.set_opacity(0.2)
+        return background
+
+
 class DiskOfBits(Scene):
     def construct(self):
         # Setup disc
@@ -4764,24 +4836,25 @@ class EndScreen(Scene):
 
 # Part 2
 
-class Thumbnail2(Scene):
+class Thumbnail2(AltThumbnail):
     def construct(self):
+        self.add(self.get_background())
+
         code = ImageMobject("HammingCodeOneLine")
         code.set_width(FRAME_WIDTH - 3)
+        br = SurroundingRectangle(code, buff=MED_SMALL_BUFF)
+        br.set_fill(BLACK, 1)
+        br.set_stroke(GREY_B, 2)
+        code = Group(br, code)
+        code.set_width(FRAME_WIDTH - 2)
+        code.to_edge(DOWN, buff=LARGE_BUFF)
         self.add(code)
 
-        words = VGroup(
-            # TexText("Why one line\\\\"),
-            # TexText("finds bit errors"),
-            TexText("Hamming codes\\\\"),
-            TexText("in one(ish) line"),
-        )
-        words.set_width(FRAME_WIDTH - 3)
-        words[0].to_edge(UP, buff=0.5)
-        words[1].to_edge(DOWN, buff=0.5)
-
-        words[0].set_color(BLUE_C)
-        words[1].set_color(BLUE_B)
+        words = TexText("Hamming codes, part 2", "\\\\the elegance")
+        words[1].set_color(BLUE)
+        words.set_height(2.0)
+        words.to_edge(UP)
+        words.set_stroke(BLACK, 20, background=True)
 
         self.add(words)
 

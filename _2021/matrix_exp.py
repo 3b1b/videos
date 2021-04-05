@@ -1448,7 +1448,7 @@ class DefinitionFirstVsLast(Scene):
         )
         self.wait()
 
-        # Highligh specific example
+        # Highlight specific example
         full_rect = FullScreenRectangle()
         full_rect.set_fill(BLACK, opacity=0.75)
         sp, gp, hc = low_prog[:3].copy()
@@ -6189,7 +6189,7 @@ class FrameForFlow(Scene):
         self.add(screen_rect)
 
 
-class Thumbnail(DampedRotationPhaseFlow):
+class ThumbnailBackdrop(DampedRotationPhaseFlow):
     CONFIG = {
         "run_time": 10,
     }
@@ -6203,14 +6203,31 @@ class Thumbnail(DampedRotationPhaseFlow):
             if isinstance(mob, NumberPlane):
                 self.remove(mob.coordinate_labels)
 
-        rect = FullScreenFadeRectangle()
-        rect.set_opacity(0.5)
-        self.add(rect)
+
+class Thumbnail(Scene):
+    def construct(self):
+        im = ImageMobject("ExpMatThumbnailBackdrop")
+        im.set_height(FRAME_HEIGHT)
+        im.set_opacity(0.7)
+        self.add(im)
+
+        # rect = FullScreenFadeRectangle()
+        # rect.set_fill(opacity=0.3)
+        # self.add(rect)
 
         exp = get_matrix_exponential([[-1, -1], [1, 0]], scalar_tex="")
         exp.set_height(5)
-        exp.set_stroke(BLACK, 30, background=True)
-        self.add(exp)
+        exp.set_stroke(BLACK, 50, opacity=0.5, background=True)
+
+        fuzz = VGroup()
+        N = 100
+        for w in np.linspace(150, 0, N):
+            ec = exp.copy()
+            ec.set_stroke(BLUE_E, width=w, opacity=(1 / N))
+            ec.set_fill(opacity=0)
+            fuzz.add(ec)
+
+        self.add(fuzz, exp)
 
         self.embed()
 

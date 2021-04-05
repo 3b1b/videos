@@ -1520,20 +1520,21 @@ class VideoWrapper(Scene):
 class Thumbnail(Scene):
     def construct(self):
         epii = Tex(
-            "e^{{i} \\pi} = -1",
+            "e^{ {i} \\pi} = -1",
             tex_to_color_map={
-                "{i}": CONST_COLOR,
-                "\\pi": T_COLOR,
-                "-1": POSITION_COLOR,
+                "{i}": YELLOW,
+                "\\pi": BLUE,
+                "-1": GREY_A,
             }
         )
         epii.set_width(8)
         epii.to_edge(UP)
+        epii.set_stroke(BLACK, 50, background=True)
 
         words = VGroup(
             TexText("in"),
             TexText(
-                "in", 
+                "in",
                 "3.14", " minutes"
             ),
         )
@@ -1546,15 +1547,22 @@ class Thumbnail(Scene):
         words.shift(-words[0].get_center())
         words[0].set_opacity(0)
 
-        unit_size = 1.5
+        unit_size = 2.0
         plane = ComplexPlane()
         plane.scale(unit_size)
-        plane.add_coordinates()
+        plane.shift(1.0 * DOWN)
+        plane.add_coordinate_labels([*range(-3, 4), complex(0, -1), complex(0, 1)])
 
         circle = Circle(
             radius=unit_size,
             color=YELLOW,
         )
+        circle.set_stroke(GREY_B, 3)
+        arc = Arc(0, PI, radius=unit_size)
+        arc.set_stroke(BLUE, 10)
+        circle = VGroup(arc.copy().set_stroke(BLACK, 20, background=True), circle, arc)
+
+        circle.move_to(plane.get_origin())
         # half_circle = VMobject()
         # half_circle.pointwise_become_partial(circle, 0, 0.5)
         # half_circle.set_stroke(RED, 6)
@@ -1562,19 +1570,22 @@ class Thumbnail(Scene):
             plane.n2p(0),
             plane.n2p(1),
             buff=0,
-            color=POSITION_COLOR,
+            fill_color=GREY_A,
+            thickness=0.1
         )
         v_vect = Arrow(
             plane.n2p(1),
             plane.n2p(complex(1, 1)),
             buff=0,
-            color=VELOCITY_COLOR,
+            fill_color=YELLOW,
+            thickness=0.1
         )
         vects = VGroup(p_vect, v_vect)
-        vects.set_stroke(width=10)
 
         self.add(plane)
         self.add(circle)
         self.add(vects)
         self.add(epii)
-        self.add(words)
+        # self.add(words)
+
+        self.embed()

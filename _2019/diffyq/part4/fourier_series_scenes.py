@@ -1833,51 +1833,52 @@ class DE4Thumbnail(ComplexFourierSeriesExample):
     }
 
     def construct(self):
-        name = TexText("Fourier series")
-        name.set_width(FRAME_WIDTH - 2)
-        name.to_edge(UP)
-        name.set_color(YELLOW)
-        subname = TexText("a.k.a ``everything is rotations''")
-        subname.match_width(name)
-        subname.next_to(name, DOWN)
-        VGroup(name, subname).to_edge(DOWN)
-
-        self.add(name)
-        self.add(subname)
-
         path = self.get_path()
         path.to_edge(DOWN)
         path.set_stroke(YELLOW, 2)
         freqs = self.get_freqs()
         coefs = self.get_coefficients_of_path(path, freqs=freqs)
         vectors = self.get_rotating_vectors(freqs, coefs)
-        # circles = self.get_circles(vectors)
+        circles = self.get_circles(vectors)
 
         ns = [10, 50, 250]
         approxs = VGroup(*[
             self.get_vector_sum_path(vectors[:n])
             for n in ns
         ])
-        approxs.arrange(RIGHT, buff=2.5)
-        approxs.set_height(3.75)
-        approxs.to_edge(UP, buff=1.25)
+        approxs.arrange(RIGHT, buff=1.0)
+        approxs.set_width(FRAME_WIDTH - 2)
+        approxs.set_y(-0.5)
         for a, c, w in zip(approxs, [BLUE, GREEN, YELLOW], [4, 3, 2]):
             a.set_stroke(c, w)
-            a.set_stroke(WHITE, w + w / 2, background=True)
+            a.set_stroke(c, w + w / 2, background=True)
 
         labels = VGroup()
         for n, approx in zip(ns, approxs):
             label = Tex("n = ", str(n))
             label[1].match_color(approx)
             label.scale(2)
-            label.next_to(approx, UP)
-            label.to_edge(UP, buff=MED_SMALL_BUFF)
+            label.next_to(approx, UP, MED_LARGE_BUFF)
+            label.shift_onto_screen()
             labels.add(label)
+        for label in labels:
+            label.align_to(labels[-1], DOWN)
 
         self.add(approxs)
         self.add(labels)
 
         return
+        # Old
+        name = TexText("Fourier series")
+        name.to_edge(UP)
+        name.set_color(YELLOW)
+        subname = TexText("a.k.a ``everything is rotations''")
+        subname.match_width(name)
+        subname.next_to(name, DOWN, SMALL_BUFF)
+
+        names = VGroup(name, subname)
+        names.set_width(8)
+        names.to_edge(DOWN, buff=MED_SMALL_BUFF)
 
         self.add_vectors_circles_path()
         n = 6

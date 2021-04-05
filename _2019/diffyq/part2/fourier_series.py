@@ -371,7 +371,7 @@ class FourierOfPiSymbol(FourierCirclesScene):
         return path
 
 
-class FourierOfTexPaths(FourierOfPiSymbol, MovingCameraScene):
+class FourierOfTexPaths(FourierOfPiSymbol):
     CONFIG = {
         "n_vectors": 100,
         "name_color": WHITE,
