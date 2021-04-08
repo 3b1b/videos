@@ -4788,7 +4788,7 @@ class ShowFinalStrategyWithFadeLines(ShowFinalStrategy):
     }
 
 
-class Thumbnail(ThreeDScene):
+class Thumbnail(FourDCubeColoringFromTrees):
     def construct(self):
         # Board
         board = Chessboard(
@@ -4797,44 +4797,51 @@ class Thumbnail(ThreeDScene):
             square_resolution=(5, 5),
             top_square_resolution=(7, 7),
         )
-        board.set_gloss(0.5)
+        board.set_gloss(0.3)
+        k = 16
+        board[k].set_color(YELLOW)
+        board.set_height(7)
 
         coins = CoinsOnBoard(
             board,
             coin_config={
-                "disk_resolution": (8, 51),
+                "disk_resolution": (80, 51),
             }
         )
         coins.flip_by_message("A colab!")
 
-        # bools = np.array(string_to_bools("A colab!"))
-        # bools = bools.reshape((6, 8))[:, 2:]
-        # coins.flip_by_bools(bools.flatten())
+        board_group = Group(board, coins)
+        board_group.set_width(FRAME_WIDTH / 2 - 2)
+        board_group.set_x(-FRAME_WIDTH / 4)
+        self.add(board_group)
 
-        # board[0].set_opacity(0)
-        # coins[0].set_opacity(0)
+        # Hypercube
+        cube = self.get_hypercube(width=2)
+        colors = [BLUE_D, TEAL, GREEN, YELLOW]
+        for n, vert in enumerate(cube.verts):
+            code = boolian_linear_combo(int_to_bit_coords(n, 4))
+            cube.verts[n].set_color(colors[code])
 
-        # k = boolian_linear_combo(coins.get_bools())
-        k = 6
+        cube.set_width(FRAME_WIDTH / 2 - 2)
+        cube.set_x(FRAME_WIDTH / 4)
+        cube.set_z(0, OUT)
+        cube.rotate(7 * DEGREES, UP)
+        self.add(cube)
 
-        board[k].set_color(YELLOW)
+        Group(cube, board_group).to_edge(UP, LARGE_BUFF)
 
-        self.add(board)
-        self.add(coins)
+        v_line = Line(UP, DOWN)
+        v_line.set_height(FRAME_HEIGHT)
+        v_line.set_stroke(GREY_A, 3)
+        self.add(v_line)
 
-        # Move them
-        Group(board, coins).shift(DOWN + 2 * RIGHT)
-
-        frame = self.camera.frame
-        frame.set_euler_angles(phi=50 * DEGREES)
-
-        # Title
-        title = TexText("Impossible?")
-        title.fix_in_frame()
-        title.set_width(8)
-        title.to_edge(UP)
-        title.set_stroke(BLACK, 6, background=True)
-        # self.add(title)
+        titles = VGroup(Text("From chessboards"), Text("to hypercubes"))
+        titles.match_width(board_group)
+        for title, mob in zip(titles, [board_group, cube]):
+            title.match_x(mob)
+        titles.to_edge(DOWN)
+        self.add(titles)
+        return
 
         # Instructions
         message = TexText(
@@ -4850,14 +4857,14 @@ class Thumbnail(ThreeDScene):
         arrow = Arrow(
             message.get_corner(UR),
             message.get_corner(UR) + 3 * RIGHT + UP,
-            path_arc=-90 * DEGREES,
+            path_arc=-70 * DEGREES,
         )
         arrow.fix_in_frame()
         arrow.shift(1.5 * LEFT)
         arrow.set_color(YELLOW)
 
-        self.add(message)
-        self.add(arrow)
+        # self.add(message)
+        # self.add(arrow)
 
 
 class ChessEndScreen(PatreonEndScreen):

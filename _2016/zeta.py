@@ -3296,6 +3296,64 @@ class Thumbnail(ZetaTransformationScene):
 
         self.add(div_sum, million, zeta)
 
+class ZetaThumbnail(Scene):
+    def construct(self):
+        plane = ComplexPlane(
+            x_range=(-5, 5), y_range=(-3, 3),
+            background_line_style={
+                "stroke_width": 2,
+                "stroke_opacity": 0.75,
+            }
+        )
+        plane.set_height(FRAME_HEIGHT)
+        plane.scale(3 / 2.5)
+        plane.add_coordinate_labels(font_size=12)
+        self.add(plane)
+
+        lines = VGroup(
+            *(
+                Line(plane.c2p(-7, y), plane.c2p(7, y))
+                for y in np.arange(-2, 2, 0.1)
+                if y != 0
+            ),
+            *(
+                Line(plane.c2p(x, -4), plane.c2p(x, 4))
+                for x in np.arange(-2, 2, 0.1)
+                if x != 0
+            ),
+        )
+        lines.insert_n_curves(200)
+        lines.apply_function(lambda p: plane.n2p(zeta(plane.p2n(p))))
+        lines.make_smooth()
+        lines.set_stroke(GREY_B, 1, opacity=0.5)
+        self.add(lines)
+
+        c_line = Line(plane.c2p(0.5, 0), plane.c2p(0.5, 35))
+        c_line.insert_n_curves(1000)
+        c_line.apply_function(lambda p: plane.n2p(zeta(plane.p2n(p))))
+        c_line.make_smooth()
+        c_line.set_stroke([TEAL, YELLOW], width=[7, 3])
+
+        shadow = VGroup()
+        for w in np.linspace(25, 0, 50):
+            cc = c_line.copy()
+            cc.set_stroke(BLACK, width=w, opacity=0.025)
+            shadow.add(cc)
+
+        self.add(shadow)
+        self.add(c_line)
+
+        sym = Tex("\\zeta\\left(s\\right)")
+        sym.set_height(1.5)
+        sym.move_to(FRAME_WIDTH * LEFT / 4 + FRAME_HEIGHT * UP / 4)
+        shadow = VGroup()
+        for w in np.linspace(50, 0, 50):
+            sc = sym.copy()
+            sc.set_fill(opacity=0)
+            sc.set_stroke(BLACK, width=w, opacity=0.05)
+            shadow.add(sc)
+        self.add(shadow)
+        self.add(sym)
 
 class ZetaPartialSums(ZetaTransformationScene):
     CONFIG = {

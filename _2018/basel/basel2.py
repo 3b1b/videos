@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 from manim_imports_ext import *
-from once_useful_constructs.light import *
+
 
 import warnings
 warnings.warn("""
