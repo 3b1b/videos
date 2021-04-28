@@ -3,18 +3,18 @@
 
 from manim_imports_ext import *
 from _2019.diffyq.part2.fourier_series import FourierOfTexPaths
-from _2018.quaternions import *
 
 
 # I'm guessing most of this needs to be fixed...
-class ComplexMorphingNames(ComplexTransformationScene):
+# class ComplexMorphingNames(ComplexTransformationScene):
+class ComplexMorphingNames(Scene):
     CONFIG = {
         "patron_name": "Janel",
         "function": lambda z: 0.2 * (z**3),
         "default_apply_complex_function_kwargs": {
             "run_time": 5,
         },
-        "output_directory": os.path.join(VIDEO_DIR, "EightDollarPatrons"),
+        "output_directory": os.path.join(get_output_dir(), "EightDollarPatrons"),
         "include_coordinate_labels": False,
         "vert_start_color": YELLOW,  # TODO
         "vert_end_color": PINK,
@@ -131,7 +131,7 @@ class NameAnimationScene(Scene):
     CONFIG = {
         "animated_name": "Test name",
         "all_names": [
-            "William Wayne Smith",
+            "范英睿",
         ],
         "animate_all_names": True,
         "linger_after_completion": False,
@@ -145,6 +145,7 @@ class NameAnimationScene(Scene):
                 try:
                     self.file_writer.file_name = name.replace(" ", "") + self.__class__.__name__
                     self.file_writer.init_output_directories()
+                    self.file_writer.begin()
                     self.num_plays = 0
                     # Allow subclasses to alter this name, for example by lengthening it.
                     name = self.edit_name_text(name)
@@ -345,12 +346,10 @@ class ModularMultiplicationNameAnimation(RotatingNameLetters):
 
 
 class FourierNameAnimation(FourierOfTexPaths, NameAnimationScene):
-    CONFIG = {
-        "camera_class": MovingCamera
-    }
+    pass
 
 
-class QuaternionNameAnimation(SpecialThreeDScene):
+class QuaternionNameAnimation(Scene):
     CONFIG = {
         "R": 2,
     }
