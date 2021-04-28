@@ -74,14 +74,14 @@ class FourierCirclesScene(Scene):
 
         last_vector = None
         for freq, coefficient in zip(freqs, coefficients):
-            if last_vector:
+            if last_vector is not None:
                 center_func = last_vector.get_end
             else:
                 center_func = self.center_tracker.get_location
             vector = self.get_rotating_vector(
                 coefficient=coefficient,
                 freq=freq,
-                center_func=center_func,
+                center_func=center_func
             )
             vectors.add(vector)
             last_vector = vector
@@ -311,7 +311,7 @@ class FourierSeriesIntroBackground20(FourierSeriesIntroBackground4):
 
 class FourierOfPiSymbol(FourierCirclesScene):
     CONFIG = {
-        "n_vectors": 51,
+        "n_vectors": 101,
         "center_point": ORIGIN,
         "slow_factor": 0.1,
         "n_cycles": 1,
@@ -328,8 +328,10 @@ class FourierOfPiSymbol(FourierCirclesScene):
     def add_vectors_circles_path(self):
         path = self.get_path()
         coefs = self.get_coefficients_of_path(path)
-        for coef in coefs:
-            print(coef)
+
+        for freq, coef in zip(self.get_freqs(), coefs):
+            print(freq, "\t", coef)
+
         vectors = self.get_rotating_vectors(coefficients=coefs)
         circles = self.get_circles(vectors)
         self.set_decreasing_stroke_widths(circles)
@@ -379,6 +381,14 @@ class FourierOfTexPaths(FourierOfPiSymbol):
         "time_per_symbol": 5,
         "slow_factor": 1 / 5,
         "parametric_function_step_size": 0.001,
+        "max_circle_stroke_width": 0.25,
+        "vector_config": {
+            "buff": 0,
+            "fill_opacity": 0.75,
+            "thickness": 0.02,
+            "max_tip_length_to_length_ratio": 0.5,
+            "max_width_to_length_ratio": 0.05,
+        },
     }
 
     def construct(self):
@@ -398,6 +408,7 @@ class FourierOfTexPaths(FourierOfPiSymbol):
             for subpath in path.get_subpaths():
                 sp_mob = VMobject()
                 sp_mob.set_points(subpath)
+                sp_mob.insert_n_curves(10)
                 sp_mob.set_color("#2561d9")
                 coefs = self.get_coefficients_of_path(sp_mob)
                 new_vectors = self.get_rotating_vectors(coefficients=coefs)
@@ -406,22 +417,25 @@ class FourierOfTexPaths(FourierOfPiSymbol):
 
                 drawn_path = self.get_drawn_path(new_vectors)
                 drawn_path.clear_updaters()
-                drawn_path.set_stroke(self.name_color, 3)
+                drawn_path.set_stroke(self.name_color, 1.5)
                 drawn_path.set_fill(opacity=0)
 
-                static_vectors = VMobject().become(new_vectors)
-                static_circles = VMobject().become(new_circles)
+                static_vectors = self.get_rotating_vectors(coefficients=coefs)
+                static_circles = self.get_circles(static_vectors)
+                self.set_decreasing_stroke_widths(static_circles)
+                static_vectors.clear_updaters()
+                static_circles.clear_updaters()
 
                 if vectors is None:
-                    vectors = static_vectors.copy()
-                    circles = static_circles.copy()
+                    vectors = static_vectors.deepcopy()
+                    circles = static_circles.deepcopy()
                     vectors.scale(0)
                     circles.scale(0)
 
                 self.play(
                     Transform(vectors, static_vectors, remover=True),
                     Transform(circles, static_circles, remover=True),
-                    frame.set_height, 1.5 * name.get_height(),
+                    frame.set_height, 1.25 * name.get_height(),
                     frame.move_to, path,
                 )
 
