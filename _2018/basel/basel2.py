@@ -39,7 +39,7 @@ DEGREES = TAU/360
 
 inverse_power_law = lambda maxint,scale,cutoff,exponent: \
     (lambda r: maxint * (cutoff/(r/scale+cutoff))**exponent)
-inverse_quadratic = lambda maxint,scale,cutoff: inverse_power_law(maxint,scale,cutoff,2)
+inverse_quadratic = lambda maxint, scale, cutoff: inverse_power_law(maxint,scale,cutoff,2)
 
 # A = np.array([5.,-3.,0.])
 # B = np.array([-5.,3.,0.])
