@@ -17,5 +17,5 @@ style:
   background_color: "#000000"
 camera_qualities:
   default_quality: "ultra_high"
-window_position: UL
+window_position: UR
 window_monitor: 0
