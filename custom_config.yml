@@ -3,7 +3,7 @@ directories:
   output: "/Users/grant/Dropbox/3Blue1Brown/videos"
   raster_images: "/Users/grant/Dropbox/3Blue1Brown/images/raster"
   vector_images: "/Users/grant/Dropbox/3Blue1Brown/images/vector"
-  pi_creature_images: "/Users/grant/Dropbox/3Blue1Brown/images/pi_creature"
+  pi_creature_images: "/Users/grant/Dropbox/3Blue1Brown/images/pi_creature/svg"
   sounds: "/Users/grant/Dropbox/3Blue1Brown/sounds"
   data: "/Users/grant/Dropbox/3Blue1Brown/data"
   temporary_storage: "/Users/grant/Dropbox/3Blue1Brown/manim_cache"
