@@ -76,17 +76,7 @@ class PatreonEndScreen(Scene):
         thanks.add(underline)
 
         # Build name list
-        file_name = os.path.join(get_directories()["data"], "patrons.txt")
-        with open(file_name, "r") as fp:
-            names = [
-                self.modify_patron_name(name.strip())
-                for name in fp.readlines()
-            ]
-
-        if self.randomize_order:
-            random.shuffle(names)
-        else:
-            names.sort()
+        names = self.get_names()
 
         name_labels = VGroup(*map(TexText, names))
         name_labels.scale(self.patron_scale_val)
@@ -135,6 +125,27 @@ class PatreonEndScreen(Scene):
         static_group.fix_in_frame()
         self.add(columns, static_group)
         self.play(frame_shift, blinks)
+
+    def get_names(self):
+        patron_file = "patrons.txt"
+        hardcoded_patron_file = "hardcoded_patrons.txt"
+        names = []
+        for file in patron_file, hardcoded_patron_file:
+            full_path = os.path.join(get_directories()["data"], file)
+            with open(full_path, "r") as fp:
+                names.extend([
+                    self.modify_patron_name(name.strip())
+                    for name in fp.readlines()
+                ])
+        # Remove duplicates
+        names = list(set(names))
+
+        # Make sure these aren't missed
+        if self.randomize_order:
+            random.shuffle(names)
+        else:
+            names.sort()
+        return names
 
     def modify_patron_name(self, name):
         path = os.path.join(
