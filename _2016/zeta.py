@@ -17,6 +17,11 @@ def d_zeta(z):
     return (zeta(z + epsilon) - zeta(z))/epsilon
 
 
+class ComplexTransformationScene(Scene):
+    def construct(self):
+        pass
+
+
 class ZetaTransformationScene(ComplexTransformationScene):
     CONFIG = {
         "anchor_density" : 35,
@@ -3308,7 +3313,7 @@ class ZetaThumbnail(Scene):
         plane.set_height(FRAME_HEIGHT)
         plane.scale(3 / 2.5)
         plane.add_coordinate_labels(font_size=12)
-        self.add(plane)
+        # self.add(plane)
 
         lines = VGroup(
             *(
@@ -3326,7 +3331,7 @@ class ZetaThumbnail(Scene):
         lines.apply_function(lambda p: plane.n2p(zeta(plane.p2n(p))))
         lines.make_smooth()
         lines.set_stroke(GREY_B, 1, opacity=0.5)
-        self.add(lines)
+        # self.add(lines)
 
         c_line = Line(plane.c2p(0.5, 0), plane.c2p(0.5, 35))
         c_line.insert_n_curves(1000)
@@ -3352,8 +3357,8 @@ class ZetaThumbnail(Scene):
             sc.set_fill(opacity=0)
             sc.set_stroke(BLACK, width=w, opacity=0.05)
             shadow.add(sc)
-        self.add(shadow)
-        self.add(sym)
+        # self.add(shadow)
+        # self.add(sym)
 
 class ZetaPartialSums(ZetaTransformationScene):
     CONFIG = {

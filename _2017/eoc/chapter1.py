@@ -55,7 +55,7 @@ class Eoc1Thumbnail(GraphScene):
         self.add(axes)
         self.add(graph)
         self.add(rects)
-        self.add(title)
+        # self.add(title)
         # self.add(answer)
 
     def func(slef, x):

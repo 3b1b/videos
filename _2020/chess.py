@@ -4805,7 +4805,8 @@ class Thumbnail(FourDCubeColoringFromTrees):
         coins = CoinsOnBoard(
             board,
             coin_config={
-                "disk_resolution": (80, 51),
+                # "disk_resolution": (80, 51),
+                "disk_resolution": (2, 12),
             }
         )
         coins.flip_by_message("A colab!")

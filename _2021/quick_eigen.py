@@ -92,6 +92,31 @@ def get_shadow(vmobject, width=50, n_copies=25):
 
 class Thumbnail(Scene):
     def construct(self):
+        grid = NumberPlane(faded_line_ratio=0)
+        grid.apply_matrix([[3, 1], [0, 2]])
+        grid.set_opacity(0.5)
+        self.add(grid)
+
+        mat_mob = IntegerMatrix([[3, 1], [4, 1]])
+        mat_mob.set_height(3)
+        mat_mob.add_to_back(BackgroundRectangle(mat_mob))
+        mat_mob.to_edge(UP, buff=MED_SMALL_BUFF)
+        self.add(mat_mob)
+
+        answer = Tex("{m} \\pm \\sqrt{\\,{m}^2 - {p}", tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR})
+        answer.add_background_rectangle()
+        answer.set_width(FRAME_WIDTH / 2 + 2)
+        answer.to_edge(DOWN)
+        # answer.shift(SMALL_BUFF * UP)
+        self.add(answer)
+
+        arrow = Arrow(mat_mob, answer, fill_color=YELLOW, thickness=0.15, buff=0.3)
+        arrow.set_stroke(BLACK, 30, background=True)
+        arrow.shift(0.2 * UP)
+        self.add(arrow)
+
+        return
+        #old
         backdrop = ImageMobject("QuickEigenThumbnailBackdrop")
         backdrop.set_height(FRAME_HEIGHT)
         backdrop.set_opacity(0.5)
