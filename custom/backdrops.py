@@ -2,6 +2,7 @@ from manimlib.constants import WHITE
 from manimlib.constants import BLACK
 from manimlib.constants import DOWN
 from manimlib.constants import UP
+from manimlib.constants import BLUE
 from manimlib.scene.scene import Scene
 from manimlib.mobject.frame import FullScreenRectangle
 from manimlib.mobject.frame import ScreenRectangle
@@ -29,3 +30,16 @@ class Spotlight(Scene):
         animated_screen = AnimatedBoundary(screen)
         self.add(screen, animated_screen)
         self.wait(16)
+
+
+class VideoWrapper(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        screen = ScreenRectangle()
+        screen.set_fill(BLACK, 1)
+        screen.set_stroke(BLUE, 0)
+        screen.set_height(6)
+        screen.to_edge(DOWN)
+
+        self.add(screen, AnimatedBoundary(screen))
+        self.wait(32)
