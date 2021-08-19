@@ -57,9 +57,8 @@ def get_covid_clipboard(disease_name="SARS\\\\CoV-2", sign="+", report="Detected
 
 
 # Scenes
-class Thumbnail(Scene):
+class Thumbnail1(Scene):
     def construct(self):
-        self.clear()
         # New
         bg = FullScreenFadeRectangle()
         bg.set_fill(BLACK, 1)
@@ -103,14 +102,6 @@ class Thumbnail(Scene):
         post_pop.align_to(pre_pop, DOWN)
 
         self.add(group)
-
-        clipboard = get_covid_clipboard("Virus")
-        clipboard[2][0].set_stroke(GREEN, 8)
-        clipboard[2].scale(0.9)
-        clipboard.set_width(arrow.get_width() * 1.0)
-        clipboard.next_to(arrow, UP)
-        VGroup(clipboard, arrow).shift_onto_screen(buff=MED_SMALL_BUFF)
-        self.add(clipboard)
 
         # Or try something else...
         self.remove(group)
@@ -184,7 +175,7 @@ class Thumbnail(Scene):
         self.embed()
 
 
-class AltThumbnail(Scene):
+class Thumbnail2(Scene):
     def construct(self):
         dots = Dot().get_grid(9 * 5, 16 * 5, buff=MED_LARGE_BUFF)
         dots.set_height(FRAME_HEIGHT)
@@ -235,6 +226,40 @@ class AltThumbnail(Scene):
         self.add(formula)
 
         # VGroup(formula, rect, rect_label).to_edge(DOWN)
+
+
+class Thumbnail3(Scene):
+    def construct(self):
+        bg = FullScreenFadeRectangle()
+        bg.set_fill(BLACK, 1)
+        bg.set_gloss(0.4)
+        self.add(bg)
+
+        # Just the clipboard
+        clipboard = get_covid_clipboard("Cancer", color=GREEN)
+        clipboard[2][0].set_stroke(GREEN, 8)
+        clipboard[2].scale(0.9)
+        clipboard.set_height(7)
+        clipboard.center().to_edge(LEFT, buff=MED_SMALL_BUFF)
+        self.add(clipboard)
+
+        clipback = VMobject()
+        clipback.set_points(clipboard[1].get_subpaths()[0])
+        clipback.set_stroke(BLACK, 0)
+        clipback.set_fill(BLACK, 1)
+        self.add(clipback, clipboard)
+
+        # Title
+        words = VGroup(
+            TexText("90\\% test accuracy", tex_to_color_map={"90\\%": GREEN}),
+            Tex("&9\\%\\text{ chance it's true}", tex_to_color_map={"9\\%": RED}),
+            Text("...how?")
+        )
+        words.arrange(DOWN, buff=0.75, aligned_edge=LEFT)
+        words.set_width(FRAME_WIDTH - clipboard.get_width() - 1.5)
+        words.to_edge(RIGHT, buff=0.5)
+        words.set_stroke(BLACK, 10, background=True)
+        self.add(words)
 
 
 class MathAsDesign(Scene):
