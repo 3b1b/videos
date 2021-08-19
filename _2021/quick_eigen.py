@@ -97,15 +97,37 @@ class Thumbnail(Scene):
         grid.set_opacity(0.5)
         self.add(grid)
 
-        mat_mob = IntegerMatrix([[3, 1], [4, 1]])
+        mat_mob = IntegerMatrix([[3, 1], [4, 3]], h_buff=0.8)
         mat_mob.set_height(3)
         mat_mob.add_to_back(BackgroundRectangle(mat_mob))
         mat_mob.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(mat_mob)
 
-        answer = Tex("{m} \\pm \\sqrt{\\,{m}^2 - {p}", tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR})
+        a, b, c, d = mat_mob.get_entries()
+        a_to_d = d.get_center() - a.get_center()
+        rect = Rectangle(height=1, width=get_norm(a_to_d) + 1)
+        rect.round_corners()
+        rect.set_stroke(MEAN_COLOR, 3)
+        rect.rotate(angle_of_vector(a_to_d))
+        rect.move_to(VGroup(a, d))
+        rect2 = rect.copy()
+        rect2.set_color(PROD_COLOR)
+        rect2.rotate(-2 * angle_of_vector(a_to_d))
+        rect2.move_to(rect)
+
+        dashed_rects = VGroup(
+            DashedVMobject(rect.insert_n_curves(100), num_dashes=50),
+            DashedVMobject(rect2.insert_n_curves(100), num_dashes=50),
+        )
+
+        self.add(dashed_rects)
+
+        answer = Tex(
+            "\\lambda_1, \\lambda_2 = {3} \\pm \\sqrt{\\,{3}^2 - {5}} = 5, 1",
+            tex_to_color_map={"{3}": MEAN_COLOR, "{p}": PROD_COLOR}
+        )
         answer.add_background_rectangle()
-        answer.set_width(FRAME_WIDTH / 2 + 2)
+        answer.set_width(12)
         answer.to_edge(DOWN)
         # answer.shift(SMALL_BUFF * UP)
         self.add(answer)

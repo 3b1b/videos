@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from manim_imports_ext import *
-from _2017.efvgt import ConfettiSpiril
+# from _2017.efvgt import ConfettiSpiril
 
 #revert_to_original_skipping_status
 
@@ -84,6 +84,7 @@ class UtilitiesPuzzleScene(Scene):
         houses = VGroup()
         for x in range(3):
             house = SVGMobject(file_name = "house")
+            house.set_stroke(BLACK, 5, background=True)
             house.set_height(self.object_height)
             house.set_fill(GREY_B)
             house.move_to(x*self.h_distance*RIGHT)
@@ -106,10 +107,12 @@ class UtilitiesPuzzleScene(Scene):
             stroke_width = 0
         )
         objects.add(bounding_box)
-        self.add_foreground_mobjects(objects)
-        self.set_variables_as_attrs(
-            houses, utilities, objects, bounding_box
-        )
+        self.add(objects)
+        self.houses = houses
+        self.utilities = utilities
+        self.objects = objects
+        self.bounding_box = bounding_box
+
 
     def get_utility(self, name, color):
         circle = Circle(
@@ -122,6 +125,8 @@ class UtilitiesPuzzleScene(Scene):
             height = 0.65*circle.get_height(),
             fill_color = WHITE,
         )
+        utility.insert_n_curves(100)
+        utility.set_stroke(width=0)
         if color == YELLOW:
             utility.set_fill(GREY_D)
         utility.move_to(circle)
@@ -2064,4 +2069,29 @@ class NewMugThumbnail(Scene):
         image.set_height(5.5)
         image.next_to(title, DOWN)
         self.add(title, image)
+
+class Thumbnail3(UtilitiesPuzzleScene):
+    def construct(self):
+        self.setup_configuration()
+        lines = self.get_almost_solution_lines()
+        lines.set_stroke(WHITE, 5, opacity=0.9)
+
+        group = VGroup(lines, self.objects)
+        group.set_height(5.5)
+        group.to_edge(DOWN, buff=0.1)
+
+        self.add(*group)
+
+        words = TexText("No crossing\\\\allowed!", font_size=72)
+        words.to_corner(UL)
+        # words.shift(3 * RIGHT)
+        arrow = Arrow(
+            words.get_corner(UR) + 0.1 * DOWN,
+            group.get_top() + 0.35 * DOWN + 0.15 * RIGHT,
+            path_arc=-75 * DEGREES,
+            thickness=0.1,
+        )
+        arrow.set_fill(RED)
+
+        self.add(words, arrow)
 
