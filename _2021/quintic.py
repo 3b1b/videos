@@ -388,6 +388,7 @@ class TestRootCoefScene(RootCoefScene):
 
         # Add dots
         coefs = [3, 2, 1, 0, -1]
+        # coefs = [-1, 0]
         roots = coefficients_to_roots(coefs)
         self.add_root_dots(roots)
         self.add_coef_dots(coefs)
@@ -416,3 +417,193 @@ class TestRootCoefScene(RootCoefScene):
         #     self.play(FadeOut(arrows))
 
         # self.embed()
+
+
+# Scenes
+
+class ComplexNewtonsMethod(Scene):
+    coefs = [1, 1, 1, 0, 0]
+    poly_tex = "x^5 + x^2 + x + 1"
+    plane_config = {
+        "x_range": (-2, 2),
+        "y_range": (-2, 2),
+        "height": 8,
+        "width": 8,
+    }
+    rule_font_size = 42
+    seed = complex(1, 1)
+    guess_color = YELLOW
+    step_arrow_width = 5
+
+    def construct(self):
+        self.add_plane()
+        self.add_title()
+        self.add_z0_def()
+        self.add_rule()
+        self.find_root()
+
+        self.embed()
+
+    def add_plane(self):
+        plane = ComplexPlane(**self.plane_config)
+        plane.add_coordinate_labels(font_size=24)
+        plane.to_edge(RIGHT, buff=0)
+        self.plane = plane
+        self.add(plane)
+
+    def add_title(self):
+        title = TexText("Newton's method", font_size=60)
+        title.move_to(midpoint(self.plane.get_left(), LEFT_SIDE))
+        title.to_edge(UP)
+
+        poly = Tex("P(x) = ", self.poly_tex, "= 0 ")
+        poly.match_width(title)
+        poly.next_to(title, DOWN, buff=MED_LARGE_BUFF)
+        poly.set_fill(GREY_A)
+        title.add(poly)
+
+        self.title = title
+        self.add(title)
+
+    def add_z0_def(self):
+        seed_text = Text("(Arbitrary seed)")
+        z0_def = Tex(
+            "z_0 = 1 + i",
+            tex_to_color_map={"z_0": self.guess_color},
+            font_size=self.rule_font_size
+        )
+        z0_group = VGroup(seed_text, z0_def)
+        z0_group.arrange(DOWN)
+        z0_group.next_to(self.title, DOWN, buff=LARGE_BUFF)
+
+        guess_dot = Dot(self.plane.n2p(self.seed), color=self.guess_color)
+
+        guess = DecimalNumber(self.seed, num_decimal_places=3)
+        # guess.set_stroke(BLACK, 8, background=True)
+        guess.add_updater(
+            lambda m: m.set_value(self.plane.p2n(
+                guess_dot.get_center()
+            )).set_fill(self.guess_color).add_background_rectangle()
+        )
+        guess.add_updater(lambda m: m.next_to(guess_dot, UP))
+
+        self.play(
+            Write(seed_text, run_time=1),
+            FadeIn(z0_def),
+        )
+        self.play(
+            FadeTransform(z0_def[0].copy(), guess_dot),
+            FadeIn(guess),
+        )
+        self.wait()
+
+        self.z0_def = z0_def
+        self.guess_dot = guess_dot
+        self.guess = guess
+
+    def add_rule(self):
+        rule = Tex(
+            """
+                z_1 =
+                z_0 - {P(z_0) \\over P'(z_0)}
+            """,
+            tex_to_color_map={
+                "z_1": self.guess_color,
+                "z_0": self.guess_color
+            },
+            font_size=self.rule_font_size,
+        )
+        rule.next_to(self.z0_def, DOWN, buff=LARGE_BUFF)
+
+        rule.n = 0
+        rule.zns = rule.get_parts_by_tex("z_0")
+        rule.znp1 = rule.get_parts_by_tex("z_1")
+
+        self.rule = rule
+
+        self.play(
+            FadeTransformPieces(self.z0_def[0].copy(), rule.zns),
+            FadeIn(rule),
+        )
+        self.wait()
+
+    def find_root(self):
+        for x in range(5):
+            self.root_search_step(self.guess_dot)
+
+    def root_search_step(self, dot, tol=1e-2):
+        dot_step_anims = self.get_dot_step_anims(dot)
+        diff_rect = SurroundingRectangle(
+            self.rule.slice_by_tex("-"),
+            buff=0.1,
+            stroke_color=GREY_A,
+            stroke_width=1,
+        )
+
+        self.play(
+            ShowCreation(diff_rect),
+            dot_step_anims[0],
+        )
+        self.play(
+            dot_step_anims[1],
+            FadeOut(diff_rect),
+            *self.cycle_rule_entries_anims(),
+            run_time=2
+        )
+        self.wait()
+
+    def get_dot_step_anims(self, dot):
+        plane = self.plane
+        z0 = plane.p2n(dot.get_center())
+        z1 = z0 - poly(z0, self.coefs) / dpoly(z0, self.coefs)
+
+        arrow = Arrow(
+            plane.n2p(z0), plane.n2p(z1),
+            buff=0,
+            stroke_width=self.step_arrow_width
+        )
+
+        return [
+            ShowCreation(arrow),
+            AnimationGroup(
+                dot.animate.move_to(plane.n2p(z1)),
+                FadeOut(arrow),
+            )
+        ]
+
+    def cycle_rule_entries_anims(self):
+        rule = self.rule
+        rule.n += 1
+        zns = VGroup(*(
+            Tex(
+                f"z_{rule.n}", font_size=self.rule_font_size
+            ).replace(old_zn).match_color(old_zn)
+            for old_zn in rule.zns
+        ))
+        znp1 = Tex(f"z_{rule.n + 1}", font_size=self.rule_font_size)
+        znp1.move_to(rule.znp1)
+        znp1.match_color(rule.znp1[0])
+
+        result = (
+            FadeOut(rule.zns),
+            FadeTransformPieces(rule.znp1, zns),
+            FadeIn(znp1, 0.5 * RIGHT)
+        )
+        rule.zns = zns
+        rule.znp1 = znp1
+        return result
+
+
+class ComplexNewtonsMethodManySeeds(Scene):
+    def construct(self):
+        self.add_plane()
+        self.add_title()
+        self.add_z0_def()
+        self.add_rule()
+        self.find_root()
+
+    def add_z0_def(self):
+        pass
+
+    def root_search_step(self):
+        pass
