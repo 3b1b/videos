@@ -240,7 +240,7 @@ class RootCoefScene(Scene):
                 color=self.coef_color,
                 **self.dot_style,
             )
-            for coef in coefs
+            for coef in coefs[:-1]  # Exclude highest term
         )
 
     def add_root_dots(self, roots=None):
@@ -400,10 +400,12 @@ class RootCoefScene(Scene):
             Arrow(dj, di, **kwargs),
         )
 
-    def swap_roots(self, i, j, run_time=2, wait_time=1):
-        self.play(Swap(
-            self.root_dots[i],
-            self.root_dots[j],
+    def swap_roots(self, *indices, run_time=2, wait_time=1):
+        self.play(CyclicReplace(
+            *(
+                self.root_dots[i]
+                for i in indices
+            ),
             run_time=3
         ))
         self.wait(wait_time)
@@ -455,9 +457,24 @@ class RootCoefScene(Scene):
 
 # Scenes
 
+class HelloPatrons(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        morty = Mortimer()
+        morty.to_edge(DOWN).shift(3 * RIGHT)
+        self.play(PiCreatureSays(morty, "Hello patrons!", target_mode="wave_1"))
+        self.play(Blink(morty))
+
+
+class ComingVideoWrapper(VideoWrapper):
+    animate_boundary = False
+    title = "Upcoming: Unsolvabillity of the Quintic"
+
+
 class RealNewtonsMethod(Scene):
     coefs = [-0.2, -1, 1, 0, 0, 1]
     poly_tex = "x^5 + x^2 - x - 0.2"
+    dpoly_tex = "5x^4 + 2x - 1"
     seed = 1.3
     axes_config = {
         "x_range": (-2, 2, 0.2),
@@ -535,12 +552,14 @@ class RealNewtonsMethod(Scene):
             root.real for root in roots
             if abs(root.imag) < 1e-6
         ]
+        real_roots.sort()
 
         dots = VGroup(*(
             Dot(self.axes.c2p(r, 0), radius=0.05)
             for r in real_roots
         ))
-        dots.set_fill(WHITE, 0.75)
+        dots.set_fill(YELLOW, 1)
+        dots.set_stroke(BLACK, 2, background=True)
         squares = VGroup(*[
             Square().set_height(0.25).move_to(dot)
             for dot in dots
@@ -561,10 +580,55 @@ class RealNewtonsMethod(Scene):
             ),
         )
         self.wait()
-        self.play(FadeOut(dots))
+
+        # Show values numerically
+        root_strs = ["{0:.4}".format(root) for root in real_roots]
+        equations = VGroup(*(
+            Tex(
+                "P(", root_str, ")", "=", "0",
+                font_size=self.rule_font_size
+            ).set_color_by_tex(root_str, YELLOW)
+            for root_str in root_strs
+        ))
+        equations.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        equations.next_to(self.poly, DOWN, LARGE_BUFF, aligned_edge=LEFT)
+        question = Text("How do you\ncompute these?")
+        question.next_to(equations, RIGHT, buff=LARGE_BUFF)
+        question.set_color(YELLOW)
+
+        arrows = VGroup(*(
+            Arrow(
+                question.get_corner(UL) + 0.2 * DL,
+                eq[1].get_corner(UR) + 0.25 * LEFT,
+                path_arc=arc, stroke_width=3,
+                buff=0.2,
+            )
+            for eq, arc in zip(equations, [0.7 * PI, 0.5 * PI, 0.0 * PI])
+        ))
+        arrows.set_color(YELLOW)
+
+        self.play(
+            LaggedStartMap(FadeIn, equations, lag_ratio=0.25),
+            LaggedStart(*(
+                FadeTransform(dot.copy(), eq[1])
+                for dot, eq in zip(dots, equations)
+            ), lag_ratio=0.25)
+        )
+        self.wait()
+        self.play(
+            Write(question),
+            Write(arrows)
+        )
         self.wait()
 
-        pass  # TODO
+        self.play(LaggedStart(
+            FadeOut(dots),
+            FadeOut(question),
+            FadeOut(arrows),
+            FadeOut(equations),
+            lag_ratio=0.25
+        ))
+        self.wait()
 
     def introduce_step(self):
         axes = self.axes
@@ -624,6 +688,18 @@ class RealNewtonsMethod(Scene):
         )
         self.wait()
 
+        # Show derivative
+        dpoly = Tex("P'(x) = ", self.dpoly_tex)
+        dpoly.match_height(self.poly)
+        dpoly.match_style(self.poly)
+        dpoly.next_to(self.poly, DOWN, aligned_edge=LEFT)
+
+        self.play(
+            FadeIn(dpoly, 0.5 * DOWN),
+            guess_label.animate.shift(0.25 * DOWN)
+        )
+        self.wait()
+
         # Show step
         step_arrow = Arrow(v_line.get_start(), tan_line.get_start(), buff=0)
         step_arrow.set_stroke(GREY_A, 3)
@@ -664,6 +740,15 @@ class RealNewtonsMethod(Scene):
         rule = self.rule = self.get_update_rule()
         rule.next_to(guess_label, DOWN, LARGE_BUFF)
 
+        for line in [v_line, Line(tan_line.get_start(), v_line.get_start())]:
+            self.play(
+                VShowPassingFlash(
+                    Line(line.get_start(), line.get_end()).set_stroke(YELLOW, 10).insert_n_curves(20),
+                    time_width=1.0,
+                    run_time=1.5
+                )
+            )
+        self.wait()
         self.play(
             FadeTransform(v_line_label.copy(), slope_eqs[0].get_part_by_tex("P(x_0)")),
             FadeTransform(step_word.copy(), slope_eqs[0].get_part_by_tex("\\text{Step}")),
@@ -789,7 +874,7 @@ class RealNewtonsMethod(Scene):
         zns = VGroup()
         for old_zn in rule.zns:
             zn = Tex(f"{char}_{{{rule.n}}}", font_size=self.rule_font_size)
-            zn[0][1:].set_max_width(0.25, about_edge=DL)
+            zn[0][1:].set_max_width(0.2, about_edge=DL)
             zn.move_to(old_zn)
             zn.match_color(old_zn)
             zns.add(zn)
@@ -807,6 +892,23 @@ class RealNewtonsMethod(Scene):
         return result
 
 
+class AssumingItsGood(TeacherStudentsScene):
+    def construct(self):
+        self.pi_creatures.refresh_triangulation()
+        self.teacher_says(
+            TexText("Assuming this\\\\approximation\\\\is decent...", font_size=42),
+            bubble_kwargs={
+                "height": 3, "width": 4,
+            }
+        )
+        self.change_student_modes(
+            "pondering", "pondering", "tease",
+            look_at_arg=self.screen
+        )
+        self.pi_creatures.refresh_triangulation()
+        self.wait(3)
+
+
 class RealNewtonsMethodHigherGraph(RealNewtonsMethod):
     coefs = [1, -1, 1, 0, 0, 0.99]
     poly_tex = "x^5 + x^2 - x + 1"
@@ -817,6 +919,51 @@ class RealNewtonsMethodHigherGraph(RealNewtonsMethod):
 
     def step_towards_root(self, fade_tan_with_vline=True):
         super().step_towards_root(fade_tan_with_vline)
+
+
+class FactorPolynomial(RealNewtonsMethodHigherGraph):
+    def construct(self):
+        self.add_graph()
+        self.add_title(self.axes)
+        self.show_factors()
+
+    def show_factors(self):
+        poly = self.poly
+        colors = color_gradient((BLUE, YELLOW), 5)
+        factored = Tex(
+            "P(x) = ", *(
+                f"(x - r_{n})"
+                for n in range(5)
+            ),
+            tex_to_color_map={
+                f"r_{n}": color
+                for n, color in enumerate(colors)
+            }
+        )
+        factored.match_height(poly[0])
+        factored.next_to(poly, DOWN, LARGE_BUFF, LEFT)
+
+        self.play(
+            FadeTransform(poly.copy(), factored)
+        )
+        self.wait()
+
+        words = TexText("Potentially complex\\\\", "$r_n = a_n + b_n i$")
+        words.set_color(GREY_A)
+        words.next_to(factored, DOWN, buff=1.5)
+        words.shift(LEFT)
+        lines = VGroup(*(
+            Line(words, part, buff=0.15).set_stroke(part.get_color(), 2)
+            for n in range(5)
+            for part in [factored.get_part_by_tex(f"r_{n}")]
+        ))
+
+        self.play(
+            FadeIn(words[0]),
+            Write(lines),
+        )
+        self.play(FadeIn(words[1], 0.5 * DOWN))
+        self.wait()
 
 
 class TransitionToComplexPlane(RealNewtonsMethodHigherGraph):
@@ -996,16 +1143,30 @@ class TransitionToComplexPlane(RealNewtonsMethodHigherGraph):
         self.play(
             FadeTransform(z_label.copy(), pz_label)
         )
-        for z in [complex(-0.5, 0.5), complex(-0.5, -0.5), complex(0.5, -0.5), complex(0.5, 0.5)]:
+        z_values = [
+            complex(-0.5, 0.5),
+            complex(-0.5, -0.5),
+            complex(-0.25, 0.25),
+            complex(0.5, -0.5),
+            complex(0.5, 0.5),
+            complex(1, 0.25),
+        ]
+        for z in z_values:
             self.play(
                 in_dot.animate.move_to(in_plane.n2p(z)),
-                run_time=3,
+                run_time=2,
+                path_arc=PI / 2
             )
             self.wait()
 
         self.remove(in_tracer, out_tracer)
+        in_plane.generate_target()
+        in_dot.generate_target()
+        group = VGroup(in_plane.target, in_dot.target)
+        group.set_height(8).center().to_edge(RIGHT, buff=0),
         self.play(
-            VGroup(in_plane, in_dot).animate.set_height(8).center().to_edge(RIGHT, buff=0),
+            MoveToTarget(in_plane),
+            MoveToTarget(in_dot),
             FadeOut(self.input_word),
             FadeOut(self.output_word),
             FadeOut(out_plane),
@@ -1205,7 +1366,7 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
         "width": 8,
     }
     step = 0.2
-    n_search_steps = 15
+    n_search_steps = 20
     colors = ROOT_COLORS_BRIGHT
 
     def construct(self):
@@ -1360,19 +1521,23 @@ class IntroPolyFractal(Scene):
         self.wait()
 
         # Zoom in
-        # fractal.set_n_steps(40)
-        self.play(
-            frame.animate.set_height(1e-3).move_to([-3.12334879, 1.61196545, 0.]),
-            run_time=20,
-            rate_func=bezier(2 * [0] + 7 * [1])
-        )
-        self.wait()
-
-        self.play(
-            frame.animate.center().set_height(8),
-            run_time=10,
-            rate_func=bezier(7 * [0] + 2 * [1])
-        )
+        fractal.set_n_steps(40)
+        zoom_points = [
+            [-3.12334879, 1.61196545, 0.],
+            [1.21514006, 0.01415811, 0.],
+        ]
+        for point in zoom_points:
+            self.play(
+                frame.animate.set_height(2e-3).move_to(point),
+                run_time=25,
+                rate_func=bezier(2 * [0] + 6 * [1])
+            )
+            self.wait()
+            self.play(
+                frame.animate.center().set_height(8),
+                run_time=10,
+                rate_func=bezier(6 * [0] + 2 * [1])
+            )
 
         # Allow for play
         self.tie_fractal_to_root_dots(fractal)
@@ -1396,11 +1561,11 @@ class IntroPolyFractal(Scene):
         self.plane = plane
         return plane
 
-    def get_fractal(self, plane):
+    def get_fractal(self, plane, colors=ROOT_COLORS_BRIGHT):
         fractal = PolyFractal(
             scale_factor=get_norm(plane.n2p(1) - plane.n2p(0)),
             offset=plane.n2p(0),
-            colors=ROOT_COLORS_BRIGHT,
+            colors=colors,
         )
         fractal.replace(plane, stretch=True)
         return fractal
@@ -1437,6 +1602,40 @@ class IntroPolyFractal(Scene):
         self.root_dots.clear_updaters()
 
 
+class IncreasingStepsPolyFractal(IntroPolyFractal):
+    def construct(self):
+        plane = self.get_plane()
+        fractal = self.get_fractal(plane, colors=ROOT_COLORS_DEEP)
+        fractal.set_n_steps(0)
+        root_dots = self.get_root_dots(plane, fractal)
+        self.tie_fractal_to_root_dots(fractal)
+
+        steps_label = VGroup(Integer(0, edge_to_fix=RIGHT), Text("Steps"))
+        steps_label.arrange(RIGHT, aligned_edge=UP)
+        steps_label.next_to(ORIGIN, UP).to_edge(LEFT)
+        steps_label.set_stroke(BLACK, 5, background=True)
+
+        self.add(fractal)
+        self.add(plane)
+        self.add(root_dots)
+        self.add(steps_label)
+
+        self.embed()
+
+        self.wait(20)
+
+        for n in range(20):
+            fractal.set_n_steps(n)
+            steps_label[0].set_value(n)
+            steps_label.set_stroke(BLACK, 5, background=True)
+            if n == 1:
+                self.wait(15)
+            elif n == 2:
+                self.wait(10)
+            else:
+                self.wait()
+
+
 class IntroduceRootsAndCoefficients(RootCoefScene):
     coefs = [3, 2, 1, 0, -1, 1]
 
@@ -1452,23 +1651,13 @@ class IntroduceRootsAndCoefficients(RootCoefScene):
         self.add_r_labels()
         self.add_c_labels()
 
-        # Animate
-        # self.swap_roots(0, 1)
-        # self.rotate_coef(0)
-
-        # self.add_root_lines()
-        # self.add_coef_lines()
-
-        # self.tie_roots_to_coefs()
-
-        # Sample animations
-        # self.rotate_coef(0)
-
-        # self.tie_coefs_to_roots()
-        # for i, j in [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2)]:
-        #     arrows = self.get_root_swap_arrows(i, j)
-        #     self.play(*map(ShowCreation, arrows))
-        #     self.swap_roots(i, j)
-        #     self.play(FadeOut(arrows))
+        for x in range(20):
+            k = random.randint(2, 5)
+            indices = random.choice(list(it.combinations(range(5), k)))
+            # arrows = self.get_root_swap_arrows(i, j)
+            # self.play(*map(ShowCreation, arrows))
+            self.swap_roots(*indices)
+            self.wait()
+            # self.play(FadeOut(arrows))
 
         # self.embed()
