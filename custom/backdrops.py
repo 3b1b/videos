@@ -33,6 +33,10 @@ class Spotlight(Scene):
 
 
 class VideoWrapper(Scene):
+    animate_boundary = True
+    title = ""
+    wait_time = 32
+
     def construct(self):
         self.add(FullScreenRectangle())
         screen = ScreenRectangle()
@@ -41,5 +45,17 @@ class VideoWrapper(Scene):
         screen.set_height(6)
         screen.to_edge(DOWN)
 
-        self.add(screen, AnimatedBoundary(screen))
-        self.wait(32)
+        if self.animate_boundary:
+            screen = AnimatedBoundary(screen)
+            wait_time = self.wait_time
+        else:
+            wait_time = 1
+
+        if self.title:
+            title_text = TexText(self.title, font_size=60)
+            title_text.set_max_width(screen.get_width())
+            title_text.next_to(screen, UP)
+            self.add(title_text)
+
+        self.add(screen, screen)
+        self.wait(wait_time)
