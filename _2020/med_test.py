@@ -232,7 +232,7 @@ class Thumbnail3(Scene):
     def construct(self):
         bg = FullScreenFadeRectangle()
         bg.set_fill(BLACK, 1)
-        bg.set_gloss(0.4)
+        # bg.set_gloss(0.4)
         self.add(bg)
 
         # Just the clipboard
@@ -240,26 +240,63 @@ class Thumbnail3(Scene):
         clipboard[2][0].set_stroke(GREEN, 8)
         clipboard[2].scale(0.9)
         clipboard.set_height(7)
-        clipboard.center().to_edge(LEFT, buff=MED_SMALL_BUFF)
+        clipboard.center().to_edge(LEFT, buff=1.0)
         self.add(clipboard)
 
         clipback = VMobject()
         clipback.set_points(clipboard[1].get_subpaths()[0])
         clipback.set_stroke(BLACK, 0)
-        clipback.set_fill(BLACK, 1)
+        clipback.set_fill(GREY_E, 1)
+        clipback.refresh_triangulation()
+        clipboard.refresh_triangulation()
         self.add(clipback, clipboard)
 
         # Title
         words = VGroup(
-            TexText("90\\% test accuracy", tex_to_color_map={"90\\%": GREEN}),
-            Tex("&9\\%\\text{ chance it's true}", tex_to_color_map={"9\\%": RED}),
+            VGroup(
+                Tex("90\\%").scale(1.8).set_color(GREEN),
+                TexText("test accuracy", alignment="")
+            ).arrange(DOWN, aligned_edge=LEFT, buff=SMALL_BUFF),
+            VGroup(
+                Tex("9\\%").scale(1.8).set_color(RED),
+                TexText("chance it's true", alignment="")
+            ).arrange(DOWN, aligned_edge=LEFT, buff=SMALL_BUFF),
             Text("...how?")
         )
-        words.arrange(DOWN, buff=0.75, aligned_edge=LEFT)
-        words.set_width(FRAME_WIDTH - clipboard.get_width() - 1.5)
-        words.to_edge(RIGHT, buff=0.5)
+        words.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        # words.set_width(FRAME_WIDTH - clipboard.get_width() - 1.5)
+        words.set_height(FRAME_HEIGHT - 2)
+        words.to_edge(RIGHT, buff=1.0)
         words.set_stroke(BLACK, 10, background=True)
         self.add(words)
+
+        VGroup(*[m for m in self.mobjects if isinstance(m, VMobject)]).refresh_triangulation()
+
+
+class Thumbnail4(Scene):
+    def construct(self):
+        top_words = Text("False Positive Rate")
+        top_words.set_width(FRAME_WIDTH - 1)
+        top_words.to_edge(UP)
+        self.add(top_words)
+
+        # is_not = Text("is NOT")
+        is_not = Tex("\\ne")
+        is_not.set_color(RED)
+        is_not.set_height(2.5)
+        is_not.set_stroke(RED, 8)
+        self.add(is_not)
+
+        prob = Text(
+            "P(Healthy | Positive)",
+            t2c={
+                "Healthy": YELLOW,
+                "Positive": GREEN,
+            }
+        )
+        prob.set_width(FRAME_WIDTH - 1)
+        prob.to_edge(DOWN)
+        self.add(prob)
 
 
 class MathAsDesign(Scene):

@@ -1846,12 +1846,20 @@ class DE4Thumbnail(ComplexFourierSeriesExample):
             self.get_vector_sum_path(vectors[:n])
             for n in ns
         ])
+        approxs.set_height(4)
         approxs.arrange(RIGHT, buff=1.0)
         approxs.set_width(FRAME_WIDTH - 2)
-        approxs.set_y(-0.5)
+        # approxs.set_y(-0.5)
         for a, c, w in zip(approxs, [BLUE, GREEN, YELLOW], [4, 3, 2]):
+            shadows = VGroup()
+            for w2 in zip(np.linspace(1, 15, 10)):
+                shadow = a.deepcopy()
+                shadow.set_stroke(c, w2, opacity=0.05)
+                shadows.add(shadow)
             a.set_stroke(c, w)
-            a.set_stroke(c, w + w / 2, background=True)
+            # a.set_stroke(c, w + w / 2, background=True)
+            # a.add_to_back(shadows)
+            self.add(shadows)
 
         labels = VGroup()
         for n, approx in zip(ns, approxs):
@@ -1863,9 +1871,15 @@ class DE4Thumbnail(ComplexFourierSeriesExample):
             labels.add(label)
         for label in labels:
             label.align_to(labels[-1], DOWN)
+        title = Text("Drawn with circles")
+        title.set_width(FRAME_WIDTH - 4)
+        title.next_to(approxs, DOWN)
+        title.shift_onto_screen(buff=0.1)
+        title.set_stroke(WHITE, 1)
 
         self.add(approxs)
         self.add(labels)
+        self.add(title)
 
         return
         # Old
