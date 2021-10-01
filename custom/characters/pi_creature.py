@@ -43,6 +43,10 @@ class PiCreature(SVGMobject):
         "left_arm_range": [0.34, 0.462],
         "pupil_to_eye_width_ratio": 0.4,
         "pupil_dot_to_pupil_width_ratio": 0.3,
+        "path_string_config": {
+            "long_lines": True,
+            "should_subdivide_sharp_curves": False,
+        }
     }
 
     def __init__(self, mode="plain", **kwargs):
@@ -82,6 +86,10 @@ class PiCreature(SVGMobject):
             self.mode = mobject.get_mode()
 
     def name_parts(self):
+        # Temporary hack based on how Figma exports
+        if len(self) > 6:
+            self.remove(self[0], self[2])
+        #
         self.mouth = self.submobjects[MOUTH_INDEX]
         self.body = self.submobjects[BODY_INDEX]
         self.pupils = VGroup(*[
