@@ -6,9 +6,9 @@ def roots_to_coefficients(roots):
     return [
         ((-1)**(n - k)) * sum(
             np.prod(tup)
-            for tup in it.combinations(roots, k + 1)
+            for tup in it.combinations(roots, n - k)
         )
-        for k in range(n - 1, -1, -1)
+        for k in range(n)
     ] + [1]
 
 

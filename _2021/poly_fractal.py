@@ -8,6 +8,16 @@ from _2021.quintic import poly
 
 ROOT_COLORS_BRIGHT = [RED, GREEN, BLUE, YELLOW, MAROON_B]
 ROOT_COLORS_DEEP = ["#440154", "#3b528b", "#21908c", "#5dc963", "#29abca"]
+CUBIC_COLORS = ["#440154", BLUE_E, TEAL_E]
+
+
+def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20):
+    result = VGroup(*(
+        Dot(point, radius=interpolate(r_min, r_max, a))
+        for a in np.linspace(0, 1, n)
+    ))
+    result.set_fill(YELLOW, opacity=1 / n)
+    return result
 
 
 class PolyFractal(Mobject):
@@ -21,6 +31,9 @@ class PolyFractal(Mobject):
         "scale_factor": 1.0,
         "offset": ORIGIN,
         "n_steps": 30,
+        "julia_highlight": 0.0,
+        "max_degree": 5,
+        "color_mult": 1.0,
     }
 
     def init_data(self):
@@ -31,10 +44,12 @@ class PolyFractal(Mobject):
     def init_uniforms(self):
         super().init_uniforms()
         self.set_colors(self.colors)
+        self.set_julia_highlight(self.julia_highlight)
         self.set_coefs(self.coefs)
         self.set_scale(self.scale_factor)
         self.set_offset(self.offset)
         self.set_n_steps(self.n_steps)
+        self.set_color_mult(self.color_mult)
 
     def set_colors(self, colors):
         self.uniforms.update({
@@ -43,24 +58,30 @@ class PolyFractal(Mobject):
         })
         return self
 
+    def set_julia_highlight(self, value):
+        self.uniforms["julia_highlight"] = value
+
     def set_coefs(self, coefs, reset_roots=True):
-        self.uniforms["n_roots"] = float(len(coefs))
+        full_coefs = [*coefs] + [0] * (self.max_degree - len(coefs) + 1)
         self.uniforms.update({
-            f"coef{n}": np.array([coef.real, coef.imag])
-            for n, coef in enumerate(map(complex, coefs))
+            f"coef{n}": np.array([coef.real, coef.imag], dtype=np.float64)
+            for n, coef in enumerate(map(complex, full_coefs))
         })
         if reset_roots:
             self.set_roots(coefficients_to_roots(coefs), False)
+        self.coefs = coefs
         return self
 
     def set_roots(self, roots, reset_coefs=True):
         self.uniforms["n_roots"] = float(len(roots))
+        full_roots = [*roots] + [0] * (self.max_degree - len(roots))
         self.uniforms.update({
-            f"root{n}": np.array([root.real, root.imag])
-            for n, root in enumerate(map(complex, roots))
+            f"root{n}": np.array([root.real, root.imag], dtype=np.float64)
+            for n, root in enumerate(map(complex, full_roots))
         })
         if reset_coefs:
             self.set_coefs(roots_to_coefficients(roots), False)
+        self.roots = roots
         return self
 
     def set_scale(self, scale_factor):
@@ -75,21 +96,1221 @@ class PolyFractal(Mobject):
         self.uniforms["n_steps"] = float(n_steps)
         return self
 
+    def set_color_mult(self, color_mult):
+        self.uniforms["color_mult"] = color_mult
+        return self
+
+
+class MetaPolyFractal(PolyFractal):
+    CONFIG = {
+        "shader_folder": "meta_poly_fractal",
+        "fixed_roots": [0, 1],
+        "max_degree": 3,
+        "z0": 0,
+    }
+
+    def init_uniforms(self):
+        Mobject.init_uniforms(self)
+        self.set_colors(self.colors)
+        self.set_fixed_roots(self.fixed_roots)
+        self.set_z0(self.z0)
+        self.set_scale(self.scale_factor)
+        self.set_offset(self.offset)
+        self.set_n_steps(self.n_steps)
+        self.set_color_mult(self.color_mult)
+
+    def set_fixed_roots(self, roots):
+        super().set_roots(roots, reset_coefs=False)
+        self.uniforms["n_roots"] = 3.0
+
+    def set_z0(self, z0):
+        z0 = complex(z0)
+        self.uniforms["z0"] = (z0.real, z0.imag)
+
 
 # Scenes
 
-class HelloPatrons(Scene):
+
+class AmbientRootFinding(Scene):
+    def construct(self):
+        pass
+
+
+class PragmaticOrigins(Scene):
+    title = "Pragmatic origins"
+    include_pi = False
+
+    def construct(self):
+        # Title
+        title = Text(self.title, font_size=72)
+        title.set_stroke(BLACK, 5, background=True)
+        title.to_edge(UP, buff=MED_SMALL_BUFF)
+        underline = Underline(title, buff=-0.05)
+        underline.insert_n_curves(30)
+        underline.set_stroke(BLUE, width=[0, 3, 3, 3, 0])
+        underline.scale(1.5)
+
+        # Axes
+        axes = NumberPlane(
+            x_range=(-3, 3),
+            y_range=(-4, 4),
+            width=6,
+            height=8,
+            background_line_style={
+                "stroke_color": GREY_A,
+                "stroke_width": 1,
+            }
+        )
+        axes.set_height(5.0)
+        axes.to_corner(DL)
+        axes.shift(0.5 * UP)
+
+        coefs = np.array([2, -3, 1, -2, -1, 1], dtype=np.float)
+        roots = [
+            r.real
+            for r in coefficients_to_roots(coefs)
+            if abs(r.imag) < 1e-2
+        ]
+        roots.sort()
+        coefs *= 0.2
+
+        solve = TexText("Solve $f(x) = 0$", font_size=36)
+        solve.next_to(axes, UP, aligned_edge=LEFT)
+        expr = Tex("f(x) = x^5 - x^4 - 2x^3 + x^2 -3x + 2")
+        expr.match_width(axes)
+        expr.next_to(axes, DOWN)
+        graph_x_range = (-2, 2.4)
+        graph = axes.get_graph(
+            lambda x: poly(x, coefs),
+            x_range=graph_x_range
+        )
+        graph.set_stroke(BLUE, [0, *50 * [4], 0])
+        root_dots = VGroup(*(
+            glow_dot(axes.c2p(root, 0))
+            for root in roots
+        ))
+        root_eqs = VGroup()
+        root_groups = VGroup()
+        for i, root, dot in zip(it.count(1), roots, root_dots):
+            lhs = Tex(f"x_{i} = ")
+            rhs = DecimalNumber(root, num_decimal_places=3)
+            rhs.set_color(YELLOW)
+            eq = VGroup(lhs, rhs)
+            eq.arrange(RIGHT, aligned_edge=DOWN)
+            rhs.align_to(lhs.family_members_with_points()[0], DOWN)
+            root_eqs.add(eq)
+            root_groups.add(VGroup(eq, dot))
+        root_eqs.arrange(RIGHT, buff=LARGE_BUFF)
+        root_eqs.next_to(axes, RIGHT, aligned_edge=UP)
+
+        self.add(axes)
+        self.add(solve)
+        self.add(expr)
+
+        # Pi
+        if self.include_pi:
+            morty = Mortimer(height=2)
+            morty.to_corner(DR)
+            self.play(PiCreatureSays(
+                morty, "How do you\nfind theses?",
+                target_mode="tease",
+                bubble_kwargs={
+                    "width": 4,
+                    "height": 2.5,
+                }
+            ))
+
+        # Animations
+        self.add(underline, title)
+        self.play(
+            ShowCreation(underline),
+        )
+        self.wait()
+
+        alphas = [inverse_interpolate(*graph_x_range, root) for root in roots]
+        self.play(
+            ShowCreation(graph, rate_func=linear),
+            *(
+                FadeIn(
+                    rg,
+                    rate_func=squish_rate_func(rush_from, a, min(a + 0.2, 1))
+                )
+                for rg, a in zip(root_groups, alphas)
+            ),
+            run_time=4,
+        )
+        self.wait()
+
+
+class SeekingRoots(PragmaticOrigins):
+    title = "Seeking roots"
+    include_pi = True
+
+
+class AskAboutComplexity(Scene):
     def construct(self):
         self.add(FullScreenRectangle())
-        morty = Mortimer()
-        morty.to_edge(DOWN).shift(3 * RIGHT)
-        self.play(PiCreatureSays(morty, "Hello patrons!", target_mode="wave_1"))
-        self.play(Blink(morty))
+
+        question = Text("What does this complexity reflect?")
+        question.set_width(FRAME_WIDTH - 2)
+        question.to_edge(UP)
+        self.add(question)
+
+        screen = ScreenRectangle()
+        screen.set_height(6.0)
+        screen.set_fill(BLACK, 1)
+        screen.next_to(question, DOWN)
+        self.add(screen)
+
+
+class WhoCares(TeacherStudentsScene):
+    def construct(self):
+        self.students.refresh_triangulation()
+        screen = self.screen
+        screen.set_height(4, about_edge=UL)
+        screen.set_fill(BLACK, 1)
+        image = ImageMobject("RealNewtonStill")
+        image.replace(screen)
+
+        self.add(screen)
+        self.add(image)
+
+        self.wait()
+        self.play(LaggedStart(
+            PiCreatureSays(
+                self.students[1], "Ooh, quintics...",
+                target_mode="thinking",
+                look_at_arg=self.screen,
+                bubble_kwargs={
+                    "direction": LEFT,
+                    "width": 4,
+                    "height": 2,
+                }
+            ),
+            self.teacher.animate.change("happy"),
+            self.students[0].animate.change("thinking", screen),
+            self.students[2].animate.change("sassy", screen),
+            lag_ratio=0.1,
+        ))
+        self.wait(3)
+        self.play(LaggedStart(
+            PiCreatureSays(
+                self.students[2], "Who cares?",
+                target_mode="tired",
+                bubble_kwargs={
+                    "direction": LEFT,
+                    "width": 4,
+                    "height": 3,
+                }
+            ),
+            self.teacher.animate.change("guilty"),
+            self.students[0].animate.change("confused", screen),
+            RemovePiCreatureBubble(
+                self.students[1],
+                look_at_arg=self.students[2].eyes,
+                target_mode="erm",
+            ),
+            lag_ratio=0.1,
+        ))
+        self.wait(2)
+        self.teacher_says(
+            "Who doesn't",
+            target_mode="hooray",
+            bubble_kwargs={"height": 3, "width": 4},
+            added_anims=[self.get_student_changes("pondering", "pondering", "confused")]
+        )
+        self.wait(3)
+
+
+class SphereExample(Scene):
+    def construct(self):
+        # Shape
+        axes = ThreeDAxes(z_range=(-4, 4))
+        axes.shift(IN)
+        sphere = Sphere(radius=1.0)
+        # sphere = TexturedSurface(sphere, "EarthTextureMap", "NightEarthTextureMap")
+        sphere.move_to(axes.c2p(0, 0, 0))
+        sphere.set_gloss(1.0)
+        sphere.set_opacity(0.5)
+        sphere.sort_faces_back_to_front(DOWN)
+        mesh = SurfaceMesh(sphere, resolution=(21, 11))
+        mesh.set_stroke(BLUE, 0.5, 0.5)
+        sphere = Group(sphere, mesh)
+
+        frame = self.camera.frame
+        frame.reorient(20, 80)
+        frame.move_to(2 * RIGHT)
+        light = self.camera.light_source
+
+        self.add(axes)
+        self.add(sphere)
+
+        frame.add_updater(
+            lambda m, dt: m.increment_theta(1 * dt * DEGREES)
+        )
+
+        # Expression
+        equation = Tex(
+            "1.00", "\\,x^2", "+",
+            "1.00", "\\,y^2", "+",
+            "1.00", "\\,z^2", "=",
+            "1.00",
+        )
+        decimals = VGroup()
+        for i in range(0, len(equation), 3):
+            decimal = DecimalNumber(1.0, edge_to_fix=RIGHT)
+            decimal.replace(equation[i])
+            equation.replace_submobject(i, decimal)
+            decimals.add(decimal)
+            decimal.add_updater(lambda m: m.fix_in_frame())
+        equation.fix_in_frame()
+        equation.to_corner(UR)
+        self.add(equation)
+
+        # Animations
+        light.move_to([-10, -10, 20])
+        self.wait()
+        self.play(
+            ChangeDecimalToValue(decimals[3], 9.0),
+            VFadeInThenOut(SurroundingRectangle(decimals[3]).fix_in_frame()),
+            sphere.animate.scale(3),
+            run_time=3
+        )
+        self.wait()
+        self.play(
+            ChangeDecimalToValue(decimals[2], 4.0),
+            VFadeInThenOut(SurroundingRectangle(decimals[2]).fix_in_frame()),
+            sphere.animate.stretch(0.5, 2),
+            run_time=3
+        )
+        self.wait()
+        self.play(
+            ChangeDecimalToValue(decimals[0], 9.0),
+            VFadeInThenOut(SurroundingRectangle(decimals[0]).fix_in_frame()),
+            sphere.animate.stretch(1 / 3, 0),
+            run_time=3
+        )
+        self.wait(10)
+
+
+class ExamplePixels(Scene):
+    def construct(self):
+        pixels = Square().get_grid(5, 5, buff=0)
+        pixels.set_height(2)
+        pixels.to_corner(UL)
+        pixels.set_stroke(WHITE, 1)
+        pixels.set_fill(BLACK, 1)
+        self.add(pixels)
+
+        y, x = 1066, 1360
+
+        endpoint = np.array([x, -y, 0], dtype=np.float)
+        endpoint *= FRAME_HEIGHT / 2160
+        endpoint += np.array([-FRAME_WIDTH / 2, FRAME_HEIGHT / 2, 0])
+        lines = VGroup(
+            Line(pixels.get_corner(UR), endpoint),
+            Line(pixels.get_corner(DL), endpoint),
+        )
+        lines.set_stroke(WHITE, 2)
+        self.add(lines)
+
+        def match_values(pixels, values):
+            for pixel, value in zip(pixels, it.chain(*values)):
+                value = value[::-1]
+                pixel.set_fill(rgb_to_color(value / 255))
+
+        values = np.load(
+            os.path.join(get_directories()["data"], "sphere_pixel_values.npy")
+        )
+        match_values(pixels, values[0])
+        # for value in values[60::60]:
+        for value in values[1:]:
+            # pixels.generate_target()
+            # match_values(pixels.target, value)
+            # self.play(MoveToTarget(pixels))
+            match_values(pixels, value)
+            self.wait(1 / 60)
+
+
+class CurvesDefiningFonts(Scene):
+    def construct(self):
+        # Setup
+        frame = self.camera.frame
+
+        chars = TexText("When a computer\\\\renders text...")[0]
+        chars.set_width(FRAME_WIDTH - 3)
+        chars.refresh_unit_normal()
+        chars.refresh_triangulation()
+        filled_chars = chars.copy()
+        filled_chars.insert_n_curves(50)
+        chars.set_stroke(WHITE, 0.5)
+        chars.set_fill(opacity=0.0)
+
+        dot_groups = VGroup()
+        line_groups = VGroup()
+        for char in chars:
+            dots = VGroup()
+            lines = VGroup()
+            for a1, h, a2 in char.get_bezier_tuples():
+                for pair in (a1, h), (h, a2):
+                    lines.add(Line(
+                        *pair,
+                        stroke_width=0.25,
+                        # dash_length=0.0025,
+                        stroke_color=YELLOW,
+                    ))
+                for point in (a1, h, a2):
+                    dots.add(Dot(point, radius=0.005))
+            dot_groups.add(dots)
+            line_groups.add(lines)
+
+        dot_groups.set_fill(BLUE, opacity=0)
+
+        self.play(ShowIncreasingSubsets(filled_chars, run_time=1, rate_func=linear))
+        self.wait()
+
+        # Zoom in on one letter
+        char_index = 2
+        char = chars[char_index]
+        lines = line_groups[char_index]
+        dots = dot_groups[char_index]
+        char.refresh_bounding_box()
+        frame.generate_target()
+        frame.target.set_height(char.get_height() * 2)
+        frame.target.move_to(char.get_bottom(), DOWN)
+        frame.target.shift(0.1 * char.get_height() * DOWN)
+        self.play(
+            MoveToTarget(frame),
+            filled_chars.animate.set_opacity(0.2),
+            FadeIn(chars),
+            ShowCreation(line_groups, rate_func=linear),
+            dot_groups.animate.set_opacity(1),
+            run_time=5,
+        )
+        for group in (line_groups, dot_groups):
+            group.remove(*group[0:char_index - 1])
+            group.remove(*group[char_index + 2:])
+        self.wait()
+
+        # Pull out one curve
+        char.become(CurvesAsSubmobjects(char))
+
+        index = 26
+        curve = char[index]
+        sublines = lines[2 * index:2 * index + 2]
+        subdots = dots[3 * index:3 * index + 3]
+
+        curve_group = VGroup(curve, sublines, subdots)
+        curve_group.set_stroke(background=True)
+        curve_group.generate_target()
+        curve_group.save_state()
+        curve_group.target.scale(3)
+        curve_group.target.next_to(frame.get_top(), DOWN, buff=0.15)
+        curve_group.target.shift(0.3 * LEFT)
+        for dot in curve_group.target[2]:
+            dot.scale(1 / 2)
+
+        labels = VGroup(*(
+            Tex(f"P_{i}").set_height(0.05)
+            for i in range(3)
+        ))
+        for label, dot, vect in zip(labels, curve_group.target[2], [LEFT, UP, UP]):
+            label.insert_n_curves(20)
+            label.next_to(dot, vect, buff=0.025)
+            label.match_color(dot)
+
+        self.play(
+            MoveToTarget(curve_group),
+            *(
+                GrowFromPoint(label, curve_group.get_center())
+                for label in labels
+            )
+        )
+
+        equation = Tex(
+            "(1-t)^{2} P_0 +2(1-t)t P_1 +t^2 P_2",
+            tex_to_color_map={
+                "P_0": BLUE,
+                "P_1": BLUE,
+                "P_2": BLUE,
+            }
+        )
+        equation.set_height(0.07)
+        equation.next_to(curve_group, RIGHT, buff=0.25)
+        equation.insert_n_curves(20)
+
+        poly_label = Text("Polynomial")
+        poly_label.insert_n_curves(20)
+        poly_label.set_width(2)
+        poly_label.apply_function(
+            lambda p: [
+                p[0],
+                p[1] - 0.2 * p[0]**2,
+                p[2],
+            ]
+        )
+        poly_label.rotate(30 * DEGREES)
+        poly_label.match_height(curve_group)
+        poly_label.scale(0.8)
+        poly_label.move_to(curve, DR)
+        poly_label.shift(0.01 * UL)
+
+        self.play(
+            ShowCreationThenDestruction(curve.copy().set_color(PINK), run_time=2),
+            Write(poly_label, stroke_width=0.5)
+        )
+        self.play(
+            LaggedStart(*(
+                TransformFromCopy(
+                    labels[i],
+                    equation.get_part_by_tex(f"P_{i}").copy(),
+                    remover=True
+                )
+                for i in range(3)
+            )),
+            FadeIn(equation, rate_func=squish_rate_func(smooth, 0.5, 1)),
+            run_time=2,
+        )
+        self.wait()
+        self.add(curve_group.copy())
+        self.play(Restore(curve_group))
+        self.wait()
+
+
+class PlayingInFigma(ExternallyAnimatedScene):
+    pass
+
+
+class RasterizingBezier(Scene):
+    def construct(self):
+        # Add curve and pixels
+        self.add(FullScreenRectangle())
+
+        curve = SVGMobject("bezier_example")[0]
+        curve.set_width(FRAME_WIDTH - 3)
+        curve.set_stroke(WHITE, width=1.0)
+        curve.set_fill(opacity=0)
+        curve.to_edge(DOWN, buff=1)
+        curve.insert_n_curves(10)  # To beter uniformize it
+
+        thick_curve = curve.copy()
+        thick_curve.set_stroke(YELLOW, 30.0)
+        thick_curve.reverse_points()
+
+        pixels = Square().get_grid(90 // 2, 160 // 2, buff=0, fill_rows_first=False)
+        pixels.set_height(FRAME_HEIGHT)
+        pixels.set_stroke(WHITE, width=0.25)
+
+        # I fully recognize the irony is implementing this without
+        # solving polynomials, but I'm happy to be inificient on runtime
+        # to just code up the quickest thing I can think of.
+        samples = np.array([curve.pfp(x) for x in np.linspace(0, 1, 100)])
+        sw_tracker = ValueTracker(0.15)
+        get_sw = sw_tracker.get_value
+
+        for pixel in pixels:
+            diffs = samples - pixel.get_center()
+            dists = np.apply_along_axis(lambda p: np.dot(p, p), 1, diffs)
+            index = np.argmin(dists)
+            if index == 0 or index == len(samples) - 1:
+                pixel.dist = np.infty
+            else:
+                pixel.dist = dists[index]
+
+        def update_pixels(pixels):
+            for pixel in pixels:
+                pixel.set_fill(
+                    YELLOW,
+                    0.5 * clip(10 * (get_sw() - pixel.dist), 0, 1)
+                )
+
+        update_pixels(pixels)
+
+        fake_pixels = pixels.copy()
+        fake_pixels.set_stroke(width=0)
+        fake_pixels.set_fill(GREY_E, 1)
+
+        self.add(thick_curve)
+        self.wait()
+        self.add(fake_pixels, pixels)
+        self.play(
+            FadeIn(fake_pixels),
+            ShowCreation(pixels),
+            lag_ratio=10 / len(pixels),
+            run_time=4
+        )
+        self.remove(thick_curve)
+        self.wait()
+
+        # Pixel
+        pixel = pixels[725].deepcopy()
+        pixel.set_fill(opacity=0)
+        label = TexText("Pixel $\\vec{\\textbf{p}}$")
+        label.refresh_triangulation()
+        label.set_fill(YELLOW)
+        label.set_stroke(BLACK, 4, background=True)
+        label.next_to(pixel, UL, buff=LARGE_BUFF)
+        label.shift_onto_screen()
+        arrow = Arrow(label, pixel, buff=0.1, stroke_width=3.0)
+        arrow.set_color(YELLOW)
+
+        self.play(
+            FadeIn(label),
+            ShowCreation(arrow),
+            pixel.animate.set_stroke(YELLOW, 2.0),
+        )
+        pixels.add_updater(update_pixels)
+        self.play(sw_tracker.animate.set_value(2.0), run_time=2)
+        self.play(sw_tracker.animate.set_value(0.2), run_time=2)
+        pixels.suspend_updating()
+        self.play(ShowCreation(curve))
+
+        # Show P(t) value
+        ct = VGroup(Tex("\\vec{\\textbf{c}}(")[0], DecimalNumber(0), Tex(")")[0])
+        ct.arrange(RIGHT, buff=0)
+        ct.add_updater(lambda m: m.set_stroke(BLACK, 4, background=True))
+        t_tracker = ValueTracker(0)
+        get_t = t_tracker.get_value
+        P_dot = Dot(color=GREEN)
+        globals().update(locals())
+        ct[1].add_updater(lambda m: m.set_value(get_t()))
+        ct[1].next_to(ct[0], RIGHT, buff=0)
+        P_dot.add_updater(lambda m: m.move_to(curve.pfp(get_t() / 2)))
+        ct.add_updater(lambda m: m.move_to(P_dot).shift(
+            (0.3 - 0.5 * get_t() * (1 - get_t())) * rotate_vector(np.array([-3, 1, 0]), -0.8 * get_t() * PI)
+        ))
+        curve_copy = curve.copy()
+        curve_copy.pointwise_become_partial(curve, 0, 0.5)
+        curve_copy.set_points(curve_copy.get_points_without_null_curves())
+        curve_copy.set_stroke(YELLOW, 3.0)
+
+        self.play(
+            VFadeIn(ct),
+            ApplyMethod(t_tracker.set_value, 1.0, run_time=3),
+            ShowCreation(curve_copy, run_time=3),
+            VFadeIn(P_dot),
+        )
+        new_ct = Tex("\\vec{\\textbf{c}}(", "t", ")")
+        new_ct.move_to(ct, LEFT)
+        new_ct.set_stroke(BLACK, 4, background=True)
+        self.play(FadeTransformPieces(ct, new_ct))
+        ct = new_ct
+        self.wait()
+
+        # Show distance
+        graph_group = self.get_corner_graph_group(pixel, curve)
+        bg_rect, axes, y_label, graph = graph_group
+
+        t_tracker = ValueTracker(0)
+        dist_line = Line()
+        dist_line.set_stroke(TEAL, 5)
+        dist_line.add_updater(lambda l: l.put_start_and_end_on(
+            pixel.get_center(),
+            curve_copy.pfp(t_tracker.get_value())
+        ))
+
+        dist_lines = VGroup()
+        graph_v_lines = VGroup()
+        for t in np.linspace(0, 1, 20):
+            t_tracker.set_value(t)
+            dist_lines.add(dist_line.update().copy().clear_updaters())
+            graph_v_lines.add(axes.get_v_line(
+                axes.input_to_graph_point(t, graph)
+            ))
+        dist_lines.set_stroke(RED, 1, opacity=1.0)
+        graph_v_lines.set_stroke(RED, 1, opacity=1.0)
+        t_tracker.set_value(0)
+
+        self.play(
+            *map(FadeIn, graph_group[:-1]),
+        )
+        self.play(
+            FadeIn(dist_lines, lag_ratio=1),
+            FadeIn(graph_v_lines, lag_ratio=1),
+            run_time=4
+        )
+        self.wait()
+        t_tracker.set_value(0.0)
+        self.play(
+            VFadeIn(dist_line, rate_func=squish_rate_func(smooth, 0, 0.25)),
+            ApplyMethod(t_tracker.set_value, 1.0),
+            ShowCreation(graph),
+            run_time=3,
+        )
+        self.play(dist_line.animate.set_stroke(RED, 1.0))
+        self.wait()
+
+        # Show width again
+        pixels.resume_updating()
+        self.play(sw_tracker.animate.set_value(1.5), run_time=2)
+        self.play(sw_tracker.animate.set_value(0.5), run_time=1)
+        pixels.suspend_updating()
+        self.wait()
+
+        # Show derivative
+        deriv_graph_group = self.get_deriv_graph_group(graph_group)
+        d_graph = deriv_graph_group[-1]
+        d_graph.set_points_smoothly([d_graph.pfp(x) for x in np.linspace(0, 1, 20)])
+        deriv_axes = deriv_graph_group[1]
+
+        t_tracker = ValueTracker(0)
+        get_t = t_tracker.get_value
+        tan_line = always_redraw(
+            lambda: axes.get_tangent_line(
+                get_t(), graph, length=3,
+            ).set_stroke(
+                color=MAROON_B,
+                width=1.0,
+                opacity=clip(20 * get_t() * (1 - get_t()), 0, 1)
+            )
+        )
+
+        self.play(*map(FadeIn, deriv_graph_group[:-1]))
+        self.add(tan_line)
+        self.play(
+            t_tracker.animate.set_value(1),
+            ShowCreation(d_graph),
+            run_time=4
+        )
+        self.remove(tan_line)
+        self.wait()
+
+        points = graph.get_points()
+        min_point = points[np.argmin([p[1] for p in points])]
+        min_line = Line(min_point, [min_point[0], deriv_axes.c2p(0, 0)[1], 0])
+        min_line.set_stroke(WHITE, 1)
+
+        question = Text("What is\nthis value?", font_size=30)
+        question.to_corner(DR)
+        arrow = Arrow(
+            question.get_left(), min_line.get_bottom(), stroke_width=3,
+            buff=0.1
+        )
+
+        self.play(ShowCreation(min_line))
+        self.play(
+            Write(question),
+            ShowCreation(arrow),
+        )
+        self.wait()
+
+    def get_corner_graph_group(self, pixel, curve, t_range=(0, 0.5)):
+        axes = Axes(
+            x_range=(0, 1, 0.2),
+            y_range=(0, 20, 5),
+            height=3,
+            width=5,
+            axis_config={"include_tip": False}
+        )
+        axes.to_corner(UR, buff=SMALL_BUFF)
+        y_label = Tex(
+            "&\\text{Distance}^2\\\\",
+            "&||\\vec{\\textbf{p}} - \\vec{\\textbf{c}}(t)||^2",
+            font_size=24,
+        )
+        # For future transition
+        y_label = VGroup(VectorizedPoint(y_label.get_left()), *y_label)
+        y_label.next_to(axes.y_axis.get_top(), RIGHT, aligned_edge=UP)
+        y_label.shift_onto_screen(buff=MED_SMALL_BUFF)
+
+        graph = axes.get_graph(lambda t: get_norm(
+            pixel.get_center() - curve.pfp(interpolate(*t_range, t))
+        )**2)
+        graph.set_stroke(RED, 2)
+
+        bg_rect = BackgroundRectangle(axes, buff=SMALL_BUFF)
+        result = VGroup(bg_rect, axes, y_label, graph)
+
+        return result
+
+    def get_deriv_graph_group(self, graph_group):
+        top_bg_rect, top_axes, top_y_label, top_graph = graph_group
+
+        axes = Axes(
+            x_range=top_axes.x_range,
+            y_range=(-60, 60, 10),
+            height=top_axes.get_height(),
+            width=top_axes.get_width(),
+            axis_config={"include_tip": False}
+        )
+        axes.to_corner(DR, buff=SMALL_BUFF)
+        axes.shift((top_axes.c2p(0, 0) - axes.c2p(0, 0))[0] * RIGHT)
+        dt = 1e-5
+        f = top_graph.underlying_function
+        globals().update(locals())
+        graph = axes.get_graph(lambda t: (f(t + dt) - f(t)) / dt)
+        graph.set_stroke(MAROON_B)
+        # Dumb hack, not sure why it's needed
+        graph.get_points()[:133] += 0.015 * UP
+
+        y_label = VGroup(Tex("\\frac{d}{dt}", font_size=24), top_y_label[2].copy())
+        y_label.arrange(RIGHT, buff=0.05)
+        y_label.next_to(axes.y_axis.get_top(), RIGHT, buff=2 * SMALL_BUFF)
+
+        bg_rect = BackgroundRectangle(VGroup(axes, graph), buff=SMALL_BUFF)
+        bg_rect.stretch(1.05, 1, about_edge=DOWN)
+
+        result = VGroup(bg_rect, axes, y_label, graph)
+
+        return result
+
+
+class WriteThisIsPolynomial(Scene):
+    def construct(self):
+        text = TexText("(Some polynomial in $t$)", font_size=24)
+        self.play(Write(text))
+        self.wait()
+
+
+class DontWorryAboutDetails(TeacherStudentsScene):
+    CONFIG = {
+        "background_color": BLACK,
+    }
+
+    def construct(self):
+        screen = self.screen
+        screen.set_height(4, about_edge=UL)
+        screen.set_fill(BLACK, 1)
+        image1, image2 = [
+            ImageMobject(f"RasterizingBezier_{i}").replace(screen)
+            for i in range(1, 3)
+        ]
+
+        frame = self.camera.frame
+        frame.save_state()
+        frame.replace(image1)
+
+        self.add(screen, image1)
+
+        self.play(Restore(frame))
+
+        # Student asks about what the function is.
+        self.student_says(
+            TexText("Wait, what is that\\\\function exactly?"),
+            look_at_arg=image1,
+            student_index=2,
+            added_anims=[
+                self.students[0].animate.change("confused", image1),
+                self.students[1].animate.change("confused", image1),
+            ]
+        )
+        self.play(self.teacher.animate.change("tease"))
+        self.wait(2)
+        self.play(
+            self.students[0].animate.change("maybe", image1),
+        )
+        self.play(
+            self.students[1].animate.change("erm", image1),
+        )
+        self.wait(3)
+
+        self.teacher_says(
+            TexText("Just some\\\\polynomial"),
+            bubble_kwargs={
+                "width": 4,
+                "height": 3,
+            },
+            added_anims=[self.get_student_changes("confused", "maybe", "pondering")]
+        )
+        self.wait()
+        self.look_at(image1)
+        self.play(
+            frame.animate.replace(image1),
+            RemovePiCreatureBubble(self.teacher),
+            run_time=2
+        )
+        self.wait()
+
+        # Image 2
+        self.remove(image1)
+        self.add(image2)
+        self.play(Restore(frame))
+
+        self.change_all_student_modes(
+            "confused",
+            look_at_arg=image1,
+        )
+        self.teacher_says(
+            Tex("P(x) = 0"),
+            target_mode="tease",
+            bubble_kwargs={
+                "width": 3,
+                "height": 3,
+            }
+        )
+        self.wait(4)
+        self.play(
+            RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at_arg=image1),
+            self.get_student_changes(
+                *3 * ["pondering"],
+                look_at_arg=image1,
+            ),
+            FadeOut(image2),
+        )
+        self.wait(4)
+
+
+class ShowManyGraphs(Scene):
+    def construct(self):
+        # Add plots
+        root_groups = [
+            (-2, 6),
+            (-5, 0, 3),
+            (-7, -2, 3, 8),
+            (-5, 1, 5, complex(0, 1), complex(0, -1)),
+        ]
+        coef_groups = list(map(roots_to_coefficients, root_groups))
+        scalars = [0.5, 0.2, 0.01, -0.01]
+        colors = [BLUE_C, BLUE_D, BLUE_B, RED]
+        plots = Group(*(
+            self.get_plot(coefs, scalar, color)
+            for coefs, scalar, color in zip(coef_groups, scalars, colors)
+        ))
+        plots.arrange_in_grid(v_buff=0.5)
+        axes, graphs, root_dots = [
+            Group(*(plot[i] for plot in plots))
+            for i in range(3)
+        ]
+
+        self.play(
+            LaggedStartMap(FadeIn, axes, lag_ratio=0.3),
+            LaggedStartMap(ShowCreation, graphs, lag_ratio=0.3),
+            run_time=3,
+        )
+        self.play(
+            LaggedStart(*(
+                FadeIn(dot, scale=0.1)
+                for dot in it.chain(*root_dots)
+            ), lag_ratio=0.1)
+        )
+
+        self.add(plots)
+        self.wait()
+
+        quadratic, cubic, quartic, quintic = plots
+        for plot in plots:
+            plot.save_state()
+
+        # Show quadratic
+        kw = {"tex_to_color_map": {
+            "{a}": BLUE_B,
+            "{b}": BLUE_C,
+            "{c}": BLUE_D,
+            "{d}": TEAL_E,
+            "{e}": TEAL_D,
+            "{f}": TEAL_C,
+            "{p}": BLUE_B,
+            "{q}": BLUE_C,
+            "\\text{root}": YELLOW,
+            "r_1": YELLOW,
+            "r_2": YELLOW,
+            "+": WHITE,
+            "-": WHITE,
+        }}
+        quadratic.generate_target()
+        quadratic.target.set_height(6)
+        quadratic.target.center().to_edge(LEFT)
+        equation = Tex("{a}x^2 + {b}x + {c} = 0", **kw)
+        equation.next_to(quadratic.target, UP)
+        form = Tex(
+            "r_1, r_2 = {-{b} \\pm \\sqrt{\\,{b}^2 - 4{a}{c}} \\over 2{a}}",
+            **kw
+        )
+        form.next_to(quadratic.target, RIGHT, buff=MED_LARGE_BUFF)
+        form_name = Text("Quadratic formula")
+        form_name.match_width(form)
+        form_name.next_to(form, UP, LARGE_BUFF)
+
+        randy = Randolph(height=2)
+        randy.flip()
+        randy.next_to(form, RIGHT)
+        randy.align_to(quadratic.target, DOWN)
+        randy.shift_onto_screen()
+
+        self.play(
+            MoveToTarget(quadratic),
+            Write(equation),
+            *map(FadeOut, plots[1:]),
+            FadeIn(randy),
+        )
+        self.play(randy.animate.change("hooray"))
+        self.play(
+            TransformMatchingShapes(
+                VGroup(*(
+                    equation.get_part_by_tex(f"{{{c}}}")
+                    for c in "abc"
+                )).copy(),
+                form,
+                lag_ratio=0,
+                run_time=2,
+            ),
+            # FadeIn(form, 0.5 * UP),
+            randy.animate.look_at(form),
+            FadeIn(form_name),
+            FlashAround(form_name),
+        )
+        self.play(Blink(randy))
+        self.wait()
+
+        # Cubic
+        low_fade_rect = BackgroundRectangle(
+            Group(quartic, quintic),
+            buff=0.01,
+            fill_opacity=0.95,
+        )
+        cubic_eq = Tex("x^3 + {p}x + {q} = 0", **kw)
+        cubic_eq.next_to(cubic, LEFT, LARGE_BUFF, aligned_edge=UP)
+        cubic_eq.shift_onto_screen()
+        cubic_name = TexText("Cubic\\\\", "Formula")
+        cubic_name.to_corner(UL)
+        cubic_form = Tex(
+            "\\text{root}", "=",
+            "\\sqrt[3]{\\,-{{q} \\over 2} + \\sqrt{\\, {{q}^2 \\over 4} + {{p}^3 \\over 27}} }+",
+            "\\sqrt[3]{\\,-{{q} \\over 2} - \\sqrt{\\, {{q}^2 \\over 4} + {{p}^3 \\over 27}} }",
+            **kw,
+        )
+        cubic_form.set_width(7)
+        cubic_form.next_to(cubic_eq, DOWN, buff=1.25)
+        cubic_form.to_edge(LEFT)
+        cubic_arrow = Arrow(
+            cubic_eq, cubic_form,
+            stroke_width=5,
+            buff=0.1,
+        )
+
+        self.add(*plots, randy)
+        self.play(
+            Restore(quadratic),
+            *map(FadeIn, plots[1:]),
+            FadeOut(form),
+            FadeOut(form_name),
+            FadeOut(equation),
+            randy.animate.change("plain"),
+        )
+        self.play(randy.animate.change("erm", cubic))
+        self.wait()
+        self.play(
+            FadeOut(quadratic),
+            FadeIn(low_fade_rect),
+            Write(cubic_eq),
+            FadeIn(cubic_name),
+        )
+        self.play(
+            ShowCreation(cubic_arrow),
+            FadeIn(cubic_form, DOWN),
+            randy.animate.change("confused", cubic_name),
+        )
+        self.play(Blink(randy))
+
+        # Quartic
+        quartic_name = TexText("Quartic ", "Formula")
+        quartic_name.move_to(quartic).to_edge(UP)
+        cubic_fade_rect = BackgroundRectangle(cubic, buff=0.01, fill_opacity=0.95)
+        quartic_eq = Tex("{a}x^4 + {b}x^3 + {c}x^2 + {d}x + {e} = 0", **kw)
+        quartic_eq.next_to(quartic, UP)
+
+        main_form = Tex(r"r_{i}&=-\frac{b}{4 a}-S \pm \frac{1}{2} \sqrt{-4 S^{2}-2 p \pm \frac{q}{S}}")
+        details = Tex(r"""
+            &\text{Where}\\\\
+            p&=\frac{8 a c-3 b^{2}}{8 a^{2}} \qquad \qquad\\\\
+            q&=\frac{b^{3}-4 a b c+8 a^{2} d}{8 a^{3}}\\\\
+            S&=\frac{1}{2} \sqrt{-\frac{2}{3} p+\frac{1}{3 a}\left(Q+\frac{\Delta_{0}}{Q}\right)}\\\\
+            Q&=\sqrt[3]{\frac{\Delta_{1}+\sqrt{\Delta_{1}^{2}-4 \Delta_{0}^{3}}}{2}}\\\\
+            \Delta_{0}&=c^{2}-3 b d+12 a e\\\\
+            \Delta_{1}&=2 c^{3}-9 b c d+27 b^{2} e+27 a d^{2}-72 a c e\\\\
+        """)
+        main_form.match_width(quartic_eq)
+        main_form.move_to(VGroup(quartic_name, quartic_eq))
+        details.scale(0.5)
+        details.to_corner(UR)
+        details.set_stroke(BLACK, 3, background=True)
+
+        self.play(
+            FadeOut(cubic_eq),
+            FadeOut(cubic_form),
+            FadeOut(cubic_arrow),
+            FadeIn(cubic_fade_rect),
+            FadeTransform(cubic_name[0], quartic_name[0]),
+            FadeTransform(cubic_name[1], quartic_name[1]),
+            randy.animate.change("erm", quartic_name),
+            low_fade_rect.animate.replace(quintic, stretch=True).scale(1.01),
+            FadeIn(quartic_eq),
+        )
+        self.play(Write(main_form))
+        self.wait()
+        self.play(
+            randy.animate.change("horrified", details),
+            Write(details, run_time=5)
+        )
+        self.play(randy.animate.look_at(details.get_bottom()))
+        self.play(Blink(randy))
+        self.wait()
+
+        # Quintic
+        quintic.generate_target()
+        quintic.target.set_height(5)
+        quintic.target.to_corner(UL).shift(DOWN)
+        quintic_eq = Tex(
+            "{a}x^5 + {b}x^4 + {c}x^3 + {d}x^2 + {e}x + {f}",
+            **kw
+        )
+        quintic_eq.match_width(quintic.target)
+        quintic_eq.next_to(quintic.target, UP)
+        quintic_name = Text("Quintic formula?", font_size=60)
+        quintic_name.move_to(3 * RIGHT)
+        quintic_name.to_edge(UP)
+
+        subwords = VGroup(
+            TexText("There is none.", "$^*$"),
+            TexText("And there never can be."),
+        )
+
+        subwords.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
+        subwords.next_to(quintic_name, DOWN, LARGE_BUFF, aligned_edge=LEFT)
+        footnote = Tex(
+            "^*\\text{Using }",
+            "+,\\,",
+            "-,\\,",
+            "\\times,\\,",
+            "/,\\,",
+            "\\sqrt[n]{\\quad},\\,",
+            "\\text{exp},\\,",
+            "\\log,\\,",
+            "\\sin,\\,",
+            "\\cos,\\,",
+            "etc.\\\\",
+            font_size=36,
+            alignment="",
+        )
+        footnote.set_color(GREY_A)
+        footnote.next_to(subwords, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        footnote.shift_onto_screen(buff=MED_SMALL_BUFF)
+
+        self.play(
+            FadeOut(cubic),
+            FadeOut(quartic),
+            FadeOut(quartic_eq),
+            FadeOut(main_form),
+            FadeOut(details),
+            FadeTransform(quartic_name, quintic_name),
+            MoveToTarget(quintic),
+            UpdateFromFunc(
+                low_fade_rect,
+                lambda m: m.replace(quintic, stretch=True),
+            ),
+            VFadeOut(low_fade_rect),
+            randy.animate.change("tease", quintic_name),
+            FadeIn(quintic_eq),
+        )
+        self.play(Blink(randy))
+        self.wait()
+        self.play(
+            FadeIn(subwords[0][0], 0.5 * DOWN),
+            randy.animate.change("erm", subwords),
+        )
+        self.wait()
+        self.play(FadeIn(subwords[1], 0.5 * DOWN))
+        self.wait()
+        self.play(
+            FadeIn(subwords[0][1]),
+            LaggedStartMap(FadeIn, footnote, run_time=6, lag_ratio=0.5),
+            randy.animate.change("pondering", footnote)
+        )
+        self.play(Blink(randy))
+        self.wait()
+
+    def get_plot(self, coefs, scalar=1.0, color=YELLOW, stroke_width=3, height=3.5, bound=10):
+        axes = NumberPlane(
+            (-bound, bound, 5), (-bound, bound, 5),
+            faded_line_ratio=4,
+            background_line_style={
+                "stroke_width": 1.0,
+                "stroke_color": GREY_A,
+            }
+        )
+        axes.set_height(height)
+        axes.add_coordinate_labels(
+            x_values=[-5, 0, 5, 10],
+            y_values=[-5, 5, 10],
+            font_size=16,
+            excluding=[],
+        )
+
+        def f(x):
+            return scalar * poly(x, coefs)
+
+        x_min = binary_search(
+            lambda x: abs(f(x)), bound, -bound, 0
+        )
+        x_max = binary_search(
+            lambda x: abs(f(x)), bound, 0, bound,
+        )
+
+        graph = axes.get_graph(f, x_range=(x_min, x_max))
+        graph.set_stroke(color, stroke_width)
+
+        roots = [
+            root.real
+            for root in coefficients_to_roots(coefs)
+            if np.isclose(root.imag, 0)
+        ]
+
+        def get_glow_dot(point):
+            result = DotCloud([point] * 10)
+            result.set_radii([
+                interpolate(0.03, 0.06, t**2)
+                for t in np.linspace(0, 1, 10)
+            ])
+            result.set_opacity(0.2)
+            result.set_color(YELLOW)
+            return result
+
+        root_dots = Group(*(
+            get_glow_dot(axes.c2p(root, 0))
+            for root in roots
+        ))
+
+        result = Group(axes, graph, root_dots)
+        return result
 
 
 class ComingVideoWrapper(VideoWrapper):
     animate_boundary = False
-    title = "Upcoming: Unsolvabillity of the Quintic"
+    title = "Unsolvabillity of the Quintic (future topic?)"
+
+
+class QuinticAppletPlay(ExternallyAnimatedScene):
+    pass
+
+
+class AskAboutFractals(TeacherStudentsScene):
+    def construct(self):
+        self.screen.set_height(4, about_edge=UL)
+        self.screen.set_fill(BLACK, 1)
+        self.add(self.screen)
+        self.student_says(
+            "Fractals?",
+            target_mode="raise_right_hand",
+            student_index=2,
+            added_anims=[
+                self.students[0].animate.change("confused"),
+                self.students[1].animate.change("sassy"),
+            ]
+        )
+        self.wait()
+        self.teacher_says(
+            TexText("We're getting\\\\there"),
+            bubble_kwargs={
+                "height": 3,
+                "width": 4,
+            },
+            target_mode="happy"
+        )
+        self.change_all_student_modes(
+            "pondering",
+            look_at_arg=self.screen
+        )
+        self.wait(2)
 
 
 class RealNewtonsMethod(Scene):
@@ -121,6 +1342,7 @@ class RealNewtonsMethod(Scene):
         self.add_title(self.axes)
         self.draw_graph()
         self.highlight_roots()
+        self.preview_iterative_root_finding()
         self.introduce_step()
         self.find_root()
 
@@ -134,7 +1356,8 @@ class RealNewtonsMethod(Scene):
         self.add(axes)
 
         graph = self.graph = axes.get_graph(
-            lambda x: poly(x, self.coefs)
+            lambda x: poly(x, self.coefs),
+            x_range=(-1.5, 1.5),
         )
         graph.set_color(self.graph_color)
 
@@ -157,15 +1380,20 @@ class RealNewtonsMethod(Scene):
         self.add(title)
 
     def draw_graph(self):
-        underline = Underline(self.poly[:-1])
-        underline.match_style(self.graph)
+        rect = SurroundingRectangle(self.poly[:-1])
+        rect.set_stroke(self.graph_color, 2)
 
         self.play(
-            FlashAround(self.poly[:-1], color=self.graph_color),
-            ShowCreation(self.graph),
-            run_time=3
+            FlashAround(self.poly[:-1], color=self.graph_color, run_time=2),
+            ShowCreation(rect, run_time=2),
+            ShowCreation(self.graph, run_time=4),
         )
         self.wait()
+        self.play(
+            rect.animate.replace(self.poly[-1], stretch=True).scale(1.2)
+        )
+        self.wait()
+        self.play(FadeOut(rect))
 
     def highlight_roots(self):
         roots = coefficients_to_roots(self.coefs)
@@ -176,11 +1404,10 @@ class RealNewtonsMethod(Scene):
         real_roots.sort()
 
         dots = VGroup(*(
-            Dot(self.axes.c2p(r, 0), radius=0.05)
+            # Dot(self.axes.c2p(r, 0), radius=0.05)
+            glow_dot(self.axes.c2p(r, 0))
             for r in real_roots
         ))
-        dots.set_fill(YELLOW, 1)
-        dots.set_stroke(BLACK, 2, background=True)
         squares = VGroup(*[
             Square().set_height(0.25).move_to(dot)
             for dot in dots
@@ -191,7 +1418,7 @@ class RealNewtonsMethod(Scene):
         self.play(
             LaggedStart(
                 *[
-                    FadeIn(dot, shift=DOWN, scale=0.25)
+                    FadeIn(dot, scale=0.1)
                     for dot in dots
                 ] + [
                     VShowPassingFlash(square, time_width=2.0, run_time=2)
@@ -250,6 +1477,64 @@ class RealNewtonsMethod(Scene):
             lag_ratio=0.25
         ))
         self.wait()
+
+    def preview_iterative_root_finding(self):
+        axes = self.axes
+        axis = axes.x_axis
+        coefs = self.coefs
+        n_steps = 5
+
+        root_seekers = VGroup(*(
+            ArrowTip().set_height(0.2).rotate(-PI / 2).move_to(axis.n2p(x), DOWN)
+            for x in np.arange(-2, 2.0, 0.2)[:-1]
+        ))
+        root_seekers.set_stroke(YELLOW, 2, opacity=0.5)
+        root_seekers.set_fill(YELLOW, opacity=0.3)
+
+        words = Text("Approximate\nSolutions", alignment="\\flushleft")
+        words.move_to(axes.c2p(0, 3))
+        words.align_to(axis, LEFT)
+        words.set_color(YELLOW)
+
+        self.play(
+            FadeIn(root_seekers, lag_ratio=0.1),
+            Write(words),
+        )
+
+        for n in range(n_steps):
+            for rs in root_seekers:
+                rs.generate_target()
+                x = axis.p2n(rs.get_center())
+                if n == 0 and abs(x - 0.4) < 0.1:
+                    x = 0.6
+                new_x = x - poly(x, coefs) / dpoly(x, coefs)
+                rs.target.set_x(axis.n2p(new_x)[0])
+            self.play(*map(MoveToTarget, root_seekers), run_time=1.0)
+        self.wait()
+
+        values = VGroup(*(
+            DecimalNumber(
+                axis.p2n(rs.get_center()),
+                num_decimal_places=5,
+                show_ellipsis=True,
+            ).next_to(rs, UP, SMALL_BUFF)
+            for rs in root_seekers[0::len(root_seekers) // 2]
+        ))
+        values.set_fill(YELLOW)
+        values.set_stroke(BLACK, 8, background=True)
+        last_value = VMobject()
+        for value in values:
+            self.play(
+                FadeIn(value),
+                FadeOut(last_value)
+            )
+            self.wait(0.5)
+            last_value = value
+        self.play(FadeOut(last_value))
+        self.play(
+            FadeOut(words),
+            FadeOut(root_seekers),
+        )
 
     def introduce_step(self):
         axes = self.axes
@@ -319,6 +1604,7 @@ class RealNewtonsMethod(Scene):
             FadeIn(dpoly, 0.5 * DOWN),
             guess_label.animate.shift(0.25 * DOWN)
         )
+        self.play(FlashAround(dpoly))
         self.wait()
 
         # Show step
@@ -404,7 +1690,7 @@ class RealNewtonsMethod(Scene):
             self.play(*self.cycle_rule_entries_anims(), run_time=cycle_run_time)
             self.step_towards_root()
 
-    def step_towards_root(self, fade_tan_with_vline=False):
+    def step_towards_root(self, fade_tan_with_vline=False, added_anims=None):
         guess = self.guess_tracker.get_value()
         next_guess = self.get_next_guess(guess)
 
@@ -420,6 +1706,8 @@ class RealNewtonsMethod(Scene):
             FadeOut(v_line),
             self.guess_tracker.animate.set_value(next_guess)
         ]
+        if added_anims is not None:
+            anims += added_anims
         tan_fade = FadeOut(tan_line)
         if fade_tan_with_vline:
             self.play(*anims, tan_fade)
@@ -530,16 +1818,24 @@ class AssumingItsGood(TeacherStudentsScene):
         self.wait(3)
 
 
+class PauseAndPonder(TeacherStudentsScene):
+    def construct(self):
+        self.teacher_says("Pause and\nponder", target_mode="hooray")
+        self.change_all_student_modes("thinking", look_at_arg=self.screen)
+        self.wait(4)
+
+
 class RealNewtonsMethodHigherGraph(RealNewtonsMethod):
     coefs = [1, -1, 1, 0, 0, 0.99]
     poly_tex = "x^5 + x^2 - x + 1"
     n_search_steps = 20
 
-    def find_root(self, cycle_run_time=0.5):
-        super().find_root(cycle_run_time)
-
-    def step_towards_root(self, fade_tan_with_vline=True):
-        super().step_towards_root(fade_tan_with_vline)
+    def find_root(self, cycle_run_time=1.0):
+        for n in range(self.n_search_steps):
+            self.step_towards_root(
+                added_anims=self.cycle_rule_entries_anims(),
+                fade_tan_with_vline=True
+            )
 
 
 class FactorPolynomial(RealNewtonsMethodHigherGraph):
@@ -793,7 +2089,7 @@ class TransitionToComplexPlane(RealNewtonsMethodHigherGraph):
             FadeOut(out_plane),
             FadeOut(out_dot),
             FadeOut(pz_label),
-            Restore(self.poly),
+            self.poly.animate.restore().shift(0.32 * RIGHT),
         )
 
 
@@ -972,6 +2268,27 @@ class ComplexNewtonsMethod(RealNewtonsMethod):
         ]
 
 
+class OutputIsZero(Scene):
+    def construct(self):
+        words = TexText("Output $\\approx 0$")
+        words.set_stroke(BLACK, 5, background=True)
+        arrow = Vector(0.5 * UL)
+        words.next_to(arrow, DR)
+        words.shift(0.5 * LEFT)
+
+        self.play(
+            Write(words),
+            ShowCreation(arrow)
+        )
+        self.wait()
+
+
+class FunPartWords(Scene):
+    def construct(self):
+        text = TexText("Now here's \\\\ the fun part", font_size=72)
+        self.add(text)
+
+
 class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
     dot_radius = 0.035
     dot_color = WHITE
@@ -1039,6 +2356,7 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
             ), lag_ratio=0.1 / len(guess_dots)),
             run_time=3
         )
+        self.add(guess_dots)
         self.wait()
 
         self.z0_group = z0_group
@@ -1055,7 +2373,12 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
             for rp, color in zip(root_points, colors)
         ))
 
-        self.play(LaggedStartMap(DrawBorderThenFill, root_circles))
+        self.play(
+            LaggedStart(*(
+                FadeIn(rc, scale=0.5)
+                for rc in root_circles
+            ), lag_ratio=0.7, run_time=1),
+        )
         self.wait()
 
         self.root_circles = root_circles
@@ -1093,7 +2416,7 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
         )
         self.wait()
 
-        len_history = max([len(dot.history) for dot in dots if hasattr(dot, "history")])
+        len_history = max([len(dot.history) for dot in dots if hasattr(dot, "history")], default=0)
         for n in range(len_history):
             dots.generate_target()
             for dot, dot_target in zip(dots, dots.target):
@@ -1104,19 +2427,33 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
             self.play(MoveToTarget(dots, run_time=0.5))
 
 
+class ZeroStepColoring(ComplexNewtonsMethodManySeeds):
+    n_search_steps = 0
+
+
 class ComplexNewtonsMethodManySeedsHigherRes(ComplexNewtonsMethodManySeeds):
     step = 0.05
 
 
 class IntroPolyFractal(Scene):
-    def construct(self):
-        plane = self.get_plane()
-        fractal = self.get_fractal(plane)
-        root_dots = self.get_root_dots(plane, fractal)
+    coefs = [1.0, -1.0, 1.0, 0.0, 0.0, 1.0]
+    plane_config = {
+        "x_range": (-4, 4),
+        "y_range": (-4, 4),
+        "height": 16,
+        "width": 16,
+        "background_line_style": {
+            "stroke_color": GREY_A,
+            "stroke_width": 1.0,
+        },
+        "axis_config": {
+            "stroke_width": 1.0,
+        }
+    }
 
-        self.add(fractal)
-        self.add(plane)
-        self.add(root_dots)
+    def construct(self):
+        self.init_fractal(root_colors=ROOT_COLORS_BRIGHT)
+        fractal, plane, root_dots = self.group
 
         # Transition from last scene
         frame = self.camera.frame
@@ -1164,29 +2501,29 @@ class IntroPolyFractal(Scene):
         self.tie_fractal_to_root_dots(fractal)
         fractal.set_n_steps(12)
 
+    def init_fractal(self, root_colors=ROOT_COLORS_DEEP):
+        plane = self.get_plane()
+        fractal = self.get_fractal(plane, colors=root_colors)
+        root_dots = self.get_root_dots(plane, fractal)
+        self.tie_fractal_to_root_dots(fractal)
+
+        self.plane = plane
+        self.fractal = fractal
+        self.group = Group(fractal, plane, root_dots)
+        self.add(*self.group)
+
     def get_plane(self):
-        plane = ComplexPlane(
-            x_range=(-4, 4),
-            y_range=(-4, 4),
-            height=16,
-            width=16,
-            background_line_style={
-                "stroke_color": GREY_A,
-                "stroke_width": 1.0,
-            },
-            axis_config={
-                "stroke_width": 1.0,
-            }
-        )
+        plane = ComplexPlane(**self.plane_config)
         plane.add_coordinate_labels(font_size=24)
         self.plane = plane
         return plane
 
-    def get_fractal(self, plane, colors=ROOT_COLORS_BRIGHT):
+    def get_fractal(self, plane, colors=ROOT_COLORS_DEEP):
         fractal = PolyFractal(
             scale_factor=get_norm(plane.n2p(1) - plane.n2p(0)),
             offset=plane.n2p(0),
             colors=colors,
+            coefs=self.coefs,
         )
         fractal.replace(plane, stretch=True)
         return fractal
@@ -1223,24 +2560,85 @@ class IntroPolyFractal(Scene):
         self.root_dots.clear_updaters()
 
 
+class ChaosOnBoundary(TeacherStudentsScene):
+    def construct(self):
+        self.teacher_says(
+            TexText("Chaos at\\\\the boundary"),
+            bubble_kwargs={
+                "height": 3,
+                "width": 3,
+            }
+        )
+        self.change_all_student_modes("pondering", look_at_arg=self.screen)
+        self.wait(3)
+
+
+class DeepZoomFractal(IntroPolyFractal):
+    coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
+
+    plane_config = {
+        "x_range": (-4, 4),
+        "y_range": (-4, 4),
+        "height": 16 * 1,
+        "width": 16 * 1,
+        "background_line_style": {
+            "stroke_color": GREY_A,
+            "stroke_width": 1.0,
+        },
+        "axis_config": {
+            "stroke_width": 1.0,
+        }
+    }
+
+    def construct(self):
+        self.init_fractal(root_colors=ROOT_COLORS_DEEP)
+        fractal, plane, root_dots = self.group
+
+        he_tracker = ValueTracker(0)
+        frame = self.camera.frame
+        zoom_point = np.array([
+            # -1.91177811, 0.52197285, 0.
+            0.72681252, -0.66973296, 0.
+        ], dtype=np.float64)
+
+        initial_fh = FRAME_HEIGHT
+        frame.add_updater(lambda m: m.set_height(
+            initial_fh * 2**(-he_tracker.get_value()),
+        ))
+        # rd_height = root_dots.get_height()
+        # root_dots.add_updater(lambda m: m.set_height(
+        #     rd_height * 2**(he_tracker.get_value() / 8),
+        #     about_point=zoom_point
+        # ))
+
+        self.add(frame)
+        self.play(
+            UpdateFromAlphaFunc(
+                frame,
+                lambda m, a: m.move_to(zoom_point * a),
+                run_time=15,
+            ),
+            ApplyMethod(
+                he_tracker.set_value, 14,
+                run_time=30,
+                rate_func=bezier([0, 0, 1, 1]),
+            ),
+        )
+        self.wait()
+
+
 class IncreasingStepsPolyFractal(IntroPolyFractal):
     play_mode = False
 
     def construct(self):
-        plane = self.get_plane()
-        fractal = self.get_fractal(plane, colors=ROOT_COLORS_DEEP)
+        self.init_fractal()
+        fractal, plane, root_dots = self.group
         fractal.set_n_steps(0)
-        root_dots = self.get_root_dots(plane, fractal)
-        self.tie_fractal_to_root_dots(fractal)
 
         steps_label = VGroup(Integer(0, edge_to_fix=RIGHT), Text("Steps"))
         steps_label.arrange(RIGHT, aligned_edge=UP)
         steps_label.next_to(ORIGIN, UP).to_edge(LEFT)
         steps_label.set_stroke(BLACK, 5, background=True)
-
-        self.add(fractal)
-        self.add(plane)
-        self.add(root_dots)
         self.add(steps_label)
 
         step_tracker = ValueTracker(0)
@@ -1266,3 +2664,104 @@ class IncreasingStepsPolyFractal(IntroPolyFractal):
                 step_tracker.animate.set_value(20),
                 run_time=10
             )
+
+
+class ManyQuestions(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+
+        questions = VGroup(
+            Text("What about lower degrees?"),
+            Text("Do points ever cycle?"),
+            Text("Can we masure the fractal dimension?"),
+            Text("Any connection to Mandelbrot?"),
+        )
+        screens = VGroup(*(ScreenRectangle() for q in questions))
+        screens.arrange_in_grid(
+            v_buff=1,
+            h_buff=1.5
+        )
+
+        self.add(screens)
+
+        self.embed()
+
+
+class TwoRootFractal(IntroPolyFractal):
+    coefs = [-1.0, 0.0, 1.0]
+
+    def construct(self):
+        self.init_fractal(root_colors=[ROOT_COLORS_DEEP[0], ROOT_COLORS_DEEP[4]])
+
+
+class ThreeRootFractal(IntroPolyFractal):
+    coefs = [-1.0, 0.0, 0.0, 1.0]
+
+    def construct(self):
+        self.init_fractal(root_colors=CUBIC_COLORS)
+        self.fractal.set_n_steps(40)
+        self.fractal.set_color_mult(1.03)
+        # self.remove(self.plane)
+
+        # self.embed()
+
+
+class HighlightedJulia(IntroPolyFractal):
+    coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
+
+    def construct(self):
+        # self.init_fractal(root_colors=ROOT_COLORS_DEEP[0::2])
+        self.init_fractal(root_colors=ROOT_COLORS_DEEP)
+        fractal = self.fractal
+
+        fractal.set_julia_highlight(1e-3)
+        # self.play(
+        #     fractal.animate.set_julia_highlight(1e-3),
+        #     run_time=5
+        # )
+
+        # self.embed()
+
+
+class MetaFractal(IntroPolyFractal):
+    fixed_roots = [-1, 1]
+    z0 = complex(0.5, 0)
+    n_steps = 150
+
+    def construct(self):
+        colors = CUBIC_COLORS
+        self.plane_config["faded_line_ratio"] = 3
+        plane = self.get_plane()
+        root_dots = self.root_dots = VGroup(*(
+            Dot(plane.n2p(root), color=color)
+            for root, color in zip(self.fixed_roots, colors)
+        ))
+        root_dots.set_stroke(BLACK, 3)
+        fractal = MetaPolyFractal(
+            scale_factor=plane.get_x_unit_size(),
+            fixed_roots=self.fixed_roots,
+            offset=plane.get_origin(),
+            colors=colors,
+            n_steps=self.n_steps,
+            # z0=self.z0,
+        )
+        fractal.replace(plane, stretch=True)
+        fractal.add_updater(lambda f: f.set_fixed_roots([
+            plane.p2n(dot.get_center())
+            for dot in root_dots
+        ]))
+
+        self.add(fractal, plane)
+        self.add(root_dots)
+
+        frame = self.camera.frame
+        frame.generate_target()
+        frame.target.move_to([1.62070862, 1.68700851, 0.])
+        frame.target.set_height(0.083)
+
+        self.play(
+            MoveToTarget(frame),
+            run_time=10,
+            rate_func=bezier([0, 0, 1, 1])
+        )
+        self.wait()
