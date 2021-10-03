@@ -8,16 +8,45 @@ from _2021.quintic import poly
 
 ROOT_COLORS_BRIGHT = [RED, GREEN, BLUE, YELLOW, MAROON_B]
 ROOT_COLORS_DEEP = ["#440154", "#3b528b", "#21908c", "#5dc963", "#29abca"]
-CUBIC_COLORS = ["#440154", BLUE_E, TEAL_E]
+CUBIC_COLORS = [RED_E, TEAL_E, BLUE_E]
 
 
-def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20):
+def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20, opacity_mult=1.0):
     result = VGroup(*(
         Dot(point, radius=interpolate(r_min, r_max, a))
         for a in np.linspace(0, 1, n)
     ))
-    result.set_fill(YELLOW, opacity=1 / n)
+    result.set_fill(color, opacity=opacity_mult / n)
     return result
+
+
+def get_newton_rule(font_size=36, isolate=["z_n", "z_{n+1}"], **kwargs):
+    return Tex(
+        "z_{n+1} \\rightarrow z_n - {P(z_n) \\over P'(z_n)}",
+        font_size=36,
+        isolate=isolate,
+        **kwargs
+    )
+
+
+def coefs_to_poly_string(coefs):
+    n = len(coefs) - 1
+    tex_str = "" if coefs[-1] == 1 else str(int(coefs[-1]))
+    tex_str += f"z^{{{n}}}"
+    for c, k in zip(coefs[-2::-1], it.count(n - 1, -1)):
+        if c == 0:
+            continue
+        num_str = "{:+}".format(int(c))
+        if abs(c) == 1 and k > 0:
+            num_str = num_str[:-1]
+        tex_str += num_str
+        if k == 0:
+            continue
+        elif k == 1:
+            tex_str += "z"
+        else:
+            tex_str += f"z^{{{k}}}"
+    return tex_str
 
 
 class PolyFractal(Mobject):
@@ -34,7 +63,16 @@ class PolyFractal(Mobject):
         "julia_highlight": 0.0,
         "max_degree": 5,
         "color_mult": 1.0,
+        "opacity": 1.0,
     }
+
+    def __init__(self, plane, **kwargs):
+        super().__init__(
+            scale_factor=plane.get_x_unit_size(),
+            offset=plane.n2p(0),
+            **kwargs,
+        )
+        self.replace(plane, stretch=True)
 
     def init_data(self):
         self.data = {
@@ -50,6 +88,7 @@ class PolyFractal(Mobject):
         self.set_offset(self.offset)
         self.set_n_steps(self.n_steps)
         self.set_color_mult(self.color_mult)
+        self.set_opacity(self.opacity)
 
     def set_colors(self, colors):
         self.uniforms.update({
@@ -98,6 +137,15 @@ class PolyFractal(Mobject):
 
     def set_color_mult(self, color_mult):
         self.uniforms["color_mult"] = color_mult
+        return self
+
+    def set_opacities(self, *opacities):
+        for n, opacity in enumerate(opacities):
+            self.uniforms[f"color{n}"][3] = opacity
+        return self
+
+    def set_opacity(self, opacity):
+        self.set_opacities(*len(self.roots) * [opacity])
         return self
 
 
@@ -2519,14 +2567,11 @@ class IntroPolyFractal(Scene):
         return plane
 
     def get_fractal(self, plane, colors=ROOT_COLORS_DEEP):
-        fractal = PolyFractal(
-            scale_factor=get_norm(plane.n2p(1) - plane.n2p(0)),
-            offset=plane.n2p(0),
+        return PolyFractal(
+            plane,
             colors=colors,
             coefs=self.coefs,
         )
-        fractal.replace(plane, stretch=True)
-        return fractal
 
     def get_root_dots(self, plane, fractal):
         self.root_dots = VGroup(*(
@@ -2671,39 +2716,753 @@ class ManyQuestions(Scene):
         self.add(FullScreenRectangle())
 
         questions = VGroup(
-            Text("What about lower degrees?"),
+            Text("Lower order polynomials?"),
             Text("Do points ever cycle?"),
-            Text("Can we masure the fractal dimension?"),
-            Text("Any connection to Mandelbrot?"),
+            Text("Fractal dimension?"),
+            Text("Connection to Mandelbrot?"),
         )
         screens = VGroup(*(ScreenRectangle() for q in questions))
         screens.arrange_in_grid(
-            v_buff=1,
-            h_buff=1.5
+            v_buff=1.5,
+            h_buff=3.0,
         )
+        screens.set_fill(BLACK, 1)
 
+        questions.match_width(screens[0])
+        for question, screen in zip(questions, screens):
+            question.next_to(screen, UP)
+            screen.add(question)
+
+        screens.set_height(FRAME_HEIGHT - 0.5)
+        screens.center()
+
+        self.play(LaggedStartMap(
+            FadeIn, screens,
+            lag_ratio=0.7,
+        ))
+        self.wait()
+
+
+class WhatsGoingOn(TeacherStudentsScene):
+    def construct(self):
+        self.screen.set_height(4, about_edge=UL)
+        self.screen.set_fill(BLACK, 1)
+        self.add(self.screen)
+
+        self.student_says(
+            "What the %$!* is\ngoing on?",
+            target_mode="angry",
+            look_at_arg=self.screen,
+            student_index=2,
+            added_anims=[LaggedStart(*(
+                pi.animate.change("guilty", self.students[2].eyes)
+                for pi in [self.teacher, *self.students[:2]]
+            ), run_time=2)]
+        )
+        self.wait(4)
+
+
+class EquationToFrame(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+
+        screens = Square().get_grid(1, 2)
+        screens.set_height(6)
+        screens.set_width(FRAME_WIDTH - 1, stretch=True)
+        screens.set_stroke(WHITE, 3)
+        screens.set_fill(BLACK, 1)
+        screens.arrange(RIGHT, buff=2.0)
+        screens.to_edge(DOWN)
+        arrow = Arrow(*screens)
+
+        equation = get_newton_rule()
+        equation.next_to(screens[0], UP)
+
+        title = TexText("Newton's fractal")
+        title.next_to(screens[1], UP)
+
+        self.wait()
         self.add(screens)
+        self.add(equation)
+        self.play(
+            ShowCreation(arrow),
+            FadeTransform(equation.copy(), title),
+        )
+        self.wait()
 
         self.embed()
 
 
-class TwoRootFractal(IntroPolyFractal):
+class RepeatedNewton(Scene):
+    coefs = [1.0, -1.0, 1.0, 0.0, 0.0, 1.0]
+    plane_config = {
+        "x_range": (-4, 4),
+        "y_range": (-2, 2),
+        "height": 8,
+        "width": 16,
+    }
+    dots_config = {
+        "radius": 0.05,
+        "color": GREY_A,
+        "gloss": 0.4,
+        "shadow": 0.1,
+        "opacity": 0.5,
+    }
+    arrow_style = {
+        "stroke_color": GREY_C,
+    }
+    dot_density = 5.0
+    n_steps = 10
+    colors = ROOT_COLORS_BRIGHT
+    show_coloring = True
+    show_arrows = True
+    highlight_equation = False
+    corner_group_height = 2.0
+    step_run_time = 1.0
+
+    def construct(self):
+        self.add_plane()
+        self.add_true_roots()
+        self.add_labels()
+        self.add_dots()
+        self.run_iterations()
+        if self.show_coloring:
+            self.color_points()
+            self.revert_to_original_positions()
+
+    def add_plane(self):
+        plane = self.plane = ComplexPlane(**self.plane_config)
+        plane.to_edge(DOWN, buff=0)
+        plane.add_coordinate_labels(font_size=24)
+
+        self.add(plane)
+
+    def add_labels(self):
+        eq_label = self.eq_label = Tex(
+            "P(z) = " + coefs_to_poly_string(self.coefs),
+            font_size=36
+        )
+
+        rule_label = self.rule_label = get_newton_rule()
+        rule_label.next_to(eq_label, DOWN, MED_LARGE_BUFF)
+
+        corner_rect = SurroundingRectangle(
+            VGroup(eq_label, rule_label),
+            buff=MED_SMALL_BUFF
+        )
+        corner_rect.set_fill(BLACK, 0.9)
+        corner_rect.set_stroke(WHITE, 1)
+
+        self.corner_group = VGroup(
+            corner_rect,
+            eq_label,
+            rule_label,
+        )
+        self.corner_group.set_height(self.corner_group_height)
+        self.corner_group.to_corner(UL, buff=0)
+        self.add(self.corner_group)
+
+    def add_true_roots(self):
+        roots = coefficients_to_roots(self.coefs)
+        root_dots = self.root_dots = VGroup(*(
+            glow_dot(self.plane.n2p(root), color=color, opacity_mult=2.0)
+            for root, color in zip(roots, self.colors)
+        ))
+
+        self.add(root_dots)
+
+    def add_dots(self):
+        dots = self.dots = DotCloud(
+            self.get_original_points(), **self.dots_config
+        )
+
+        self.add(dots, self.corner_group)
+        self.play(ShowCreation(dots))
+
+    def get_original_points(self):
+        step = 1.0 / self.dot_density
+        return [
+            self.plane.c2p(x, y)
+            for x in np.arange(*self.plane.x_range[:2], step)
+            for y in np.arange(*self.plane.y_range[:2], step)
+        ]
+
+    def run_iterations(self):
+        self.points_history = []
+        for x in range(self.n_steps):
+            self.points_history.append(self.dots.get_points().copy())
+            self.take_step(run_time=self.step_run_time)
+
+    def take_step(self, run_time=1.0):
+        plane = self.plane
+        coefs = self.coefs
+        points = self.dots.get_points()
+
+        def func(z, epsilon=1e-5):
+            denom = dpoly(z, coefs)
+            if abs(denom) < epsilon:
+                denom = epsilon
+            return z - poly(z, coefs) / denom
+
+        zs = map(plane.p2n, points)
+        new_zs = map(func, zs)
+        new_points = list(map(plane.n2p, new_zs))
+
+        added_anims = []
+        if self.show_arrows:
+            arrows = []
+            max_len = 0.5 * plane.get_x_unit_size() / self.dot_density
+            for p1, p2 in zip(points, new_points):
+                vect = p2 - p1
+                norm = get_norm(vect)
+                if norm > max_len:
+                    vect = normalize(vect) * max_len
+                arrows.append(Vector(vect, **self.arrow_style).shift(p1))
+            arrows = VGroup(*arrows)
+            self.add(arrows, self.dots, self.corner_group)
+            self.play(ShowCreation(arrows, lag_ratio=0))
+            added_anims.append(FadeOut(arrows))
+
+        self.play(
+            self.dots.animate.set_points(new_points),
+            *added_anims,
+            run_time=run_time,
+        )
+
+    def color_points(self):
+        root_points = [rd.get_center() for rd in self.root_dots]
+        rgbas = list(map(color_to_rgba, self.colors))
+
+        def get_rgba(point):
+            norms = [get_norm(point - rp) for rp in root_points]
+            return rgbas[np.argmin(norms)]
+
+        rgbas = list(map(get_rgba, self.dots.get_points()))
+
+        fractal = PolyFractal(
+            self.plane,
+            coefs=self.coefs,
+            colors=self.colors,
+            n_steps=0,
+        )
+        fractal.set_opacity(0)
+
+        self.add(fractal, self.plane, self.dots, self.corner_group)
+        radius = self.dots.get_radius()
+        self.play(
+            fractal.animate.set_opacity(0.5),
+            self.dots.animate.set_rgba_array(rgbas).set_radius(1.5 * radius),
+        )
+        self.play(
+            fractal.animate.set_opacity(0),
+            self.dots.animate.set_radius(radius),
+        )
+        self.remove(fractal)
+
+    def revert_to_original_positions(self):
+        for ph in self.points_history[::-1]:
+            self.play(
+                self.dots.animate.set_points(ph),
+                run_time=0.5,
+            )
+
+    def reveal_fractal(self, **kwargs):
+        if "colors" not in kwargs:
+            kwargs["colors"] = self.colors
+
+        plane = self.plane
+
+        fractal = self.fractal = PolyFractal(
+            plane,
+            coefs=self.coefs,
+            **kwargs
+        )
+        root_dot_backs = VGroup(*(Dot(rd.get_center(), radius=0.1) for rd in self.root_dots))
+        root_dot_backs.set_stroke(BLACK, 2)
+        root_dot_backs.set_fill(opacity=0)
+
+        plane.generate_target(use_deepcopy=True)
+        for lines in plane.target.background_lines, plane.target.faded_lines:
+            lines.set_stroke(WHITE)
+            for line in lines.family_members_with_points():
+                line.set_opacity(line.get_stroke_opacity() * 0.5)
+
+        self.root_dots.generate_target()
+        for rd, color in zip(self.root_dots.target, kwargs["colors"]):
+            rd.set_fill(color)
+
+        self.add(fractal, *self.mobjects, root_dot_backs)
+        self.play(
+            FadeIn(fractal),
+            FadeOut(self.dots),
+            FadeIn(root_dot_backs),
+            MoveToTarget(plane),
+            MoveToTarget(self.root_dots),
+        )
+        self.wait()
+
+
+class SimplyTendingToNearestRoot(RepeatedNewton):
+    def take_step(self):
+        pass
+
+
+class RepeatedNewtonCubic(RepeatedNewton):
+    coefs = [-1, 0, 0, 1]
+
+    def construct(self):
+        super().construct()
+        self.reveal_fractal()
+
+        frame = self.camera.frame
+        self.play(
+            frame.animate.move_to([0.86579359, -0.8322599, 0.]).set_height(0.0029955),
+            rate_func=bezier([0, 0, 1, 1, 1, 1, 1, 1]),
+            run_time=10,
+        )
+
+
+class RepeatedNewtonQuadratic(RepeatedNewton):
+    coefs = [-1, 0, 1]
+    colors = [RED, BLUE]
+    n_steps = 6
+
+
+class SimpleFractalScene(IntroPolyFractal):
+    colors = ROOT_COLORS_DEEP
+
+    def construct(self):
+        self.init_fractal(root_colors=self.colors)
+
+
+class TwoRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 1.0]
-
-    def construct(self):
-        self.init_fractal(root_colors=[ROOT_COLORS_DEEP[0], ROOT_COLORS_DEEP[4]])
+    colors = [ROOT_COLORS_DEEP[0], ROOT_COLORS_DEEP[4]]
 
 
-class ThreeRootFractal(IntroPolyFractal):
+class ThreeRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 0.0, 1.0]
+    colors = ROOT_COLORS_DEEP[::2]
+
+
+class PeculiarBoundaryProperty(Scene):
+    coefs = [-1, 0, 0, 1]
+    colors = [RED_E, TEAL_E, BLUE_E]
 
     def construct(self):
-        self.init_fractal(root_colors=CUBIC_COLORS)
-        self.fractal.set_n_steps(40)
-        self.fractal.set_color_mult(1.03)
-        # self.remove(self.plane)
+        # Title
+        title = Text("Peculiar property", font_size=60)
+        title.to_edge(UP, buff=MED_SMALL_BUFF)
+        title.set_stroke(BLACK, 5, background=True)
+        underline = Underline(title, buff=-0.05)
+        underline.set_width(title.get_width() + 1)
+        underline.insert_n_curves(20)
+        underline.set_stroke(BLUE, [1, *5 * [3], 1])
 
-        # self.embed()
+        subtitle = TexText(
+            "Boundary of one color",
+            " = "
+            "Boundary of any other",
+            tex_to_color_map={
+                "one color": BLUE_D,
+                "any other": RED_D,
+            }
+        )
+        subtitle.next_to(underline, DOWN, MED_LARGE_BUFF)
+
+        # Setup for planes
+        grid = VGroup(*(
+            ComplexPlane(
+                x_range=(-3, 3),
+                y_range=(-2, 2),
+            )
+            for n in range(6)
+        ))
+
+        grid.arrange_in_grid(2, 3, v_buff=2, h_buff=3)
+        grid.set_width(FRAME_WIDTH - 2)
+        grid.to_edge(DOWN, buff=MED_LARGE_BUFF)
+
+        arrows = VGroup()
+        bound_words = VGroup()
+        for p1, p2 in zip(grid[:3], grid[3:]):
+            arrow = Arrow(p1, p2, stroke_width=4, buff=0.1)
+            arrows.add(arrow)
+            bound_word = Text("Boundary", font_size=24)
+            bound_word.next_to(arrow, RIGHT, buff=SMALL_BUFF)
+            bound_words.add(bound_word)
+
+        low_equals = VGroup(
+            Tex("=").move_to(grid[3:5]),
+            Tex("=").move_to(grid[4:6]),
+        )
+
+        # Fractals
+        fractals = Group(*(
+            PolyFractal(plane, coefs=self.coefs, colors=self.colors)
+            for plane in grid
+        ))
+        alpha = 0.2
+        for k in 0, 3:
+            fractals[0 + k].set_opacities(alpha, 1, alpha)
+            fractals[1 + k].set_opacities(alpha, alpha, 1)
+            fractals[2 + k].set_opacities(1, alpha, alpha)
+
+        boxes = VGroup(*(
+            SurroundingRectangle(fractal, buff=0)
+            for fractal in fractals
+        ))
+        boxes.set_stroke(GREY_B, 1)
+
+        # Initial fractal
+        big_plane = grid[0].deepcopy()
+        big_plane.set_height(6.5)
+        big_plane.center().to_edge(DOWN)
+        big_fractal = PolyFractal(big_plane, coefs=self.coefs, colors=self.colors)
+
+        self.add(big_fractal)
+
+        # Animations
+        def get_show_border_anims(fractal):
+            f_copy = fractal.copy()
+            fractal.set_julia_highlight(5e-3)
+            fractal.set_colors(3 * [WHITE])
+            return (FadeOut(f_copy), GrowFromCenter(fractal))
+
+        def high_to_low_anims(index):
+            return (
+                ShowCreation(arrows[index]),
+                FadeIn(bound_words[index]),
+                TransformFromCopy(fractals[index], fractals[index + 3]),
+                TransformFromCopy(boxes[index], boxes[index + 3]),
+            )
+
+        self.add(underline, title)
+        self.play(ShowCreation(underline))
+        self.wait()
+
+        self.play(
+            big_fractal.animate.set_opacities(alpha, alpha, 1)
+        )
+        self.wait()
+
+        self.play(
+            ReplacementTransform(big_fractal, fractals[1]),
+            FadeIn(subtitle[:2]),
+            ReplacementTransform(
+                boxes[1].copy().replace(big_fractal).set_opacity(0),
+                boxes[1],
+            ),
+        )
+        self.play(*high_to_low_anims(1))
+        self.play(*get_show_border_anims(fractals[4]))
+        self.wait(2)
+
+        subtitle[2:].set_opacity(0)
+        self.add(subtitle[2:])
+        for i in 2, 0:
+            self.play(
+                FadeIn(fractals[i]),
+                FadeIn(boxes[i]),
+                subtitle[2:].animate.set_opacity(1),
+            )
+            self.play(*high_to_low_anims(i))
+            self.play(*get_show_border_anims(fractals[i + 3]))
+            self.wait()
+
+        self.play(Write(low_equals))
+
+
+class DefineBoundary(Scene):
+    def construct(self):
+        # Add set
+        blob = VMobject()
+        blob.set_fill(BLUE_E, 1)
+        blob.set_stroke(width=0)
+        blob.set_points_as_corners([
+            (1 + 0.3 * random.random()) * p
+            for p in compass_directions(12)
+        ])
+        blob.close_path()
+        blob.set_height(3)
+        blob.set_width(1.0, stretch=True)
+        blob.move_to(2 * RIGHT)
+        blob.apply_complex_function(np.exp)
+        blob.make_smooth()
+        blob.rotate(90 * DEGREES)
+        blob.center()
+        blob.set_height(4)
+        blob.insert_n_curves(50)
+
+        set_text = Text("Set", font_size=72)
+        set_text.set_stroke(BLACK, 3, background=True)
+        set_text.move_to(interpolate(blob.get_top(), blob.get_bottom(), 0.35))
+
+        self.add(blob)
+        self.add(set_text)
+
+        # Preview boundary
+        point = Dot(radius=0.05)
+        point.move_to(blob.get_start())
+
+        boundary_word = Text("Boundary")
+        boundary_word.set_color(YELLOW)
+        boundary_word.next_to(blob, LEFT)
+        outline = blob.copy()
+        outline.set_fill(opacity=0)
+        outline.set_stroke(YELLOW, 2)
+
+        self.add(point)
+
+        kw = {
+            "rate_func": bezier([0, 0, 1, 1]),
+            "run_time": 5,
+        }
+        self.play(
+            FadeIn(boundary_word),
+            ShowCreation(outline, **kw),
+            MoveAlongPath(point, blob, **kw)
+        )
+        self.play(FadeOut(outline))
+
+        # Mention formality
+        boundary_word.generate_target()
+        boundary_word.target.to_corner(UL)
+        formally_word = Text("More formally")
+        formally_word.next_to(boundary_word.target, DOWN, aligned_edge=LEFT)
+
+        self.play(
+            MoveToTarget(boundary_word),
+            FadeTransform(boundary_word.copy(), formally_word)
+        )
+        self.wait()
+
+        # Draw circle
+        circle = Circle()
+        circle.move_to(point)
+        circle.set_stroke(TEAL, 3.0)
+
+        self.play(
+            ShowCreation(circle),
+            point.animate.scale(0.5),
+        )
+        self.wait()
+        group = VGroup(blob, set_text)
+        self.add(group, point, circle)
+        self.play(
+            ApplyMethod(
+                group.scale, 2, {"about_point": point.get_center()},
+                run_time=4
+            ),
+            ApplyMethod(
+                circle.set_height, 0.5,
+                run_time=2,
+            ),
+        )
+
+        # Labels
+        inside_words = Text("Points inside", font_size=36)
+        outside_words = Text("Points outside", font_size=36)
+        inside_words.next_to(circle, DOWN, buff=0.5).shift(0.5 * LEFT)
+        outside_words.next_to(circle, UP, buff=0.5).shift(0.5 * RIGHT)
+        inside_arrow = Arrow(
+            inside_words, point,
+            stroke_width=3,
+            buff=0.1,
+        )
+        outside_arrow = Arrow(
+            outside_words, point,
+            stroke_width=3,
+            buff=0.1,
+        )
+
+        self.play(
+            FadeIn(inside_words),
+            ShowCreation(inside_arrow)
+        )
+        self.play(
+            FadeIn(outside_words),
+            ShowCreation(outside_arrow)
+        )
+        self.wait()
+
+        # Show interior
+        point_group = VGroup(point, circle)
+
+        self.play(
+            point_group.animate.shift(circle.get_height() * DOWN / 4),
+            LaggedStartMap(
+                FadeOut, VGroup(inside_words, inside_arrow, outside_words, outside_arrow)
+            )
+        )
+        self.wait()
+        self.play(circle.animate.set_height(0.2))
+        self.wait()
+
+        # Show exterior
+        point_group.generate_target()
+        point_group.target.move_to(blob.get_start() + 0.25 * UP)
+        point_group.target[1].set_height(1.0)
+
+        self.play(MoveToTarget(point_group))
+        self.wait()
+        self.play(circle.animate.set_height(0.2))
+        self.wait()
+
+        # Back to boundary
+        self.play(point_group.animate.move_to(blob.get_start()))
+        frame = self.camera.frame
+        frame.generate_target()
+        frame.target.set_height(0.2)
+        frame.target.move_to(point)
+        point_group.generate_target()
+        point_group.target.set_height(0.2 / 8)
+        point_group.target[1].set_stroke(width=0.1)
+
+        self.play(MoveToTarget(point_group))
+        self.play(
+            MoveToTarget(frame),
+            run_time=4
+        )
+
+
+class VariousCirclesOnTheFractal(SimpleFractalScene):
+    coefs = [-1.0, 0.0, 0.0, 1.0]
+    colors = CUBIC_COLORS
+
+    def construct(self):
+        super().construct()
+        frame = self.camera.frame
+        plane = self.plane
+        fractal = self.fractal
+        frame.save_state()
+
+        # Setup samples
+        n_steps = 20
+        density = 0.05
+        samples = np.array([
+            [complex(x, y), 0]
+            for x in np.arange(0, 2, density)
+            for y in np.arange(0, 2, density)
+        ])
+        roots = coefficients_to_roots(self.coefs)
+        for i in range(len(samples)):
+            z = samples[i, 0]
+            for n in range(n_steps):
+                z = z - poly(z, self.coefs) / dpoly(z, self.coefs)
+            norms = [abs(z - root) for root in roots]
+            samples[i, 1] = np.argmin(norms)
+
+        unit_size = plane.get_x_unit_size()
+
+        circle = Circle()
+        circle.set_stroke(WHITE, 3.0)
+        circle.move_to(2 * UR)
+
+        words = VGroup(
+            Text("Contains"),
+            Integer(3),
+            Text("Colors"),
+        )
+        words.arrange(RIGHT, aligned_edge=DOWN)
+        height_ratio = words.get_height() / FRAME_HEIGHT
+
+        def get_interior_count(circle):
+            radius = circle.get_height() / 2 / unit_size
+            norms = abs(samples[:, 0] - plane.p2n(circle.get_center()))
+            true_result = len(set(samples[norms < radius, 1]))
+            # In principle this would work, but the samples are not perfect
+            return 3 if true_result > 1 else 1
+
+        def get_frame_ratio():
+            return frame.get_height() / FRAME_HEIGHT
+
+        def update_words(words):
+            words.set_height(height_ratio * frame.get_height())
+            ratio = get_frame_ratio()
+            words.next_to(circle, UP, buff=SMALL_BUFF * ratio)
+            words[1].set_value(get_interior_count(circle))
+            words.set_stroke(BLACK, 5 * ratio, background=True)
+            return words
+
+        words.add_updater(update_words)
+
+        circle.add_updater(lambda m: m.set_stroke(width=3.0 * get_frame_ratio()))
+
+        self.play(ShowCreation(circle))
+        self.play(FadeIn(words))
+        self.wait()
+
+        self.play(circle.animate.set_height(0.5))
+        self.wait()
+        point = plane.c2p(0.5, 0.5)
+        self.play(circle.animate.move_to(point))
+        self.play(frame.animate.set_height(2).move_to(point))
+        self.wait()
+        point = plane.c2p(0.25, 0.4)
+        self.play(circle.animate.move_to(point).set_height(0.25))
+        self.wait()
+        for xy in (0.6, 0.4), (0.2, 0.6):
+            self.play(
+                circle.animate.move_to(plane.c2p(*xy)),
+                run_time=4
+            )
+            self.wait()
+
+        # Back to larger
+        self.play(
+            Restore(frame),
+            circle.animate.set_height(0.5)
+        )
+        self.wait()
+
+        # Show smooth boundary
+        count_tracker = ValueTracker(3)
+        words.add_updater(lambda m: m[1].set_value(count_tracker.get_value()))
+
+        fractal.set_n_steps(10)
+        self.play(
+            fractal.animate.set_n_steps(0),
+            UpdateFromAlphaFunc(
+                count_tracker,
+                lambda m, a: m.set_value(3 if a < 0.9 else 1)
+            ),
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            circle.animate.move_to(plane.c2p(0.2, 0.4)),
+            UpdateFromAlphaFunc(
+                count_tracker,
+                lambda m, a: m.set_value(1 if a < 0.1 else 2)
+            ),
+        )
+        self.wait()
+
+
+class CyclicAttractor(RepeatedNewton):
+    coefs = [2, -2, 0, 1]
+    n_steps = 20
+    show_coloring = False
+
+    def construct(self):
+        super().construct()
+
+    def add_plane(self):
+        super().add_plane()
+        self.plane.axes.set_stroke(GREY_B, 1)
+
+    def add_labels(self):
+        super().add_labels()
+        eq = self.corner_group[1]
+        self.play(FlashAround(eq, run_time=3))
+
+    def get_original_points(self):
+        return [
+            (r * np.cos(theta), r * np.sin(theta), 0)
+            for r in np.linspace(0, 0.2, 10)
+            for theta in np.linspace(0, TAU, int(50 * r)) + TAU * np.random.random()
+        ]
 
 
 class HighlightedJulia(IntroPolyFractal):
@@ -2738,14 +3497,12 @@ class MetaFractal(IntroPolyFractal):
         ))
         root_dots.set_stroke(BLACK, 3)
         fractal = MetaPolyFractal(
-            scale_factor=plane.get_x_unit_size(),
+            plane,
             fixed_roots=self.fixed_roots,
-            offset=plane.get_origin(),
             colors=colors,
             n_steps=self.n_steps,
             # z0=self.z0,
         )
-        fractal.replace(plane, stretch=True)
         fractal.add_updater(lambda f: f.set_fixed_roots([
             plane.p2n(dot.get_center())
             for dot in root_dots
