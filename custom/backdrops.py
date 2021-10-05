@@ -8,6 +8,7 @@ from manimlib.mobject.frame import FullScreenRectangle
 from manimlib.mobject.frame import ScreenRectangle
 from manimlib.mobject.changing import AnimatedBoundary
 from manimlib.mobject.svg.tex_mobject import TexText
+from manimlib.animation.creation import Write
 
 # from manimlib.mobject.svg.text_mobject import Text
 
@@ -35,6 +36,9 @@ class Spotlight(Scene):
 class VideoWrapper(Scene):
     animate_boundary = True
     title = ""
+    title_config = {
+        "font_size": 60
+    }
     wait_time = 32
 
     def construct(self):
@@ -51,11 +55,15 @@ class VideoWrapper(Scene):
         else:
             wait_time = 1
 
+        self.add(screen)
+
         if self.title:
-            title_text = TexText(self.title, font_size=60)
+            title_text = TexText(
+                self.title,
+                **self.title_config,
+            )
             title_text.set_max_width(screen.get_width())
             title_text.next_to(screen, UP)
-            self.add(title_text)
+            self.play(Write(title_text))
 
-        self.add(screen, screen)
         self.wait(wait_time)
