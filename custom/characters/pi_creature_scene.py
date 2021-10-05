@@ -257,7 +257,7 @@ class TeacherStudentsScene(PiCreatureScene):
         "background_color": GREY_E,
         "student_scale_factor": 0.8,
         "seconds_to_blink": 2,
-        "screen_height": 3,
+        "screen_height": 4,
     }
 
     def setup(self):
@@ -267,7 +267,11 @@ class TeacherStudentsScene(PiCreatureScene):
         )
         self.add(self.background)
         PiCreatureScene.setup(self)
-        self.screen = ScreenRectangle(height=self.screen_height)
+        self.screen = ScreenRectangle(
+            height=self.screen_height,
+            fill_color=BLACK,
+            fill_opacity=1.0,
+        )
         self.screen.to_corner(UP + LEFT)
         self.hold_up_spot = self.teacher.get_corner(UP + LEFT) + MED_LARGE_BUFF * UP
 
