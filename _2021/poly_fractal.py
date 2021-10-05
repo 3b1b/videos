@@ -22,7 +22,7 @@ def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20, opacity_mult=1.0
 
 def get_newton_rule(font_size=36, isolate=["z_n", "z_{n+1}"], **kwargs):
     return Tex(
-        "z_{n+1} \\rightarrow z_n - {P(z_n) \\over P'(z_n)}",
+        "z_{n+1} = z_n - {P(z_n) \\over P'(z_n)}",
         font_size=36,
         isolate=isolate,
         **kwargs
@@ -1092,13 +1092,72 @@ class ShowManyGraphs(Scene):
                 lag_ratio=0,
                 run_time=2,
             ),
-            # FadeIn(form, 0.5 * UP),
             randy.animate.look_at(form),
             FadeIn(form_name),
             FlashAround(form_name),
         )
         self.play(Blink(randy))
         self.wait()
+
+        # Coco sidenote
+        form_group = VGroup(form_name, form)
+        form_group.save_state()
+        form_group.set_stroke(BLACK, 5, background=True)
+        plot_group = Group(quadratic, equation)
+        plot_group.save_state()
+
+        self.play(
+            plot_group.animate.shift(4 * LEFT).set_opacity(0),
+            form_group.animate.to_corner(UR),
+            FadeOut(randy),
+        )
+
+        pixar_image = ImageMobject("PixarCampus")
+        pixar_image.set_height(FRAME_HEIGHT + 4)
+        pixar_image.to_corner(UL, buff=0)
+        pixar_image.shift(LEFT)
+        pixar_image.add_updater(lambda m, dt: m.shift(0.1 * dt * LEFT))
+
+        coco_logo = ImageMobject("Coco_logo")
+        coco_logo.set_width(4)
+        coco_logo.match_y(form)
+        coco_logo.to_edge(RIGHT, buff=LARGE_BUFF)
+        arrow = Arrow(form.copy().to_edge(LEFT), coco_logo, buff=0.3, stroke_width=10)
+
+        self.add(pixar_image, *self.mobjects)
+        self.play(FadeIn(pixar_image))
+        self.wait(6)
+        self.add(coco_logo, *self.mobjects)
+        self.play(
+            FadeOut(pixar_image),
+            form_group.animate.to_corner(UL),
+            FadeIn(randy),
+            ShowCreation(arrow),
+            FadeIn(coco_logo),
+        )
+
+        over_trillion = Tex("> 1{,}000{,}000{,}000{,}000")[0]
+        over_trillion.next_to(form, RIGHT)
+        over_trillion.shift(3 * DOWN)
+        form_copies = form[4:].replicate(50)
+        self.play(
+            ShowIncreasingSubsets(over_trillion, run_time=1),
+            randy.animate.change("thinking", over_trillion),
+            LaggedStart(*(
+                FadeOut(form_copy, 4 * DOWN)
+                for form_copy in form_copies
+            ), lag_ratio=0.15, run_time=5)
+        )
+        self.play(
+            FadeOut(over_trillion),
+            FadeOut(coco_logo),
+            FadeOut(arrow),
+            randy.animate.change("happy"),
+            Restore(form_group),
+            Restore(plot_group),
+        )
+
+        self.embed()
 
         # Cubic
         low_fade_rect = BackgroundRectangle(
@@ -1366,6 +1425,7 @@ class RealNewtonsMethod(Scene):
     poly_tex = "x^5 + x^2 - x - 0.2"
     dpoly_tex = "5x^4 + 2x - 1"
     seed = 1.3
+    graph_x_range = (-1.5, 1.5)
     axes_config = {
         "x_range": (-2, 2, 0.2),
         "y_range": (-2, 6, 0.2),
@@ -1405,7 +1465,7 @@ class RealNewtonsMethod(Scene):
 
         graph = self.graph = axes.get_graph(
             lambda x: poly(x, self.coefs),
-            x_range=(-1.5, 1.5),
+            x_range=self.graph_x_range,
         )
         graph.set_color(self.graph_color)
 
@@ -1849,6 +1909,43 @@ class RealNewtonsMethod(Scene):
         return result
 
 
+class FasterNewtonExample(RealNewtonsMethod):
+    coefs = [0.1440, -1.0, 1.2, 1]
+    poly_tex = "x^3 + 1.2x^2 - x + 0.144"
+    dpoly_tex = "3x^2 + 2.4x - 1"
+    n_search_steps = 6
+    graph_x_range = (-2, 2)
+    seed = 1.18
+    axes_config = {
+        "x_range": (-2, 2, 0.2),
+        "y_range": (-1, 3, 0.2),
+        "height": 8,
+        "width": 8,
+        "axis_config": {
+            "tick_size": 0.05,
+            "longer_tick_multiple": 2.0,
+            "tick_offset": 0,
+            # Change name
+            "numbers_with_elongated_ticks": list(range(-2, 3)),
+            "include_tip": False,
+        }
+    }
+
+    def construct(self):
+        self.add_graph()
+        self.add_title(self.axes)
+        self.draw_graph()
+        self.introduce_step()
+        self.find_root()
+
+    def find_root(self, cycle_run_time=1.0):
+        for n in range(self.n_search_steps):
+            self.step_towards_root(
+                added_anims=self.cycle_rule_entries_anims(),
+                fade_tan_with_vline=True
+            )
+
+
 class AssumingItsGood(TeacherStudentsScene):
     def construct(self):
         self.pi_creatures.refresh_triangulation()
@@ -1873,17 +1970,39 @@ class PauseAndPonder(TeacherStudentsScene):
         self.wait(4)
 
 
-class RealNewtonsMethodHigherGraph(RealNewtonsMethod):
+class AltPauseAndPonder(Scene):
+    def construct(self):
+        morty = Mortimer(height=2)
+        morty.flip().to_corner(DL)
+        self.play(PiCreatureSays(
+            morty, TexText("Pause and\\\\Ponder", font_size=36),
+            target_mode="hooray",
+            bubble_kwargs={
+                "height": 2,
+                "width": 3,
+            }
+        ))
+        self.play(Blink(morty))
+        self.wait(2)
+        self.play(morty.animate.change("thinking"))
+        self.play(Blink(morty))
+        self.wait()
+
+
+class WhatIsThis(Scene):
+    def construct(self):
+        words = Text("What is this", color=RED)
+        arrow = Vector(UR)
+        arrow.set_color(RED)
+        words.next_to(ORIGIN, DOWN)
+        self.play(FadeIn(words, lag_ratio=0.1), ShowCreation(arrow))
+        self.wait()
+
+
+class RealNewtonsMethodHigherGraph(FasterNewtonExample):
     coefs = [1, -1, 1, 0, 0, 0.99]
     poly_tex = "x^5 + x^2 - x + 1"
     n_search_steps = 20
-
-    def find_root(self, cycle_run_time=1.0):
-        for n in range(self.n_search_steps):
-            self.step_towards_root(
-                added_anims=self.cycle_rule_entries_anims(),
-                fade_tan_with_vline=True
-            )
 
 
 class FactorPolynomial(RealNewtonsMethodHigherGraph):
@@ -2498,6 +2617,7 @@ class IntroPolyFractal(Scene):
             "stroke_width": 1.0,
         }
     }
+    n_steps = 30
 
     def construct(self):
         self.init_fractal(root_colors=ROOT_COLORS_BRIGHT)
@@ -2551,7 +2671,11 @@ class IntroPolyFractal(Scene):
 
     def init_fractal(self, root_colors=ROOT_COLORS_DEEP):
         plane = self.get_plane()
-        fractal = self.get_fractal(plane, colors=root_colors)
+        fractal = self.get_fractal(
+            plane,
+            colors=root_colors,
+            n_steps=self.n_steps,
+        )
         root_dots = self.get_root_dots(plane, fractal)
         self.tie_fractal_to_root_dots(fractal)
 
@@ -2566,11 +2690,12 @@ class IntroPolyFractal(Scene):
         self.plane = plane
         return plane
 
-    def get_fractal(self, plane, colors=ROOT_COLORS_DEEP):
+    def get_fractal(self, plane, colors=ROOT_COLORS_DEEP, n_steps=30):
         return PolyFractal(
             plane,
             colors=colors,
             coefs=self.coefs,
+            n_steps=n_steps,
         )
 
     def get_root_dots(self, plane, fractal):
@@ -2738,8 +2863,8 @@ class ManyQuestions(Scene):
 
         self.play(LaggedStartMap(
             FadeIn, screens,
-            lag_ratio=0.7,
-        ))
+            lag_ratio=0.9,
+        ), run_time=8)
         self.wait()
 
 
@@ -2765,20 +2890,13 @@ class WhatsGoingOn(TeacherStudentsScene):
 class EquationToFrame(Scene):
     def construct(self):
         self.add(FullScreenRectangle())
-
-        screens = Square().get_grid(1, 2)
-        screens.set_height(6)
-        screens.set_width(FRAME_WIDTH - 1, stretch=True)
-        screens.set_stroke(WHITE, 3)
-        screens.set_fill(BLACK, 1)
-        screens.arrange(RIGHT, buff=2.0)
-        screens.to_edge(DOWN)
+        screens = self.get_screens()
         arrow = Arrow(*screens)
 
         equation = get_newton_rule()
         equation.next_to(screens[0], UP)
 
-        title = TexText("Newton's fractal")
+        title = TexText("Unreasonable intricacy")
         title.next_to(screens[1], UP)
 
         self.wait()
@@ -2790,7 +2908,15 @@ class EquationToFrame(Scene):
         )
         self.wait()
 
-        self.embed()
+    def get_screens(self):
+        screens = Square().get_grid(1, 2)
+        screens.set_height(6)
+        screens.set_width(FRAME_WIDTH - 1, stretch=True)
+        screens.set_stroke(WHITE, 3)
+        screens.set_fill(BLACK, 1)
+        screens.arrange(RIGHT, buff=2.0)
+        screens.to_edge(DOWN)
+        return screens
 
 
 class RepeatedNewton(Scene):
@@ -2809,7 +2935,8 @@ class RepeatedNewton(Scene):
         "opacity": 0.5,
     }
     arrow_style = {
-        "stroke_color": GREY_C,
+        "stroke_color": WHITE,
+        "stroke_opacity": 0.5,
     }
     dot_density = 5.0
     n_steps = 10
@@ -2832,7 +2959,6 @@ class RepeatedNewton(Scene):
 
     def add_plane(self):
         plane = self.plane = ComplexPlane(**self.plane_config)
-        plane.to_edge(DOWN, buff=0)
         plane.add_coordinate_labels(font_size=24)
 
         self.add(plane)
@@ -2863,7 +2989,7 @@ class RepeatedNewton(Scene):
         self.add(self.corner_group)
 
     def add_true_roots(self):
-        roots = coefficients_to_roots(self.coefs)
+        roots = self.roots = coefficients_to_roots(self.coefs)
         root_dots = self.root_dots = VGroup(*(
             glow_dot(self.plane.n2p(root), color=color, opacity_mult=2.0)
             for root, color in zip(roots, self.colors)
@@ -2893,19 +3019,18 @@ class RepeatedNewton(Scene):
             self.points_history.append(self.dots.get_points().copy())
             self.take_step(run_time=self.step_run_time)
 
+    def update_z(self, z, epsilon=1e-6):
+        denom = dpoly(z, self.coefs)
+        if abs(denom) < epsilon:
+            denom = epsilon
+        return z - poly(z, self.coefs) / denom
+
     def take_step(self, run_time=1.0):
         plane = self.plane
-        coefs = self.coefs
         points = self.dots.get_points()
 
-        def func(z, epsilon=1e-5):
-            denom = dpoly(z, coefs)
-            if abs(denom) < epsilon:
-                denom = epsilon
-            return z - poly(z, coefs) / denom
-
         zs = map(plane.p2n, points)
-        new_zs = map(func, zs)
+        new_zs = map(self.update_z, zs)
         new_points = list(map(plane.n2p, new_zs))
 
         added_anims = []
@@ -2928,6 +3053,7 @@ class RepeatedNewton(Scene):
             *added_anims,
             run_time=run_time,
         )
+        self.dots.filter_out(lambda p: get_norm(p) > FRAME_WIDTH)
 
     def color_points(self):
         root_points = [rd.get_center() for rd in self.root_dots]
@@ -2967,16 +3093,9 @@ class RepeatedNewton(Scene):
             )
 
     def reveal_fractal(self, **kwargs):
-        if "colors" not in kwargs:
-            kwargs["colors"] = self.colors
-
         plane = self.plane
 
-        fractal = self.fractal = PolyFractal(
-            plane,
-            coefs=self.coefs,
-            **kwargs
-        )
+        fractal = self.fractal = self.get_fractal(**kwargs)
         root_dot_backs = VGroup(*(Dot(rd.get_center(), radius=0.1) for rd in self.root_dots))
         root_dot_backs.set_stroke(BLACK, 2)
         root_dot_backs.set_fill(opacity=0)
@@ -2988,7 +3107,7 @@ class RepeatedNewton(Scene):
                 line.set_opacity(line.get_stroke_opacity() * 0.5)
 
         self.root_dots.generate_target()
-        for rd, color in zip(self.root_dots.target, kwargs["colors"]):
+        for rd, color in zip(self.root_dots.target, fractal.colors):
             rd.set_fill(color)
 
         self.add(fractal, *self.mobjects, root_dot_backs)
@@ -3001,14 +3120,67 @@ class RepeatedNewton(Scene):
         )
         self.wait()
 
+    def get_fractal(self, **kwargs):
+        if "colors" not in kwargs:
+            kwargs["colors"] = self.colors
+        return PolyFractal(self.plane, coefs=self.coefs, **kwargs)
+
+
+class WhyNotThisWrapper(VideoWrapper):
+    title = "Why not something like this?"
+    animate_boundary = False
+    title_config = {
+        "font_size": 60,
+        "color": RED,
+    }
+    wait_time = 2
+
 
 class SimplyTendingToNearestRoot(RepeatedNewton):
-    def take_step(self):
-        pass
+    def update_z(self, z):
+        norms = [abs(r - z) for r in self.roots]
+        nearest_root = self.roots[np.argmin(norms)]
+        norm = min(norms)
+        step_size = np.log(1 + norm * 3) / 3
+        return z + step_size * (nearest_root - z)
+
+
+class UnrelatedIdeas(TeacherStudentsScene):
+    def construct(self):
+        self.screen.set_height(4, about_edge=UL)
+        self.add(self.screen)
+
+        self.change_student_modes(
+            "tease", "thinking", "raise_right_hand",
+            look_at_arg=self.screen,
+            added_anims=[self.teacher.animate.change("happy")]
+        )
+        self.wait(2)
+        self.teacher_says(
+            TexText("Unrelated\\\\ideas"),
+            bubble_kwargs={
+                "height": 3,
+                "width": 4,
+            },
+            added_anims=[
+                s.animate.change("sassy", self.teacher.eyes)
+                for s in self.students
+            ]
+        )
+        self.play(LaggedStart(
+            self.students[2].animate.change("angry"),
+            self.teacher.animate.change("guilty"),
+            lag_ratio=0.7,
+        ))
+        self.wait(2)
+
+        self.embed()
 
 
 class RepeatedNewtonCubic(RepeatedNewton):
     coefs = [-1, 0, 0, 1]
+    # colors = [RED_E, GREEN_E, BLUE_E]
+    colors = ROOT_COLORS_DEEP[::2]
 
     def construct(self):
         super().construct()
@@ -3025,24 +3197,179 @@ class RepeatedNewtonCubic(RepeatedNewton):
 class RepeatedNewtonQuadratic(RepeatedNewton):
     coefs = [-1, 0, 1]
     colors = [RED, BLUE]
-    n_steps = 6
+    n_steps = 10
 
 
 class SimpleFractalScene(IntroPolyFractal):
     colors = ROOT_COLORS_DEEP
+    display_polynomial_label = True
+    display_root_values = True
+    n_steps = 12
 
     def construct(self):
         self.init_fractal(root_colors=self.colors)
+        if self.display_polynomial_label:
+            self.add_polynomial_label()
+        if self.display_root_values:
+            self.add_root_labels()
+
+    def add_polynomial_label(self):
+        n = len(self.fractal.roots)
+        t2c = {
+            f"r_{i + 1}": interpolate_color(self.colors[i], WHITE, 0.5)
+            for i in range(n)
+        }
+        label = Tex(
+            "p(z) = ", *(
+                f"(z - r_{i})"
+                for i in range(1, n + 1)
+            ),
+            tex_to_color_map=t2c,
+            font_size=36
+        )
+        label.to_corner(UL)
+        label.set_stroke(BLACK, 5, background=True)
+        self.add(label)
+
+    def add_root_labels(self):
+        for n, root_dot in zip(it.count(1), self.root_dots):
+            self.add(self.get_root_label(root_dot, n))
+
+    def get_root_label(self, root_dot, n):
+        def get_z():
+            return self.plane.p2n(root_dot.get_center())
+        label = VGroup(
+            Tex(f"r_{n} = "),
+            DecimalNumber(get_z()),
+        )
+        label.scale(0.5)
+        label.set_stroke(BLACK, 3, background=True)
+
+        def update_label(label):
+            label.arrange(RIGHT, buff=0.1)
+            label[0].shift(0.1 * label[0].get_height() * DOWN)
+            label.next_to(root_dot, UR, SMALL_BUFF)
+            label[1].set_value(get_z())
+
+        label.add_updater(update_label)
+        return label
 
 
 class TwoRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 1.0]
     colors = [ROOT_COLORS_DEEP[0], ROOT_COLORS_DEEP[4]]
+    n_steps = 0  # Doesn't really matter, does it?
+
+
+class TwoRootFractalNoLabels(TwoRootFractal):
+    display_polynomial_label = False
+    display_root_values = False
 
 
 class ThreeRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 0.0, 1.0]
     colors = ROOT_COLORS_DEEP[::2]
+    n_steps = 12
+
+
+class ThreeRootFractalNoLabels(ThreeRootFractal):
+    display_polynomial_label = False
+    display_root_values = False
+
+
+class FromTwoToThree(EquationToFrame):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        screens = self.get_screens()
+        arrow = Arrow(*screens)
+
+        quadratic = Tex("x^2 + c_1 x + c_0")
+        cubic = Tex("x^3 + c_2 x^2 + c_1 x + c_0")
+        quadratic.next_to(screens[0], UP)
+        cubic.next_to(screens[1], UP)
+
+        self.add(screens)
+        self.add(quadratic, cubic)
+        self.play(ShowCreation(arrow))
+        self.wait()
+
+
+class StudentAsksAboutComplexity(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Why is it\\\\so complicated?"),
+            student_index=0,
+            bubble_kwargs={
+                "height": 3,
+                "width": 4,
+            },
+            added_anims=[
+                self.students[1].animate.change("confused", self.teacher.eyes),
+                self.students[2].animate.change("erm", self.teacher.eyes),
+            ],
+        )
+        self.wait()
+        self.play(
+            self.teacher.animate.change("shruggie"),
+        )
+        self.wait()
+        self.play(LaggedStart(
+            PiCreatureSays(
+                self.teacher, TexText("Math is what\\\\it is"),
+                target_mode="well",
+                bubble_kwargs={
+                    "height": 3,
+                    "width": 4,
+                }
+            ),
+            self.students[1].animate.change("maybe"),
+            self.students[2].animate.change("sassy"),
+            lag_ratio=0.7,
+        ))
+        self.wait(2)
+
+        why = self.students[0].bubble.content[0][:3]
+        question = Text("Is this meaningful?")
+        question.to_corner(UL)
+        question.set_color(YELLOW)
+        arrow = Arrow(question, why)
+        arrow.set_stroke(YELLOW, 5)
+
+        self.play(
+            why.animate.set_color(YELLOW),
+            Write(question),
+            ShowCreation(arrow),
+            LaggedStart(*(
+                pi.animate.change(mode, question)
+                for pi, mode in zip(self.pi_creatures, ("well", "erm", "sassy", "hesitant"))
+            ))
+        )
+        self.wait(2)
+
+        cross = Cross(question)
+        cross.set_stroke(RED, [1, *4 * [8], 1])
+        words = Text("Surprisingly answerable!")
+        words.next_to(question, RIGHT, LARGE_BUFF)
+        new_arrow = Arrow(words[:10], why)
+        new_arrow.set_stroke(WHITE, 5)
+        self.play(
+            RemovePiCreatureBubble(self.teacher, target_mode="erm"),
+            ShowCreation(cross),
+            FadeIn(words),
+            ShowCreation(new_arrow),
+        )
+        self.wait(2)
+
+
+class NextVideoWrapper(VideoWrapper):
+    title = "Next video"
+
+
+class MakeFunOfNextVideo(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            ""
+        )
 
 
 class PeculiarBoundaryProperty(Scene):
@@ -3119,6 +3446,9 @@ class PeculiarBoundaryProperty(Scene):
         big_plane.set_height(6.5)
         big_plane.center().to_edge(DOWN)
         big_fractal = PolyFractal(big_plane, coefs=self.coefs, colors=self.colors)
+        big_julia = big_fractal.copy()
+        big_julia.set_julia_highlight(1e-3)
+        big_julia.set_colors(3 * [WHITE])
 
         self.add(big_fractal)
 
@@ -3138,7 +3468,13 @@ class PeculiarBoundaryProperty(Scene):
             )
 
         self.add(underline, title)
-        self.play(ShowCreation(underline))
+        self.play(
+            ShowCreation(underline),
+            GrowFromCenter(big_julia, run_time=4)
+        )
+        self.play(
+            big_julia.animate.set_julia_highlight(0.02).set_colors(CUBIC_COLORS).set_opacity(0)
+        )
         self.wait()
 
         self.play(
@@ -3329,6 +3665,7 @@ class DefineBoundary(Scene):
 class VariousCirclesOnTheFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 0.0, 1.0]
     colors = CUBIC_COLORS
+    sample_density = 0.02
 
     def construct(self):
         super().construct()
@@ -3339,7 +3676,7 @@ class VariousCirclesOnTheFractal(SimpleFractalScene):
 
         # Setup samples
         n_steps = 20
-        density = 0.05
+        density = self.sample_density
         samples = np.array([
             [complex(x, y), 0]
             for x in np.arange(0, 2, density)
@@ -3420,24 +3757,648 @@ class VariousCirclesOnTheFractal(SimpleFractalScene):
         count_tracker = ValueTracker(3)
         words.add_updater(lambda m: m[1].set_value(count_tracker.get_value()))
 
+        def change_count_at(new_value, alpha):
+            curr_value = count_tracker.get_value()
+            return UpdateFromAlphaFunc(
+                count_tracker,
+                lambda m, a: m.set_value(curr_value if a < alpha else new_value)
+            )
+
         fractal.set_n_steps(10)
         self.play(
-            fractal.animate.set_n_steps(0),
-            UpdateFromAlphaFunc(
-                count_tracker,
-                lambda m, a: m.set_value(3 if a < 0.9 else 1)
-            ),
+            fractal.animate.set_n_steps(3),
+            run_time=2
+        )
+        self.play(
+            circle.animate.move_to(plane.c2p(0, 0.3)),
+            change_count_at(2, 0.75),
             run_time=2
         )
         self.wait()
         self.play(
-            circle.animate.move_to(plane.c2p(0.2, 0.4)),
-            UpdateFromAlphaFunc(
-                count_tracker,
-                lambda m, a: m.set_value(1 if a < 0.1 else 2)
+            circle.animate.move_to(plane.c2p(0, 0)),
+            change_count_at(3, 0.5),
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            circle.animate.move_to(plane.c2p(-0.6, 0.2)),
+            Succession(
+                change_count_at(2, 0.9),
+                change_count_at(3, 0.7),
+            ),
+            run_time=3
+        )
+        self.play(
+            circle.animate.set_height(0.1).move_to(plane.c2p(-0.6, 0.24)),
+            change_count_at(2, 0.8),
+            frame.animate.set_height(2.5).move_to(plane.c2p(-0.5, 0.5)),
+            run_time=3
+        )
+        self.wait(2)
+        self.play(
+            fractal.animate.set_n_steps(20),
+            change_count_at(3, 0.1),
+            run_time=3,
+        )
+        self.wait()
+
+        # Just show boundary
+        boundary = fractal.copy()
+        boundary.set_colors(3 * [WHITE])
+        boundary.add_updater(
+            lambda m: m.set_julia_highlight(get_frame_ratio() * 1e-3)
+        )
+        boundary.set_n_steps(50)
+
+        frame.generate_target()
+        frame.target.set_height(0.0018),
+        frame.target.move_to([-1.15535091, 0.23001433, 0.])
+        self.play(
+            FadeOut(circle),
+            FadeOut(words),
+            FadeOut(self.root_dots),
+            GrowFromCenter(boundary, run_time=3),
+            fractal.animate.set_opacity(0.35),
+            MoveToTarget(
+                frame,
+                run_time=10,
+                rate_func=bezier([0, 0, 1, 1, 1, 1, 1])
             ),
         )
         self.wait()
+
+
+class ArtPuzzle(Scene):
+    def construct(self):
+        words = VGroup(
+            Text("Art Puzzle:", font_size=60),
+            TexText("- Use $\\ge 3$ colors"),
+            TexText("- Boundary of one color = Boundary of all"),
+        )
+        words.set_color(BLACK)
+        words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
+        words[1:].shift(0.5 * DOWN + 0.5 * RIGHT)
+        words.to_corner(UL)
+
+        for word in words:
+            self.play(FadeIn(word, lag_ratio=0.1))
+            self.wait()
+
+
+class ZoomInOnCubic(ThreeRootFractalNoLabels):
+    colors = CUBIC_COLORS
+    coefs = [complex(0, -1), 0, 0, 1]
+    n_steps = 30
+
+    def construct(self):
+        super().construct()
+        frame = self.camera.frame
+
+        height_exp_tracker = ValueTracker()
+        get_height_exp = height_exp_tracker.get_value
+        center_tracker = VectorizedPoint(ORIGIN)
+
+        frame.add_updater(lambda m: m.move_to(center_tracker))
+        frame.add_updater(lambda m: m.set_height(FRAME_HEIGHT * 2**(-get_height_exp())))
+
+        self.play(
+            ApplyMethod(center_tracker.move_to, [0.2986952, 1.11848235, 0], run_time=4),
+            ApplyMethod(
+                height_exp_tracker.set_value, 7,
+                run_time=15,
+                rate_func=bezier([0, 0, 1, 1]),
+            ),
+        )
+        self.wait()
+
+
+class BlobsOnBlobsOnBlobs(Scene):
+    def construct(self):
+        words = TexText(
+            "Blobs", *(
+                " on blobs " + ("\\\\" if n == 2 else "")
+                for n in range(6)
+            ),
+            "..."
+        )
+        words.set_width(FRAME_WIDTH - 2)
+        words.to_edge(UP)
+        words.set_color(BLACK)
+        self.add(words[0])
+        for word in words[1:]:
+            self.play(FadeIn(word, 0.25 * UP))
+        self.wait()
+
+
+class FractalDimensionWords(Scene):
+    def construct(self):
+        text = TexText("Fractal dimension $\\approx$ 1.44", font_size=60)
+        text.to_corner(UL)
+        self.play(Write(text))
+        self.wait()
+
+
+class ThinkAboutWhatPropertyMeans(TeacherStudentsScene):
+    def construct(self):
+        self.screen.set_height(4, about_edge=UL)
+        self.add(self.screen)
+        image = ImageMobject("NewtonBoundaryProperty")
+        image.replace(self.screen)
+        self.add(image)
+
+        self.teacher_says(
+            TexText("Think about what\\\\this tells us."),
+            bubble_kwargs={
+                "height": 3,
+                "width": 4,
+            }
+        )
+        self.change_student_modes(
+            "pondering", "thinking", "pondering",
+            look_at_arg=self.screen
+        )
+        self.wait(4)
+
+
+class InterpretBoundaryProperty(RepeatedNewton):
+    plane_config = {
+        "x_range": (-4, 4),
+        "y_range": (-2, 2),
+        "height": 12,
+        "width": 24,
+    }
+
+    def construct(self):
+        self.add_plane()
+        plane = self.plane
+        plane.shift(2 * RIGHT)
+        self.add_true_roots()
+        self.add_labels()
+        self.add_fractal_background()
+
+        # Show sensitive point
+        point = plane.c2p(-0.8, 0.4)
+        dots = self.dots = DotCloud()
+        dots.set_points([
+            [r * math.cos(theta), r * math.sin(theta), 0]
+            for r in np.linspace(0, 1, 10)
+            for theta in np.linspace(0, TAU, int(r * 20)) + random.random() * TAU
+        ])
+        dots.set_height(2).center()
+        dots.filter_out(lambda p: get_norm(p) > 1)
+        dots.set_height(0.25)
+        dots.set_radius(0.05)
+        dots.make_3d()
+        dots.set_color(GREY_A)
+        dots.move_to(point)
+
+        sensitive_words = Text("Sensitive area")
+        sensitive_words.next_to(dots, RIGHT, buff=SMALL_BUFF)
+        sensitive_words.set_stroke(BLACK, 5, background=True)
+
+        def get_arrows():
+            root_dots = self.root_dots
+            if plane.p2n(dots.get_center()).real < -1.1:
+                root_dots = [root_dots[4]]
+            return VGroup(*(
+                Arrow(
+                    dots, root_dot,
+                    buff=0.1,
+                    stroke_color=root_dot[0].get_color()
+                )
+                for root_dot in root_dots
+            ))
+
+        arrows = get_arrows()
+
+        self.play(
+            FadeIn(dots, scale=2),
+            FadeIn(sensitive_words, shift=0.25 * UP)
+        )
+        self.wait()
+        self.play(ShowCreation(arrows[2]))
+        self.play(ShowCreation(arrows[4]))
+        self.wait()
+        self.play(
+            FadeOut(sensitive_words),
+            LaggedStartMap(ShowCreation, VGroup(*(
+                arrows[i] for i in (0, 1, 3)
+            )))
+        )
+        self.wait()
+        arrows.add_updater(lambda m: m.become(get_arrows()))
+        self.add(arrows)
+
+        self.play(dots.animate.move_to(plane.c2p(-1.4, 0.4)))
+        self.wait()
+        self.play(dots.animate.move_to(point))
+        self.wait()
+
+        not_allowed = Text("Not allowed!")
+        not_allowed.set_color(RED)
+        not_allowed.set_stroke(BLACK, 8, background=True)
+        not_allowed.next_to(dots, RIGHT, SMALL_BUFF)
+
+        arrows.clear_updaters()
+        self.play(
+            arrows[:2].animate.set_opacity(0),
+            FadeIn(not_allowed, scale=0.7)
+        )
+        self.wait()
+        self.play(FadeOut(arrows), FadeOut(not_allowed))
+
+        # For fun
+        self.run_iterations()
+
+    def add_fractal_background(self):
+        fractal = self.get_fractal()
+        fractal.set_opacity(0.1)
+        fractal.set_n_steps(12)
+        boundary = self.fractal_boundary = fractal.copy()
+        boundary.set_colors(5 * [WHITE])
+        boundary.set_julia_highlight(1e-3)
+        boundary.set_opacity(0.25)
+        self.add(fractal, boundary, *self.mobjects)
+
+
+class HolomorphicDynamics(Scene):
+    def construct(self):
+        self.ask_about_property()
+        self.repeated_functions()
+
+    def ask_about_property(self):
+        back_plane = FullScreenRectangle()
+        self.add(back_plane)
+
+        image = ImageMobject("NewtonBoundaryProperty")
+        border = SurroundingRectangle(image, buff=0)
+        border.set_stroke(WHITE, 2)
+        image = Group(border, image)
+        image.set_height(FRAME_HEIGHT)
+
+        image.generate_target()
+        image.target.set_height(6)
+        image.target.to_corner(DL)
+
+        question = Text("Why is this true?")
+        question.to_corner(UR)
+        arrow = Arrow(
+            question.get_left(), image.target.get_top() + RIGHT,
+            path_arc=45 * DEGREES
+        )
+
+        self.play(
+            image.animate.set_height(6).to_corner(DL),
+            Write(question),
+            ShowCreation(arrow, rate_func=squish_rate_func(smooth, 0.5, 1), run_time=2)
+        )
+        self.wait()
+
+        title = self.title = Text("Holomorphic Dynamics", font_size=60)
+        title.to_edge(UP)
+
+        self.play(
+            image.animate.set_height(1).to_corner(DL),
+            FadeOut(question, shift=DL, scale=0.2),
+            FadeOut(arrow, shift=DL, scale=0.2),
+            FadeIn(title, shift=3 * DL, scale=0.5),
+            FadeOut(back_plane),
+        )
+        self.wait()
+
+        self.image = image
+
+    def repeated_functions(self):
+        basic_expr = Tex(
+            "z", "\\rightarrow ", " f(z)"
+        )
+        fz = basic_expr.get_part_by_tex("f(z)")
+        basic_expr.next_to(self.title, DOWN, LARGE_BUFF)
+        basic_expr.to_edge(LEFT, buff=LARGE_BUFF)
+        brace = Brace(fz, DOWN)
+        newton = Tex("z - {P(z) \\over P'(z)}")
+        newton.next_to(brace, DOWN)
+        newton.align_to(basic_expr[1], LEFT)
+        newton_example = Tex("z - {z^3 + z - 1 \\over 3z^2 + 1}")
+        eq = Tex("=").rotate(PI / 2)
+        eq.next_to(newton, DOWN)
+        newton_example.next_to(eq, DOWN)
+
+        newton_group = VGroup(newton, eq, newton_example)
+        newton_group.generate_target()
+        newton_group.target[1].rotate(-PI / 2)
+        newton_group.target.arrange(RIGHT, buff=0.2)
+        newton_group.target[2].shift(SMALL_BUFF * UP)
+        newton_group.target.scale(0.7)
+        newton_group.target.to_corner(DL)
+
+        mandelbrot = Tex("z^2 + c")
+        mandelbrot.next_to(brace, DOWN)
+
+        exponential = Tex("a^z")
+        exponential.next_to(brace, DOWN)
+
+        self.play(
+            FadeIn(basic_expr),
+            FadeOut(self.image)
+        )
+        self.wait()
+        self.describe_holomorphic(fz, brace)
+        self.wait()
+        self.play(
+            FadeIn(newton),
+        )
+        self.play(
+            FadeIn(eq),
+            FadeIn(newton_example),
+        )
+        self.wait()
+        self.play(
+            MoveToTarget(newton_group),
+            FadeIn(mandelbrot, DOWN),
+        )
+        self.wait()
+        self.play(
+            mandelbrot.animate.scale(0.7).next_to(newton, UP, LARGE_BUFF, LEFT),
+            FadeIn(exponential, DOWN)
+        )
+        self.wait()
+
+        # Show fractals
+        rhss = VGroup(exponential, mandelbrot, newton)
+        f_eqs = VGroup()
+        lhss = VGroup()
+        for rhs in rhss:
+            rhs.generate_target()
+            if rhs is not exponential:
+                rhs.target.scale(1 / 0.7)
+            lhs = Tex("f(z) = ")
+            lhs.next_to(rhs.target, LEFT)
+            f_eqs.add(VGroup(lhs, rhs.target))
+            lhss.add(lhs)
+        f_eqs.arrange(RIGHT, buff=1.5)
+        f_eqs.next_to(self.title, DOWN, MED_LARGE_BUFF)
+
+        rects = ScreenRectangle().replicate(3)
+        rects.arrange(DOWN, buff=0.5)
+        rects.set_height(6.5)
+        rects.next_to(ORIGIN, RIGHT, MED_LARGE_BUFF)
+        rects.to_edge(DOWN, MED_SMALL_BUFF)
+        rects.set_stroke(WHITE, 1)
+        arrows = VGroup()
+        for rect, f_eq in zip(rects, f_eqs):
+            arrow = Vector(0.7 * RIGHT)
+            arrow.next_to(rect, LEFT)
+            arrows.add(arrow)
+            f_eq.next_to(arrow, LEFT)
+
+        self.play(
+            LaggedStartMap(MoveToTarget, rhss),
+            LaggedStartMap(Write, lhss),
+            LaggedStartMap(FadeIn, rects),
+            LaggedStartMap(ShowCreation, arrows),
+            FadeOut(brace),
+            basic_expr.animate.to_edge(UP),
+            FadeOut(newton_group[1:]),
+        )
+        self.wait()
+
+    def describe_holomorphic(self, fz, brace):
+        self.title.set_stroke(BLACK, 5, background=True)
+        word = self.title.get_part_by_text("Holomorphic")
+        underline = Underline(word, buff=-0.05)
+        underline.scale(1.2)
+        underline.insert_n_curves(40)
+        underline.set_stroke(YELLOW, [1, *6 * [3], 1])
+
+        self.add(underline, self.title)
+        self.play(
+            word.animate.set_fill(YELLOW),
+            ShowCreation(underline)
+        )
+
+        in_words = Text("Complex\ninputs", font_size=36)
+        in_words.to_corner(UL)
+        in_arrow = Arrow(
+            in_words.get_right(),
+            fz[2].get_top(),
+            path_arc=-80 * DEGREES,
+            buff=0.2,
+        )
+        VGroup(in_words, in_arrow).set_color(YELLOW)
+
+        out_words = Text("Complex\noutputs", font_size=36)
+        out_words.next_to(brace, DOWN)
+        out_words.set_color(YELLOW)
+
+        f_prime = TexText("$f'(z)$ exists")
+        f_prime.set_color(YELLOW)
+        f_prime.next_to(underline, DOWN, MED_LARGE_BUFF)
+        f_prime.match_y(fz)
+
+        self.wait()
+        self.play(
+            Write(in_words),
+            ShowCreation(in_arrow),
+            run_time=1,
+        )
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(out_words, lag_ratio=0.05)
+        )
+        self.wait()
+        self.play(FadeIn(f_prime, 0.5 * DOWN))
+        self.wait()
+
+        self.play(
+            LaggedStartMap(FadeOut, VGroup(
+                in_words, in_arrow, out_words, f_prime, underline,
+            )),
+            word.animate.set_fill(WHITE)
+        )
+
+
+class AmbientRepetition(Scene):
+    n_steps = 30
+
+    def construct(self):
+        plane = ComplexPlane((-2, 2), (-2, 2))
+        plane.set_height(FRAME_HEIGHT)
+        plane.add_coordinate_labels(font_size=24)
+        self.add(plane)
+
+        font_size = 36
+
+        z0 = complex(0, 0)
+        dot = Dot(color=BLUE)
+        dot.move_to(plane.n2p(z0))
+        z_label = Tex("z", font_size=font_size)
+        z_label.set_stroke(BLACK, 5, background=True)
+        z_label.next_to(dot, UP, SMALL_BUFF)
+        self.add(dot, z_label)
+
+        def func(z):
+            # return z**2 + complex(-0.6436875, 0.441)
+            return z**2 + complex(-0.6436875, -0.441)
+
+        def get_new_point():
+            z = plane.p2n(dot.get_center())
+            return plane.n2p(func(z))
+
+        for n in range(self.n_steps):
+            new_point = get_new_point()
+            arrow = Arrow(dot.get_center(), new_point, buff=dot.get_height() / 2)
+
+            dot_copy = dot.copy()
+            dot_copy.move_to(new_point)
+            dot_copy.set_color(YELLOW)
+            fz_label = Tex("f(z)", font_size=font_size)
+            fz_label.set_stroke(BLACK, 8, background=True)
+            fz_label.next_to(dot_copy, UP, SMALL_BUFF)
+
+            self.add(dot, dot_copy, arrow, z_label)
+            self.play(
+                ShowCreation(arrow),
+                TransformFromCopy(dot, dot_copy),
+                FadeInFromPoint(fz_label, z_label.get_center()),
+            )
+            self.wait(0.5)
+            to_fade = VGroup(
+                dot.copy(), z_label.copy(),
+                dot_copy, arrow, fz_label,
+            )
+            dot.move_to(dot_copy)
+            z_label.next_to(dot, UP, SMALL_BUFF)
+            self.remove(z_label)
+            self.play(
+                *map(FadeOut, to_fade),
+                FadeIn(z_label),
+            )
+
+        self.embed()
+
+
+class BriefMandelbrot(Scene):
+    n_iterations = 30
+
+    def construct(self):
+        self.add_plane()
+        self.add_process_description()
+        self.show_iterations()
+        self.wait(10)  # Time to play
+        self.add_mandelbrot_image()
+
+    def add_plane(self):
+        plane = self.plane = ComplexPlane((-2, 1), (-2, 2))
+
+        plane.set_height(4)
+        plane.scale(FRAME_HEIGHT / 2.307)
+        plane.next_to(2 * LEFT, RIGHT, buff=0)
+        plane.add_coordinate_labels(font_size=24)
+        self.add(plane)
+
+    def add_process_description(self):
+        kw = {
+            "tex_to_color_map": {
+                "{c}": YELLOW,
+            }
+        }
+        terms = self.terms = VGroup(
+            Tex("z_{n + 1} = z_n^2 + {c}", **kw),
+            Tex("z_0 = 0", **kw),
+            Tex("{c} \\text{ can be changed}", **kw),
+        )
+        terms.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
+        terms.next_to(self.plane, LEFT, MED_LARGE_BUFF)
+
+        self.add(terms)
+
+    def show_iterations(self):
+        plane = self.plane
+
+        c0 = complex(-0.2, 0.95)
+
+        c_dot = self.c_dot = Dot()
+        c_dot.set_fill(YELLOW)
+        c_dot.set_stroke(BLACK, 5, background=True)
+        c_dot.move_to(plane.n2p(c0))
+
+        lines = VGroup()
+        lines.set_stroke(background=True)
+
+        def get_c():
+            return plane.p2n(c_dot.get_center())
+
+        def update_lines(lines):
+            z1 = 0
+            c = get_c()
+            new_lines = []
+
+            for n in range(self.n_iterations):
+                try:
+                    z2 = z1**2 + c
+                    new_lines.append(Line(
+                        plane.n2p(z1),
+                        plane.n2p(z2),
+                        stroke_color=GREY,
+                        stroke_width=2,
+                    ))
+                    new_lines.append(Dot(
+                        plane.n2p(z2),
+                        fill_color=YELLOW,
+                        fill_opacity=0.5,
+                        radius=0.05,
+                    ))
+                    z1 = z2
+                except Exception:
+                    pass
+
+            lines.set_submobjects(new_lines)
+
+        update_lines(lines)
+        self.add(lines[:2], c_dot)
+        last_dot = Dot(plane.n2p(0)).scale(0)
+        for line, dot in zip(lines[0:20:2], lines[1:20:2]):
+            self.add(line, dot, c_dot)
+            self.play(
+                ShowCreation(line),
+                TransformFromCopy(last_dot, dot)
+            )
+            last_dot = dot
+        self.remove(*lines)
+        lines.add_updater(update_lines)
+        self.add(lines, c_dot)
+
+    def add_mandelbrot_image(self):
+        image = ImageMobject("MandelbrotSet")
+        image.set_height(FRAME_HEIGHT)
+        image.shift(self.plane.n2p(-0.7) - image.get_center())
+
+        rect = FullScreenFadeRectangle()
+        rect.set_fill(BLACK, 1)
+        rect.next_to(self.plane, LEFT, buff=0)
+
+        self.add(image, rect, *self.mobjects)
+        self.play(
+            FadeIn(image, run_time=2),
+            self.plane.animate.set_opacity(0.5)
+        )
+
+    def on_mouse_press(self, point, button, mods):
+        # TODO, copy-pasted, should factor out
+        super().on_mouse_press(point, button, mods)
+        mob = self.point_to_mobject(point, search_set=[self.c_dot])
+        if mob is None:
+            return
+        self.mouse_drag_point.move_to(point)
+        mob.add_updater(lambda m: m.move_to(self.mouse_drag_point))
+        self.unlock_mobject_data()
+        self.lock_static_mobject_data()
+
+    def on_mouse_release(self, point, button, mods):
+        super().on_mouse_release(point, button, mods)
+        self.c_dot.clear_updaters()
 
 
 class CyclicAttractor(RepeatedNewton):
@@ -3473,13 +4434,23 @@ class HighlightedJulia(IntroPolyFractal):
         self.init_fractal(root_colors=ROOT_COLORS_DEEP)
         fractal = self.fractal
 
-        fractal.set_julia_highlight(1e-3)
+        def get_height_ratio():
+            return self.camera.frame.get_height() / FRAME_HEIGHT
+
+        fractal.set_colors(5 * [WHITE])
+        fractal.add_updater(lambda m: m.set_julia_highlight(get_height_ratio() * 1e-3))
+        fractal.set_n_steps(50)
         # self.play(
         #     fractal.animate.set_julia_highlight(1e-3),
         #     run_time=5
         # )
 
         # self.embed()
+
+
+class MontelCorrolaryScreenGrab(Scene):
+    def construct(self):
+        pass
 
 
 class MetaFractal(IntroPolyFractal):
