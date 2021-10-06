@@ -19,10 +19,13 @@ from manimlib.utils.rate_functions import linear
 
 from custom.characters.pi_creature import Mortimer
 from custom.characters.pi_creature import Randolph
+from custom.characters.pi_creature_animations import Blink
 
 
 class PatreonEndScreen(Scene):
     CONFIG = {
+        "title_text": "Clicky Stuffs",
+        "show_pis": True,
         "max_patron_group_size": 20,
         "patron_scale_val": 0.8,
         "n_patron_columns": 4,
@@ -36,9 +39,10 @@ class PatreonEndScreen(Scene):
 
     def construct(self):
         # Add title
-        title = self.title = TexText("Clicky Stuffs")
+        title = self.title = TexText(self.title_text)
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
+        self.add(title)
 
         pi_creatures = VGroup(Randolph(), Mortimer())
         for pi, vect in zip(pi_creatures, [LEFT, RIGHT]):
@@ -46,7 +50,9 @@ class PatreonEndScreen(Scene):
             pi.change_mode("thinking")
             pi.look(DOWN)
             pi.next_to(title, vect, buff=MED_LARGE_BUFF)
-        self.add(title, pi_creatures)
+        self.add(pi_creatures)
+        if not self.show_pis:
+            pi_creatures.set_opacity(0)
 
         # Set the top of the screen
         logo_box = Square(side_length=2.5)

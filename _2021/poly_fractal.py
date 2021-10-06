@@ -20,11 +20,13 @@ def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20, opacity_mult=1.0
     return result
 
 
-def get_newton_rule(font_size=36, isolate=["z_n", "z_{n+1}"], **kwargs):
+def get_newton_rule(font_size=36, var="z", **kwargs):
+    terms = [f"{var}_n", f"{var}_{{n + 1}}"]
+    t0, t1 = terms
     return Tex(
-        "z_{n+1} = z_n - {P(z_n) \\over P'(z_n)}",
+        t1, "=", t0, "=",
+        "{P(", t0, ")", "\\over ", "P'(", t0, ")}",
         font_size=36,
-        isolate=isolate,
         **kwargs
     )
 
@@ -47,6 +49,20 @@ def coefs_to_poly_string(coefs):
         else:
             tex_str += f"z^{{{k}}}"
     return tex_str
+
+
+def get_figure(image_name, person_name, year_text, height=3):
+    image = ImageMobject(image_name)
+    image.set_height(height)
+    rect = SurroundingRectangle(image, buff=0)
+    rect.set_stroke(WHITE, 2)
+    name = Text(f"{person_name}", font_size=36)
+    name.set_color(GREY_A)
+    name.next_to(image, DOWN)
+    year_label = Text(f"{year_text}", font_size=30)
+    year_label.match_color(name)
+    year_label.next_to(name, DOWN, buff=0.2)
+    return Group(rect, image, name, year_label)
 
 
 class PolyFractal(Mobject):
@@ -639,7 +655,7 @@ class RasterizingBezier(Scene):
         curve.set_stroke(WHITE, width=1.0)
         curve.set_fill(opacity=0)
         curve.to_edge(DOWN, buff=1)
-        curve.insert_n_curves(10)  # To beter uniformize it
+        curve.insert_n_curves(10)  # To better uniformize it
 
         thick_curve = curve.copy()
         thick_curve.set_stroke(YELLOW, 30.0)
@@ -1383,7 +1399,7 @@ class ShowManyGraphs(Scene):
 
 class ComingVideoWrapper(VideoWrapper):
     animate_boundary = False
-    title = "Unsolvabillity of the Quintic (future topic?)"
+    title = "Unsolvability of the Quintic (future topic?)"
 
 
 class QuinticAppletPlay(ExternallyAnimatedScene):
@@ -1843,7 +1859,7 @@ class RealNewtonsMethod(Scene):
             gv.set_value(get_guess())
             gv.next_to(guess_marker, DOWN, SMALL_BUFF)
             gv.set_fill(self.guess_color)
-            gv.add_background_rectangle()
+            gv.set_stroke(BLACK, 3, background=True)
             return gv
 
         guess_value.add_updater(update_guess_value)
@@ -1997,6 +2013,360 @@ class WhatIsThis(Scene):
         words.next_to(ORIGIN, DOWN)
         self.play(FadeIn(words, lag_ratio=0.1), ShowCreation(arrow))
         self.wait()
+
+
+class GutCheckFormula(RealNewtonsMethod):
+    seed = 5.0
+
+    def construct(self):
+        self.add_axes_and_graph()
+        self.add_rule()
+        self.add_guess()
+        self.sample_values()
+
+    def add_axes_and_graph(self):
+        axes = NumberPlane(
+            (-2, 15), (-2, 8),
+            faded_line_ratio=1,
+            background_line_style={
+                "stroke_opacity": 0.5,
+                "stroke_color": GREY,
+            }
+        )
+        axes.to_corner(DL, buff=0)
+        axes.add_coordinate_labels(font_size=16, fill_opacity=0.5)
+        axes.x_axis.numbers.next_to(axes.x_axis, UP, buff=0.05)
+        self.add(axes)
+
+        roots = [-1, 3, 4.5]
+        coefs = 0.1 * np.array(roots_to_coefficients(roots))
+        graph = axes.get_graph(lambda x: poly(x, coefs))
+        graph.set_stroke(BLUE, 3)
+        self.add(graph)
+
+        self.root_point = axes.c2p(roots[-1], 0)
+
+        self.axes = axes
+        self.graph = graph
+
+    def add_rule(self):
+        rule = Tex(
+            "x_{n + 1}", "=",
+            "x_{n}", " - ", "{P(x) ", "\\over ", "P'(x)}"
+        )
+        rule.set_stroke(BLACK, 5, background=True)
+        rule.to_corner(UR)
+
+        step_box = SurroundingRectangle(rule[3:], buff=0.1)
+        step_box.set_stroke(YELLOW, 1.0)
+        step_word = Text("Step size", font_size=36)
+        step_word.set_color(YELLOW)
+        step_word.next_to(step_box, DOWN)
+
+        self.add(rule)
+        self.add(step_box)
+        self.add(step_word)
+
+        self.rule = rule
+        self.step_box = step_box
+        self.step_word = step_word
+
+    def add_guess(self, include_px=True):
+        guess_group = self.get_guess_group()
+        marker, value, tracker = guess_group
+        self.guess_tracker = tracker
+
+        def update_v_line(v_line):
+            x = tracker.get_value()
+            graph_point = self.graph.pfp(
+                inverse_interpolate(*self.graph.x_range[:2], x)
+            )
+            v_line.put_start_and_end_on(
+                self.axes.c2p(x, 0),
+                graph_point,
+            )
+
+        v_line = Line()
+        v_line.set_stroke(WHITE, 2)
+        v_line.add_updater(update_v_line)
+
+        self.add(*guess_group)
+        self.add(v_line)
+
+        if include_px:
+            px_label = Tex("P(x)", font_size=36)
+            px_label.add_updater(lambda m: m.next_to(v_line, RIGHT, buff=0.05))
+            self.add(px_label)
+
+    def sample_values(self):
+        box = self.step_box
+        rule = self.rule
+        tracker = self.guess_tracker
+        graph = self.graph
+
+        words = Text("Gut check!")
+        words.next_to(self.step_word, DOWN, LARGE_BUFF)
+        words.shift(2 * LEFT)
+        arrow = Arrow(words, self.rule)
+
+        self.play(
+            Write(words, run_time=1),
+            ShowCreation(arrow),
+        )
+        self.wait()
+        self.play(
+            FadeOut(words),
+            FadeOut(arrow),
+            FadeOut(self.step_word),
+            box.animate.replace(rule[4], stretch=True).scale(1.2).set_stroke(width=2.0),
+        )
+        self.play(
+            tracker.animate.set_value(6.666),
+            run_time=3,
+        )
+
+        arrow = Arrow(
+            self.axes.c2p(tracker.get_value(), 0),
+            self.root_point,
+            buff=0,
+            stroke_color=RED,
+        )
+        self.play(ShowCreation(arrow))
+        self.wait()
+
+        # Large p_prime
+        self.play(
+            FadeOut(arrow),
+            tracker.animate.set_value(5.0),
+        )
+        self.play(
+            graph.animate.stretch(8, 1, about_point=self.axes.c2p(0, 0)),
+            box.animate.replace(self.rule[-1]).scale(1.2),
+            run_time=3
+        )
+        self.wait()
+
+        tan_line = self.get_tan_line(graph, tracker.get_value(), 15)
+        self.play(ShowCreation(tan_line))
+        self.wait()
+
+    def get_tan_line(self, graph, x, length=5, epsilon=1e-3):
+        alpha = inverse_interpolate(*graph.x_range[:2], x)
+        tan_line = Line(
+            graph.pfp(alpha - epsilon),
+            graph.pfp(alpha + epsilon),
+        )
+        tan_line.set_length(length)
+        tan_line.set_stroke(RED, 5)
+        return tan_line
+
+
+class HistoryWithNewton(Scene):
+    def construct(self):
+        # Add title
+        title = Text("Newton's method", font_size=60)
+        title.to_edge(UP)
+        self.add(title)
+
+        # Add timeline
+        time_range = (1620, 2020)
+        timeline = NumberLine(
+            (*time_range, 1),
+            tick_size=0.025,
+            longer_tick_multiple=4,
+            numbers_with_elongated_ticks=range(*time_range, 10),
+        )
+        timeline.stretch(0.2 / timeline.get_unit_size(), 0)
+        timeline_center = 2 * DOWN
+        timeline.move_to(timeline_center)
+        timeline.to_edge(RIGHT)
+        timeline.add_numbers(
+            range(*time_range, 10),
+            group_with_commas=False,
+        )
+        timeline.shift(timeline_center - timeline.n2p(1680))
+
+        self.add(timeline)
+
+        # Newton
+        newton = get_figure("Newton", "Isaac Newton", "1669")
+        newton.next_to(title, DOWN, buff=0.5)
+        newton.to_edge(LEFT, buff=1.5)
+        newton_point = timeline.n2p(1669)
+        newton_arrow = Arrow(newton_point, newton[0].get_right() + DOWN, path_arc=PI / 3)
+
+        newton_words = Text("Overly\ncomplicated", font_size=36)
+        newton_words.next_to(newton[0], RIGHT)
+
+        raphson_point = timeline.n2p(1690)
+        raphson = get_figure("Newton", "Joseph Raphson", "1690")
+        raphson.move_to(newton)
+        raphson.set_x(raphson_point[0] + 2)
+        raphson[1].set_opacity(0)
+        raphson_arrow = Arrow(raphson_point, raphson[0].get_left() + DOWN, path_arc=-PI / 3)
+        raphson_word = Text("Simplified", font_size=36)
+        raphson_word.next_to(raphson[0], LEFT)
+
+        no_image_group = VGroup(
+            Text("No image"),
+            Text("(sorry)"),
+            # Randolph(mode="shruggie", height=1)
+        )
+        no_image_group[:2].set_fill(GREY)
+        no_image_group.arrange(DOWN, buff=0.5)
+        no_image_group.set_width(raphson[0].get_width() - 0.5)
+        no_image_group.move_to(raphson[0])
+
+        self.add(newton, newton_arrow)
+
+        frame = self.camera.frame
+        frame.save_state()
+        title.fix_in_frame()
+        frame.move_to(timeline, RIGHT)
+        self.play(
+            frame.animate.match_width(timeline).set_x(timeline.get_center()[0]),
+            run_time=2
+        )
+        self.play(Restore(frame, run_time=2))
+
+        # self.play(
+        #     GrowFromPoint(newton, newton_point),
+        #     ShowCreation(newton_arrow)
+        # )
+        self.wait()
+        self.play(Write(newton_words))
+        self.wait()
+        self.play(
+            GrowFromPoint(raphson, raphson_point),
+            ShowCreation(raphson_arrow),
+        )
+        self.play(LaggedStartMap(FadeIn, no_image_group, lag_ratio=0.2))
+        self.play(FadeIn(raphson_word))
+        self.wait()
+
+        new_title = Text("Newton-Raphson method", font_size=60)
+        new_title.to_edge(UP)
+        self.play(
+            FadeOut(title),
+            TransformFromCopy(
+                newton[2].get_part_by_text("Newton"),
+                new_title.get_part_by_text("Newton"),
+            ),
+            TransformFromCopy(
+                raphson[2].get_part_by_text("Raphson"),
+                new_title.get_part_by_text("Raphson"),
+            ),
+            TransformFromCopy(
+                title.get_part_by_text("method"),
+                new_title.get_part_by_text("method"),
+            ),
+            FadeIn(new_title.get_part_by_text("-"))
+        )
+        self.play(FlashAround(new_title, run_time=2))
+        self.wait()
+
+
+class CalcHomework(GutCheckFormula):
+    seed = 3.0
+
+    def construct(self):
+        # Title
+        old_title = Text("Newton-Raphson method", font_size=60)
+        old_title.to_edge(UP)
+        title = Text("Calc 1", font_size=72)
+        title.to_edge(UP, buff=MED_SMALL_BUFF)
+        line = Underline(title)
+        line.scale(2)
+        line.set_stroke(WHITE, 2)
+        self.add(old_title)
+
+        # Axes
+        axes = NumberPlane(
+            x_range=(-5, 5, 1),
+            y_range=(-8, 10, 2),
+            height=6.5,
+            width=FRAME_WIDTH,
+            faded_line_ratio=4,
+            background_line_style={
+                "stroke_color": GREY_C,
+                "stroke_width": 1,
+            }
+        )
+        axes.to_edge(DOWN, buff=0)
+        axes.add_coordinate_labels(font_size=18)
+
+        self.add(axes)
+
+        # Homework
+        hw = TexText(
+            "Homework:\\\\",
+            "\\quad Approximate $\\sqrt{7}$ by hand using\\\\",
+            "\\quad the ", "Newton-Raphson method.",
+            alignment="",
+            font_size=36,
+            color=GREY_A,
+        )
+        hw[1:].shift(MED_SMALL_BUFF * RIGHT + SMALL_BUFF * DOWN)
+        hw.add_to_back(
+            BackgroundRectangle(hw, fill_opacity=0.8, buff=0.25)
+        )
+        hw.move_to(axes, UL)
+        hw.to_edge(LEFT, buff=0)
+
+        self.wait()
+        self.play(
+            FadeIn(hw, lag_ratio=0.1, run_time=2),
+            FadeTransform(
+                old_title,
+                hw[-1]
+            ),
+            FadeIn(title),
+            ShowCreation(line),
+        )
+        self.wait()
+
+        # Graph
+        graph = axes.get_graph(
+            lambda x: x**2 - 7,
+            x_range=(-math.sqrt(17), math.sqrt(17))
+        )
+        graph.set_stroke(BLUE, 2)
+        graph_label = Tex("x^2 - 7", font_size=36)
+        graph_label.set_color(BLUE)
+        graph_label.next_to(graph.pfp(0.99), LEFT)
+
+        self.add(graph, hw)
+        self.play(ShowCreation(graph, run_time=3))
+        self.play(FadeIn(graph_label))
+        self.wait()
+
+        # Marker
+        axes.x_axis.numbers.remove(axes.x_axis.numbers[-3])
+        self.axes = axes
+        self.graph = graph
+        self.add_guess(include_px=False)
+        self.wait()
+
+        # Update
+        tan_line = self.get_tan_line(graph, 3)
+        tan_line.set_stroke(width=3)
+        update_tex = Tex(
+            "3 \\rightarrow 3 - {3^2 - 7 \\over 2 \\cdot 3}",
+            tex_to_color_map={"3": YELLOW},
+            font_size=28
+        )
+        update_tex.next_to(axes.c2p(1.2, 0), UR, buff=SMALL_BUFF)
+
+        self.add(tan_line, self.guess_marker, self.guess_value)
+        self.play(
+            GrowFromCenter(tan_line),
+            FadeIn(update_tex),
+        )
+        self.wait()
+        self.play(
+            self.guess_tracker.animate.set_value(8 / 3),
+            run_time=2
+        )
 
 
 class RealNewtonsMethodHigherGraph(FasterNewtonExample):
@@ -2939,18 +3309,21 @@ class RepeatedNewton(Scene):
         "stroke_opacity": 0.5,
     }
     dot_density = 5.0
-    n_steps = 10
+    n_steps = 12
     colors = ROOT_COLORS_BRIGHT
     show_coloring = True
     show_arrows = True
     highlight_equation = False
     corner_group_height = 2.0
     step_run_time = 1.0
+    show_fractal_background = False
 
     def construct(self):
         self.add_plane()
         self.add_true_roots()
         self.add_labels()
+        if self.show_fractal_background:
+            self.add_fractal_background()
         self.add_dots()
         self.run_iterations()
         if self.show_coloring:
@@ -3125,6 +3498,33 @@ class RepeatedNewton(Scene):
             kwargs["colors"] = self.colors
         return PolyFractal(self.plane, coefs=self.coefs, **kwargs)
 
+    def add_fractal_background(self):
+        fractal = self.get_fractal()
+        fractal.set_opacity(0.1)
+        fractal.set_n_steps(12)
+        boundary = self.fractal_boundary = fractal.copy()
+        boundary.set_colors(5 * [WHITE])
+        boundary.set_julia_highlight(1e-4)
+        boundary.set_opacity(0.25)
+        self.add(fractal, boundary, *self.mobjects)
+
+
+class AmbientQuinticSolving(RepeatedNewton):
+    coefs = [-23.125, -11.9375, -6.875, 0.3125, 2.5, 1]
+    show_fractal_background = True
+    dots_config = {
+        "radius": 0.03,
+        "color": GREY_A,
+        "gloss": 0.4,
+        "shadow": 0.1,
+        "opacity": 0.5,
+    }
+    dot_density = 10.0
+
+    def add_labels(self):
+        super().add_labels()
+        self.corner_group.set_opacity(0)
+
 
 class WhyNotThisWrapper(VideoWrapper):
     title = "Why not something like this?"
@@ -3202,8 +3602,8 @@ class RepeatedNewtonQuadratic(RepeatedNewton):
 
 class SimpleFractalScene(IntroPolyFractal):
     colors = ROOT_COLORS_DEEP
-    display_polynomial_label = True
-    display_root_values = True
+    display_polynomial_label = False
+    display_root_values = False
     n_steps = 12
 
     def construct(self):
@@ -3261,20 +3661,21 @@ class TwoRootFractal(SimpleFractalScene):
     n_steps = 0  # Doesn't really matter, does it?
 
 
-class TwoRootFractalNoLabels(TwoRootFractal):
-    display_polynomial_label = False
-    display_root_values = False
+class TwoRootFractalWithLabels(TwoRootFractal):
+    display_polynomial_label = True
+    display_root_values = True
 
 
 class ThreeRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 0.0, 1.0]
-    colors = ROOT_COLORS_DEEP[::2]
+    # colors = ROOT_COLORS_DEEP[::2]
+    colors = [*2 * [ROOT_COLORS_DEEP[0]], *1 * [ROOT_COLORS_DEEP[4]]]
     n_steps = 12
 
 
-class ThreeRootFractalNoLabels(ThreeRootFractal):
-    display_polynomial_label = False
-    display_root_values = False
+class ThreeRootFractalWithLabels(ThreeRootFractal):
+    display_polynomial_label = True
+    display_root_values = True
 
 
 class FromTwoToThree(EquationToFrame):
@@ -3363,13 +3764,6 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
 
 class NextVideoWrapper(VideoWrapper):
     title = "Next video"
-
-
-class MakeFunOfNextVideo(TeacherStudentsScene):
-    def construct(self):
-        self.student_says(
-            ""
-        )
 
 
 class PeculiarBoundaryProperty(Scene):
@@ -3846,7 +4240,7 @@ class ArtPuzzle(Scene):
             self.wait()
 
 
-class ZoomInOnCubic(ThreeRootFractalNoLabels):
+class ZoomInOnCubic(ThreeRootFractal):
     colors = CUBIC_COLORS
     coefs = [complex(0, -1), 0, 0, 1]
     n_steps = 30
@@ -3928,6 +4322,7 @@ class InterpretBoundaryProperty(RepeatedNewton):
         "height": 12,
         "width": 24,
     }
+    n_steps = 15
 
     def construct(self):
         self.add_plane()
@@ -3942,13 +4337,13 @@ class InterpretBoundaryProperty(RepeatedNewton):
         dots = self.dots = DotCloud()
         dots.set_points([
             [r * math.cos(theta), r * math.sin(theta), 0]
-            for r in np.linspace(0, 1, 10)
+            for r in np.linspace(0, 1, 20)
             for theta in np.linspace(0, TAU, int(r * 20)) + random.random() * TAU
         ])
         dots.set_height(2).center()
         dots.filter_out(lambda p: get_norm(p) > 1)
-        dots.set_height(0.25)
-        dots.set_radius(0.05)
+        dots.set_height(0.3)
+        dots.set_radius(0.04)
         dots.make_3d()
         dots.set_color(GREY_A)
         dots.move_to(point)
@@ -3959,7 +4354,7 @@ class InterpretBoundaryProperty(RepeatedNewton):
 
         def get_arrows():
             root_dots = self.root_dots
-            if plane.p2n(dots.get_center()).real < -1.1:
+            if plane.p2n(dots.get_center()).real < -1.25:
                 root_dots = [root_dots[4]]
             return VGroup(*(
                 Arrow(
@@ -3990,9 +4385,9 @@ class InterpretBoundaryProperty(RepeatedNewton):
         arrows.add_updater(lambda m: m.become(get_arrows()))
         self.add(arrows)
 
-        self.play(dots.animate.move_to(plane.c2p(-1.4, 0.4)))
+        self.play(dots.animate.move_to(plane.c2p(-1.4, 0.4)), run_time=3)
         self.wait()
-        self.play(dots.animate.move_to(point))
+        self.play(dots.animate.move_to(point), run_time=3)
         self.wait()
 
         not_allowed = Text("Not allowed!")
@@ -4011,15 +4406,194 @@ class InterpretBoundaryProperty(RepeatedNewton):
         # For fun
         self.run_iterations()
 
-    def add_fractal_background(self):
-        fractal = self.get_fractal()
-        fractal.set_opacity(0.1)
-        fractal.set_n_steps(12)
-        boundary = self.fractal_boundary = fractal.copy()
-        boundary.set_colors(5 * [WHITE])
-        boundary.set_julia_highlight(1e-3)
-        boundary.set_opacity(0.25)
-        self.add(fractal, boundary, *self.mobjects)
+
+class CommentsOnNaming(Scene):
+    def construct(self):
+        self.setup_table()
+        self.show_everyone()
+
+    def setup_table(self):
+        titles = VGroup(
+            TexText("How it started", font_size=60),
+            TexText("How it's going", font_size=60),
+        )
+        titles.to_edge(UP, buff=MED_SMALL_BUFF)
+        titles.set_color(GREY_A)
+        titles[0].set_x(-FRAME_WIDTH / 4)
+        titles[1].set_x(FRAME_WIDTH / 4)
+        h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
+        h_line.next_to(titles, DOWN).set_x(0)
+        v_line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        lines = VGroup(h_line, v_line)
+        lines.set_stroke(WHITE, 2)
+
+        self.left_point = [-FRAME_WIDTH / 4, -1, 0]
+        self.right_point = [FRAME_WIDTH / 4, -1, 0]
+
+        self.add(titles, lines)
+
+    def show_everyone(self):
+        # Newton
+        newton = get_figure(
+            "Newton", "Isaac Newton", "1643-1727",
+            height=4,
+        )
+        newton.move_to(self.left_point)
+
+        newton_formula = get_newton_rule(var="x")
+        newton_formula.next_to(newton, UP)
+
+        nf_label = TexText("``Newton's'' fractal")
+        nf_label.align_to(newton_formula, UP)
+        nf_label.set_x(self.right_point[0])
+
+        self.play(
+            FadeIn(newton_formula),
+            LaggedStartMap(FadeIn, newton)
+        )
+        self.wait()
+        self.play(Write(nf_label))
+        self.wait(2)
+
+        # Hamilton
+        hamilton = get_figure(
+            "Hamilton", "William Rowan Hamilton", "1805 - 1865",
+            height=4,
+        )
+        hamilton.move_to(self.left_point)
+        hamiltons_equation = Tex(
+            r"\frac{\mathrm{d} \boldsymbol{q}}{\mathrm{d} t}=\frac{\partial \mathcal{H}}{\partial \boldsymbol{p}}, \quad \frac{\mathrm{d} \boldsymbol{p}}{\mathrm{d} t}=-\frac{\partial \mathcal{H}}{\partial \boldsymbol{q}}"
+        )
+        hamiltons_equation.match_width(hamilton[0])
+        hamiltons_equation.next_to(hamilton, UP)
+
+        hamiltonians = Text("Hamiltonians")
+        hamiltonians.move_to(nf_label)
+
+        self.play(
+            LaggedStart(
+                FadeOut(newton, shift=0.25 * LEFT),
+                FadeOut(newton_formula, shift=0.25 * LEFT),
+                FadeOut(nf_label, shift=0.25 * RIGHT),
+            ),
+            LaggedStart(
+                FadeIn(hamilton, shift=0.25 * LEFT),
+                FadeIn(hamiltons_equation, shift=0.25 * LEFT),
+                FadeIn(hamiltonians, shift=0.25 * RIGHT),
+            )
+        )
+        self.wait(2)
+
+        # Fourier
+        fourier = get_figure(
+            "Joseph Fourier", "Joseph Fourier", "1768-1830",
+            height=4
+        )
+        fourier.move_to(self.left_point)
+        fourier_transform = Tex(
+            r"f(t)=\int_{0}^{\infty}(a(\lambda) \cos (2 \pi \lambda t)+b(\lambda) \sin (2 \pi \lambda t)) d \lambda"
+        )
+        fourier_transform.set_width(fourier.get_width() * 1.5)
+        fourier_transform.next_to(fourier, UP)
+
+        FFT = Text("FFT")
+        FFT.move_to(hamiltonians)
+
+        FFT_diagram = ImageMobject("FFT_Diagram")
+        FFT_diagram.move_to(self.right_point),
+
+        self.play(
+            LaggedStart(
+                FadeOut(hamilton, shift=0.25 * LEFT),
+                FadeOut(hamiltons_equation, shift=0.25 * LEFT),
+                FadeOut(hamiltonians, shift=0.25 * RIGHT),
+            ),
+            LaggedStart(
+                FadeIn(fourier, shift=0.25 * LEFT),
+                FadeIn(fourier_transform, shift=0.25 * LEFT),
+                FadeIn(FFT, shift=0.25 * RIGHT),
+            ),
+            FadeIn(FFT_diagram),
+        )
+        self.wait(2)
+
+        # Everyone
+        people = Group(newton, hamilton, fourier)
+        people.generate_target()
+        people.target.arrange(DOWN, buff=LARGE_BUFF)
+        people.target.set_height(6.4)
+        people.target.move_to(self.left_point)
+        people.target.to_edge(DOWN, buff=SMALL_BUFF)
+
+        self.play(
+            FadeOut(fourier_transform),
+            FadeOut(FFT),
+            MoveToTarget(people, run_time=2),
+            FFT_diagram.animate.scale(1 / 3).match_y(people.target[2]),
+        )
+
+        arrow = Arrow(
+            fourier, FFT_diagram,
+            buff=1.0,
+            stroke_width=8
+        )
+        arrows = VGroup(
+            arrow.copy().match_y(newton),
+            arrow.copy().match_y(hamilton),
+            arrow,
+        )
+        self.play(LaggedStartMap(ShowCreation, arrows, lag_ratio=0.5, run_time=3))
+        self.wait()
+
+
+class MakeFunOfNextVideo(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("``Next part''...I've\\\\heard that before."),
+            target_mode="sassy",
+            student_index=2,
+            added_anims=[LaggedStart(
+                self.teacher.animate.change("guilty"),
+                self.students[0].animate.change("sassy"),
+                self.students[1].animate.change("hesitant"),
+            )]
+        )
+        self.wait()
+        self.teacher_says(
+            TexText("Wait, for real\\\\this time!"),
+            bubble_kwargs={
+                "height": 3,
+                "width": 3,
+            },
+            target_mode="speaking",
+            added_anims=[
+                self.students[0].animate.change("hesitant"),
+            ]
+        )
+        self.wait(3)
+
+
+class Part1EndScroll(PatreonEndScreen):
+    CONFIG = {
+        "title_text": "",
+        "scroll_time": 60,
+        "show_pis": False,
+    }
+
+
+class Thanks(Scene):
+    def construct(self):
+        morty = Mortimer(mode="happy")
+        thanks = Text("Thank you")
+        thanks.next_to(morty, LEFT)
+        self.play(
+            morty.animate.change("gracious"),
+            FadeIn(thanks, lag_ratio=0.1)
+        )
+        for n in range(5):
+            self.play(morty.animate.look([DL, DR][n % 2]))
+            self.wait(random.random() * 5)
+            self.play(Blink(morty))
 
 
 class HolomorphicDynamics(Scene):
@@ -4456,10 +5030,10 @@ class MontelCorrolaryScreenGrab(Scene):
 class MetaFractal(IntroPolyFractal):
     fixed_roots = [-1, 1]
     z0 = complex(0.5, 0)
-    n_steps = 150
+    n_steps = 200
 
     def construct(self):
-        colors = CUBIC_COLORS
+        colors = ROOT_COLORS_DEEP[0::2]
         self.plane_config["faded_line_ratio"] = 3
         plane = self.get_plane()
         root_dots = self.root_dots = VGroup(*(
@@ -4482,10 +5056,15 @@ class MetaFractal(IntroPolyFractal):
         self.add(fractal, plane)
         self.add(root_dots)
 
+        point1 = np.array([1.62070862, 1.68700851, 0.])
+        point2 = np.array([0.81263967, 2.84042313, 0.])
+        height1 = 0.083
+        height2 = 0.035
+
         frame = self.camera.frame
         frame.generate_target()
-        frame.target.move_to([1.62070862, 1.68700851, 0.])
-        frame.target.set_height(0.083)
+        frame.target.move_to(point1)
+        frame.target.set_height(height1)
 
         self.play(
             MoveToTarget(frame),
@@ -4493,3 +5072,18 @@ class MetaFractal(IntroPolyFractal):
             rate_func=bezier([0, 0, 1, 1])
         )
         self.wait()
+        self.play(
+            UpdateFromAlphaFunc(
+                frame,
+                lambda m, a: m.set_height(
+                    interpolate(
+                        interpolate(height1, 2, a),
+                        interpolate(2, height2, a),
+                        a,
+                    ),
+                ).move_to(
+                    interpolate(point1, point2, a)
+                )
+            ),
+            run_time=10
+        )
