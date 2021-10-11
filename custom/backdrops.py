@@ -40,13 +40,14 @@ class VideoWrapper(Scene):
         "font_size": 60
     }
     wait_time = 32
+    screen_height = 6.25
 
     def construct(self):
         self.add(FullScreenRectangle())
         screen = ScreenRectangle()
         screen.set_fill(BLACK, 1)
         screen.set_stroke(BLUE, 0)
-        screen.set_height(6)
+        screen.set_height(self.screen_height)
         screen.to_edge(DOWN)
 
         if self.animate_boundary:
