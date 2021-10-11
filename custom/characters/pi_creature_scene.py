@@ -1,4 +1,3 @@
-import itertools as it
 import random
 
 from manimlib.animation.transform import ReplacementTransform
@@ -6,6 +5,7 @@ from manimlib.animation.transform import Transform
 from manimlib.animation.transform import ApplyMethod
 from manimlib.animation.composition import LaggedStart
 from manimlib.animation.fading import FadeIn
+from manimlib.animation.fading import FadeTransform
 from manimlib.constants import *
 from manimlib.mobject.mobject import Group
 from manimlib.mobject.frame import ScreenRectangle
@@ -107,7 +107,7 @@ class PiCreatureScene(Scene):
             )
             anims += [
                 ReplacementTransform(old_bubble, bubble),
-                ReplacementTransform(old_bubble.content, bubble.content),
+                FadeTransform(old_bubble.content, bubble.content),
                 pi_creature.change_mode, target_mode
             ]
         else:
