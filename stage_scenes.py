@@ -39,7 +39,7 @@ def stage_scenes(module_name):
     # TODO, fix this
     animation_dir = os.path.join(
         os.path.expanduser('~'),
-        "Dropbox/3Blue1Brown/videos/2021/poly_fractal/videos"
+        "Dropbox/3Blue1Brown/videos/2021/holomorphic_dynamics/videos"
     )
     # 
     files = os.listdir(animation_dir)

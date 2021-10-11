@@ -24,7 +24,7 @@ def get_newton_rule(font_size=36, var="z", **kwargs):
     terms = [f"{var}_n", f"{var}_{{n + 1}}"]
     t0, t1 = terms
     return Tex(
-        t1, "=", t0, "=",
+        t1, "=", t0, "-",
         "{P(", t0, ")", "\\over ", "P'(", t0, ")}",
         font_size=36,
         **kwargs
@@ -51,17 +51,17 @@ def coefs_to_poly_string(coefs):
     return tex_str
 
 
-def get_figure(image_name, person_name, year_text, height=3):
+def get_figure(image_name, person_name, year_text, height=3, label_direction=DOWN):
     image = ImageMobject(image_name)
     image.set_height(height)
     rect = SurroundingRectangle(image, buff=0)
     rect.set_stroke(WHITE, 2)
     name = Text(f"{person_name}", font_size=36)
     name.set_color(GREY_A)
-    name.next_to(image, DOWN)
     year_label = Text(f"{year_text}", font_size=30)
     year_label.match_color(name)
     year_label.next_to(name, DOWN, buff=0.2)
+    VGroup(name, year_label).next_to(image, label_direction)
     return Group(rect, image, name, year_label)
 
 
@@ -80,6 +80,7 @@ class PolyFractal(Mobject):
         "max_degree": 5,
         "color_mult": 1.0,
         "opacity": 1.0,
+        "black_for_cycles": False,
     }
 
     def __init__(self, plane, **kwargs):
@@ -105,6 +106,7 @@ class PolyFractal(Mobject):
         self.set_n_steps(self.n_steps)
         self.set_color_mult(self.color_mult)
         self.set_opacity(self.opacity)
+        self.uniforms["black_for_cycles"] = float(self.black_for_cycles)
 
     def set_colors(self, colors):
         self.uniforms.update({
@@ -160,7 +162,7 @@ class PolyFractal(Mobject):
             self.uniforms[f"color{n}"][3] = opacity
         return self
 
-    def set_opacity(self, opacity):
+    def set_opacity(self, opacity, recurse=True):
         self.set_opacities(*len(self.roots) * [opacity])
         return self
 
@@ -171,6 +173,7 @@ class MetaPolyFractal(PolyFractal):
         "fixed_roots": [0, 1],
         "max_degree": 3,
         "z0": 0,
+        "black_for_cycles": True,
     }
 
     def init_uniforms(self):
@@ -3309,7 +3312,7 @@ class RepeatedNewton(Scene):
         "stroke_opacity": 0.5,
     }
     dot_density = 5.0
-    n_steps = 12
+    n_steps = 10
     colors = ROOT_COLORS_BRIGHT
     show_coloring = True
     show_arrows = True
@@ -3640,7 +3643,7 @@ class SimpleFractalScene(IntroPolyFractal):
             return self.plane.p2n(root_dot.get_center())
         label = VGroup(
             Tex(f"r_{n} = "),
-            DecimalNumber(get_z()),
+            DecimalNumber(get_z(), include_sign=True),
         )
         label.scale(0.5)
         label.set_stroke(BLACK, 3, background=True)
@@ -3668,9 +3671,8 @@ class TwoRootFractalWithLabels(TwoRootFractal):
 
 class ThreeRootFractal(SimpleFractalScene):
     coefs = [-1.0, 0.0, 0.0, 1.0]
-    # colors = ROOT_COLORS_DEEP[::2]
-    colors = [*2 * [ROOT_COLORS_DEEP[0]], *1 * [ROOT_COLORS_DEEP[4]]]
-    n_steps = 12
+    colors = ROOT_COLORS_DEEP[::2]
+    n_steps = 30
 
 
 class ThreeRootFractalWithLabels(ThreeRootFractal):
