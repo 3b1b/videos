@@ -38,7 +38,11 @@ def coefs_to_poly_string(coefs):
     for c, k in zip(coefs[-2::-1], it.count(n - 1, -1)):
         if c == 0:
             continue
-        num_str = "{:+}".format(int(c))
+        if isinstance(c, complex):
+            num_str = "({:+}".format(int(c.real))
+            num_str += "+ {:+})".format(int(c.imag))
+        else:
+            num_str = "{:+}".format(int(c))
         if abs(c) == 1 and k > 0:
             num_str = num_str[:-1]
         tex_str += num_str
@@ -3312,6 +3316,7 @@ class RepeatedNewton(Scene):
         "stroke_opacity": 0.5,
     }
     dot_density = 5.0
+    points_scalar = 1.0
     n_steps = 10
     colors = ROOT_COLORS_BRIGHT
     show_coloring = True
@@ -3383,11 +3388,11 @@ class RepeatedNewton(Scene):
 
     def get_original_points(self):
         step = 1.0 / self.dot_density
-        return [
+        return self.points_scalar * np.array([
             self.plane.c2p(x, y)
             for x in np.arange(*self.plane.x_range[:2], step)
             for y in np.arange(*self.plane.y_range[:2], step)
-        ]
+        ])
 
     def run_iterations(self):
         self.points_history = []
@@ -3499,7 +3504,8 @@ class RepeatedNewton(Scene):
     def get_fractal(self, **kwargs):
         if "colors" not in kwargs:
             kwargs["colors"] = self.colors
-        return PolyFractal(self.plane, coefs=self.coefs, **kwargs)
+        self.fractal = PolyFractal(self.plane, coefs=self.coefs, **kwargs)
+        return self.fractal
 
     def add_fractal_background(self):
         fractal = self.get_fractal()

@@ -503,8 +503,8 @@ class RationalFunctions(Scene):
         equation = Tex(
             "f(z)",
             "=", "z - {P(z) \\over P'(z)}",
-            "=", "z - {z^3 - 1 \\over 2z}",
-            "=", "{-z^3 + 2z^2 + 1 \\over 2z}"
+            "=", "z - {z^3 - 1 \\over 3z^2}",
+            "=", "{+2z^3 + 1 \\over 3z^2}"
         )
         iter_brace = Brace(equation[2], UP)
         iter_text = iter_brace.get_text("What's being iterated")
@@ -530,17 +530,18 @@ class RationalFunctions(Scene):
             LaggedStart(*(
                 FadeTransform(equation[4][i].copy(), equation[6][j])
                 for i, j in zip(
-                    [1, 2, 3, 4, 5, 6, 7, 8],
-                    [0, 1, 2, 7, 8, 9, 10, 11],
+                    [1, 0, *range(2, 10)],
+                    [0, 1, *range(2, 10)],
                 )
             ), lag_ratio=0.02)
         )
+        self.add(equation[6])
         self.play(
             LaggedStart(*(
-                FadeTransform(equation[4][i].copy(), equation[6][j])
+                FadeTransform(equation[4][i].copy().set_opacity(0), equation[6][j].copy().set_opacity(0))
                 for i, j in zip(
-                    [0, 0, 0, 8],
-                    [3, 4, 5, 6],
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0],
                 )
             ), lag_ratio=0.02)
         )
@@ -587,6 +588,10 @@ class RationalFunctions(Scene):
             Tex("(z^2 + 1)^2 \\over 4z(z^2 - 1)"),
             Tex("az + b \\over cz + d"),
             Tex("z^2 + az + b \\over z^2 + cz + d"),
+            Tex(
+                "a_n z^n + \\cdots + a_0 \\over "
+                "b_m z^m + \\cdots + b_0"
+            ),
             Tex("z^2 + c \\over 1"),
         )
 
@@ -1532,6 +1537,31 @@ class FixedPoints(Scene):
         return arrow
 
 
+class UseNewton(TeacherStudentsScene):
+    def construct(self):
+        self.teacher_says(
+            TexText(
+                "You could solve\\\\ $A(z) - z\\cdot B(z) = 0$ \\\\",
+                "using Newton's method"
+            ),
+            bubble_kwargs={
+                "width": 4,
+                "height": 3,
+            },
+            target_mode="hooray",
+            added_anims=[
+                self.get_student_changes("confused", "erm", "maybe")
+            ]
+        )
+        self.wait(2)
+        self.student_says(
+            Text("Too meta..."),
+            target_mode="sassy",
+            student_index=2,
+        )
+        self.wait(3)
+
+
 class DescribeDerivative(Scene):
     zoom_in_frame = False
     z = 1
@@ -1655,7 +1685,7 @@ class DescribeDerivative(Scene):
             rect.set_stroke(WHITE, 2)
 
         self.play(
-            rect.animate.replace(tiny_dots, 1),
+            rect.animate.replace(tiny_dots, 1).move_to(plane.n2p(self.z)),
             *fade_anims,
             FadeIn(tiny_dots),
             run_time=3,
@@ -1688,6 +1718,20 @@ class DescribeDerivativeIExample(DescribeDerivative):
 
 class DescribeDerivativeIExampleInnerFrame(DescribeDerivativeIExample):
     zoom_in_frame = True
+
+
+class LooksLikeTwoMult(Scene):
+    const = "2"
+
+    def construct(self):
+        tex = TexText(f"Looks like $z \\rightarrow {self.const}\\cdot z$")
+        tex.set_stroke(BLACK, 5, background=True)
+        self.play(FadeIn(tex, lag_ratio=0.1))
+        self.wait()
+
+
+class LooksLikeTwoiMult(LooksLikeTwoMult):
+    const = "2i"
 
 
 class Cycles(FixedPoints):
@@ -1762,7 +1806,7 @@ class Cycles(FixedPoints):
         # Example with z^2 + c
         julia_f2_eqs = VGroup(
             Tex("(z^2 + c)^2 + c = z", **kw),
-            Tex("z^4 + 2cz^2 -z + c^2 = 0", **kw),
+            Tex("z^4 + 2cz^2 -z + c^2 + c = 0", **kw),
         )
         julia_f2_eqs.arrange(DOWN, buff=0.7, aligned_edge=LEFT)
         julia_f2_eqs.next_to(f2_equation, DOWN, buff=1.0, aligned_edge=LEFT)
@@ -2039,6 +2083,67 @@ class Cycles(FixedPoints):
         return poly
 
 
+class TwoToMillionPoints(Scene):
+    c = -0.18 + 0.77j
+    plane_height = 7
+
+    def construct(self):
+        plane, julia_fractal = self.get_plane_and_fractal()
+
+        words = TexText("$\\approx 2^{1{,}000{,}000}$ solutions!")
+        words.set_stroke(BLACK, 8, background=True)
+        words.move_to(plane, UL)
+        words.shift(MED_SMALL_BUFF * DR)
+
+        points = self.get_julia_set_points(plane, 100000, 1000)
+        dots = DotCloud(points)
+        dots.set_color(YELLOW)
+        dots.set_opacity(1)
+        dots.set_radius(0.025)
+        dots.add_updater(lambda m: m)
+        dots.make_3d()
+
+        self.add(julia_fractal, plane, words)
+        self.play(ShowCreation(dots, run_time=10))
+
+    def get_plane_and_fractal(self):
+        plane = ComplexPlane((-2, 2), (-2, 2))
+        plane.set_height(self.plane_height)
+        fractal = JuliaFractal(plane)
+        fractal.set_c(self.c)
+        return plane, fractal
+
+    def get_julia_set_points(self, plane, n_points, n_steps):
+        values = np.array([
+            complex(math.cos(x), math.sin(x))
+            for x in np.linspace(0, TAU, n_points)
+        ])
+
+        c = self.c
+        for n in range(n_steps):
+            units = -1 + 2 * np.random.randint(0, 2, len(values))
+            values[:] = (units * np.sqrt(values[:])) - c
+        values += c
+
+        return np.array(list(map(plane.n2p, values)))
+
+
+class CyclesHaveSolutions(Scene):
+    def construct(self):
+        text = VGroup(
+            Tex(
+                "f^n(z) = z \\text{ has solutions}",
+                tex_to_color_map={"z": BLUE},
+            ),
+            Tex("\\sim D^n \\text{ of them...}"),
+        )
+        text.arrange(DOWN)
+
+        for part in text:
+            self.play(FadeIn(part))
+            self.wait()
+
+
 class MandelbrotFunctions(Scene):
     def construct(self):
         kw = {"tex_to_color_map": {"c": YELLOW}}
@@ -2048,6 +2153,38 @@ class MandelbrotFunctions(Scene):
         )
         group.arrange(DOWN, aligned_edge=LEFT)
         self.add(group)
+
+
+class AmbientNewtonRepetition(RepeatedNewton):
+    coefs = [-4, 0, -3, 0, 1]
+    show_fractal_background = True
+    show_coloring = False
+    n_steps = 20
+    dot_density = 10.0
+    points_scalar = 2.0
+    dots_config = {
+        "radius": 0.025,
+        "color": GREY_A,
+        "gloss": 0.4,
+        "shadow": 0.1,
+        "opacity": 0.5,
+    }
+
+
+class AmbientNewtonBoundary(AmbientNewtonRepetition):
+    def construct(self):
+        self.add_plane()
+        fractal = self.get_fractal()
+        self.remove(self.plane)
+
+        fractal.set_julia_highlight(1e-4)
+        fractal.set_colors(5 * [WHITE])
+        self.play(GrowFromPoint(
+            fractal,
+            fractal.get_corner(UL),
+            run_time=5
+        ))
+        self.wait()
 
 
 class CyclicAttractor(RepeatedNewton):
@@ -2131,7 +2268,7 @@ class CyclicExercise(Scene):
         self.wait()
 
 
-class AskHowOftenThisHappens(TeacherStudentsScene):
+class AskHowOftenThisHappensAlt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("How often does\\\\this happen?"),
@@ -2141,11 +2278,26 @@ class AskHowOftenThisHappens(TeacherStudentsScene):
             },
             student_index=0,
         )
-        self.change_student_modes(
-            "raise_left_hand", "pondering", "pondering",
-            look_at_arg=self.students[0].bubble,
-            added_anims=[self.teacher.animate.change("happy")]
+        self.play(
+            self.teacher.animate.change("raise_right_hand", 3 * UR),
+            self.get_student_changes(
+                "raise_left_hand", "pondering", "pondering",
+                look_at_arg=3 * UR,
+            )
         )
+        self.change_student_modes(
+            "raise_left_hand", "erm", "erm",
+            look_at_arg=3 * UR,
+        )
+        self.wait()
+        self.play(self.teacher.animate.change("tease", 3 * UR))
+        self.change_student_modes(
+            "confused", "pondering", "thinking",
+            look_at_arg=3 * UR,
+        )
+        self.wait(8)
+        return
+
         self.wait(2)
         self.play(
             PiCreatureSays(
@@ -2157,6 +2309,29 @@ class AskHowOftenThisHappens(TeacherStudentsScene):
             self.students[2].animate.change("thinking", self.teacher.eyes),
         )
         self.wait(2)
+
+
+class WhatDoesBlackMean(Scene):
+    def construct(self):
+        lhs = TexText("$z_n$ never gets\\\\near a root")
+        rhs = TexText("$\\Rightarrow$ ", "Black ", )
+        rhs.next_to(lhs, RIGHT)
+        words = VGroup(lhs, rhs)
+        words.next_to(ORIGIN, UR, MED_LARGE_BUFF)
+        words.to_edge(RIGHT)
+        words.set_stroke(BLACK, 5, background=True)
+        # lhs[0].set_color(BLACK)
+        # lhs[0].set_stroke(width=0)
+
+        arrow = Arrow(ORIGIN, words.get_left(), buff=0.1)
+
+        self.play(
+            ShowCreation(arrow),
+            Write(lhs),
+        )
+        self.wait()
+        self.play(FadeIn(rhs))
+        self.wait()
 
 
 class PlayWithRootsSeekingCycles(ThreeRootFractal):
@@ -2407,6 +2582,12 @@ class GenerateCubicParameterPlot(Scene):
         self.wait()
 
 
+class Z0RuleLabel(Scene):
+    def construct(self):
+        label = Tex("z_0 = (r_1 + r_2 + r_3) / 3")
+        self.add(label)
+
+
 class WhyFractals(Scene):
     def construct(self):
         words = Text("Why fractals?")
@@ -2417,6 +2598,7 @@ class WhyFractals(Scene):
 
 class SmallCircleProperty(Scene):
     def construct(self):
+        # Titles
         rule = TexText(
             "For any rational map, color points\\\\based on their limiting behavior...\\\\",
             "(which limit point, which limit cycle, etc.)",
@@ -2429,8 +2611,7 @@ class SmallCircleProperty(Scene):
         r_map = Tex("z_{n + 1} = A(z_n) / B(z_n)")
         r_map.to_corner(UR)
 
-        self.add(rule[0], r_map)
-
+        # Fractal
         colors = [
             MANDELBROT_COLORS[0], BLUE_C, BLUE_E, ROOT_COLORS_DEEP[1],
         ]
@@ -2438,8 +2619,8 @@ class SmallCircleProperty(Scene):
         plane.set_height(5)
         plane.to_corner(DR)
         fractal = PolyFractal(plane, coefs=[5, 4j, 3, 2, 1], colors=colors)
-        self.add(fractal)
 
+        # Circles
         circles = Circle(radius=0.6).get_grid(3, 1, buff=0.5)
         circles.replace(plane, 1)
         circles.set_x(-1)
@@ -2452,8 +2633,10 @@ class SmallCircleProperty(Scene):
         semis[1].set_fill(colors[1], 1)
         circles[1].add(semis)
 
-        self.add(circles)
+        multi_color_image = ImageMobject("MulticoloredNewtonsMapCircle")
+        multi_color_image.add_updater(lambda m: m.replace(circles[2]))
 
+        # Circle label
         circle_labels = VGroup(
             Text("One color"),
             Text("Some colors"),
@@ -2465,13 +2648,12 @@ class SmallCircleProperty(Scene):
             mark.next_to(circle, LEFT, MED_LARGE_BUFF)
             label.next_to(mark, LEFT, MED_LARGE_BUFF)
 
-        self.add(circle_labels)
-
         # Little circles
-        lil_circles = circles[2].replicate(2)
+        lil_circles = circles[0].replicate(2)
         lil_circles.set_height(0.2)
         lil_circles[0].move_to(plane.get_corner(UL) + MED_SMALL_BUFF * DR)
         lil_circles[1].move_to(plane).shift([0.22, -0.12, 0])
+        lil_circles[1].set_fill(opacity=0)
 
         lines = VGroup()
         for big, lil in zip(circles[::2], lil_circles):
@@ -2479,24 +2661,57 @@ class SmallCircleProperty(Scene):
             v1 = rotate_vector(vect, 75 * DEGREES)
             v2 = rotate_vector(vect, -75 * DEGREES)
             big.insert_n_curves(20)
-            lines.add(
-                Line(big.get_boundary_point(v1), lil.get_top()),
-                Line(big.get_boundary_point(v2), lil.get_bottom()),
-            )
+            lines.add(VGroup(
+                Line(lil.get_top(), big.get_boundary_point(v1)),
+                Line(lil.get_bottom(), big.get_boundary_point(v2)),
+            ))
         lines.set_stroke(WHITE, 1)
-        self.add(lines, lil_circles)
 
-        # Animations
+        # Intro anims
+        self.add(rule[0])
+        self.play(FadeIn(r_map))
+        self.wait()
+        fractal.set_opacity(0)
+        self.add(fractal)
+        for i in range(1, 5):
+            opacities = np.zeros(4)
+            opacities[:i] = 1
+            self.play(fractal.animate.set_opacities(*opacities))
+        self.wait()
         self.play(FadeIn(rule[-1], lag_ratio=0.1, run_time=2))
         self.wait()
 
+        # Show circles
+        self.add(lil_circles[0])
+        self.play(
+            TransformFromCopy(lil_circles[0], circles[0]),
+            *map(ShowCreation, lines[0]),
+            FadeIn(circle_labels[0]),
+        )
         self.play(Write(marks[0]))
+        self.wait()
+
+        self.add(multi_color_image)
+        self.add(lil_circles[1])
+        self.play(
+            TransformFromCopy(lil_circles[1], circles[2]),
+            *map(ShowCreation, lines[1]),
+            FadeIn(circle_labels[2]),
+        )
         self.play(Write(marks[2]))
+        self.wait()
+
+        self.play(
+            FadeIn(circle_labels[1]),
+            FadeIn(circles[1]),
+        )
         self.play(Write(marks[1]))
         self.wait()
 
 
 class MentionFatouSetsAndJuliaSets(Scene):
+    colors = [RED_E, BLUE_E, TEAL_E, MAROON_E]
+
     def construct(self):
         # Introduce terms
         f_group, j_group = self.get_fractals()
@@ -2521,8 +2736,12 @@ class MentionFatouSetsAndJuliaSets(Scene):
         # Define Fatou set
         fatou_condition = self.get_fatou_condition()
         fatou_condition.set_width(FRAME_WIDTH - 1)
-        fatou_condition.center().to_edge(UP)
+        fatou_condition.center().to_edge(UP, buff=1.0)
         lhs, arrow, rhs = fatou_condition
+        f_line = Line(LEFT, RIGHT)
+        f_line.match_width(fatou_condition)
+        f_line.next_to(fatou_condition, DOWN)
+        f_line.set_stroke(WHITE, 1)
 
         self.play(
             FadeOut(j_name, RIGHT),
@@ -2530,6 +2749,12 @@ class MentionFatouSetsAndJuliaSets(Scene):
             Write(lhs)
         )
         self.wait()
+        for words in lhs[-1]:
+            self.play(FlashUnder(
+                words,
+                buff=0,
+                time_width=1.5
+            ))
         self.play(Write(arrow))
         self.play(LaggedStart(
             FadeTransform(f_name.copy(), rhs[1][:8]),
@@ -2539,13 +2764,65 @@ class MentionFatouSetsAndJuliaSets(Scene):
         self.wait()
 
         # Show Julia set
+        otherwise = Text("Otherwise...")
+        otherwise.next_to(rhs, DOWN, LARGE_BUFF)
+        j_condition = TexText("$z_0 \\in$", " Julia set", " of $f$")
+        j_condition.match_height(rhs)
+        j_condition.next_to(otherwise, DOWN, LARGE_BUFF)
 
-        self.embed()
+        j_group.set_height(4.0)
+        j_group.to_edge(DOWN)
+        j_group.set_x(-1.0)
+        j_name = j_condition.get_part_by_tex("Julia set")
+        j_underline = Underline(j_name, buff=0.05)
+        j_underline.set_color(YELLOW)
+        arrow = Arrow(
+            j_name.get_bottom(),
+            j_group.get_right(),
+            path_arc=-45 * DEGREES,
+        )
+        arrow.set_stroke(YELLOW, 5)
+
+        julia_set = j_group[0]
+        julia_set.update()
+        julia_set.suspend_updating()
+        julia_copy = julia_set.copy()
+        julia_copy.clear_updaters()
+        julia_copy.set_colors(self.colors)
+        julia_copy.set_julia_highlight(0)
+
+        mover = f_group[:-4]
+        mover.generate_target()
+        mover.target.match_width(rhs)
+        mover.target.next_to(rhs, UP, MED_LARGE_BUFF)
+        mover.target.shift_onto_screen(buff=SMALL_BUFF)
+
+        self.play(
+            ShowCreation(f_line),
+            FadeOut(f_name),
+            MoveToTarget(mover),
+        )
+        self.play(
+            Write(otherwise),
+            FadeIn(j_condition, 0.5 * DOWN)
+        )
+        self.wait()
+        self.play(
+            ShowCreation(j_underline),
+            ShowCreation(arrow),
+            FadeIn(j_group[1]),
+            FadeIn(julia_copy)
+        )
+        self.play(
+            GrowFromPoint(julia_set, julia_set.get_corner(UL), run_time=2),
+            julia_copy.animate.set_opacity(0.2)
+        )
+        self.wait()
 
     def get_fractals(self, jy=1.5, fy=-2.5):
         coefs = roots_to_coefficients([-1.5, 1.5, 1j, -1j])
         n = len(coefs) - 1
-        colors = [RED_E, BLUE_E, TEAL_E, MAROON_E]
+        colors = self.colors
         f_planes = VGroup(*(self.get_plane() for x in range(n)))
         f_planes.arrange(RIGHT, buff=LARGE_BUFF)
         plusses = Tex("+").replicate(n - 1)
@@ -2565,7 +2842,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
 
         j_plane = self.get_plane()
         j_plane.set_y(jy)
-        julia = PolyFractal(j_plane, coefs=coefs, colors=5 * [WHITE])
+        julia = PolyFractal(j_plane, coefs=coefs, colors=5 * [GREY_A])
         julia.set_julia_highlight(1e-3)
         j_group = Group(julia, j_plane)
 
@@ -2576,7 +2853,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
                     m.plane.get_center()
                 ).set_scale(
                     m.plane.get_x_unit_size()
-                )
+                ).replace(m.plane)
             )
 
         fractals = Group(f_group, j_group)
@@ -2623,6 +2900,590 @@ class MentionFatouSetsAndJuliaSets(Scene):
         return result
 
 
+class ShowJuliaSetPoint(TwoToMillionPoints):
+    plane_height = 14
+    show_disk = False
+    n_steps = 60
+    disk_radius = 0.02
+
+    def construct(self):
+        # Background
+        plane, fractal = self.get_plane_and_fractal()
+
+        plane.add_coordinate_labels(font_size=24)
+        for mob in plane.family_members_with_points():
+            if isinstance(mob, Line):
+                mob.set_stroke(opacity=0.5 * mob.get_stroke_opacity())
+        self.add(fractal, plane)
+
+        # Points
+        points = list(self.get_julia_set_points(plane, n_points=1, n_steps=1000))
+
+        def func(p):
+            z = plane.p2n(p)
+            return plane.n2p(z**2 + self.c)
+
+        for n in range(100):
+            points.append(func(points[-1]))
+
+        dot = Dot(points[0])
+        dot.set_color(YELLOW)
+
+        self.add(dot)
+
+        if self.show_disk:
+            dot.scale(0.5)
+            disk = dot.copy()
+            disk.insert_n_curves(10000)
+            disk.set_height(plane.get_x_unit_size() * self.disk_radius)
+            disk.set_fill(YELLOW, 0.25)
+            disk.set_stroke(YELLOW, 2, 1)
+            self.add(disk, dot)
+
+        frame = self.camera.frame
+        path_arc = 30 * DEGREES
+        point = dot.get_center().copy()
+        for n in range(self.n_steps):
+            new_point = func(point)
+            arrow = Arrow(point, new_point, path_arc=path_arc, buff=0)
+            arrow.set_stroke(WHITE, opacity=0.9)
+            self.add(dot.copy().set_opacity(0.5))
+            anims = []
+            if self.show_disk:
+                disk.generate_target()
+                disk.target.apply_function(func)
+                disk.target.make_approximately_smooth()
+                anims.append(MoveToTarget(disk, path_arc=path_arc))
+                if disk.target.get_height() > frame.get_height():
+                    anims.extend([
+                        mob.animate.scale(2.0)
+                        for mob in [frame, fractal]
+                    ])
+            self.play(
+                ApplyMethod(dot.move_to, new_point, path_arc=path_arc),
+                ShowCreation(arrow),
+                *anims,
+            )
+            self.play(FadeOut(arrow))
+            point = new_point
+
+
+class ShowJuliaSetPointWithDisk(ShowJuliaSetPoint):
+    show_disk = True
+    n_steps = 11
+
+
+class AboutFatouDisks(Scene):
+    disk_style = {
+        "fill_color": YELLOW,
+        "fill_opacity": 0.5,
+        "stroke_color": YELLOW,
+        "stroke_width": 1,
+    }
+
+    def construct(self):
+        words = Text("(Small enough) disks around points in the Fatou set...")
+        words.to_edge(UP)
+
+        disks, arrows = self.get_disks_and_arrow()
+        arrows[-1].add(Tex("\\dots").next_to(arrows[-1], RIGHT))
+        group = VGroup(disks, arrows)
+        group.next_to(words, DOWN)
+
+        shrink_words = Text("...eventually shrink to 0")
+        shrink_words.next_to(group, DOWN, aligned_edge=RIGHT)
+
+        self.add(words)
+        self.play_disk_progression(disks, arrows)
+        self.play(
+            FadeIn(arrows[-1]),
+            Write(shrink_words, run_time=2)
+        )
+        self.wait()
+
+    def play_disk_progression(self, disks, arrows):
+        self.add(disks[0])
+        for d1, d2, arrow in zip(disks, disks[1:], arrows):
+            self.play(
+                TransformFromCopy(d1.copy().fade(1), d2),
+                FadeIn(arrow),
+            )
+
+    def get_disks(self):
+        radii = [
+            *np.linspace(0.5, 1, 3),
+            *np.linspace(1, 0, 7)**2 + 0.05,
+        ]
+        disks = VGroup(*(Circle(radius=r, **self.disk_style) for r in radii))
+
+        for disk in disks:
+            disk.add(Dot(disk.get_center(), radius=0.01))
+
+        return disks
+
+    def get_disks_and_arrow(self):
+        disks = self.get_disks()
+        arrows = Tex("\\rightarrow").replicate(len(disks))
+        group = VGroup(*it.chain(*zip(disks, arrows)))
+        group.arrange(RIGHT)
+        group.set_width(FRAME_WIDTH - 2)
+        return disks, arrows
+
+
+class AboutFatouDisksJustWords(Scene):
+    def construct(self):
+        words = TexText(
+            "(Small enough) disks around points in the Fatou set...\\\\",
+            "...eventually shrink to 0"
+        )
+        words.arrange(DOWN, aligned_edge=LEFT)
+        words.to_corner(UL)
+        words.set_stroke(BLACK, 6, background=True)
+
+        self.play(FadeIn(words[0], lag_ratio=0.1))
+        self.wait()
+        self.play(FadeIn(words[1], lag_ratio=0.1))
+        self.wait()
+
+
+class ShowFatouDiskExample(Scene):
+    disk_radius = 0.1
+    n_steps = 14
+
+    def construct(self):
+        c = -1.06 + 0.11j
+        plane = ComplexPlane((-3, 3), (-2, 2))
+        for line in plane.family_members_with_points():
+            line.set_stroke(opacity=0.5 * line.get_stroke_opacity())
+        plane.set_height(1.8 * FRAME_HEIGHT)
+        plane.add_coordinate_labels(font_size=18)
+        fractal = JuliaFractal(plane, parameter=c)
+
+        # z0 = -1.1 + 0.1j
+        z0 = -0.3 + 0.2j
+
+        dot = Dot(plane.n2p(z0), radius=0.025)
+        dot.set_fill(YELLOW)
+
+        disk = dot.copy()
+        disk.set_height(2 * self.disk_radius * plane.get_x_unit_size())
+        disk.set_fill(YELLOW, 0.5)
+        disk.set_stroke(YELLOW, 1.0)
+        disk.insert_n_curves(1000)
+
+        def func(point):
+            return plane.n2p(plane.p2n(point)**2 + c)
+
+        self.add(fractal, plane)
+        self.add(disk, dot)
+        self.play(DrawBorderThenFill(disk))
+
+        path_arc = 10 * DEGREES
+        for n in range(self.n_steps):
+            point = dot.get_center()
+            new_point = func(point)
+            arrow = Arrow(point, new_point, path_arc=path_arc, buff=0.1)
+            self.play(
+                dot.animate.move_to(new_point),
+                disk.animate.apply_function(func),
+                ShowCreation(arrow),
+                path_arc=path_arc,
+            )
+            self.play(FadeOut(arrow))
+
+        self.embed()
+
+
+class AboutJuliaDisks(AboutFatouDisks):
+    def construct(self):
+        words1 = Text("Any tiny disk around a Julia set point...")
+        words1.to_edge(UP)
+        disks, arrows = self.get_disks_and_arrow()
+        group = VGroup(disks, arrows)
+        group.next_to(words1, DOWN)
+        arrows[-1].add(disks[-1].copy().scale(5).next_to(arrows[-1], RIGHT))
+
+        words2 = Text("...eventually hits every point in the plane,")
+        words2.next_to(disks, DOWN, aligned_edge=RIGHT)
+        words2.get_part_by_text("every point in the plane").set_color(BLUE)
+
+        words3 = Text("with at most two exceptions.")
+        words3.next_to(words2, DOWN, MED_LARGE_BUFF, aligned_edge=RIGHT)
+
+        words4 = TexText(
+            "``Stuff goes everywhere'' principle of Julia sets",
+            font_size=60
+        )
+        words4.to_edge(DOWN, LARGE_BUFF)
+
+        VGroup(words1, words2, words3, words4).set_stroke(BLACK, 5, background=True)
+
+        plane = ComplexPlane((-100, 100), (-50, 50))
+        plane.scale(2)
+        plane.add_coordinate_labels()
+        plane.add(BackgroundRectangle(plane, opacity=0.25))
+        plane.set_stroke(background=True)
+        plane.add_updater(lambda m, dt: m.scale(1 - 0.15 * dt))
+
+        self.add(words1)
+        self.play_disk_progression(disks, arrows)
+        self.add(plane, *self.mobjects)
+        self.play(
+            FadeIn(arrows[-1]),
+            FadeIn(words2, run_time=2, lag_ratio=0.1),
+            VFadeIn(plane, suspend_updating=False),
+        )
+        self.wait()
+        self.play(
+            FadeIn(words3, run_time=2, lag_ratio=0.1),
+        )
+        self.wait(2)
+        self.play(Write(words4))
+        self.wait(6)
+        self.play(VFadeOut(plane, suspend_updating=False))
+
+    def get_disks(self):
+        c = -0.18 + 0.77j
+        z = -0.491 - 0.106j
+        plane = ComplexPlane()
+        disk = Circle(radius=0.1, **self.disk_style)
+        disk.move_to(plane.n2p(z))
+        disk.insert_n_curves(200)
+
+        disks = VGroup(disk)
+        for n in range(5):
+            new_disk = disks[-1].copy()
+            new_disk.apply_complex_function(lambda z: z**2 + c)
+            new_disk.make_approximately_smooth()
+            disks.add(new_disk)
+
+        for disk in disks:
+            disk.center()
+
+        disks.set_height(1)
+
+        return disks
+
+
+class MontelCorrolaryScreenGrab(ExternallyAnimatedScene):
+    pass
+
+
+class DescribeChaos(Scene):
+    def construct(self):
+        j_point = 3 * LEFT
+        j_value = -0.36554 - 0.29968j
+
+        plane = ComplexPlane((-3, 3), (-2, 2))
+        plane.scale(50)
+        plane.shift(j_point - plane.n2p(j_value))
+        fractal = JuliaFractal(plane)
+        fractal.set_c(-0.5 + 0.5j)
+        self.add(fractal, plane)
+
+        j_dot = Dot(color=YELLOW, radius=0.05)
+        j_dot.move_to(j_point)
+
+        j_label = Text("Julia set point", color=YELLOW)
+        j_label.next_to(j_dot, UP, buff=1.0).shift(LEFT)
+        j_arrow = Line(j_label.get_bottom(), j_dot.get_center(), buff=0.1)
+        j_arrow.set_stroke(width=3)
+        j_arrow.set_color(YELLOW)
+
+        surrounding_dots = VGroup(*(
+            Dot(radius=0.05).move_to(j_dot.get_center() + buff * vect)
+            for n, buff in [(6, 0.2), (12, 0.4)]
+            for vect in compass_directions(n)
+        ))
+        surrounding_dots.set_color(GREY_B)
+        # for dot in surrounding_dots:
+        #     dot.shift(0.1 * (random.random() - 0.5))
+        dots_label = Text("Immediate neighbors")
+        dots_label.next_to(surrounding_dots, DOWN)
+        dots_label.set_color(GREY_A)
+        sublabel = Text("drift far away")
+        sublabel.set_color(GREY_A)
+        sublabel.next_to(dots_label, DOWN)
+        fa = sublabel.get_part_by_text("far away")
+        strike = Line(LEFT, RIGHT)
+        strike.set_stroke(RED, 10)
+        strike.replace(fa, 0)
+        new_words = Text("everywhere!")
+        new_words.next_to(fa, DOWN)
+        new_words.set_color(RED)
+
+        all_words = VGroup(j_label, dots_label, sublabel, new_words)
+        all_words.set_stroke(BLACK, 5, background=True)
+
+        arrows = VGroup()
+        for dot in surrounding_dots[-12:]:
+            point = dot.get_center()
+            vect = 0.6 * normalize(point - j_dot.get_center())
+            arrows.add(Arrow(point, point + vect, buff=0.1))
+        arrows.set_stroke(RED)
+
+        self.add(j_dot)
+        self.add(surrounding_dots)
+        self.add(j_label, j_arrow)
+        self.add(dots_label)
+
+        frame = self.camera.frame
+        frame.save_state()
+        frame.replace(plane)
+        self.play(Restore(frame, run_time=5))
+        self.wait()
+        self.play(FadeIn(sublabel, lag_ratio=0.1))
+        self.wait()
+        self.play(
+            ShowCreation(strike),
+            FadeIn(new_words, shift=0.25 * DOWN)
+        )
+
+        self.add(arrows, all_words, strike)
+        self.play(LaggedStartMap(ShowCreation, arrows))
+        self.wait()
+
+
+class SimulationOfTinyDisk(RepeatedNewton):
+    coefs = [1, 1, 0, 1]
+    plane_config = {
+        "x_range": (-4, 4),
+        "y_range": (-2, 2),
+        "height": 12,
+        "width": 24,
+    }
+    colors = ROOT_COLORS_DEEP[::2]
+    n_steps = 20
+
+    def construct(self):
+        frame = self.camera.frame
+        frame.save_state()
+
+        def get_height_ratio():
+            return frame.get_height() / FRAME_HEIGHT
+
+        self.add_plane()
+        self.add_true_roots()
+        self.add_labels()
+        self.add_fractal_background()
+
+        fractal = self.fractal
+        julia_set = self.fractal_boundary
+        fractal.set_n_steps(40)
+        julia_set.set_n_steps(40)
+        fractal.set_opacity(0.3)
+        julia_set.set_opacity(1)
+        julia_set.add_updater(lambda m: m.set_julia_highlight(
+            get_height_ratio() * 1e-3
+        ))
+        julia_set.set_opacity(0.5)
+
+        # Generate dots
+        point = [1.10049904, 1.38962415, 0.]
+        target_height = 0.0006
+        cluster_radius = target_height / 50
+
+        dots = self.dots = DotCloud()
+        n_radii = 200
+        dots.set_points([
+            [cluster_radius * r * math.cos(theta), cluster_radius * r * math.sin(theta), 0]
+            for r in np.linspace(1, 0, n_radii)
+            for theta in np.linspace(0, TAU, int(r * 20)) + random.random() * TAU
+        ])
+        dots.set_height(0.3)
+        dots.set_gloss(0.5)
+        dots.set_shadow(0.5)
+        dots.set_color(GREY_A)
+        dots.move_to(point)
+        dots.add_updater(lambda m: m.set_radius(0.05 * get_height_ratio()))
+
+        self.play(
+            frame.animate.set_height(target_height).move_to(point),
+            run_time=6,
+            rate_func=lambda a: smooth(a**0.5),
+        )
+
+        self.play(ShowCreation(dots))
+        self.wait()
+        self.play(Restore(frame, run_time=6, rate_func=lambda a: smooth(a**3)))
+        fractal.set_n_steps(12)
+        julia_set.set_n_steps(12)
+
+        self.run_iterations()
+
+
+class SimulationAnnotations(Scene):
+    def construct(self):
+        dots = self.dots = DotCloud()
+        n_radii = 200
+        cluster_radius = 0.5
+        dots.set_points([
+            [cluster_radius * r * math.cos(theta), cluster_radius * r * math.sin(theta), 0]
+            for r in np.linspace(1, 0, n_radii)
+            for theta in np.linspace(0, TAU, int(r * 20)) + random.random() * TAU
+        ])
+
+        n_points_label = TexText("$\\sim 2{,}000$ points")
+        n_points_label.next_to(dots, UP)
+
+        brace = Brace(
+            # Line(dots.get_bottom(), dots.get_corner(DR)),
+            Line(dots.get_center(), dots.get_right()),
+            DOWN, buff=0
+        )
+        brace_tex = Tex("\\text{Radius } \\approx 1 / 1{,}000{,}000")
+        brace_tex.next_to(dots, DOWN)
+
+        group = VGroup(n_points_label, brace, brace_tex)
+        group.set_stroke(BLACK, 5, background=True)
+
+        self.play(Write(n_points_label))
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(brace_tex, DOWN)
+        )
+        self.wait()
+        self.play(FadeOut(group))
+
+
+class LattesExample(TeacherStudentsScene):
+    def construct(self):
+        example = VGroup(
+            TexText("Lattè's example: "),
+            Tex(r"L(z)=\frac{\left(z^{2}+1\right)^{2}}{4 z\left(z^{2}-1\right)}"),
+        )
+        example.arrange(RIGHT)
+        example[0].shift(SMALL_BUFF * DOWN)
+        example.move_to(self.hold_up_spot, DOWN)
+        example.set_x(0)
+
+        j_fact = TexText("Julia set of $L(z)$ is all of $\\mathds{C}$")
+        j_fact.move_to(example)
+        subwords = TexText("(and the point at $\\infty$)", font_size=36)
+        subwords.set_fill(GREY_A)
+        subwords.next_to(j_fact, DOWN)
+
+        self.play(
+            self.teacher.animate.change("raise_right_hand", 3 * UR),
+            self.get_student_changes(
+                "pondering", "happy", "tease",
+                look_at_arg=3 * UR
+            )
+        )
+        self.wait(3)
+        self.play(
+            self.teacher.animate.change("sassy", example),
+            Write(example)
+        )
+        self.change_student_modes(
+            "pondering", "pondering", "pondering",
+            look_at_arg=example,
+        )
+
+        self.play(
+            example.animate.to_edge(UP),
+            FadeIn(j_fact),
+            self.get_student_changes(
+                "erm", "erm", "erm",
+                look_at_arg=j_fact,
+            ),
+            self.teacher.animate.change("raise_right_hand", j_fact)
+        )
+        self.play(FadeIn(subwords))
+        self.wait(3)
+
+
+class JFunctionMention(Scene):
+    def construct(self):
+        image = ImageMobject("j_invariant")
+        image.set_height(5)
+        name = TexText("Klein's $j$ function")
+        name.next_to(image, UP)
+        words = Text("A whole story...")
+        words.next_to(image, RIGHT)
+
+        self.play(
+            FadeIn(image),
+            Write(name)
+        )
+        self.wait()
+        self.play(Write(words))
+        self.wait()
+
+
+class LinksBelow(TeacherStudentsScene):
+    def construct(self):
+        self.pi_creatures.flip().flip()
+        self.teacher_says("Links below")
+        self.change_student_modes(
+            "pondering", "thinking", "pondering",
+            look_at_arg=FRAME_HEIGHT * DOWN,
+        )
+        self.wait(2)
+        self.play(self.teacher.change("happy"))
+        self.wait(4)
+
+
+class MoreAmbientChaos(TwoToMillionPoints):
+    def construct(self):
+        plane = ComplexPlane((-2, 2), (-2, 2))
+        plane.set_height(7)
+        self.add(plane)
+
+        point = self.get_julia_set_points(plane, n_points=1, n_steps=1000)[0]
+        epsilon = 1e-6
+        dots = DotCloud([
+            point + epsilon * rotate_vector(RIGHT, random.random() * TAU)
+            for x in range(10)
+        ])
+        dots.set_gloss(0.5)
+        dots.set_shadow(0.5)
+        dots.set_radius(0.075)
+        dots.set_color(YELLOW)
+
+        def func(p):
+            z = plane.p2n(p)
+            return plane.n2p(z**2 + self.c)
+
+        n_steps = 100
+
+        for n in range(n_steps):
+            points = dots.get_points()
+
+            values = list(map(plane.p2n, points))
+            new_values = np.array(list(map(lambda z: z**2 + self.c, values)))
+
+            new_points = list(map(plane.n2p, new_values))
+
+            nn_points = []
+            for p in new_points:
+                if p[0] < plane.get_left()[0]:
+                    p[0] += 2 * (plane.get_left()[0] - p[0])
+                if p[0] > plane.get_right()[0]:
+                    p[0] -= 2 * (p[0] - plane.get_right()[0])
+                if p[1] < plane.get_bottom()[1]:
+                    p[1] += 2 * (plane.get_bottom()[1] - p[1])
+                if p[1] > plane.get_top()[1]:
+                    p[1] -= 2 * (p[1] - plane.get_top()[1])
+                nn_points.append(p)
+            new_points = nn_points
+
+            lines = VGroup(*(
+                Line(p1, p2)
+                for p1, p2 in zip(points, new_points)
+            ))
+            lines.set_stroke(WHITE, 1)
+
+            self.play(
+                dots.animate.set_points(new_points),
+                ShowCreation(lines, lag_ratio=0),
+            )
+            self.add(lines[0].copy().set_opacity(0.25))
+            for line in lines:
+                line.rotate(PI)
+            self.play(FadeOut(lines))
+
+
 class HighlightedJulia(IntroPolyFractal):
     coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
 
@@ -2643,11 +3504,6 @@ class HighlightedJulia(IntroPolyFractal):
         # )
 
         # self.embed()
-
-
-class MontelCorrolaryScreenGrab(Scene):
-    def construct(self):
-        pass
 
 
 class MetaFractal(IntroPolyFractal):
@@ -2710,3 +3566,11 @@ class MetaFractal(IntroPolyFractal):
             ),
             run_time=10
         )
+
+
+class Part1EndScroll(PatreonEndScreen):
+    CONFIG = {
+        # "title_text": "",
+        "scroll_time": 30,
+        # "show_pis": False,
+    }
