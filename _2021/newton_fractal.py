@@ -4099,11 +4099,11 @@ class VariousCirclesOnTheFractal(SimpleFractalScene):
         circle.move_to(2 * UR)
 
         words = VGroup(
-            Text("Contains"),
+            Text("#Colors inside: "),
             Integer(3),
-            Text("Colors"),
         )
-        words.arrange(RIGHT, aligned_edge=DOWN)
+        words.arrange(RIGHT)
+        words[1].align_to(words[0][-2], DOWN)
         height_ratio = words.get_height() / FRAME_HEIGHT
 
         def get_interior_count(circle):
@@ -4120,7 +4120,8 @@ class VariousCirclesOnTheFractal(SimpleFractalScene):
             words.set_height(height_ratio * frame.get_height())
             ratio = get_frame_ratio()
             words.next_to(circle, UP, buff=SMALL_BUFF * ratio)
-            words[1].set_value(get_interior_count(circle))
+            count = get_interior_count(circle)
+            words[1].set_value(count)
             words.set_stroke(BLACK, 5 * ratio, background=True)
             return words
 
@@ -4132,14 +4133,14 @@ class VariousCirclesOnTheFractal(SimpleFractalScene):
         self.play(FadeIn(words))
         self.wait()
 
-        self.play(circle.animate.set_height(0.5))
+        self.play(circle.animate.set_height(0.25))
         self.wait()
         point = plane.c2p(0.5, 0.5)
         self.play(circle.animate.move_to(point))
         self.play(frame.animate.set_height(2).move_to(point))
         self.wait()
         point = plane.c2p(0.25, 0.4)
-        self.play(circle.animate.move_to(point).set_height(0.25))
+        self.play(circle.animate.move_to(point).set_height(0.1))
         self.wait()
         for xy in (0.6, 0.4), (0.2, 0.6):
             self.play(
@@ -4821,7 +4822,6 @@ class AmbientRepetition(Scene):
         self.add(dot, z_label)
 
         def func(z):
-            # return z**2 + complex(-0.6436875, 0.441)
             return z**2 + complex(-0.6436875, -0.441)
 
         def get_new_point():

@@ -400,7 +400,8 @@ class HolomorphicPreview(Scene):
 
 class AmbientRepetition(Scene):
     n_steps = 30
-    c = -0.6436875 + -0.441j
+    # c = -0.6436875 + -0.441j
+    c = -0.5436875 + -0.641j
     show_labels = True
 
     def construct(self):
@@ -462,7 +463,7 @@ class AmbientRepetition(Scene):
                 FadeIn(z_label),
             )
 
-    def func(self, c):
+    def func(self, z):
         return 2 * ((z / 2)**2 + self.c)
 
 
@@ -504,7 +505,7 @@ class RationalFunctions(Scene):
             "f(z)",
             "=", "z - {P(z) \\over P'(z)}",
             "=", "z - {z^3 - 1 \\over 3z^2}",
-            "=", "{+2z^3 + 1 \\over 3z^2}"
+            "=", "{2z^3 + 1 \\over 3z^2}"
         )
         iter_brace = Brace(equation[2], UP)
         iter_text = iter_brace.get_text("What's being iterated")
@@ -531,7 +532,7 @@ class RationalFunctions(Scene):
                 FadeTransform(equation[4][i].copy(), equation[6][j])
                 for i, j in zip(
                     [1, 0, *range(2, 10)],
-                    [0, 1, *range(2, 10)],
+                    [0, 0, *range(1, 9)],
                 )
             ), lag_ratio=0.02)
         )
@@ -597,13 +598,16 @@ class RationalFunctions(Scene):
 
         for function in functions:
             function.replace(rhs, dim_to_match=1)
-            function.set_max_width(rhs.get_width())
+            function.move_to(rhs, LEFT)
+            function.set_max_width(rhs.get_width() + 2)
 
         for n, function in enumerate(functions):
             self.play(
                 FadeOut(rhs, lag_ratio=0.1),
                 FadeIn(function, lag_ratio=0.1),
+                box.animate.set_opacity(0),
             )
+            self.remove(box)
             self.wait()
             if n == 0:
                 self.play(
@@ -1456,7 +1460,8 @@ class FixedPoints(Scene):
         )
         part3 = TexText(
             "Exercise 1c$^{**}$: Show that the set of values\\\\",
-            "c satisfying this form a cardioid."
+            "$c$ satisfying this form a cardioid.",
+            tex_to_color_map={"$c$": YELLOW}
         )
         parts = VGroup(part1, part2, part3)
         for part in part2, part3:
@@ -1490,6 +1495,7 @@ class FixedPoints(Scene):
         self.wait()
         self.play(Write(part2))
         self.wait()
+        print(self.num_plays)
         self.play(Write(part3))
         self.play(ShowCreation(cardioid, run_time=4, rate_func=linear))
         self.play(
@@ -1638,9 +1644,9 @@ class DescribeDerivative(Scene):
             for y in np.arange(-10, 10)
         ])
         tiny_dots.set_radius(dot_radius * 15 * epsilon)
-        tiny_dots.set_color(YELLOW)
-        tiny_dots.set_gloss(0.2)
         tiny_dots.set_opacity(0.75)
+        tiny_dots.set_color_by_gradient(YELLOW, BLUE)
+        tiny_dots.set_gloss(0.2)
 
         self.add(dots, corner_group)
         self.play(ShowCreation(dots), run_time=2)
@@ -1692,14 +1698,24 @@ class DescribeDerivative(Scene):
         )
         self.wait()
 
-        def func(p):
-            z = plane.p2n(p)
-            return plane.n2p(z**2)
+        # def func(p):
+        #     z = plane.p2n(p)
+        #     return plane.n2p(z**2)
+
+        def homotopy(x, y, z, t):
+            z = plane.p2n([x, y, z])
+            return plane.n2p(z**(1 + t))
+
+        rc = rect.get_center()
+        path = ParametricCurve(lambda t: homotopy(*rc, t))
 
         self.play(
-            dots.animate.apply_function(func),
-            tiny_dots.animate.apply_function(func),
-            rect.animate.move_to(func(rect.get_center())),
+            Homotopy(homotopy, dots),
+            Homotopy(homotopy, tiny_dots),
+            MoveAlongPath(rect, path),
+            # dots.animate.apply_function(func),
+            # tiny_dots.animate.apply_function(func),
+            # rect.animate.move_to(func(rect.get_center())),
             run_time=5,
         )
         self.wait()
@@ -2241,7 +2257,7 @@ class CyclicAttractorSmallRadius(CyclicAttractor):
 class CyclicExercise(Scene):
     def construct(self):
         words = TexText(
-            "Exercise 2: If $f(z) = z - {z^3 - 2z + z \\over 3z^2 - 2}$,\\\\",
+            "Exercise 2: If $f(z) = z - {z^3 - 2z + 2 \\over 3z^2 - 2}$,\\\\",
             "and $g(z) = f(f(z))$, confirm that $|g'(0)| < 1$."
         )
         words[1].shift(SMALL_BUFF * DOWN)
