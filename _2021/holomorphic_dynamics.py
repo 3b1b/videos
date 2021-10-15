@@ -3436,7 +3436,7 @@ class LinksBelow(TeacherStudentsScene):
             look_at_arg=FRAME_HEIGHT * DOWN,
         )
         self.wait(2)
-        self.play(self.teacher.change("happy"))
+        self.play(self.teacher.animate.change("happy"))
         self.wait(4)
 
 
@@ -3568,6 +3568,11 @@ class MetaFractal(IntroPolyFractal):
         )
         self.wait()
         self.play(
+            fractal.animate.set_color_mult(1.03),
+            run_time=3
+        )
+        self.wait()
+        self.play(
             UpdateFromAlphaFunc(
                 frame,
                 lambda m, a: m.set_height(
@@ -3582,6 +3587,7 @@ class MetaFractal(IntroPolyFractal):
             ),
             run_time=10
         )
+        self.wait()
 
 
 class Part1EndScroll(PatreonEndScreen):

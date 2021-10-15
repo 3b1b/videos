@@ -158,7 +158,7 @@ class PolyFractal(Mobject):
         return self
 
     def set_color_mult(self, color_mult):
-        self.uniforms["color_mult"] = color_mult
+        self.uniforms["color_mult"] = float(color_mult)
         return self
 
     def set_opacities(self, *opacities):
@@ -196,7 +196,7 @@ class MetaPolyFractal(PolyFractal):
 
     def set_z0(self, z0):
         z0 = complex(z0)
-        self.uniforms["z0"] = (z0.real, z0.imag)
+        self.uniforms["z0"] = np.array([z0.real, z0.imag])
 
 
 # Scenes
