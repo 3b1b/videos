@@ -69,9 +69,9 @@ def get_figure(image_name, person_name, year_text, height=3, label_direction=DOW
     return Group(rect, image, name, year_label)
 
 
-class PolyFractal(Mobject):
+class NewtonFractal(Mobject):
     CONFIG = {
-        "shader_folder": "poly_fractal",
+        "shader_folder": "newton_fractal",
         "shader_dtype": [
             ('point', np.float32, (3,)),
         ],
@@ -82,9 +82,10 @@ class PolyFractal(Mobject):
         "n_steps": 30,
         "julia_highlight": 0.0,
         "max_degree": 5,
-        "color_mult": 1.0,
+        "saturation_factor": 0.0,
         "opacity": 1.0,
         "black_for_cycles": False,
+        "is_parameter_space": False,
     }
 
     def __init__(self, plane, **kwargs):
@@ -108,9 +109,10 @@ class PolyFractal(Mobject):
         self.set_scale(self.scale_factor)
         self.set_offset(self.offset)
         self.set_n_steps(self.n_steps)
-        self.set_color_mult(self.color_mult)
+        self.set_saturation_factor(self.saturation_factor)
         self.set_opacity(self.opacity)
         self.uniforms["black_for_cycles"] = float(self.black_for_cycles)
+        self.uniforms["is_parameter_space"] = float(self.is_parameter_space)
 
     def set_colors(self, colors):
         self.uniforms.update({
@@ -157,8 +159,8 @@ class PolyFractal(Mobject):
         self.uniforms["n_steps"] = float(n_steps)
         return self
 
-    def set_color_mult(self, color_mult):
-        self.uniforms["color_mult"] = float(color_mult)
+    def set_saturation_factor(self, saturation_factor):
+        self.uniforms["saturation_factor"] = float(saturation_factor)
         return self
 
     def set_opacities(self, *opacities):
@@ -171,32 +173,24 @@ class PolyFractal(Mobject):
         return self
 
 
-class MetaPolyFractal(PolyFractal):
+class MetaNewtonFractal(NewtonFractal):
     CONFIG = {
-        "shader_folder": "meta_poly_fractal",
-        "fixed_roots": [0, 1],
-        "max_degree": 3,
-        "z0": 0,
+        "coefs": [-1.0, 0.0, 0.0, 1.0],
+        "colors": [*ROOT_COLORS_DEEP[::2], BLACK, BLACK],
+        "fixed_roots": [-1, 1],
+        "n_roots": 3,
         "black_for_cycles": True,
+        "is_parameter_space": True,
+        "n_steps": 300,
     }
 
     def init_uniforms(self):
-        Mobject.init_uniforms(self)
-        self.set_colors(self.colors)
+        super().init_uniforms()
         self.set_fixed_roots(self.fixed_roots)
-        self.set_z0(self.z0)
-        self.set_scale(self.scale_factor)
-        self.set_offset(self.offset)
-        self.set_n_steps(self.n_steps)
-        self.set_color_mult(self.color_mult)
 
     def set_fixed_roots(self, roots):
         super().set_roots(roots, reset_coefs=False)
         self.uniforms["n_roots"] = 3.0
-
-    def set_z0(self, z0):
-        z0 = complex(z0)
-        self.uniforms["z0"] = np.array([z0.real, z0.imag])
 
 
 # Scenes
@@ -2979,7 +2973,7 @@ class ComplexNewtonsMethodManySeedsHigherRes(ComplexNewtonsMethodManySeeds):
     step = 0.05
 
 
-class IntroPolyFractal(Scene):
+class IntroNewtonFractal(Scene):
     coefs = [1.0, -1.0, 1.0, 0.0, 0.0, 1.0]
     plane_config = {
         "x_range": (-4, 4),
@@ -3068,7 +3062,7 @@ class IntroPolyFractal(Scene):
         return plane
 
     def get_fractal(self, plane, colors=ROOT_COLORS_DEEP, n_steps=30):
-        return PolyFractal(
+        return NewtonFractal(
             plane,
             colors=colors,
             coefs=self.coefs,
@@ -3120,7 +3114,7 @@ class ChaosOnBoundary(TeacherStudentsScene):
         self.wait(3)
 
 
-class DeepZoomFractal(IntroPolyFractal):
+class DeepZoomFractal(IntroNewtonFractal):
     coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
 
     plane_config = {
@@ -3174,7 +3168,7 @@ class DeepZoomFractal(IntroPolyFractal):
         self.wait()
 
 
-class IncreasingStepsPolyFractal(IntroPolyFractal):
+class IncreasingStepsNewtonFractal(IntroNewtonFractal):
     play_mode = False
 
     def construct(self):
@@ -3446,7 +3440,7 @@ class RepeatedNewton(Scene):
 
         rgbas = list(map(get_rgba, self.dots.get_points()))
 
-        fractal = PolyFractal(
+        fractal = NewtonFractal(
             self.plane,
             coefs=self.coefs,
             colors=self.colors,
@@ -3504,7 +3498,7 @@ class RepeatedNewton(Scene):
     def get_fractal(self, **kwargs):
         if "colors" not in kwargs:
             kwargs["colors"] = self.colors
-        self.fractal = PolyFractal(self.plane, coefs=self.coefs, **kwargs)
+        self.fractal = NewtonFractal(self.plane, coefs=self.coefs, **kwargs)
         return self.fractal
 
     def add_fractal_background(self):
@@ -3609,7 +3603,7 @@ class RepeatedNewtonQuadratic(RepeatedNewton):
     n_steps = 10
 
 
-class SimpleFractalScene(IntroPolyFractal):
+class SimpleFractalScene(IntroNewtonFractal):
     colors = ROOT_COLORS_DEEP
     display_polynomial_label = False
     display_root_values = False
@@ -3828,7 +3822,7 @@ class PeculiarBoundaryProperty(Scene):
 
         # Fractals
         fractals = Group(*(
-            PolyFractal(plane, coefs=self.coefs, colors=self.colors)
+            NewtonFractal(plane, coefs=self.coefs, colors=self.colors)
             for plane in grid
         ))
         alpha = 0.2
@@ -3847,7 +3841,7 @@ class PeculiarBoundaryProperty(Scene):
         big_plane = grid[0].deepcopy()
         big_plane.set_height(6.5)
         big_plane.center().to_edge(DOWN)
-        big_fractal = PolyFractal(big_plane, coefs=self.coefs, colors=self.colors)
+        big_fractal = NewtonFractal(big_plane, coefs=self.coefs, colors=self.colors)
         big_julia = big_fractal.copy()
         big_julia.set_julia_highlight(1e-3)
         big_julia.set_colors(3 * [WHITE])
@@ -5008,7 +5002,7 @@ class CyclicAttractor(RepeatedNewton):
         ]
 
 
-class HighlightedJulia(IntroPolyFractal):
+class HighlightedJulia(IntroNewtonFractal):
     coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
 
     def construct(self):
@@ -5035,7 +5029,7 @@ class MontelCorrolaryScreenGrab(Scene):
         pass
 
 
-class MetaFractal(IntroPolyFractal):
+class MetaFractal(IntroNewtonFractal):
     fixed_roots = [-1, 1]
     z0 = complex(0.5, 0)
     n_steps = 200
@@ -5049,12 +5043,11 @@ class MetaFractal(IntroPolyFractal):
             for root, color in zip(self.fixed_roots, colors)
         ))
         root_dots.set_stroke(BLACK, 3)
-        fractal = MetaPolyFractal(
+        fractal = MetaNewtonFractal(
             plane,
             fixed_roots=self.fixed_roots,
             colors=colors,
             n_steps=self.n_steps,
-            # z0=self.z0,
         )
         fractal.add_updater(lambda f: f.set_fixed_roots([
             plane.p2n(dot.get_center())

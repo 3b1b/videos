@@ -63,7 +63,7 @@ def get_iteration_label(font_size=36):
     return result
 
 
-class MandelbrotFractal(PolyFractal):
+class MandelbrotFractal(NewtonFractal):
     CONFIG = {
         "shader_folder": "mandelbrot_fractal",
         "shader_dtype": [
@@ -2234,7 +2234,7 @@ class CyclicAttractorSmallRadius(CyclicAttractor):
     def construct(self):
         super().construct()
 
-        fractal = PolyFractal(
+        fractal = NewtonFractal(
             self.plane,
             coefs=self.coefs,
             colors=self.colors,
@@ -2473,7 +2473,7 @@ class GenerateCubicParameterPlot(Scene):
         ))
 
         # Fractals
-        left_fractal = PolyFractal(
+        left_fractal = NewtonFractal(
             planes[0], coefs=[-1, 0, 0, 1],
             colors=colors,
             black_for_cycles=True,
@@ -2483,7 +2483,7 @@ class GenerateCubicParameterPlot(Scene):
             for rd in root_dots
         ]))
 
-        right_fractal = MetaPolyFractal(
+        right_fractal = MetaNewtonFractal(
             planes[1],
             colors=colors,
             fixed_roots=[-1, 1],
@@ -2634,7 +2634,7 @@ class SmallCircleProperty(Scene):
         plane = ComplexPlane((-2, 2), (-2, 2))
         plane.set_height(5)
         plane.to_corner(DR)
-        fractal = PolyFractal(plane, coefs=[5, 4j, 3, 2, 1], colors=colors)
+        fractal = NewtonFractal(plane, coefs=[5, 4j, 3, 2, 1], colors=colors)
 
         # Circles
         circles = Circle(radius=0.6).get_grid(3, 1, buff=0.5)
@@ -2846,7 +2846,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
         f_group.add(f_planes[-1])
         f_group.arrange(RIGHT)
         fatou = Group(*(
-            PolyFractal(f_plane, coefs=coefs, colors=colors)
+            NewtonFractal(f_plane, coefs=coefs, colors=colors)
             for f_plane in f_planes
         ))
         for i, fractal in enumerate(fatou):
@@ -2858,7 +2858,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
 
         j_plane = self.get_plane()
         j_plane.set_y(jy)
-        julia = PolyFractal(j_plane, coefs=coefs, colors=5 * [GREY_A])
+        julia = NewtonFractal(j_plane, coefs=coefs, colors=5 * [GREY_A])
         julia.set_julia_highlight(1e-3)
         j_group = Group(julia, j_plane)
 
@@ -3500,7 +3500,7 @@ class MoreAmbientChaos(TwoToMillionPoints):
             self.play(FadeOut(lines))
 
 
-class HighlightedJulia(IntroPolyFractal):
+class HighlightedJulia(IntroNewtonFractal):
     coefs = [-1.0, 0.0, 0.0, 1.0, 0.0, 1.0]
 
     def construct(self):
@@ -3522,7 +3522,7 @@ class HighlightedJulia(IntroPolyFractal):
         # self.embed()
 
 
-class MetaFractal(IntroPolyFractal):
+class MetaFractal(IntroNewtonFractal):
     fixed_roots = [-1, 1]
     z0 = complex(0.5, 0)
     n_steps = 200
@@ -3536,7 +3536,7 @@ class MetaFractal(IntroPolyFractal):
             for root, color in zip(self.fixed_roots, colors)
         ))
         root_dots.set_stroke(BLACK, 3)
-        fractal = MetaPolyFractal(
+        fractal = MetaNewtonFractal(
             plane,
             fixed_roots=self.fixed_roots,
             colors=colors,
@@ -3563,15 +3563,13 @@ class MetaFractal(IntroPolyFractal):
 
         self.play(
             MoveToTarget(frame),
-            run_time=10,
+            run_time=8,
             rate_func=bezier([0, 0, 1, 1])
         )
-        self.wait()
         self.play(
-            fractal.animate.set_color_mult(1.03),
+            fractal.animate.set_saturation_factor(4),
             run_time=3
         )
-        self.wait()
         self.play(
             UpdateFromAlphaFunc(
                 frame,
