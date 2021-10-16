@@ -378,10 +378,11 @@ class FourierOfTexPaths(FourierOfPiSymbol):
         "n_vectors": 100,
         "name_color": WHITE,
         "animated_name": "Abc",
+        "conjoined": False,
         "time_per_symbol": 5,
         "slow_factor": 1 / 5,
         "parametric_function_step_size": 0.001,
-        "max_circle_stroke_width": 0.25,
+        "max_circle_stroke_width": 1.0,
         "vector_config": {
             "buff": 0,
             "fill_opacity": 0.75,
@@ -393,6 +394,13 @@ class FourierOfTexPaths(FourierOfPiSymbol):
 
     def construct(self):
         name = TexText(self.animated_name)
+
+        if self.conjoined:
+            new_name = VMobject()
+            for path in name.family_members_with_points():
+                new_name.append_points(path.get_points())
+            name = new_name
+
         max_width = FRAME_WIDTH - 2
         max_height = FRAME_HEIGHT - 2
         name.set_width(max_width)
@@ -405,7 +413,8 @@ class FourierOfTexPaths(FourierOfPiSymbol):
         vectors = None
         circles = None
         for path in name.family_members_with_points():
-            for subpath in path.get_subpaths():
+            subpaths = [path.get_points()] if self.conjoined else path.get_subpaths()
+            for subpath in subpaths:
                 sp_mob = VMobject()
                 sp_mob.set_points(subpath)
                 sp_mob.insert_n_curves(10)
@@ -435,7 +444,7 @@ class FourierOfTexPaths(FourierOfPiSymbol):
                 self.play(
                     Transform(vectors, static_vectors, remover=True),
                     Transform(circles, static_circles, remover=True),
-                    frame.set_height, 1.25 * name.get_height(),
+                    frame.set_max_width, 1.25 * name.get_width(),
                     frame.move_to, path,
                 )
 
