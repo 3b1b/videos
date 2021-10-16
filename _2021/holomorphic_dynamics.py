@@ -3557,6 +3557,7 @@ class MetaFractal(IntroNewtonFractal):
         height2 = 0.035
 
         frame = self.camera.frame
+        frame.save_state()
         frame.generate_target()
         frame.target.move_to(point1)
         frame.target.set_height(height1)
@@ -3584,6 +3585,12 @@ class MetaFractal(IntroNewtonFractal):
                 )
             ),
             run_time=10
+        )
+        self.wait(2)
+        self.play(
+            Restore(frame),
+            fractal.animate.set_saturation_factor(0),
+            run_time=7
         )
         self.wait()
 
