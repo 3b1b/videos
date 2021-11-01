@@ -2,6 +2,7 @@ from manimlib.constants import *
 from manimlib.mobject.coordinate_systems import NumberPlane
 from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
+from manimlib.mobject.frame import FullScreenFadeRectangle
 from manimlib.scene.scene import Scene
 
 from custom.characters.pi_creature import Mortimer
@@ -23,20 +24,18 @@ class Banner(Scene):
         "pre_date_text": "Next video on ",
     }
 
-    def __init__(self, **kwargs):
-        # Force these dimensions
-        self.camera_config = {
-            "pixel_height": 1440,
-            "pixel_width": 2560,
-        }
-        Scene.__init__(self, **kwargs)
-
     def construct(self):
         # Background
-        plane = NumberPlane(x_range=(0, 14, 0.5), y_range=(0, 8, 0.5))
-        plane.axes.set_stroke(BLUE, 1)
-        plane.fade(0.5)
-        self.add(plane)
+        plane = NumberPlane(
+            (-10, 10), (-14, 14),
+            axis_config={"stroke_color": BLUE_A}
+        )
+        for line in plane.family_members_with_points():
+            line.set_stroke(width=line.get_stroke_width() / 2)
+        self.add(
+            plane,
+            FullScreenFadeRectangle(fill_opacity=0.25),
+        )
 
         # Pis
         pis = self.get_pis()
@@ -49,13 +48,10 @@ class Banner(Scene):
         plane.move_to(pis.get_bottom() + SMALL_BUFF * DOWN)
 
         # Message
-        if self.use_date:
-            message = self.get_date_message()
-        else:
-            message = self.get_probabalistic_message()
+        message = self.get_message()
         message.set_height(self.message_height)
         message.next_to(pis, DOWN)
-        message.set_stroke(BLACK, 5, background=True)
+        message.set_stroke(BLACK, 10, background=True)
         self.add(message)
 
         # Suppoerter note
@@ -77,9 +73,15 @@ class Banner(Scene):
         return VGroup(
             Randolph(color=BLUE_E, mode="pondering"),
             Randolph(color=BLUE_D, mode="hooray"),
-            Randolph(color=BLUE_C, mode="sassy"),
+            Randolph(color=BLUE_C, mode="tease"),
             Mortimer(color=GREY_BROWN, mode="thinking")
         )
+
+    def get_message(self):
+        if self.use_date:
+            return self.get_date_message()
+        else:
+            return self.get_probabalistic_message()
 
     def get_probabalistic_message(self):
         return TexText(
