@@ -591,11 +591,13 @@ class CubicFormula(RootCoefScene):
         )
 
     def add_crt_dots(self):
-        crt_dots = Dot(**self.sqrt_dot_config).replicate(2)
+        crt_dots = Dot(**self.sqrt_dot_config).replicate(3)
 
         # TODO, refactor to prevent code duplication here
         def update_crt_dots(dots):
-            q, p, zero, one = self.get_coefs()
+            coefs = self.get_coefs()
+            roots = coefficients_to_roots(coefs)
+            q, p, zero, one = coefs
             disc = (q**2 / 4) + (p**3 / 27)
             deltas = get_nth_roots(disc, 2)
             # TODO add all the cube roots
@@ -612,11 +614,17 @@ class CubicFormula(RootCoefScene):
         self.add(crt_dots)
 
 
-
 # Scenes
 
+class Cubic(RootCoefScene):
+    coefs = [1, -1, 0, 1]
+
+    def construct(self):
+        self.embed()
+
+
 class AmbientRootSwapping(RootCoefScene):
-    n_swaps = 20
+    n_swaps = 0
 
     def construct(self):
         for x in range(self.n_swaps):
@@ -624,6 +632,8 @@ class AmbientRootSwapping(RootCoefScene):
             indices = random.choice(list(it.combinations(range(5), k)))
             self.swap_roots(*indices)
             self.wait()
+
+        self.embed()
 
 
 class CubicFormulaTest(CubicFormula):

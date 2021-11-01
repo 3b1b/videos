@@ -3607,7 +3607,7 @@ class SimpleFractalScene(IntroNewtonFractal):
     colors = ROOT_COLORS_DEEP
     display_polynomial_label = False
     display_root_values = False
-    n_steps = 12
+    n_steps = 25
 
     def construct(self):
         self.init_fractal(root_colors=self.colors)
@@ -5088,3 +5088,37 @@ class MetaFractal(IntroNewtonFractal):
             ),
             run_time=10
         )
+
+
+class Thumbnail2(SimpleFractalScene):
+    def construct(self):
+        super().construct()
+        fractal = self.fractal
+        fractal.set_saturation_factor(4.5)
+        self.remove(self.plane)
+        self.remove(self.root_dots)
+
+        frame = self.camera.frame
+        frame.set_height(4)
+
+        fc = fractal.copy()
+        fc.set_saturation_factor(2)
+        fc.set_julia_highlight(0.01)
+        self.add(fc)
+
+        # self.clear()
+        # back = fractal.copy()
+        # back.set_saturation_factor(0)
+        # back.set_opacity(0.1)
+        # self.add(back)
+
+        # N = 20
+        # for x in np.linspace(np.log(1e-3), np.log(0.1), N):
+        #     jh = np.exp(x)
+        #     fc = fractal.copy()
+        #     fc.set_saturation_factor(1)
+        #     fc.set_julia_highlight(jh)
+        #     fc.set_opacity(2 / N)
+        #     self.add(fc)
+
+        self.embed()

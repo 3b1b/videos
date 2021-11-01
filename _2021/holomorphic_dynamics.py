@@ -3562,6 +3562,9 @@ class MetaFractal(IntroNewtonFractal):
         frame.target.move_to(point1)
         frame.target.set_height(height1)
 
+        fractal.set_saturation_factor(2)
+        plane.remove(plane.coordinate_labels)
+
         self.play(
             MoveToTarget(frame),
             run_time=8,
