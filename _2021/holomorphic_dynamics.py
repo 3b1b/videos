@@ -3604,3 +3604,41 @@ class Part1EndScroll(PatreonEndScreen):
         "scroll_time": 30,
         # "show_pis": False,
     }
+
+
+class AmbientJulia(Scene):
+    def construct(self):
+        plane = ComplexPlane(
+            (-4, 4), (-2, 2),
+            background_line_style={
+                "stroke_color": GREY_A,
+                "stroke_width": 1,
+            }
+        )
+        plane.axes.set_stroke(width=1, opacity=0.5)
+        plane.set_height(14)
+        fractal = JuliaFractal(plane)
+        fractal.set_n_steps(100)
+
+        R = 0.25
+        cardioid = ParametricCurve(
+            lambda t: plane.c2p(
+                2 * R * math.cos(t) - R * math.cos(2 * t),
+                2 * R * math.sin(t) - R * math.sin(2 * t),
+            ),
+            t_range=(0, TAU)
+        )
+
+        t_tracker = ValueTracker(0)
+        get_t = t_tracker.get_value
+
+        fractal.add_updater(lambda m: m.set_c(
+            plane.p2n(cardioid.pfp(get_t()))
+        ))
+
+        self.add(fractal, plane)
+        self.play(
+            t_tracker.animate.set_value(1),
+            rate_func=linear,
+            run_time=300
+        )
