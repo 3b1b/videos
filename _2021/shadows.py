@@ -2,18 +2,58 @@ from manim_imports_ext import *
 
 
 # Helpers
-def get_shadow(mobject, opacity=0.5):
+def project_to_xy_plane(p1, p2):
+    """
+    Draw a line from source to p1 to p2.  Where does it
+    intersect the xy plane?
+    """
+    x1, y1, z1 = p1
+    x2, y2, z2 = p2
+    if z2 < z1:
+        z2 = z1 + 1e-2  # TODO, bad hack
+    vect = p2 - p1
+    return p1 - (z2 / vect[2]) * vect
+
+
+def flat_project(point):
+    return [*point[:2], 0]
+
+
+def get_pre_shadow(mobject, opacity):
     result = mobject.deepcopy()
-    result.apply_function(lambda p: [p[0], p[1], 0])
+    result.clear_updaters()
+
     color = interpolate_color(
-        mobject.get_fill_color(), BLACK,
-        mobject.get_fill_opacity()
+        mobject[0].get_fill_color(), BLACK,
+        mobject[0].get_fill_opacity()
     )
     # color = BLACK
-    result.set_fill(color, opacity=opacity)
-    result.set_stroke(BLACK, 0.5, opacity=opacity)
-    result.set_shade_in_3d(False)
+    for sm in result.family_members_with_points():
+        sm.set_fill(color, opacity=opacity)
+        sm.set_stroke(BLACK, 0.5, opacity=opacity)
+        sm.set_gloss(sm.get_gloss() * 0.5)
+        sm.set_shadow(0)
+        sm.set_reflectiveness(0)
     return result
+
+
+def update_shadow(shadow, mobject, light_source):
+    lp = light_source.get_center() if light_source is not None else None
+
+    def project(point):
+        if lp is None:
+            return flat_project(point)
+        else:
+            return project_to_xy_plane(lp, point)
+
+    for sm, mm in zip(shadow.family_members_with_points(), mobject.family_members_with_points()):
+        sm.set_points(np.apply_along_axis(project, 1, mm.get_points()))
+
+
+def get_shadow(mobject, light_source=None, opacity=0.5):
+    shadow = get_pre_shadow(mobject, opacity)
+    shadow.add_updater(lambda s: update_shadow(s, mobject, light_source))
+    return shadow
 
 
 def get_boundary_points(shadow, n_points=20):
@@ -36,72 +76,98 @@ def get_area(planar_mobject):
     ]))
 
 
-def get_xy_plane_projection_point(p1, p2):
-    """
-    Draw a line from source to p1 to p2.  Where does it
-    intersect the xy plane?
-    """
-    vect = p2 - p1
-    return p1 - (p1[2] / vect[2]) * vect
-
-
 # Scenes
 
-
-class ShowShadows(ThreeDScene):
-    CONFIG = {
-        "object_center": [0, 0, 3],
-        "area_label_center": [0, -1.5, 0],
-        "surface_area": 6.0,
-        "num_reorientations": 10,
-        "camera_config": {
-            "light_source_start_point": 10 * OUT,
-            "frame_center": [0, 0, 0.5],
-        },
-        "initial_orientation_config": {
-            "phi": 60 * DEGREES,
-            "theta": -120 * DEGREES,
-        }
+class ShadowScene(ThreeDScene):
+    object_center = [0, 0, 3]
+    frame_center = [0, 0, 2]
+    area_label_center = [0, -1.5, 0]
+    surface_area = 6.0
+    num_reorientations = 10
+    plane_dims = (20, 20)
+    plane_style = {
+        "stroke_width": 0,
+        "fill_color": GREY_A,
+        "fill_opacity": 0.5,
+        "gloss": 0.5,
+        "shadow": 0.2,
     }
+    inf_light = False
+    glow_radius = 10
+    glow_factor = 10
 
     def setup(self):
+        self.camera.frame.reorient(-30, 75)
+        self.camera.frame.move_to(self.frame_center)
         self.add_plane()
-        self.setup_orientation_trackers()
-        self.setup_object_and_shadow()
-        self.add_shadow_area_label()
-        self.add_surface_area_label()
+        self.add_solid()
+        self.add_shadow()
+        self.setup_light_source()
 
     def add_plane(self):
-        plane = self.plane = Rectangle(
-            width=FRAME_WIDTH,
-            height=24.2,
-            stroke_width=0,
-            fill_color=WHITE,
-            fill_opacity=0.35,
-        )
-        plane.set_sheen(0.2, DR)
+        width, height = self.plane_dims
+        plane = self.plane = Rectangle(width, height)
+        plane.set_style(**self.plane_style)
+
         grid = NumberPlane(
-            color=GREY_B,
-            secondary_color=GREY_D,
-            y_radius=int(plane.get_height() / 2),
-            stroke_width=1,
-            secondary_line_ratio=0,
+            x_range=(-width // 2, width // 2, 2),
+            y_range=(-height // 2, height // 2, 2),
+            background_line_style={
+                "stroke_color": GREY_B,
+                "stroke_width": 1,
+            },
+            faded_line_ratio=4,
         )
+        grid.axes.match_style(grid.background_lines)
+        grid.set_flat_stroke(True)
         plane.add(grid)
-        plane.add(VectorizedPoint(10 * IN))
-        plane.set_shade_in_3d(True, z_index_as_group=True)
         self.add(plane)
 
-    def setup_orientation_trackers(self):
-        # Euler angles
-        self.alpha_tracker = ValueTracker(0)
-        self.beta_tracker = ValueTracker(0)
-        self.gamma_tracker = ValueTracker(0)
+    def add_solid(self):
+        self.solid = self.get_object()
+        self.solid.move_to(self.object_center)
+        self.solid.add_updater(lambda m: self.sort_to_camera(m))
+        self.add(self.solid)
 
-    def setup_object_and_shadow(self):
-        self.obj3d = always_redraw(self.get_reoriented_object)
-        self.shadow = always_redraw(lambda: get_shadow(self.obj3d))
+    def get_object(self):
+        cube = VCube()
+        cube.deactivate_depth_test()
+        cube.set_height(2)
+        cube.set_stroke(WHITE, 0.5)
+        cube.set_fill(BLUE_E, 0.8)
+        cube.set_reflectiveness(0.3)
+        cube.set_gloss(0.1)
+        cube.set_shadow(0.5)
+        # Wrap in group so that strokes and fills
+        # are rendered in separate passes
+        cube = self.cube = Group(*cube)
+        return cube
 
+    def add_shadow(self):
+        light_source = None if self.inf_light else self.camera.light_source
+        shadow = get_shadow(self.solid, light_source)
+
+        self.add(shadow, self.solid)
+        self.shadow = shadow
+
+    def setup_light_source(self):
+        self.light = self.camera.light_source
+        glow = self.glow = TrueDot(
+            radius=self.glow_radius,
+            glow_factor=self.glow_factor,
+        )
+        glow.set_color(interpolate_color(YELLOW, WHITE, 0.5))
+        glow.add_updater(lambda m: m.move_to(self.light))
+        self.add(glow)
+
+    def sort_to_camera(self, mobject):
+        cl = self.camera.get_location()
+        mobject.sort(lambda p: -get_norm(p - cl))
+        for sm in mobject:
+            sm.refresh_unit_normal()
+        return mobject
+
+    # TODO
     def add_shadow_area_label(self):
         text = TexText("Shadow area: ")
         decimal = DecimalNumber(0)
@@ -129,6 +195,7 @@ class ShowShadows(ThreeDScene):
         self.add(label)
         self.add(decimal)
 
+    # TODO
     def add_surface_area_label(self):
         text = TexText("Surface area: ")
         decimal = DecimalNumber(self.surface_area)
@@ -142,65 +209,7 @@ class ShowShadows(ThreeDScene):
         self.surface_area_label = label
         self.add_fixed_orientation_mobjects(label)
 
-    def construct(self):
-        # Show creation
-        obj3d = self.obj3d.copy()
-        obj3d.clear_updaters()
-        temp_shadow = always_redraw(lambda: get_shadow(obj3d))
-        self.add(temp_shadow)
-        self.move_camera(
-            **self.initial_orientation_config,
-            added_anims=[
-                LaggedStartMap(DrawBorderThenFill, obj3d)
-            ],
-            run_time=2
-        )
-        self.begin_ambient_camera_rotation(0.01)
-        self.remove(obj3d, temp_shadow)
-
-        average_label = self.get_average_label()
-        # Reorient
-        self.add(self.obj3d, self.shadow)
-        for n in range(self.num_reorientations):
-            self.randomly_reorient()
-            if n == 3:
-                self.add_fixed_in_frame_mobjects(average_label)
-                self.play(Write(average_label, run_time=2))
-            else:
-                self.wait()
-
-    def randomly_reorient(self, run_time=3):
-        a, b, c = TAU * np.random.random(3)
-        self.play(
-            self.alpha_tracker.set_value, a,
-            self.beta_tracker.set_value, b,
-            self.gamma_tracker.set_value, c,
-            run_time=run_time
-        )
-
-    #
-    def get_object(self):
-        cube = Cube()
-        cube.set_height(1)
-        # cube.set_width(2, stretch=True)
-        cube.set_stroke(WHITE, 0.5)
-        return cube
-
-    def get_reoriented_object(self):
-        obj3d = self.get_object()
-        angles = [
-            self.alpha_tracker.get_value(),
-            self.beta_tracker.get_value(),
-            self.gamma_tracker.get_value(),
-        ]
-        vects = [OUT, RIGHT, OUT]
-
-        center = self.object_center
-        obj3d.move_to(center)
-        for angle, vect in zip(angles, vects):
-            obj3d.rotate(angle, vect, about_point=center)
-        return obj3d
-
+    # TODO
     def get_average_label(self):
         rect = SurroundingRectangle(
             self.shadow_area_decimal,
@@ -223,7 +232,21 @@ class ShowShadows(ThreeDScene):
         return VGroup(rect, words)
 
 
-class ShowInfinitelyFarLightSource(ShowShadows):
+class IntroduceShadow(ShadowScene):
+    def construct(self):
+        light = self.light
+        cube = self.cube
+
+        self.play(
+            light.animate.next_to(cube, OUT, 2),
+            run_time=5,
+        )
+        self.wait()
+
+        self.embed()
+
+
+class ShowInfinitelyFarLightSource(ShadowScene):
     CONFIG = {
         "num_reorientations": 1,
         "camera_center": [0, 0, 1],
@@ -345,7 +368,7 @@ class ShowInfinitelyFarLightSource(ShowShadows):
         return lines
 
 
-class CylinderShadows(ShowShadows):
+class CylinderShadows(ShadowScene):
     CONFIG = {
         "surface_area": 2 * PI + 2 * PI * 2,
         "area_label_center": [0, -2, 0],
@@ -382,7 +405,7 @@ class CylinderShadows(ShowShadows):
         return cylinder
 
 
-class PrismShadows(ShowShadows):
+class PrismShadows(ShadowScene):
     CONFIG = {
         "surface_area": 3 * np.sqrt(3) / 2 + 3 * (np.sqrt(3) * 2),
         "object_center": [0, 0, 3],

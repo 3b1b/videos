@@ -19,3 +19,4 @@ camera_qualities:
   default_quality: "ultra_high"
 window_position: UR
 window_monitor: 0
+full_screen: False
