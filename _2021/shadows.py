@@ -144,6 +144,7 @@ class ShadowScene(ThreeDScene):
         plane.replace(grid, stretch=True)
         plane.set_style(**self.plane_style)
         plane.set_stroke(width=0)
+        plane.set_height(height // 2 + 6, about_edge=UP, stretch=True)
         self.plane = plane
 
         plane.add(grid)
@@ -152,7 +153,6 @@ class ShadowScene(ThreeDScene):
     def add_solid(self):
         self.solid = self.get_solid()
         self.solid.move_to(self.object_center)
-        self.solid.add_updater(lambda m: self.sort_to_camera(m))
         self.add(self.solid)
 
     def get_solid(self):
@@ -163,6 +163,7 @@ class ShadowScene(ThreeDScene):
         # Wrap in group so that strokes and fills
         # are rendered in separate passes
         cube = self.cube = Group(*cube)
+        cube.add_updater(lambda m: self.sort_to_camera(m))
         return cube
 
     def add_shadow(self):
@@ -1116,35 +1117,43 @@ class AmbientFaceRotationShadowView(AmbientFaceRotation):
 
 class AllPossibleOrientations(ShadowScene):
     inf_light = True
-    plane_dims = (16, 12)
+    plane_dims = (12, 8)
 
     def construct(self):
         # Setup
         frame = self.camera.frame
-        frame.reorient(-10, 80)
+        frame.reorient(-20, 80)
         frame.set_height(5)
-        frame.add_updater(lambda f, dt: f.increment_theta(0.02 * dt))
+        frame.d_theta = 0
+
+        def update_frame(frame, dt):
+            frame.d_theta += -0.0025 * frame.get_theta()
+            frame.increment_theta(clip(0.0025 * frame.d_theta, -0.01 * dt, 0.01 * dt))
+
+        frame.add_updater(update_frame)
         face = self.solid
         square, normal_vect = face
+        normal_vect.set_flat_stroke()
         self.solid = square
         self.remove(self.shadow)
         self.add_shadow()
         self.shadow.deactivate_depth_test()
         self.solid = face
-        fc = square.get_center()
+        fc = square.get_center().copy()
 
         # Sphere points
         sphere = Sphere(radius=1)
-        sphere.set_color(WHITE, 0.5)
+        sphere.set_color(GREY_E, 0.7)
         sphere.move_to(fc)
         sphere.always_sort_to_camera(self.camera)
 
         n_lat_lines = 20
+        theta_step = PI / n_lat_lines
         sphere_points = np.array([
-            sphere.uv_func(phi, theta)
-            for theta in np.linspace(0, PI, n_lat_lines)
-            for phi in random.random() + np.linspace(
-                0, TAU, int(2 * n_lat_lines * math.sin(theta))
+            sphere.uv_func(phi, theta + theta_step * (phi / TAU))
+            for theta in np.arange(0, PI, theta_step)
+            for phi in np.linspace(
+                0, TAU, int(2 * n_lat_lines * math.sin(theta)) + 1
             )
         ])
         sphere_points[:, 2] *= -1
@@ -1158,11 +1167,15 @@ class AllPossibleOrientations(ShadowScene):
         sphere_dots.apply_depth_test()
         sphere_dots.add_updater(lambda m: m)
 
-        face.save_state()
+        sphere_words = TexText("All normal vectors = Sphere")
+        uniform_words = TexText("All points equally likely")
+        for words in [sphere_words, uniform_words]:
+            words.fix_in_frame()
+            words.to_edge(UP)
 
-        z_to_vector
-
+        # Trace sphere
         N = len(original_sphere_points)
+        self.play(FadeIn(sphere_words))
         self.play(
             ShowCreation(sphere_dots),
             UpdateFromAlphaFunc(
@@ -1175,18 +1188,820 @@ class AllPossibleOrientations(ShadowScene):
                     about_point=fc
                 )
             ),
-            run_time=10,
-            rate_func=linear,
+            run_time=15,
+            rate_func=smooth,
+        )
+        self.play(
+            FadeOut(sphere_words, UP),
+            FadeIn(uniform_words, UP),
+        )
+        last_dot = Mobject()
+        for x in range(20):
+            point = random.choice(sphere_points)
+            dot = TrueDot(
+                point,
+                radius=1,
+                glow_factor=10,
+                color=YELLOW,
+            )
+            face.apply_matrix(rotation_between_vectors(
+                normal_vect.get_vector(),
+                point - fc
+            ), about_point=fc)
+            self.add(dot)
+            self.play(FadeOut(last_dot, run_time=0.25))
+            self.wait(0.25)
+            last_dot = dot
+        self.play(FadeOut(last_dot))
+        self.wait()
+
+        # Sphere itself
+        sphere_mesh = SurfaceMesh(sphere, resolution=(21, 11))
+        sphere_mesh.set_stroke(BLUE_E, 1, 1)
+        for sm in sphere_mesh.get_family():
+            sm.uniforms["anti_alias_width"] = 0
+        v1 = normal_vect.get_vector()
+        normal_vect.scale(0.99, about_point=fc)
+        v2 = DR + OUT
+        self.play(
+            Rotate(
+                face, angle_between_vectors(v1, v2),
+                axis=normalize(cross(v1, v2))
+            ),
+            UpdateFromAlphaFunc(
+                self.plane, lambda m, a: square.scale(0.9).set_opacity(0.5 - a * 0.5)
+            ),
+        )
+        self.play(
+            ShowCreation(sphere_mesh, lag_ratio=0.5),
+            FadeIn(sphere),
+            sphere_dots.animate.set_radius(0),
+            run_time=2,
+        )
+        self.remove(sphere_dots)
+
+        # Show patch
+        patch = ParametricSurface(
+            sphere.uv_func,
+            # u_range=(0.86 * TAU, 0.91 * TAU),
+            # v_range=(0.615 * PI, 0.71 * PI),
+            u_range=(0.85 * TAU, 0.9 * TAU),
+            v_range=(0.6 * PI, 0.7 * PI),
+        )
+        patch.shift(fc)
+        patch.set_color(YELLOW, 0.75)
+        patch.always_sort_to_camera(self.camera)
+        self.add(patch, sphere)
+
+        self.play(
+            ShowCreation(patch),
+            frame.animate.reorient(10, 75),
         )
 
-        self.add(sphere_dots)
+        # Probability expression
+        patch_copy = patch.deepcopy()
+        sphere_copy = sphere.deepcopy()
+        sphere_copy.set_color(GREY_D, 0.7)
+        for mob in patch_copy, sphere_copy:
+            mob.apply_matrix(frame.get_inverse_camera_rotation_matrix())
+            mob.fix_in_frame()
+            mob.center()
+        patch_copy2 = patch_copy.copy()
 
-        # Embed
-        self.embed()
+        prob = Group(*Tex(
+            "P(", "0.", ")", "=", "{Num ", "\\over ", "Den}",
+            font_size=60
+        ))
+        prob.fix_in_frame()
+        prob.to_corner(UR)
+        prob.shift(DOWN)
+        for i, mob in [(1, patch_copy), (4, patch_copy2), (6, sphere_copy)]:
+            mob.replace(prob[i], dim_to_match=1)
+            prob.replace_submobject(i, mob)
+        sphere_copy.scale(3, about_edge=UP)
+
+        self.play(FadeIn(prob, lag_ratio=0.1))
+        self.wait()
+        for i in (4, 6):
+            self.play(ShowCreationThenFadeOut(
+                SurroundingRectangle(prob[i], stroke_width=2).fix_in_frame()
+            ))
+            self.wait()
+
+        # Non-specified orientation
+        self.play(
+            LaggedStart(*map(FadeOut, (sphere, sphere_mesh, patch, *prob, uniform_words)))
+        )
+        self.play(
+            square.animate.set_fill(opacity=0.5),
+            frame.animate.reorient(-30),
+            run_time=3,
+        )
+        self.play(
+            Rotate(square, TAU, normal_vect.get_vector()),
+            run_time=8,
+        )
+        self.wait()
+
+        # Show theta
+        def get_normal():
+            return normal_vect.get_vector()
+
+        def get_theta():
+            return np.arccos(get_normal()[2] / get_norm(get_normal()))
+
+        def get_arc():
+            result = Arc(PI / 2, -get_theta(), radius=0.25)
+            result.rotate(PI / 2, RIGHT, about_point=ORIGIN)
+            result.rotate(angle_of_vector([*get_normal()[:2], 0]), OUT, about_point=ORIGIN)
+            result.shift(fc)
+            result.set_stroke(WHITE, 1)
+            result.apply_depth_test()
+            return result
+
+        arc = always_redraw(get_arc)
+
+        theta = Tex("\\theta", font_size=20)
+        theta.rotate(PI / 2, RIGHT)
+        theta.set_backstroke(width=2)
+        theta.add_updater(lambda m: m.next_to(arc.pfp(0.5), OUT + RIGHT, buff=0.05))
+
+        z_axis = Line(ORIGIN, 10 * OUT)
+        z_axis.set_stroke(WHITE, 1)
+        z_axis.apply_depth_test()
+
+        self.add(z_axis, face, theta, arc)
+        self.play(
+            ShowCreation(z_axis),
+            ShowCreation(arc),
+            FadeIn(theta, 0.5 * OUT),
+        )
+        self.wait()
+
+        # Show shadow area
+        shadow_area = TexText("Shadow area =", "$|\\cos(\\theta)|s^2$")
+        shadow_area.fix_in_frame()
+        shadow_area.to_edge(RIGHT)
+        shadow_area.set_y(-3)
+        shadow_area.set_backstroke()
+
+        self.play(
+            Write(shadow_area, run_time=3),
+            Rotate(face, TAU, normal_vect.get_vector(), run_time=10),
+        )
+        self.wait(4)
+
+        shadow_area[1].generate_target()
+        shadow_area[1].target.to_corner(UR, buff=MED_LARGE_BUFF)
+        shadow_area[1].target.shift(LEFT)
+        brace = Brace(shadow_area[1].target, DOWN)
+        brace_text = TexText("How do you average this\\\\over the sphere?", font_size=36)
+        brace_text.next_to(brace, DOWN, SMALL_BUFF)
+        brace.fix_in_frame()
+        brace_text.fix_in_frame()
+
+        self.play(
+            GrowFromCenter(brace),
+            MoveToTarget(shadow_area[1]),
+            FadeOut(shadow_area[0]),
+            square.animate.set_fill(opacity=0),
+        )
+        face.generate_target()
+        face.target[1].set_length(0.98, about_point=fc)
+        sphere.set_opacity(0.35)
+        sphere_mesh.set_stroke(width=0.5)
+        self.play(
+            MoveToTarget(face),
+            FadeIn(brace_text, 0.5 * DOWN),
+            Write(sphere_mesh, run_time=2, stroke_width=1),
+            FadeIn(sphere),
+        )
+
+        # Sum expression
+        def update_theta_ring(ring):
+            theta = get_theta()
+            phi = angle_of_vector([*get_normal()[:2], 0])
+            ring.set_width(2 * 1.01 * math.sin(theta))
+            ring.rotate(phi - angle_of_vector([*ring.get_start()[:2], 0]))
+            ring.move_to(fc + math.cos(theta) * OUT)
+            return ring
+
+        theta_ring = Circle()
+        theta_ring.set_stroke(YELLOW, 2)
+        theta_ring.apply_depth_test()
+        theta_ring.uniforms["anti_alias_width"] = 0
+
+        loose_sum = Tex(
+            "\\sum_{\\theta \\in [0, \\pi]}",
+            "P(\\theta)",
+            "\\cdot ",
+            "|\\cos(\\theta)|s^2"
+        )
+        loose_sum.fix_in_frame()
+        loose_sum.next_to(brace_text, DOWN, LARGE_BUFF)
+        loose_sum.to_edge(RIGHT)
+        prob_words = TexText("How likely is a given value of $\\theta$?", font_size=36)
+        prob_words.fix_in_frame()
+        prob_words.next_to(loose_sum[1], DOWN)
+        prob_words.to_edge(RIGHT, buff=MED_SMALL_BUFF)
+
+        finite_words = Text("If finite...")
+        finite_words.next_to(brace_text, DOWN, LARGE_BUFF).fix_in_frame()
+        self.add(finite_words)
+        face.rotate(-angle_of_vector([*get_normal()[:2], 0]))
+        face.shift(fc - normal_vect.get_start())
+        for d_theta in (*[-0.2] * 10, *[0.2] * 10):
+            face.rotate(d_theta, np.cross(get_normal(), OUT), about_point=fc)
+            self.wait(0.25)
+
+        self.play(
+            Write(loose_sum.get_part_by_tex("P(\\theta)")),
+            FadeIn(prob_words, 0.5 * DOWN),
+            FadeOut(finite_words),
+            ApplyMethod(frame.set_x, 1, run_time=2)
+        )
+        update_theta_ring(theta_ring)
+        self.add(theta_ring, sphere)
+        self.play(
+            Rotate(face, TAU, OUT, about_point=fc, run_time=4),
+            ShowCreation(theta_ring, run_time=4),
+        )
+        theta_ring.add_updater(update_theta_ring)
+        self.wait()
+        self.play(
+            FadeTransform(shadow_area[1].copy(), loose_sum.get_part_by_tex("cos")),
+            Write(loose_sum.get_part_by_tex("\\cdot")),
+            FadeOut(prob_words, 0.5 * DOWN)
+        )
+        self.wait(2)
+        self.play(
+            Write(loose_sum[0], run_time=2),
+            run_time=3,
+        )
+        face.rotate(get_theta(), axis=np.cross(get_normal(), OUT), about_point=fc)
+        for x in np.arange(0.2, PI, 0.2):
+            face.rotate(0.2, UP, about_point=fc)
+            self.wait(0.5)
+        self.wait(5)
+
+        # Continuous
+        sum_brace = Brace(loose_sum[0], DOWN, buff=SMALL_BUFF)
+        continuum = TexText("Continuum\\\\(uncountably infinite)", font_size=36)
+        continuum.next_to(sum_brace, DOWN, SMALL_BUFF)
+        zero = Tex('0')
+        zero.next_to(loose_sum[1], DOWN, buff=1.5)
+        zero.shift(1.5 * RIGHT)
+        zero_arrow = Arrow(loose_sum[1], zero, buff=SMALL_BUFF)
+        nonsense_brace = Brace(loose_sum, UP)
+        nonsense = nonsense_brace.get_text("Not really a sensible expression", font_size=36)
+
+        for mob in [sum_brace, continuum, zero, zero_arrow, nonsense_brace, nonsense]:
+            mob.fix_in_frame()
+            mob.set_color(RED)
+            if mob.get_fill_opacity() > 0:
+                mob.set_backstroke()
+
+        face.start_time = self.time
+        face.clear_updaters()
+        face.add_updater(lambda f, dt: f.rotate(
+            angle=0.25 * dt * math.cos(0.1 * (self.time - f.start_time)),
+            axis=np.cross(get_normal(), OUT),
+            about_point=fc,
+        ).shift(fc - f[1].get_start()))
+
+        self.play(
+            GrowFromCenter(sum_brace),
+            FadeIn(continuum, 0.5 * DOWN)
+        )
+        self.wait(4)
+        self.play(
+            ShowCreation(zero_arrow),
+            GrowFromPoint(zero, zero_arrow.get_start()),
+        )
+        self.wait(2)
+        inf_sum_group = VGroup(
+            nonsense_brace, nonsense,
+            sum_brace, continuum,
+            zero_arrow, zero,
+            loose_sum,
+        )
+        top_part = inf_sum_group[:2]
+        top_part.set_opacity(0)
+        self.play(
+            inf_sum_group.animate.to_corner(UR),
+            FadeOut(VGroup(brace, brace_text, shadow_area[1])),
+            run_time=2,
+        )
+        top_part.set_fill(opacity=1)
+        self.play(
+            GrowFromCenter(nonsense_brace),
+            Write(nonsense),
+        )
+        self.wait(10)
+
+        # Swap for an integral
+        integral = Tex(
+            "\\int_0^\\pi ",
+            "p(\\theta)",
+            "\\cdot ",
+            "|\\cos(\\theta)| s^2",
+            "d\\theta",
+        )
+        integral.shift(loose_sum[-1].get_right() - integral[-1].get_right())
+        integral.fix_in_frame()
+
+        self.play(LaggedStart(*map(FadeOut, inf_sum_group[:-1])))
+        self.play(
+            TransformMatchingShapes(
+                loose_sum[0], integral[0],
+                fade_transform_mismatches=True,
+
+            )
+        )
+        self.play(
+            FadeTransformPieces(loose_sum[1:4], integral[1:4]),
+            Write(integral[4])
+        )
+        self.wait(5)
+        face.clear_updaters()
+        self.wait(5)
+
+        # Show 2d slice
+        back_half_sphere = Sphere(u_range=(0, PI))
+        back_half_sphere.match_color(sphere)
+        back_half_sphere.set_opacity(sphere.get_opacity())
+        back_half_sphere.shift(fc)
+        back_half_mesh = SurfaceMesh(back_half_sphere, resolution=(11, 11))
+        back_half_mesh.set_stroke(BLUE_D, 1, 0.75)
+
+        circle = Circle()
+        circle.set_stroke(TEAL, 1)
+        circle.rotate(PI / 2, RIGHT)
+        circle.move_to(fc)
+
+        frame.clear_updaters()
+        theta_ring.deactivate_depth_test()
+        theta_ring.uniforms.pop("anti_alias_width")
+        theta_ring.set_stroke(width=1)
+        self.play(
+            FadeOut(sphere),
+            sphere_mesh.animate.set_stroke(opacity=0.25),
+            FadeIn(circle),
+            theta_ring.animate.set_stroke(width=1),
+            frame.animate.reorient(-6, 87).set_height(4),
+            integral.animate.set_height(0.5).set_opacity(0).to_corner(UR),
+            run_time=2,
+        )
+        self.remove(integral)
+
+        # Finite sample
+        def get_tick_marks(theta_samples, tl=0.05):
+            return VGroup(*(
+                Line((1 - tl / 2) * p, (1 + tl / 2) * p).shift(fc)
+                for theta in theta_samples
+                for p in [np.array([math.sin(theta), 0, math.cos(theta)])]
+            )).set_stroke(YELLOW, 1)
+
+        theta_samples = np.linspace(0, PI, sphere_mesh.resolution[0])
+        dtheta = theta_samples[1] - theta_samples[0]
+        tick_marks = get_tick_marks(theta_samples)
+
+        def set_theta(face, theta):
+            face.apply_matrix(rotation_between_vectors(
+                normal_vect.get_vector(), OUT
+            ), about_point=fc)
+            face.rotate(theta, UP, about_point=fc)
+
+        self.play(
+            ShowIncreasingSubsets(tick_marks[:-1]),
+            UpdateFromAlphaFunc(
+                face, lambda f, a: set_theta(face, theta_samples[int(a * (len(theta_samples) - 2))])
+            ),
+            run_time=4
+        )
+        self.add(tick_marks)
+        self.wait(2)
+
+        tsi = 6  # theta sample index
+        dt_line = Line(tick_marks[tsi].get_center(), tick_marks[tsi + 1].get_center())
+        dt_brace = Brace(
+            Line(ORIGIN, RIGHT), UP
+        )
+        dt_brace.scale(0.5)
+        dt_brace.set_width(dt_line.get_length(), stretch=True)
+        dt_brace.rotate(PI / 2, RIGHT)
+        dt_brace.rotate(theta_samples[tsi], UP)
+        dt_brace.move_to(dt_line)
+        dt_brace.shift(SMALL_BUFF * normalize(dt_line.get_center() - fc))
+        dt_label = Tex("\\Delta\\theta", font_size=24)
+        dt_label.rotate(PI / 2, RIGHT)
+        dt_label.next_to(dt_brace, OUT + RIGHT, buff=0.05)
+
+        self.play(
+            Write(dt_brace),
+            Write(dt_label),
+            run_time=1,
+        )
+        sphere.set_opacity(0.1)
+        self.play(
+            frame.animate.reorient(10, 70),
+            Rotate(face, -get_theta() + theta_samples[tsi], UP, about_point=fc),
+            sphere_mesh.animate.set_stroke(opacity=0.5),
+            FadeIn(sphere),
+            run_time=3
+        )
+        frame.add_updater(update_frame)
+        self.wait()
+
+        # Lattitude band
+        def get_band(index):
+            band = Sphere(
+                u_range=(0, TAU), v_range=theta_samples[index:index + 2],
+                prefered_creation_axis=1,
+            )
+            band.set_color(YELLOW, 0.5)
+            band.stretch(-1, 2, about_point=ORIGIN)
+            band.shift(fc)
+            return band
+
+        band = get_band(tsi)
+
+        self.add(band, sphere_mesh, sphere)
+        self.play(
+            ShowCreation(band),
+            Rotate(face, dtheta, UP, about_point=fc),
+            run_time=3,
+        )
+        self.play(Rotate(face, -dtheta, UP, about_point=fc), run_time=3)
+        self.wait(2)
+
+        area_question = Text("Area of this band?")
+        area_question.set_color(YELLOW)
+        area_question.fix_in_frame()
+        area_question.set_y(1.75)
+        area_question.to_edge(RIGHT, buff=2.5)
+        self.play(Write(area_question))
+        self.wait()
+
+        random_points = [sphere.pfp(random.random()) - fc for x in range(30)]
+        random_points.append(normal_vect.get_end() - fc)
+        glow_dots = Group(*(TrueDot(p) for p in random_points))
+        for dot in glow_dots:
+            dot.shift(fc)
+            dot.set_radius(0.2)
+            dot.set_color(BLUE)
+            dot.set_glow_factor(2)
+
+        theta_ring.suspend_updating()
+        last_dot = VectorizedPoint()
+        for dot in glow_dots:
+            face.apply_matrix(rotation_between_vectors(
+                get_normal(), dot.get_center() - fc,
+            ), about_point=fc)
+            self.add(dot)
+            self.play(FadeOut(last_dot), run_time=0.25)
+            last_dot = dot
+        self.play(FadeOut(last_dot))
+        self.wait()
+
+        # Find the area of the band
+        frame.clear_updaters()
+        self.play(
+            frame.animate.reorient(-7.5, 78),
+            sphere_mesh.animate.set_stroke(opacity=0.2),
+            band.animate.set_opacity(0.2),
+        )
+
+        one = Tex("1", font_size=24)
+        one.rotate(PI / 2, RIGHT)
+        one.next_to(normal_vect.get_center(), IN + RIGHT, buff=0.05)
+        radial_line = Line(
+            [0, 0, normal_vect.get_end()[2]],
+            normal_vect.get_end()
+        )
+        radial_line.set_stroke(BLUE, 2)
+        r_label = Tex("r", font_size=20)
+        sin_label = Tex("\\sin(\\theta)", font_size=16)
+        for label in r_label, sin_label:
+            label.rotate(PI / 2, RIGHT)
+            label.next_to(radial_line, OUT, buff=0.05)
+            label.set_color(BLUE)
+            label.set_backstroke()
+
+        self.play(Write(one))
+        self.wait()
+        self.play(
+            TransformFromCopy(normal_vect, radial_line),
+            FadeTransform(one.copy(), r_label)
+        )
+        self.wait()
+        self.play(FadeTransform(r_label, sin_label))
+        self.wait()
+
+        band_area = Tex("2\\pi \\sin(\\theta)", "\\Delta\\theta")
+        band_area.next_to(area_question, DOWN, LARGE_BUFF)
+        band_area.set_backstroke()
+        band_area.fix_in_frame()
+        circ_label, dt_copy = band_area
+        circ_brace = Brace(circ_label, DOWN, buff=SMALL_BUFF)
+        circ_words = circ_brace.get_text("Circumference")
+        approx = Tex("\\approx")
+        approx.rotate(PI / 2)
+        approx.move_to(midpoint(band_area.get_top(), area_question.get_bottom()))
+        VGroup(circ_brace, circ_words, approx).set_backstroke().fix_in_frame()
+
+        self.play(
+            frame.animate.reorient(10, 60),
+        )
+        theta_ring.suspend_updating()
+        self.play(
+            ShowCreation(theta_ring),
+            Rotate(face, TAU, OUT, about_point=fc),
+            FadeIn(circ_label, 0.5 * DOWN, rate_func=squish_rate_func(smooth, 0, 0.5)),
+            GrowFromCenter(circ_brace),
+            Write(circ_words),
+            run_time=3,
+        )
+        self.wait()
+        self.play(frame.animate.reorient(-5, 75))
+        self.play(FadeTransform(area_question[-1], approx))
+        area_question.remove(area_question[-1])
+        self.play(Write(dt_copy))
+        self.wait(3)
+
+        # Probability of falling in band
+        prob = Tex(
+            "P(\\text{Vector} \\text{ in } \\text{Band})", "=",
+            "{2\\pi \\sin(\\theta) \\Delta\\theta", "\\over", " 4\\pi}",
+            tex_to_color_map={
+                "\\text{Vector}": GREY_B,
+                "\\text{Band}": YELLOW,
+            }
+        )
+        prob.fix_in_frame()
+        prob.to_edge(RIGHT)
+        prob.set_y(1)
+        prob.set_backstroke()
+        numer = prob.get_part_by_tex("\\sin")
+        numer_rect = SurroundingRectangle(numer, buff=0.05)
+        numer_rect.set_stroke(YELLOW, 1)
+        numer_rect.fix_in_frame()
+        area_question.generate_target()
+        area_question.target.match_width(numer_rect)
+        area_question.target.next_to(numer_rect, UP, SMALL_BUFF)
+        denom_rect = SurroundingRectangle(prob.get_part_by_tex("4\\pi"), buff=0.05)
+        denom_rect.set_stroke(BLUE, 2)
+        denom_rect.fix_in_frame()
+        denom_label = TexText("Surface area of\\\\a unit sphere")
+        denom_label.scale(area_question.target[0].get_height() / denom_label[0][0].get_height())
+        denom_label.set_color(BLUE)
+        denom_label.next_to(denom_rect, DOWN, SMALL_BUFF)
+        denom_label.fix_in_frame()
+
+        i = prob.index_of_part_by_tex("sin")
+        self.play(
+            FadeTransform(band_area, prob.get_part_by_tex("sin"), remover=True),
+            MoveToTarget(area_question),
+            FadeIn(prob[:i]),
+            FadeIn(prob[i + 1:]),
+            FadeIn(numer_rect),
+            *map(FadeOut, [approx, circ_brace, circ_words]),
+            frame.animate.set_x(1.5),
+        )
+        self.add(prob)
+        self.remove(band_area)
+        self.wait()
+        self.play(
+            ShowCreation(denom_rect),
+            FadeIn(denom_label, 0.5 * DOWN),
+        )
+        sc = sphere.copy().flip(UP).scale(1.01).set_color(BLUE, 0.5)
+        self.add(sc, sphere_mesh)
+        self.play(ShowCreation(sc), run_time=3)
+        self.play(FadeOut(sc))
+        self.wait()
+
+        # Expression for average
+        sphere_group = Group(
+            sphere, sphere_mesh, theta_ring, band,
+            circle, radial_line, sin_label, one, tick_marks,
+            dt_brace, dt_label,
+        )
+
+        average_eq = Tex(
+            "\\text{Average shadow} \\\\",
+            "\\sum_{\\theta}",
+            "{2\\pi", "\\sin(\\theta)", " \\Delta\\theta", "\\over", " 4\\pi}",
+            "\\cdot", "|\\cos(\\theta)|", "s^2"
+        )
+        average_eq.fix_in_frame()
+        average_eq.move_to(prob).to_edge(UP)
+        average_eq[0].scale(1.25)
+        average_eq[0].shift(MED_SMALL_BUFF * UP)
+        average_eq[0].match_x(average_eq[1:])
+
+        new_prob = average_eq[2:7]
+        prob_rect = SurroundingRectangle(new_prob)
+        prob_rect.set_stroke(YELLOW, 2)
+        prob_rect.fix_in_frame()
+
+        self.play(
+            FadeIn(average_eq[:1]),
+            FadeIn(prob_rect),
+            prob[:5].animate.match_width(prob_rect).next_to(prob_rect, DOWN, buff=0.15),
+            FadeTransform(prob[-3:], new_prob),
+            *map(FadeOut, [prob[5], numer_rect, denom_rect, area_question, denom_label])
+        )
+        self.wait()
+        self.play(
+            FadeOut(sphere_group),
+            FadeIn(average_eq[-3:]),
+            UpdateFromAlphaFunc(face, lambda f, a: f[0].set_fill(opacity=0.5 * a))
+        )
+        self.wait()
+        band.set_opacity(0.5)
+        bands = Group(*(get_band(i) for i in range(len(theta_samples) - 1)))
+        sphere_mesh.set_stroke(opacity=0.5)
+        self.add(sphere_mesh, sphere, bands)
+        self.play(
+            FadeIn(average_eq[1]),
+            UpdateFromAlphaFunc(face, lambda f, a: f[0].set_fill(opacity=0.5 * (1 - a))),
+            FadeIn(sphere),
+            FadeIn(tick_marks),
+            FadeIn(sphere_mesh),
+            LaggedStartMap(
+                FadeIn, bands,
+                rate_func=there_and_back,
+                lag_ratio=0.5,
+                run_time=8,
+                remover=True
+            ),
+        )
+
+        # Simplify
+        average2 = Tex(
+            "{2\\pi", "\\over", "4\\pi}", "s^2",
+            "\\sum_{\\theta}",
+            "\\sin(\\theta)", "\\Delta\\theta",
+            "\\cdot", "|\\cos(\\theta)|"
+        )
+        average2.fix_in_frame()
+        average2.move_to(average_eq[1:], RIGHT)
+        half = Tex("1 \\over 2")
+        pre_half = average2[:3]
+        half.move_to(pre_half, RIGHT)
+        half_rect = SurroundingRectangle(pre_half, buff=SMALL_BUFF)
+        half_rect.set_stroke(RED, 1)
+        VGroup(half, half_rect).fix_in_frame()
+
+        self.play(
+            FadeOut(prob_rect),
+            FadeOut(prob[:5]),
+            *(
+                FadeTransform(average_eq[i], average2[j], path_arc=10 * DEGREES)
+                for i, j in [
+                    (1, 4),
+                    (2, 0),
+                    (3, 5),
+                    (4, 6),
+                    (5, 1),
+                    (6, 2),
+                    (7, 7),
+                    (8, 8),
+                    (9, 3),
+                ]
+            ),
+            run_time=2,
+        )
+        self.play(ShowCreation(half_rect))
+        self.play(
+            FadeTransform(pre_half, half),
+            FadeOut(half_rect),
+        )
+        sin, dt, dot, cos = average2[5:]
+        tail = VGroup(cos, dot, sin, dt)
+        tail.generate_target()
+        tail.target.arrange(RIGHT, buff=SMALL_BUFF)
+        tail.target.move_to(tail, LEFT)
+        tail.target[-1].align_to(sin[0], DOWN)
+        self.play(
+            MoveToTarget(tail, path_arc=PI / 2),
+        )
+        self.wait(2)
+
+        integral = Tex("\\int_0^\\pi ")
+        integral.next_to(tail, LEFT, SMALL_BUFF)
+        integral.fix_in_frame()
+        dtheta = Tex("d\\theta").fix_in_frame()
+        dtheta.move_to(tail[-1], LEFT)
+
+        average_copy = VGroup(half, average2[3:]).copy()
+        average_copy.set_backstroke()
+        self.play(
+            VGroup(half, average2[3]).animate.next_to(integral, LEFT, SMALL_BUFF),
+            FadeTransform(average2[4], integral),
+            FadeTransform(tail[-1], dtheta),
+            average_copy.animate.shift(2.5 * DOWN),
+            frame.animate.set_phi(80 * DEGREES),
+        )
+        self.wait()
+        self.play(LaggedStart(
+            ShowCreationThenFadeOut(SurroundingRectangle(average_copy[1][-3]).fix_in_frame()),
+            ShowCreationThenFadeOut(SurroundingRectangle(dtheta).fix_in_frame()),
+            lag_ratio=0.5
+        ))
+        self.wait()
+
+        # The limit
+        brace = Brace(average_copy, UP, buff=SMALL_BUFF)
+        brace_text = brace.get_text(
+            "What does this approach for finer subdivisions?",
+            font_size=30
+        )
+        arrow = Arrow(integral.get_bottom(), brace_text)
+        VGroup(brace, brace_text, arrow).set_color(YELLOW).fix_in_frame()
+        brace_text.set_backstroke()
+
+        self.play(
+            GrowFromCenter(brace),
+            ShowCreation(arrow),
+            FadeIn(brace_text, lag_ratio=0.1)
+        )
+
+        for n in range(1, 4):
+            new_ticks = get_tick_marks(
+                np.linspace(0, PI, sphere_mesh.resolution[0] * 2**n),
+                tl=0.05 / n
+            )
+            self.play(
+                ShowCreation(new_ticks),
+                FadeOut(tick_marks),
+                run_time=2,
+            )
+            self.wait()
+            tick_marks = new_ticks
+
+        # Make room for computation
+        face[0].set_fill(BLUE_D, opacity=0.75)
+        face[0].set_stroke(WHITE, 0.5, 1)
+        rect = Rectangle(fill_color=BLACK, fill_opacity=1, stroke_width=0)
+        rect.replace(self.plane, stretch=True)
+        rect.stretch(4 / 12, dim=0, about_edge=RIGHT)
+        rect.scale(1.01)
+        top_line = VGroup(half, average2[3], integral, tail[:-1], dtheta)
+        self.add(face[0], sphere)
+        self.play(
+            LaggedStart(*map(FadeOut, [arrow, brace_text, brace, average_copy])),
+            # UpdateFromAlphaFunc(face, lambda f, a: f[0].set_fill(opacity=0.5 * a)),
+            GrowFromCenter(face[0], remover=True),
+            frame.animate.set_height(6).set_x(3.5),
+            FadeIn(rect),
+            FadeOut(tick_marks),
+            top_line.animate.set_width(4).to_edge(UP).to_edge(RIGHT, buff=LARGE_BUFF),
+            FadeOut(average_eq[0], UP),
+            run_time=2,
+        )
+        self.add(face, sphere)
+        self.begin_ambient_rotation(face, about_point=fc, speed=0.1)
+
+        # Computation
+        new_lines = VGroup(
+            Tex("{1 \\over 2} s^2 \\cdot 2 \\int_0^{\\pi / 2} \\cos(\\theta)\\sin(\\theta)\\,d\\theta"),
+            Tex("{1 \\over 2} s^2 \\cdot \\int_0^{\\pi / 2} \\sin(2\\theta)\\,d\\theta"),
+            Tex("{1 \\over 2} s^2 \\cdot \\left[ -\\frac{1}{2} \\cos(2\\theta) \\right]_0^{\\pi / 2}"),
+            Tex("{1 \\over 2} s^2 \\cdot \\left(-\\left(-\\frac{1}{2}\\right) - \\left(-\\frac{1}{2}\\right)\\right)"),
+            Tex("{1 \\over 2} s^2"),
+        )
+        new_lines.scale(top_line.get_height() / new_lines[0].get_height())
+        kw = {"buff": 0.35, "aligned_edge": LEFT}
+        new_lines.arrange(DOWN, **kw)
+        new_lines.next_to(top_line, DOWN, **kw)
+        new_lines.fix_in_frame()
+
+        annotations = VGroup(
+            TexText("To avoid the annoying absolute value, just\\\\cover the north half and double it."),
+            TexText("Trig identity: $\\sin(2\\theta) = 2\\cos(\\theta)\\sin(\\theta)$"),
+            TexText("Antiderivative"),
+            TexText("Try not to get lost in\\\\the sea of negatives..."),
+            TexText("Whoa, that turned out nice!"),
+        )
+        annotations.fix_in_frame()
+        annotations.set_color(YELLOW)
+        annotations.scale(0.5)
+
+        for note, line in zip(annotations, new_lines):
+            note.next_to(line, LEFT, MED_LARGE_BUFF)
+
+        self.play(
+            LaggedStartMap(FadeIn, new_lines, lag_ratio=0.7),
+            LaggedStartMap(FadeIn, annotations, lag_ratio=0.7),
+            run_time=5,
+        )
+        self.wait(30)
 
     def get_solid(self):
         face = Square(side_length=2)
-        face.set_style(**self.object_style)
+        face.set_fill(BLUE, 0.5)
         face.set_stroke(width=0)
         normal = Vector(OUT)
         normal.shift(2e-2 * OUT)
@@ -1194,3 +2009,8 @@ class AllPossibleOrientations(ShadowScene):
         face.set_stroke(background=True)
         face.apply_depth_test()
         return face
+
+
+class DiscussIntegral(Scene):
+    def construct(self):
+        pass
