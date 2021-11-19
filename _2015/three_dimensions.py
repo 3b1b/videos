@@ -5,7 +5,7 @@ from mobject.mobject import Mobject, Mobject1D, Mobject2D, Mobject
 from geometry import Line
 from constants import *
 
-class Stars(Mobject1D):
+class OldStars(Mobject1D):
     CONFIG = {
         "stroke_width" : 1,
         "radius"          : FRAME_X_RADIUS,
@@ -25,7 +25,7 @@ class Stars(Mobject1D):
             for r, phi, theta in zip(radii, phis, thetas)
         ])
 
-class CubeWithFaces(Mobject2D):
+class OldCubeWithFaces(Mobject2D):
     def init_points(self):
         self.add_points([
             sgn * np.array(coords)
@@ -40,7 +40,7 @@ class CubeWithFaces(Mobject2D):
     def unit_normal(self, coords):
         return np.array([1 if abs(x) == 1 else 0 for x in coords])
 
-class Cube(Mobject1D):
+class OldCube(Mobject1D):
     def init_points(self):
         self.add_points([
             ([a, b, c][p[0]], [a, b, c][p[1]], [a, b, c][p[2]])
@@ -50,7 +50,7 @@ class Cube(Mobject1D):
         self.pose_at_angle()
         self.set_color(YELLOW)
 
-class Octohedron(Mobject1D):
+class OldOctohedron(Mobject1D):
     def init_points(self):
         x = np.array([1, 0, 0])
         y = np.array([0, 1, 0])
@@ -67,7 +67,7 @@ class Octohedron(Mobject1D):
         self.pose_at_angle()
         self.set_color(MAROON_D)
 
-class Dodecahedron(Mobject1D):
+class OldDodecahedron(Mobject1D):
     def init_points(self):
         phi = (1 + np.sqrt(5)) / 2
         x = np.array([1, 0, 0])
@@ -94,7 +94,7 @@ class Dodecahedron(Mobject1D):
         self.pose_at_angle()
         self.set_color(GREEN)
 
-class Sphere(Mobject2D):
+class OldSphere(Mobject2D):
     def init_points(self):
         self.add_points([
             (
