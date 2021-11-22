@@ -99,6 +99,7 @@ class ShadowScene(ThreeDScene):
         "gloss": 0.5,
         "shadow": 0.2,
     }
+    shrink_back_of_plane = False
     object_style = {
         "stroke_color": WHITE,
         "stroke_width": 0.5,
@@ -144,7 +145,8 @@ class ShadowScene(ThreeDScene):
         plane.replace(grid, stretch=True)
         plane.set_style(**self.plane_style)
         plane.set_stroke(width=0)
-        plane.set_height(height // 2 + 6, about_edge=UP, stretch=True)
+        if self.shrink_back_of_plane:
+            plane.set_height(height // 2 + 6, about_edge=UP, stretch=True)
         self.plane = plane
 
         plane.add(grid)
@@ -1051,72 +1053,514 @@ class FocusOnOneFace(ShadowScene):
 
 class DiscussLinearity(Scene):
     def construct(self):
-        pass
+        # Set background
+        background = FullScreenRectangle()
+        self.add(background)
+        panels = Rectangle(4, 4).replicate(3)
+        panels.set_fill(BLACK, 1)
+        panels.set_stroke(WHITE, 2)
+        panels.set_height(FRAME_HEIGHT - 1)
+        panels.arrange(RIGHT, buff=LARGE_BUFF)
+        panels.set_width(FRAME_WIDTH - 1)
+        panels.center()
+        self.add(panels)
+
+        # Arrows
+        arrows = VGroup(*(
+            Arrow(
+                p1.get_top(), p2.get_top(), path_arc=-0.6 * PI
+            ).scale(0.75, about_edge=DOWN)
+            for p1, p2 in zip(panels, panels[1:])
+        ))
+        arrows.space_out_submobjects(0.8)
+        arrows.rotate(PI, RIGHT, about_point=panels.get_center())
+        arrow_labels = VGroup(
+            Text("Rotation", font_size=30),
+            Text("Flat projection", font_size=30),
+        )
+        arrow_labels.set_backstroke()
+        for arrow, label in zip(arrows, arrow_labels):
+            label.next_to(arrow.pfp(0.5), UP, buff=0.35)
+
+        shape_labels = VGroup(
+            Text("Some shape"),
+            Text("Any shape"),
+        )
+        shape_labels.next_to(panels[0].get_top(), UP, SMALL_BUFF)
+
+        self.play(Write(shape_labels[0], run_time=1))
+        self.wait()
+        self.play(
+            FadeTransform(
+                shape_labels[0].get_part_by_text("Some"),
+                shape_labels[1].get_part_by_text("Any"),
+            ),
+            FadeTransform(
+                shape_labels[0].get_part_by_text("shape"),
+                shape_labels[1].get_part_by_text("shape"),
+            ),
+        )
+        self.wait(2)
+
+        for arrow, label in zip(arrows, arrow_labels):
+            self.play(
+                ShowCreation(arrow),
+                FadeIn(label, lag_ratio=0.1)
+            )
+            self.wait()
+
+        # Linear!
+        lin_text = Text(
+            "All linear transformations!",
+            t2c={"linear": YELLOW}
+        )
+        lin_text.next_to(panels, UP, MED_SMALL_BUFF)
+
+        self.play(
+            FadeOut(shape_labels[1]),
+            FadeIn(lin_text, lag_ratio=0.1)
+        )
+        self.wait()
+
+        # Stretch words
+        uniform_words = Text("Uniform stretching here", font_size=36).replicate(2)
+        for words, panel in zip(uniform_words, panels[0::2]):
+            words.next_to(panel.get_top(), DOWN, SMALL_BUFF)
+            words.set_color(YELLOW)
+            words.set_backstroke()
+            self.play(
+                FadeIn(words, lag_ratio=0.1),
+            )
+            self.wait()
+
+        # Transition
+        lin_part = lin_text.get_part_by_text("linear")
+        lin_copies = lin_part.copy().replicate(2)
+        lin_copies.scale(0.6)
+        for lin_copy, arrow in zip(lin_copies, arrows):
+            lin_copy.next_to(arrow.pfp(0.5), DOWN, buff=0.15)
+
+        self.play(
+            TransformFromCopy(lin_part.replicate(2), lin_copies),
+            LaggedStart(
+                FadeOut(lin_text, lag_ratio=0.1),
+                *map(FadeOut, uniform_words)
+            )
+        )
+
+        # Areas
+        area_labels = VGroup(
+            Text("Area(shape)", t2c={"shape": BLUE}),
+            Text("Area(shadow)", t2c={"shadow": BLUE_E}),
+        )
+        area_exprs = VGroup(
+            Tex("A").set_color(BLUE),
+            Tex("(\\text{some factor})", "\\cdot ", "A"),
+        )
+        area_exprs[1][2].set_color(BLUE)
+        area_exprs[1][0].set_color(GREY_C)
+        equals = VGroup()
+        for label, expr, panel in zip(area_labels, area_exprs, panels[0::2]):
+            label.match_x(panel)
+            label.to_edge(UP, buff=MED_SMALL_BUFF)
+            eq = Tex("=")
+            eq.rotate(PI / 2)
+            eq.next_to(label, DOWN, buff=0.15)
+            equals.add(eq)
+            expr.next_to(eq, DOWN, buff=0.15)
+
+        self.play(
+            *map(Write, area_labels),
+            run_time=1
+        )
+        self.play(
+            *(FadeIn(eq, 0.5 * DOWN) for eq in equals),
+            *(FadeIn(expr, DOWN) for expr in area_exprs),
+        )
+        self.wait()
+
+        f_rot = Tex("f(\\text{Rot})")
+        f_rot.set_color(GREY_B)
+        times_A = area_exprs[1][1:]
+        f_rot.next_to(times_A, LEFT, buff=0.2)
+        times_A.generate_target()
+        VGroup(f_rot, times_A.target).match_x(panels[2])
+
+        self.play(
+            FadeTransform(area_exprs[1][0], f_rot),
+            MoveToTarget(times_A)
+        )
+        self.play(ShowCreationThenFadeAround(f_rot, run_time=2))
+        self.wait(1)
+
+        # Cross out right
+        cross = Cross(VGroup(equals[1], f_rot, times_A))
+        cross.insert_n_curves(20)
+        self.play(ShowCreation(cross))
+        self.wait(3)
 
 
-# This should maybe include changing shapes and sizes
-class AmbientFaceRotation(ShadowScene):
-    inf_light = True
-    show_3d_perspective = True
+class AmbientShapeRotationPreimage(ShadowScene):
+    inf_light = False
+    display_mode = "preimage_only"  # Or "full_3d" or "shadow_only"
+    rotate_in_3d = True
+    only_show_shadow = False
 
     def construct(self):
         # Setup
-        cube = self.solid
+        display_mode = self.display_mode
         frame = self.camera.frame
         frame.set_height(6)
-        frame.add_updater(lambda f, dt: f.increment_theta(dt * 0.01))
         light = self.light
         light.move_to(75 * OUT)
 
-        index = np.argmax([f.get_z() for f in cube])
-        self.solid = face = cube[index]
+        shape = self.solid
         fc = 2.5 * OUT
-        face.move_to(fc)
-        self.remove(cube, self.shadow)
-        self.add(face)
-        self.add_shadow()
-        shadow = self.shadow
-        shadow_fill_opacity = shadow.get_fill_opacity()
-        shadow.add_updater(lambda s: s.set_fill(opacity=shadow_fill_opacity))
+        shape.move_to(fc)
 
-        if self.show_3d_perspective:
+        self.solid.rotate(-0.5 * PI)
+        self.solid.insert_n_curves(20)
+        preimage = self.solid.deepcopy()
+        preimage.move_to(ORIGIN)
+        rotated = self.solid
+
+        self.remove(self.shadow)
+        shadow = rotated.deepcopy()
+        shadow.set_fill(interpolate_color(BLUE_E, BLACK, 0.5), 0.7)
+        shadow.set_stroke(BLACK, 1)
+
+        def update_shadow(shadow):
+            shadow.set_points(
+                np.apply_along_axis(
+                    lambda p: project_to_xy_plane(self.light.get_center(), p),
+                    1, rotated.get_points()
+                )
+            )
+            shadow.refresh_triangulation()
+            return shadow
+
+        shadow.add_updater(update_shadow)
+
+        rotated.axis_tracker = VectorizedPoint(RIGHT)
+        rotated.angle_tracker = ValueTracker(0)
+        rotated.rot_speed_tracker = ValueTracker(0.15)
+
+        def update_rotated(mob, dt):
+            mob.set_points(preimage.get_points())
+            mob.shift(fc)
+            mob.refresh_triangulation()
+            axis = mob.axis_tracker.get_location()
+            angle = mob.angle_tracker.get_value()
+            speed = mob.rot_speed_tracker.get_value()
+            mob.axis_tracker.rotate(speed * dt, axis=OUT, about_point=ORIGIN)
+            mob.angle_tracker.increment_value(speed * dt)
+            mob.rotate(angle, axis, about_point=fc)
+            return rotated
+
+        rotated.add_updater(update_rotated)
+
+        # Conditionals
+        if display_mode == "full_3d":
+            preimage.set_opacity(0)
+            self.add(shadow)
+            self.add(rotated)
+
             z_axis = VGroup(
                 Line(ORIGIN, fc),
                 Line(fc, 10 * OUT),
             )
             z_axis.set_stroke(WHITE, 1)
-            self.add(z_axis[0], face, z_axis[1])
+            self.add(z_axis[0], rotated, z_axis[1])
 
             orientation_arrows = VGroup(
-                Vector(RIGHT, stroke_color=RED),
-                Vector(UP, stroke_color=GREEN),
-                Vector(OUT, stroke_color=BLUE),
+                Vector(RIGHT, stroke_color=RED_D),
+                Vector(UP, stroke_color=GREEN_D),
+                Vector(OUT, stroke_color=BLUE_D),
             )
-            orientation_arrows.shift(face.get_center())
 
-            face.add(orientation_arrows[:2])
-            face = Group(face, orientation_arrows[2])
-            face.add_updater(lambda m: self.sort_to_camera(m))
-            self.add(face)
-            self.add(get_shadow(orientation_arrows))
-        else:
+            orientation_arrows.set_stroke(opacity=0.85)
+            orientation_arrows.shift(fc)
+            orientation_arrows.save_state()
+            orientation_arrows.add_updater(lambda m: m.restore().rotate(
+                rotated.angle_tracker.get_value(),
+                rotated.axis_tracker.get_location(),
+            ))
+            orientation_arrows.add_updater(lambda m: m.shift(fc - m[0].get_start()))
+            orientation_arrows.apply_depth_test()
+            self.add(orientation_arrows)
+
+            proj_lines = always_redraw(lambda: VGroup(*(
+                Line(
+                    rotated.pfp(a),
+                    flat_project(rotated.pfp(a))
+                ).set_stroke(WHITE, 0.5, 0.2)
+                for a in np.linspace(0, 1, 100)
+            )))
+            self.add(proj_lines)
+
+            frame.reorient(20, 70)
+            frame_speed = -0.02
+            frame.add_updater(lambda f, dt: f.increment_theta(frame_speed * dt))
+        elif display_mode == "shadow_only":
             frame.reorient(0, 0)
             frame.set_height(3)
-            frame.clear_updaters()
-            fc = 10 * OUT
-            face.move_to(fc)
+            rotated.set_opacity(0)
+            preimage.set_opacity(0)
+            self.glow.set_opacity(0.2)
+            self.add(rotated)
+            self.add(shadow)
+        elif display_mode == "preimage_only":
+            self.glow.set_opacity(0)
+            self.remove(self.plane)
+            self.add(preimage)
+            frame.reorient(0, 0)
+            frame.set_height(3)
+            rotated.set_opacity(0)
 
-        # Ambient rotation
-        self.begin_ambient_rotation(face, about_point=fc)
+        # Change shape
+        self.wait(2)
+        cat = SVGMobject("cat_outline").family_members_with_points()[0]
+        dog = SVGMobject("dog_outline").family_members_with_points()[0]
+        dog.insert_n_curves(87)
+        for mob in cat, dog:
+            mob.match_style(preimage)
+            mob.replace(preimage, dim_to_match=0)
+        self.play(
+            Transform(preimage, cat, run_time=4),
+        )
+        cat.insert_n_curves(87)
+        preimage.become(cat)
+        self.wait(7)
+
+        # Stretch
+        self.play(rotated.rot_speed_tracker.animate.set_value(0))
+        rotated.rot_speed = 0
+        for axis in (0, 1):
+            self.play(
+                preimage.animate.stretch(3, axis),
+                rate_func=there_and_back,
+                run_time=4
+            )
+        self.wait(10)
+        self.play(rotated.rot_speed_tracker.animate.set_value(0.1))
+        self.wait(10)
+
+        # More shape changes
+        self.play(
+            preimage.animate.scale(2),
+            rate_func=there_and_back,
+            run_time=3,
+        )
+        self.play(
+            preimage.animate.become(dog),
+            path_arc=PI,
+            rate_func=there_and_back_with_pause,
+            run_time=5,
+        )
+        self.wait(6)
+
+        # Bring light source closer
+        self.play(rotated.rot_speed_tracker.animate.set_value(0))
+        anims = [
+            light.animate.move_to(4 * OUT)
+        ]
+
+        angle = rotated.angle_tracker.get_value()
+        angle_anim = rotated.angle_tracker.animate.set_value(np.round(angle / TAU, 0) * TAU)
+
+        if self.display_mode == "full_3d":
+            light_lines = self.get_light_lines(shadow)
+            lso = light_lines[0].get_stroke_opacity()
+            pso = proj_lines[0].get_stroke_opacity()
+            proj_lines.clear_updaters()
+            anims += [
+                UpdateFromAlphaFunc(proj_lines, lambda m, a: m.set_stroke(opacity=pso * (1 - a))),
+                UpdateFromAlphaFunc(light_lines, lambda m, a: m.set_stroke(opacity=lso * a)),
+                angle_anim,
+                frame.animate.reorient(20, 70),
+            ]
+            frame.clear_updaters()
+        if self.display_mode == "shadow_only":
+            anims += [
+                frame.animate.set_height(8),
+                angle_anim,
+            ]
+        self.play(*anims, run_time=4)
+        self.wait()
+        rotated.axis_tracker.move_to(UP)
+        self.play(
+            rotated.angle_tracker.animate.set_value(70 * DEGREES),
+            run_time=3
+        )
+        self.play(
+            preimage.animate.stretch(1.5, 0),
+            rate_func=there_and_back,
+            run_time=5,
+        )
+        anims = [rotated.axis_tracker.animate.move_to(RIGHT)]
+        if self.display_mode == "full_3d":
+            anims.append(frame.animate.reorient(-20, 70))
+        self.play(*anims, run_time=2)
+        self.play(
+            preimage.animate.stretch(2, 1),
+            rate_func=there_and_back,
+            run_time=7,
+        )
+
+        # More ambient motion
+        self.play(rotated.rot_speed_tracker.animate.set_value(0.1))
         self.wait(30)
 
+    def get_solid(self):
+        face = Square(side_length=2)
+        face.set_fill(BLUE, 0.5)
+        face.set_stroke(WHITE, 1)
+        return face
 
-class AmbientFaceRotationShadowView(AmbientFaceRotation):
-    show_3d_perspective = False
+
+class AmbientShapeRotationFull3d(AmbientShapeRotationPreimage):
+    display_mode = "full_3d"
+
+
+class AmbientShapeRotationShadowOnly(AmbientShapeRotationPreimage):
+    display_mode = "shadow_only"
+
+
+class SingleFaceRandomRotation(ShadowScene):
+    inf_light = True
+    n_rotations = 1
+    total_time = 60
+    plane_dims = (8, 8)
+    frame_rot_speed = 0.02
+    theta0 = -20 * DEGREES
+    CONFIG = {"random_seed": 0}
+
+    def construct(self):
+        np.random.seed(self.random_seed)
+        frame = self.camera.frame
+        frame.set_height(5.0)
+        frame.set_z(1.75)
+        frame.set_theta(self.theta0)
+        face = self.solid
+        face.shift(0.25 * IN)
+        fc = face.get_center()
+        z_axis = VGroup(Line(ORIGIN, fc), Line(fc, 10 * OUT))
+        z_axis.set_stroke(WHITE, 0.5)
+        self.add(z_axis[0], face, z_axis[1])
+
+        arrows = VGroup(
+            Line(ORIGIN, RIGHT, color=RED_D),
+            Line(ORIGIN, UP, color=GREEN_D),
+            VGroup(
+                Vector(OUT, stroke_width=4, stroke_color=BLACK),
+                Vector(OUT, stroke_width=3, stroke_color=BLUE_D),
+            )
+        )
+        arrows[:2].set_stroke(width=2)
+        arrows.set_stroke(opacity=0.8)
+        arrows.shift(fc)
+        arrows.set_stroke(opacity=0.8)
+        face.add(arrows[:2])
+
+        face = Group(face, arrows[2])
+        face.add_updater(lambda m: self.sort_to_camera(face))
+
+        arrow_shadow = get_shadow(arrows)
+        arrow_shadow.set_stroke(width=1)
+        arrow_shadow[2].set_stroke(width=[1, 1, 4, 0])
+        self.add(arrow_shadow)
+
+        self.add(z_axis[0], face, z_axis[1])
+
+        frame.add_updater(lambda f, dt: f.increment_theta(self.frame_rot_speed * dt))
+        self.wait(self.initial_wait_time)
+        for x in range(self.n_rotations):
+            self.randomly_reorient(
+                face,
+                about_point=fc,
+                angle=3 * PI,
+                run_time=1.5,
+            )
+            self.wait()
+
+        self.wait(self.total_time - 2 - self.initial_wait_time)
+
+    def get_solid(self):
+        face = Square(side_length=2)
+        face.set_fill(BLUE_E, 0.75)
+        face.set_stroke(WHITE, 0.5)
+        return face
+
+
+class RandomRotations1(SingleFaceRandomRotation):
+    initial_wait_time = 1
+    theta0 = -30 * DEGREES
+    CONFIG = {"random_seed": 10}
+
+
+class RandomRotations2(SingleFaceRandomRotation):
+    initial_wait_time = 1.5
+    theta0 = -25 * DEGREES
+    CONFIG = {"random_seed": 4}
+
+
+class RandomRotations3(SingleFaceRandomRotation):
+    initial_wait_time = 2
+    theta0 = -20 * DEGREES
+    CONFIG = {"random_seed": 5}
+
+
+class RandomRotations4(SingleFaceRandomRotation):
+    initial_wait_time = 2.5
+    theta0 = -15 * DEGREES
+    CONFIG = {"random_seed": 6}
+
+
+class AlicesFaceAverage(Scene):
+    def construct(self):
+        # Background
+        background = FullScreenRectangle()
+        self.add(background)
+
+        panels = Rectangle(2, 2.5).replicate(5)
+        panels.set_stroke(WHITE, 1)
+        panels.set_fill(BLACK, 1)
+        dots = Tex("\\dots")
+        panels.replace_submobject(3, dots)
+        panels.arrange(RIGHT, buff=0.25)
+        panels.set_width(FRAME_WIDTH - 1)
+        panels.move_to(2 * DOWN, DOWN)
+        self.add(panels)
+        panels = VGroup(*panels[:-2], panels[-1])
+
+        # Label the rotations
+        rot_labels = VGroup(
+            Tex("R_1"), Tex("R_2"), Tex("R_3"), Tex("R_n"),
+        )
+        for label, panel in zip(rot_labels, panels):
+            label.set_height(0.3)
+            label.next_to(panel, DOWN)
+
+        rot_words = Text("Sequence of random rotations")
+        rot_words.next_to(rot_labels, DOWN, MED_LARGE_BUFF)
+
+        self.play(Write(rot_words, run_time=2))
+        self.wait(2)
+        self.play(LaggedStartMap(
+            FadeIn, rot_labels,
+            shift=0.25 * DOWN,
+            lag_ratio=0.5
+        ))
+        self.wait()
+
+        # Show the shadow areas
+
+        self.embed()
 
 
 class AllPossibleOrientations(ShadowScene):
     inf_light = True
+    shrink_back_of_plane = True
     plane_dims = (12, 8)
 
     def construct(self):
@@ -1381,7 +1825,7 @@ class AllPossibleOrientations(ShadowScene):
         def update_theta_ring(ring):
             theta = get_theta()
             phi = angle_of_vector([*get_normal()[:2], 0])
-            ring.set_width(2 * 1.01 * math.sin(theta))
+            ring.set_width(max(2 * 1.01 * math.sin(theta), 1e-3))
             ring.rotate(phi - angle_of_vector([*ring.get_start()[:2], 0]))
             ring.move_to(fc + math.cos(theta) * OUT)
             return ring
@@ -1613,7 +2057,7 @@ class AllPossibleOrientations(ShadowScene):
         frame.add_updater(update_frame)
         self.wait()
 
-        # Lattitude band
+        # Latitude band
         def get_band(index):
             band = Sphere(
                 u_range=(0, TAU), v_range=theta_samples[index:index + 2],
@@ -1713,7 +2157,8 @@ class AllPossibleOrientations(ShadowScene):
         self.play(
             frame.animate.reorient(10, 60),
         )
-        theta_ring.suspend_updating()
+        theta_ring.update()
+        # theta_ring.suspend_updating()
         self.play(
             ShowCreation(theta_ring),
             Rotate(face, TAU, OUT, about_point=fc),
@@ -1979,7 +2424,7 @@ class AllPossibleOrientations(ShadowScene):
         new_lines.fix_in_frame()
 
         annotations = VGroup(
-            TexText("To avoid the annoying absolute value, just\\\\cover the north half and double it."),
+            TexText("To avoid the annoying absolute value, just\\\\cover the northern hemisphere and double it."),
             TexText("Trig identity: $\\sin(2\\theta) = 2\\cos(\\theta)\\sin(\\theta)$"),
             TexText("Antiderivative"),
             TexText("Try not to get lost in\\\\the sea of negatives..."),
@@ -1989,6 +2434,9 @@ class AllPossibleOrientations(ShadowScene):
         annotations.set_color(YELLOW)
         annotations.scale(0.5)
 
+        rect = SurroundingRectangle(new_lines[-1], buff=SMALL_BUFF)
+        rect.set_stroke(YELLOW, 2).fix_in_frame()
+
         for note, line in zip(annotations, new_lines):
             note.next_to(line, LEFT, MED_LARGE_BUFF)
 
@@ -1997,7 +2445,13 @@ class AllPossibleOrientations(ShadowScene):
             LaggedStartMap(FadeIn, annotations, lag_ratio=0.7),
             run_time=5,
         )
-        self.wait(30)
+        self.wait(20)
+        self.play(
+            new_lines[:-1].animate.set_opacity(0.5),
+            annotations[:-1].animate.set_opacity(0.5),
+            ShowCreation(rect),
+        )
+        self.wait(10)
 
     def get_solid(self):
         face = Square(side_length=2)
@@ -2011,6 +2465,73 @@ class AllPossibleOrientations(ShadowScene):
         return face
 
 
-class DiscussIntegral(Scene):
+class ThreeCamps(TeacherStudentsScene):
     def construct(self):
-        pass
+        # Setup
+        teacher = self.teacher
+        students = self.students
+
+        image = ImageMobject("Shadows_Integral_Intro")
+        image.center().set_height(FRAME_HEIGHT)
+        image.generate_target()
+        image.target.replace(self.screen)
+        self.screen.set_stroke(WHITE, 1)
+        self.screen.save_state()
+        self.screen.replace(image).set_stroke(width=0)
+
+        self.play(
+            LaggedStart(*(
+                student.animate.change("pondering", image.target)
+                for student in students
+            ), run_time=2, lag_ratio=0.2),
+            Restore(self.screen, run_time=1.5),
+            MoveToTarget(image, run_time=1.5),
+            teacher.animate.change("tease")
+        )
+        self.wait()
+
+        # Reactions
+        phrases = [
+            Text("How fun!", font_size=40),
+            Text("Wait, what?", font_size=40),
+            Text("Okay give\nme a sec...", font_size=35),
+        ]
+        modes = ["hooray", "erm", "confused"]
+        heights = np.linspace(2.0, 2.5, 3)
+        for student, phrase, mode, height in zip(reversed(students), phrases, modes, heights):
+            self.play(
+                PiCreatureSays(
+                    student, phrase, target_mode=mode,
+                    look_at_arg=image,
+                    bubble_kwargs={
+                        "direction": LEFT,
+                        "width": 3,
+                        "height": height,
+                    },
+                    bubble_class=ThoughtBubble,
+                    run_time=2
+                )
+            )
+        self.wait(4)
+
+        # Next
+        integral = Tex("\\int_0^\\pi \\dots d\\theta")
+        integral.move_to(self.hold_up_spot, DOWN)
+
+        self.play(
+            FadeOut(Group(self.screen, image), 2 * UL, scale=0.25, run_time=2),
+            LaggedStart(*(
+                FadeOut(VGroup(student.bubble, student.bubble.content))
+                for student in students
+            )),
+            LaggedStart(*(
+                student.animate.change("pondering", integral)
+                for student in students
+            )),
+            FadeIn(integral, UP),
+            teacher.animate.change("raise_right_hand", integral),
+        )
+        self.wait(3)
+
+        # Embed
+        self.embed()
