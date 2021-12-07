@@ -99,7 +99,7 @@ class ShadowScene(ThreeDScene):
         "gloss": 0.5,
         "shadow": 0.2,
     }
-    shrink_back_of_plane = False
+    limited_plane_extension = 0
     object_style = {
         "stroke_color": WHITE,
         "stroke_width": 0.5,
@@ -145,8 +145,8 @@ class ShadowScene(ThreeDScene):
         plane.replace(grid, stretch=True)
         plane.set_style(**self.plane_style)
         plane.set_stroke(width=0)
-        if self.shrink_back_of_plane:
-            plane.set_height(height // 2 + 8, about_edge=UP, stretch=True)
+        if self.limited_plane_extension > 0:
+            plane.set_height(height // 2 + self.limited_plane_extension, about_edge=UP, stretch=True)
         self.plane = plane
 
         plane.add(grid)
@@ -243,7 +243,7 @@ class ShadowScene(ThreeDScene):
         light_lines.add_updater(update_lines)
         return light_lines
 
-    def randomly_reorient(self, mobject=None, angle=TAU, about_point=None, **kwargs):
+    def random_toss(self, mobject=None, angle=TAU, about_point=None, **kwargs):
         if mobject is None:
             mobject = self.solid
 
@@ -260,6 +260,30 @@ class ShadowScene(ThreeDScene):
             UpdateFromAlphaFunc(mobject, update),
             **kwargs
         )
+
+    def randomly_reorient(self, solid=None, about_point=None):
+        solid = self.solid if solid is None else solid
+        solid.rotate(
+            random.uniform(0, TAU),
+            axis=normalize(np.random.uniform(-1, 1, 3)),
+            about_point=about_point,
+        )
+        return solid
+
+    def init_frame_rotation(self, factor=0.0025, max_speed=0.01):
+        frame = self.camera.frame
+        frame.d_theta = 0
+
+        def update_frame(frame, dt):
+            frame.d_theta += -factor * frame.get_theta()
+            frame.increment_theta(clip(
+                factor * frame.d_theta,
+                -max_speed * dt,
+                max_speed * dt
+            ))
+
+        frame.add_updater(update_frame)
+        return frame
 
 
 class IntroduceShadow(ShadowScene):
@@ -303,7 +327,7 @@ class IntroduceShadow(ShadowScene):
                 for mob in (cube, shadow)
             )
         )
-        self.randomly_reorient(run_time=3, angle=TAU)
+        self.random_toss(run_time=3, angle=TAU)
 
         # Change size and orientation
         outline.update()
@@ -317,7 +341,7 @@ class IntroduceShadow(ShadowScene):
             run_time=2,
             rate_func=there_and_back,
         )
-        self.randomly_reorient(run_time=2, angle=PI)
+        self.random_toss(run_time=2, angle=PI)
         self.wait()
         self.begin_ambient_rotation(cube)
         self.play(FadeIn(subquestion, 0.5 * DOWN))
@@ -533,7 +557,7 @@ class IntroduceShadow(ShadowScene):
         samples.shift(1.5 * LEFT)
         self.add(samples)
         for x in range(9):
-            self.randomly_reorient()
+            self.random_toss()
             sample = area_label[1].copy()
             sample.clear_updaters()
             sample.fix_in_frame()
@@ -567,7 +591,7 @@ class IntroduceShadow(ShadowScene):
         self.wait()
 
         for x in range(10):
-            self.randomly_reorient()
+            self.random_toss()
             self.wait()
 
 
@@ -664,7 +688,7 @@ class StartSimple(Scene):
 
 class FocusOnOneFace(ShadowScene):
     inf_light = True
-    shrink_back_of_plane = True
+    limited_plane_extension = 8
 
     def construct(self):
         # Some random tumbling
@@ -679,9 +703,17 @@ class FocusOnOneFace(ShadowScene):
         words.fix_in_frame()
         words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         words.to_corner(UL)
+        average_words = Text("Average over all orientations")
+        average_words.move_to(words[0], LEFT)
+        average_words.fix_in_frame()
+        self.add(average_words)
 
-        self.randomly_reorient(run_time=3, rate_func=linear)
-        self.play(FadeIn(words[0], scale=0.75, run_time=0.5))
+        self.random_toss(run_time=3, rate_func=linear)
+        self.play(
+            FadeIn(words[0], 0.75 * UP),
+            FadeOut(average_words, 0.75 * UP),
+            run_time=0.5,
+        )
         self.wait()
 
         # Just one face
@@ -1191,6 +1223,23 @@ class FocusOnOneFace(ShadowScene):
         self.wait(10)
 
 
+class NotQuiteRight(TeacherStudentsScene):
+    def construct(self):
+        self.remove(self.background)
+        self.teacher_says(
+            "Not quite right...",
+            target_mode="hesitant",
+            bubble_kwargs={"height": 3, "width": 4},
+            added_anims=[
+                self.get_student_changes(
+                    "pondering", "thinking", "erm",
+                    look_at_arg=self.screen,
+                )
+            ]
+        )
+        self.wait(4)
+
+
 class DiscussLinearity(Scene):
     def construct(self):
         # Set background
@@ -1566,7 +1615,47 @@ class AmbientShapeRotationShadowOnly(AmbientShapeRotationPreimage):
     display_mode = "shadow_only"
 
 
+class IsntThatObvious(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Isn't that obvious?"),
+            bubble_kwargs={
+                "height": 3,
+                "width": 4,
+                "direction": LEFT,
+            },
+            target_mode="angry",
+            look_at_arg=self.screen,
+            added_anims=[LaggedStart(
+                self.teacher.animate.change("guilty"),
+                self.students[0].animate.change("pondering", self.screen),
+                self.students[1].animate.change("erm", self.screen),
+            )]
+        )
+        self.wait(2)
+        self.play(
+            self.students[0].animate.change("hesitant"),
+        )
+        self.wait(2)
+
+
+class WonderAboutAverage(Scene):
+    def construct(self):
+        randy = Randolph()
+        randy.to_edge(DOWN)
+        randy.look(RIGHT)
+        self.play(PiCreatureBubbleIntroduction(
+            randy, TexText("How do you think\\\\about this average"),
+            target_mode="confused",
+            run_time=2
+        ))
+        for x in range(2):
+            self.play(Blink(randy))
+            self.wait(2)
+
+
 class SingleFaceRandomRotation(ShadowScene):
+    initial_wait_time = 0
     inf_light = True
     n_rotations = 1
     total_time = 60
@@ -1615,11 +1704,13 @@ class SingleFaceRandomRotation(ShadowScene):
         frame.add_updater(lambda f, dt: f.increment_theta(self.frame_rot_speed * dt))
         self.wait(self.initial_wait_time)
         for x in range(self.n_rotations):
-            self.randomly_reorient(
+            self.random_toss(
                 face,
                 about_point=fc,
                 angle=3 * PI,
-                run_time=1.5,
+                # run_time=1.5,
+                run_time=8,
+                rate_func=smooth,
             )
             self.wait()
 
@@ -1825,9 +1916,15 @@ class AlicesFaceAverage(Scene):
         sample = sample_average[0][:len("Sample")]
         cross = Cross(sample)
         cross.insert_n_curves(20)
-        cross.scale(1.25)
+        cross.scale(1.5)
 
-        self.play(ShowCreationThenFadeAround(sample, surrounding_rectangle_config={"color": RED}))
+        self.play(
+            FlashAround(sample_average[2:], run_time=3, time_width=1.5)
+        )
+        self.play(
+            FlashUnder(sample_average[:2], color=RED),
+            run_time=2
+        )
         self.play(
             GrowFromCenter(brace),
             FadeIn(lim, 0.25 * DOWN),
@@ -1865,7 +1962,7 @@ class AlicesFaceAverage(Scene):
 
 class ManyShadows(SingleFaceRandomRotation):
     plane_dims = (4, 4)
-    shrink_back_of_plane = False
+    limited_plane_extension = 2
 
     def construct(self):
         self.clear()
@@ -1875,8 +1972,11 @@ class ManyShadows(SingleFaceRandomRotation):
         face = self.solid
         shadow = self.shadow
 
-        planes = plane.replicate(30)
-        for plane in planes:
+        n_rows = 3
+        n_cols = 10
+
+        planes = plane.replicate(n_rows * n_cols)
+        for n, plane in zip(it.count(1), planes):
             face.rotate(angle=random.uniform(0, TAU), axis=normalize(np.random.uniform(-1, 1, 3)))
             shadow.update()
             sc = shadow.deepcopy()
@@ -1884,14 +1984,28 @@ class ManyShadows(SingleFaceRandomRotation):
             sc.set_fill(interpolate_color(BLUE_E, BLACK, 0.5), 0.75)
             plane.set_gloss(0)
             plane.add_to_back(sc)
+            area = DecimalNumber(get_norm(sc.get_area_vector() / 4.0), font_size=56)
+            label = VGroup(Tex(f"f(R_{n}) = "), area)
+            label.arrange(RIGHT)
+            label.set_width(0.8 * plane.get_width())
+            label.next_to(plane, UP, SMALL_BUFF)
+            label.set_color(WHITE)
+            plane.add(label)
 
-        planes.arrange_in_grid(3, 10, buff=LARGE_BUFF)
-        planes.set_width(FRAME_WIDTH)
+        planes.arrange_in_grid(n_rows, n_cols, buff=LARGE_BUFF)
+        planes.set_width(15)
         planes.to_edge(DOWN)
+        planes.update()
 
-        self.play(LaggedStartMap(
-            FadeIn, planes, scale=1.2, lag_ratio=0.4, run_time=10,
-        ))
+        self.play(
+            LaggedStart(
+                *(
+                    FadeIn(plane, scale=1.1)
+                    for plane in planes
+                ),
+                lag_ratio=0.6, run_time=10
+            )
+        )
         self.wait()
 
         self.embed()
@@ -1899,7 +2013,7 @@ class ManyShadows(SingleFaceRandomRotation):
 
 class AllPossibleOrientations(ShadowScene):
     inf_light = True
-    shrink_back_of_plane = True
+    limited_plane_extension = 6
     plane_dims = (12, 8)
 
     def construct(self):
@@ -2240,9 +2354,8 @@ class AllPossibleOrientations(ShadowScene):
 
         for mob in [sum_brace, continuum, zero, zero_arrow, nonsense_brace, nonsense]:
             mob.fix_in_frame()
-            mob.set_color(RED)
-            if mob.get_fill_opacity() > 0:
-                mob.set_backstroke()
+            mob.set_color(YELLOW)
+        VGroup(nonsense_brace, nonsense).set_color(RED)
 
         face.start_time = self.time
         face.clear_updaters()
@@ -2497,7 +2610,6 @@ class AllPossibleOrientations(ShadowScene):
             frame.animate.reorient(10, 60),
         )
         theta_ring.update()
-        # theta_ring.suspend_updating()
         self.play(
             ShowCreation(theta_ring),
             Rotate(face, TAU, OUT, about_point=fc),
@@ -2806,6 +2918,7 @@ class AllPossibleOrientations(ShadowScene):
 
 class ThreeCamps(TeacherStudentsScene):
     def construct(self):
+        self.remove(self.background)
         # Setup
         teacher = self.teacher
         students = self.students
@@ -2823,8 +2936,6 @@ class ThreeCamps(TeacherStudentsScene):
                 student.animate.change("pondering", image.target)
                 for student in students
             ), run_time=2, lag_ratio=0.2),
-            Restore(self.screen, run_time=1.5),
-            MoveToTarget(image, run_time=1.5),
             teacher.animate.change("tease")
         )
         self.wait()
@@ -2858,7 +2969,6 @@ class ThreeCamps(TeacherStudentsScene):
         integral.move_to(self.hold_up_spot, DOWN)
 
         self.play(
-            FadeOut(Group(self.screen, image), 2 * UL, scale=0.25, run_time=2),
             LaggedStart(*(
                 FadeOut(VGroup(student.bubble, student.bubble.content))
                 for student in students
@@ -2874,3 +2984,138 @@ class ThreeCamps(TeacherStudentsScene):
 
         # Embed
         self.embed()
+
+
+class TwoToOneCover(ShadowScene):
+    inf_light = True
+    plane_dims = (20, 12)
+    limited_plane_extension = 8
+    highlighted_face_color = YELLOW
+
+    def construct(self):
+        # Setup
+        frame = self.camera.frame
+        frame.reorient(-20, 75)
+        frame.set_z(3)
+        self.init_frame_rotation()
+
+        cube = self.solid
+        cube.add_updater(lambda m: self.sort_to_camera(m))
+        cube.rotate(PI / 3, normalize([3, 4, 5]))
+
+        outline = self.get_shadow_outline()
+
+        # Inequality
+        t2c = {
+            "Shadow": GREY_B,
+            "Cube": BLUE_D,
+            "Face$_i$": YELLOW,
+        }
+        ineq = TexText(
+            "Area(Shadow(Cube))",
+            " $<$ ",
+            " $\\displaystyle \\sum_{i=1}^6$ ",
+            "Area(Shadow(Face$_i$))",
+            tex_to_color_map=t2c,
+            isolate=["(", ")"],
+        )
+        ineq.to_edge(UP, buff=MED_SMALL_BUFF)
+        ineq.fix_in_frame()
+
+        lhs = ineq.slice_by_tex(None, "<")
+        lt = ineq.get_part_by_tex("<")
+        rhs = ineq.slice_by_tex("sum", None)
+        af_label = ineq[-7:]
+        lhs.save_state()
+        lhs.set_x(0)
+
+        # Shadow of the cube
+        wireframe = cube.copy()
+        for face in wireframe:
+            face.set_fill(opacity=0)
+            face.set_stroke(WHITE, 1)
+        wireframe_shadow = wireframe.copy()
+        wireframe_shadow.apply_function(flat_project)
+        wireframe_shadow.set_gloss(0)
+        wireframe_shadow.set_reflectiveness(0)
+        wireframe_shadow.set_shadow(0)
+        for face in wireframe_shadow:
+            face.set_stroke(GREY_D, 1)
+
+        self.play(
+            ShowCreation(wireframe, lag_ratio=0.1),
+            Write(lhs[2:-1])
+        )
+        self.play(TransformFromCopy(wireframe, wireframe_shadow))
+        self.play(*map(FadeOut, (wireframe, wireframe_shadow)))
+        self.wait()
+        self.play(
+            FadeIn(lhs[:2]), FadeIn(lhs[-1]),
+            Write(outline),
+            VShowPassingFlash(
+                outline.copy().set_stroke(YELLOW, 4),
+                time_width=1.5
+            ),
+        )
+        self.wait()
+
+        # Show faces and shadows
+        cube.save_state()
+        faces, face_shadows = self.get_faces_and_face_shadows()
+        faces[:3].set_opacity(0.1)
+        face_shadow_lines = VGroup(*(
+            VGroup(*(
+                Line(v1, v2)
+                for v1, v2 in zip(f.get_vertices(), fs.get_vertices())
+            ))
+            for f, fs in zip(faces, face_shadows)
+        ))
+        face_shadow_lines.set_stroke(YELLOW, 0.5, 0.5)
+
+        self.play(
+            Restore(lhs),
+            FadeIn(af_label, shift=0.5 * RIGHT)
+        )
+        self.play(
+            *(
+                LaggedStart(*(
+                    VFadeInThenOut(sm)
+                    for sm in reversed(mobject)
+                ), lag_ratio=0.5, run_time=6)
+                for mobject in [faces, face_shadows, face_shadow_lines]
+            ),
+        )
+        self.play(
+            ApplyMethod(cube.space_out_submobjects, 1.7, rate_func=there_and_back_with_pause, run_time=8),
+            ApplyMethod(frame.reorient, 20, run_time=8),
+            Write(lt),
+            Write(rhs[0]),
+        )
+        self.wait(2)
+
+        # Show a given pair of faces
+        face_pair = faces[:2].copy()
+
+        # Half of sum
+        eq_half = Tex("=", "\\frac{1}{2}")
+        eq_half.move_to(lt, LEFT)
+        eq_half.fix_in_frame()
+
+        self.play(
+            FadeOut(lt, UP),
+            Write(eq_half),
+            rhs.animate.next_to(eq_half, RIGHT, buff=0.15),
+        )
+
+        # Show the double cover
+
+        # Embed
+        self.embed()
+
+    def get_faces_and_face_shadows(self):
+        faces = self.solid.deepcopy()
+        VGroup(*faces).set_fill(self.highlighted_face_color)
+
+        shadows = get_pre_shadow(faces, opacity=0.7)
+        shadows.apply_function(flat_project)
+        return faces, shadows
