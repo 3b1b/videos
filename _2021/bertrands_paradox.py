@@ -601,14 +601,15 @@ class ChordsInSpaceWithCircle(RandomChordScene):
         # Show colors
         key = TexText(
             "Blue $\\Rightarrow$ Chord > \\text{Triangle side}\\\\"
-            "Red $\\Rightarrow$ Chord > \\text{Triangle side}\\\\",
+            "Red $\\Rightarrow$ Chord < \\text{Triangle side}\\\\",
             tex_to_color_map={
                 "Blue": BLUE,
                 "Red": RED,
             }
         )
         key.to_edge(UP)
-        key.set_backstroke()
+        key.set_backstroke(width=5)
+        key[len(key) // 2:].align_to(key[:len(key) // 2], RIGHT)
 
         self.play(
             Restore(chords),
