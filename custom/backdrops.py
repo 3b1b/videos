@@ -51,7 +51,8 @@ class VideoWrapper(Scene):
         screen.to_edge(DOWN)
 
         if self.animate_boundary:
-            screen = AnimatedBoundary(screen)
+            boundary = AnimatedBoundary(screen)
+            self.add(boundary)
             wait_time = self.wait_time
         else:
             wait_time = 1
