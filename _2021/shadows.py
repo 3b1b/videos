@@ -18,7 +18,7 @@ def project_to_xy_plane(p1, p2):
 
 def flat_project(point):
     # return [*point[:2], 0]
-    return [*point[:2], 0.02 * point[2]]  # TODO
+    return [*point[:2], 0.05 * point[2]]  # TODO
 
 
 def get_pre_shadow(mobject, opacity):
@@ -106,6 +106,27 @@ def get_overline(mob):
     overline = Underline(mob).next_to(mob, UP, buff=0.05)
     overline.set_stroke(WHITE, 2)
     return overline
+
+
+def get_key_result(solid_name, color=BLUE):
+    eq = Tex(
+        "\\text{Area}\\big(\\text{Shadow}(\\text{" + solid_name + "})\\big)",
+        "=",
+        "\\frac{1}{2}", "{c}", "\\cdot",
+        "(\\text{Surface area})",
+        tex_to_color_map={
+            "\\text{Shadow}": GREY_B,
+            f"\\text{{{solid_name}}}": color,
+            "\\text{Solid}": BLUE,
+            "{c}": RED,
+        }
+    )
+    eq.add_to_back(get_overline(eq[:5]))
+    return eq
+
+
+def get_surface_area(solid):
+    return sum(get_norm(f.get_area_vector()) for f in solid)
 
 
 # Scenes
@@ -309,6 +330,58 @@ class ShadowScene(ThreeDScene):
 
         frame.add_updater(update_frame)
         return frame
+
+
+class SimpleWriting(Scene):
+    text = ""
+    font = "Better Grade"
+    color = WHITE
+    font_size = 48
+
+    def construct(self):
+        words = Text(self.text, font=self.font, font_size=self.font_size)
+        words.set_color(self.color)
+        self.play(Write(words))
+        self.wait()
+
+
+class AliceName(SimpleWriting):
+    text = "Alice"
+    font_size = 72
+
+
+class BobName(SimpleWriting):
+    text = "Bob"
+    font = "Kalam"
+
+
+class BobWords(SimpleWriting):
+    font = "Kalam"
+    font_size = 24
+    words1 = "Embraces calculations"
+    words2 = "Loves specifics"
+
+    def construct(self):
+        words = VGroup(*(
+            Text(text, font=self.font, font_size=self.font_size)
+            for text in (self.words1, self.words2)
+        ))
+        words.arrange(DOWN)
+
+        for word in words:
+            self.play(Write(word))
+            self.wait()
+
+
+class AliceWords(BobWords):
+    font = "Better Grade"
+    words1 = "Procrastinates calculations"
+    words2 = "Seeks generality"
+    font_size = 48
+
+
+class AskAboutConditions(SimpleWriting):
+    text = "Which properties matter?"
 
 
 class IntroduceShadow(ShadowScene):
@@ -658,6 +731,13 @@ class AskAboutAveraging(TeacherStudentsScene):
         self.remove(self.background)
         sts = self.students
         tch = self.teacher
+
+        self.change_student_modes(
+            "maybe", "thinking", "erm",
+            look_at_arg=self.screen,
+            added_anims=[self.teacher.animate.change("raise_right_hand", self.screen)]
+        )
+        self.wait(3)
         self.play(
             PiCreatureBubbleIntroduction(
                 sts[2], TexText("What does that\\\\mean, exactly?"),
@@ -672,17 +752,218 @@ class AskAboutAveraging(TeacherStudentsScene):
             )
         )
         self.wait(4)
-        self.teacher_says(
-            TexText("Ah, very good\\\\question!"),
-            target_mode="hooray",
+        self.student_says(
+            "Can we do an experiment?",
+            target_mode="raise_left_hand",
+            student_index=1,
+        )
+        self.wait(4)
+        self.student_says(
+            TexText("But what defines a\\\\``random'' toss?"),
+            look_at_arg=self.screen,
+            target_mode="hesitant",
+            student_index=2,
             added_anims=[
-                sts[0].animate.change("maybe", tch.eyes),
-                sts[1].animate.change("thinking", tch.eyes),
+                self.teacher.animate.change("guilty"),
+                self.students[0].animate.change("erm"),
             ]
         )
+        self.wait(4)
+        self.play(LaggedStart(
+            self.students[0].animate.change("pondering", self.screen),
+            self.students[1].animate.change("maybe", self.screen),
+            self.teacher.animate.change("tease", self.screen),
+        ))
+        self.wait(2)
+        self.teacher_says(TexText("Hold off until\\\\the end"))
         self.wait(3)
+        self.change_student_modes(
+            "thinking", "tease", "pondering",
+            look_at_arg=self.screen,
+            added_anims=[self.teacher.animate.change("tease", self.students)]
+        )
+        self.wait(4)
+
+
+class MeanCalculation(Scene):
+    def construct(self):
+        values = [1.55, 1.33, 1.46, 1.34, 1.50, 1.26, 1.42, 1.54, 1.51]
+        nums = VGroup(*(
+            DecimalNumber(x)
+            for x in values
+        ))
+        nums.arrange(DOWN, aligned_edge=LEFT)
+        nums.to_corner(UR, buff=LARGE_BUFF).shift(0.5 * LEFT)
+
+        self.add(nums)
+
+        mean_label = Text("Mean", font_size=36)
+        mean_label.set_color(GREEN)
+        mean_label.set_backstroke()
+        mean_arrow = Vector(0.25 * UR)
+        mean_arrow.match_color(mean_label)
+        mean_arrow.next_to(mean_label, UR, SMALL_BUFF)
+        mean_label.add(mean_arrow)
+
+        for n in range(len(nums)):
+            brace = Brace(nums[:n + 1], LEFT, buff=SMALL_BUFF)
+            mean = DecimalNumber(np.mean(values[:n + 1]))
+            mean.next_to(brace, LEFT)
+            mean.match_color(mean_label)
+            VGroup(brace, mean).set_backstroke()
+            mean_label.next_to(mean, DL, SMALL_BUFF)
+
+            self.add(brace, mean, mean_label)
+            self.wait(0.5)
+            self.remove(brace, mean)
+        self.add(brace, mean)
+        self.wait()
 
         # Embed
+        self.embed()
+
+
+class DescribeSO3(ShadowScene):
+    def construct(self):
+        frame = self.camera.frame
+        frame.set_z(1)
+        frame.reorient(0)
+        cube = self.solid
+        cube.set_opacity(0.95)
+        cube.move_to(ORIGIN)
+        self.remove(self.plane)
+        self.remove(self.shadow)
+
+        x_point = VectorizedPoint(cube.get_right())
+        y_point = VectorizedPoint(cube.get_top())
+        z_point = VectorizedPoint(cube.get_zenith())
+        cube.add(x_point, y_point, z_point)
+
+        def get_matrix():
+            return np.array([
+                x_point.get_center(),
+                y_point.get_center(),
+                z_point.get_center(),
+            ]).T
+
+        def get_mat_mob():
+            matrix = DecimalMatrix(
+                get_matrix(),
+                element_to_mobject_config=dict(
+                    num_decimal_places=2,
+                    edge_to_fix=LEFT,
+                    include_sign=True,
+                ),
+                h_buff=2.0,
+                element_alignment_corner=LEFT,
+            )
+            matrix.fix_in_frame()
+            matrix.set_height(1.25)
+            brackets = matrix.get_brackets()
+            brackets[1].move_to(brackets[0].get_center() + 3.45 * RIGHT)
+            matrix.to_corner(UL)
+            return matrix
+
+        matrix = always_redraw(get_mat_mob)
+        self.add(matrix)
+
+        # Space of orientations
+        self.begin_ambient_rotation(cube, speed=0.4)
+        self.wait(2)
+
+        question = Text("What is the space of all orientations?")
+        question.to_corner(UR)
+        question.fix_in_frame()
+        SO3 = Tex("SO(3)")
+        SO3.next_to(question, DOWN)
+        SO3.set_color(BLUE)
+        SO3.fix_in_frame()
+
+        self.play(Write(question))
+        self.wait(2)
+        self.play(FadeIn(SO3, DOWN))
+        self.wait(2)
+        self.play(SO3.animate.next_to(matrix, DOWN, MED_LARGE_BUFF))
+        self.wait(5)
+
+        new_question = Text(
+            "What probability distribution are we placing\n"
+            "on the space of all orientations?",
+            t2c={"probability distribution": YELLOW},
+            t2s={"probability distribution": ITALIC},
+        )
+        new_question.match_width(question)
+        new_question.move_to(question, UP)
+        new_question.fix_in_frame()
+
+        n = len("the space of all orientations?")
+        self.play(
+            FadeTransform(question[-n:], new_question[-n:]),
+            FadeOut(question[:-n]),
+            FadeIn(new_question[:-n]),
+        )
+        self.wait()
+        cube.clear_updaters()
+
+        N = 15
+        cube_field = cube.get_grid(N, N)
+        cube_field.set_height(10)
+
+        for n, c in enumerate(cube_field):
+            c.rotate(PI * (n // N) / N, axis=RIGHT)
+            c.rotate(PI * (n % N) / N, axis=UP)
+            for face in c:
+                face.set_stroke(width=0)
+            self.sort_to_camera(c)
+
+        matrix.clear_updaters()
+        self.play(
+            FadeTransform(cube, cube_field[0]),
+            LaggedStartMap(FadeIn, cube_field, run_time=15, lag_ratio=0.1)
+        )
+        self.add(cube_field)
+        self.wait()
+
+
+class PauseAndPonder(TeacherStudentsScene):
+    def construct(self):
+        self.remove(self.background)
+
+        self.teacher_says(
+            TexText("The goal is\\\\not speed."),
+            added_anims=[self.get_student_changes(
+                "tease", "well", "pondering",
+                look_at_arg=self.screen
+            )]
+        )
+        self.wait(2)
+        self.play(
+            RemovePiCreatureBubble(self.teacher, target_mode="tease"),
+            PiCreatureBubbleIntroduction(
+                self.students[2],
+                Lightbulb(),
+                bubble_class=ThoughtBubble,
+                bubble_creation_class=lambda m: FadeIn(m, lag_ratio=0.1),
+                bubble_kwargs=dict(
+                    height=3,
+                    width=3,
+                    direction=LEFT,
+                ),
+                target_mode="thinking",
+                look_at_arg=self.screen,
+            )
+        )
+        self.wait(3)
+        self.teacher_says(
+            "Pause and ponder!",
+            target_mode="well",
+            added_anims=[self.get_student_changes(
+                "pondering", "tease", "thinking"
+            )],
+            run_time=1
+        )
+        self.wait(5)
+
         self.embed()
 
 
@@ -704,7 +985,9 @@ class StartSimple(Scene):
             "Start with the simplest non-trivial\n"
             "variant of the problem you can."
         )
-        words.next_to(line, DOWN, LARGE_BUFF)
+        words.next_to(line, DOWN, MED_SMALL_BUFF)
+        rect = BackgroundRectangle(words, fill_opacity=1, buff=SMALL_BUFF)
+        words.set_backstroke(width=5)
 
         # Shapes
         cube = VCube()
@@ -713,7 +996,7 @@ class StartSimple(Scene):
         cube.set_opacity(0.75)
         cube.set_stroke(WHITE, 0.5, 0.5)
         cube.set_height(2)
-        cube.rotate(PI / 10, [1, 2, 0])
+        cube.rotate(PI / 4, [1, 2, 0])
         cube.sort(lambda p: p[2])
         cube = Group(*cube)
         cube.set_gloss(1)
@@ -723,6 +1006,9 @@ class StartSimple(Scene):
         group = Group(cube, arrow, face)
         group.arrange(RIGHT, buff=MED_LARGE_BUFF)
         group.next_to(words, DOWN, LARGE_BUFF)
+        group.set_width(2)
+        group.to_edge(RIGHT)
+        group.set_y(0)
 
         self.camera.light_source.set_x(-4)
 
@@ -730,9 +1016,15 @@ class StartSimple(Scene):
             ShowCreation(line),
             Write(title, run_time=1),
         )
+        self.wait()
         self.play(
-            FadeIn(words, DOWN),
+            FadeIn(rect),
+            FadeIn(words, lag_ratio=0.1),
+            run_time=2
         )
+        self.wait()
+        self.play(FlashAround(words.get_part_by_text("non-trivial"), run_time=2))
+        self.wait()
         self.play(
             LaggedStart(*map(DrawBorderThenFill, cube)),
             ShowCreation(arrow),
@@ -1431,24 +1723,234 @@ class DiscussLinearity(Scene):
         self.play(ShowCreationThenFadeAround(f_rot, run_time=2))
         self.wait(1)
 
+        # Determinant
+        factor = area_exprs[1].get_part_by_tex('factor')
+        rect = SurroundingRectangle(factor, buff=SMALL_BUFF)
+        rect.set_stroke(YELLOW, 2)
+
+        rot = Matrix([["v_1", "w_1"], ["v_2", "w_2"], ["v_3", "w_3"]], h_buff=1.0)
+        rot.set_column_colors(GREEN, RED)
+        proj = Matrix([["1", "0", "0"], ["0", "1", "0"]], h_buff=0.6)
+        prod = VGroup(proj, rot)
+        prod.arrange(RIGHT, buff=SMALL_BUFF)
+        prod.set_height(0.8)
+        det = Tex(
+            "\\text{det}", "\\Big(", "\\Big)",
+            tex_to_color_map={
+                "\\text{det}": YELLOW,
+                # "rot": BLUE_D,
+                # "proj": BLUE_B,
+            },
+            font_size=36
+        )
+        det[1:].match_height(prod, stretch=True)
+        det.to_edge(UP)
+        prod.next_to(det[1], RIGHT, SMALL_BUFF)
+        det[2].next_to(prod, RIGHT, SMALL_BUFF)
+        det.add(prod)
+        det.center().to_edge(UP, buff=0.25)
+        det_rect = SurroundingRectangle(det, buff=SMALL_BUFF)
+        det_rect.set_stroke(YELLOW, 1)
+
+        rot_brace = Brace(rot, DOWN, buff=SMALL_BUFF)
+        details = Text("Need to work out rotation matrix...", font_size=20)
+        details.next_to(rot_brace, DOWN, SMALL_BUFF)
+        details.set_color(GREY_A)
+
+        arrow = Arrow(rect.get_corner(UL), det.get_right())
+        arrow.set_color(YELLOW)
+
+        self.play(ShowCreation(rect))
+        self.play(
+            FadeTransform(rect.copy(), det_rect),
+            FadeTransform(factor.copy(), det),
+            ShowCreation(arrow)
+        )
+        self.wait()
+        self.play(
+            FadeOut(det_rect),
+            GrowFromCenter(rot_brace),
+            FadeIn(details),
+        )
+        self.wait()
+        self.play(LaggedStart(*map(FadeOut, (
+            *det, rot_brace, details
+        )), lag_ratio=0.3, run_time=2))
+
         # Any shape
-        # self.play(
-        #     FadeTransform(
-        #         shape_labels[0].get_part_by_text("Some"),
-        #         shape_labels[1].get_part_by_text("Any"),
-        #     ),
-        #     FadeTransform(
-        #         shape_labels[0].get_part_by_text("shape"),
-        #         shape_labels[1].get_part_by_text("shape"),
-        #     ),
-        # )
-        # self.wait(2)
+        ind_words = Text("Independent of the shape!", font_size=30)
+        ind_words.move_to(det)
+        ind_words.set_color(GREEN)
+
+        self.play(
+            arrow.animate.match_points(Arrow(factor.get_corner(UL), ind_words.get_corner(DR))),
+            Write(ind_words, run_time=1),
+        )
+        self.wait()
+        self.play(LaggedStart(*map(FadeOut, (ind_words, arrow, rect))))
+        self.wait()
 
         # Cross out right
         cross = Cross(VGroup(equals[1], f_rot, times_A))
         cross.insert_n_curves(20)
         self.play(ShowCreation(cross))
         self.wait(3)
+
+
+class Matrices(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+
+        kw = {
+            "v_buff": 0.7,
+            "bracket_v_buff": 0.15,
+            "bracket_h_buff": 0.15,
+        }
+        matrices = VGroup(
+            Matrix([["v_1", "w_1"], ["v_2", "w_2"], ["v_3", "w_3"]], h_buff=1.0, **kw),
+            Matrix([["1", "0", "0"], ["0", "1", "0"]], h_buff=0.6, **kw),
+        )
+        matrices.set_color(GREY_A)
+        matrices[0].set_column_colors(GREEN, RED)
+        matrices.arrange(LEFT, buff=SMALL_BUFF)
+        matrices.scale(0.5)
+        mat_product = matrices[:2].copy()
+
+        vectors = VGroup(
+            Matrix([["x_0"], ["y_0"]], **kw),
+            Matrix([["x_1"], ["y_1"], ["z_1"]], **kw),
+            Matrix([["x_2"], ["y_2"]], **kw),
+        )
+
+        for vect, x in zip(vectors, [-6, 0, 6]):
+            vect.set_x(x)
+            vect.set_y(2.5)
+
+        arrows = VGroup(
+            Arrow(vectors[0], vectors[1]),
+            Arrow(vectors[1], vectors[2]),
+            Arrow(vectors[0], vectors[2]),
+        )
+
+        for mat, arrow in zip((*matrices[:2], mat_product), arrows):
+            mat.next_to(arrow, UP, SMALL_BUFF)
+
+        # Animations
+        self.add(vectors[0])
+        for i in range(2):
+            self.play(
+                FadeTransform(vectors[i].copy(), vectors[i + 1]),
+                ShowCreation(arrows[i]),
+                FadeIn(matrices[i], 0.5 * RIGHT)
+            )
+            self.wait()
+
+        self.play(
+            Transform(arrows[0], arrows[2]),
+            Transform(arrows[1], arrows[2]),
+            Transform(matrices, mat_product),
+            FadeOut(vectors[1], scale=0),
+        )
+
+
+class DefineDeterminant(Scene):
+    def construct(self):
+        # Planes
+        plane = NumberPlane((-2, 2), (-3, 3))
+        plane.set_height(FRAME_HEIGHT)
+        planes = VGroup(plane, plane.deepcopy())
+        planes[0].to_edge(LEFT, buff=0)
+        planes[1].to_edge(RIGHT, buff=0)
+        planes[1].set_stroke(GREY_A, 1, 0.5)
+        planes[1].faded_lines.set_opacity(0)
+
+        titles = VGroup(
+            Text("Input"),
+            Text("Output"),
+        )
+        for title, plane in zip(titles, planes):
+            title.next_to(plane.get_top(), DOWN)
+            title.add_background_rectangle()
+
+        self.add(planes)
+
+        # Area
+        square = Square()
+        square.set_stroke(YELLOW, 2)
+        square.set_fill(YELLOW, 0.5)
+        square.replace(Line(planes[0].c2p(-1, -1), planes[0].c2p(1, 1)))
+        area_label = TexText("Area", "=", "$A$")
+        area_label.set_color_by_tex("$A$", YELLOW)
+        area_label.next_to(square, UP)
+        area_label.add_background_rectangle()
+        self.play(
+            DrawBorderThenFill(square),
+            FadeIn(area_label, 0.25 * UP, rate_func=squish_rate_func(smooth, 0.5, 1))
+        )
+        self.wait()
+
+        # Arrow
+        arrow = Arrow(*planes)
+        arrow_label = Text("Linear transformation", font_size=30)
+        arrow_label.next_to(arrow, UP)
+        mat_mob = Matrix([["a", "b"], ["c", "d"]], h_buff=0.7, v_buff=0.7)
+        mat_mob.set_height(0.7)
+        mat_mob.next_to(arrow, DOWN)
+
+        # Apply matrix
+        matrix = [
+            [0.5, 0.4],
+            [0.25, 0.75],
+        ]
+
+        for mob in planes[0], square:
+            mob.output = mob.deepcopy()
+            mob.output.apply_matrix(matrix, about_point=planes[0].c2p(0, 0))
+            mob.output.move_to(planes[1].get_center())
+
+        planes[0].output.set_stroke(width=1, opacity=1)
+        planes[0].output.faded_lines.set_opacity(0)
+
+        self.play(
+            ReplacementTransform(planes[0].copy().fade(1), planes[0].output, run_time=2),
+            ReplacementTransform(square.copy().fade(1), square.output, run_time=2),
+            ShowCreation(arrow),
+            FadeIn(arrow_label, 0.25 * RIGHT),
+            FadeIn(mat_mob, 0.25 * RIGHT),
+        )
+        self.wait()
+
+        # New area
+        new_area_label = Tex(
+            "\\text{Area} = ", "{c}", "\\cdot", "{A}",
+            tex_to_color_map={
+                "{c}": RED,
+                "{A}": YELLOW,
+            }
+        )
+        new_area_label.add_background_rectangle()
+        new_area_label.next_to(square.output, UP)
+        new_area_label.shift(0.5 * RIGHT)
+
+        mmc = mat_mob.copy()
+        mmc.scale(1.5)
+        det = VGroup(get_det_text(mmc), mmc)
+        det.set_height(new_area_label.get_height() * 1.2)
+        det.move_to(new_area_label.get_part_by_tex("c"), RIGHT)
+        det.match_y(new_area_label[-1])
+        det_name = TexText("``Determinant''", font_size=36)
+        det_name.next_to(det, UP, MED_LARGE_BUFF)
+        det_name.set_color(RED)
+        det_name.add_background_rectangle()
+
+        self.play(FadeTransform(area_label.copy(), new_area_label))
+        self.wait()
+        self.play(
+            FadeTransform(mat_mob.copy(), det),
+            FadeTransform(new_area_label.get_part_by_tex("c"), det_name),
+            new_area_label[1].animate.next_to(det, LEFT, SMALL_BUFF).match_y(new_area_label[1]),
+        )
+        self.wait()
 
 
 class AmbientShapeRotationPreimage(ShadowScene):
@@ -1922,20 +2424,30 @@ class AverageCatShadow(AverageFaceShadow):
 
     def setup(self):
         super().setup()
-        cat = SVGMobject("cat_outline").family_members_with_points()[0]
+        self.replace_face()
+
+    def replace_face(self):
         face = self.face
 
-        cat.match_style(face[0])
-        cat.replace(face[0])
+        shape = self.get_shape().family_members_with_points()[0]
+        shape.match_style(face[0])
+        shape.replace(face[0])
 
-        # self.face.set_submobjects([cat, VectorizedPoint(cat.get_center())])
-        face[0].set_points(cat.get_points())
+        face[0].set_points(shape.get_points())
         face[0].set_gloss(0.25)
         face[0][0].set_gloss(0)
 
         self.solid = face
         self.remove(self.shadow)
         self.add_shadow()
+
+    def get_shape(self):
+        return SVGMobject("cat_outline")
+
+
+class AveragePentagonShadow(AverageCatShadow):
+    def get_shape(self):
+        return RegularPolygon(5)
 
 
 class AverageShadowAnnotation(Scene):
@@ -1948,19 +2460,21 @@ class AverageShadowAnnotation(Scene):
         self.wait(2)
 
         # Formula
+        # shape_name = "2d shape"
+        shape_name = "Square"
         t2c = {
             "Shadow": GREY_B,
-            "2d shape": BLUE,
+            shape_name: BLUE,
             "$c$": RED,
         }
         formula = VGroup(
             TexText(
-                "Area(Shadow(2d shape))",
+                f"Area(Shadow({shape_name}))",
                 tex_to_color_map=t2c,
             ),
             Tex("=").rotate(PI / 2),
             TexText(
-                "$c$", " $\\cdot$", "(Area(2d shape))",
+                "$c$", " $\\cdot$", f"(Area({shape_name}))",
                 tex_to_color_map=t2c
             )
         )
@@ -1982,6 +2496,18 @@ class AverageShadowAnnotation(Scene):
         self.play(
             Write(formula[1]),
             FadeIn(formula[2], DOWN)
+        )
+        self.wait()
+
+        # Append half
+        half = Tex("\\frac{1}{2}")
+        half.set_color(RED)
+        c = formula[2].get_part_by_tex("$c$")
+        half.move_to(c, RIGHT)
+
+        self.play(
+            FadeOut(c, 0.5 * UP),
+            FadeIn(half, 0.5 * UP),
         )
         self.wait()
 
@@ -2289,7 +2815,7 @@ class AllPossibleOrientations(ShadowScene):
         sphere.move_to(fc)
         sphere.always_sort_to_camera(self.camera)
 
-        n_lat_lines = 20
+        n_lat_lines = 40
         theta_step = PI / n_lat_lines
         sphere_points = np.array([
             sphere.uv_func(phi, theta + theta_step * (phi / TAU))
@@ -2303,11 +2829,17 @@ class AllPossibleOrientations(ShadowScene):
         sphere_points += fc
 
         sphere_dots = DotCloud(sphere_points)
-        sphere_dots.set_radius(0.025)
+        sphere_dots.set_radius(0.0125)
         sphere_dots.set_glow_factor(0.5)
         sphere_dots.make_3d()
         sphere_dots.apply_depth_test()
         sphere_dots.add_updater(lambda m: m)
+
+        sphere_lines = VGroup(*(
+            Line(sphere.get_center(), p)
+            for p in sphere_dots.get_points()
+        ))
+        sphere_lines.set_stroke(WHITE, 1, 0.05)
 
         sphere_words = TexText("All normal vectors = Sphere")
         uniform_words = TexText("All points equally likely")
@@ -2320,6 +2852,7 @@ class AllPossibleOrientations(ShadowScene):
         self.play(FadeIn(sphere_words))
         self.play(
             ShowCreation(sphere_dots),
+            ShowIncreasingSubsets(sphere_lines),
             UpdateFromAlphaFunc(
                 face,
                 lambda m, a: m.apply_matrix(
@@ -2330,7 +2863,7 @@ class AllPossibleOrientations(ShadowScene):
                     about_point=fc
                 )
             ),
-            run_time=15,
+            run_time=30,
             rate_func=smooth,
         )
         self.play(
@@ -2346,12 +2879,16 @@ class AllPossibleOrientations(ShadowScene):
                 glow_factor=10,
                 color=YELLOW,
             )
-            face.apply_matrix(rotation_between_vectors(
-                normal_vect.get_vector(),
-                point - fc
-            ), about_point=fc)
             self.add(dot)
-            self.play(FadeOut(last_dot, run_time=0.25))
+            self.play(
+                face.animate.apply_matrix(rotation_between_vectors(
+                    normal_vect.get_vector(),
+                    point - fc
+                ), about_point=fc),
+                FadeOut(last_dot, run_time=0.25),
+                FadeIn(dot),
+                run_time=0.5,
+            )
             self.wait(0.25)
             last_dot = dot
         self.play(FadeOut(last_dot))
@@ -2365,6 +2902,7 @@ class AllPossibleOrientations(ShadowScene):
         v1 = normal_vect.get_vector()
         normal_vect.scale(0.99, about_point=fc)
         v2 = DR + OUT
+        frame.reorient(-5)
         self.play(
             Rotate(
                 face, angle_between_vectors(v1, v2),
@@ -2378,26 +2916,31 @@ class AllPossibleOrientations(ShadowScene):
             ShowCreation(sphere_mesh, lag_ratio=0.5),
             FadeIn(sphere),
             sphere_dots.animate.set_radius(0),
-            run_time=2,
+            FadeOut(sphere_lines),
+            frame.animate.reorient(0),
+            run_time=3,
         )
         self.remove(sphere_dots)
 
         # Show patch
-        patch = ParametricSurface(
-            sphere.uv_func,
-            # u_range=(0.86 * TAU, 0.91 * TAU),
-            # v_range=(0.615 * PI, 0.71 * PI),
-            u_range=(0.85 * TAU, 0.9 * TAU),
-            v_range=(0.6 * PI, 0.7 * PI),
-        )
-        patch.shift(fc)
-        patch.set_color(YELLOW, 0.75)
-        patch.always_sort_to_camera(self.camera)
+        def get_patch(u, v, delta_u=0.05, delta_v=0.1):
+            patch = ParametricSurface(
+                sphere.uv_func,
+                u_range=(u * TAU, (u + delta_u) * TAU),
+                v_range=(v * PI, (v + delta_v) * PI),
+            )
+            patch.shift(fc)
+            patch.set_color(YELLOW, 0.75)
+            patch.always_sort_to_camera(self.camera)
+            return patch
+
+        patch = get_patch(0.85, 0.6)
         self.add(patch, sphere)
 
         self.play(
             ShowCreation(patch),
             frame.animate.reorient(10, 75),
+            run_time=2,
         )
 
         # Probability expression
@@ -2428,6 +2971,22 @@ class AllPossibleOrientations(ShadowScene):
             self.play(ShowCreationThenFadeOut(
                 SurroundingRectangle(prob[i], stroke_width=2).fix_in_frame()
             ))
+            self.wait()
+
+        # Many patches
+        patches = Group(
+            get_patch(0.65, 0.5),
+            get_patch(0.55, 0.8),
+            get_patch(0.85, 0.8),
+            get_patch(0.75, 0.4, 0.1, 0.2),
+        )
+
+        patch.deactivate_depth_test()
+        self.add(sphere, patch)
+        for new_patch in patches:
+            self.play(
+                Transform(patch, new_patch),
+            )
             self.wait()
 
         # Non-specified orientation
@@ -2703,7 +3262,8 @@ class AllPossibleOrientations(ShadowScene):
                 for p in [np.array([math.sin(theta), 0, math.cos(theta)])]
             )).set_stroke(YELLOW, 1)
 
-        theta_samples = np.linspace(0, PI, sphere_mesh.resolution[0])
+        factor = 1
+        theta_samples = np.linspace(0, PI, factor * sphere_mesh.resolution[0])
         dtheta = theta_samples[1] - theta_samples[0]
         tick_marks = get_tick_marks(theta_samples)
 
@@ -2723,7 +3283,7 @@ class AllPossibleOrientations(ShadowScene):
         self.add(tick_marks)
         self.wait(2)
 
-        tsi = 6  # theta sample index
+        tsi = factor * 6  # theta sample index
         dt_line = Line(tick_marks[tsi].get_center(), tick_marks[tsi + 1].get_center())
         dt_brace = Brace(
             Line(ORIGIN, RIGHT), UP
@@ -3161,6 +3721,104 @@ class AllPossibleOrientations(ShadowScene):
         return face
 
 
+class AskAboutAverageCosValue(AllPossibleOrientations):
+    def construct(self):
+        self.remove(self.solid)
+        self.remove(self.shadow)
+        frame = self.camera.frame
+        frame.set_height(5)
+        frame.reorient(-5, 80)
+        frame.shift(2 * RIGHT)
+        self.init_frame_rotation()
+
+        # Copy pasting from above...not great
+        fc = 3 * OUT
+        sphere = Sphere(radius=1)
+        sphere.set_color(GREY_E, 0.25)
+        sphere.move_to(fc)
+        sphere.always_sort_to_camera(self.camera)
+
+        sphere_mesh = SurfaceMesh(sphere, resolution=(21, 11))
+        sphere_mesh.set_stroke(BLUE_E, 1, 0.5)
+
+        for sm in sphere_mesh.get_family():
+            sm.uniforms["anti_alias_width"] = 0
+
+        self.add(sphere, sphere_mesh)
+
+        normal_vect = Arrow(sphere.get_center(), sphere.pfp(0.2), buff=0)
+
+        def randomly_place_vect():
+            theta = random.uniform(0.1, PI - 0.1)
+            phi = random.uniform(-PI / 4, PI / 4) + random.choice([0, PI])
+            point = fc + np.array([
+                math.sin(theta) * math.cos(phi),
+                math.sin(theta) * math.sin(phi),
+                math.cos(theta),
+            ])
+            normal_vect.put_start_and_end_on(sphere.get_center(), point)
+
+        def get_normal():
+            return normal_vect.get_vector()
+
+        def get_theta():
+            return np.arccos(get_normal()[2] / get_norm(get_normal()))
+
+        def get_arc():
+            result = Arc(PI / 2, -get_theta(), radius=0.25)
+            result.rotate(PI / 2, RIGHT, about_point=ORIGIN)
+            result.rotate(angle_of_vector([*get_normal()[:2], 0]), OUT, about_point=ORIGIN)
+            result.shift(fc)
+            result.set_stroke(WHITE, 1)
+            result.apply_depth_test()
+            return result
+
+        arc = always_redraw(get_arc)
+
+        theta = Tex("\\theta", font_size=20)
+        theta.rotate(PI / 2, RIGHT)
+        theta.set_backstroke(width=2)
+        theta.add_updater(lambda m: m.next_to(
+            arc.pfp(0.5), arc.pfp(0.5) - fc, buff=0.05)
+        )
+
+        z_axis = Line(ORIGIN, 10 * OUT)
+        z_axis.set_stroke(WHITE, 1)
+        z_axis.apply_depth_test()
+
+        self.add(z_axis, normal_vect, arc, theta)
+        self.add(sphere_mesh, sphere)
+
+        # Show random samples
+        question = TexText("What's the mean?")
+        question.to_corner(UR)
+        question.to_edge(UP, buff=MED_SMALL_BUFF)
+        question.fix_in_frame()
+        arrow = Arrow(question, question.get_center() + DOWN)
+        arrow.fix_in_frame()
+
+        values = VGroup()
+        lhss = VGroup()
+
+        self.add(question, arrow)
+
+        for n in range(15):
+            randomly_place_vect()
+            lhs = Tex("|\\cos(\\theta_{" + str(n + 1) + "})| = ", font_size=30)
+            value = DecimalNumber(abs(math.cos(get_theta())), font_size=30)
+            value.next_to(values, DOWN)
+            for mob in lhs, value:
+                mob.fix_in_frame()
+                mob.set_backstroke()
+            values.add(value)
+            values.next_to(arrow, DOWN)
+            lhs.next_to(value, LEFT, buff=SMALL_BUFF)
+            lhss.add(lhs)
+
+            self.add(values, lhss)
+            self.wait(0.5)
+
+
 class ThreeCamps(TeacherStudentsScene):
     def construct(self):
         self.remove(self.background)
@@ -3209,14 +3867,20 @@ class ThreeCamps(TeacherStudentsScene):
             )
         self.wait(4)
 
-        # Next
+        # Let's go over the definition
         integral = Tex("\\int_0^\\pi \\dots d\\theta")
         integral.move_to(self.hold_up_spot, DOWN)
+        brace = Brace(integral, UP)
+        words = TexText("Let's go over the definition", font_size=36)
+        words.next_to(brace, UP, SMALL_BUFF)
+        words2 = TexText("It can't hurt, right?", font_size=36)
+        words2.move_to(words)
+        VGroup(brace, words, words2).set_color(YELLOW)
 
         self.play(
             LaggedStart(*(
                 FadeOut(VGroup(student.bubble, student.bubble.content))
-                for student in students
+                for student in reversed(students)
             )),
             LaggedStart(*(
                 student.animate.change("pondering", integral)
@@ -3225,7 +3889,201 @@ class ThreeCamps(TeacherStudentsScene):
             FadeIn(integral, UP),
             teacher.animate.change("raise_right_hand", integral),
         )
+        self.play(
+            GrowFromCenter(brace),
+            Write(words)
+        )
+        self.wait(2)
+        self.play(
+            words.animate.shift(0.75 * UP).set_opacity(0.5),
+            FadeIn(words2, 0.2 * UP),
+            LaggedStart(
+                self.teacher.animate.change("shruggie"),
+                self.students[0].animate.change("sassy", words2),
+                self.students[1].animate.change("thinking", words2),
+                self.students[2].animate.change("well", words2),
+            )
+        )
+        self.wait(2)
+        self.play(self.teacher.animate.change("speaking", words2))
         self.wait(3)
+
+
+class ParticularValuesUnhelpfulOverlay(Scene):
+    def construct(self):
+        # Particular value
+        expr = Tex("P(\\theta =", "\\pi / 4", ")", "=", "0")
+        expr.set_color_by_tex("\\pi / 4", YELLOW)
+        brace = Brace(expr.get_part_by_tex("\\pi / 4"), UP, buff=SMALL_BUFF)
+        brace.stretch(0.5, 1, about_edge=DOWN)
+        words = Text("Some specific value", font_size=24)
+        words.next_to(brace, UP, SMALL_BUFF)
+        VGroup(brace, words).set_color(YELLOW)
+        VGroup(expr, brace, words).to_corner(UR)
+
+        self.play(FadeIn(expr, lag_ratio=1))
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(words, shift=0.2 * UP),
+        )
+        self.wait()
+
+        # Unhelpful
+        question = TexText("What are you going\\\\to do with that?", font_size=24)
+        question.next_to(expr, DOWN, LARGE_BUFF)
+        arrow = Arrow(question, expr.get_part_by_tex("0"), buff=SMALL_BUFF)
+
+        self.play(
+            FadeIn(question),
+            ShowCreation(arrow),
+        )
+        self.wait()
+
+        # New expr
+        range_expr = Tex(
+            "P(\\pi / 4 < \\theta < \\pi / 4 + \\Delta\\theta) > 0",
+            tex_to_color_map={
+                "\\pi / 4": YELLOW,
+                "\\Delta\\theta": GREY_A,
+            },
+            font_size=40
+        )
+        range_expr.move_to(expr, RIGHT)
+        new_brace = Brace(range_expr.slice_by_tex("\\pi / 4", ")"), UP, buff=SMALL_BUFF)
+        new_words = Text("Range of values", font_size=24)
+        new_words.next_to(new_brace, UP, SMALL_BUFF)
+        VGroup(new_brace, new_words).set_color(YELLOW)
+
+        self.play(
+            FadeOut(question),
+            FadeOut(arrow),
+            TransformMatchingShapes(expr, range_expr),
+            FadeTransform(brace, new_brace),
+            FadeTransform(words, new_words),
+        )
+        self.wait()
+
+
+class SurfaceAreaOfSphere(Scene):
+    def construct(self):
+        sphere = Sphere(radius=3)
+        sphere.set_color(BLUE_E, 1)
+        sphere.always_sort_to_camera(self.camera)
+        sphere.rotate(5 * DEGREES, OUT)
+        sphere.rotate(80 * DEGREES, LEFT)
+        sphere.move_to(0.5 * DOWN)
+
+        sphere_mesh = SurfaceMesh(sphere)
+        sphere_mesh.set_stroke(WHITE, 0.5, 0.5)
+
+        equation = Tex(
+            "\\text{Surface area} = 4\\pi R^2",
+            tex_to_color_map={
+                "R": YELLOW,
+                "\\text{Surface area}": BLUE,
+            },
+        )
+        equation.to_edge(UP)
+
+        self.add(equation, sphere, sphere_mesh)
+        self.play(
+            Write(sphere_mesh, lag_ratio=0.02, stroke_width=1),
+            ShowCreation(sphere, rate_func=squish_rate_func(smooth, 0.25, 1)),
+            run_time=5,
+        )
+        self.wait()
+
+
+class IntegralOverlay(Scene):
+    def construct(self):
+        integral = Tex("\\int_0^\\pi")
+        integral.set_color(YELLOW)
+
+        self.play(Write(integral, run_time=2))
+        self.play(integral.animate.set_color(WHITE))
+        self.play(LaggedStart(*(
+            FlashAround(sm, time_width=3)
+            for sm in integral[0][:0:-1]
+        ), lag_ratio=0.5, run_time=3))
+        self.wait()
+
+
+class AlicesInsights(Scene):
+    def construct(self):
+        title = TexText("Alice's insights", font_size=72)
+        title.to_edge(UP)
+        title.set_backstroke()
+        underline = Underline(title, buff=-0.05)
+        underline.scale(1.5)
+        underline.insert_n_curves(50)
+        underline.set_stroke(WHITE, width=[0, *4 * [3], 0], opacity=1)
+        self.add(underline, title)
+
+        kw = dict(
+            t2c={
+                "double cover": YELLOW,
+                "mean": RED,
+                "means": RED,
+                "sum": BLUE,
+                "Sum": BLUE,
+                "Average": RED,
+            }
+        )
+        insights = VGroup(
+            Text("1. The face shadows double cover the cube shadow", **kw),
+            # Text("2. The mean of the sum is the sum of the means", **kw),
+            Text("2. Average(Sum(Face shadows)) = Sum(Average(Face shadow))", **kw),
+            Text("3. Use a sphere to deduce the unknown constant", **kw),
+        )
+        insights.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
+        insights.next_to(underline, DOWN, LARGE_BUFF)
+        insights.to_edge(LEFT)
+
+        self.play(LaggedStart(*(
+            FadeIn(insight[:2], 0.25 * DOWN)
+            for insight in insights
+        )))
+        self.wait()
+        for insight in insights:
+            self.play(FadeIn(insight[2:], lag_ratio=0.1))
+            self.wait()
+
+
+class HalfBathedInLight(ShadowScene):
+    def construct(self):
+        frame = self.camera.frame
+        frame.set_height(12)
+        frame.add_updater(lambda m, dt: m.increment_theta(0.05 * dt))
+        cube = self.solid
+        light = self.light
+        light.next_to(cube, OUT, 2)
+        self.add(light)
+        self.remove(self.plane)
+        self.shadow.add_updater(lambda m: m.set_opacity(0))
+        cube.move_to(OUT)
+        cube.set_opacity(0.95)
+        cube.rotate(PI / 2, DL)
+        # cube.add_updater(lambda m: self.sort_to_camera(cube))
+        cube.update()
+        cube.clear_updaters()
+
+        light_lines = self.get_light_lines()
+        light_lines.add_updater(lambda m: m.set_stroke(YELLOW, 2))
+        self.add(light_lines, light)
+
+        self.wait(2)
+        for s, color in zip([slice(3, None), slice(0, 3)], [WHITE, GREY_D]):
+            cube.generate_target()
+            sorted_cube = Group(*cube.target)
+            sorted_cube.sort(lambda p: p[2])
+            sorted_cube[s].space_out_submobjects(2)
+            sorted_cube[s].set_color(color)
+            self.play(
+                MoveToTarget(cube),
+                rate_func=there_and_back_with_pause,
+                run_time=3,
+            )
+        self.wait(5)
 
         # Embed
         self.embed()
@@ -3388,6 +4246,24 @@ class TwoToOneCover(ShadowScene):
         self.remove(ineq)
         self.add(new_expression)
         self.wait(2)
+        anims = []
+        for part in z_sorted_faces:
+            pc = part.copy()
+            pc.set_fill(YELLOW, 0.25)
+            pc_shadow = get_shadow(pc)
+            pc_shadow.clear_updaters()
+            pc_shadow.match_style(pc)
+            lines = VGroup(*(
+                Line(v, flat_project(v))
+                for v in pc.get_vertices()
+            ))
+            lines.set_stroke(YELLOW, 1, 0.1)
+            anims.append(AnimationGroup(
+                VFadeInThenOut(pc),
+                VFadeInThenOut(pc_shadow),
+                VFadeInThenOut(lines),
+            ))
+        self.play(LaggedStart(*anims, lag_ratio=0.4, run_time=6))
         self.play(Restore(cube))
 
         # Show the double cover
@@ -3420,20 +4296,38 @@ class TwoToOneCover(ShadowScene):
         self.play(ShowCreation(line, rate_func=rush_into))
         self.play(FadeIn(dot, scale=10, rate_func=rush_from, run_time=0.5))
         self.wait()
-        for arrow in arrows:
-            self.play(ShowCreation(arrow))
-        self.wait()
-
         self.play(
-            FadeOut(arrows),
             Rotate(
                 dot, TAU,
                 about_point=ORIGIN,
                 run_time=6,
             ),
         )
+        self.wait()
+        for arrow in arrows:
+            self.play(ShowCreation(arrow))
+        self.wait()
+        self.play(FadeOut(arrows))
+
         cube.add_updater(lambda m: self.sort_to_camera(m))
-        self.random_toss(cube, angle=TAU, run_time=6)
+        self.random_toss(cube, angle=1.5 * TAU, run_time=8)
+
+        # Just show wireframe
+        cube.save_state()
+        cube.generate_target()
+        for sm in cube.target:
+            sm.set_fill(opacity=0)
+            sm.set_stroke(WHITE, 2)
+        outline = self.get_shadow_outline()
+        outline.rotate(PI)
+        self.play(
+            MoveToTarget(cube),
+            dot.animate.move_to(outline.get_start())
+        )
+        self.play(MoveAlongPath(dot, outline, run_time=8))
+        self.wait(2)
+        self.play(Restore(cube))
+        self.play(dot.animate.move_to(outline.get_center()), run_time=2)
 
         # Make room for equation animations
         # Start here for new scene
@@ -3554,7 +4448,7 @@ class TwoToOneCover(ShadowScene):
         self.begin_ambient_rotation(cube, speed=0.4)
         self.wait(20)
 
-    def get_top_expression(self, *mid_tex):
+    def get_top_expression(self, *mid_tex, n_faces=6):
         t2c = {
             "Shadow": GREY_B,
             "Cube": BLUE_D,
@@ -3563,7 +4457,7 @@ class TwoToOneCover(ShadowScene):
         ineq = TexText(
             "Area(Shadow(Cube))",
             *mid_tex,
-            " $\\displaystyle \\sum_{j=1}^6$ ",
+            " $\\displaystyle \\sum_{j=1}^" + f"{{{n_faces}}}" + "$ ",
             "Area(Shadow(Face$_j$))",
             tex_to_color_map=t2c,
             isolate=["(", ")"],
@@ -3578,6 +4472,126 @@ class TwoToOneCover(ShadowScene):
         shadows = get_pre_shadow(faces, opacity=0.7)
         shadows.apply_function(flat_project)
         return faces, shadows
+
+
+class ConvexityPrelude(Scene):
+    def construct(self):
+        square = Square(side_length=3)
+        square.rotate(-PI / 4)
+        square.flip()
+        square.set_stroke(BLUE, 2)
+
+        points = [square.pfp(1 / 8), square.pfp(7 / 8)]
+
+        beam = VGroup(
+            Line(points[0] + 3 * UP, points[0], stroke_width=3),
+            Line(points[0], points[1], stroke_width=2),
+            Line(points[1], points[1] + 3 * DOWN, stroke_width=1),
+        )
+
+        beam.set_stroke(YELLOW)
+
+        words = TexText("2 intersections\\\\", "(almost always)")
+        words[1].scale(0.7, about_edge=UP).set_color(GREY_B)
+        words.to_edge(LEFT)
+        arrows = VGroup(*(
+            Arrow(words[0].get_right(), point)
+            for point in points
+        ))
+
+        dots = GlowDot()
+        dots.set_points(points)
+        dots.set_color(WHITE)
+        dots.set_radius(0.2)
+        dots.set_glow_factor(3)
+
+        self.add(square)
+        self.add(words)
+        self.play(
+            ShowCreation(beam),
+            FadeIn(arrows, lag_ratio=0.7),
+            FadeIn(dots, lag_ratio=0.7),
+        )
+        self.wait()
+
+        question1 = Text("Why is this true?")
+        question2 = Text("Is this true for all shapes?")
+        question2.next_to(question1, DOWN, aligned_edge=LEFT)
+        VGroup(question1, question2).to_corner(UR)
+
+        self.play(Write(question1, run_time=1))
+        self.wait()
+        self.play(FadeIn(question2, 0.25 * DOWN))
+        self.wait()
+
+        # Convexity
+        square.generate_target()
+        convex_shapes = VGroup(
+            square.target,
+            RegularPolygon(5, color=TEAL),
+            Rectangle(2, 1, color=TEAL_E),
+            RegularPolygon(6, color=GREEN),
+            Circle(color=GREEN_B),
+        )
+        convex_shapes[2].apply_matrix([[1, 0.5], [0, 1]])
+        convex_shapes[3].shift(2 * RIGHT).apply_complex_function(np.exp)
+        convex_shapes[3].make_jagged()
+        for shape in convex_shapes:
+            shape.set_height(1)
+            shape.set_stroke(width=2)
+        convex_shapes.arrange(DOWN)
+        convex_shapes.set_height(6)
+
+        v_line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
+        h_line.set_y(3)
+        VGroup(v_line, h_line).set_stroke(WHITE, 2)
+        convex_title = Text("Convex")
+        non_convex_title = Text("Non-convex")
+        for title, vect in zip([convex_title, non_convex_title], [LEFT, RIGHT]):
+            title.scale(1.5)
+            title.next_to(h_line, UP)
+            title.shift(vect * FRAME_WIDTH / 4)
+
+        convex_shapes.next_to(h_line, DOWN)
+        convex_shapes.match_x(convex_title)
+
+        self.play(
+            MoveToTarget(square),
+            FadeIn(convex_shapes[1:], lag_ratio=0.5),
+            FadeTransform(beam, v_line),
+            ShowCreation(h_line),
+            FadeIn(convex_title),
+            LaggedStart(*map(FadeOut, (
+                dots, arrows, words,
+                question1, question2,
+            ))),
+        )
+        self.wait()
+
+        # Non-convex shapes
+        pi = Tex("\\pi").family_members_with_points()[0]
+        pent = RegularPolygon(5)
+        pent.set_points_as_corners([ORIGIN, *pent.get_vertices()[1:], ORIGIN])
+        n_mob = Tex("N").family_members_with_points()[0]
+        nc_shapes = VGroup(pi, pent, n_mob)
+        nc_shapes.set_fill(opacity=0)
+        nc_shapes.set_stroke(width=2)
+        nc_shapes.set_submobject_colors_by_gradient(RED, PINK)
+        for shape in nc_shapes:
+            shape.set_height(1)
+        nc_shapes.arrange(DOWN)
+        nc_shapes.replace(convex_shapes, dim_to_match=1)
+        nc_shapes.match_x(non_convex_title)
+
+        self.play(
+            Write(non_convex_title, run_time=1),
+            LaggedStartMap(FadeIn, nc_shapes),
+        )
+        self.wait()
+
+        # Embed
+        self.embed()
 
 
 class DefineConvexity(Scene):
@@ -3788,10 +4802,15 @@ class ShowGridSum(TwoToOneCover):
     def construct(self):
         # Setup
         self.clear()
+        shape_name = "Cube"
+        n_faces = 6
+        # shape_name = "Dodec."
+        # n_faces = 12
+
         frame = self.camera.frame
         frame.reorient(0, 0)
         frame.move_to(ORIGIN)
-        equation = self.get_top_expression(" = ", "$\\displaystyle \\frac{1}{2}$")
+        equation = self.get_top_expression(" = ", "$\\displaystyle \\frac{1}{2}$", n_faces=n_faces)
         self.add(equation)
 
         lhs = equation.slice_by_tex(None, "=")
@@ -3799,7 +4818,7 @@ class ShowGridSum(TwoToOneCover):
 
         # Abbreviate
         t2c = {
-            "\\text{Cube}": BLUE,
+            f"\\text{{{shape_name}}}": BLUE,
             "\\text{F}_j": YELLOW,
             "\\text{Face}": YELLOW,
             "\\text{Total}": GREEN,
@@ -3809,11 +4828,11 @@ class ShowGridSum(TwoToOneCover):
         kw = {
             "tex_to_color_map": t2c
         }
-        lhs.alt1 = Tex("S(\\text{Cube})", **kw)
+        lhs.alt1 = Tex(f"S(\\text{{{shape_name}}})", **kw)
         summand.alt1 = Tex("S(\\text{F}_j)", **kw)
 
         def get_s_cube_term(i="i"):
-            return Tex(f"S\\big(R_{{{i}}}", "(\\text{Cube})\\big)", **kw)
+            return Tex(f"S\\big(R_{{{i}}}", f"(\\text{{{shape_name}}})\\big)", **kw)
 
         def get_s_f_term(i="i", j="j"):
             result = Tex(
@@ -3883,8 +4902,8 @@ class ShowGridSum(TwoToOneCover):
         total.match_x(lhss)
 
         mean_sa = Tex(
-            "S(\\text{Cube})", "=", "\\frac{1}{n}",
-            "\\sum_{i=1}^n S\\big(R_i(\\text{Cube})\\big)",
+            f"S(\\text{{{shape_name}}})", "=", "\\frac{1}{n}",
+            "\\sum_{i=1}^n S\\big(R_i(" + f"\\text{{{shape_name}}})\\big)",
             **kw,
         )
 
@@ -3930,11 +4949,11 @@ class ShowGridSum(TwoToOneCover):
         # Create grid
         sf = get_s_f_term
         grid_terms = [
-            [sf(1, 1), sf(1, 2), Tex("\\dots"), sf(1, 6)],
-            [sf(2, 1), sf(2, 2), Tex("\\dots"), sf(2, 6)],
-            [sf(3, 1), sf(3, 2), Tex("\\dots"), sf(3, 6)],
+            [sf(1, 1), sf(1, 2), Tex("\\dots"), sf(1, n_faces)],
+            [sf(2, 1), sf(2, 2), Tex("\\dots"), sf(2, n_faces)],
+            [sf(3, 1), sf(3, 2), Tex("\\dots"), sf(3, n_faces)],
             [Tex("\\vdots"), Tex("\\vdots"), Tex("\\ddots"), Tex("\\vdots")],
-            [sf("n", 1), sf("n", 2), Tex("\\dots"), sf("n", 6)],
+            [sf("n", 1), sf("n", 2), Tex("\\dots"), sf("n", n_faces)],
         ]
         grid = VGroup(*(VGroup(*row) for row in grid_terms))
         for lhs, row in zip(lhss, grid):
@@ -4063,8 +5082,8 @@ class ShowGridSum(TwoToOneCover):
 
         # Show final result
         rhss = VGroup(
-            Tex("=", "\\frac{1}{2}", "\\sum_{j=1}^6 ", "S(\\text{F}_j})", **kw),
-            Tex("=", "\\frac{1}{2}", "\\sum_{j=1}^6 ", "{c}", "\\cdot ", "A(\\text{F}_j)", **kw),
+            Tex("=", "\\frac{1}{2}", "\\sum_{j=1}^" + f"{{{n_faces}}}", " S(\\text{F}_j})", **kw),
+            Tex("=", "\\frac{1}{2}", "\\sum_{j=1}^" + f"{{{n_faces}}}", " {c}", "\\cdot ", "A(\\text{F}_j)", **kw),
             Tex("=", "\\frac{1}{2}", "{c}", "\\cdot ", "(\\text{Surface area})", **kw),
         )
         rhss[0].add(get_overline(rhss[0].slice_by_tex("S")))
@@ -4084,6 +5103,25 @@ class ShowGridSum(TwoToOneCover):
         grid_rect.set_stroke(YELLOW, 1)
         grid_rect.set_fill(YELLOW, 0.25)
 
+        rects = VGroup(
+            SurroundingRectangle(mean_sa.slice_by_tex("frac")),
+            SurroundingRectangle(rhss[0][1:])
+        )
+        for rect in rects:
+            rect.match_height(corner_rect.target, stretch=True)
+            rect.match_y(corner_rect.target)
+        rects[0].set_color(BLUE)
+        rects[1].set_color(YELLOW)
+        rects.set_stroke(width=2)
+        rects.set_fill(opacity=0.25)
+
+        rows_first = Text("Rows first")
+        rows_first.next_to(rects[0], DOWN)
+        rows_first.match_color(rects[0])
+        cols_first = Text("Columns first")
+        cols_first.next_to(rects[1], DOWN)
+        cols_first.match_color(rects[1])
+
         self.add(corner_rect, mean_sa)
         self.play(
             MoveToTarget(corner_rect),
@@ -4092,6 +5130,21 @@ class ShowGridSum(TwoToOneCover):
         self.add(grid_rect, grid)
         self.play(VFadeInThenOut(grid_rect, run_time=2))
         self.wait()
+
+        self.play(
+            Write(rects[0]),
+            Write(rows_first),
+        )
+        self.wait()
+        self.play(
+            Write(rects[1]),
+            Write(cols_first),
+        )
+        self.wait()
+        self.play(LaggedStart(*map(FadeOut, (
+            *rects, rows_first, cols_first
+        ))))
+
         self.play(
             TransformMatchingShapes(rhss[0].copy(), rhss[1])
         )
@@ -4110,6 +5163,224 @@ class ShowGridSum(TwoToOneCover):
             FadeIn(final_rect),
             run_time=2,
         )
+
+
+class LimitBrace(Scene):
+    def construct(self):
+        brace = Brace(Line().set_width(3), UP)
+        tex = brace.get_tex("n \\to \\infty")
+        VGroup(brace, tex).set_color(TEAL)
+        VGroup(brace, tex).set_backstroke()
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(tex, shift=0.25 * UP)
+        )
+        self.wait()
+
+
+class FromRowsToColumns(Scene):
+    def construct(self):
+        n = 5
+        grid = Dot().get_grid(n, n, buff=MED_LARGE_BUFF)
+
+        grids = grid.get_grid(1, 2, buff=3)
+
+        buff = 0.2
+        row_rects = VGroup(*(
+            SurroundingRectangle(grids[0][k:k + n], buff=buff)
+            for k in range(0, n * n, n)
+        ))
+        col_rects = VGroup(*(
+            SurroundingRectangle(grids[1][k::n], buff=buff)
+            for k in range(n)
+        ))
+        rects = VGroup(row_rects, col_rects)
+        rects.set_fill(opacity=0.25)
+        rects.set_stroke(width=2)
+        row_rects.set_color(BLUE)
+        col_rects.set_color(YELLOW)
+
+        # plus_template = Tex("+")
+        # plus_template.match_height(grids[0][0])
+        # for grid in grids:
+        #     plusses = VGroup()
+        #     for k, dot in enumerate(grid):
+        #         if k % n != n - 1:
+        #             pc = plus_template.copy()
+        #             pc.move_to(midpoint(dot.get_center(), grid[k + 1].get_center()))
+        #             plusses.add(pc)
+        #     grid.add(plusses)
+
+        arrow = Arrow(grids[0], grids[1], buff=0.5)
+
+        self.add(grids[0])
+        self.play(FadeIn(row_rects, lag_ratio=0.2))
+        self.wait()
+        self.play(
+            TransformFromCopy(grids[0], grids[1]),
+            ShowCreation(arrow)
+        )
+        self.play(FadeIn(col_rects, lag_ratio=0.2))
+        self.wait()
+
+
+class ComplainAboutProgress(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Wait, is that all\\\\we've accomplished?"),
+            target_mode="angry",
+        )
+        self.change_student_modes(
+            "guilty", "erm",
+            look_at_arg=self.students[2].eyes,
+            added_anims=[self.teacher.animate.change("guilty")],
+        )
+        self.wait(4)
+
+
+class SupposedlyObviousProportionality(ShadowScene):
+    solid_name = "Cube"
+
+    def construct(self):
+        # Setup
+        cube = self.solid
+        shadow = self.shadow
+        frame = self.camera.frame
+        frame.set_z(3)
+        frame.reorient(-20, 80)
+        self.init_frame_rotation()
+        light = self.light
+        light.next_to(cube, OUT, 50)
+        equation = get_key_result(self.solid_name)
+        equation.fix_in_frame()
+        equation.to_edge(UP)
+        self.add(equation)
+
+        # Rotation
+        self.begin_ambient_rotation(cube)
+        self.wait()
+
+        # Ask about constant
+        question = TexText(
+            "What is $c$?!",
+            font_size=72,
+            tex_to_color_map={"$c$": RED}
+        )
+        question.fix_in_frame()
+        question.next_to(equation, DOWN, LARGE_BUFF)
+        question.to_edge(RIGHT, buff=LARGE_BUFF)
+        c_arrow = Arrow(
+            equation.get_part_by_tex("{c}"),
+            question.get_corner(UL),
+        )
+        c_arrow.set_color(RED)
+        c_arrow.fix_in_frame()
+
+        self.play(
+            ShowCreation(c_arrow),
+            Write(question)
+        )
+        self.wait(4)
+
+        # "Obvious"
+        obvious_words = TexText("Isn't this obvious?", font_size=36)
+        obvious_words.set_color(GREY_A)
+        obvious_words.match_y(question)
+        obvious_words.to_edge(LEFT)
+        obvious_arrow = Arrow(
+            obvious_words, equation.get_corner(DL) + RIGHT
+        )
+        VGroup(obvious_words, obvious_arrow).fix_in_frame()
+
+        self.play(
+            TransformMatchingShapes(question, obvious_words),
+            ReplacementTransform(c_arrow, obvious_arrow),
+        )
+        self.wait()
+
+        # 2d quantities
+        cube.clear_updaters()
+
+        shadow_label = TexText("2D")
+        shadow_label.move_to(shadow)
+        face_labels = VGroup()
+        for face in cube[3:]:
+            lc = shadow_label.copy()
+            normal = face.get_unit_normal()
+            lc.rotate(angle_of_vector(flat_project(normal)) + PI / 2)
+            lc.apply_matrix(
+                rotation_between_vectors(OUT, normal)
+            )
+            lc.move_to(face)
+            face.label = lc
+            face_labels.add(lc)
+
+        self.play(
+            Write(shadow_label),
+            Write(face_labels),
+            run_time=2,
+        )
+        self.wait()
+        scalars = [cube, face_labels, shadow_label]
+        self.play(
+            *(
+                mob.animate.scale(0.5)
+                for mob in scalars
+            ),
+            rate_func=there_and_back,
+            run_time=3
+        )
+        self.play(
+            *(
+                mob.animate.stretch(2, 0)
+                for mob in scalars
+            ),
+            rate_func=there_and_back,
+            run_time=3
+        )
+        self.wait()
+
+        # No not really
+        no_words = Text("No, not really", font_size=30)
+        no_words.set_color(RED)
+        no_words.fix_in_frame()
+        no_words.next_to(obvious_words, DOWN, MED_LARGE_BUFF)
+
+        self.play(
+            FadeIn(no_words, 0.25 * DOWN),
+            FadeOut(shadow_label),
+            FadeOut(face_labels),
+        )
+
+        # Move light
+        self.play(
+            light.animate.next_to(cube, OUT + RIGHT, 2),
+            run_time=4,
+            rate_func=rush_from,
+        )
+        for s in (1.5, 0.25, 2 / 0.75):
+            self.play(
+                cube.animate.scale(s),
+                run_time=2,
+            )
+
+        # To finish
+        cube.add_updater(lambda m: self.sort_to_camera(m))
+        self.begin_ambient_rotation(cube)
+        self.play(
+            light.animate.next_to(cube, OUT, 50),
+            LaggedStart(*map(FadeOut, (
+                no_words, obvious_words, obvious_arrow,
+            ))),
+            run_time=3,
+        )
+        self.wait(33)
+
+
+class LurkingAssumption(VideoWrapper):
+    title = "There's a subtle hidden assumption..."
+    wait_time = 4
+    animate_boundary = False
 
 
 class WhatIsC(Scene):
@@ -4230,23 +5501,10 @@ class ShowSeveralConvexShapes(Scene):
 class KeyResult(Scene):
     def construct(self):
         eq1, eq2 = [
-            Tex(
-                "\\text{Area}\\big(\\text{Shadow}(\\text{" + word + "})\\big)",
-                "=",
-                "\\frac{1}{2}", "{c}", "\\cdot",
-                "(\\text{Surface area})",
-                tex_to_color_map={
-                    "\\text{Shadow}": GREY_B,
-                    "\\text{Cube}": BLUE,
-                    "\\text{Solid}": BLUE,
-                    "{c}": RED,
-                }
-            )
+            get_key_result(word)
             for word in ("Cube", "Solid")
         ]
-        for eq in eq1, eq2:
-            eq.add_to_back(get_overline(eq[:5]))
-            eq.to_edge(UP)
+        VGroup(eq1, eq2).to_edge(UP)
 
         self.play(FadeIn(eq1, lag_ratio=0.1))
         self.wait()
@@ -4350,16 +5608,127 @@ class ShadowsOfDodecahedron(ShadowScene):
             )), run_time=5)
 
     def get_solid(self):
-        dodec = Dodecahedron()
-        dodec.set_stroke(WHITE, 1)
-        dodec.set_fill(BLUE_E, 0.8)
-        dodec.set_gloss(0.1)
-        dodec.set_shadow(0.4)
-        dodec.set_reflectiveness(0.4)
-        group = Group(*dodec)
+        solid = self.get_solid_no_style()
+        solid.set_stroke(WHITE, 1)
+        solid.set_fill(self.solid_fill_color, 0.8)
+        solid.set_gloss(0.1)
+        solid.set_shadow(0.4)
+        solid.set_reflectiveness(0.4)
+        group = Group(*solid)
         group.deactivate_depth_test()
         group.add_updater(lambda m: self.sort_to_camera(m))
         return group
+
+    def get_solid_no_style(self):
+        dodec = Dodecahedron()
+        dodec.scale((32 / get_surface_area(dodec))**0.5)
+        return dodec
+
+
+class AmbientDodecahedronShadow(ShadowsOfDodecahedron):
+    solid_name = "Dodecahedron"
+    solid_fill_color = BLUE_E
+    name_color = BLUE_D
+
+    def construct(self):
+        self.camera.frame.reorient(20, 80)
+        self.camera.frame.set_z(3)
+
+        eq = get_key_result(self.solid_name, color=self.name_color)
+        eq.to_edge(UP)
+        eq.fix_in_frame()
+        self.add(eq)
+
+        self.init_frame_rotation()
+        self.play(LaggedStart(*map(Write, self.solid)))
+        self.add(self.solid)
+
+        outline = self.get_shadow_outline()
+        area_label = self.get_shadow_area_label()
+        # area_label.scale(0.7)
+        area_label.move_to(2.75 * DOWN).to_edge(LEFT)
+        area_label.add_updater(lambda m: m.fix_in_frame())
+        surface_area = get_surface_area(self.solid)
+        surface_area /= (self.unit_size**2)
+        sa_label = VGroup(Text("Surface area: "), DecimalNumber(surface_area))
+        sa_label.arrange(RIGHT)
+        sa_label.match_y(area_label)
+        sa_label.to_edge(RIGHT)
+        sa_label.set_backstroke()
+        sa_label.fix_in_frame()
+
+        self.play(
+            *map(VFadeIn, (outline, area_label, sa_label))
+        )
+        self.add(outline)
+        self.add(area_label)
+
+        self.begin_ambient_rotation(self.solid, about_point=self.solid.get_center())
+        self.wait(30)
+
+
+class AmbientTriPrismSum(AmbientDodecahedronShadow):
+    solid_name = "Triangular Prism"
+    solid_fill_color = interpolate_color(TEAL_E, BLACK, 0.25)
+    name_color = TEAL_D
+
+    def get_solid_no_style(self):
+        triangle = RegularPolygon(3)
+        tri1, tri2 = triangle.replicate(2)
+        tri2.shift(3 * OUT)
+        sides = []
+        verts1 = tri1.get_anchors()
+        verts2 = tri2.get_anchors()
+        for (a, b), (c, d) in zip(adjacent_pairs(verts1), adjacent_pairs(verts2)):
+            sides.append(Polygon(a, b, d, c))
+        result = VGroup(tri1, *sides, tri2)
+        result.scale((16 / get_surface_area(result))**0.5)
+        return result
+
+
+class AmbientPyramidSum(AmbientDodecahedronShadow):
+    solid_name = "Pyramid"
+    solid_fill_color = GREY_BROWN
+    name_color = interpolate_color(GREY_BROWN, WHITE, 0.5)
+
+    def get_solid_no_style(self):
+        base = Square(side_length=1)
+        result = VGroup(base)
+        for v1, v2 in adjacent_pairs(base.get_vertices()):
+            result.add(Polygon(v1, v2, math.sqrt(3) * OUT / 2))
+        result.set_height(2)
+        return result
+
+
+class AmbientCubeWithLabels(AmbientDodecahedronShadow):
+    solid_name = "Cube"
+
+    def get_solid_no_style(self):
+        return VCube()
+
+
+class DodecahedronFaceSum(Scene):
+    def construct(self):
+        expr = TexText(
+            "Area(Shadow(Dodecahedron))", "=",
+            "$\\displaystyle \\frac{1}{2}$",
+            " $\\displaystyle \\sum_{j=1}^{12}$ ",
+            "Area(Shadow(Face$_j$))",
+            tex_to_color_map={
+                "Shadow": GREY_B,
+                "Dodecahedron": BLUE_D,
+                "Face$_j$": YELLOW,
+            }
+        )
+        expr.to_edge(UP, buff=MED_SMALL_BUFF)
+
+        self.add(expr.slice_by_tex(None, "="))
+        self.wait()
+        self.play(FadeIn(expr.slice_by_tex("="), shift=0.25 * UP))
+        self.wait()
+        self.play(FlashAround(expr.get_part_by_tex("frac"), run_time=2))
+        self.play(FlashUnder(expr[-5:], run_time=2))
+        self.wait(2)
 
 
 class SphereShadow(ShadowScene):
@@ -4441,6 +5810,28 @@ class PiRSquared(Scene):
         self.wait()
 
 
+class SwapConstantForFourth(Scene):
+    def construct(self):
+        eq = get_key_result("Dodecahedron")
+        eq.to_edge(UP)
+        parts = VGroup(
+            eq.get_part_by_tex("frac"),
+            eq.get_part_by_tex("{c}")
+        )
+        fourth = Tex("\\frac{1}{4}")
+        fourth.move_to(parts, LEFT)
+        fourth.set_color(RED)
+
+        self.add(eq)
+        self.wait()
+        self.play(
+            FadeOut(parts, UP),
+            FadeIn(fourth, UP),
+            eq.slice_by_tex("\\cdot").animate.next_to(fourth, RIGHT),
+        )
+        self.wait()
+
+
 class ButSpheresAreSmooth(TeacherStudentsScene):
     def construct(self):
         self.student_says(
@@ -4504,4 +5895,735 @@ class RepeatedRelation(Scene):
             limit.slice_by_tex("=").animate.next_to(new_rhs, RIGHT),
             GrowFromCenter(new_rhs)
         )
+        self.wait()
+
+
+class SimpleCross(Scene):
+    def construct(self):
+        lines = VGroup(
+            Line(UP, DOWN).set_height(FRAME_HEIGHT),
+            Line(LEFT, RIGHT).set_width(FRAME_WIDTH),
+        )
+        self.play(ShowCreation(lines, lag_ratio=0.5))
+        self.wait()
+
+
+# Not needed?
+class AmbientCubeTurningIntoNewShapes(Scene):
+    def construct(self):
+        pass
+
+
+class PopularizaitonVsDoing(Scene):
+    def construct(self):
+        # Words
+        popular = Text("Popularization of math")
+        doing = Text("Doing math")
+        words = VGroup(popular, doing)
+        words.arrange(DOWN, buff=3)
+        words.move_to(UP)
+
+        self.play(FadeIn(popular, UP))
+        self.wait()
+        self.play(
+            TransformFromCopy(
+                popular.get_part_by_text("math"),
+                doing.get_part_by_text("math"),
+            ),
+            Write(doing[:len("Doing")])
+        )
+        self.wait()
+
+        # Bars
+        width = 8
+        bar = Rectangle(width, 0.5)
+        bar.set_stroke(WHITE, 1)
+        bar.next_to(popular, DOWN)
+        left_bar, right_bar = bar.replicate(2)
+        left_bar.set_fill(BLUE_E, 1)
+        right_bar.set_fill(RED_E, 1)
+        left_bar.stretch(0.5, 0, about_edge=LEFT)
+        right_bar.stretch(0.5, 0, about_edge=RIGHT)
+
+        left_brace = always_redraw(lambda: Brace(left_bar, DOWN, buff=SMALL_BUFF))
+        right_brace = always_redraw(lambda: Brace(right_bar, DOWN, buff=SMALL_BUFF))
+        left_label = Text("Insights", font_size=30, color=GREY_B)
+        right_label = Text("Computations", font_size=30, color=GREY_B)
+        always(left_label.next_to, left_brace, DOWN, SMALL_BUFF)
+        always(right_label.next_to, right_brace, DOWN, SMALL_BUFF)
+
+        bar_group = VGroup(
+            bar,
+            left_bar, right_bar,
+            left_brace, right_brace,
+            left_label, right_label,
+        )
+
+        def set_bar_alpha(alpha, **kwargs):
+            self.play(
+                left_bar.animate.set_width(alpha * width, about_edge=LEFT, stretch=True),
+                right_bar.animate.set_width((1 - alpha) * width, about_edge=RIGHT, stretch=True),
+                **kwargs
+            )
+
+        self.play(FadeIn(bar_group, lag_ratio=0.1))
+        set_bar_alpha(0.95, run_time=2)
+        self.wait()
+        self.add(bar_group.deepcopy().clear_updaters())
+        self.play(
+            bar_group.animate.shift(doing.get_center() - popular.get_center())
+        )
+        set_bar_alpha(0.05, run_time=5)
+        self.wait()
+
+        # Embed
+        self.embed()
+
+
+class MultipleMathematicalBackgrounds(TeacherStudentsScene):
+    def construct(self):
+        self.remove(self.background)
+        labels = VGroup(
+            TexText("$\\le$ High school"),
+            TexText("$\\approx$ Undergrad"),
+            TexText("$\\ge$ Ph.D."),
+        )
+        for student, label in zip(self.students, labels):
+            label.scale(0.7)
+            label.next_to(student, UP)
+
+        words = TexText("Explanation doesn't vary\\\\with backgrounds")
+        words.to_edge(UP)
+
+        lines = VGroup(*(
+            DashedLine(words, label, buff=0.5)
+            for label in labels
+        ))
+        lines.set_stroke(WHITE, 2)
+
+        self.add(words)
+        self.play(
+            self.teacher.animate.change("raise_right_hand"),
+            self.get_student_changes(
+                "pondering", "thinking", "pondering",
+                look_at_arg=self.teacher.eyes,
+            ),
+        )
+        self.play(
+            LaggedStartMap(ShowCreation, lines, lag_ratio=0.5),
+            LaggedStartMap(FadeIn, labels, lag_ratio=0.5),
+        )
+        self.wait(3)
+        self.play(
+            self.teacher.animate.change("dejected").look(UP),
+            self.get_student_changes("hesitant", "well", "thinking"),
+            LaggedStartMap(FadeOut, lines, scale=0.5),
+            FadeOut(words, DOWN),
+        )
+        self.wait(4)
+
+        # Different levels
+        kw = {"font_size": 30}
+        methods = VGroup(
+            TexText("Calculus\\\\primer", **kw),
+            TexText("Quickly show\\\\key steps", **kw),
+            TexText("Describe as a\\\\measure on SO(3)", **kw),
+        )
+        new_lines = VGroup()
+        colors = [GREEN_B, GREEN_C, GREEN_D]
+        for method, label, color in zip(methods, labels, colors):
+            method.move_to(label)
+            method.shift(2.5 * UP)
+            method.set_color(color)
+            line = DashedLine(method, label, buff=0.25)
+            line.set_stroke(color, 2)
+            new_lines.add(line)
+
+        self.play(
+            self.teacher.animate.change("raise_right_hand"),
+            self.get_student_changes(
+                "erm", "pondering", "thinking",
+                look_at_arg=self.students.get_center() + 4 * UP
+            ),
+            LaggedStartMap(FadeIn, methods, lag_ratio=0.5),
+            LaggedStartMap(ShowCreation, new_lines, lag_ratio=0.5),
+        )
+        self.wait(4)
+
+
+class WatchingAVideo(Scene):
+    def construct(self):
+        self.add(FullScreenRectangle())
+        randy = Randolph()
+        randy.to_corner(DL)
+        screen = ScreenRectangle(height=5)
+        screen.set_fill(BLACK, 1)
+        screen.to_corner(UR)
+
+        def blink_wait(n=1):
+            for x in range(n):
+                self.wait()
+                self.play(Blink(randy))
+                self.wait()
+
+        self.add(screen)
+        self.add(randy)
+        self.play(randy.animate.change("pondering", screen))
+        blink_wait()
+        self.play(randy.animate.change("thinking", screen))
+        blink_wait()
+        self.play(randy.animate.change("hesitant", screen))
+        blink_wait(2)
+
+
+class CleverProofExample(Scene):
+    def construct(self):
+        initial_sum = Tex("1^2 + 2^2 + 3^2 + \\cdots + n^2")
+        tripple_tris, final_tri = self.get_triangle_sums()
+
+        initial_sum.set_width(10)
+        self.play(FadeIn(initial_sum, lag_ratio=0.1))
+        self.wait()
+
+        tripple_tris.set_width(10)
+        tripple_tris.to_edge(DOWN, buff=2)
+        tris = tripple_tris[0]
+        tri = tris[0]
+        tri.save_state()
+        tri.set_height(4)
+        tri.center().to_edge(DOWN, buff=1)
+        self.play(
+            initial_sum.animate.set_width(8).to_edge(UP),
+            FadeIn(tri, lag_ratio=0.1)
+        )
+        self.wait()
+        self.play(
+            Restore(tri),
+            FadeIn(tripple_tris[1:])
+        )
+        for i in (0, 1):
+            bt1 = tris[i].copy()
+            bt1.generate_target()
+            bt1.target.rotate(120 * DEGREES)
+            bt1.target.replace(tris[i + 1])
+            bt1.target.set_opacity(0)
+            tris[i + 1].save_state()
+            tris[i + 1].rotate(-120 * DEGREES)
+            tris[i + 1].replace(tris[i])
+            tris[i + 1].set_opacity(0)
+            self.play(
+                MoveToTarget(bt1, remover=True),
+                Restore(tris[i + 1])
+            )
+        self.wait()
+
+        final_tri.set_height(3)
+        final_tri.move_to(tripple_tris, UP)
+        initial_sum.generate_target()
+        eq = Tex("=").scale(2)
+        tripple_tris.generate_target()
+        top_row = VGroup(initial_sum.target, eq, tripple_tris.target)
+        top_row.arrange(RIGHT, buff=0.5)
+        top_row.set_width(FRAME_WIDTH - 1)
+        top_row.center().to_edge(UP)
+
+        self.play(
+            MoveToTarget(initial_sum),
+            FadeIn(eq),
+            MoveToTarget(tripple_tris),
+            FadeTransform(tripple_tris.copy(), final_tri)
+        )
+        self.wait()
+
+        final1 = Tex("= \\frac{2n + 1}{3} (1 + 2 + 3 + \\cdots + n)")
+        final2 = Tex("= \\frac{2n + 1}{3} \\frac{(n + 1)n}{2}")
+        final3 = Tex("= \\frac{(2n + 1)(n + 1)(n)}{6}")
+        final_tri.generate_target()
+        final_tri.target.set_height(2).to_edge(LEFT)
+        for final in (final1, final2, final3):
+            final.next_to(final_tri.target, RIGHT)
+
+        self.play(
+            MoveToTarget(final_tri),
+            Write(final1),
+        )
+        self.wait()
+        self.play(
+            FadeOut(final1, UP),
+            FadeIn(final2, UP),
+        )
+        self.wait()
+        self.play(
+            FadeOut(final2, UP),
+            FadeIn(final3, UP),
+        )
+        self.play(VGroup(final_tri, final3).animate.set_x(0))
+        self.wait()
+
+        # Embed
+        self.embed()
+
+    def get_triangle_sums(self):
+        dl_dots = Tex("\\vdots").rotate(-30 * DEGREES)
+        dr_dots = Tex("\\vdots").rotate(30 * DEGREES)
+        blank = Integer(0).set_opacity(0)
+        n = Tex("n")
+        np1 = Tex("(2n + 1)")
+        dots = Tex("\\dots")
+        tri1 = VGroup(
+            Integer(1).replicate(1),
+            Integer(2).replicate(2),
+            Integer(3).replicate(3),
+            VGroup(dl_dots, blank.copy(), blank.copy(), dr_dots),
+            VGroup(n.copy(), n.copy(), dots, n.copy(), n.copy()),
+        )
+        tri2 = VGroup(
+            n.replicate(1),
+            VGroup(dl_dots, n).copy(),
+            VGroup(Integer(3), blank, dr_dots).copy(),
+            VGroup(Integer(2), Integer(3), dots, n).copy(),
+            VGroup(Integer(1), Integer(2), Integer(3), dots, n).copy(),
+        )
+        tri3 = VGroup(
+            n.replicate(1),
+            VGroup(n, dr_dots).copy(),
+            VGroup(dl_dots, blank, Integer(3)).copy(),
+            VGroup(n, dots, Integer(3), Integer(2)).copy(),
+            VGroup(n, dots, Integer(3), Integer(2), Integer(1)).copy(),
+        )
+
+        sum_tri = VGroup(
+            np1.replicate(1),
+            np1.replicate(2),
+            np1.replicate(3),
+            VGroup(dl_dots, *blank.replicate(6), dr_dots).copy(),
+            VGroup(np1.copy(), np1.copy(), dots.copy(), np1.copy(), np1.copy()),
+        )
+
+        tris = VGroup(tri1, tri2, tri3)
+        for tri in (*tris, sum_tri):
+            for row in tri:
+                row.arrange(RIGHT, buff=0.5)
+            tri.arrange(DOWN, buff=0.5)
+        tris.arrange(RIGHT, buff=2.0)
+        tris.set_width(6)
+        plusses = VGroup(
+            Tex("+").move_to(tris[:2]),
+            Tex("+").move_to(tris[1:]),
+        )
+        parens = Tex("()")[0]
+        parens.stretch(2, 1)
+        parens.match_height(tris)
+        parens[0].next_to(tris, LEFT)
+        parens[1].next_to(tris, RIGHT)
+
+        frac = Tex("\\frac{1}{3}")
+        frac.next_to(parens, LEFT)
+
+        lhs = VGroup(tris, frac, parens, plusses)
+
+        parens_copy = parens.copy()
+        sum_tri.match_height(lhs)
+        sum_tri.move_to(tris, LEFT)
+        parens_copy[1].next_to(sum_tri, RIGHT)
+
+        rhs = VGroup(frac.copy(), sum_tri, parens_copy)
+        rhs.next_to(lhs, DOWN, LARGE_BUFF, aligned_edge=LEFT)
+        # eq = Tex("=")
+        # eq.next_to(rhs, LEFT)
+
+        return VGroup(lhs, rhs)
+
+
+class BlendOfMindsets(Scene):
+    def construct(self):
+        Text("Calculate specifics")
+        Text("Understand generalities")
+        Text("You need both")
+
+
+class ListernerEmail(Scene):
+    def construct(self):
+        # Letter
+        rect = Rectangle(4, 7)
+        rect.set_stroke(WHITE, 2)
+        rect.set_fill("#060606", 1)
+        lines = Line(LEFT, RIGHT).get_grid(15, 1)
+        lines.set_width(0.8 * rect.get_width())
+        lines.arrange(DOWN)
+        lines.set_height(0.7 * rect.get_height(), stretch=True)
+        for n in [3, 8, -1]:
+            lines[n].stretch(0.5, 0, about_edge=LEFT)
+            if n > 0:
+                lines[n + 1].set_opacity(0)
+        lines.move_to(rect)
+
+        salutation = Text("Hi Prof. Kontorovich,", font_size=30)
+        salutation.next_to(lines, UP, aligned_edge=LEFT)
+        lines.shift(0.2 * DOWN)
+
+        letter = VGroup(rect, lines, salutation)
+
+        self.add(rect)
+        self.play(
+            Write(salutation, run_time=1),
+            ShowCreation(lines, rate_func=linear, run_time=3, lag_ratio=0.5),
+        )
+        self.add(letter)
+        self.wait()
+        self.play(letter.animate.to_edge(LEFT))
+
+        # Phrases
+        phrases = VGroup(
+            Text("I’m a PhD student..."),
+            Text(
+                "...I had noticed my mathematical capabilities\n"
+                "starting to fade (to which I attributed getting\n"
+                "older and not being as sharp)..."
+            ),
+            Text(
+                "...I realized that the entire problem, for me at least,\n"
+                "was entirely about my lack of problems and drills."
+            ),
+        )
+
+        phrases.arrange(DOWN, buff=2.0, aligned_edge=LEFT)
+        phrases.set_width(8)
+        phrases.next_to(letter, RIGHT, LARGE_BUFF)
+
+        highlights = VGroup()
+        for i, w in [(0, 1), (5, 3), (11, 2.5)]:
+            hrect = Rectangle(w, 0.1)
+            hrect.set_stroke(width=0)
+            hrect.set_fill(YELLOW, 0.5)
+            hrect.move_to(lines[i], LEFT)
+            highlights.add(hrect)
+
+        highlights[0].shift(1.5 * RIGHT)
+        highlights[2].align_to(lines, RIGHT)
+
+        hlines = VGroup()
+
+        for highlight, phrase in zip(highlights, phrases):
+            hlines.add(VGroup(
+                DashedLine(highlight.get_corner(UR), phrase.get_corner(UL), buff=0.1),
+                DashedLine(highlight.get_corner(DR), phrase.get_corner(DL), buff=0.1),
+            ))
+        hlines.set_stroke(YELLOW, 1)
+
+        for i in range(3):
+            self.play(
+                FadeIn(highlights[i]),
+                *map(ShowCreation, hlines[i]),
+                GrowFromPoint(phrases[i], highlights[i].get_right())
+            )
+            self.wait(2)
+
+        # Embed
+        self.embed()
+
+
+class FamousMathematicians(Scene):
+    im_height = 3.5
+
+    def construct(self):
+        # Portraits
+        images = Group(
+            ImageMobject("Newton"),
+            ImageMobject("Euler"),
+            ImageMobject("Gauss"),
+            ImageMobject("Fourier"),
+            ImageMobject("Riemann_cropped"),
+            ImageMobject("Cauchy"),
+            ImageMobject("Noether"),
+            ImageMobject("Ramanujan"),
+        )
+        names = VGroup(
+            Text("Isaac Newton"),
+            Text("Leonhard Euler"),
+            Text("Carl Friedrich Gauss"),
+            Text("Joseph Fourier"),
+            Text("Bernhard Riemann"),
+            Text("Augustin Cauchy"),
+            Text("Emmy Noether"),
+            Text("Srinivasa Ramanujan"),
+        )
+        im_groups = Group()
+        for im, name in zip(images, names):
+            im.set_height(self.im_height)
+            name.scale(0.6)
+            name.set_color(GREY_A)
+            name.next_to(im, DOWN)
+            im_groups.add(Group(im, name))
+
+        # im_groups.arrange(RIGHT, aligned_edge=UP, buff=LARGE_BUFF)
+        im_groups.arrange_in_grid(2, 4, aligned_edge=UP, buff=LARGE_BUFF)
+        im_groups.set_width(FRAME_WIDTH - 2)
+        im_groups.to_edge(LEFT)
+        dots = Tex("\\dots", font_size=72).replicate(2)
+        dots[0].next_to(images[-5], RIGHT, MED_LARGE_BUFF)
+        dots[1].next_to(images[-1], RIGHT, MED_LARGE_BUFF)
+
+        self.play(
+            LaggedStart(*map(FadeIn, (*im_groups, dots)), lag_ratio=0.25),
+            run_time=5
+        )
+        self.wait()
+
+        self.play(
+            im_groups[0].animate.set_height(6).center().to_edge(LEFT),
+            LaggedStart(*(
+                FadeOut(mob, DR)
+                for mob in (*im_groups[1:], dots)
+            ), lag_ratio=0.25),
+            run_time=2,
+        )
+        self.wait()
+
+        # Papers (do in editor)
+
+
+class InventingMath(Scene):
+    def construct(self):
+        pass
+
+
+class AmbientHourglass(ShadowScene):
+    inf_light = True
+
+    def construct(self):
+        frame = self.camera.frame
+        frame.set_z(3)
+
+        self.init_frame_rotation()
+        self.remove(self.solid, self.shadow)
+
+        qint_func = bezier([0, 1, -1.25, 1, 0])
+
+        def func(u, v):
+            qf = qint_func(v)
+            x = qf * math.cos(u)
+            y = qf * math.sin(u)
+            x = np.sign(x) * abs(x)**0.5
+            y = np.sign(y) * abs(y)**0.5
+            return [x, y, 0.5 - v]
+
+        ep = 1e-6
+        hourglass = ParametricSurface(func, (0, TAU), (0 + ep, 1 - ep))
+
+        hourglass.set_depth(2)
+        hourglass.set_z(3)
+        hourglass.set_color(BLUE_D)
+        hourglass.set_opacity(0.5)
+        hourglass.set_reflectiveness(0.1)
+        hourglass.set_gloss(0.1)
+        hourglass.set_shadow(0.5)
+        hourglass.always_sort_to_camera(self.camera)
+        mesh = SurfaceMesh(hourglass)
+        mesh.set_flat_stroke(False)
+        mesh.set_stroke(BLUE_B, 0.2, 0.5)
+        mesh_shadow = mesh.copy()
+        mesh_shadow.deactivate_depth_test()
+        solid_group = Group(mesh_shadow, hourglass, mesh)
+
+        shadow = self.shadow = get_shadow(solid_group)
+        shadow[1].always_sort_to_camera(self.camera)
+
+        self.add(solid_group, shadow)
+
+        for x in range(30):
+            self.random_toss(solid_group)
+            self.wait()
+
+        self.begin_ambient_rotation(
+            solid_group,
+            speed=0.5,
+            initial_axis=[1, 0, 1],
+        )
+        self.wait(35)
+
+
+class QuantifyConvexity(Scene):
+    def construct(self):
+        # Ask question
+        nonconvex = Text("Non-convex")
+        nonconvex.to_edge(UP)
+        nonconvex.set_color(RED)
+        question = Text("Can we quantify this?")
+        question.next_to(nonconvex, DOWN, buff=1.5)
+        question.to_edge(LEFT)
+        arrow = Arrow(question, nonconvex.get_corner(DL))
+
+        self.play(Write(nonconvex))
+        self.wait()
+        self.play(
+            FadeIn(question, 0.5 * DOWN),
+            ShowCreation(arrow),
+        )
+        self.wait()
+
+        # Binary choice
+        double_arrow = Tex("\\leftrightarrow")
+        double_arrow.move_to(nonconvex)
+        convex = Text("Convex")
+        convex.set_color(GREEN)
+        convex.next_to(double_arrow, RIGHT)
+
+        self.play(
+            nonconvex.animate.next_to(double_arrow, LEFT),
+            Write(double_arrow),
+            FadeIn(convex, shift=0.25 * RIGHT),
+            Uncreate(arrow),
+            FadeOut(question, 0.5 * DOWN),
+        )
+        self.wait()
+
+        # Spectrum
+        interval = UnitInterval(width=7)
+        interval.add_numbers()
+        interval.to_corner(UL, buff=LARGE_BUFF)
+
+        self.play(
+            FadeTransform(double_arrow, interval),
+            convex.animate.scale(0.5).next_to(interval.n2p(1), UP),
+            nonconvex.animate.scale(0.5).next_to(interval.n2p(0), UP),
+        )
+        self.wait()
+
+        # Fraction
+        shadow = get_key_result("Solid").slice_by_tex(None, "=")
+        shadow.add(shadow[0].copy())
+        shadow.remove(shadow[0])
+        four_shadow = VGroup(Tex("4 \\cdot"), shadow)
+        four_shadow.arrange(RIGHT, buff=SMALL_BUFF)
+        sa = Text("Surface area")
+        frac = VGroup(
+            four_shadow,
+            Line().match_width(four_shadow).set_stroke(width=2),
+            sa
+        )
+        frac.arrange(DOWN)
+        frac.set_width(3)
+        frac.to_corner(UR)
+        frac.match_y(interval)
+
+        self.play(Write(shadow))
+        self.play(FadeIn(four_shadow[0]))
+        self.wait()
+        self.play(ShowCreation(frac[1]))
+        self.play(FadeIn(sa))
+        self.wait()
+
+        # Dot
+        dot = GlowDot()
+        dot.scale(2)
+        dot.move_to(interval.n2p(1))
+
+        self.play(FadeIn(dot, RIGHT))
+        self.wait()
+        self.play(dot.animate.move_to(interval.n2p(0.6)), run_time=2)
+        self.wait()
+
+
+class GoalsOfMath(TeacherStudentsScene):
+    def construct(self):
+        words = Text("The goal of math\nis to answer questions")
+        words.move_to(self.hold_up_spot, DOWN)
+        words.to_edge(RIGHT, buff=2.0)
+        aq = words.get_part_by_text("answer questions")
+        aq.set_color(BLUE)
+        dni = Text(
+            "develop new ideas",
+            t2c={"new ideas": YELLOW},
+            t2s={"new ideas": ITALIC},
+        )
+        dni.move_to(aq, LEFT)
+
+        self.play(
+            self.teacher.animate.change("raise_right_hand", words),
+            self.get_student_changes(*3 * ["pondering"], look_at_arg=words),
+            Write(words)
+        )
+        self.wait(2)
+        self.add(aq, self.teacher)
+        self.play(
+            aq.animate.shift(0.5 * DOWN).set_opacity(0.2),
+            Write(dni),
+            self.teacher.animate.change("well", words),
+            self.get_student_changes(*3 * ["thinking"], look_at_arg=words)
+        )
+        self.wait(3)
+
+
+class InfatuationWithGenerality(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Why are mathematicians\\\\obsessed with abstractions?"),
+            student_index=0,
+            added_anims=[
+                self.students[1].animate.change("tease"),
+                self.students[2].animate.change("pondering"),
+            ]
+        )
+        self.play(
+            self.teacher.animate.change("well"),
+        )
+        self.wait(6)
+
+
+class NumberphileFrame(VideoWrapper):
+    animate_boundary = True
+    title = "Bertrand's Paradox (with Numberphile)"
+    title_config = {
+        "font_size": 48
+    }
+    wait_time = 16
+
+
+class ByLine(Scene):
+    def construct(self):
+        lines = VGroup(
+            TexText("Artwork by\\\\", "Kurt Bruns"),
+            TexText("Music by\\\\", "Vince Rubinetti"),
+            TexText("Other stuff\\\\", "Grant Sanderson"),
+        )
+        for line in lines:
+            line[0].set_color(GREY_B)
+            line[1].scale(1.2, about_edge=UP)
+
+        lines.arrange(DOWN, buff=1.5)
+        self.add(lines)
+
+
+class EndScreen(PatreonEndScreen):
+    pass
+
+
+class ThumbnailBackground(ShadowScene):
+    plane_dims = (32, 20)
+
+    def construct(self):
+        frame = self.camera.frame
+        frame.reorient(0)
+        cube = self.solid
+        cube.set_shadow(0.5)
+        light = self.light
+
+        light.next_to(cube, OUT, buff=2)
+        light.shift(2 * LEFT)
+
+        light.move_to(50 * OUT)
+
+        gc = self.glow.replicate(10)
+        gc.set_opacity(0.3)
+        gc.clear_updaters()
+        gc.arrange(RIGHT).match_width(cube)
+        gc.move_to(6 * OUT)
+        self.add(gc)
+
+        outline = self.get_shadow_outline()
+        light_lines = self.get_light_lines(outline)
+        self.add(outline, light_lines)
+        self.randomly_reorient(cube)
+        self.randomly_reorient(cube)
         self.wait()
