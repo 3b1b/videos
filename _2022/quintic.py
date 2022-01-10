@@ -53,6 +53,32 @@ def get_nth_roots(z, n):
     ]
 
 
+def sort_to_minimize_distances(unordered_points, reference_points):
+    """
+    Sort the initial list of points in R^n so that the sum
+    of the distances between corresponding points in both lists
+    is smallest
+    """
+    ordered_points = []
+    unused_points = list(unordered_points)
+
+    for ref_point in reference_points:
+        distances = [get_norm(ref_point - up) for up in unused_points]
+        index = np.argmin(distances)
+        ordered_points.append(unused_points.pop(index))
+    return ordered_points
+
+
+def optimal_transport(dots, target_points):
+    """
+    Move the dots to the target points such that each dot moves a minimal distance
+    """
+    points = sort_to_minimize_distances(target_points, [d.get_center() for d in dots])
+    for dot, point in zip(dots, points):
+        dot.move_to(point)
+    return dots
+
+
 class RootCoefScene(Scene):
     coefs = [3, 2, 1, 0, -1, 1]
     root_plane_config = {
@@ -72,6 +98,7 @@ class RootCoefScene(Scene):
     plane_height = 5.5
     plane_buff = 1.5
     planes_center = ORIGIN
+    plane_arrangement = LEFT
 
     root_color = YELLOW
     coef_color = RED_B
@@ -104,7 +131,7 @@ class RootCoefScene(Scene):
         )
         for plane in planes:
             plane.set_height(self.plane_height)
-        planes.arrange(RIGHT, buff=self.plane_buff)
+        planes.arrange(self.plane_arrangement, buff=self.plane_buff)
         planes.move_to(self.planes_center)
 
         for plane in planes:
@@ -258,19 +285,8 @@ class RootCoefScene(Scene):
             self.coef_dots.clear_updaters()
 
         def update_root_dots(rdots):
-            old_roots = self.get_roots()
-            unordered_roots = coefficients_to_roots(self.get_coefs())
-            # Sort them to match the old_roots
-            roots = []
-            for old_root in old_roots:
-                if len(unordered_roots) == 0:
-                    break
-                distances = [abs(old_root - ur) for ur in unordered_roots]
-                root = unordered_roots[np.argmin(distances)]
-                unordered_roots.remove(root)
-                roots.append(root)
-            for dot, root in zip(rdots, roots):
-                dot.move_to(self.root_plane.n2p(root))
+            new_roots = coefficients_to_roots(self.get_coefs())
+            optimal_transport(rdots, map(self.root_plane.n2p, new_roots))
 
         self.root_dots.add_updater(update_root_dots)
         self.add(self.root_dots)
@@ -409,10 +425,12 @@ class RootCoefScene(Scene):
         self.rotate_coefs([i], **kwargs)
 
     # Interaction
-
-    def on_mouse_press(self, point, button, mods):
-        try:
-            super().on_mouse_press(point, button, mods)
+    def on_mouse_release(self, point, button, mods):
+        super().on_mouse_release(point, button, mods)
+        if self.root_dots.has_updaters or self.coef_dots.has_updaters:
+            self.root_dots.clear_updaters()
+            self.coef_dots.clear_updaters()
+        else:
             mob = self.point_to_mobject(
                 point,
                 search_set=self.get_all_dots(),
@@ -426,17 +444,10 @@ class RootCoefScene(Scene):
             elif mob in self.coef_dots:
                 self.tie_roots_to_coefs()
                 self.add(*self.coef_dots)
-            self.mouse_drag_point.move_to(point)
-            mob.add_updater(lambda m: m.move_to(self.mouse_drag_point))
+            self.mouse_point.move_to(point)
+            mob.add_updater(lambda m: m.move_to(self.mouse_point))
             self.unlock_mobject_data()
             self.lock_static_mobject_data()
-        except Exception as e:
-            print(e)
-
-    def on_mouse_release(self, point, button, mods):
-        super().on_mouse_release(point, button, mods)
-        self.root_dots.clear_updaters()
-        self.coef_dots.clear_updaters()
 
 
 class CubicFormula(RootCoefScene):
@@ -477,67 +488,91 @@ class CubicFormula(RootCoefScene):
         "height": 3.0,
         "width": 3.0,
     }
+    cf_plane_config = {
+        "x_range": (-2.0, 2.0),
+        "y_range": (-2.0, 2.0),
+        "background_line_style": {
+            "stroke_color": BLUE_E,
+            "stroke_width": 1.0,
+        },
+        "height": 3.0,
+        "width": 3.0,
+    }
     plane_height = 3.0
     plane_buff = 1.0
-    planes_center = 1.5 * UP
+    planes_center = 1.6 * UP
+    lower_planes_height = 2.75
+    lower_planes_buff = 2.0
 
-    sqrt_dot_config = {
-        "color": GREEN,
-        "radius": 0.05,
-        "stroke_color": BLACK,
-        "stroke_width": 4,
-        "draw_stroke_behind_fill": True,
-    }
-
-    cr_dot_config = {
-        "color": YELLOW_D,
-        "radius": 0.05,
-        "stroke_color": BLACK,
-        "stroke_width": 4,
-        "draw_stroke_behind_fill": True,
-    }
+    sqrt_dot_color = GREEN
+    crt_dot_colors = (RED, BLUE)
+    cf_dot_color = YELLOW
 
     def add_planes(self):
         super().add_planes()
-        self.root_plane_label.next_to(self.root_plane, LEFT)
-        self.coef_plane_label.next_to(self.coef_plane, RIGHT)
-        self.add_sqrt_plane()
-        self.add_crt_plane()
+        self.root_plane_label.next_to(self.root_plane, -self.plane_arrangement)
+        self.coef_plane_label.next_to(self.coef_plane, self.plane_arrangement)
+        self.add_lower_planes()
 
-    def add_sqrt_plane(self):
+    def add_lower_planes(self):
         sqrt_plane = ComplexPlane(**self.sqrt_plane_config)
-        sqrt_plane.move_to(self.root_plane)
-        sqrt_plane.to_edge(DOWN)
-
-        label = Tex(
-            "\\delta = \\sqrt{ \\frac{q^2}{4} + \\frac{p^3}{27}}",
-            font_size=30,
-            tex_to_color_map={"\\delta": GREEN}
-        )
-        label.next_to(sqrt_plane, LEFT, aligned_edge=DOWN)
-
-        self.add(sqrt_plane, label)
-        self.sqrt_plane = sqrt_plane
-        self.sqrt_plane_label = label
-
-    def add_crt_plane(self):
         crt_plane = ComplexPlane(**self.crt_plane_config)
-        label = Tex(
-            # "\\frac{1}{8}\\left("
-            "\\sqrt[3]{-\\frac{q}{2} + \\delta} +",
-            "\\sqrt[3]{-\\frac{q}{2} - \\delta}",
-            # "\\right)",
-            font_size=30,
-            tex_to_color_map={"\\delta": GREEN}
+        cf_plane = ComplexPlane(**self.cf_plane_config)
+
+        planes = VGroup(sqrt_plane, crt_plane, cf_plane)
+        for plane in planes:
+            plane.add_coordinate_labels(font_size=16)
+        planes.set_height(self.lower_planes_height)
+        planes.arrange(RIGHT, buff=self.lower_planes_buff)
+        planes.to_edge(DOWN, buff=SMALL_BUFF)
+
+        kw = dict(
+            font_size=24,
+            tex_to_color_map={
+                "\\delta_1": GREEN,
+                "\\delta_2": GREEN,
+            },
+            background_stroke_width=3,
+            background_stroke_color=3,
         )
-        crt_plane.move_to(self.coef_plane)
-        crt_plane.to_edge(DOWN)
 
-        label.next_to(crt_plane, RIGHT, aligned_edge=DOWN)
+        sqrt_label = Tex(
+            "\\delta_1, \\delta_2 = \\sqrt{ \\frac{q^2}{4} + \\frac{p^3}{27}}",
+            **kw
+        )
+        sqrt_label.set_backstroke()
+        sqrt_label.next_to(sqrt_plane, UP, SMALL_BUFF)
 
-        self.add(crt_plane, label)
+        crt_labels = VGroup(
+            Tex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_1}", **kw),
+            Tex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_2}", **kw),
+        )
+        for label, color in zip(crt_labels, self.crt_dot_colors):
+            label[0].scale(4, about_edge=RIGHT)
+            label[0].set_color(color)
+            label.set_backstroke()
+        crt_labels.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        crt_labels.next_to(crt_plane, UP, SMALL_BUFF)
+
+        cf_label = Tex(
+            "\\sqrt[3]{-\\frac{q}{2} + \\delta_1} +",
+            "\\sqrt[3]{-\\frac{q}{2} + \\delta_2}",
+            **kw
+        )
+        cf_label.set_backstroke()
+        cf_label.next_to(cf_plane, UP, SMALL_BUFF)
+
+        self.add(planes)
+        self.add(sqrt_label)
+        self.add(crt_labels)
+        self.add(cf_label)
+
+        self.sqrt_plane = sqrt_plane
         self.crt_plane = crt_plane
-        self.crt_plane_label = label
+        self.cf_plane = cf_plane
+        self.sqrt_label = sqrt_label
+        self.crt_labels = crt_labels
+        self.cf_label = cf_label
 
     def get_coef_poly(self):
         return Tex(
@@ -566,19 +601,18 @@ class CubicFormula(RootCoefScene):
         super().add_dots()
         self.add_sqrt_dots()
         self.add_crt_dots()
+        self.add_cf_dots()
 
     def add_sqrt_dots(self):
-        sqrt_dots = Dot(**self.sqrt_dot_config).replicate(2)
+        sqrt_dots = Dot(**self.dot_style).replicate(2)
+        sqrt_dots.set_color(self.sqrt_dot_color)
 
         def update_sqrt_dots(dots):
             q, p, zero, one = self.get_coefs()
             disc = (q**2 / 4) + (p**3 / 27)
             roots = get_nth_roots(disc, 2)
-            points = map(self.sqrt_plane.n2p, roots)
-            # TODO: Align with previous points
-            for dot, point in zip(dots, points):
-                dot.move_to(point)
-            return dot
+            optimal_transport(dots, map(self.sqrt_plane.n2p, roots))
+            return dots
 
         sqrt_dots.add_updater(update_sqrt_dots)
 
@@ -587,31 +621,58 @@ class CubicFormula(RootCoefScene):
 
         # Labels
         self.delta_labels = self.add_dot_labels(
-            Tex("\\delta").replicate(2), sqrt_dots
+            VGroup(Tex("\\delta_1"), Tex("\\delta_2")),
+            sqrt_dots
         )
 
     def add_crt_dots(self):
-        crt_dots = Dot(**self.sqrt_dot_config).replicate(3)
+        sqrt_dots = self.sqrt_dots
+        crt_dots = Dot(**self.dot_style).replicate(3).replicate(2)
+        for dots, color in zip(crt_dots, self.crt_dot_colors):
+            dots.set_color(color)
 
-        # TODO, refactor to prevent code duplication here
-        def update_crt_dots(dots):
-            coefs = self.get_coefs()
-            roots = coefficients_to_roots(coefs)
-            q, p, zero, one = coefs
-            disc = (q**2 / 4) + (p**3 / 27)
-            deltas = get_nth_roots(disc, 2)
-            # TODO add all the cube roots
+        def update_crt_dots(dot_triples):
+            q, p, zero, one = self.get_coefs()
+            deltas = map(self.sqrt_plane.p2n, (d.get_center() for d in sqrt_dots))
 
-            points = map(self.crt_plane.n2p, roots)
-            # TODO: Align with previous points
-            for dot, point in zip(dots, points):
-                dot.move_to(point)
-            return dot
+            for delta, triple in zip(deltas, dot_triples):
+                roots = get_nth_roots(-q / 2 + delta, 3)
+                optimal_transport(triple, map(self.crt_plane.n2p, roots))
+            return dot_triples
 
         crt_dots.add_updater(update_crt_dots)
 
         self.crt_dots = crt_dots
         self.add(crt_dots)
+
+    def add_cf_dots(self):
+        cf_dots = Dot(**self.dot_style).replicate(9)
+        cf_dots.set_fill(self.root_color, opacity=0.5)
+
+        def update_cf_dots(dots):
+            cr_values = [
+                [
+                    self.crt_plane.p2n(d.get_center())
+                    for d in triple
+                ]
+                for triple in self.crt_dots
+            ]
+            for dot, (z1, z2) in zip(dots, it.product(*cr_values)):
+                dot.move_to(self.cf_plane.n2p(z1 + z2))
+            return dots
+
+        cf_dots.add_updater(update_cf_dots)
+
+        alt_root_dots = GlowDot()
+        alt_root_dots.add_updater(lambda m: m.set_points(
+            list(map(self.cf_plane.n2p, self.get_roots()))
+        ))
+
+        self.cf_dots = cf_dots
+        self.alt_root_dots = alt_root_dots
+
+        self.add(cf_dots)
+        self.add(alt_root_dots)
 
 
 # Scenes
@@ -638,4 +699,5 @@ class AmbientRootSwapping(RootCoefScene):
 
 class CubicFormulaTest(CubicFormula):
     def construct(self):
-        self.embed()
+        pass
+        # self.embed()

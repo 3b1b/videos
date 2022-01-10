@@ -1,5 +1,5 @@
 from manim_imports_ext import *
-from _2021.newton_fractal import *
+from _2022.newton_fractal import *
 
 
 MANDELBROT_COLORS = [

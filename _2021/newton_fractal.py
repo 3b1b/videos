@@ -1,9 +1,9 @@
 from manim_imports_ext import *
 
-from _2021.quintic import coefficients_to_roots
-from _2021.quintic import roots_to_coefficients
-from _2021.quintic import dpoly
-from _2021.quintic import poly
+from _2022.quintic import coefficients_to_roots
+from _2022.quintic import roots_to_coefficients
+from _2022.quintic import dpoly
+from _2022.quintic import poly
 
 
 ROOT_COLORS_BRIGHT = [RED, GREEN, BLUE, YELLOW, MAROON_B]
