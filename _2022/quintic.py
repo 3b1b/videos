@@ -88,7 +88,7 @@ def x_power_tex(power, base="x"):
         return f"{base}^{{{power}}}"
 
 
-def poly_tex(coefs, prefix="P(x) = ", coef_color=MAROON_B):
+def poly_tex(coefs, prefix="P(x) = ", coef_color=RED_B):
     n = len(coefs) - 1
     coefs = [f"{{{coef}}}" for coef in coefs]
     terms = [prefix, x_power_tex(n)]
@@ -173,7 +173,13 @@ def expanded_poly_tex(roots, vertical=True, root_colors=[YELLOW, YELLOW], abbrev
     return result
 
 
-def get_symmetric_system(lhss, roots=None, root_colors=[YELLOW, YELLOW], lhs_color=MAROON_B, abbreviate=False):
+def get_symmetric_system(lhss,
+                         roots=None,
+                         root_colors=[YELLOW, YELLOW],
+                         lhs_color=RED_B,
+                         abbreviate=False,
+                         signed=False,
+                         ):
     lhss = [f"{{{lhs}}}" for lhs in lhss]
     if roots is None:
         roots = [f"r_{{{i}}}" for i in range(len(lhss))]
@@ -190,10 +196,13 @@ def get_symmetric_system(lhss, roots=None, root_colors=[YELLOW, YELLOW], lhs_col
     equations = VGroup(*(
         Tex(
             lhs, "=",
+            "-(" if neg else "",
             *sym_poly_tex_args(roots, k, abbreviate=abbreviate),
+            ")" if neg else "",
             **kw
         )
         for k, lhs in zip(it.count(1), lhss)
+        for neg in [signed and k % 2 == 1]
     ))
     equations.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
     for eq in equations:
@@ -235,10 +244,16 @@ class RootCoefScene(Scene):
     include_labels = True
     label_font_size = 30
     coord_label_font_size = 18
+    continuous_roots = True
+    show_equals = True
 
     def setup(self):
+        self.lock_coef_imag = False
+        self.lock_coef_norm = False
         self.add_planes()
         self.add_dots()
+        self.active_dot_aura = Group()
+        self.add(self.active_dot_aura)
         self.prepare_cycle_interaction()
         if self.include_tracers:
             self.add_all_tracers()
@@ -282,13 +297,15 @@ class RootCoefScene(Scene):
         coef_poly.next_to(coef_plane, UP)
         coef_poly.match_y(root_poly)
 
-        equals = Tex("=")
-        equals.move_to(midpoint(root_poly.get_right(), coef_poly.get_left()))
-
         self.add(planes)
         self.add(root_plane_label, coef_plane_label)
         self.add(root_poly, coef_poly)
-        self.add(equals)
+
+        if self.show_equals:
+            equals = Tex("=")
+            equals.move_to(midpoint(root_poly.get_right(), coef_poly.get_left()))
+            self.add(equals)
+            self.poly_equal_sign = equals
 
         self.root_plane = root_plane
         self.coef_plane = coef_plane
@@ -296,7 +313,6 @@ class RootCoefScene(Scene):
         self.coef_plane_label = coef_plane_label
         self.root_poly = root_poly
         self.coef_poly = coef_poly
-        self.poly_equal_sign = equals
 
     def get_degree(self):
         return len(self.coefs) - 1
@@ -396,39 +412,45 @@ class RootCoefScene(Scene):
         if clear_updaters:
             self.root_dots.clear_updaters()
             self.coef_dots.clear_updaters()
-
-        def update_coef_dots(cdots):
-            coefs = roots_to_coefficients(self.get_roots())
-            for dot, coef in zip(cdots, coefs):
-                dot.move_to(self.coef_plane.n2p(coef))
-
-        self.coef_dots.add_updater(update_coef_dots)
+        self.coef_dots.add_updater(self.update_coef_dots_by_roots)
         self.add(self.coef_dots)
         self.add(*self.root_dots)
+
+    def update_coef_dots_by_roots(self, coef_dots):
+        coefs = roots_to_coefficients(self.get_roots())
+        for dot, coef in zip(coef_dots, coefs):
+            dot.move_to(self.coef_plane.n2p(coef))
+        return coef_dots
 
     def tie_roots_to_coefs(self, clear_updaters=True):
         if clear_updaters:
             self.root_dots.clear_updaters()
             self.coef_dots.clear_updaters()
-
-        def update_root_dots(rdots):
-            new_roots = coefficients_to_roots(self.get_coefs())
-            optimal_transport(rdots, map(self.root_plane.n2p, new_roots))
-
-        self.root_dots.add_updater(update_root_dots)
+        self.root_dots.add_updater(self.update_root_dots_by_coefs)
         self.add(self.root_dots)
         self.add(*self.coef_dots)
 
+    def update_root_dots_by_coefs(self, root_dots):
+        new_roots = coefficients_to_roots(self.get_coefs())
+        new_root_points = map(self.root_plane.n2p, new_roots)
+        if self.continuous_roots:
+            optimal_transport(root_dots, new_root_points)
+        else:
+            for dot, point in zip(root_dots, new_root_points):
+                dot.move_to(point)
+        return root_dots
+
     def get_tracers(self, dots, time_traced=2.0, **kwargs):
-        return VGroup(*(
-            TracingTail(
+        tracers = VGroup()
+        for dot in dots:
+            dot.tracer = TracingTail(
                 dot,
                 stroke_color=dot.get_fill_color(),
                 time_traced=time_traced,
                 **kwargs
             )
-            for dot in dots
-        ))
+            tracers.add(dot.tracer)
+        return tracers
 
     def add_all_tracers(self, **kwargs):
         self.tracers = self.get_tracers(self.get_all_dots())
@@ -556,16 +578,22 @@ class RootCoefScene(Scene):
         self.rotate_coefs([i], **kwargs)
 
     # Interaction
+    def add_dot_auroa(self, dot):
+        glow_dot = GlowDot(color=WHITE)
+        always(glow_dot.move_to, dot)
+        self.active_dot_aura.add(glow_dot)
+
+    def remove_dot_aura(self):
+        if len(self.active_dot_aura) > 0:
+            self.play(FadeOut(self.active_dot_aura), run_time=0.5)
+            self.active_dot_aura.set_submobjects([])
+            self.add(self.active_dot_aura)
+
     def prepare_cycle_interaction(self):
         self.dots_awaiting_cycle = []
         self.dot_awaiting_loop = None
-        self.cycle_glow = Group()
-        self.add(self.cycle_glow)
 
     def handle_cycle_preparation(self, dot):
-        glow_dot = GlowDot(color=WHITE)
-        always(glow_dot.move_to, dot)
-        self.cycle_glow.add(glow_dot)
         if dot in self.root_dots and dot not in self.dots_awaiting_cycle:
             self.dots_awaiting_cycle.append(dot)
         if dot in self.coef_dots and dot is not self.dot_awaiting_loop:
@@ -578,6 +606,7 @@ class RootCoefScene(Scene):
             self.tie_coefs_to_roots()
             self.unlock_mobject_data()
             self.play(CyclicReplace(*self.dots_awaiting_cycle, run_time=5))
+            self.remove_dot_aura()
         if self.dot_awaiting_loop is not None:
             self.tie_roots_to_coefs()
             self.unlock_mobject_data()
@@ -587,7 +616,7 @@ class RootCoefScene(Scene):
                 about_point=self.mouse_point.get_center().copy(),
                 run_time=8
             ))
-        self.play(FadeOut(self.cycle_glow))
+            self.remove_dot_aura()
         self.prepare_cycle_interaction()
 
     def on_mouse_release(self, point, button, mods):
@@ -596,20 +625,34 @@ class RootCoefScene(Scene):
             # End the interaction where a dot is tied to the mouse
             self.root_dots.clear_updaters()
             self.coef_dots.clear_updaters()
+            self.remove_dot_aura()
             return
         dot = self.point_to_mobject(point, search_set=self.get_all_dots(), buff=0.1)
         if dot is None:
             return
+        self.add_dot_auroa(dot)
         if self.window.is_key_pressed(ord("c")):
             self.handle_cycle_preparation(dot)
             return
-        # Otherwise, have this dot track with the mouse
+
+        # Make sure other dots are updated accordingly
         if dot in self.root_dots:
             self.tie_coefs_to_roots()
         elif dot in self.coef_dots:
             self.tie_roots_to_coefs()
-        self.mouse_point.move_to(point)
+
+        # Otherwise, have this dot track with the mouse
+        dot.last_norm = get_norm(self.coef_plane.p2c(dot.get_center()))
+        dot.last_y = dot.get_y()
         dot.add_updater(lambda m: m.move_to(self.mouse_point))
+        if self.lock_coef_imag or self.window.is_key_pressed(ord("r")):
+            # Fix the imaginary value
+            dot.add_updater(lambda d: d.set_y(d.last_y))
+        elif (self.lock_coef_norm or self.window.is_key_pressed(ord("a"))) and dot in self.coef_dots:
+            # Fix the norm
+            dot.add_updater(lambda d: d.move_to(self.coef_plane.c2p(
+                *d.last_norm * normalize(self.coef_plane.p2c(d.get_center()))
+            )))
         self.refresh_locked_data()
 
     def on_key_release(self, symbol, modifiers):
@@ -617,6 +660,151 @@ class RootCoefScene(Scene):
         char = chr(symbol)
         if char == "c":
             self.carry_out_cycle()
+
+    #
+    def update_mobjects(self, dt):
+        # Go in reverse order, since dots are often re-added
+        # once they become interactive
+        for mobject in reversed(self.mobjects):
+            mobject.update(dt)
+
+
+class RadicalScene(RootCoefScene):
+    n = 3
+    c = 1.5
+    root_plane_config = {
+        "x_range": (-2.0, 2.0),
+        "y_range": (-2.0, 2.0),
+        "background_line_style": {
+            "stroke_color": BLUE_E,
+        }
+    }
+    coef_plane_config = {
+        "x_range": (-2, 2),
+        "y_range": (-2, 2),
+        "background_line_style": {
+            "stroke_color": GREY,
+        }
+    }
+    plane_height = 4.0
+    plane_buff = 3.0
+    planes_center = 1.5 * DOWN
+    show_equals = False
+
+    def setup(self):
+        self.coefs = [-self.c, *[0] * (self.n - 1), 1]
+        super().setup()
+        self.remove(self.coef_plane_label)
+        self.remove(self.root_plane_label)
+        self.sync_roots(self.root_dots[0])
+
+    def get_radical_labels(self):
+        left = self.coef_plane.get_right()
+        right = self.root_plane.get_left()
+        arrow_kw = dict(
+            stroke_width=5,
+            stroke_color=GREY_A,
+            buff=0.5,
+        )
+        r_arrow = Arrow(left, right, **arrow_kw).shift(UP)
+        l_arrow = Arrow(right, left, **arrow_kw).shift(DOWN)
+
+        r_label = Tex(f"\\sqrt[{self.n}]{{c}}")[0]
+        l_label = Tex(f"r_i^{{{self.n}}}")[0]
+        r_label[3].set_color(self.coef_color)
+        l_label[-3::2].set_color(self.root_color)
+
+        if self.n == 2:
+            r_label[0].set_opacity(0)
+
+        r_label.next_to(r_arrow, UP)
+        l_label.next_to(l_arrow, UP)
+
+        return VGroup(
+            VGroup(r_arrow, l_arrow),
+            VGroup(r_label, l_label),
+        )
+
+    def get_angle_label(self, dot, plane, sym, get_theta):
+        line = Line()
+        line.set_stroke(dot.get_fill_color(), width=2)
+        line.add_updater(lambda m: m.put_start_and_end_on(
+            plane.get_origin(), dot.get_center()
+        ))
+
+        arc = always_redraw(lambda: ParametricCurve(
+            lambda t: plane.n2p((0.25 + 0.01 * t) * np.exp(complex(0, t))),
+            t_range=[0, get_theta() + 1e-5, 0.025],
+            stroke_width=2,
+        ))
+
+        tex_mob = Tex(sym, font_size=24)
+        tex_mob.set_backstroke(width=8)
+
+        def update_sym(tex_mob):
+            tex_mob.set_opacity(min(1, 3 * get_theta()))
+            point = arc.t_func(0.5 * get_theta())
+            origin = plane.get_origin()
+            w = tex_mob.get_width()
+            tex_mob.move_to(origin + (1.3 + 2 * w) * (point - origin))
+            return tex_mob
+
+        tex_mob.add_updater(update_sym)
+
+        return VGroup(line, arc, tex_mob)
+
+    def get_c(self):
+        return -self.get_coefs()[0]
+
+    # Updates to RootCoefScene methods
+    def get_coef_poly(self):
+        degree = self.get_degree()
+        return Tex(f"x^{degree}", "-", "c")
+
+    def get_c_symbols(self, coef_poly):
+        return VGroup(coef_poly[-1])
+
+    def add_c_labels(self):
+        self.c_dot_labels = self.add_dot_labels(
+            VGroup(Tex("c")),
+            VGroup(self.coef_dots[0]),
+        )
+
+    def get_coefs(self):
+        c = self.coef_plane.p2n(self.coef_dots[0].get_center())
+        return [-c, *[0] * (self.n - 1), 1]
+
+    def set_coefs(self, coefs):
+        super().set_coefs(coefs)
+        self.coef_dots[0].move_to(self.coef_plane.n2p(-coefs[0]))
+        self.coef_dots[1:].set_opacity(0)
+
+    def tie_coefs_to_roots(self, *args, **kwargs):
+        super().tie_coefs_to_roots(*args, **kwargs)
+        # Hack
+        for dot in self.root_dots:
+            dot.add_updater(lambda m: m)
+
+    def update_coef_dots_by_roots(self, coef_dots):
+        controlled_roots = [
+            d for d in self.root_dots
+            if len(d.get_updaters()) > 1
+        ]
+        root_dot = controlled_roots[0] if controlled_roots else self.root_dots[0]
+        root = self.root_plane.p2n(root_dot.get_center())
+        coef_dots[0].move_to(self.coef_plane.n2p(root**self.n))
+        # Update all the root dots
+        if controlled_roots:
+            self.sync_roots(controlled_roots[0])
+        return coef_dots
+
+    def sync_roots(self, anchor_root_dot):
+        root = self.root_plane.p2n(anchor_root_dot.get_center())
+        anchor_index = self.root_dots.submobjects.index(anchor_root_dot)
+        for i, dot in enumerate(self.root_dots):
+            if i != anchor_index:
+                zeta = np.exp(complex(0, (i - anchor_index) * TAU / self.n))
+                dot.move_to(self.root_plane.n2p(zeta * root))
 
 
 class QuadraticFormula(RootCoefScene):
@@ -976,6 +1164,11 @@ class CubicFormula(RootCoefScene):
 
 # Scenes
 
+class IntroduceUnsolvability(Scene):
+    def construct(self):
+        pass
+
+
 class ConstructPolynomialWithGivenRoots(Scene):
     root_color = YELLOW
 
@@ -989,9 +1182,9 @@ class ConstructPolynomialWithGivenRoots(Scene):
             Tex(
                 "P(x) = x^3 + c_2 x^2 + c_1 x + c_0",
                 tex_to_color_map={
-                    "c_2": MAROON_B,
-                    "c_1": MAROON_B,
-                    "c_0": MAROON_B,
+                    "c_2": RED_B,
+                    "c_1": RED_B,
+                    "c_0": RED_B,
                 }
             ),
             TexText(
@@ -1161,9 +1354,9 @@ class ConstructPolynomialWithGivenRoots(Scene):
         answer = Tex(
             "= x^3 -7x^2 + 14x -8",
             tex_to_color_map={
-                "-7": MAROON_B,
-                "14": MAROON_B,
-                "-8": MAROON_B,
+                "-7": RED_B,
+                "14": RED_B,
+                "-8": RED_B,
             }
         )
         answer.scale(0.7)
@@ -1172,34 +1365,76 @@ class ConstructPolynomialWithGivenRoots(Scene):
         self.play(FadeIn(answer, DOWN))
         self.wait()
 
-        # Show general expansion
-        rs = [f"r_{i}" for i in range(3)]
-        gen_factored = factored_poly_tex(rs)
-        gen_expanded = expanded_poly_tex(rs, vertical=False)
-        for gen, old in (gen_factored, factored), (gen_expanded, cleaner_expanded):
-            gen.match_height(old)
-            gen.move_to(old, LEFT)
+        # Note the symmetry
+        randy = Randolph(height=1)
+        randy.to_corner(DL, buff=MED_SMALL_BUFF)
 
-        self.play(FadeTransformPieces(factored, gen_factored))
+        randy.change("tease")
+        randy.save_state()
+        randy.change("plain").set_opacity(0)
+
+        bubble = SpeechBubble(width=3, height=1, stroke_width=2)
+        bubble.move_to(randy.get_corner(UR), LEFT)
+        bubble.shift(0.45 * UP + 0.1 * LEFT)
+        bubble.add_content(Text("Note the symmetry!"))
+
+        self.play(Restore(randy))
+        self.play(ShowCreation(bubble), Write(bubble.content))
+        self.play(Blink(randy))
         self.wait()
-        for i in range(1, 4):
+
+        factored.save_state()
+        cleaner_expanded.save_state()
+        for alt_roots in [(2, 4, 1), (4, 2, 1), (1, 4, 2), (1, 2, 4)]:
+            alt_factored = factored_poly_tex(alt_roots)
+            alt_factored.replace(factored)
+            alt_expanded = expanded_poly_tex(alt_roots, vertical=False)
+            alt_expanded.replace(cleaner_expanded)
+            globals().update(locals())
+            movers, targets = [
+                VGroup(*(
+                    group.get_parts_by_tex(str(root))
+                    for root in alt_roots
+                    for group in groups
+                ))
+                for groups in [(factored, *cleaner_expanded), (alt_factored, *alt_expanded)]
+            ]
+
             self.play(
-                FadeTransformPieces(cleaner_expanded[i], gen_expanded[i]),
-                cleaner_expanded[i + 1:].animate.next_to(gen_expanded[i], RIGHT, SMALL_BUFF)
+                TransformMatchingShapes(movers, targets, path_arc=PI / 2, run_time=1.5),
+                randy.animate.look_at(movers),
             )
+            self.remove(targets, factored, cleaner_expanded)
+            factored.become(alt_factored)
+            cleaner_expanded.become(alt_expanded)
+            self.add(factored, cleaner_expanded)
             self.wait()
-        self.remove(cleaner_expanded)
-        self.add(gen_expanded)
+        factored.restore()
+        cleaner_expanded.restore()
+        self.play(
+            FadeOut(randy),
+            FadeOut(bubble),
+            FadeOut(bubble.content),
+        )
 
         # Reverse question
         top_lhs = Tex("P(x)").match_height(factored)
         top_lhs.next_to(answer, LEFT).align_to(factored, LEFT)
         top_lhs.set_opacity(0)
         coef_poly = VGroup(top_lhs, answer)
+        coef_poly.generate_target()
+        coef_poly.target.set_opacity(1).to_edge(UP)
 
+        full_factored = VGroup(back_rect, factored, equals, cleaner_expanded)
+        full_factored.generate_target()
+        full_factored.target.next_to(coef_poly.target, DOWN, buff=0.75, aligned_edge=LEFT)
+        full_factored.target.set_opacity(0.5)
+
+        self.add(full_factored, coef_poly)
         self.play(
             FadeOut(challenge, UP),
-            coef_poly.animate.set_opacity(1).to_edge(UP),
+            MoveToTarget(full_factored),
+            MoveToTarget(coef_poly),
         )
 
         new_challenge = Text("Find the roots!")
@@ -1214,16 +1449,31 @@ class ConstructPolynomialWithGivenRoots(Scene):
         )
         self.wait()
 
-        full_factored = VGroup(back_rect, gen_factored, equals, gen_expanded)
-        self.play(
-            full_factored.animate.next_to(
-                coef_poly, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT,
-            )
-        )
+        # Show general expansion
+        rs = [f"r_{i}" for i in range(3)]
+        gen_factored = factored_poly_tex(rs, root_colors=[YELLOW, GREEN])
+        gen_expanded = expanded_poly_tex(rs, vertical=False, root_colors=[YELLOW, GREEN])
+        for gen, old in (gen_factored, factored), (gen_expanded, cleaner_expanded):
+            gen.match_height(old)
+            gen.move_to(old, LEFT)
+
+        self.play(FadeTransformPieces(factored, gen_factored))
         self.wait()
+        for i in range(1, 4):
+            self.play(
+                cleaner_expanded[0].animate.set_opacity(1),
+                equals.animate.set_opacity(1),
+                FadeTransformPieces(cleaner_expanded[i], gen_expanded[i]),
+                cleaner_expanded[i + 1:].animate.next_to(gen_expanded[i], RIGHT, SMALL_BUFF)
+            )
+            self.wait()
+        self.remove(cleaner_expanded)
+        self.add(gen_expanded)
+
+        full_factored = VGroup(back_rect, gen_factored, equals, gen_expanded)
 
         # Show system of equations
-        system = get_symmetric_system([7, 14, 8])
+        system = get_symmetric_system([7, 14, 8], root_colors=[YELLOW, GREEN])
         system.next_to(full_factored, DOWN, LARGE_BUFF, aligned_edge=LEFT)
 
         coef_terms = answer[1::2]
@@ -1312,6 +1562,9 @@ class ConstructPolynomialWithGivenRoots(Scene):
         ))
 
         for equation, tuple_group in zip(q_system, root_tuple_groups):
+            self.play(FadeIn(equation))
+            self.wait(0.25)
+
             rects_group = VGroup(*(
                 VGroup(*(
                     SurroundingRectangle(term).set_stroke(BLUE, 2)
@@ -1327,17 +1580,16 @@ class ConstructPolynomialWithGivenRoots(Scene):
             terms_column.move_to(4 * RIGHT).to_edge(UP)
 
             anims = [
-                FadeIn(equation),
-                ShowSubmobjectsOneByOne(rects_group, rate_func=linear, run_time=3),
-                ShowIncreasingSubsets(terms_column, rate_func=linear, run_time=3, int_func=np.ceil),
+                ShowSubmobjectsOneByOne(rects_group, rate_func=linear),
+                ShowIncreasingSubsets(terms_column, rate_func=linear, int_func=np.ceil),
             ]
-            if equation is q_system[2]:
+            if equation is q_system[1]:
                 anims.append(
                     Group(axes, graph, root_dots).animate.scale(
-                        0.5, about_point=axes.c2p(6, 0)
+                        0.5, about_point=axes.c2p(5, -3)
                     )
                 )
-            self.play(*anims)
+            self.play(*anims, run_time=0.25 * len(terms_column))
             self.remove(rects_group)
             self.wait()
             self.play(FadeOut(terms_column))
@@ -1548,12 +1800,14 @@ class ConstructPolynomialWithGivenRoots(Scene):
 class FactsAboutRootsToCoefficients(RootCoefScene):
     coefs = [-5, 14, -7, 1]
     coef_plane_config = {
-        "x_range": (-10.0, 15.0, 5.0),
-        "y_range": (-10.0, 1.0),
+        "x_range": (-15.0, 15.0, 5.0),
+        "y_range": (-10, 10, 5),
         "background_line_style": {
             "stroke_color": GREY,
             "stroke_width": 1.0,
-        }
+        },
+        "height": 20,
+        "width": 30,
     }
     root_plane_config = {
         "x_range": (-1.0, 6.0),
@@ -1563,7 +1817,620 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
             "stroke_width": 1.0,
         }
     }
+    plane_height = 3.5
+    planes_center = 1.5 * DOWN
 
+    def construct(self):
+        # Play with coefficients, confined to real axis
+        self.wait()
+        self.add_constant_decimals()
+        self.lock_coef_imag = True
+        self.wait(note="Move around c0")
+        self.lock_coef_imag = False
+        self.remove_constant_decimals()
+
+        # Show the goal
+        self.add_system()
+        self.add_solver_functions()
+
+        # Why that's really weird
+        self.play(
+            self.coef_system.animate.set_opacity(0.2),
+            self.root_system[1:].animate.set_opacity(0.2),
+        )
+        self.wait(note="Show loops with c0")
+
+        # Why something like this must be possible
+        brace = Brace(self.coef_system, RIGHT)
+        properties = VGroup(
+            Text("Continuous"),
+            Text("Symmetric"),
+        )
+        properties.arrange(DOWN, buff=MED_LARGE_BUFF)
+        properties.next_to(brace, RIGHT)
+
+        self.play(
+            GrowFromCenter(brace),
+            self.root_system.animate.set_opacity(0),
+            self.coef_system.animate.set_opacity(1),
+        )
+        self.wait()
+        for words in properties:
+            self.play(Write(words, run_time=1))
+            self.wait()
+
+        self.swap_root_symbols()
+        self.wait(note="Physically swap roots")
+
+        # What this implies about our functions
+        brace.generate_target()
+        brace.target.rotate(PI)
+        brace.target.next_to(self.root_system, LEFT)
+        left_group = VGroup(properties, self.coef_system)
+        left_group.generate_target()
+        left_group.target.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
+        left_group.target.set_height(1)
+        left_group.target.to_corner(UL)
+        left_group.target.set_opacity(0.5)
+
+        self.play(
+            MoveToTarget(brace, path_arc=PI / 2),
+            MoveToTarget(left_group),
+            self.root_system.animate.set_opacity(1)
+        )
+        self.wait()
+
+        restriction = VGroup(
+            Text("Cannot(!) be both"),
+            Text("Continuous and single-valued", t2c={
+                "Continuous": YELLOW,
+                "single-valued": BLUE,
+            })
+        )
+        restriction.scale(0.8)
+        restriction.arrange(DOWN)
+        restriction.next_to(brace, LEFT)
+
+        self.play(FadeIn(restriction))
+        self.wait(note="Move c0, emphasize multiplicity of outputs")
+
+        # Impossibility result
+        words = Text("Cannot be built from ")
+        symbols = Tex(
+            "+,\\,", "-,\\,", "\\times,\\,", "/,\\,", "\\text{exp}\\\\",
+            "\\sin,\\,", "\\cos,\\,", "| \\cdot |,\\,", "\\dots",
+        )
+        impossibility = VGroup(words, symbols)
+        impossibility.arrange(RIGHT)
+        impossibility.match_width(restriction)
+        impossibility.next_to(restriction, DOWN, aligned_edge=RIGHT)
+        impossible_rect = SurroundingRectangle(impossibility)
+        impossible_rect.set_stroke(RED, 2)
+
+        arrow = Tex("\\Downarrow", font_size=36)
+        arrow.next_to(impossible_rect, UP, SMALL_BUFF)
+        restriction.generate_target()
+        restriction.target.scale(1.0).next_to(arrow, UP, SMALL_BUFF)
+
+        self.play(
+            FadeIn(impossibility[0]),
+            FadeIn(arrow),
+            ShowCreation(impossible_rect),
+            MoveToTarget(restriction),
+        )
+        for symbol in symbols:
+            self.wait(0.25)
+            self.add(symbol)
+        self.wait()
+
+        # Show discontinuous example
+        to_fade = VGroup(
+            restriction[0],
+            restriction[1].get_part_by_text("Continuous and"),
+            arrow,
+            impossibility,
+            impossible_rect,
+        )
+        to_fade.save_state()
+        self.play(*(m.animate.fade(0.8) for m in to_fade))
+
+        self.continuous_roots = False
+        self.root_dots[0].set_fill(BLUE)
+        self.root_dots[0].tracer.set_stroke(BLUE)
+        self.r_dot_labels[0].set_fill(BLUE)
+        self.wait(note="Show discontinuous behavior")
+        self.continuous_roots = True
+
+        # Represent as a multivalued function
+        f_name = "\\text{cubic\\_solve}"
+        t2c = dict([
+            (f"{sym}_{i}", color)
+            for i in range(3)
+            for sym, color in [
+                ("r", self.root_color),
+                ("c", self.coef_color),
+            ]
+        ])
+        t2c[f_name] = GREY_A
+        mvf = Tex(
+            f"{f_name}(c_0, c_1, c_2)\\\\", "=\\\\", "\\left\\{r_0, r_1, r_2\\right\\}",
+            tex_to_color_map=t2c
+        )
+        mvf.get_part_by_tex("=").rotate(PI / 2).match_x(mvf.slice_by_tex(None, "="))
+        mvf.slice_by_tex("left").match_x(mvf.get_part_by_tex("="))
+        mvf.move_to(self.root_system, LEFT)
+
+        self.play(
+            TransformMatchingShapes(self.root_system, mvf),
+            restriction[1].get_part_by_text("single-valued").animate.fade(0.8),
+        )
+        self.wait(note="Labeling is an artifact")
+        self.play(FadeOut(self.r_dot_labels))
+        self.wait()
+
+    def add_c_labels(self):
+        super().add_c_labels()
+        self.c_dot_labels[2].clear_updaters()
+        self.c_dot_labels[2].add_updater(
+            lambda l: l.next_to(l.dot, DL, buff=0)
+        )
+        return self.c_dot_labels
+
+    def add_constant_decimals(self):
+        dummy = "+10.00"
+        poly = Tex(
+            f"x^3 {dummy}x^2 {dummy}x {dummy}",
+            isolate=[dummy],
+            font_size=36,
+        )
+        poly.next_to(self.coef_poly, UP, MED_LARGE_BUFF)
+        decimals = DecimalNumber(100, include_sign=True, edge_to_fix=LEFT).replicate(3)
+        for dec, part in zip(decimals, poly.get_parts_by_tex(dummy)):
+            dec.match_height(part)
+            dec.move_to(part, LEFT)
+            part.set_opacity(0)
+            poly.add(dec)
+        poly.decimals = decimals
+
+        def update_poly(poly):
+            for dec, coef in zip(poly.decimals, self.get_coefs()[-2::-1]):
+                dec.set_value(coef.real)
+            poly.decimals.set_fill(RED, 1)
+            return poly
+
+        poly.add_updater(update_poly)
+
+        VGroup(poly[0], decimals[0]).next_to(poly[2], LEFT, SMALL_BUFF, aligned_edge=DOWN)
+
+        self.play(FadeIn(poly, UP, suspend_updating=True))
+        self.decimal_poly = poly
+
+    def remove_constant_decimals(self):
+        self.decimal_poly.clear_updaters()
+        self.play(FadeOut(self.decimal_poly, DOWN))
+
+    def add_system(self):
+        c_parts = self.get_c_symbols(self.coef_poly)
+        system = get_symmetric_system(
+            (f"c_{i}" for i in reversed(range(len(self.coef_dots)))),
+            signed=True,
+        )
+        system.scale(0.8)
+        system.next_to(self.coef_poly, UP, LARGE_BUFF)
+        system.align_to(self.coef_plane, LEFT)
+
+        self.add(system)
+
+        kw = dict(lag_ratio=0.8, run_time=2.5)
+        self.play(
+            LaggedStart(*(
+                TransformFromCopy(c, line[0])
+                for c, line in zip(c_parts, system)
+            ), **kw),
+            LaggedStart(*(
+                FadeIn(line[1:], lag_ratio=0.1)
+                for line in system
+            ), **kw)
+        )
+        self.add(system)
+        self.coef_system = system
+        self.wait()
+
+    def add_solver_functions(self):
+        func_name = "\\text{cubic\\_solve}"
+        t2c = dict((
+            (f"{sym}_{i}", color)
+            for i in range(3)
+            for sym, color in [
+                ("c", self.coef_color),
+                ("r", self.root_color),
+                (func_name, GREY_A),
+            ]
+        ))
+        kw = dict(tex_to_color_map=t2c)
+        lines = VGroup(*(
+            Tex(f"r_{i} = {func_name}_{i}(c_0, c_1, c_2)", **kw)
+            for i in range(3)
+        ))
+        lines.scale(0.8)
+        lines.arrange(DOWN, aligned_edge=LEFT)
+        lines.match_y(self.coef_system)
+        lines.align_to(self.root_plane, LEFT)
+
+        kw = dict(lag_ratio=0.7, run_time=2)
+        self.play(
+            LaggedStart(*(
+                TransformFromCopy(r, line[0])
+                for r, line in zip(self.get_r_symbols(self.root_poly), lines)
+            ), **kw),
+            LaggedStart(*(
+                FadeIn(line[1:], lag_ratio=0.1)
+                for line in lines
+            ), **kw),
+        )
+        self.add(lines)
+        self.root_system = lines
+        self.wait()
+
+    def swap_root_symbols(self):
+        system = self.coef_system
+        cs = [f"c_{i}" for i in reversed(range(len(self.coef_dots)))]
+        rs = [f"r_{{{i}}}" for i in range(len(self.root_dots))]
+
+        for tup in [(1, 2, 0), (2, 0, 1), (0, 1, 2)]:
+            rs = [f"r_{{{i}}}" for i in tup]
+            alt_system = get_symmetric_system(cs, roots=rs, signed=True)
+            alt_system.replace(system)
+            self.play(*(
+                TransformMatchingTex(
+                    l1, l2,
+                    path_arc=PI / 2,
+                    lag_ratio=0.01,
+                    run_time=2
+                )
+                for l1, l2 in zip(system, alt_system)
+            ))
+            self.remove(system)
+            system = alt_system
+            self.add(system)
+            self.wait()
+        self.coef_system = system
+
+
+class ComplicatedSingleValuedFunction(Scene):
+    def construct(self):
+        pass
+
+
+class SolvabilityChart(Scene):
+    def construct(self):
+        pass
+
+
+class StudySqrt(RadicalScene):
+    n = 2
+    c = 2.0
+
+    def construct(self):
+        # Show simple equation
+        kw = dict(tex_to_color_map={"c": self.coef_color})
+        equations = VGroup(
+            Tex("x^2 - c = 0", **kw),
+            Tex("x =", "\\sqrt{c}", **kw),
+        )
+        equations.arrange(DOWN, buff=MED_LARGE_BUFF)
+        equations.to_edge(UP)
+
+        self.wait()
+        self.play(FadeIn(equations[0], UP))
+        self.wait()
+        self.play(
+            TransformMatchingShapes(
+                equations[0].copy(),
+                equations[1],
+                path_arc=PI / 2,
+            )
+        )
+        self.wait()
+
+        sqrt_label = equations[1][1:].copy()
+
+        # Add decimal labels, show square roots of real c
+        c_label = VGroup(
+            Tex("c = ", tex_to_color_map={"c": self.coef_color}),
+            DecimalNumber(self.c),
+        )
+        c_label.arrange(RIGHT, aligned_edge=DOWN)
+        c_label.next_to(self.coef_poly, UP, buff=1.5)
+        c_label[1].add_updater(lambda d: d.set_value(self.get_c().real))
+
+        def update_root_dec(root_dec):
+            c_real = self.get_c().real
+            root_dec.unit = "" if c_real > 0 else "i"
+            root_dec.set_value((-1)**root_dec.index * math.sqrt(abs(c_real)))
+
+        r_labels = VGroup(*(
+            VGroup(Tex(f"r_{i}", "="), DecimalNumber(self.c, include_sign=True))
+            for i in range(2)
+        ))
+        for i, r_label in enumerate(r_labels):
+            r_label.arrange(RIGHT)
+            r_label[1].align_to(r_label[0][0][0], DOWN)
+            r_label[0][0].set_color(self.root_color)
+            r_label[1].index = i
+            r_label[1].add_updater(update_root_dec)
+
+        r_labels.arrange(DOWN, buff=0.75)
+        r_labels.match_x(self.root_plane)
+        r_labels.match_y(c_label)
+
+        sqrt_arrow = Arrow(self.coef_plane, self.root_plane)
+        sqrt_arrow.match_y(c_label)
+
+        self.play(
+            FadeIn(c_label),
+            ShowCreation(sqrt_arrow),
+            sqrt_label.animate.next_to(sqrt_arrow, UP),
+            FadeOut(equations),
+        )
+        self.play(FadeIn(r_labels))
+        self.lock_coef_imag = True
+        self.wait(note="Move c along real line")
+        self.lock_coef_imag = False
+
+        # Focus just on one root
+        root_dots = self.root_dots
+        root_tracers = VGroup(*(d.tracer for d in root_dots))
+        root_labels = self.r_dot_labels
+        self.play(
+            r_labels[0].animate.match_y(c_label),
+            FadeOut(r_labels[1], DOWN),
+            root_dots[1].animate.set_opacity(0.5),
+            root_dots[1].tracer.animate.set_stroke(opacity=0.5),
+            root_labels[1].animate.set_opacity(0.5),
+        )
+        self.wait()
+        r_label = r_labels[0]
+
+        # Vary the angle of c
+        self.show_angle_variation(c_label, r_label, sqrt_arrow)
+        self.play(
+            sqrt_arrow.animate.set_width(1.75).match_y(self.root_plane),
+            MaintainPositionRelativeTo(sqrt_label, sqrt_arrow)
+        )
+
+        # Discontinuous square root
+        option = VGroup(
+            TexText("One option:", color=BLUE),
+            TexText("\\\\Make", " $\\sqrt{\\quad}$", " single-valued, but discontinuous", font_size=36),
+        )
+        option.arrange(DOWN, buff=0.5)
+        option[1][1].align_to(option[1][0], DOWN)
+        option.to_edge(UP, buff=MED_SMALL_BUFF)
+
+        np_tex = Code("Python: numpy.sqrt(c)")
+        np_tex.match_width(self.root_plane)
+        np_tex.next_to(self.root_plane, UP)
+
+        sqrt_dot = Dot(**self.dot_style)
+        sqrt_dot.set_color(BLUE)
+        sqrt_dot.add_updater(lambda d: d.move_to(self.root_plane.n2p(np.sqrt(self.get_c()))))
+        sqrt_label = Code("sqrt(c)")
+        sqrt_label.scale(0.75)
+        sqrt_label.add_updater(lambda m: m.next_to(sqrt_dot, UR, buff=0))
+
+        self.play(FadeIn(option, UP))
+        self.wait()
+        self.remove(root_tracers)
+        self.play(
+            self.root_dots.animate.set_opacity(0),
+            FadeOut(self.root_poly),
+            FadeOut(root_labels),
+            FadeIn(np_tex),
+            FadeIn(sqrt_dot),
+            FadeIn(sqrt_label),
+        )
+        self.wait(note="Show discontinuity")
+
+        # Taylor series
+        taylor_series = Tex(
+            "\\sqrt{x} \\approx",
+            "1",
+            "+ \\frac{1}{2}(x - 1)",
+            "- \\frac{1}{8}(x - 1)^2",
+            "+ \\frac{1}{16}(x - 1)^3",
+            "- \\frac{5}{128}(x - 1)^4",
+            "+ \\cdots",
+            font_size=36,
+        )
+        ts_title = Text("What about a Taylor series?")
+        ts_title.set_color(GREEN)
+        ts_group = VGroup(ts_title, taylor_series)
+        ts_group.arrange(DOWN, buff=MED_LARGE_BUFF)
+        ts_group.to_edge(UP, buff=MED_SMALL_BUFF)
+
+        def f(x, n):
+            return sum((
+                gen_choose(1 / 2, k) * (x - 1)**k
+                for k in range(n)
+            ))
+
+        brace = Brace(taylor_series[1:-1], DOWN, buff=SMALL_BUFF)
+        upper_f_label = brace.get_tex("f_4(x)", buff=SMALL_BUFF)
+        upper_f_label.set_color(GREEN)
+
+        f_dot = Dot(**self.dot_style)
+        f_dot.set_color(GREEN)
+        f_dot.add_updater(lambda d: d.move_to(self.root_plane.n2p(f(self.get_c(), 4))))
+        f_label = Tex("f_4(x)", font_size=24, color=GREEN)
+        f_label.add_updater(lambda m: m.next_to(f_dot, DL, buff=SMALL_BUFF))
+
+        self.play(
+            FadeOut(np_tex),
+            FadeIn(ts_group, UP),
+            FadeOut(option, UP),
+        )
+        self.wait()
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(upper_f_label, 0.5 * DOWN),
+        )
+        self.wait()
+        self.play(
+            TransformFromCopy(upper_f_label, f_label),
+            GrowFromPoint(f_dot, upper_f_label.get_center()),
+        )
+        self.wait()
+
+        anims = [
+            brace.animate.become(Brace(taylor_series[1:], DOWN, buff=SMALL_BUFF))
+        ]
+        for label in (upper_f_label, f_label):
+            new_label = Tex("f_{50}(x)")
+            new_label.replace(label, 1)
+            new_label.match_style(label)
+            anims.append(Transform(label, new_label, suspend_updating=False))
+        self.play(*anims)
+        f_dot.clear_updaters()
+        f_dot.add_updater(lambda d: d.move_to(self.root_plane.n2p(f(self.get_c(), 50))))
+        self.wait()
+
+        disc = Circle(radius=self.root_plane.x_axis.get_unit_size())
+        disc.move_to(self.root_plane.n2p(1))
+        disc.set_stroke(BLUE_B, 2)
+        disc.set_fill(BLUE_B, 0.2)
+        self.play(FadeIn(disc))
+        self.wait()
+
+        # Back to normal
+        ts_group.add(brace, upper_f_label)
+        root_labels.set_opacity(1)
+        self.play(
+            FadeOut(ts_group, UP),
+            *map(FadeOut, (disc, f_label, f_dot, sqrt_label, sqrt_dot)),
+            FadeIn(root_labels),
+            FadeIn(self.root_poly),
+            root_dots.animate.set_opacity(1),
+        )
+        self.add(root_tracers, *root_labels)
+        self.wait()
+
+    def show_angle_variation(self, c_label, r_label, arrow):
+        angle_color = TEAL
+        self.last_theta = 0
+
+        def get_theta():
+            angle = np.log(self.get_c()).imag
+            diff = angle - self.last_theta
+            diff = (diff + PI) % TAU - PI
+            self.last_theta += diff
+            return self.last_theta
+
+        circle = Circle(radius=self.coef_plane.x_axis.get_unit_size())
+        circle.set_stroke(angle_color, 1)
+        circle.move_to(self.coef_plane.get_origin())
+
+        left_exp_label, right_exp_label = (
+            self.get_exp_label(
+                get_theta=func,
+                color=angle_color
+            ).move_to(label[-1], DL)
+            for label, func in [
+                (c_label, get_theta),
+                (r_label, lambda: get_theta() / self.n),
+            ]
+        )
+
+        below_arrow_tex = MTex(
+            "e^{x} \\rightarrow e^{x /" + str(self.n) + "}",
+            font_size=36,
+            tex_to_color_map={"\\theta": angle_color},
+        )
+        below_arrow_tex.next_to(arrow, DOWN)
+
+        angle_labels = VGroup(
+            self.get_angle_label(self.coef_dots[0], self.coef_plane, "\\theta", get_theta),
+            self.get_angle_label(
+                self.root_dots[0], self.root_plane,
+                f"\\theta / {self.n}",
+                lambda: get_theta() / self.n,
+            ),
+        )
+
+        self.add(circle, self.coef_dots)
+        self.lock_coef_norm = True
+        self.tie_roots_to_coefs()
+        self.play(
+            FadeIn(circle),
+            FadeIn(angle_labels),
+            self.coef_dots[0].animate.move_to(self.coef_plane.n2p(1)),
+        )
+        self.wait()
+        self.play(
+            FadeOut(c_label[-1], UP),
+            FadeOut(r_label[-1], UP),
+            FadeIn(left_exp_label, UP),
+            FadeIn(right_exp_label, UP),
+        )
+        self.wait(note="Rotate c a bit")
+        self.play(Write(below_arrow_tex))
+        self.wait(note="Show full rotation, then two rotations")
+
+        # Remove stuff
+        self.play(LaggedStart(*map(FadeOut, (
+            circle, angle_labels,
+            left_exp_label, right_exp_label,
+            c_label[:-1], r_label[:-1],
+            below_arrow_tex,
+        ))))
+        self.lock_coef_norm = False
+
+    def get_exp_label(self, get_theta, color=GREEN):
+        result = Tex("e^{", "2\\pi i \\cdot", "0.00}")
+        decimal = DecimalNumber()
+        decimal.replace(result[2], dim_to_match=1)
+        result.replace_submobject(2, decimal)
+        result.add_updater(lambda m: m.assemble_family())
+        result.add_updater(lambda m: m[-1].set_color(color))
+        result.add_updater(lambda m: m[-1].set_value(get_theta() / TAU))
+        return result
+
+
+class CubeRootBehavior(StudySqrt):
+    n = 3
+    c = 1.0
+
+    def construct(self):
+        arrows, labels = self.get_radical_labels()
+        self.add(arrows, labels)
+
+        c_label = Tex("c = ", "1.00", tex_to_color_map={"c": self.coef_color})
+        r_label = Tex("r_0 = ", "1.00", tex_to_color_map={"r_0": self.root_color})
+        c_label.match_x(self.coef_plane)
+        c_label.to_edge(UP, buff=1.0)
+        r_label.match_x(self.root_plane)
+        r_label.match_y(c_label)
+        right_arrow_group = VGroup(arrows[0], labels[0])
+        right_arrow_group.save_state()
+
+        self.wait()
+        self.wait()
+        self.play(
+            right_arrow_group.animate.to_edge(UP),
+            *map(FadeIn, (c_label, r_label))
+        )
+        self.show_angle_variation(c_label, r_label, right_arrow_group[0])
+        self.play(Restore(right_arrow_group))
+
+    def add_labeled_arrow(self):
+        pass
+
+
+class FifthRootBehavior(CubeRootBehavior):
+    n = 5
+
+
+class SummarizeRootsToCyclesBehavior(Scene):
     def construct(self):
         pass
 
