@@ -1,5 +1,7 @@
 from manim_imports_ext import *
 
+# Helpers
+
 
 def roots_to_coefficients(roots):
     n = len(list(roots))
@@ -32,8 +34,12 @@ def find_root(func, dfunc, seed=complex(1, 1), tol=1e-8, max_steps=100):
 
 
 def coefficients_to_roots(coefs):
-    # Find a root, divide out by (x - root), repeat
+    if len(coefs) == 0:
+        return []
+    elif coefs[-1] == 0:
+        return coefficients_to_roots(coefs[:-1])
     roots = []
+    # Find a root, divide out by (x - root), repeat
     for i in range(len(coefs) - 1):
         root = find_root(
             lambda x: poly(x, coefs),
@@ -208,6 +214,45 @@ def get_symmetric_system(lhss,
     for eq in equations:
         eq.shift((equations[0][1].get_x() - eq[1].get_x()) * RIGHT)
     return equations
+
+
+def get_quadratic_formula(lhs="", **tex_config):
+    return MTex(
+        lhs + "{-{b} \\pm \\sqrt{ {b}^2 - 4{a}{c} } \\over 2{a} }",
+        **tex_config
+    )
+
+
+def get_full_cubic_formula(lhs="", **tex_config):
+    # Thanks to Mathologer and MathPix here...
+    return Tex(lhs + """
+        &\\sqrt[3]{\\left(-{ {b}^{3} \\over 27 {a}^{3}}+{ {b} {c} \\over 6 {a}^{2}}
+            -{ {d} \\over 2 {a} }\\right)-\\sqrt{\\left(-{ {b}^{3} \\over 27 {a}^{3}}
+            +{ {b} {c} \\over 6 {a}^{2}}-{ {d} \\over 2 {a}}\\right)^{2}
+            +\\left({ {c} \\over 3 {a} }-{ {b}^{2} \\over 9 {a}^{2}}\\right)^{3}}} \\\\
+        +&\\sqrt[3]{\\left(-{ {b}^{3} \\over 27 {a}^{3}}+{ {b} {c} \\over 6 {a}^{2}}
+            -{ {d} \\over 2 {a} }\\right)+\\sqrt{\\left(-{ {b}^{3} \\over 27 {a}^{3}}
+            +{ {b} {c} \\over 6 {a}^{2}}-{ {d} \\over 2 {a}}\\right)^{2}
+            +\\left({ {c} \\over 3 {a} }-{ {b}^{2} \\over 9 {a}^{2} }\\right)^{3}}} \\\\
+        -&{ {b} \\over 3 {a} }
+    """, **tex_config)
+
+
+def get_cubic_formula(lhs="", **tex_config):
+    return MTex(
+        lhs + """
+         \\sqrt[3]{-{q \\over 2}-\\sqrt{\\left({q \\over 2}\\right)^{2}+\\left({p \\over 3}\\right)^{3}}}
+        +\\sqrt[3]{-{q \\over 2}+\\sqrt{\\left({q \\over 2}\\right)^{2}+\\left({p \\over 3}\\right)^{3}}}
+        """,
+        **tex_config
+    )
+
+
+def get_quartic_formula(lhs="", **tex_config):
+    pass
+
+
+# General scene types
 
 
 class RootCoefScene(Scene):
@@ -990,9 +1035,10 @@ class CubicFormula(RootCoefScene):
         crt_labels.next_to(crt_plane, UP, SMALL_BUFF)
 
         cf_label = Tex(
-            "\\sqrt[3]{-\\frac{q}{2} + \\delta_1} +",
-            "\\sqrt[3]{-\\frac{q}{2} + \\delta_2}",
-            **kw
+            "\\sqrt[3]{ -\\frac{q}{2} + \\delta_1 } +",
+            "\\sqrt[3]{ -\\frac{q}{2} + \\delta_2 }",
+            # **kw  # TODO, What the hell is going on here...
+            font_size=24,
         )
         cf_label.set_backstroke()
         cf_label.next_to(cf_plane, UP, SMALL_BUFF)
@@ -1162,12 +1208,19 @@ class CubicFormula(RootCoefScene):
         self.add(cf_lines)
 
 
-# Scenes
+# Introduction
 
 class IntroduceUnsolvability(Scene):
     def construct(self):
         pass
 
+
+class TableOfContents(Scene):
+    def construct(self):
+        pass
+
+
+# Preliminaries on polynomials
 
 class ConstructPolynomialWithGivenRoots(Scene):
     root_color = YELLOW
@@ -1824,10 +1877,16 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
         # Play with coefficients, confined to real axis
         self.wait()
         self.add_constant_decimals()
+        self.add_graph()
         self.lock_coef_imag = True
         self.wait(note="Move around c0")
         self.lock_coef_imag = False
-        self.remove_constant_decimals()
+
+        self.decimal_poly.clear_updaters()
+        self.play(
+            FadeOut(self.decimal_poly, DOWN),
+            FadeOut(self.graph_group, DOWN),
+        )
 
         # Show the goal
         self.add_system()
@@ -1934,11 +1993,16 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
         to_fade.save_state()
         self.play(*(m.animate.fade(0.8) for m in to_fade))
 
+        root_tracers = VGroup(*(d.tracer for d in self.root_dots))
+        self.remove(root_tracers)
         self.continuous_roots = False
         self.root_dots[0].set_fill(BLUE)
-        self.root_dots[0].tracer.set_stroke(BLUE)
         self.r_dot_labels[0].set_fill(BLUE)
+        self.root_dots[1].set_fill(GREEN)
+        self.r_dot_labels[1].set_fill(GREEN)
         self.wait(note="Show discontinuous behavior")
+        self.add(self.get_tracers(self.root_dots))
+        self.wait(note="Turn tracers back on")
         self.continuous_roots = True
 
         # Represent as a multivalued function
@@ -1978,36 +2042,70 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
 
     def add_constant_decimals(self):
         dummy = "+10.00"
-        poly = Tex(
+        polynomial = Tex(
             f"x^3 {dummy}x^2 {dummy}x {dummy}",
             isolate=[dummy],
-            font_size=36,
+            font_size=40,
         )
-        poly.next_to(self.coef_poly, UP, MED_LARGE_BUFF)
+        polynomial.next_to(self.coef_poly, UP, LARGE_BUFF)
         decimals = DecimalNumber(100, include_sign=True, edge_to_fix=LEFT).replicate(3)
-        for dec, part in zip(decimals, poly.get_parts_by_tex(dummy)):
+        for dec, part in zip(decimals, polynomial.get_parts_by_tex(dummy)):
             dec.match_height(part)
             dec.move_to(part, LEFT)
             part.set_opacity(0)
-            poly.add(dec)
-        poly.decimals = decimals
+            polynomial.add(dec)
+        polynomial.decimals = decimals
 
-        def update_poly(poly):
-            for dec, coef in zip(poly.decimals, self.get_coefs()[-2::-1]):
+        def update_poly(polynomial):
+            for dec, coef in zip(polynomial.decimals, self.get_coefs()[-2::-1]):
                 dec.set_value(coef.real)
-            poly.decimals.set_fill(RED, 1)
-            return poly
+            polynomial.decimals.set_fill(RED, 1)
+            return polynomial
 
-        poly.add_updater(update_poly)
+        update_poly(polynomial)
+        VGroup(polynomial[0], decimals[0]).next_to(
+            polynomial[2], LEFT, SMALL_BUFF, aligned_edge=DOWN
+        )
 
-        VGroup(poly[0], decimals[0]).next_to(poly[2], LEFT, SMALL_BUFF, aligned_edge=DOWN)
+        self.play(FadeIn(polynomial, UP, suspend_updating=True))
+        polynomial.add_updater(update_poly)
+        self.decimal_poly = polynomial
 
-        self.play(FadeIn(poly, UP, suspend_updating=True))
-        self.decimal_poly = poly
+    def add_graph(self):
+        self.decimal_poly
+        axes = Axes(
+            (0, 6), (-4, 10),
+            axis_config=dict(tick_size=0.025),
+            width=3, height=2,
+        )
+        axes.set_height(2)
+        axes.move_to(self.root_plane)
+        axes.to_edge(UP, buff=SMALL_BUFF)
 
-    def remove_constant_decimals(self):
-        self.decimal_poly.clear_updaters()
-        self.play(FadeOut(self.decimal_poly, DOWN))
+        graph = always_redraw(
+            lambda: axes.get_graph(
+                lambda x: poly(x, self.get_coefs()).real
+            ).set_stroke(BLUE, 2)
+        )
+
+        root_dots = GlowDot()
+        root_dots.add_updater(lambda d: d.set_points([
+            axes.c2p(r.real, 0)
+            for r in self.get_roots()
+            if abs(r.imag) < 1e-5
+        ]))
+
+        arrow = Arrow(self.decimal_poly.get_right(), axes)
+
+        graph_group = Group(axes, graph, root_dots)
+
+        self.play(
+            ShowCreation(arrow),
+            FadeIn(graph_group, shift=UR),
+        )
+
+        graph_group.add(arrow)
+        self.graph_group = graph_group
 
     def add_system(self):
         c_parts = self.get_c_symbols(self.coef_poly)
@@ -2104,7 +2202,234 @@ class ComplicatedSingleValuedFunction(Scene):
 
 class SolvabilityChart(Scene):
     def construct(self):
-        pass
+        # Preliminary terms
+        frame = self.camera.frame
+        frame.set_height(10)
+
+        words = self.get_words(frame)
+        equations = self.get_equations(words)
+        s_words = self.get_solvability_words(equations)
+        gen_form_words = Text("General form")
+        gen_form_words.match_x(equations, LEFT)
+        gen_form_words.match_y(s_words, UP)
+        lines = self.get_lines(
+            rows=VGroup(s_words, *words),
+            cols=VGroup(words, equations, *s_words),
+        )
+        row_lines, col_lines = lines
+        marks = self.get_marks(equations, s_words)
+
+        # Shift colums
+        marks[1].save_state()
+        s_words[1].save_state()
+        frame.save_state()
+        frame.set_height(9, about_edge=DL)
+        frame.shift(LEFT)
+        VGroup(marks[1], s_words[1]).next_to(col_lines[1], RIGHT, MED_LARGE_BUFF)
+
+        solvable_word = TexText("Can you solve\\\\for $x$?")
+        solvable_word.move_to(s_words[1], DOWN)
+
+        # Cover rects
+        cover_rect = Rectangle()
+        cover_rect.set_fill(BLACK, 1)
+        cover_rect.set_stroke(BLACK, 0)
+        cover_rect.replace(frame, stretch=True)
+        cover_rect.add(VectorizedPoint(cover_rect.get_top() + 0.025 * UP))
+        cover_rect.move_to(row_lines[1], UL).shift(LEFT)
+        right_cover_rect = cover_rect.copy()
+        right_cover_rect.next_to(s_words[1], RIGHT, buff=MED_LARGE_BUFF)
+        right_cover_rect.match_y(frame)
+
+        self.add(words, equations, solvable_word)
+        self.add(row_lines, col_lines[:2])
+        self.add(right_cover_rect, cover_rect)
+
+        # Axes
+        axes = self.get_axes(frame)
+        coefs = np.array([1, 0.5, 0, 0, 0, 0])
+        coef_tracker = ValueTracker(coefs)
+        get_coefs = coef_tracker.get_value
+        graph = always_redraw(lambda: axes.get_graph(
+            lambda x: poly(x, get_coefs()),
+            stroke_color=BLUE,
+            stroke_width=2,
+        ))
+        root_dots = GlowDot()
+        root_dots.add_updater(lambda m: m.set_points([
+            axes.c2p(r.real, 0)
+            for r in coefficients_to_roots(get_coefs())
+            if abs(r.imag) < 1e-5 and abs(r.real) < 5
+        ]))
+        self.add(axes)
+
+        # Linear equation
+        tex_kw = dict(tex_to_color_map=self.get_tex_to_color_map())
+        lin_solution = Tex("x = {-{b} \\over {a}}", **tex_kw)
+        lin_solution.scale(1.2)
+        lin_solution.next_to(equations[0], DOWN, buff=2.0)
+
+        self.wait()
+        self.play(
+            ShowCreation(graph),
+            FadeIn(root_dots, rate_func=squish_rate_func(smooth, 0.3, 0.4)),
+        )
+        self.wait()
+        self.play(TransformMatchingShapes(
+            equations[0].copy(), lin_solution
+        ))
+        self.play(Write(marks[1][0]))
+        self.wait()
+
+        # Quadratic
+        quadratic_formula = get_quadratic_formula(lhs="x = ", **tex_kw)
+        quadratic_formula.next_to(equations[1], DOWN, buff=2.0)
+        new_coefs = 0.2 * np.array([*roots_to_coefficients([-3, 2]), 0, 0, 0])
+
+        self.play(
+            cover_rect.animate.move_to(row_lines[2], UL).shift(LEFT),
+            FadeOut(lin_solution, DOWN),
+        )
+        self.play(coef_tracker.animate.set_value(new_coefs))
+        self.wait()
+        self.play(TransformMatchingShapes(
+            equations[1].copy(), quadratic_formula,
+        ))
+        self.play(Write(marks[1][1]))
+        self.wait()
+
+        # Cubic
+        key_to_color = dict([
+            (TransformMatchingShapes.get_mobject_key(Tex(c)[0][0]), color)
+            for c, color in self.get_tex_to_color_map().items()
+        ])
+        full_cubic = get_full_cubic_formula(lhs="x = ")
+        full_cubic.set_width(9)
+        full_cubic.next_to(equations[2], DOWN, buff=1.0).shift(LEFT)
+        for sm in full_cubic[0]:
+            key = TransformMatchingShapes.get_mobject_key(sm)
+            sm.set_color(key_to_color.get(key, WHITE))
+        new_coefs = 0.05 * np.array([*roots_to_coefficients([-4, -1, 3]), 0, 0])
+
+        self.play(
+            cover_rect.animate.move_to(row_lines[3], UL).shift(LEFT),
+            FadeOut(quadratic_formula, DOWN),
+        )
+        self.play(coef_tracker.animate.set_value(new_coefs))
+        self.wait()
+        self.play(TransformMatchingShapes(
+            equations[2].copy(), full_cubic,
+            run_time=2
+        ))
+        self.wait()
+
+        # Embed
+        self.embed()
+
+    def get_words(self, frame):
+        words = VGroup(*map(Text, (
+            "Linear",
+            "Quadratic",
+            "Cubic",
+            "Quartic",
+            "Quintic",
+            "Sextic",
+        )))
+        words.add(Tex("\\vdots"))
+        words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
+        words.next_to(frame.get_corner(DL), UR, buff=1.0)
+        words.shift(0.5 * LEFT)
+        words[-1].match_x(words[-2])
+        return words
+
+    def get_equations(self, words):
+        kw = dict(tex_to_color_map=self.get_tex_to_color_map())
+        equations = VGroup(
+            Tex("{a}x + {b} = 0", **kw),
+            Tex("{a}x^2 + {b}x + {c} = 0", **kw),
+            Tex("{a}x^3 + {b}x^2 + {c}x + {d} = 0", **kw),
+            Tex("{a}x^4 + \\cdots + {d}x + {e} = 0", **kw),
+            Tex("{a}x^5 + \\cdots + {e}x + {f} = 0", **kw),
+            Tex("{a}x^6 + \\cdots + {f}x + {g} = 0", **kw),
+            Tex("\\vdots", **kw),
+        )
+        equations.arrange(DOWN, aligned_edge=LEFT)
+        equations.next_to(words, RIGHT, LARGE_BUFF)
+        for eq, word in zip(equations, words):
+            dy = word[-1].get_bottom()[1] - eq[0][0].get_bottom()[1]
+            eq.shift(dy * UP)
+        equations[-1].match_y(words[-1])
+        equations[-1].match_x(equations[-2])
+        return equations
+
+    def get_solvability_words(self, equations):
+        operations = ["+", "-", "\\times", "/", "\\sqrt[n]{\\quad}"]
+        arith, radicals = (
+            "$" + " ,\\, ".join(operations[s]) + "$"
+            for s in (slice(None, -1), slice(None))
+        )
+        s_words = VGroup(
+            TexText("Solvable", " using\\\\", arith),
+            TexText("Solvable", " using\\\\", radicals),
+            TexText("Solvable\\\\", "numerically"),
+        )
+        s_words.arrange(RIGHT, buff=LARGE_BUFF, aligned_edge=UP)
+        s_words.next_to(equations, UR, buff=MED_LARGE_BUFF)
+        s_words.shift(MED_LARGE_BUFF * RIGHT)
+
+        return s_words
+
+    def get_lines(self, rows, cols, color=GREY_A, width=2):
+        row_line = Line(cols.get_left(), cols.get_right())
+        row_lines = row_line.replicate(len(rows) - 1)
+        for r1, r2, rl in zip(rows, rows[1:], row_lines):
+            rl.match_y(midpoint(r1.get_bottom(), r2.get_top()))
+
+        col_line = Line(rows.get_top(), rows.get_bottom())
+        col_lines = col_line.replicate(len(cols) - 1)
+        for c1, c2, cl in zip(cols, cols[1:], col_lines):
+            cl.match_x(midpoint(c1.get_right(), c2.get_left()))
+
+        col_lines[0].match_height(Group(row_lines, Point(col_lines.get_bottom())), about_edge=DOWN)
+
+        lines = VGroup(row_lines, col_lines)
+        lines.set_stroke(color, width)
+        return lines
+
+    def get_marks(self, equations, solvability_words):
+        pre_marks = [
+            "cxxxxxx",
+            "ccccxxx",
+            "ccccccc",
+        ]
+        marks = VGroup(*(
+            VGroup(*(
+                Checkmark() if pm == 'c' else Exmark()
+                for pm in pm_list
+            ))
+            for pm_list in pre_marks
+        ))
+        for mark_group, s_word in zip(marks, solvability_words):
+            mark_group.match_x(s_word)
+            for mark, eq in zip(mark_group, equations):
+                mark.match_y(eq)
+        return marks
+
+    def get_axes(self, frame):
+        axes = Axes((-5, 5), (-5, 5), height=10, width=10)
+        axes.set_width(4)
+        axes.next_to(frame.get_corner(DR), UL)
+        axes.add(Tex("x", font_size=24).next_to(axes.x_axis.get_right(), DOWN, SMALL_BUFF))
+        axes.add(Tex("y", font_size=24).next_to(axes.y_axis.get_top(), LEFT, SMALL_BUFF))
+        return axes
+
+    def get_tex_to_color_map(self):
+        chars = "abcdefg"
+        colors = color_gradient([RED_B, RED_C, RED_D], len(chars))
+        return dict(
+            (f"{{{char}}}", color)
+            for char, color in zip(chars, colors)
+        )
 
 
 class StudySqrt(RadicalScene):
@@ -2433,6 +2758,9 @@ class FifthRootBehavior(CubeRootBehavior):
 class SummarizeRootsToCyclesBehavior(Scene):
     def construct(self):
         pass
+
+
+# Analyze the cubic formula
 
 
 class Cubic(RootCoefScene):
