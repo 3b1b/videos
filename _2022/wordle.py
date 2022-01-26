@@ -501,7 +501,7 @@ def simulated_games(first_guess='tares', quiet=False, n_samples=None):
     print(f"Average: {average}")
 
 
-# Scenes
+# Scene types
 
 
 class WordleScene(Scene):
@@ -514,6 +514,11 @@ class WordleScene(Scene):
         1: "#C6B566",  # YELLOW
         2: GREEN_D,  # GREEN
     }
+    uniform_prior = False
+    wordle_based_prior = False
+    freq_prior = True
+
+    CONFIG = {"random_seed": None}
 
     def setup(self):
         self.all_words = self.get_word_list()
@@ -526,6 +531,7 @@ class WordleScene(Scene):
         self.guesses = []
         self.patterns = []
         self.possibilities = list(self.all_words)
+        self.pending_pattern = None
 
         self.add_grid()
 
@@ -533,7 +539,14 @@ class WordleScene(Scene):
         return get_word_list()
 
     def get_priors(self):
-        return get_word_priors()
+        words = self.all_words
+        if self.uniform_prior:
+            return dict(zip(words, it.count(1)))
+        elif self.wordle_based_prior:
+            short_list = set(get_word_list(short=True))
+            return dict((w, int(w in short_list)) for w in words)
+        else:
+            return get_word_priors()
 
     def get_pattern(self, guess):
         return get_pattern(guess, self.secret_word)
@@ -577,10 +590,13 @@ class WordleScene(Scene):
         self.grid.pending_word.remove(letter_mob)
         self.remove(letter_mob)
 
-    def add_word(self, word, pattern=None):
+    def add_word(self, word, wait_time_per_letter=0.1):
         for letter in word:
             self.add_letter(letter)
-            self.wait(0.1, ignore_presenter_mode=True)
+            self.wait(
+                wait_time_per_letter,
+                ignore_presenter_mode=True
+            )
 
     def pending_word_as_string(self):
         return "".join(
@@ -588,14 +604,17 @@ class WordleScene(Scene):
             for t in self.grid.pending_word
         )
 
-    def reveal_pattern(self, pattern=None):
+    def is_valid_guess(self):
+        guess = self.pending_word_as_string()
+        return guess in self.all_words
+
+    def reveal_pattern(self, pattern=None, animate=True):
         grid = self.grid
         row = grid[len(grid.words)]
         word_mob = grid.pending_word
         guess = self.pending_word_as_string()
 
-        if len(guess) != 5 or guess not in self.all_words:
-            # Invalid guess
+        if not self.is_valid_guess():
             c = row.get_center().copy()
             func = bezier([0, 0, 1, 1, -1, -1, 0, 0])
             self.play(UpdateFromAlphaFunc(
@@ -603,6 +622,7 @@ class WordleScene(Scene):
                 lambda m, a: m.move_to(c + func(a) * RIGHT),
                 run_time=0.5,
             ))
+            grid.pending_word.set_submobjects([])
             return False
 
         if pattern is None:
@@ -614,7 +634,11 @@ class WordleScene(Scene):
         self.guesses.append(guess)
         self.patterns.append(pattern)
 
-        self.animate_pattern(row, word_mob, pattern)
+        if animate:
+            self.animate_pattern(pattern)
+        else:
+            self.show_pattern(pattern)
+
         grid.words.add(grid.pending_word)
         grid.pending_word = VGroup()
 
@@ -624,12 +648,10 @@ class WordleScene(Scene):
 
         return True
 
-    def animate_pattern(self, row, word_mob, pattern):
-        colors = [
-            self.color_map[key]
-            for key in pattern_to_int_list(pattern)
-        ]
-        for square, color in zip(row, colors):
+    def animate_pattern(self, pattern):
+        grid = self.grid
+        row = grid[len(grid.words)]
+        for square, color in zip(row, self.get_colors(pattern)):
             square.future_color = color
 
         def alpha_func(mob, alpha):
@@ -649,16 +671,28 @@ class WordleScene(Scene):
             ), lag_ratio=0.5),
             LaggedStart(*(
                 UpdateFromAlphaFunc(letter, alpha_func)
-                for letter in word_mob
+                for letter in grid.pending_word
             ), lag_ratio=0.5),
             run_time=2,
         )
+
+    def show_pattern(self, pattern):
+        self.pending_pattern = pattern
+        row = self.grid[len(self.grid.words)]
+        for square, color in zip(row, self.get_colors(pattern)):
+            square.set_fill(color, 1)
+
+    def get_colors(self, pattern):
+        return [self.color_map[key] for key in pattern_to_int_list(pattern)]
 
     def win_animation(self):
         pass
 
     def has_won(self):
         return self.patterns[-1] == 3**5 - 1
+
+    def get_matching_words(self, n_rows, n_cols, dots_index=-5, font_size=24):
+        pass  # TODO, see get_shown_words below
 
     # Interactive parts
     def on_key_press(self, symbol, modifiers):
@@ -697,7 +731,7 @@ class WordleSceneWithAnalysis(WordleScene):
     def setup(self):
         super().setup()
         self.show_possible_words()
-        self.add_top_picks_title()
+        self.add_score_grid_title()
         self.score_grid = VGroup()
         self.init_score_grid()
 
@@ -705,7 +739,7 @@ class WordleSceneWithAnalysis(WordleScene):
         self.show_scores()
 
     def init_score_grid(self):
-        titles = self.top_picks_titles
+        titles = self.score_grid_titles
         line = Line().match_width(titles)
         line.set_stroke(GREY_C, 1)
         lines = line.get_grid(self.n_top_picks, 1, buff=0.5)
@@ -735,7 +769,7 @@ class WordleSceneWithAnalysis(WordleScene):
             label.next_to(self.grid[score - 1], LEFT)
         return label
 
-    def add_top_picks_title(self):
+    def add_score_grid_title(self):
         titles = VGroup(
             Text("Top picks"),
             Text("Entropy", color=self.entropy_color),
@@ -764,18 +798,24 @@ class WordleSceneWithAnalysis(WordleScene):
         titles.to_edge(UP, buff=MED_SMALL_BUFF)
 
         self.add(titles)
-        self.top_picks_titles = titles
+        self.score_grid_titles = titles
 
     def reveal_pattern(self):
-        self.isolate_guessed_row()
-        is_valid_word = super().reveal_pattern()  # TODO, account for invalid guesses
-        if not is_valid_word:
-            return False
+        is_valid_guess = self.is_valid_guess()
+        if is_valid_guess:
+            self.isolate_guessed_row()
 
-        self.show_possible_words()
-        self.wait()
-        if not self.has_won():
+        super().reveal_pattern()
+
+        if is_valid_guess and not self.has_won():
+            self.show_possible_words()
+            self.wait()
             self.show_scores()
+        if self.has_won():
+            self.play(
+                FadeOut(self.score_grid, RIGHT),
+                FadeOut(self.score_grid_titles, RIGHT),
+            )
 
     def animate_pattern(self, *args, **kwargs):
         for word_mob, word, bar in zip(self.shown_words, self.shown_words.words, self.prob_bars):
@@ -969,7 +1009,7 @@ class WordleSceneWithAnalysis(WordleScene):
                       entropy2=None,
                       probability=None,
                       font_size=36):
-        titles = self.top_picks_titles
+        titles = self.score_grid_titles
         row = VGroup()
 
         # Word
@@ -1015,7 +1055,7 @@ class WordleSceneWithAnalysis(WordleScene):
         return row
 
     def get_score_grid_lines(self):
-        titles = self.top_picks_titles
+        titles = self.score_grid_titles
         line = Line().match_width(titles)
         line.set_stroke(GREY_C, 1)
         lines = line.get_grid(self.n_top_picks, 1, buff=0.5)
@@ -1038,7 +1078,140 @@ class WordleSceneWithAnalysis(WordleScene):
 
 
 class WordleDistributions(WordleScene):
-    def construct(self):
+    grid_center = [-4.5, -0.5, 0]
+    grid_height = 5
+    bar_color = TEAL
+
+    def get_axes(self, y_max=0.1):
+        axes = Axes(
+            (0, 3**5 // 2),
+            (0, y_max, y_max / 5),
+            height=6,
+            width=7.5,
+            x_axis_config={
+                "tick_size": 0,
+            }
+        )
+        axes.next_to(self.grid, RIGHT, LARGE_BUFF, aligned_edge=DOWN)
+        y_label = Tex("p(\\text{Pattern})", font_size=24)
+        y_label.next_to(axes.y_axis.get_top(), UR, buff=SMALL_BUFF)
+
+        x_label = Text("Pattern", font_size=24)
+        x_label.next_to(axes.x_axis.get_right(), UR, MED_SMALL_BUFF)
+        x_label.shift_onto_screen()
+        axes.x_axis.add(x_label)
+
+        axes.y_axis.add(y_label)
+        axes.y_axis.add_numbers(num_decimal_places=2)
+        return axes
+
+    def get_distribution_bars(self, axes, guess):
+        x_unit = axes.x_axis.unit_size
+        y_unit = axes.y_axis.unit_size
+        bar_template = Rectangle(width=x_unit)
+        bar_template.set_stroke(width=0)
+        bar_template.set_fill(self.bar_color, 1)
+        bars = bar_template.replicate(3**5)
+
+        distribution = get_pattern_distributions(
+            [guess], self.possibilities,
+            get_weights(self.possibilities, self.priors)
+        )[0]
+        pattern_indices = np.argsort(distribution)[::-1]
+        bars.patterns = pattern_indices
+
+        for i, bar in enumerate(bars):
+            prob = distribution[pattern_indices[i]]
+            bar.set_height(prob * y_unit, stretch=True)
+            bar.move_to(axes.c2p(i, 0), DL)
+            bar.prob = prob
+        return bars
+
+    def get_bar_indicator(self, bars, pattern_index):
+        pattern_index_tracker = ValueTracker(pattern_index)
+
+        def get_pattern_index():
+            return int(pattern_index_tracker.get_value())
+
+        def get_pattern():
+            return bars.patterns[get_pattern_index()]
+
+        tri = ArrowTip(angle=PI / 2)
+        tri.set_height(0.1)
+        tri.add_updater(lambda m: m.next_to(bars[get_pattern_index()], DOWN, buff=0))
+
+        grid = self.grid
+        row = grid[len(grid.words)]
+        row_copy = row.copy()
+        row_copy.scale(0.25)
+        row_copy.add_updater(lambda m: m.next_to(tri, DOWN, SMALL_BUFF))
+
+        bars.add_updater(lambda m: m.set_opacity(0.35))
+        bars.add_updater(lambda m: m[get_pattern_index()].set_opacity(1))
+        grid.add_updater(lambda m: self.show_pattern(get_pattern()))
+        row_copy.add_updater(lambda m: m.match_style(row).set_stroke(width=0.1))
+
+        indicator = Group(tri, row_copy)
+
+        return indicator, pattern_index_tracker
+
+    def get_highlighted_bar_p_label(self, bars, pattern_index_tracker):
+        def get_bar():
+            return bars[int(pattern_index_tracker.get_value())]
+
+        p_label = VGroup(Tex("p = "), DecimalNumber(0, num_decimal_places=4))
+        p_label.arrange(RIGHT, buff=0.2)
+        p_label[1].match_y(p_label[0][0][1])
+        p_label.scale(0.75)
+        p_label.add_updater(lambda m: m.next_to(get_bar(), UR, SMALL_BUFF))
+        p_label.add_updater(lambda m: m.shift_onto_screen(buff=LARGE_BUFF))
+        p_label.add_updater(lambda m: m[1].set_value(get_bar().prob))
+        return p_label
+
+    def get_dynamic_match_label(self, font_size=36):
+        buckets = get_word_buckets(
+            self.pending_word_as_string(),
+            self.possibilities
+        )
+
+        label = VGroup(
+            Integer(len(buckets[0]), font_size=font_size, edge_to_fix=DR),
+            Text("Possible matches", font_size=font_size)
+        )
+        label.arrange(RIGHT, aligned_edge=DOWN)
+        label.next_to(self.grid, UP)
+
+        def update_label(label):
+            bucket_size = len(buckets[self.pending_pattern])
+            label[0].set_value(bucket_size)
+
+        label.add_updater(update_label)
+
+        return label
+
+    def get_total_words_label(self, font_size=36):
+        label = VGroup(
+            Integer(len(self.all_words), font_size=font_size),
+            Text("Total words", font_size=font_size)
+        )
+        label.arrange(RIGHT, aligned_edge=UP)
+        label.match_x(self.grid)
+        label.to_edge(UP, buff=MED_SMALL_BUFF)
+        return label
+
+    def get_information_label(self, p_label):
+        pass
+
+    def get_matches(self):
+        buckets = get_word_buckets(
+            self.pending_word_as_string(),
+            self.possibilities
+        )
+        buckets[self.pending_pattern]
+
+    # Animations
+
+    def add_distribution(self, axes):
         pass
 
 
@@ -1051,23 +1224,62 @@ class ExternalPatternEntry(WordleSceneWithAnalysis):
         return pattern_from_string(input("Pattern please:"))
 
 
-class Test(WordleSceneWithAnalysis):
+# Scenes
+
+
+class IntroduceInformation(WordleDistributions):
     CONFIG = {
         "random_seed": None
     }
-
-    # def get_priors(self):
-    #     short_list = get_word_list(short=True)
-    #     # return dict(zip(self.all_words, it.repeat(1)))
-    #     return dict(
-    #         (w, 1 if w in short_list else 0)
-    #         for w in self.all_words
-    #     )
+    uniform_prior = True
 
     def construct(self):
-        super().construct()
-        # Embed
-        # self.embed()
+        # Total labels
+        total_label = self.get_total_words_label()
+        self.add(total_label)
+
+        # Show an example guess
+        guess = "blues"
+        self.add_word(guess)
+        # self.wait(note="Write blues")
+        self.wait()
+
+        match_label = self.get_dynamic_match_label()
+
+        self.embed()
+
+        # Show several possible patterns, with corresponding matches
+
+        # Show distribution
+
+        # Define information
+
+        # Define entropy
+
+        # Blah
+
+        axes = self.get_axes()
+        bars = self.get_distribution_bars(axes, guess)
+
+        bar_indicator, x_tracker = self.get_bar_indicator(bars, 25)
+        p_label = self.get_highlighted_bar_p_label(bars, x_tracker)
+
+        self.add(axes, bars)
+        self.add(bar_indicator)
+        self.add(p_label)
+        self.add(match_label)
+
+        self.embed()
+
+        self.play(x_tracker.animate.set_value(100))
+
+    def add_trackers(self):
+        pass
+
+
+class ComputeManyAllEntropies(Scene):
+    def construct(self):
+        pass
 
 
 # Script
