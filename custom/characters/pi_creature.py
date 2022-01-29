@@ -77,6 +77,7 @@ class PiCreature(SVGMobject):
         # Shouldn't need this, remove?
         self.mouth.insert_n_curves(10)
         self.mouth.set_stroke(BLACK, 1)
+        self.eyes.set_stroke(width=0)
 
     def align_data_and_family(self, mobject):
         # This ensures that after a transform into a different mode,
