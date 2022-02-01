@@ -78,7 +78,7 @@ def get_confetti_animations(num_confetti_squares):
         ConfettiSpiril(
             square,
             x_start = 2*random.random()*FRAME_X_RADIUS - FRAME_X_RADIUS,
-            rate_func = squish_rate_func(lambda t : t, a, a+0.5)
+            rate_func = squish_rate_func(rush_from, a, a+0.5)
         )
         for a, square in zip(
             np.linspace(0, 0.5, num_confetti_squares),
@@ -229,6 +229,9 @@ class JustGiveMeAQuickExplanation(TeacherStudentsScene):
             for pi in self.get_students()[::2]
         ]))
         self.wait(2)
+
+class ComplexTransformationScene(Scene):
+    pass
 
 class QuickExplanation(ComplexTransformationScene):
     CONFIG = {
@@ -3364,37 +3367,4 @@ class Thumbnail(Scene):
         groups.to_edge(DOWN)
         via.move_to(VGroup(formula, groups))
         self.add(via, groups)
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
