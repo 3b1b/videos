@@ -16,6 +16,9 @@ style:
   font: "CMU Serif"
   background_color: "#000000"
 camera_qualities:
+  high:
+    resolution: "1920x1080"
+    frame_rate: 60
   default_quality: "ultra_high"
 window_position: UR
 window_monitor: 0
