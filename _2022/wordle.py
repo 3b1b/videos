@@ -9,17 +9,16 @@ MISPLACED = 1
 EXACT = 2
 
 DATA_DIR = os.path.join(get_directories()["data"], "wordle")
-SHORT_WORD_LIST_FILE = os.path.join(DATA_DIR, "possible_words.txt")
-LONG_WORD_LIST_FILE = os.path.join(DATA_DIR, "allowed_words.txt")
-ENT_MAP_FILE = os.path.join(DATA_DIR, "entropies.json")
-PATTERN_GRID_FILE = os.path.join(DATA_DIR, "pattern_grid.np")
-WORD_FREQ_FILE = os.path.join(DATA_DIR, "wordle_words_freqs_full.txt")
-WORD_FREQ_MAP_FILE = os.path.join(DATA_DIR, "freq_map.json")
-PATTERN_HASH_GRID_FILE = os.path.join(DATA_DIR, "pattern_grid.npy")
+WORD_DATA_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "wordle_data",
+)
+SHORT_WORD_LIST_FILE = os.path.join(WORD_DATA_DIR, "possible_words.txt")
+LONG_WORD_LIST_FILE = os.path.join(WORD_DATA_DIR, "allowed_words.txt")
+WORD_FREQ_FILE = os.path.join(WORD_DATA_DIR, "wordle_words_freqs_full.txt")
+WORD_FREQ_MAP_FILE = os.path.join(WORD_DATA_DIR, "freq_map.json")
+PATTERN_MATRIX_FILE = os.path.join(DATA_DIR, "pattern_grid.npy")
 SECOND_GUESS_MAP_FILE = os.path.join(DATA_DIR, "second_guess_map.json")
-THIRD_GUESS_MAP_FILE = os.path.join(DATA_DIR, "third_guess_map.json")
-BEST_DOUBLE_ENTROPIES = os.path.join(DATA_DIR, "best_double_entropies.json")
-BEST_DOUBLE_BUCKET_SIZES = os.path.join(DATA_DIR, "best_double_bucket_sizes.json")
 ENT_SCORE_PAIRS_FILE = os.path.join(DATA_DIR, "ent_score_pairs.json")
 
 # To store the large grid of patterns at run time
@@ -95,22 +94,6 @@ def get_true_wordle_prior():
         (w, int(w in short_words))
         for w in words
     )
-
-
-def get_entropy_map(regenerate=False, rewrite=True):
-    if regenerate:
-        words = get_word_list()
-        priors = get_frequency_based_priors()
-        weights = get_weights(words, priors)
-        entropies = get_entropies(words, words, weights)
-        ent_map = dict(zip(words, entropies))
-        if rewrite:
-            with open(ENT_MAP_FILE, 'w') as fp:
-                json.dump(ent_map, fp)
-        return ent_map
-    with open(ENT_MAP_FILE) as fp:
-        ent_map = json.load(fp)
-    return ent_map
 
 
 # String matching, etc.
@@ -210,12 +193,15 @@ def generate_pattern_grid(words1, words2):
 def generate_full_pattern_grid():
     words = get_word_list()
     grid = generate_pattern_grid(words, words)
-    np.save(PATTERN_HASH_GRID_FILE, grid)
+    np.save(PATTERN_MATRIX_FILE, grid)
 
 
 def get_pattern_grid(words1, words2):
     if not PATTERN_GRID_DATA:
-        PATTERN_GRID_DATA['grid'] = np.load(PATTERN_HASH_GRID_FILE)
+        if not os.path.exists(PATTERN_MATRIX_FILE):
+            log.info("Generating pattern matrix...(this takes a moment, but is only needed once)")
+            generate_full_pattern_grid()
+        PATTERN_GRID_DATA['grid'] = np.load(PATTERN_MATRIX_FILE)
         PATTERN_GRID_DATA['words_to_index'] = dict(zip(
             get_word_list(), it.count()
         ))
@@ -283,18 +269,6 @@ def get_entropies(allowed_words, possible_words, weights):
         return np.zeros(len(allowed_words))
     distributions = get_pattern_distributions(allowed_words, possible_words, weights)
     return entropy_of_distributions(distributions)
-
-
-def generate_entropy_map():
-    words = get_word_list()
-    priors = get_frequency_based_priors()
-    weights = get_weights(words, priors)
-    ent_map = dict(zip(
-        words, get_entropies(words, words, weights)
-    ))
-    with open(ENT_MAP_FILE, 'w') as fp:
-        json.dump(ent_map, fp)
-    return ent_map
 
 
 def max_bucket_size(guess, possible_words, weights):
@@ -2312,15 +2286,10 @@ class DescribeBit(TeacherStudentsScene):
             FadeIn(words, UP)
         )
         self.change_student_modes(
-            "guilty", "pondering", "thinking",
+            "happy", "pondering", "thinking",
             look_at_arg=words
         )
-        self.student_says(
-            "Yeah, we know...",
-            student_index=0,
-            target_mode="sassy",
-        )
-        self.wait(2)
+        self.wait(4)
 
         formula = Tex("I = -\\log_2(p)", tex_to_color_map={"I": YELLOW})
         formula.next_to(self.teacher.get_corner(UL), UP)
@@ -2329,15 +2298,11 @@ class DescribeBit(TeacherStudentsScene):
             words.animate.to_edge(UP),
             FadeIn(formula, UP),
             self.teacher.animate.change("raise_right_hand", formula),
+            self.students[0].animate.change("erm", formula),
             self.students[1].animate.change("confused", formula),
             self.students[2].animate.change("pondering", formula),
         )
-        self.student_says(
-            "Wait, what?",
-            student_index=0,
-            target_mode="erm",
-        )
-        self.wait(3)
+        self.wait(5)
 
 
 class DefineInformation(Scene):
@@ -4726,8 +4691,9 @@ class Thumbnail(Scene):
         rows = WordleScene.patterns_to_squares(
             patterns, color_map=[GREY_D, YELLOW, GREEN_E]
         )
-
+        rows.set_stroke(width=0)
         rows.set_width(0.5 * FRAME_WIDTH)
+        rows.move_to(DOWN)
         rows.center()
         rows.set_gloss(0.4)
         self.add(rows)
@@ -4740,7 +4706,6 @@ class Thumbnail(Scene):
             for char, square in zip(word, row):
                 char.move_to(square)
             words.add(word)
-
         # self.add(words)
 
         # Title
@@ -4752,10 +4717,6 @@ class Thumbnail(Scene):
         )
         title.to_edge(UP, buff=0.75)
         self.add(title)
-
-        rows.move_to(DOWN)
-
-        self.embed()
 
 
 # Run simulated wordle games
@@ -5008,5 +4969,5 @@ if __name__ == "__main__":
         first_guess="crane",
         priors=get_true_wordle_prior(),
         # priors=get_frequency_based_priors(),
-        hard_mode=True,
+        # hard_mode=True,
     )
