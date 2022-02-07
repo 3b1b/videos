@@ -105,6 +105,8 @@ def pattern_trit_generator(guess, true_word):
             true_word = "".join(list(true_word[:i]) + ["0"] + list(true_word[i+1:]))
             yield EXACT
         elif c1 in true_word:
+            ind = true_word.index(c1)
+            true_word = "".join(list(true_word[:ind]) + ["0"] + list(true_word[ind+1:])) 
             yield MISPLACED
         else:
             yield MISS
