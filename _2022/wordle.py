@@ -112,7 +112,7 @@ def pattern_trit_generator(guess, true_word):
 def get_pattern(guess, true_word):
     """
     A unique integer id associated with the grey/yellow/green wordle
-    pattern relatign a guess to the tue answer. In the ternary representation
+    pattern relating a guess to the tue answer. In the ternary representation
     of this number, 0 -> grey, 1 -> yellow, 2 -> green.
     """
     return sum(
