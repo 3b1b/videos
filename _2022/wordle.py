@@ -100,13 +100,21 @@ def get_true_wordle_prior():
 
 
 def pattern_trit_generator(guess, true_word):
-    for c1, c2 in zip(guess, true_word):
+    pattern = len(guess) * [MISS]
+    letters_left = []
+
+    for index, (c1, c2) in enumerate(zip(guess, true_word)):
         if c1 == c2:
-            yield EXACT
-        elif c1 in true_word:
-            yield MISPLACED
+            pattern[index] = EXACT
         else:
-            yield MISS
+            letters_left.append(c2)
+
+    for (index, c) in enumerate(guess):
+        if not pattern[index] and c in letters_left:
+            pattern[index] = MISPLACED
+            letters_left.remove(c)
+
+    return pattern
 
 
 def get_pattern(guess, true_word):
