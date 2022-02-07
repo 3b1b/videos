@@ -16,8 +16,8 @@ SHORT_WORD_LIST_FILE = os.path.join(WORD_DATA_DIR, "possible_words.txt")
 LONG_WORD_LIST_FILE = os.path.join(WORD_DATA_DIR, "allowed_words.txt")
 WORD_FREQ_FILE = os.path.join(WORD_DATA_DIR, "wordle_words_freqs_full.txt")
 WORD_FREQ_MAP_FILE = os.path.join(WORD_DATA_DIR, "freq_map.json")
-PATTERN_MATRIX_FILE = os.path.join(DATA_DIR, "pattern_grid.npy")
-SECOND_GUESS_MAP_FILE = os.path.join(DATA_DIR, "second_guess_map.json")
+SECOND_GUESS_MAP_FILE = os.path.join(WORD_DATA_DIR, "second_guess_map.json")
+PATTERN_MATRIX_FILE = os.path.join(DATA_DIR, "pattern_matrix.npy")
 ENT_SCORE_PAIRS_FILE = os.path.join(DATA_DIR, "ent_score_pairs.json")
 
 # To store the large grid of patterns at run time
@@ -248,13 +248,13 @@ def get_pattern_distributions(allowed_words, possible_words, weights):
     that to bucket together words from possible_words which would produce
     the same pattern, adding together their corresponding probabilities.
     """
-    pattern_grid = get_pattern_grid(allowed_words, possible_words)
+    pattern_matrix = get_pattern_grid(allowed_words, possible_words)
 
     n = len(allowed_words)
     distributions = np.zeros((n, 3**5))
     n_range = np.arange(n)
     for j, prob in enumerate(weights):
-        distributions[n_range, pattern_grid[:, j]] += prob
+        distributions[n_range, pattern_matrix[:, j]] += prob
     return distributions
 
 
@@ -438,7 +438,14 @@ def get_expected_scores(allowed_words, possible_words, priors,
     return expected_scores
 
 
-def optimal_guess(allowed_words, possible_words, priors, look_two_ahead=False):
+def optimal_guess(allowed_words, possible_words, priors, look_two_ahead=False, purely_maximize_information=False):
+    if purely_maximize_information:
+        if len(possible_words) == 1:
+            return possible_words[0]
+        weights = get_weights(possible_words, priors)
+        ents = get_entropies(allowed_words, possible_words, weights)
+        return allowed_words[np.argmax(ents)]
+    # Otherwise, minimize expected score
     expected_scores = get_expected_scores(
         allowed_words, possible_words, priors,
         look_two_ahead=look_two_ahead
@@ -4849,11 +4856,12 @@ def simulated_games(first_guess=None,
                     second_guess_map=None,
                     save_second_guess_map_to_file=True,
                     exclude_seen_words=False,
-                    n_samples=None,
+                    test_set=None,
                     shuffle=False,
                     quiet=False,
                     results_file=None,
                     hard_mode=False,
+                    purely_maximize_information=False,
                     **kw
                     ):
     all_words = get_word_list(short=False)
@@ -4868,32 +4876,34 @@ def simulated_games(first_guess=None,
     if priors is None:
         priors = get_frequency_based_priors()
 
-    if n_samples is None:
-        samples = short_word_list
-    else:
-        samples = random.sample(short_word_list, n_samples)
+    if test_set is None:
+        test_set = short_word_list
 
     if shuffle:
-        random.shuffle(samples)
+        random.shuffle(test_set)
 
     seen = set()
 
     # Keep track of the best next guess for a given set of possibilities
     next_guess_map = {}
 
-    def get_next_guess(possibilities):
-        phash = hash("".join(possibilities))
+    def get_next_guess(guesses, patterns):
+        phash = hash("".join(
+            f"{g}{p}" for g, p in zip(guesses, patterns)
+        ))
         if phash not in next_guess_map:
             choices = possibilities if hard_mode else all_words
             next_guess_map[phash] = optimal_guess(
                 choices, possibilities, priors,
                 look_two_ahead=look_two_ahead,
+                purely_maximize_information=purely_maximize_information,
+                # purely_maximize_information=(len(patterns) < 2),
             )
         return next_guess_map[phash]
 
     scores = np.array([], dtype=int)
     game_results = []
-    for answer in ProgressDisplay(samples, leave=False, desc=" Trying all wordle answers"):
+    for answer in ProgressDisplay(test_set, leave=False, desc=" Trying all wordle answers"):
         guesses = []
         patterns = []
         possibility_counts = []
@@ -4914,7 +4924,7 @@ def simulated_games(first_guess=None,
             if second_guess_map and score == 1:
                 guess = second_guess_map[pattern]
             else:
-                guess = get_next_guess(possibilities)
+                guess = get_next_guess(guesses, patterns)
 
         scores = np.append(scores, [score])
         score_dist = [
@@ -4945,7 +4955,7 @@ def simulated_games(first_guess=None,
                 f"Average: {average}",
                 *" " * 2,
             ])
-            if answer is not samples[0]:
+            if answer is not test_set[0]:
                 # Move cursor back up to the top of the message
                 n = len(message.split("\n")) + 1
                 print(("\033[F\033[K") * n)
@@ -4964,9 +4974,17 @@ def simulated_games(first_guess=None,
 
 
 if __name__ == "__main__":
-    simulated_games(
+    # from IPython.terminal.embed import InteractiveShellEmbed
+    # shell = InteractiveShellEmbed()
+    # shell()
+
+    words = get_word_list()
+    results = simulated_games(
         first_guess="crane",
         priors=get_true_wordle_prior(),
         # priors=get_frequency_based_priors(),
-        # hard_mode=True,
+        # priors={w: 1 for w in words},
+        # test_set=random.sample(words, 1000),
+        purely_maximize_information=True,
+        # shuffle=True,
     )
