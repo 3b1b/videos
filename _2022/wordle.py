@@ -100,8 +100,9 @@ def get_true_wordle_prior():
 
 
 def pattern_trit_generator(guess, true_word):
-    for c1, c2 in zip(guess, true_word):
+    for i ,(c1, c2) in enumerate(zip(guess, true_word)):
         if c1 == c2:
+            true_word = "".join(list(true_word[:i]) + ["0"] + list(true_word[i+1:]))
             yield EXACT
         elif c1 in true_word:
             yield MISPLACED
