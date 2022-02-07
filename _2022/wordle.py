@@ -1,6 +1,5 @@
 from manim_imports_ext import *
 from tqdm import tqdm as ProgressDisplay
-from IPython.terminal.embed import InteractiveShellEmbed as embed
 from scipy.stats import entropy
 
 
@@ -1704,12 +1703,13 @@ class IntroduceGame(WordleScene):
 
 
 class InitialDemo(ExternalPatternEntry):
+    secret_word = "elder"
     pre_computed_first_guesses = [
         "crane", "slane", "slate", "salet", "trace",
         "reast", "crate", "toile", "torse", "carse",
         "carle", "trone", "carte", "roast",
     ]
-    wordle_based_prior = True
+    # wordle_based_prior = True
 
 
 class ShowTonsOfWords(Scene):
@@ -4693,8 +4693,7 @@ class Thumbnail(Scene):
         )
         rows.set_stroke(width=0)
         rows.set_width(0.5 * FRAME_WIDTH)
-        rows.move_to(DOWN)
-        rows.center()
+        rows.to_edge(DOWN, buff=LARGE_BUFF)
         rows.set_gloss(0.4)
         self.add(rows)
 
@@ -4710,7 +4709,7 @@ class Thumbnail(Scene):
 
         # Title
         title = Text(
-            "Open with CRANE",
+            "Best opener: CRANE",
             font_size=120,
             font="Consolas",
             t2c={"crane": GREEN}
