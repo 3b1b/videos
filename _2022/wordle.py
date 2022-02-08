@@ -98,17 +98,31 @@ def get_true_wordle_prior():
 # String matching, etc.
 
 
-def pattern_trit_generator(guess, true_word):
-    for c1, c2 in zip(guess, true_word):
-        if c1 == c2:
+def words_to_int_arrays(words):
+    base = ord('a')
+    arr = np.array([[ord(c) - base for c in w] for w in words], dtype=np.uint8)
+
+    # To appropriately handle double letter situations, we want to treat
+    # the first occurance of a letter as distinct form its second occurance,
+    # so assign it a distinct number.
+    for i in range(1, arr.shape[1]):
+        for j in range(i):
+            arr[:, i] += (arr[:, i] == arr[:, j]) * np.uint8(26)
+    return arr
+
+
+def pattern_trit_generator(guess, answer):
+    guess_arr, answer_arr = words_to_int_arrays([guess, answer])
+    for c1, c2 in zip(guess_arr, answer_arr):
+        if c1 % 26 == c2 % 26:
             yield EXACT
-        elif c1 in true_word:
+        elif (c1 == answer_arr).any():
             yield MISPLACED
         else:
             yield MISS
 
 
-def get_pattern(guess, true_word):
+def get_pattern(guess, answer):
     """
     A unique integer id associated with the grey/yellow/green wordle
     pattern relatign a guess to the tue answer. In the ternary representation
@@ -116,7 +130,7 @@ def get_pattern(guess, true_word):
     """
     return sum(
         value * (3**i)
-        for i, value in enumerate(pattern_trit_generator(guess, true_word))
+        for i, value in enumerate(pattern_trit_generator(guess, answer))
     )
 
 
@@ -150,7 +164,7 @@ def patterns_hash(patterns):
     # return sum((3**(5 * i) + 1) * (p + 1) for i, p in enumerate(patterns))
 
 
-def generate_pattern_grid(words1, words2):
+def generate_pattern_matrix(words):
     """
     A pattern for two words represents the worle-similarity
     pattern (grey -> 0, yellow -> 1, green -> 2) but as an integer
@@ -159,47 +173,46 @@ def generate_pattern_grid(words1, words2):
 
     This function computes the pairwise patterns between two lists
     of words, returning the result as a grid of hash values. Since
-    this is the most time consuming part of many computations, all
-    operations that can be are vectorized, perhaps at the expense
-    of easier readibility.
+    this can be time-consuming, all operations that can be are vectorized
+    (perhaps at the expense of easier readibility), and the the result
+    is typically saved to file as per generate_full_pattern_matrix below.
     """
     # Convert word lists to integer arrays
-    w1, w2 = (
-        np.array([[ord(c) for c in w] for w in words], dtype=np.uint8)
-        for words in (words1, words2)
-    )
+    n = len(words[0])
+    w1, w2 = map(words_to_int_arrays, (words, words))
 
-    if len(w1) == 0 or len(w2) == 0:
+    if len(w1) == 0:
         return np.zeros((len(w1), len(w2)), dtype=np.uint8)
 
     # equality_grid[a, b, i, j] represents whether the ith letter
     # of words1[a] equals the jth letter of words2[b]
-    equality_grid = np.zeros((len(w1), len(w2), 5, 5), dtype=bool)
-    for i, j in it.product(range(5), range(5)):
+    equality_grid = np.zeros((len(w1), len(w2), n, n), dtype=bool)
+    mod_equality_grid = np.zeros((len(w1), len(w2), n, n), dtype=bool)
+    for i, j in it.product(range(n), range(n)):
         equality_grid[:, :, i, j] = np.equal.outer(w1[:, i], w2[:, j])
+        mod_equality_grid[:, :, i, j] = np.equal.outer(w1[:, i] % 26, w2[:, j] % 26)
 
-    patterns = np.zeros((len(w1), len(w2)), dtype=np.uint8)
-    three_pows = (3**np.arange(5)).astype(np.uint8)
+    pattern_matrix = np.zeros((len(w1), len(w2)), dtype=np.uint8)
+    three_pows = (3**np.arange(n)).astype(np.uint8)
     for i, tp in enumerate(three_pows):
-        # This accounts for yellow squares
-        patterns[:, :] += tp * equality_grid[:, :, i, :].any(2)
-        # This accounts for green squares
-        patterns[:, :] += tp * equality_grid[:, :, i, i]
+        pattern_matrix[:, :] += tp * np.maximum(
+            # This accounts for yellow squares
+            equality_grid[:, :, i, :].any(2),
+            # This accounts for green squares
+            np.uint8(2) * mod_equality_grid[:, :, i, i]
+        )
 
-    return patterns
+    # Save to file
+    np.save(PATTERN_MATRIX_FILE, pattern_matrix)
+
+    return pattern_matrix
 
 
-def generate_full_pattern_grid():
-    words = get_word_list()
-    grid = generate_pattern_grid(words, words)
-    np.save(PATTERN_MATRIX_FILE, grid)
-
-
-def get_pattern_grid(words1, words2):
+def get_pattern_matrix(words1, words2):
     if not PATTERN_GRID_DATA:
         if not os.path.exists(PATTERN_MATRIX_FILE):
-            log.info("Generating pattern matrix...(this takes a moment, but is only needed once)")
-            generate_full_pattern_grid()
+            log.info("Generating pattern matrix. This takes a moment, but is only needed once")
+            generate_pattern_matrix(get_word_list())
         PATTERN_GRID_DATA['grid'] = np.load(PATTERN_MATRIX_FILE)
         PATTERN_GRID_DATA['words_to_index'] = dict(zip(
             get_word_list(), it.count()
@@ -214,13 +227,13 @@ def get_pattern_grid(words1, words2):
 
 
 def get_possible_words(guess, pattern, word_list):
-    all_hashes = get_pattern_grid([guess], word_list).flatten()
+    all_hashes = get_pattern_matrix([guess], word_list).flatten()
     return list(np.array(word_list)[all_hashes == pattern])
 
 
 def get_word_buckets(guess, possible_words):
     buckets = [[] for x in range(3**5)]
-    hashes = get_pattern_grid([guess], possible_words).flatten()
+    hashes = get_pattern_matrix([guess], possible_words).flatten()
     for index, word in zip(hashes, possible_words):
         buckets[index].append(word)
     return buckets
@@ -248,7 +261,7 @@ def get_pattern_distributions(allowed_words, possible_words, weights):
     that to bucket together words from possible_words which would produce
     the same pattern, adding together their corresponding probabilities.
     """
-    pattern_matrix = get_pattern_grid(allowed_words, possible_words)
+    pattern_matrix = get_pattern_matrix(allowed_words, possible_words)
 
     n = len(allowed_words)
     distributions = np.zeros((n, 3**5))
@@ -4887,17 +4900,14 @@ def simulated_games(first_guess=None,
     # Keep track of the best next guess for a given set of possibilities
     next_guess_map = {}
 
-    def get_next_guess(guesses, patterns):
-        phash = hash("".join(
-            f"{g}{p}" for g, p in zip(guesses, patterns)
-        ))
+    def get_next_guess(guesses, patterns, possibilities):
+        phash = hash("".join(f"{g}{p}" for g, p in zip(guesses, patterns)))
         if phash not in next_guess_map:
             choices = possibilities if hard_mode else all_words
             next_guess_map[phash] = optimal_guess(
                 choices, possibilities, priors,
                 look_two_ahead=look_two_ahead,
                 purely_maximize_information=purely_maximize_information,
-                # purely_maximize_information=(len(patterns) < 2),
             )
         return next_guess_map[phash]
 
@@ -4918,13 +4928,27 @@ def simulated_games(first_guess=None,
             pattern = get_pattern(guess, answer)
             guesses.append(guess)
             patterns.append(pattern)
+
             possibilities = get_possible_words(guess, pattern, possibilities)
+            if len(possibilities) == 0:
+                from IPython.terminal.embed import InteractiveShellEmbed
+                shell = InteractiveShellEmbed()
+                shell()
+
+                log.warn(f"""
+                    Narrowed down to no possibilities.
+                    answer: {answer}
+                    guesses: {guesses}
+                    patterns:\n{patterns_to_string(patterns)}
+                """)
+                raise Exception()
+
             possibility_counts.append(len(possibilities))
             score += 1
             if second_guess_map and score == 1:
                 guess = second_guess_map[pattern]
             else:
-                guess = get_next_guess(guesses, patterns)
+                guess = get_next_guess(guesses, patterns, possibilities)
 
         scores = np.append(scores, [score])
         score_dist = [
@@ -4978,13 +5002,15 @@ if __name__ == "__main__":
     # shell = InteractiveShellEmbed()
     # shell()
 
+    # sgm = build_optimal_second_guess_map('salet')
+
     words = get_word_list()
     results = simulated_games(
         first_guess="crane",
         priors=get_true_wordle_prior(),
+        # sgm=sgm,
+        # hard_mode=True,
         # priors=get_frequency_based_priors(),
         # priors={w: 1 for w in words},
-        # test_set=random.sample(words, 1000),
-        purely_maximize_information=True,
-        # shuffle=True,
+        shuffle=True,
     )
