@@ -723,19 +723,10 @@ def simulated_games(first_guess=None,
 
 
 if __name__ == "__main__":
-    # from IPython.terminal.embed import InteractiveShellEmbed
-    # shell = InteractiveShellEmbed()
-    # shell()
-
-    sgm = build_optimal_second_guess_map('salet', 25)
-
     words = get_word_list()
     results = simulated_games(
         first_guess="salet",
         priors=get_true_wordle_prior(),
-        # sgm=sgm,
-        # hard_mode=True,
         # priors=get_frequency_based_priors(),
-        # priors={w: 1 for w in words},
         shuffle=True,
     )
