@@ -4264,41 +4264,14 @@ class Thumbnail(Scene):
         # self.add(words)
 
         # Title
-        # title = Text(
-        #     "Best opener: CRANE*",
-        #     font_size=100,
-        #     font="Consolas",
-        #     t2c={"crane": GREEN}
-        # )
-        # title.get_part_by_text("*").scale(0.5, about_edge=UL)
-        # title.to_edge(UP, buff=0.75)
-        # self.add(title)
-
-        # strike = Line()
-        # strike.replace(title.get_part_by_text("CRANE"), 0)
-        # strike.set_stroke(RED, 10)
-        # strike.scale(1.2)
-        # # self.add(strike)
-
-        # footnote = Text(
-        #     "*See pinned comment for an update",
-        #     font="Consolas",
-        #     font_size=36
-        # )
-        # footnote.to_edge(DOWN, buff=MED_SMALL_BUFF)
-        # footnote.set_color(GREY_B)
-        # self.add(footnote)
-
-        # return
-
-        rows.to_edge(DOWN, buff=0.5)
-        title = VGroup(
-            # Text("Bot's average: 3.43", font="Consolas"),
-            # Text("Theoretical best: 3.42", font="Consolas"),
-            Text("Average score: 3.43", font="Consolas"),
+        title = Text(
+            "Best opener: CRANE",
+            font_size=100,
+            font="Consolas",
+            t2c={"crane": GREEN}
         )
-        title.arrange(DOWN)
-        title.set_width(10)
-        title.move_to(midpoint(rows.get_top(), FRAME_HEIGHT * UP / 2))
-
+        title.to_edge(UP, buff=0.75)
         self.add(title)
+
+        self.rows = rows
+        self.title = title
