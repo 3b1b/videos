@@ -301,6 +301,24 @@ def words_to_max_buckets(possible_words, weights):
     words_and_maxes[:-20:-1]
 
 
+def get_bucket_sizes(allowed_words, possible_words):
+    """
+    Returns a (len(allowed_words), 243) shape array reprenting the size of
+    word buckets associated with each guess in allowed_words
+    """
+    weights = np.ones(len(possible_words))
+    return get_pattern_distributions(allowed_words, possible_words, weights)
+
+
+def get_bucket_counts(allowed_words, possible_words):
+    """
+    Returns the number of separate buckets that each guess in allowed_words
+    would separate possible_words into
+    """
+    bucket_sizes = get_bucket_sizes(allowed_words, possible_words)
+    return (bucket_sizes > 0).sum(1)
+
+
 # Functions to analyze second guesses
 
 
@@ -431,18 +449,45 @@ def get_expected_scores(allowed_words, possible_words, priors,
     return expected_scores
 
 
-def optimal_guess(allowed_words, possible_words, priors, look_two_ahead=False, purely_maximize_information=False):
+def get_score_lower_bounds(allowed_words, possible_words):
+    """
+    Assuming a uniform distribution on how likely each element
+    of possible_words is, this gives the a lower boudn on the
+    possible score for each word in allowed_words
+    """
+    bucket_counts = get_bucket_counts(allowed_words, possible_words)
+    N = len(possible_words)
+    # Probabilities of getting it in 1
+    p1s = np.array([w in possible_words for w in allowed_words]) / N
+    # Probabilities of getting it in 2
+    p2s = bucket_counts / N - p1s
+    # Otherwise, assume it's gotten in 3 (which is optimistics)
+    p3s = 1 - bucket_counts / N
+    return p1s + 2 * p2s + 3 * p3s
+
+
+def optimal_guess(allowed_words, possible_words, priors,
+                  look_two_ahead=False,
+                  optimize_for_uniform_distribution=False,
+                  purely_maximize_information=False,
+                  ):
     if purely_maximize_information:
         if len(possible_words) == 1:
             return possible_words[0]
         weights = get_weights(possible_words, priors)
         ents = get_entropies(allowed_words, possible_words, weights)
         return allowed_words[np.argmax(ents)]
-    # Otherwise, minimize expected score
-    expected_scores = get_expected_scores(
-        allowed_words, possible_words, priors,
-        look_two_ahead=look_two_ahead
-    )
+
+    # Just experimenting here...
+    if optimize_for_uniform_distribution:
+        expected_scores = get_score_lower_bounds(
+            allowed_words, possible_words
+        )
+    else:
+        expected_scores = get_expected_scores(
+            allowed_words, possible_words, priors,
+            look_two_ahead=look_two_ahead
+        )
     return allowed_words[np.argmin(expected_scores)]
 
 
@@ -453,7 +498,7 @@ def brute_force_optimal_guess(all_words, possible_words, priors, n_top_picks=10,
     # For the suggestions with the top expected scores, just
     # actually play the game out from this point to see what
     # their actual scores are, and minimize.
-    expected_scores = get_expected_scores(all_words, possible_words, priors)
+    expected_scores = get_score_lower_bounds(all_words, possible_words)
     top_choices = [all_words[i] for i in np.argsort(expected_scores)[:n_top_picks]]
     true_average_scores = []
     if display_progress:
@@ -477,7 +522,10 @@ def brute_force_optimal_guess(all_words, possible_words, priors, n_top_picks=10,
                     possibilities,
                 )
                 # Make recursive?
-                guess = optimal_guess(all_words, possibilities, priors)
+                guess = optimal_guess(
+                    all_words, possibilities, priors,
+                    optimize_for_uniform_distribution=True
+                )
                 score += 1
             scores.append(score)
         true_average_scores.append(np.mean(scores))
@@ -487,7 +535,24 @@ def brute_force_optimal_guess(all_words, possible_words, priors, n_top_picks=10,
 # Run simulated wordle games
 
 
-def find_top_scorers(n_top_candidates=50):
+def get_two_step_score_lower_bound(first_guess, allowed_words, possible_words):
+    """
+    Useful to prove what the minimum possible average score could be
+    for a given initial guess
+    """
+    N = len(possible_words)
+    buckets = get_word_buckets(first_guess, possible_words)
+    min_score = 0
+    for bucket in buckets:
+        if len(bucket) == 0:
+            continue
+        lower_bounds = get_score_lower_bounds(allowed_words, bucket)
+        min_score += (len(bucket) / N) * lower_bounds.min()
+    p = (1 / len(possible_words)) * (first_guess in possible_words)
+    return p + (1 - p) * (1 + min_score)
+
+
+def find_top_scorers(n_top_candidates=100, hard_mode=False, quiet=True):
     # Run find_best_two_step_entropy first
     file = os.path.join(get_directories()["data"], "wordle", "best_double_entropies.json")
     with open(file) as fp:
@@ -497,9 +562,14 @@ def find_top_scorers(n_top_candidates=50):
     priors = get_true_wordle_prior()
     guess_to_score = {}
     guess_to_dist = {}
-    for row in double_ents[:n_top_candidates]:
+    for row in ProgressDisplay(double_ents[:n_top_candidates]):
         first_guess = row[0]
-        result = simulate_games(first_guess, priors=priors)
+        result, decision_map = simulate_games(
+            first_guess, priors=priors,
+            optimize_for_uniform_distribution=True,
+            hard_mode=hard_mode,
+            quiet=quiet
+        )
         average = result["average_score"]
         total = int(np.round(average * len(answers)))
         guess_to_score[first_guess] = total
@@ -508,7 +578,10 @@ def find_top_scorers(n_top_candidates=50):
     top_scorers = sorted(list(guess_to_score.keys()), key=lambda w: guess_to_score[w])
     result = [[w, guess_to_score[w], guess_to_dist[w]] for w in top_scorers]
 
-    file = os.path.join(get_directories()["data"], "wordle", "best_scores.json")
+    file = os.path.join(
+        get_directories()["data"], "wordle",
+        "best_scores" + ("_hard_mode" if hard_mode else "") + ".json",
+    )
     with open(file, 'w') as fp:
         json.dump(result, fp)
 
@@ -663,6 +736,7 @@ def gather_entropy_to_score_data(first_guess="crane", priors=None):
 def simulate_games(first_guess=None,
                    priors=None,
                    look_two_ahead=False,
+                   optimize_for_uniform_distribution=False,
                    second_guess_map=None,
                    exclude_seen_words=False,
                    test_set=None,
@@ -670,6 +744,7 @@ def simulate_games(first_guess=None,
                    hard_mode=False,
                    purely_maximize_information=False,
                    brute_force_optimize=False,
+                   brute_force_depth=10,
                    results_file=None,
                    next_guess_map_file=None,
                    quiet=False,
@@ -706,22 +781,27 @@ def simulate_games(first_guess=None,
         if second_guess_map is not None and len(patterns) == 1:
             next_guess_map[phash] = second_guess_map[patterns[0]]
         if phash not in next_guess_map:
-            choices = possibilities if hard_mode else all_words
+            choices = all_words
+            if hard_mode:
+                for guess, pattern in zip(guesses, patterns):
+                    choices = get_possible_words(guess, pattern, choices)
             if brute_force_optimize:
                 next_guess_map[phash] = brute_force_optimal_guess(
                     choices, possibilities, priors,
+                    n_top_picks=brute_force_depth,
                 )
             else:
                 next_guess_map[phash] = optimal_guess(
                     choices, possibilities, priors,
                     look_two_ahead=look_two_ahead,
                     purely_maximize_information=purely_maximize_information,
+                    optimize_for_uniform_distribution=optimize_for_uniform_distribution,
                 )
         return next_guess_map[phash]
 
     # Go through each answer in the test set, play the game,
     # and keep track of the stats.
-    scores = np.array([], dtype=int)
+    scores = np.zeros(0, dtype=int)
     game_results = []
     for answer in ProgressDisplay(test_set, leave=False, desc=" Trying all wordle answers"):
         guesses = []
@@ -801,19 +881,12 @@ def simulate_games(first_guess=None,
 
 
 if __name__ == "__main__":
-    for first_guess in ["salet", "crate", "trace"]:
-        results, decision_map = simulate_games(
-            first_guess=first_guess,
-            priors=get_true_wordle_prior(),
-            second_guess_map=get_optimal_second_guess_map(first_guess),
-            # priors=get_frequency_based_priors(),
-            # shuffle=True,
-            brute_force_optimize=True,
-            # hard_mode=True,
-            results_file=f"{first_guess}_result_brute_force_optimize.json",
-            next_guess_map_file=f"{first_guess}_guess_map_brute_force_optimize.json",
-        )
-
-    from IPython.terminal.embed import InteractiveShellEmbed
-    shell = InteractiveShellEmbed()
-    shell()
+    first_guess = "salet"
+    results, decision_map = simulate_games(
+        first_guess=first_guess,
+        priors=get_true_wordle_prior(),
+        optimize_for_uniform_distribution=True,
+        # shuffle=True,
+        # brute_force_optimize=True,
+        # hard_mode=True,
+    )
