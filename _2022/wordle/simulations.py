@@ -103,7 +103,7 @@ def words_to_int_arrays(words):
 
 def generate_pattern_matrix(words1, words2):
     """
-    A pattern for two words represents the worle-similarity
+    A pattern for two words represents the wordle-similarity
     pattern (grey -> 0, yellow -> 1, green -> 2) but as an integer
     between 0 and 3^5. Reading this integer in ternary gives the
     associated pattern.
@@ -113,7 +113,7 @@ def generate_pattern_matrix(words1, words2):
     this can be time-consuming, many operations that can be are vectorized
     (perhaps at the expense of easier readibility), and the the result
     is saved to file so that this only needs to be evaluated once, and
-    all remaining pattern matching is a lookup
+    all remaining pattern matching is a lookup.
     """
 
     # Number of letters/words
@@ -521,7 +521,9 @@ def brute_force_optimal_guess(all_words, possible_words, priors, n_top_picks=10,
                     guess, get_pattern(guess, answer),
                     possibilities,
                 )
-                # Make recursive?
+                # Make recursive? If so, we'd want to keep track of
+                # the next_guess map and pass it down in the recursive
+                # subcalls
                 guess = optimal_guess(
                     all_words, possibilities, priors,
                     optimize_for_uniform_distribution=True
@@ -552,7 +554,7 @@ def get_two_step_score_lower_bound(first_guess, allowed_words, possible_words):
     return p + (1 - p) * (1 + min_score)
 
 
-def find_top_scorers(n_top_candidates=100, hard_mode=False, quiet=True):
+def find_top_scorers(n_top_candidates=100, quiet=True, file_ext="", **kwargs):
     # Run find_best_two_step_entropy first
     file = os.path.join(get_directories()["data"], "wordle", "best_double_entropies.json")
     with open(file) as fp:
@@ -562,13 +564,14 @@ def find_top_scorers(n_top_candidates=100, hard_mode=False, quiet=True):
     priors = get_true_wordle_prior()
     guess_to_score = {}
     guess_to_dist = {}
+
     for row in ProgressDisplay(double_ents[:n_top_candidates]):
         first_guess = row[0]
         result, decision_map = simulate_games(
             first_guess, priors=priors,
             optimize_for_uniform_distribution=True,
-            hard_mode=hard_mode,
-            quiet=quiet
+            quiet=quiet,
+            **kwargs,
         )
         average = result["average_score"]
         total = int(np.round(average * len(answers)))
@@ -580,7 +583,7 @@ def find_top_scorers(n_top_candidates=100, hard_mode=False, quiet=True):
 
     file = os.path.join(
         get_directories()["data"], "wordle",
-        "best_scores" + ("_hard_mode" if hard_mode else "") + ".json",
+        "best_scores" + file_ext + ".json",
     )
     with open(file, 'w') as fp:
         json.dump(result, fp)
@@ -873,7 +876,7 @@ def simulate_games(first_guess=None,
     # Save results
     for obj, file in [(final_result, results_file), (next_guess_map, next_guess_map_file)]:
         if file:
-            path = os.path.join(get_directories()["data"], "wordle", file)
+            path = os.path.join(DATA_DIR, "simulation_results", file)
             with open(path, 'w') as fp:
                 json.dump(obj, fp)
 
