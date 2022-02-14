@@ -423,6 +423,53 @@ class LogoGenerationFlurry(LogoGenerationTemplate):
         ]
 
 
+class LogoGenerationFivefold(LogoGenerationTemplate):
+    def construct(self):
+        logo = self.logo
+        iris, spike_layers, pupil = logo
+
+        name = TexText("3Blue1Brown")
+        name.scale(2.5)
+        name.next_to(logo, DOWN, buff=MED_LARGE_BUFF)
+        name.set_gloss(0.2)
+
+        self.add(iris)
+        anims = []
+        for layer in spike_layers:
+            for n, spike in enumerate(layer):
+                angle = (5 * (n + 1) * TAU / len(layer)) % TAU
+                spike.rotate(angle, about_point=ORIGIN)
+                anims.append(Rotate(
+                    spike, -angle,
+                    about_point=ORIGIN,
+                    run_time=5,
+                    # rate_func=rush_into,
+                ))
+                self.add(spike)
+        self.add(pupil)
+
+        def update(alpha):
+            spike_layers.set_opacity(alpha)
+            mid_alpha = 4.0 * (1.0 - alpha) * alpha
+            spike_layers.set_stroke(WHITE, 1, opacity=mid_alpha)
+            pupil.set_stroke(WHITE, 1, opacity=mid_alpha)
+            iris.set_stroke(WHITE, 1, opacity=mid_alpha)
+
+        name.flip().flip()
+        self.play(
+            *anims,
+            VFadeIn(iris, run_time=3),
+            UpdateFromAlphaFunc(
+                Mobject(),
+                lambda m, a: update(a),
+                run_time=3,
+            ),
+            # FadeIn(name, run_time=3, lag_ratio=0.5, rate_func=linear),
+            Write(name, run_time=3)
+        )
+        self.wait(2)
+
+
 class Vertical3B1B(Scene):
     def construct(self):
         words = TexText(
