@@ -39,7 +39,6 @@ agile
 aging
 aglow
 agony
-agora
 agree
 ahead
 aider
@@ -724,7 +723,6 @@ fetus
 fever
 fewer
 fiber
-fibre
 ficus
 field
 fiend
@@ -1173,7 +1171,6 @@ lurid
 lusty
 lying
 lymph
-lynch
 lyric
 macaw
 macho
@@ -1492,7 +1489,6 @@ puffy
 pulpy
 pulse
 punch
-pupal
 pupil
 puppy
 puree
@@ -1776,7 +1772,6 @@ slang
 slant
 slash
 slate
-slave
 sleek
 sleep
 sleet
@@ -2242,7 +2237,6 @@ weigh
 weird
 welch
 welsh
-wench
 whack
 whale
 wharf
