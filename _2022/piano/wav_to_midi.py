@@ -161,6 +161,24 @@ def generate_pure_piano_key_files(velocities=[SAMPLED_VELOCITY], duration=1 / 96
             os.remove(mid_file)
 
 
+def generate_piano_sample_midi(delay=5, duration=1 / 96, velocity=100):
+    notes = []
+    for n, key in enumerate(piano_midi_range):
+        notes.append(Note(
+            key,
+            velocity=velocity,
+            position=n * delay,
+            duration=duration,
+        ))
+    mid_file = os.path.join(DATA_DIR, "individual_key_samples.mid")
+    create_midi_file_with_notes(mid_file, notes)
+    midi_to_wav(mid_file)
+
+
+def parse_piano_samples_with_delay(wav_file, target_folder, delay=5):
+    pass
+
+
 # Using fourier
 
 def load_piano_key_signals(folder=PIANO_SAMPLES_DIR, duration=0.5, velocity=50):
@@ -173,7 +191,16 @@ def load_piano_key_signals(folder=PIANO_SAMPLES_DIR, duration=0.5, velocity=50):
     return np.array(key_signals, dtype=float)
 
 
-def wav_to_midi(sound_file):
+def wav_to_midi(sound_file,
+                duration=1 / 48,  # How to choose this?
+                played_duration=1 / 48,
+                sample_velocity=100,
+                volume_ratio_threshold=0.75,
+                max_volume=10000,
+                steps_per_second=240,  # And how to choose this?
+                n_repressed_lower_keys=32,  # Honestly, low keys are trash, just trashing up the whole sound
+                max_notes_per_step=2,
+                ):
     """
     Walk through a series of windows over the original signal, and for each one,
     find the top several key sounds which correlate most closely with that window.
@@ -184,14 +211,8 @@ def wav_to_midi(sound_file):
         - Duration shouldn't necessarily be fixed
     """
     sample_rate = 48000  # Should get this from the file itself
-    duration = 1 / 48  # How to choose this?
-    sample_velocity = 100
-    volume_ratio_threshold = 0.75
-    max_volume = 16000
-    step_size = int(sample_rate / 240)  # And how to choose this?
+    step_size = int(sample_rate / steps_per_second)
     window_size = int(sample_rate * duration + step_size)
-    n_repressed_lower_keys = 32  # Honestly, low keys are trash, just trashing up the whole sound
-    max_notes_per_step = 100  # At the moment, set so high as to have no effect
 
     notes = []
     key_signals = load_piano_key_signals(duration=duration, velocity=sample_velocity)
@@ -260,7 +281,7 @@ def wav_to_midi(sound_file):
                     velocity=clip(factor * sample_velocity, 0, 100),
                     position=opt_pos / sample_rate,
                     # Right now at least, it always hits with a short staccato
-                    duration=1 / 96,
+                    duration=played_duration,
                 ))
 
     mid_file = sound_file.replace(".wav", "_as_piano.mid")
