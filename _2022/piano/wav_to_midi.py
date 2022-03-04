@@ -205,8 +205,6 @@ def wav_to_midi(sound_file):
     # spot when each note is allowed to be played.
     key_to_min_pos = {key: 0 for key in piano_midi_range}
 
-    n_notes_list = []
-
     for pos in ProgressDisplay(range(0, len(signal), step_size), leave=False):
         window = signal[pos:pos + window_size]
         new_window = new_signal[pos:pos + window_size]
@@ -264,36 +262,6 @@ def wav_to_midi(sound_file):
                     # Right now at least, it always hits with a short staccato
                     duration=1 / 96,
                 ))
-
-            # Note, this below can probably be removed, or replaced, with new_notes
-            # above being replaced by notes
-
-            # # Potentially rescale these new notes to match the volume of the true
-            # # signal clip
-            # win_norm = norm(window)
-            # new_norm = norm(new_window + added_vect)
-            # if new_norm == 0:
-            #     scalar = 1.0
-            # else:
-            #     scalar = win_norm / new_norm
-
-            # scalar = 1.0  # Nevermind...
-
-            # new_window += scalar * added_vect
-
-            # n_notes_list.append(len(new_notes))
-
-            # for note in new_notes:
-            #     notes.append(Note(
-            #         note.value,
-            #         clip(scalar * note.velocity, 0, 100),
-            #         note.position,
-            #         note.duration,
-            #     ))
-
-    n_notes_list = np.array(n_notes_list)
-    n_notes_list = n_notes_list[n_notes_list > 0]
-    print(f"Average number of notes: {n_notes_list.mean()}")
 
     mid_file = sound_file.replace(".wav", "_as_piano.mid")
     create_midi_file_with_notes(mid_file, notes)
@@ -413,15 +381,9 @@ def test_midi_file_writing():
 
 def main():
     parser = argparse.ArgumentParser()
-    parer.add_argument("wav_file")
+    parser.add_argument("wav_file")
     args = parser.parse_args()
-
-    embed()
-
-    # generate_pure_piano_key_files(velocities=[100], duration=1 / 16)
-    wav_to_midi(TEST_SPEECH)
-    return
-
+    wav_to_midi(args.wav_file)
 
 
 if __name__ == "__main__":
