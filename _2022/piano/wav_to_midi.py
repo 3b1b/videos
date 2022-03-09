@@ -1,7 +1,6 @@
 from manim_imports_ext import *
 
 import argparse
-import wave
 import matplotlib.pyplot as plt
 
 import mido
@@ -9,6 +8,9 @@ from collections import namedtuple
 from tqdm import tqdm as ProgressDisplay
 
 from scipy.signal import fftconvolve
+from scipy.signal import convolve
+from scipy.signal import argrelextrema
+from scipy.io import wavfile
 
 from IPython.terminal.embed import InteractiveShellEmbed
 embed = InteractiveShellEmbed()
@@ -20,10 +22,6 @@ DATA_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "data",
 )
-PIANO_SAMPLES_DIR = os.path.join(DATA_DIR, "piano_samples")
-TEST_SPEECH = os.path.join(DATA_DIR, "IAmAPiano.wav")
-# TEST_SPEECH = os.path.join(DATA_DIR, "SampleLetters.wav")
-CLACK = "/Users/grant/Dropbox/3Blue1Brown/sounds/clack.wav"
 
 Note = namedtuple(
     'Note',
@@ -46,15 +44,33 @@ def square(vect):
 def norm(vect):
     return np.linalg.norm(vect)
 
+
+def projection_factor(v, w):
+    """
+    If projecting v onto w produces the vector f * w, this returns f
+    """
+    return np.dot(v, w) / np.dot(w, w)
+
+
+def gaussian_kernel(length=100, spread=0.5):
+    """
+    creates gaussian kernel with side length `l` and a sigma of `sigma`
+    """
+    sigma = spread * length
+    ax = np.linspace(-(length - 1) / 2., (length - 1) / 2., length)
+    gauss = np.exp(-0.5 * np.square(ax) / np.square(sigma))
+    return gauss / gauss.sum()
+
+
 # Functions for creating MIDI files
 
 
-def hz_to_midi(frequencies):
+def hz_to_midi_value(frequencies):
     freqs = np.atleast_1d(frequencies)
     return (12 * np.log2(freqs / 440) + 69).astype(int)
 
 
-def midi_to_hz(midis):
+def midi_value_to_hz(midis):
     midis = np.atleast_1d(midis)
     return 440 * 2**((midis - 69) / 12)
 
@@ -133,9 +149,10 @@ def midi_to_wav(mid_file):
         "-Ow -o -",
         "|",
         "ffmpeg",
-        "-i - -acodec libmp3lame -ab 64k -hide_banner -loglevel error",
+        "-i - -acodec libmp3lame -ab 64k",
+        "-ar 48000",
+        "-hide_banner -loglevel error",
         mp3_file,
-        "> /dev/null"
     ]))
     os.system(" ".join([
         "ffmpeg",
@@ -145,10 +162,11 @@ def midi_to_wav(mid_file):
         wav_file,
     ]))
     os.remove(mp3_file)
+    return wav_file
 
 
-def generate_pure_piano_key_files(velocities=[SAMPLED_VELOCITY], duration=1 / 96):
-    folder = PIANO_SAMPLES_DIR
+def generate_pure_piano_key_files(velocities=[SAMPLED_VELOCITY], duration=0.025, folder="digital_piano_samples"):
+    folder = os.path.join(DATA_DIR, folder)
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -161,7 +179,7 @@ def generate_pure_piano_key_files(velocities=[SAMPLED_VELOCITY], duration=1 / 96
             os.remove(mid_file)
 
 
-def generate_piano_sample_midi(delay=5, duration=1 / 96, velocity=100):
+def generate_piano_sample_midi(delay=5, duration=0.025, velocity=100):
     notes = []
     for n, key in enumerate(piano_midi_range):
         notes.append(Note(
@@ -175,31 +193,78 @@ def generate_piano_sample_midi(delay=5, duration=1 / 96, velocity=100):
     midi_to_wav(mid_file)
 
 
-def parse_piano_samples_with_delay(wav_file, target_folder, delay=5):
-    pass
+# Processing sample signals from piano
 
-
-# Using fourier
-
-def load_piano_key_signals(folder=PIANO_SAMPLES_DIR, duration=0.5, velocity=50):
-    sample_rate = 48000
+def load_piano_key_signals(folder="piano_samples", duration=0.5, velocity=50):
     key_signals = []
     for key in piano_midi_range:
-        full_signal = wav_to_array(os.path.join(folder, f"{key}_{velocity}.wav"))
-        vect = full_signal[:int(duration * sample_rate)]
-        key_signals.append(vect)
+        sample_rate, full_signal = wav_data(
+            os.path.join(DATA_DIR, folder, f"{key}_{velocity}.wav")
+        )
+        key_signal = full_signal[:int(duration * sample_rate)]
+        key_signals.append(key_signal)
     return np.array(key_signals, dtype=float)
 
 
+def get_volume_to_velocity_func_map(folder="true_piano_samples", sampled_velocities=[26, 101]):
+    """
+    Functions are encoded as a pair (c0, c1) for the linear function c0 + c1 * x
+    """
+    result = dict()
+    vels = sampled_velocities
+    for key in piano_midi_range:
+        globals().update(locals())
+        volumes = [
+            wav_data(os.path.join(DATA_DIR, folder, f"{key}_{vel}.wav"))[1].max()
+            for vel in vels
+        ]
+        # Coefficients for const + (slope) * x function fit
+        slope = (vels[1] - vels[0]) / (volumes[1] - volumes[0])
+        const = vels[0] - slope * volumes[0]
+        result[key] = (const, slope)
+    return result
+
+
+def get_velocity(key, signal, scale_factor, v2v_func_map):
+    c0, c1 = v2v_func_map[key]
+    return c0 + c1 * (signal.max() * scale_factor)
+
+
+def shift_pitch(signal, sample_rate, shift_in_hz, frame_size=4800):
+    result = []
+    for lh in range(0, len(signal), frame_size):
+        rh = lh + frame_size
+        fft_spectrum = np.fft.rfft(signal[lh:rh])
+        freq = sample_rate / (rh - lh)
+        shift = int(shift_in_hz / freq)
+        shifted_spectrum = np.zeros_like(fft_spectrum)
+        shifted_spectrum[shift:] = fft_spectrum[:-shift]
+        shifted_signal = np.fft.irfft(shifted_spectrum)
+        result.append(shifted_signal)
+    return np.hstack(result)
+
+
 def wav_to_midi(sound_file,
-                duration=1 / 48,  # How to choose this?
-                played_duration=1 / 48,
+                freq_shift=100,  # Unused
+                key_block_time=0.080,
+                key_signal_time=0.080,
+                key_play_time=0.060,
+                step_size=0.010,
                 sample_velocity=100,
-                volume_ratio_threshold=0.75,
-                max_volume=10000,
-                steps_per_second=240,  # And how to choose this?
-                n_repressed_lower_keys=32,  # Honestly, low keys are trash, just trashing up the whole sound
-                max_notes_per_step=2,
+                reference_velocities=[25, 100],
+                sample_folder="digital_piano_samples",
+                # sample_velocity=76,
+                # reference_velocities=[26, 101],
+                # sample_folder="true_piano_samples",
+                key_signal_max=0.1,
+                volume_ratio_threshold=1.0,
+                scale_factor_cutoff=0.01,
+                min_velocity=0,
+                max_velocity=100,
+                # Honestly, low keys are trash, so many are supressed
+                n_supressed_lower_keys=32,
+                supression_factor=0.1,
+                max_notes_per_step=1,
                 ):
     """
     Walk through a series of windows over the original signal, and for each one,
@@ -210,165 +275,162 @@ def wav_to_midi(sound_file,
     Room for improvement:
         - Duration shouldn't necessarily be fixed
     """
-    sample_rate = 48000  # Should get this from the file itself
-    step_size = int(sample_rate / steps_per_second)
-    window_size = int(sample_rate * duration + step_size)
-
-    notes = []
-    key_signals = load_piano_key_signals(duration=duration, velocity=sample_velocity)
-
-    # Read in audio file, and soften so as to never exceed piano samples
-    signal = wav_to_array(sound_file).astype(float)
-    signal *= max_volume / signal.max()  # Soften
+    # Read in audio file, normalize
+    sample_rate, signal = wav_data(sound_file)
+    signal /= signal.max()
+    # signal = shift_pitch(signal, sample_rate, freq_shift)
     new_signal = np.zeros_like(signal)
 
-    # To prevent keys from running over each other, keep track of the next available
-    # spot when each note is allowed to be played.
-    key_to_min_pos = {key: 0 for key in piano_midi_range}
+    # Shift frequency
 
-    for pos in ProgressDisplay(range(0, len(signal), step_size), leave=False):
-        window = signal[pos:pos + window_size]
-        new_window = new_signal[pos:pos + window_size]
-        window_diff = window - new_window
+    step_size = int(sample_rate * step_size)
+    key_block_size = int(sample_rate * key_block_time)
 
-        sub_window = signal[pos:pos + step_size]
-        new_sub_window = new_signal[pos:pos + step_size]
+    # v2v_func_map = get_volume_to_velocity_func_map(sample_folder, reference_velocities)
 
-        # Find the best several keys to add in this window
-        convs = np.array([
-            fftconvolve(ks[::-1], window_diff, mode='valid')
-            for ks in key_signals
-        ])
-        indices = np.argsort(convs.max(1))[::-1]
-        indices = (
-            *indices[indices > n_repressed_lower_keys],
-            *reversed(range(n_repressed_lower_keys)),
-        )
+    notes = []
+    key_signals = load_piano_key_signals(
+        folder=sample_folder,
+        duration=key_signal_time,
+        velocity=sample_velocity,
+    )
+    # Try just normalizing each one?
+    key_signals *= key_signal_max / key_signals.max()
+    # key_signals = np.array([
+    #     ks * key_signal_max / ks.max()
+    #     for ks in key_signals
+    # ])
+    # normalized_key_signals = [normalize(ks) for ks in key_signals]
 
-        for i in indices[:max_notes_per_step]:
-            key = piano_midi_range[i]
-            ks = key_signals[i]
-            offset = convs[i].argmax()
-            opt_pos = pos + offset
+    velocities = []
 
-            # Check if we're allowed to use this key
-            if key_to_min_pos[key] > opt_pos:
-                continue
+    # Compute correlations between all notes at all points along the signal
+    full_convs = np.array([
+        fftconvolve(signal, ks[::-1])[len(ks) - 1:]
+        for ks in key_signals
+        # for ks in normalized_key_signals
+    ])
+    # Repress lower keys
+    # TODO: Instead of multiplying by an arbitrary factor, use some smoothing function
+    full_convs[:n_supressed_lower_keys, :] *= supression_factor
 
-            win_norm = norm(sub_window)
-            new_norm = norm(new_sub_window)
+    # # Find natural rises and falls (currently not doing anything with these)
+    # gkern = gaussian_kernel(int(0.02 * sample_rate))
+    # smooth_signal = fftconvolve(np.abs(signal), gkern, mode='same')
+    # smooth_signal = fftconvolve(smooth_signal, gkern, mode='same')
 
-            # If this sub_window is as loud as that of the original signal, stop
-            # adding new keys
-            if new_norm > volume_ratio_threshold * win_norm:
+    positions = list(range(0, len(signal), step_size))
+    p_to_max = {
+        pos: full_convs[:, pos:pos + step_size].max()
+        for pos in positions
+    }
+    positions.sort(key=lambda p: -p_to_max[p])
+    # random.shuffle(positions)
+    for pos in positions:
+        window = signal[pos:pos + step_size]
+        new_window = new_signal[pos:pos + step_size]
+
+        for n in range(max_notes_per_step):
+            # When volume is larger than original window, stop adding new notes
+            if norm(new_window) > volume_ratio_threshold * norm(window):
                 break
 
-            # If the projection of segment onto ks is f * ks, this gives f
-            segment = (window - new_window)[offset:offset + len(ks)]
-            short_ks = ks[:len(segment)]
-            factor = np.dot(segment, short_ks) / np.dot(short_ks, short_ks)
-            factor = clip(factor, 0, 1)
+            convs = full_convs[:, pos:pos + step_size]
+            key_index, offset = np.unravel_index(np.argmax(convs), convs.shape)
+            opt_pos = pos + offset
+            ks = key_signals[key_index]
 
-            if factor > 0:
+            # Consider the segment of the original signal which lines up
+            # with this key signal as a vector. If you project that segment
+            # onto the key signal itself, producing a vector which is f * (key signal),
+            # this factor gives f.
+            diff = (signal - new_signal)[opt_pos:opt_pos + len(ks)]  # What's the right length here?
+            factor = projection_factor(diff, ks[:len(diff)])
+
+            # velocity = get_velocity(key, ks, factor, v2v_func_map)
+            velocity = factor * sample_velocity
+            velocity = clip(velocity, min_velocity, max_velocity)
+            velocities.append((factor, velocity))
+
+            if factor > scale_factor_cutoff:
                 # Add the key_signal to new_window, which will in turn be added to new_signal
-                piece = new_window[offset:offset + len(ks)]
-                piece += factor * ks[:len(piece)]
+                # TODO, figure out the true addition to the signal given the
+                # cutoff in velocity
+                piece = new_signal[opt_pos:opt_pos + len(ks)]
+                piece += (velocity / sample_velocity) * ks[:len(piece)]
                 # Mark this key as unavailable for the next len(ks) samples
-                key_to_min_pos[key] = opt_pos + len(ks)
+                full_convs[key_index, opt_pos:opt_pos + key_block_size] = 0
+                # full_convs[:, opt_pos:opt_pos + step_size] = 0  # Something like this?
                 # Add the note, which will ultimately be used to create the MIDI file
                 notes.append(Note(
-                    value=key,
-                    velocity=clip(factor * sample_velocity, 0, 100),
+                    value=piano_midi_range[key_index],
+                    velocity=velocity,
                     position=opt_pos / sample_rate,
-                    # Right now at least, it always hits with a short staccato
-                    duration=played_duration,
+                    # Always hit with a short staccato
+                    duration=key_play_time,
                 ))
 
     mid_file = sound_file.replace(".wav", "_as_piano.mid")
     create_midi_file_with_notes(mid_file, notes)
-    midi_to_wav(mid_file)
+    piano_wav_file = midi_to_wav(mid_file)
+    # os.system(f"open -F {piano_wav_file}")
 
-    plt.plot(signal, linewidth=1.0)
-    plt.plot(new_signal, linewidth=1.0)
-    plt.show()
+    # plt.plot(signal, linewidth=1.0)
+    # plt.plot(new_signal, linewidth=1.0)
+    # plt.plot(smooth_signal, linewidth=1.0)
+    # plt.show()
+
+    vels = np.array(velocities)
+    plt.plot(vels[:, 1])
+    embed()
 
     return
-
-
-def still_terrible_wav_to_midi_strat():
-    # Old (bad) strat
-    for n in range(20):
-        indices = np.argsort(np.abs(np.array(piano_midi_range) - 69))  # Sort by closest to middle A
-        for i in indices:
-            ks = key_signals[i]
-            v_norm = norm(ks)
-            key = piano_midi_range[i]
-            conv = fftconvolve(ks[::-1], signal)
-            conv = conv[len(ks) - 1:]  # Only care about parts where piano sound overlaps fully
-            opt_pos = np.argmax(conv)
-            segment = signal[opt_pos:opt_pos + len(ks)]
-
-            # If the projection of segment onto ks is f * ks, this gives f
-            factor = conv[opt_pos] / (v_norm**2)
-            # Cannot add more than max velocity key hit
-            factor = min(factor, 127 / SAMPLED_VELOCITY)
-
-            segment -= (factor * ks).astype(int)
-
-            notes.append(Note(
-                value=key,
-                velocity=factor * SAMPLED_VELOCITY,
-                position=opt_pos / sample_rate,
-                duration=duration,
-            ))
-
-
-def previous_terrible_wav_to_midi():
-    sample_rate = 48000  # Should get this from the file itself
-    bucket_size = 1 / 60  # In seconds
-    step = int(sample_rate * bucket_size)
-
-    notes = []
-    for n in ProgressDisplay(range(0, len(signal), step)):
-        bucket = signal[n:n + step]
-        times = np.linspace(0, len(bucket) / sample_rate, len(bucket))
-        for key in piano_midi_range:
-            freq = midi_to_hz(key)
-            cos_wave = np.cos(TAU * freq * times)
-            sin_wave = np.sin(TAU * freq * times)
-            cos_wave /= norm(cos_wave)
-            sin_wave /= norm(sin_wave)
-            strength = get_norm([
-                np.dot(cos_wave, bucket),
-                np.dot(sin_wave, bucket),
-            ])
-            velocity = 2 * strength
-            if velocity > 1:
-                notes.append(Note(
-                    value=key,
-                    velocity=min(velocity, 127),
-                    position=(n / step) * bucket_size,
-                    duration=bucket_size,
-                ))
-
-    create_midi_file_with_notes(
-        sound_file.replace(".wav", ".mid"),
-        notes,
-    )
 
 
 # Functions for processing sound files
 
 
-def wav_to_array(file_name):
-    fp = wave.open(file_name)
-    nchan = fp.getnchannels()
-    N = fp.getnframes()
-    dstr = fp.readframes(N * nchan)
-    data = np.frombuffer(dstr, np.int16)
-    data = np.reshape(data, (-1, nchan))
-    data = data[:, 0].copy()  # Just pull out the first channel
-    return data
+def wav_data(file_name):
+    rate, arr = wavfile.read(file_name)
+    arr = arr.astype(float)
+    if len(arr.shape) > 1 and arr.shape[1] > 1:
+        arr = arr.mean(1)  # Collapse to single channel
+    return rate, arr
+
+
+def extract_pure_keys(key_sample_file,
+                      output_folder="true_piano_samples",
+                      start=3.9,
+                      spacing=3,
+                      velocities=[1, 26, 51, 76, 101, 126]):
+    """
+    For a file
+    """
+    output_folder = os.path.join(DATA_DIR, output_folder)
+    sample_rate, arr = wav_data(key_sample_file)
+
+    # Create function whose local maxima correspond to key starts
+    kernel = np.ones(sample_rate) / sample_rate
+    smoothed = fftconvolve(np.abs(arr).astype(float), kernel, mode='valid')
+    smoothed = fftconvolve(smoothed, kernel, mode='valid')
+    smooth_to_true_shift = int(0.7 * sample_rate)
+    smoothed = np.hstack([np.zeros(smooth_to_true_shift), smoothed])
+    local_maxima = argrelextrema(smoothed, np.greater)[0]
+
+    def true_peak_near(index):
+        return local_maxima[np.argmin(np.abs(local_maxima - index))]
+
+    spacing_in_samples = int(spacing * sample_rate)
+    index = true_peak_near(start * sample_rate)
+    for key in piano_midi_range:
+        for vel in velocities:
+            wavfile.write(
+                filename=os.path.join(output_folder, f"{key}_{vel}.wav"),
+                rate=sample_rate,
+                data=arr[index:index + spacing_in_samples],
+            )
+            index = true_peak_near(index + spacing_in_samples)
+    return
 
 
 def normalize_data(data):
@@ -382,7 +444,7 @@ def data_to_audio_segment(segment):
 def test_midi_file_writing():
     notes = [
         Note(
-            value=hz_to_midi(240 * 2**((5 * x % 12) / 12)),
+            value=hz_to_midi_value(240 * 2**((5 * x % 12) / 12)),
             velocity=random.randint(20, 64),
             position=x / 120,
             duration=1 / 120,
@@ -398,6 +460,24 @@ def test_midi_file_writing():
     mid = mido.MidiFile(test_file, clip=True)
     track = mid.tracks[0]
     print(track)
+
+
+def plot_velocity_data():
+    key = 55
+    folder = os.path.join(DATA_DIR, "true_piano_samples")
+    signals = []
+    vels = list(range(1, 127, 25))
+    for vel in vels:
+        file = os.path.join(folder, f"{key}_{vel}.wav")
+        rate, signal = wav_data(file)
+        signals.append(signal)
+
+    maxes = [s.max() for s in signals]
+    plt.plot(maxes, vels)
+    plt.plot(np.linspace(0, maxes[-1], len(maxes)), vels)
+    plt.show()
+
+    embed()
 
 
 def main():
