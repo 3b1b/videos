@@ -207,6 +207,7 @@ class Guitar(SVGMobject):
 
 
 # Cards
+
 class DeckOfCards(VGroup):
     def __init__(self, **kwargs):
         possible_values = list(map(str, list(range(1, 11)))) + ["J", "Q", "K"]
