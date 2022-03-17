@@ -345,7 +345,7 @@ class DecomposeAudioSegment(Scene):
 
         sine_waves.set_submobject_colors_by_gradient(YELLOW, GREEN, RED, ORANGE)
         sine_waves.set_stroke(width=3)
-        top_waves = VGroup(*[sine_waves[i] for i in [4, 9, 13]]).copy()
+        top_waves = VGroup(*[sine_waves[i] for i in [4, 9, 13, 14]]).copy()
 
         # Break down
         frame = self.camera.frame
@@ -381,12 +381,20 @@ class DecomposeAudioSegment(Scene):
 
         frame.clear_updaters()
         frame.generate_target()
-        frame.target.set_euler_angles(1.33, 1.519)
+        frame.target.set_euler_angles(1.22, 1.54)
+        frame.target.move_to([1.92, 7.29, 1.05])
 
         fft_label = TexText("|Fourier Transform|", font_size=60)
         fft_label.rotate(PI / 2, RIGHT).rotate(PI / 2, OUT)
         fft_label.next_to(f_axes.i2gp(freqs[5], fft_graph), OUT)
         fft_label.set_color(GREEN)
+
+        piano = Piano()
+        f_step = f_axes.x_range[2]
+        piano.set_width(get_norm(f_axes.c2p(88 * f_step) - f_axes.get_origin()))
+        piano.rotate(PI / 2, OUT)
+        piano.move_to(f_axes.get_origin(), DR)
+        piano.set_opacity(0.5)
 
         wave_shadows = sine_waves.copy().set_stroke(opacity=0.1)
         self.remove(top_waves, sine_waves)
@@ -400,14 +408,41 @@ class DecomposeAudioSegment(Scene):
                 lag_ratio=0.1,
                 run_time=8,
             ),
-            FadeIn(fft_graph),
+            graph.animate.set_stroke(width=1, opacity=0.5),
+            ShowCreation(fft_graph, run_time=5),
             Write(fft_label),
-            MoveToTarget(frame, run_time=5)
+            MoveToTarget(frame, run_time=5),
         )
-        self.wait(4)
+        self.wait(2)
+        self.add(piano, freq_label, fft_graph, lines)
         self.play(
+            Write(piano),
+            frame.animate.set_phi(1.25),
+            run_time=3,
+        )
+        self.wait()
+
+        # Pull out dominant signals
+        glow_keys = VGroup(*(
+            piano[np.argmin([
+                get_norm(k.get_center() - wave.get_left())
+                for k in piano
+            ])]
+            for wave in top_waves
+        ))
+        peak_dots = GlowDots([
+            lines[np.argmin([
+                get_norm(line.get_start() - wave.get_left())
+                for line in lines
+            ])].get_end()
+            for wave in top_waves
+        ])
+
+        self.play(
+            ShowCreation(peak_dots),
             LaggedStartMap(ShowCreation, top_waves),
-            frame.animate.set_euler_angles(1.0, 1.35),
+            frame.animate.set_euler_angles(0.72, 1.15).move_to([2., 4., 1.]),
+            ApplyMethod(glow_keys.set_fill, RED, 1, rate_func=squish_rate_func(smooth, 0, 0.2)),
             run_time=6,
         )
         self.wait()
@@ -415,14 +450,16 @@ class DecomposeAudioSegment(Scene):
         # Reconstruct
         approx_wave = graph.copy()  # Cheating
         approx_wave.set_points_smoothly(graph.get_points()[::150], true_smooth=True)
-        approx_wave.set_stroke(TEAL, 3)
+        approx_wave.set_stroke(TEAL, 3, 1.0)
 
         self.play(
             frame.animate.reorient(0, 90).move_to(ORIGIN).set_height(10),
             graph.animate.set_stroke(width=2, opacity=0.5),
             *(ReplacementTransform(wave, approx_wave) for wave in top_waves),
             LaggedStartMap(FadeOut, VGroup(fft_graph, lines, fft_label, freq_label, f_axes)),
+            FadeOut(peak_dots),
             FadeOut(wave_shadows),
+            FadeOut(piano),
             run_time=3,
         )
         self.wait()
@@ -446,23 +483,33 @@ class DecomposeAudioSegment(Scene):
         )
 
         # Show windows
+        axes = self.original_axes
         graph = self.original_graph
 
         windows = Rectangle().get_grid(1, 75, buff=0)
-        windows.replace(self.original_axes, stretch=True)
+        windows.replace(graph, stretch=True)
+        windows.stretch(1.1, 1)
         windows.set_stroke(WHITE, 1)
 
-        fade_rect = BackgroundRectangle(graph)
-        fade_rect.set_fill(BLACK, 0.6)
-        self.add(graph, fade_rect, self.original_axes)
-        graph.set_stroke(width=1, opacity=0.2)
+        piano = Piano()
+        piano.set_width(12)
+        piano.next_to(axes, UP).set_x(0)
+        piano.save_state()
+        self.add(piano)
 
         for window in windows[:40]:
-            segment = Intersection(window, graph)
-            segment.set_stroke(BLUE, width=2, opacity=1)
-            self.add(window, segment)
+            fade_rect = BackgroundRectangle(axes)
+            fade_rect.scale(1.01)
+            fade_rect = Difference(fade_rect, window)
+            fade_rect.set_fill(BLACK, 0.6)
+            fade_rect.set_stroke(width=0)
+
+            piano.restore()
+            VGroup(*random.sample(list(piano), random.randint(1, 4))).set_color(RED)
+
+            self.add(fade_rect, window)
             self.wait(0.25)
-            self.remove(window, segment)
+            self.remove(fade_rect, window)
 
 
 class WaveformDescription(DecomposeAudioSegment):
