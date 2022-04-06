@@ -162,11 +162,9 @@ class FourierCirclesScene(Scene):
             stroke_width = self.drawn_path_stroke_width
         path = self.get_vector_sum_path(vectors, **kwargs)
         broken_path = CurvesAsSubmobjects(path)
-        broken_path.curr_time = 0
 
         def update_path(path, dt):
-            # alpha = path.curr_time * self.get_slow_factor()
-            alpha = self.get_drawn_path_alpha()
+            alpha = self.get_vector_time()
             n_curves = len(path)
             for a, sp in zip(np.linspace(0, 1, n_curves), path):
                 b = alpha - a
@@ -175,7 +173,6 @@ class FourierCirclesScene(Scene):
                 else:
                     width = stroke_width * (1 - (b % 1))
                 sp.set_stroke(width=width)
-            path.curr_time += dt
             return path
 
         broken_path.set_color(self.drawn_path_color)
