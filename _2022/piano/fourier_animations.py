@@ -15,6 +15,14 @@ def get_wave_sum(axes, freqs, amplitudes=None, phases=None):
     ))
 
 
+def get_ellipsis_vector(values, n_top_shown=3, n_bottom_shown=2, height=2):
+    values = list(map(str, (*values[:n_top_shown], *values[-n_bottom_shown:])))
+    values.insert(n_top_shown, "\\vdots")
+    vector = Matrix(np.transpose([values]))
+    vector.set_height(3)
+    return vector
+
+
 class SumOfWaves(Scene):
     def construct(self):
         # Show single pure wave
@@ -185,31 +193,25 @@ class DecomposeAudioSegment(Scene):
     audio_file = os.path.join(DATA_DIR, "audio_clips", "SignalFromSpeech.wav")
     sample_density = 1 / 5
     n_sine_waves = 5
+    signal_graph_style = dict(
+        stroke_color=BLUE,
+        stroke_width=1,
+    )
+    graph_point = 0.428
+    zoom_rect_dims = (0.4, 4.0)
 
     def construct(self):
         self.add_full_waveform()
-        self.zoom_in_on_segment()
+        self.zoom_in_on_segment(
+            self.axes, self.graph,
+            self.graph_point, self.zoom_rect_dims
+        )
         self.prepare_for_3d()
         self.break_down_into_fourier_components()
         self.back_to_full_signal()
 
     def add_full_waveform(self):
-        sample_rate, signal = wavfile.read(self.audio_file)
-        signal = signal[:, 0] / np.abs(signal).max()
-        signal = signal[::int(1 / self.sample_density)]
-
-        axes = Axes(
-            (0, len(signal), sample_rate * self.sample_density), (-1, 1, 0.25),
-            height=6,
-            width=15,
-        )
-        axes.to_edge(LEFT)
-
-        xs = np.arange(len(signal))
-        points = axes.c2p(xs, signal)
-        graph = VMobject()
-        graph.set_points_as_corners(points)
-        graph.set_stroke(BLUE, 1.0)
+        axes, graph = self.get_signal_graph()
 
         self.add(axes)
         self.play(
@@ -228,12 +230,9 @@ class DecomposeAudioSegment(Scene):
         self.axes = axes
         self.graph = graph
 
-    def zoom_in_on_segment(self):
-        axes = self.axes
-        graph = self.graph
-
-        point = graph.pfp(0.428)[0] * RIGHT
-        zoom_rect = Rectangle(0.4, 4.0)
+    def zoom_in_on_segment(self, axes, graph, graph_point, zoom_rect_dims, run_time=4, fade_in_new_axes=True):
+        point = graph.pfp(graph_point)[0] * RIGHT
+        zoom_rect = Rectangle(*zoom_rect_dims)
         zoom_rect.move_to(point)
         zoom_rect.set_stroke(WHITE, 2)
 
@@ -246,6 +245,7 @@ class DecomposeAudioSegment(Scene):
         graph_snippet.set_points_as_corners(snippet_points)
         graph_snippet.match_style(graph)
         point = graph_snippet.get_center().copy()
+        point[1] = axes.get_origin()[1]
         zoom_rect.move_to(point)
 
         movers = [axes, graph, graph_snippet, zoom_rect]
@@ -264,7 +264,7 @@ class DecomposeAudioSegment(Scene):
         self.play(Write(zoom_rect))
         self.play(
             *map(MoveToTarget, movers),
-            run_time=4
+            run_time=run_time
         )
         self.remove(graph, axes)
         self.wait()
@@ -273,12 +273,15 @@ class DecomposeAudioSegment(Scene):
         new_axes = Axes((-2, 12), (-1, 1, 0.25), width=FRAME_WIDTH + 1)
         new_axes.shift(LEFT_SIDE + RIGHT - new_axes.get_origin())
 
-        self.play(FadeIn(new_axes))
+        if fade_in_new_axes:
+            self.play(FadeIn(new_axes))
 
         self.original_graph = graph
         self.original_axes = axes
         self.axes = new_axes
         self.graph = graph_snippet
+
+        return new_axes, graph_snippet
 
     def prepare_for_3d(self):
         frame = self.camera.frame
@@ -511,6 +514,26 @@ class DecomposeAudioSegment(Scene):
             self.wait(0.25)
             self.remove(fade_rect, window)
 
+    def get_signal_graph(self):
+        sample_rate, signal = wavfile.read(self.audio_file)
+        signal = signal[:, 0] / np.abs(signal).max()
+        signal = signal[::int(1 / self.sample_density)]
+
+        axes = Axes(
+            (0, len(signal), sample_rate * self.sample_density), (-1, 1, 0.25),
+            height=6,
+            width=15,
+        )
+        axes.to_edge(LEFT)
+
+        xs = np.arange(len(signal))
+        points = axes.c2p(xs, signal)
+        graph = VMobject()
+        graph.set_points_as_corners(points)
+        graph.set_style(**self.signal_graph_style)
+
+        return axes, graph
+
 
 class WaveformDescription(DecomposeAudioSegment):
     def construct(self):
@@ -548,3 +571,365 @@ class WaveformDescription(DecomposeAudioSegment):
         self.play(Write(y_label), run_time=1)
         self.play(Write(x_label), run_time=1)
         self.wait(10)
+
+
+class SignalsAsVectors(DecomposeAudioSegment):
+    audio_file = os.path.join(DATA_DIR, "audio_clips", "SignalFromSpeech.wav")  # Change?
+    sample_density = 1.0
+
+    def construct(self):
+        self.zoom_in_on_waveform()
+        self.describe_fourier_basis()
+
+    def zoom_in_on_waveform(self):
+        # Two sets of zooming
+        axes, graph = self.get_signal_graph()
+        self.add(axes, graph)
+        axes, graph = self.zoom_in_on_segment(
+            axes, graph, 0.35, (0.2, 4.0), run_time=3, fade_in_new_axes=False
+        )
+        axes.set_stroke(opacity=0)
+        axes, graph = self.zoom_in_on_segment(
+            axes, graph, 0.5, (0.15, 6.0), run_time=3, fade_in_new_axes=False
+        )
+
+        # Pull out true points from graph
+        points = []
+        for point in graph.get_anchors():
+            if not any((point == p).all() for p in points):
+                points.append(point)
+
+        # Create axes with alternate line representation of values
+        axes = Axes(
+            (0, len(points) - 1), (-1, 1, 0.25),
+            width=graph.get_width(),
+            height=graph.get_height(),
+        )
+        axes.shift(graph.get_left() - axes.get_origin())
+        self.play(FadeIn(axes))
+
+        # Lines and dots
+        new_graph, lines, dots = self.get_graph_with_lines_and_dots(axes, points)
+        new_graph.match_style(graph)
+        self.remove(graph)
+        graph = new_graph
+        self.add(graph)
+
+        self.play(
+            ShowCreation(lines, lag_ratio=0.5),
+            FadeIn(dots),
+            graph.animate.set_stroke(width=1)
+        )
+        self.wait()
+
+        self.signal_graph_group = Group(axes, graph, lines, dots)
+
+    def describe_fourier_basis(self):
+        # Vars
+        frame = self.camera.frame
+        graph_group = self.signal_graph_group
+        axes, graph, lines, dots = graph_group
+
+        # Show as a list of numbers
+        values = axes.y_axis.p2n(dots.get_points())
+        vector = get_ellipsis_vector((100 * values).astype(int))
+        vector.next_to(graph, UP, buff=MED_LARGE_BUFF)
+        vector.to_edge(LEFT, buff=LARGE_BUFF)
+
+        self.play(
+            frame.animate.move_to(axes.get_bottom() + MED_LARGE_BUFF * DOWN, DOWN),
+            LaggedStart(
+                Write(vector.get_brackets()),
+                *(
+                    GrowFromPoint(mob, point)
+                    for point, mob in zip(dots.get_points()[:3], vector.get_entries()[:3])
+                ),
+                Write(vector.get_entries()[3]),
+                *(
+                    GrowFromPoint(mob, point)
+                    for point, mob in zip(dots.get_points()[-2:], vector.get_entries()[-2:])
+                ),
+            ),
+            run_time=3,
+        )
+        self.wait()
+
+        # Show fourier basis as graphs
+        signal_fft = np.fft.fft(values)
+        fourier_basis = np.array([
+            np.fft.ifft(basis)
+            for basis in np.identity(values.size)
+        ])
+        component_values = np.array([
+            part * len(signal_fft)
+            for coef, fb in zip(signal_fft, fourier_basis)
+            for part in (fb.real, fb.imag)
+        ])
+        xs = list(range(len(signal_fft)))
+        component_graphs = VGroup(*(
+            self.get_graph_with_lines_and_dots(axes, axes.c2p(xs, vals))[0]
+            for vals in component_values
+        ))
+
+        component_graphs.make_smooth()
+        component_graphs.set_submobject_colors_by_gradient(YELLOW, RED, GREEN)
+
+        n_parts_shown = 6
+        comp_groups = VGroup(*(
+            VGroup(axes.deepcopy(), cg)
+            for cg in component_graphs[2:2 + n_parts_shown]
+        ))
+        comp_groups.add(Tex("\\vdots").set_height(comp_groups.get_height() / 2))
+        comp_groups.arrange(DOWN, buff=0.75 * comp_groups.get_height())
+        comp_groups.set_height(7.5)
+        comp_groups.move_to(frame).to_edge(RIGHT, buff=MED_SMALL_BUFF)
+
+        self.play(
+            graph_group.animate.set_width(
+                graph_group.get_width() - comp_groups.get_width() - LARGE_BUFF,
+                about_edge=DL
+            ),
+            vector.animate.to_edge(LEFT, buff=MED_LARGE_BUFF),
+            LaggedStartMap(FadeIn, comp_groups),
+        )
+        self.wait()
+
+        # Show fourier basis as vectors
+        c_dots_group = Group()
+        c_lines_group = VGroup()
+        c_vectors = VGroup()
+
+        for c_axes, c_graph in comp_groups[:-1]:
+            g, c_lines, c_dots = self.get_graph_with_lines_and_dots(
+                c_axes,
+                c_graph.get_points()[::6]
+            )
+            c_dots.set_color(c_graph.get_color())
+            c_dots.set_radius(0.1)
+            c_lines.set_stroke(width=0.5)
+
+            c_dots_group.add(c_dots)
+            c_lines_group.add(c_lines)
+
+            c_values = c_axes.y_axis.p2n(c_dots.get_points())
+            c_vector = get_ellipsis_vector((100 * c_values).astype(int))
+            c_vector.set_color(c_graph.get_color())
+            c_vectors.add(c_vector)
+
+        syms = VGroup(Tex("="), *(Tex("+") for v in c_vectors[1:]))
+        coef_syms = VGroup(*(Tex(f"c_{i}") for i in range(1, 4)))
+        coef_syms.add(Tex("\\cdots"))
+        last_vect = vector
+        buff = 0.15
+        for sym, coef_sym, c_vect in zip(syms, coef_syms, c_vectors):
+            sym.next_to(last_vect, RIGHT, buff=buff)
+            coef_sym.next_to(sym, RIGHT, buff=buff)
+            c_vect.next_to(coef_sym, RIGHT, buff=buff)
+            last_vect = c_vect
+
+        for i in range(3):
+            self.play(
+                ShowCreation(c_dots_group[i]),
+                ShowCreation(c_lines_group[i]),
+            )
+            self.play(
+                FadeIn(syms[i]),
+                Write(coef_syms[i]),
+                FadeTransform(c_dots_group[i].copy(), c_vectors[i])
+            )
+        self.play(
+            *map(ShowCreation, c_dots_group[3:]),
+            *map(ShowCreation, c_lines_group[3:]),
+            Write(syms[3]),
+            Write(coef_syms[3]),
+        )
+        self.wait()
+
+        for comp, dots, lines in zip(comp_groups, c_dots_group, c_lines_group):
+            c_axes, c_graph = comp
+            stretcher = Group(c_graph, dots, lines)
+            self.play(
+                stretcher.animate.stretch(
+                    random.uniform(-1, 1),
+                    dim=1,
+                    about_point=c_axes.get_center(),
+                ),
+            )
+        self.wait()
+
+    def get_graph_with_lines_and_dots(self, axes, points, color=BLUE):
+        graph = VMobject()
+        graph.set_points_as_corners(points)
+        graph.set_stroke(color, 1)
+
+        # Alternate representation of values with lines
+        lines = VGroup(*(
+            axes.get_v_line(point, line_func=Line)
+            for point in points
+        ))
+        lines.set_stroke(WHITE, 1)
+        dots = GlowDots(points)
+        dots.set_color(color)
+
+        return graph, lines, dots
+
+
+class SampleRateOverlay(Scene):
+    def construct(self):
+        text = VGroup(
+            TexText("48,000 samples / sec"),
+            Tex("\\Downarrow"),
+            TexText("20 ms window", " = 960-dimensional vector")
+        )
+        text.arrange(DOWN)
+        text.to_edge(UP)
+
+        text[2][1].set_color(YELLOW)
+        text[2][0].save_state()
+        text[2][0].match_x(text)
+        self.play(Write(text[0]), run_time=1)
+        self.wait()
+        self.play(
+            GrowFromPoint(text[1], text[0].get_bottom()),
+            FadeIn(text[2][0], DOWN)
+        )
+        self.wait()
+        self.play(Restore(text[2][0]), FadeIn(text[2][1]))
+        self.wait()
+
+
+class ThreeDChangeOfBasisExample(Scene):
+    def construct(self):
+        # Add axes and standard basis
+        frame = self.camera.frame
+        frame.reorient(-20, 75)
+        frame.shift(OUT)
+        frame.add_updater(lambda m: m.set_theta(
+            -20 * math.cos(TAU * self.time / 60) * DEGREES,
+        ))
+
+        axes = ThreeDAxes(axis_config=dict(tick_size=0.05))
+        axes.set_stroke(width=1)
+        plane = NumberPlane(faded_line_ratio=0)
+        plane.set_stroke(GREY, 1, 0.5)
+        basis_mobs = VGroup(
+            Vector(RIGHT, color=RED),
+            Vector(UP, color=GREEN),
+            Vector(OUT, color=BLUE),
+        )
+
+        signal = Vector([-3, 1, 2], color=YELLOW)
+        signal.set_opacity(0.75)
+        signal_label = Text("Signal")
+        signal_label.rotate(90 * DEGREES, RIGHT)
+        signal_label.match_color(signal)
+        signal_label.add_updater(lambda m: m.next_to(signal.get_end(), OUT))
+        coef_label = self.get_coef_label(signal, basis_mobs)
+
+        self.add(axes)
+        self.add(plane)
+        self.add(basis_mobs)
+        self.add(signal)
+        self.add(signal_label)
+        self.add(coef_label)
+        for mob in self.mobjects:
+            mob.apply_depth_test()
+
+        # Show components
+        components = always_redraw(
+            self.get_linear_combination, signal, basis_mobs
+        )
+        components.suspend_updating()
+        self.animate_linear_combination(basis_mobs, components)
+        self.wait(2)
+        components.resume_updating()
+        self.add(components)
+        for v in [[-1, 1, 0.5], [1, 1, 0.25], [2, 1, 2]]:
+            self.play(
+                signal.animate.put_start_and_end_on(ORIGIN, v),
+                run_time=3
+            )
+            self.wait()
+        self.wait(5)
+
+        # Change of basis
+        rot_matrix = rotation_between_vectors([1, 1, 1], OUT)
+        new_basis = rot_matrix.T
+
+        basis_mobs.generate_target()
+        for basis_mob, new_vector in zip(basis_mobs.target, new_basis):
+            basis_mob.put_start_and_end_on(ORIGIN, new_vector)
+
+        self.play(FadeOut(components))
+        self.play(MoveToTarget(basis_mobs, run_time=2))
+        self.wait()
+        components.update()
+        for comp in components:
+            self.play(GrowArrow(comp))
+        self.add(components)
+        for vect in [[1, 0, 2]]:
+            self.play(signal.animate.put_start_and_end_on(ORIGIN, vect), run_time=3)
+            self.wait()
+
+        frame.suspend_updating()
+
+        self.embed()
+
+    def get_coefficients(self, vect_mob, basis_mobs):
+        cob_inv = np.array([
+            b.get_vector()
+            for b in basis_mobs
+        ]).T
+        cob = np.linalg.inv(cob_inv)
+        return np.dot(cob, vect_mob.get_vector())
+
+    def get_linear_combination(self, vect_mob, basis_mobs):
+        coefs = self.get_coefficients(vect_mob, basis_mobs)
+        components = VGroup()
+        last_point = vect_mob.get_start()
+        for coef, basis in zip(coefs, basis_mobs):
+            comp = Vector(coef * basis.get_vector())
+            comp.match_style(basis)
+            comp.set_stroke(opacity=0.5)
+            comp.shift(last_point - comp.get_start())
+            last_point = comp.get_end()
+            components.add(comp)
+        return components
+
+    def animate_linear_combination(self, basis_mobs, components):
+        for basis, part in zip(basis_mobs, components):
+            self.play(TransformFromCopy(basis, part))
+
+    def get_coef_label(self, vect_mob, basis_mobs, lhs_tex="\\vec{\\textbf{s}}"):
+        label = VGroup()
+        lhs = Tex(lhs_tex + "=")
+        label.numbers = VGroup(*(
+            DecimalNumber(include_sign=True)
+            for b in basis_mobs
+        ))
+        label.basis_labels = VGroup(*(
+            Tex("\\vec{\\textbf{v}}_1", color=RED),
+            Tex("\\vec{\\textbf{v}}_2", color=GREEN),
+            Tex("\\vec{\\textbf{v}}_3", color=BLUE),
+        ))
+
+        label.add(lhs)
+        label.add(*it.chain(*zip(
+            label.numbers, label.basis_labels
+        )))
+        label.fix_in_frame()
+        label.arrange(RIGHT, buff=SMALL_BUFF)
+        label.to_corner(UL)
+
+        def update_label(label):
+            coefs = self.get_coefficients(vect_mob, basis_mobs)
+            for coef, number in zip(coefs, label.numbers):
+                number.set_value(coef)
+
+        label.add_updater(update_label)
+        return label
+
+
+class ContrastPureToneToPianoKey(Scene):
+    def construct(self):
+        pass
