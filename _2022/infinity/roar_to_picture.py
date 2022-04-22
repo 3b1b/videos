@@ -3,16 +3,17 @@ from _2022.piano.fourier_animations import DecomposeAudioSegment
 from _2019.diffyq.part2.fourier_series import FourierCirclesScene
 
 
-class DecomposeRoar(DecomposeAudioSegment):
+class DecomposeRoar_SlowFPS(DecomposeAudioSegment):
     audio_file = "/Users/grant/Dropbox/3Blue1Brown/videos/2022/infinity/Roar.wav"
     graph_point = 0.428
     zoom_rect_dims = (0.2, 6.0)
 
     def construct(self):
-        self.add_full_waveform()
+        self.add_full_waveform(run_time=2.5)
         self.zoom_in_on_segment(
             self.axes, self.graph,
-            self.graph_point, self.zoom_rect_dims
+            self.graph_point, self.zoom_rect_dims,
+            run_time=3,
         )
         self.prepare_for_3d()
         self.show_all_waves()
@@ -55,7 +56,8 @@ class DecomposeRoar(DecomposeAudioSegment):
                 x_range=(0, t_max),
             )
             wave.match_y(f_axes.c2p(freq, 0))
-            wave.set_stroke(opacity=0.75)
+            # wave.set_stroke(opacity=0.75)
+            wave.set_stroke(opacity=1.0)
             wave.amp = amp
             wave.freq = freq
             wave.phase = phase
@@ -85,14 +87,14 @@ class DecomposeRoar(DecomposeAudioSegment):
                 ),
                 lag_ratio=1 / len(sine_waves),
             ),
-            run_time=8
+            run_time=4
         )
         self.wait(3)
 
 
-class CombineWavesToImage(FourierCirclesScene):
+class CombineWavesToImage_SlowFPS(FourierCirclesScene):
     CONFIG = {
-        "peace_sign_height": 6.0,
+        "drawing_height": 6.0,
         "n_shown_waves": 5,
         "n_vectors": 500,
         # "n_vectors": 50,
@@ -102,6 +104,7 @@ class CombineWavesToImage(FourierCirclesScene):
         # "parametric_function_step_size": 0.01,
         "drawn_path_color": YELLOW,
         "remove_background_waves": False,
+        "drawing_file": "/Users/grant/Dropbox/3Blue1Brown/videos/2022/infinity/monster-holding-piece-sign-3.svg",
     }
 
     def construct(self):
@@ -157,10 +160,10 @@ class CombineWavesToImage(FourierCirclesScene):
         ))
         all_axes.arrange(DOWN, buff=1.0)
 
-        dots = VGroup(Tex("\\vdots", font_size=100), Tex(""))
-        dots.arrange(RIGHT)
+        dots = Tex("\\vdots", font_size=100)
         dots.next_to(all_axes, DOWN, buff=0.5)
         dots.match_x(all_axes[0].get_origin())
+        dots.set_fill(WHITE)
 
         frame = self.camera.frame
         group = Group(all_axes, dots)
@@ -216,10 +219,9 @@ class CombineWavesToImage(FourierCirclesScene):
         true_path = self.path
         fade_region = self.get_fade_region(true_path)
 
-        sf = self.get_slow_factor()
         rt = 5
-        future_vt = self.get_vector_time() + sf * rt
-        self.wait((1.0 - (future_vt % 1.0)) / sf)
+        # sf = self.get_slow_factor()
+        # future_vt = self.get_vector_time() + sf * rt
 
         label = VGroup(Integer(100, edge_to_fix=DR), Text("terms"))
         label.arrange(RIGHT, buff=0.15)
@@ -227,7 +229,6 @@ class CombineWavesToImage(FourierCirclesScene):
         label[0].set_value(self.n_shown_waves)
 
         # Animate entry
-        drawn_path = self.get_drawn_path(self.vectors[:self.n_shown_waves + 1])
         terms = self.get_terms(self.n_shown_waves)
         self.play(
             FadeIn(fade_region, lag_ratio=0.1),
@@ -241,16 +242,21 @@ class CombineWavesToImage(FourierCirclesScene):
             ), lag_ratio=0.1),
             FadeIn(label),
             Write(terms),
-            # self.slow_factor_tracker.animate.set_value(0.1),
             run_time=rt,
         )
-        self.vector_clock.set_value(0)
 
         # Set up drawn paths
-        self.add(drawn_path, terms)
+        drawn_path = self.get_drawn_path(self.vectors[:self.n_shown_waves + 1])
+        dot = self.add_draw_dot(self.vectors[:self.n_shown_waves + 1])
+        self.add(drawn_path, terms, dot)
+        anims = [
+            UpdateFromAlphaFunc(drawn_path, lambda m, a: m.set_stroke(interpolate_color(BLACK, YELLOW, a))),
+            UpdateFromAlphaFunc(dot, lambda m, a: m.set_opacity(a)),
+        ]
         if self.remove_background_waves:
             self.play(
                 fade_region.animate.set_height(2 * FRAME_WIDTH).set_opacity(0.05),
+                *anims,
                 run_time=2
             )
             self.remove(
@@ -260,7 +266,7 @@ class CombineWavesToImage(FourierCirclesScene):
                 fade_region,
             )
         else:
-            self.wait(2)
+            self.play(*anims, run_time=2)
 
         # Now add on new vectors one at a time
         drawn_paths = dict()
@@ -280,8 +286,8 @@ class CombineWavesToImage(FourierCirclesScene):
                 drawn_paths[n] = self.get_drawn_path(self.vectors[:n])
             if n not in all_terms:
                 all_terms[n] = self.get_terms(n)
-            group[0].become(drawn_paths[n])
-            group[1].become(all_terms[n])
+            group.replace_submobject(0, drawn_paths[n])
+            group.replace_submobject(1, all_terms[n])
             group[2][0].set_value(n)
             group[3].set_submobjects(self.vectors[:n])
             group[4].set_submobjects(self.circles[:n])
@@ -289,11 +295,14 @@ class CombineWavesToImage(FourierCirclesScene):
             self.style_vectors(group[3])
             self.style_circles(group[4])
 
+            if n > 25:
+                group[4].set_stroke(opacity=(1.0 / (n - 25))**0.2)
+
             group.update()
             return group
 
-        self.remove(self.vectors, self.circles, drawn_path, terms)
-
+        self.remove(self.vectors, self.circles, drawn_path, terms, dot)
+        self.add_draw_dot(drawing_group[3])
         self.play(UpdateFromAlphaFunc(
             drawing_group, update_drawing_group,
             run_time=15,
@@ -303,24 +312,30 @@ class CombineWavesToImage(FourierCirclesScene):
         inf = Tex("\\infty")
         inf.match_height(label[0])
         inf.move_to(label[0], RIGHT)
+        inf.set_fill(WHITE)
 
+        drawn_path = drawing_group[0]
+        # self.add_path_fader(true_path, fade_rate=1)
+        true_path.set_stroke(width=1.0)
+
+        self.add(drawn_path, true_path, self.circles, self.vectors)
         self.play(
-            FadeIn(true_path),
-            VFadeOut(drawn_path),
+            UpdateFromAlphaFunc(drawn_path, lambda m, a: m.set_stroke(interpolate_color(YELLOW, BLACK, a))),
+            VFadeIn(true_path),
             ChangeDecimalToValue(label[0], 1000),
             VFadeOut(label[0]),
             FadeIn(inf),
             run_time=3,
         )
+        self.remove(drawn_path)
         self.wait(12)
 
     ##
 
     def get_drawing(self):
-        # drawing = self.get_peace_sign()
-        svg = SVGMobject("/Users/grant/Dropbox/3Blue1Brown/videos/2022/infinity/monster-holding-heart.svg")
+        svg = SVGMobject(self.drawing_file)
         drawing = svg[1]
-        drawing.set_height(self.peace_sign_height)
+        drawing.set_height(self.drawing_height)
         drawing.set_stroke(self.drawn_path_color, 2)
         return drawing
 
@@ -355,47 +370,55 @@ class CombineWavesToImage(FourierCirclesScene):
         for k, circle in zip(it.count(0), circles):
             circle.set_stroke(width=mcsw / (1 + k / 4), opacity=1)
 
-        if len(circles) > 25:
-            circles.set_stroke(opacity=(1.0 / (len(circles) - 25))**0.2)
-
         return circles
 
-    def get_fade_region(self, path, n_disks=100):
-        disk = Circle(radius=path.get_width() / 2)
-        disks = VGroup(*(
-            disk.copy().scale(sf)
-            for sf in np.linspace(1.0, 2.25, n_disks)
-        ))
-        disks.set_stroke(width=0)
-        disks.set_fill(BLACK, opacity=3.0 / n_disks)
-        return disks
+    def get_fade_region(self, path):
+        dot = GlowDot()
+        dot.set_radius(1.0 * path.get_width())
+        dot.set_glow_factor(0.2)
+        dot.set_color(BLACK, 0.95)
+        return dot
 
     def get_drawn_path(self, vectors):
-        if len(vectors) == 0:
+        nv = len(vectors)
+        if nv == 0:
             return VGroup()
-        return super().get_drawn_path(vectors, stroke_width=4).set_stroke(self.drawn_path_color)
+        fade_rate = 10 * np.exp(0.01 * (5 - nv)) + 1.0
+        path = super().get_drawn_path(vectors, stroke_width=4, fade_rate=fade_rate)
+        path.set_stroke(self.drawn_path_color)
+        return path
 
-    def get_terms(self, n_terms, max_terms=40, max_width=12):
-        tex_str = ""
+    def get_terms(self, n_terms, max_terms=100, max_width=12):
         ks = list(range(-int(np.floor(n_terms / 2)), int(np.ceil(n_terms / 2))))
         ks.sort(key=abs)
         ks = ks[:max_terms]
         ks.sort()
+        font_size = max(180 / n_terms, 5)
+        terms = VGroup()
         for k in ks:
-            tex_str += "c_{k} e^{k \\cdot 2 \\pi i \\cdot t} +".replace("k", str(k))
+            terms.add(MTex("c_{k} e^{k \\cdot 2 \\pi i \\cdot t} +".replace("k", str(k))))
         if n_terms <= max_terms:
-            tex_str = tex_str[:-1]  # Remove trailing plus
+            terms[-1][-1].set_opacity(0)
         else:
-            tex_str = "\\cdots + " + tex_str + "\\cdots"
+            terms.add_to_back(MTex("\\cdots + "))
+            terms.add(MTex("\\cdots"))
 
-        font_size = 180 / n_terms
-        result = Tex(tex_str, font_size=font_size)
-        result.set_max_width(max_width)
-        result.next_to(self.path, UP, MED_SMALL_BUFF)
+        terms.arrange(RIGHT, SMALL_BUFF)
+        terms.scale(font_size / 48)
+        terms.set_max_width(max_width)
+        terms.next_to(self.path, UP, SMALL_BUFF)
 
         max_light_terms = 15
         if n_terms > max_light_terms:
-            result.set_fill(opacity=max_light_terms / (n_terms - max_light_terms))
-            result.set_stroke(width=0)
+            terms.set_fill(opacity=max_light_terms / (n_terms - max_light_terms))
+            terms.set_stroke(width=0)
 
-        return result
+        return terms
+
+    def add_draw_dot(self, vectors):
+        dot = GlowDot()
+        dot.add_updater(lambda d: d.move_to(
+            vectors[-1].get_end() if len(vectors) > 0 else ORIGIN
+        ))
+        self.add(dot)
+        return dot

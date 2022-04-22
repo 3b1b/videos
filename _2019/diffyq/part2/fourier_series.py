@@ -157,27 +157,31 @@ class FourierCirclesScene(Scene):
     def get_drawn_path_alpha(self):
         return self.get_vector_time()
 
-    def get_drawn_path(self, vectors, stroke_width=None, **kwargs):
+    def get_drawn_path(self, vectors, stroke_width=None, fade_rate=0.2, **kwargs):
         if stroke_width is None:
             stroke_width = self.drawn_path_stroke_width
         path = self.get_vector_sum_path(vectors, **kwargs)
-        broken_path = CurvesAsSubmobjects(path)
+        path.set_stroke(self.drawn_path_color, stroke_width)
+        self.add_path_fader(path, fade_rate)
+        return path
 
-        def update_path(path, dt):
+    def add_path_fader(self, path, fade_rate=0.2):
+        stroke_width = np.max(path.get_stroke_width())
+        stroke_opacity = np.max(path.get_stroke_opacity())
+
+        def update_path(path_, dt):
             alpha = self.get_vector_time()
-            n_curves = len(path)
-            for a, sp in zip(np.linspace(0, 1, n_curves), path):
-                b = alpha - a
-                if b < 0:
-                    width = 0
-                else:
-                    width = stroke_width * (1 - (b % 1))
-                sp.set_stroke(width=width)
-            return path
+            n = path_.get_num_points()
+            fade_factors = (np.linspace(0, 1, n) - alpha) % 1
+            fade_factors = fade_factors**fade_rate
+            path_.set_stroke(
+                width=stroke_width * fade_factors,
+                opacity=stroke_opacity * fade_factors,
+            )
+            return path_
 
-        broken_path.set_color(self.drawn_path_color)
-        broken_path.add_updater(update_path)
-        return broken_path
+        path.add_updater(update_path)
+        return path
 
     def get_y_component_wave(self,
                              vectors,

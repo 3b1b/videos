@@ -210,7 +210,7 @@ class DecomposeAudioSegment(Scene):
         self.break_down_into_fourier_components()
         self.back_to_full_signal()
 
-    def add_full_waveform(self):
+    def add_full_waveform(self, run_time=5):
         axes, graph = self.get_signal_graph()
 
         self.add(axes)
@@ -224,7 +224,7 @@ class DecomposeAudioSegment(Scene):
                 time_width=0.1,
                 rate_func=linear,
             ),
-            run_time=5,
+            run_time=run_time,
         )
 
         self.axes = axes
@@ -261,20 +261,21 @@ class DecomposeAudioSegment(Scene):
         zoom_rect.target.set_stroke(width=0)
         axes.target.set_stroke(opacity=0)
 
-        self.play(Write(zoom_rect))
-        self.play(
-            *map(MoveToTarget, movers),
-            run_time=run_time
-        )
-        self.remove(graph, axes)
-        self.wait()
-
-        # Swap axes
         new_axes = Axes((-2, 12), (-1, 1, 0.25), width=FRAME_WIDTH + 1)
         new_axes.shift(LEFT_SIDE + RIGHT - new_axes.get_origin())
 
-        if fade_in_new_axes:
-            self.play(FadeIn(new_axes))
+        self.play(Write(zoom_rect))
+        self.play(
+            *map(MoveToTarget, movers),
+            FadeIn(new_axes),
+            run_time=run_time,
+        )
+        self.remove(graph, axes)
+
+        # Swap axes
+
+        # if fade_in_new_axes:
+        #     self.play(FadeIn(new_axes))
 
         self.original_graph = graph
         self.original_axes = axes
