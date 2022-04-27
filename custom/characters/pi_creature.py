@@ -38,6 +38,7 @@ class PiCreature(SVGMobject):
         "flip_at_start": False,
         "is_looking_direction_purposeful": False,
         "start_corner": None,
+        "long_lines": True,
         # Range of proportions along body where arms are
         "right_arm_range": [0.55, 0.7],
         "left_arm_range": [0.34, 0.462],
@@ -52,32 +53,50 @@ class PiCreature(SVGMobject):
     def __init__(self, mode="plain", **kwargs):
         digest_config(self, kwargs)
         self.mode = mode
-        self.parts_named = False
-        try:
-            svg_file = os.path.join(
-                get_directories()["pi_creature_images"],
-                f"{mode}.svg"
-            )
-        except Exception:
-            logging.log(
-                logging.WARNING,
-                f"No {self.file_name_prefix} design with mode {mode}",
-            )
-            svg_file = os.path.join(
-                get_directories()["pi_creature_images"],
-                "plain.svg",
-            )
-        SVGMobject.__init__(self, file_name=svg_file, **kwargs)
+        color = self.color
 
+        super().__init__(
+            file_name=self.get_svg_file_path(mode),
+            color=None,
+            **kwargs
+        )
+
+        self.init_structure()
+        self.set_color(color)
         if self.flip_at_start:
             self.flip()
         if self.start_corner is not None:
             self.to_corner(self.start_corner)
+        self.refresh_triangulation()
 
-        # Shouldn't need this, remove?
+    def get_svg_file_path(self, mode):
+        folder = get_directories()["pi_creature_images"]
+        path = os.path.join(folder, f"{mode}.svg")
+        if os.path.exists(path):
+            return path
+        else:
+            logging.log(
+                logging.WARNING,
+                f"No {self.file_name_prefix} design with mode {mode}",
+            )
+            folder = get_directories()["pi_creature_images"]
+            return os.path.join(folder, "plain.svg")
+
+    def init_structure(self):
+        # Figma exports with superfluous parts, so this
+        # hardcodes how to extract what we want.
+        parts = self.submobjects
+        self.eyes = VGroup(parts[2], parts[6])
+        self.pupils = self.get_circle_pupils(
+            eyes=self.eyes,
+            original_pupils=VGroup(parts[8], parts[9])
+        )
+        self.body = parts[10]
+        self.mouth = parts[11]
         self.mouth.insert_n_curves(10)
-        self.mouth.set_stroke(BLACK, 1)
-        self.eyes.set_stroke(width=0)
+        self.set_submobjects([
+            self.eyes, self.pupils, self.body, self.mouth
+        ])
 
     def align_data_and_family(self, mobject):
         # This ensures that after a transform into a different mode,
@@ -86,40 +105,13 @@ class PiCreature(SVGMobject):
         if isinstance(mobject, PiCreature):
             self.mode = mobject.get_mode()
 
-    def name_parts(self):
-        # Temporary hack based on how Figma exports
-        if len(self) > 6:
-            self.remove(self[0], self[2])
-        #
-        self.mouth = self.submobjects[MOUTH_INDEX]
-        self.body = self.submobjects[BODY_INDEX]
-        self.pupils = VGroup(*[
-            self.submobjects[LEFT_PUPIL_INDEX],
-            self.submobjects[RIGHT_PUPIL_INDEX]
-        ])
-        self.eyes = VGroup(*[
-            self.submobjects[LEFT_EYE_INDEX],
-            self.submobjects[RIGHT_EYE_INDEX]
-        ])
-        self.eye_parts = VGroup(self.eyes, self.pupils)
-        self.parts_named = True
-
-    def init_colors(self):
-        SVGMobject.init_colors(self)
-        if not self.parts_named:
-            self.name_parts()
-        self.mouth.set_fill(BLACK, opacity=1)
-        self.body.set_fill(self.color, opacity=1)
-        self.eyes.set_fill(WHITE, opacity=1)
-        self.init_pupils()
-        return self
-
-    def init_pupils(self):
+    def get_circle_pupils(self, eyes, original_pupils):
         # Instead of what is drawn, make new circles.
         # This is mostly because the paths associated
         # with the eyes in all the drawings got slightly
         # messed up.
-        for eye, pupil in zip(self.eyes, self.pupils):
+        result = VGroup()
+        for eye, pupil in zip(eyes, original_pupils):
             pupil_r = eye.get_width() / 2
             pupil_r *= self.pupil_to_eye_width_ratio
             dot_r = pupil_r
@@ -138,16 +130,11 @@ class PiCreature(SVGMobject):
                 stroke_width=0,
             )
             new_pupil.move_to(pupil)
-            pupil.become(new_pupil)
             dot.shift(new_pupil.pfp(3 / 8) - dot.pfp(3 / 8))
-            pupil.add(dot)
+            result.add(VGroup(new_pupil, dot))
+        return result
 
-    def copy(self):
-        copy_mobject = SVGMobject.copy(self)
-        copy_mobject.name_parts()
-        return copy_mobject
-
-    def set_color(self, color):
+    def set_color(self, color, recurse=False):
         self.body.set_fill(color)
         return self
 
@@ -214,10 +201,10 @@ class PiCreature(SVGMobject):
             self.eyes.submobjects[1].get_center()[0]
 
     def blink(self):
-        eye_parts = self.eye_parts
-        eye_bottom_y = eye_parts.get_y(DOWN)
+        eyes = self.eyes
+        eye_bottom_y = eyes.get_y(DOWN)
 
-        for eye_part in eye_parts.family_members_with_points():
+        for eye_part in eyes.family_members_with_points():
             new_points = eye_part.get_points()
             new_points[:, 1] = eye_bottom_y
             eye_part.set_points(new_points)
