@@ -13,6 +13,7 @@ from manimlib.mobject.frame import FullScreenFadeRectangle
 from manimlib.mobject.svg.drawings import SpeechBubble
 from manimlib.mobject.svg.drawings import ThoughtBubble
 from manimlib.mobject.types.vectorized_mobject import VGroup
+from manimlib.scene.interactive_scene import InteractiveScene
 from manimlib.scene.scene import Scene
 from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.rate_functions import there_and_back
@@ -26,7 +27,7 @@ from custom.characters.pi_creature_animations import PiCreatureBubbleIntroductio
 from custom.characters.pi_creature_animations import RemovePiCreatureBubble
 
 
-class PiCreatureScene(Scene):
+class PiCreatureScene(InteractiveScene):
     CONFIG = {
         "total_wait_time": 0,
         "seconds_to_blink": 3,
@@ -39,6 +40,7 @@ class PiCreatureScene(Scene):
     }
 
     def setup(self):
+        super().setup()
         self.pi_creatures = VGroup(*self.create_pi_creatures())
         self.pi_creature = self.get_primary_pi_creature()
         if self.pi_creatures_start_on_screen:
@@ -149,12 +151,12 @@ class PiCreatureScene(Scene):
         self.pi_creature_thinks(
             self.get_primary_pi_creature(), *content, **kwargs)
 
-    def compile_play_args_to_animation_list(self, *args, **kwargs):
+    def anims_from_play_args(self, *args, **kwargs):
         """
         Add animations so that all pi creatures look at the
         first mobject being animated with each .play call
         """
-        animations = Scene.compile_play_args_to_animation_list(self, *args, **kwargs)
+        animations = super().anims_from_play_args(*args, **kwargs)
         anim_mobjects = Group(*[a.mobject for a in animations])
         all_movers = anim_mobjects.get_family()
         if not self.any_pi_creatures_on_screen():
@@ -171,13 +173,13 @@ class PiCreatureScene(Scene):
         # Get pi creatures to look at whatever
         # is being animated
         first_anim = non_pi_creature_anims[0]
-        main_mobject = first_anim.mobject
+        if hasattr(first_anim, "target_mobject") and first_anim.target_mobject is not None:
+            main_mobject = first_anim.target_mobject
+        else:
+            main_mobject = first_anim.mobject
         for pi_creature in pi_creatures:
             if pi_creature not in all_movers:
-                animations.append(ApplyMethod(
-                    pi_creature.look_at,
-                    main_mobject,
-                ))
+                animations.append(ApplyMethod(pi_creature.look_at, main_mobject))
         return animations
 
     def blink(self):
@@ -261,12 +263,14 @@ class TeacherStudentsScene(PiCreatureScene):
     }
 
     def setup(self):
+        super().setup()
         self.background = FullScreenFadeRectangle(
             fill_color=self.background_color,
             fill_opacity=1,
         )
+        self.disable_interaction(self.background)
         self.add(self.background)
-        PiCreatureScene.setup(self)
+        self.bring_to_back(self.background)
         self.screen = ScreenRectangle(
             height=self.screen_height,
             fill_color=BLACK,

@@ -53,7 +53,7 @@ class PiCreature(SVGMobject):
     def __init__(self, mode="plain", **kwargs):
         digest_config(self, kwargs)
         self.mode = mode
-        color = self.color
+        color = kwargs.pop("color", self.color)
 
         super().__init__(
             file_name=self.get_svg_file_path(mode),
@@ -86,17 +86,14 @@ class PiCreature(SVGMobject):
         # Figma exports with superfluous parts, so this
         # hardcodes how to extract what we want.
         parts = self.submobjects
-        self.eyes = VGroup(parts[2], parts[6])
-        self.pupils = self.get_circle_pupils(
-            eyes=self.eyes,
+        self.eyes = self.draw_eyes(
+            original_irises=VGroup(parts[2], parts[6]),
             original_pupils=VGroup(parts[8], parts[9])
         )
         self.body = parts[10]
         self.mouth = parts[11]
         self.mouth.insert_n_curves(10)
-        self.set_submobjects([
-            self.eyes, self.pupils, self.body, self.mouth
-        ])
+        self.set_submobjects([self.eyes, self.body, self.mouth])
 
     def align_data_and_family(self, mobject):
         # This ensures that after a transform into a different mode,
@@ -105,34 +102,29 @@ class PiCreature(SVGMobject):
         if isinstance(mobject, PiCreature):
             self.mode = mobject.get_mode()
 
-    def get_circle_pupils(self, eyes, original_pupils):
+    def draw_eyes(self, original_irises, original_pupils):
         # Instead of what is drawn, make new circles.
         # This is mostly because the paths associated
         # with the eyes in all the drawings got slightly
         # messed up.
-        result = VGroup()
-        for eye, pupil in zip(eyes, original_pupils):
-            pupil_r = eye.get_width() / 2
+        eyes = VGroup()
+        for iris, ref_pupil in zip(original_irises, original_pupils):
+            pupil_r = iris.get_width() / 2
             pupil_r *= self.pupil_to_eye_width_ratio
             dot_r = pupil_r
             dot_r *= self.pupil_dot_to_pupil_width_ratio
 
-            new_pupil = Circle(
-                radius=pupil_r,
-                color=BLACK,
-                fill_opacity=1,
-                stroke_width=0,
-            )
-            dot = Circle(
-                radius=dot_r,
-                color=WHITE,
-                fill_opacity=1,
-                stroke_width=0,
-            )
-            new_pupil.move_to(pupil)
-            dot.shift(new_pupil.pfp(3 / 8) - dot.pfp(3 / 8))
-            result.add(VGroup(new_pupil, dot))
-        return result
+            black = Circle(radius=pupil_r, color=BLACK)
+            dot = Circle(radius=dot_r, color=WHITE)
+            pupil = VGroup(black, dot)
+            pupil.set_style(fill_opacity=1, stroke_width=0)
+            pupil.move_to(ref_pupil)
+            dot.shift(black.pfp(3 / 8) - dot.pfp(3 / 8))
+            eye = VGroup(iris, pupil)
+            eye.pupil = pupil
+            eye.iris = iris
+            eyes.add(eye)
+        return eyes
 
     def set_color(self, color, recurse=False):
         self.body.set_fill(color)
@@ -158,21 +150,19 @@ class PiCreature(SVGMobject):
         return self.mode
 
     def look(self, direction):
-        norm = get_norm(direction)
-        if norm == 0:
-            return
-        direction /= norm
+        direction = normalize(direction)
         self.purposeful_looking_direction = direction
-        for pupil, eye in zip(self.pupils, self.eyes):
-            eye_center = eye.get_center()
-            right = eye.get_right() - eye_center
-            up = eye.get_top() - eye_center
+        for eye in self.eyes:
+            iris, pupil = eye
+            iris_center = iris.get_center()
+            right = iris.get_right() - iris_center
+            up = iris.get_top() - iris_center
             vect = direction[0] * right + direction[1] * up
             v_norm = get_norm(vect)
             pupil_radius = 0.5 * pupil.get_width()
             vect *= (v_norm - 0.75 * pupil_radius) / v_norm
-            pupil.move_to(eye_center + vect)
-        self.pupils[1].align_to(self.pupils[0], DOWN)
+            pupil.move_to(iris_center + vect)
+        self.eyes[1].pupil.align_to(self.eyes[0].pupil, DOWN)
         return self
 
     def look_at(self, point_or_mobject):
@@ -190,7 +180,7 @@ class PiCreature(SVGMobject):
         return self
 
     def get_looking_direction(self):
-        vect = self.pupils.get_center() - self.eyes.get_center()
+        vect = self.eyes[0].pupil.get_center() - self.eyes[0].get_center()
         return normalize(vect)
 
     def get_look_at_spot(self):
@@ -298,13 +288,13 @@ class BabyPiCreature(PiCreature):
         self.scale(self.scale_factor)
         self.shift(LEFT)
         self.to_edge(DOWN, buff=LARGE_BUFF)
-        eyes = VGroup(self.eyes, self.pupils)
+        eyes = self.eyes
         eyes_bottom = eyes.get_bottom()
         eyes.scale(self.eye_scale_factor)
         eyes.move_to(eyes_bottom, aligned_edge=DOWN)
         looking_direction = self.get_looking_direction()
-        for pupil in self.pupils:
-            pupil.scale(self.pupil_scale_factor)
+        for eye in eyes:
+            eye.pupil.scale(self.pupil_scale_factor)
         self.look(looking_direction)
 
 
