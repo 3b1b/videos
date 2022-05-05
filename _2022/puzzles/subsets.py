@@ -253,7 +253,10 @@ class ProblemStatement(TeacherStudentsScene):
                 set_tex_transform(set_tex, subset),
             )
             self.wait()
-            self.play(Write(sum_wrapper))
+            self.play(
+                Write(sum_wrapper),
+                morty.animate.change("hooray" if subset is subsets[-1] else "tease", subset),
+            )
             self.wait(2)
             mark = Checkmark() if sum(subset.values) % 5 == 0 else Exmark()
             sum_wrapper.refresh_bounding_box()
@@ -307,13 +310,13 @@ class ProblemStatement(TeacherStudentsScene):
                 look_at_arg=ORIGIN,
             )
         )
-        self.wait(3)
+        self.wait(10)
 
         # Start simpler
         small_set = get_set_tex(range(1, 6))
         small_set.to_edge(UP)
 
-        case_words = Text("Start simple!")
+        case_words = Text("Start simple")
         case_words.next_to(small_set, DOWN)
         case_words.set_color(BLUE)
 
@@ -331,6 +334,11 @@ class ProblemStatement(TeacherStudentsScene):
         self.play(FadeOut(statement), FadeOut(case_words))
 
 
+class PeekAhead(InteractiveScene):
+    def construct(self):
+        pass
+
+
 class ExampleWith5(InteractiveScene):
     elem_colors = color_gradient([BLUE_B, BLUE_D], 5)
 
@@ -340,64 +348,8 @@ class ExampleWith5(InteractiveScene):
         full_set = list(range(1, N + 1))
         set_tex = get_set_tex(full_set)
         set_tex.to_edge(UP)
-
-        count = TexText(
-            "Total subsets:", " $2^5 = 32$"
-        )
-        count.set_color_by_tex("32", YELLOW)
-        count.next_to(set_tex, DOWN, LARGE_BUFF)
-        counter = Integer(32)
-        counter.add_updater(lambda c: c.set_color(YELLOW))
-        counter.next_to(count[0], RIGHT)
-
-        all_subsets = VGroup(*(
-            get_set_tex(ss) for ss in get_subsets(full_set)
-        ))
-        all_subsets.arrange_in_grid(4, 8, buff=MED_LARGE_BUFF)
-        all_subsets.set_width(FRAME_WIDTH - 1)
-        all_subsets.next_to(count, DOWN, LARGE_BUFF)
-
         self.add(set_tex)
         self.wait()
-        self.play(
-            Write(count[0]),
-            ShowIncreasingSubsets(all_subsets, run_time=6),
-            CountInFrom(counter, 0, run_time=6),
-        )
-        self.play(
-            TransformMatchingShapes(counter, count[1]),
-        )
-        self.remove(counter)
-        self.add(count)
-        self.wait()
-
-        # Ask about construction
-        morty = Mortimer()
-        morty.to_corner(DR)
-        self.play(PiCreatureSays(
-            morty, TexText("What are all\\\\the subsets?"),
-            run_time=2,
-        ))
-        self.play(Blink(morty))
-        old_bubble = morty.bubble
-        old_text = old_bubble.content
-        new_text = TexText("What's the\\\\construction process?")
-        new_bubble = morty.get_bubble(
-            new_text,
-            bubble_class=SpeechBubble,
-            width=5,
-            height=3,
-        )
-        self.play(
-            morty.animate.change("hesitant"),
-            ReplacementTransform(old_bubble, new_bubble),
-            FadeTransform(old_text, new_text),
-        )
-        self.wait()
-        self.play(*map(FadeOut, [morty, new_bubble, new_text]))
-
-        # Construct all subsets
-        subsets = self.construct_all_subsets(set_tex)
 
         # Show n choose k stacks
         stacks = self.get_subset_stacks(full_set)
@@ -405,18 +357,17 @@ class ExampleWith5(InteractiveScene):
         anims = []
         for stack in stacks:
             for new_subset in stack:
-                for subset in subsets:
-                    if set(subset.values) == set(new_subset.values):
-                        anims.append(FadeTransform(subset, new_subset))
+                anims.append(set_tex_transform(set_tex, new_subset))
 
-        self.play(LaggedStart(*anims))
+        self.play(LaggedStart(*anims, lag_ratio=0.05))
         self.wait()
 
         # Show their sums
         sum_stacks = self.get_subset_sums(stacks)
         covered_sums = []
-        for n in range(4):
-            self.wait(note=f"Example sum {n + 1} / 4")
+        n_selections = 6
+        for n in range(n_selections):
+            self.wait(note=f"Example sum {n + 1} / {n_selections}")
             # Show sum based on what's in self.selection
             anims = []
             for stack, sum_stack in zip(stacks, sum_stacks):
@@ -431,6 +382,112 @@ class ExampleWith5(InteractiveScene):
 
         # Isolate counts we care about
         self.highlight_multiple_of_5(stacks, sum_stacks)
+
+        # Count total
+        stack_group = VGroup(stacks, sum_stacks, self.highlight_rects)
+        stack_group.save_state()
+        stack_group.generate_target()
+        stack_group.target[:2].set_opacity(1)
+        stack_group.target.set_height(4)
+        stack_group.target.center().to_edge(DOWN, buff=LARGE_BUFF)
+
+        stack_group_rect = SurroundingRectangle(stack_group.target, buff=MED_LARGE_BUFF)
+        stack_group_rect.round_corners(radius=0.5)
+        stack_group_rect.set_stroke(BLUE, 2)
+
+        count = TexText(
+            "Total subsets:", " $2^5 = 32$"
+        )
+        count.set_color_by_tex("32", BLUE)
+        count.next_to(stack_group_rect, UP)
+        counter = Integer(32)
+        counter.add_updater(lambda c: c.set_color(BLUE))
+        counter.next_to(count[0], RIGHT)
+
+        self.play(
+            MoveToTarget(stack_group),
+            FadeIn(stack_group_rect, scale=0.8),
+        )
+
+        highlights = VGroup()
+        for stack in stacks:
+            for subset in stack:
+                highlights.add(VHighlight(subset, max_stroke_addition=10))
+
+        self.add(highlights, stack_group)
+        self.play(
+            Write(count[0]),
+            ShowIncreasingSubsets(highlights, run_time=5),
+            CountInFrom(counter, 0, run_time=5),
+        )
+        self.play(
+            Transform(counter, count[1][-2:]),
+            Write(count[1][:-2]),
+            FadeOut(highlights)
+        )
+        self.remove(counter)
+        self.add(count)
+        self.wait()
+
+        # Ask about construction
+        questions = VGroup(
+            Text("How do you\ncount these?", font_size=36),
+            Text(
+                "How do you\nconstruct these?",
+                t2c={"construct": YELLOW},
+                t2s={"construct": ITALIC},
+                font_size=36,
+            )
+        )
+
+        for question in questions:
+            question.to_corner(UL)
+
+        count_word = questions[0].get_part_by_text("count")
+        construct_word = questions[1].get_part_by_text("construct")
+        cross = Cross(count_word)
+        cross.scale(1.5)
+
+        arrow = Arrow(questions[0], count.get_left())
+
+        self.play(
+            Write(questions[0]),
+            ShowCreation(arrow),
+        )
+        self.wait()
+        self.play(ShowCreation(cross))
+        self.play(
+            VGroup(count_word, cross).animate.shift(0.75 * DOWN),
+            Write(construct_word),
+            questions[0][-len("these?"):].animate.move_to(questions[1][-1], RIGHT),
+        )
+        self.wait()
+        to_fade = VGroup(
+            questions[0], construct_word, cross, arrow,
+            stack_group_rect, count, *stack_group, self.counter,
+        )
+        self.play(LaggedStartMap(FadeOut, to_fade, run_time=1.5, lag_ratio=0.25))
+
+        # Construct all subsets
+        subsets = self.construct_all_subsets(set_tex)
+
+        # Show reorganizations
+        stack_group.restore()
+        stack_group[:2].set_opacity(2)
+        anims = []
+        for stack in stacks:
+            for new_subset in stack:
+                for subset in subsets:
+                    if set(subset.values) == set(new_subset.values):
+                        anims.append(FadeTransform(subset, new_subset))
+
+        self.play(LaggedStart(*anims, lag_ratio=0.05))
+        self.wait()
+        self.play(
+            LaggedStartMap(FadeIn, sum_stacks, run_time=1),
+            LaggedStartMap(FadeIn, self.highlight_rects, run_time=1),
+        )
+        self.wait()
         self.group_by_sum(stacks, sum_stacks)
 
         # Show generating function
@@ -470,7 +527,7 @@ class ExampleWith5(InteractiveScene):
             Write(lines),
             UpdateFromAlphaFunc(
                 rects, lambda r, a: match_n(r, int(31 * a)),
-                run_time=8,
+                run_time=4,
                 rate_func=linear,
             )
         )
@@ -496,9 +553,10 @@ class ExampleWith5(InteractiveScene):
             ))
             for ss in added_subsets:
                 self.color_set_tex(ss)
+                get_integer_parts(ss)[-1].set_opacity(0)
 
-            vect = [RIGHT, RIGHT, DOWN, DOWN, RIGHT][value - 1]
-            buff = [2.25, 2.0, 0.75, 0.75, 1.0][value - 1]
+            vect = [RIGHT, DOWN, RIGHT, DOWN, RIGHT][value - 1]
+            buff = [2.25, 0.75, 2.0, 0.75, 1.0][value - 1]
             added_subsets.next_to(subsets, vect, buff=buff)
             new_subsets = VGroup(*subsets.target, *added_subsets)
             new_subsets.set_max_width(FRAME_WIDTH - 1)
@@ -509,18 +567,33 @@ class ExampleWith5(InteractiveScene):
                 ssc.move_to(nss)
 
             self.wait()
+            elem = get_part_by_value(set_tex, value)
+            self.play(
+                elem.animate.set_color(self.elem_colors[value - 1]),
+                FlashAround(elem, color=self.elem_colors[value - 1]),
+            )
             if value == 1:
                 self.play(set_tex_transform(set_tex, subsets[0]))
                 self.add(subsets)
                 self.wait()
             self.play(
-                MoveToTarget(subsets),
-                Transform(subsets.copy(), subsets_copy, remover=True)
+                MoveToTarget(subsets, path_arc=30 * DEGREES),
+                ReplacementTransform(
+                    subsets.copy(),
+                    subsets_copy,
+                    path_arc=30 * DEGREES,
+                )
             )
-            elem = get_part_by_value(set_tex, value)
+            self.remove(subsets_copy)
             self.play(
-                elem.animate.set_color(self.elem_colors[value - 1]),
-                FlashAround(elem, color=self.elem_colors[value - 1]),
+                LaggedStart(*(
+                    Transform(
+                        elem.copy(),
+                        get_integer_parts(st)[-1].copy().set_opacity(1),
+                        remover=True,
+                    )
+                    for st in added_subsets
+                ), lag_ratio=0.1),
                 *(
                     set_tex_transform(st1, st2)
                     for st1, st2 in zip(subsets_copy, added_subsets)
@@ -529,6 +602,7 @@ class ExampleWith5(InteractiveScene):
             self.remove(subsets_copy, new_subsets)
             subsets.set_submobjects(list(new_subsets))
             self.add(subsets)
+            subsets.set_opacity(1)
             self.wait()
         self.wait()
 
@@ -544,6 +618,7 @@ class ExampleWith5(InteractiveScene):
         return subsets
 
     def highlight_multiple_of_5(self, stacks, sum_stacks):
+        # Blah
         rects = VGroup()
         anims = []
         for stack, sum_stack in zip(stacks, sum_stacks):
@@ -624,7 +699,6 @@ class ExampleWith5(InteractiveScene):
 
         # Transition to common sum
         self.play(
-            FadeOut(self.counter),
             MoveToTarget(common_sum_stacks),
             *rect_anims,
             run_time=2
@@ -645,7 +719,7 @@ class ExampleWith5(InteractiveScene):
         csr = self.common_sum_rects
         lower_group = self.lower_group = VGroup(csr, css)
 
-        factored_terms = "(1 + x)", "(1 + x^2)", "(1 + x^3)", "(1 + x^4)", "(1 + x^5)"
+        factored_terms = "(1 + x^1)", "(1 + x^2)", "(1 + x^3)", "(1 + x^4)", "(1 + x^5)"
         factored = MTex("".join(factored_terms), isolate=factored_terms)
         expanded_terms = ["1"]
         for n in range(1, 16):
@@ -659,6 +733,29 @@ class ExampleWith5(InteractiveScene):
         self.play(Write(factored))
         self.wait()
         self.play(lower_group.animate.set_height(3.0, about_edge=DOWN))
+
+        # Emphasize 5 binary choices
+        parts = VGroup(*(
+            factored.get_part_by_tex(term)
+            for term in factored_terms
+        ))
+        rects = VGroup(*(
+            SurroundingRectangle(part, buff=0.05).round_corners()
+            for part in parts
+        ))
+        rects.set_stroke(BLUE, 2)
+        words = Text("5 binary choices", color=BLUE)
+        words.next_to(rects, DOWN, MED_LARGE_BUFF)
+
+        self.play(
+            LaggedStartMap(
+                VFadeInThenOut, rects,
+                lag_ratio=0.25,
+                run_time=4,
+            ),
+            Write(words),
+        )
+        self.play(FadeOut(words))
 
         # Animate expansion
         fac_term_parts = [factored.get_part_by_tex(term) for term in factored_terms]
@@ -735,7 +832,7 @@ class ExampleWith5(InteractiveScene):
     def transition_to_full_generating_function(self, set_tex):
         # Expressions
         factored = MTex(
-            "f(x) = (1 + x)(1 + x^2)(1 + x^3) \\cdots \\left(1 + x^{1{,}999}\\right)\\left(1 + x^{2{,}000}\\right)",
+            "f(x) = (1 + x^1)(1 + x^2)(1 + x^3) \\cdots \\left(1 + x^{1{,}999}\\right)\\left(1 + x^{2{,}000}\\right)",
         )
         expanded = MTex(
             "f(x) = 1+x+x^{2}+2 x^{3}+2 x^{4}+ 3x^{5} +\\cdots + x^{2{,}001{,}000}",
@@ -743,6 +840,10 @@ class ExampleWith5(InteractiveScene):
         )
         new_set_tex = get_set_tex(range(1, 2001))
         new_set_tex.move_to(set_tex)
+        self.color_set_tex(new_set_tex)
+        get_integer_parts(new_set_tex)[-1].set_color(
+            interpolate_color(BLUE_E, BLUE_D, 0.5)
+        )
 
         h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
         h_line.set_stroke(GREY_C, 1)
@@ -771,6 +872,24 @@ class ExampleWith5(InteractiveScene):
             Write(expanded)
         )
         self.wait()
+
+        # Emphasize scale
+        words = TexText("Imagine collecting $2^{2{,}000}$ terms!")
+        words.set_color(RED)
+        words.next_to(h_line, DOWN)
+        words.to_edge(RIGHT)
+        morty = Mortimer(height=2)
+        morty.next_to(words, DOWN, MED_LARGE_BUFF)
+        morty.to_edge(RIGHT)
+
+        self.play(
+            VFadeIn(morty),
+            morty.animate.change("surprised", expanded),
+            Write(words)
+        )
+        self.play(Blink(morty))
+        self.wait()
+        self.play(FadeOut(words), FadeOut(morty))
 
         # Show example term
         n = 25
@@ -831,7 +950,8 @@ class ExampleWith5(InteractiveScene):
     def color_set_tex(self, set_tex):
         for value in set_tex.values:
             elem = get_part_by_value(set_tex, value)
-            elem.set_color(self.elem_colors[value - 1])
+            if value - 1 < len(self.elem_colors):
+                elem.set_color(self.elem_colors[value - 1])
 
     def get_subset_stacks(self, full_set, buff=3.5):
         stacks = VGroup(*(
@@ -866,7 +986,12 @@ class ExampleWith5(InteractiveScene):
         ))
 
 
-class DerivativeTricks(InteractiveScene):
+class ShowHypercubeConstruction(InteractiveScene):
+    def construct(self):
+        pass
+
+
+class EvaluationTricks(InteractiveScene):
     def construct(self):
         # Setup function
         def func(x, n=10):
@@ -892,7 +1017,7 @@ class DerivativeTricks(InteractiveScene):
         factored.to_corner(UR)
         expanded = VGroup(
             MTex("f(x) = ", **tex_kw),
-            MTex("\\sum_{n = 0}^{\\infty} c_n x^n", **tex_kw),
+            MTex("\\sum_{n = 0}^{N} c_n x^n", **tex_kw),
             MTex("= 1+x+x^{2}+2 x^{3}+2 x^{4}+ \\cdots", **tex_kw)
         )
         expanded.arrange(RIGHT, buff=0.2)
@@ -954,40 +1079,32 @@ class DerivativeTricks(InteractiveScene):
         self.play(x_tracker.animate.set_value(-0.5), run_time=2)
         self.play(x_tracker.animate.set_value(0.7), run_time=2)
         self.wait()
-        self.play(FadeOut(line), FadeOut(dot))
 
         # Plug in 0
         f0 = MTex("f(0) = 1", tex_to_color_map={"0": BLUE})
+        f0[-1].set_opacity(0)
         f0.next_to(expanded, DOWN, LARGE_BUFF, aligned_edge=LEFT)
-        dot = GlowDot(color=WHITE)
-        dot.move_to(f0[-1])
-        dot.set_opacity(0)
-        self.play(FadeTransform(lhs.copy(), f0))
-        self.play(dot.animate.move_to(plane.i2gp(0, graph)).set_opacity(1))
-        self.wait(note="Move box out of the way")
 
-        # Plug in 1
-        f1 = MTex("f(1) = 2^{2{,}000}", tex_to_color_map={"2^{2{,}000}": TEAL, "1": BLUE})
-        f1.next_to(f0, RIGHT, buff=2.0, aligned_edge=DOWN)
-        self.play(
-            TransformFromCopy(factored[:5], f1[:5]),
-        )
+        c0_rhs = MTex("= c_0")
+        c0_rhs.next_to(f0, RIGHT)
+        c0_rhs.shift(0.05 * DOWN)
+
+        self.play(FadeTransform(lhs.copy(), f0))
+        self.play(x_tracker.animate.set_value(0))
+        self.wait(note="Move box out of the way")
+        f0.set_opacity(1)
+        self.play(Write(f0[-1]))
+        self.add(f0)
         self.wait()
-        self.play(Write(f1[5:]))
-        self.wait(note="Comment on factored form")
+        self.play(Write(c0_rhs))
+        f0.add(c0_rhs)
 
         # Take derivative at 0
         dkw = dict(tex_to_color_map={"0": BLUE})
-        f_prime_0 = VGroup(
-            MTex("f'(0) = ", **dkw),
-            Text("First coefficient")
-        )
-        f_prime_n = VGroup(MTex("\\frac{1}{n!} f^{(n)}(0) = ", **dkw), MTex("n^{\\text{th} } \\text{ coefficient}"))
-        last = f0
-        for eq in [f_prime_0, f_prime_n]:
-            eq.arrange(RIGHT, buff=MED_SMALL_BUFF)
-            eq.next_to(last, DOWN, MED_LARGE_BUFF, LEFT)
-            last = eq
+        f_prime_0 = MTex("f'(0) = c_1", **dkw)
+        f_prime_n = MTex("\\frac{1}{n!} f^{(n)}(0) = c_n", **dkw)
+        f_prime_0.next_to(f0, RIGHT, buff=1.5)
+        f_prime_n.next_to(f_prime_0, DOWN, MED_LARGE_BUFF, LEFT)
 
         tan_line = plane.get_graph(lambda x: x + 1)
         tan_line.set_stroke(PINK, 2, 0.8)
@@ -1006,13 +1123,92 @@ class DerivativeTricks(InteractiveScene):
         self.wait()
         self.play(LaggedStartMap(FadeOut, VGroup(f_prime_0, f_prime_n, *crosses)))
 
-        # Clarify goal
-        new_rhs = expanded[1]
-        self.add(rhs, box)
-        self.play(LaggedStartMap(FadeOut, VGroup(*rhs, box), lag_ratio=0.1))
+        # Plug in 1
+        f1 = MTex(
+            "f({1}) \\,=\\, 2^{2{,}000} \\,=\\, c_0 + c_1 + c_2 + c_3 + \\cdots + c_N",
+            tex_to_color_map={
+                "2^{2{,}000}": TEAL,
+                "{1}": BLUE,
+                "=": WHITE,
+            }
+        )
+        f1.move_to(f0, LEFT)
+        self.play(
+            TransformFromCopy(factored[:5], f1[:5]),
+            f0.animate.shift(2 * DOWN),
+        )
+        self.wait()
+        self.play(
+            Write(f1[5:11]),
+            x_tracker.animate.set_value(1)
+        )
+        self.wait(note="Comment on factored form")
+        self.play(Write(f1[11:]))
+        self.add(f1)
+
+        # Plug in -1
+        fm1 = self.load_mobject("f_of_neg1.mob")
+        # fm1 = MTex(
+        #     "f({-1}) \\,=\\, {0} \\,=\\,"
+        #     "c_0 - c_1 + c_2 - c_3 + \\cdots + c_N",
+        #     tex_to_color_map={
+        #         "{-1}": RED,
+        #         "{0}": TEAL,
+        #         "=": WHITE,
+        #     }
+        # )
+        fm1.next_to(f1, DOWN, LARGE_BUFF, LEFT)
+
+        self.play(
+            TransformMatchingShapes(f1[:5].copy(), fm1[:5]),
+            FadeOut(f0, DOWN)
+        )
+        self.wait()
+        self.play(
+            Write(fm1[5:7]),
+            ApplyMethod(x_tracker.set_value, -1, run_time=3)
+        )
+        self.wait()
+        self.play(Write(fm1[7:]))
         self.wait()
 
-        examples = VGroup(f0, f1)
+        # Show filtration expression
+        f1_group = VGroup(f1, fm1)
+        self.play(
+            FadeOut(expanded),
+            FadeOut(box),
+            f1_group.animate.move_to(expanded, UL),
+        )
+
+        h_line = Line(LEFT, RIGHT).match_width(f1_group)
+        h_line.set_stroke(GREY_B, 3)
+        h_line.next_to(f1_group, DOWN, MED_LARGE_BUFF)
+        h_line.stretch(1.05, 0, about_edge=LEFT)
+
+        filter_expr = MTex(
+            "{1 \\over 2} \\Big(f({1}) + f({-1})\\Big)"
+            "= c_0 + c_2 + c_4 + \\cdots + c_{N}",
+            tex_to_color_map={
+                "{1}": BLUE,
+                "{-1}": RED,
+            }
+        )
+        filter_expr.next_to(h_line, DOWN, MED_LARGE_BUFF)
+        filter_expr.align_to(f1_group, LEFT)
+
+        self.play(
+            ShowCreation(h_line),
+            TransformFromCopy(f1[:4], filter_expr[4:8]),
+            TransformFromCopy(fm1[:4], filter_expr[9:14]),
+            Write(filter_expr[:4]),
+            Write(filter_expr[8]),
+            Write(filter_expr[14:16]),
+        )
+        self.wait()
+        self.play(Write(filter_expr[16:]))
+        self.wait()
+
+        # Clarify goal
         parens = MTex("()")
         words = TexText("Some clever\\\\evaluation of $f$", font_size=36)
         words.set_color(WHITE)
@@ -1021,18 +1217,25 @@ class DerivativeTricks(InteractiveScene):
         parens[1].next_to(words, RIGHT, buff=SMALL_BUFF)
         desire = VGroup(
             VGroup(parens, words),
-            MTex("= c_0 + c_5 + c_{10} + \\cdots + c_{2{,}000}")
+            MTex("= c_0 + c_5 + c_{10} + \\cdots + c_{N}")
         )
         desire.arrange(RIGHT)
         desire.next_to(expanded, DOWN, 1.0, LEFT)
 
         self.play(
-            examples.animate.next_to(desire, DOWN, LARGE_BUFF, LEFT),
-            FadeIn(desire, DOWN)
+            FadeIn(expanded),
+            FadeOut(f1_group, DOWN),
+            Uncreate(h_line),
+            filter_expr.animate.to_edge(DOWN),
+        )
+        self.wait()
+        self.play(
+            FadeIn(desire, DOWN),
         )
         self.wait()
 
         # Indicator on x^n
+        new_rhs = expanded[1]
         rect = SurroundingRectangle(new_rhs.get_part_by_tex("x^n"), buff=0.05)
         rect.set_stroke(BLUE_B, 2)
         rect.round_corners()
@@ -1053,13 +1256,155 @@ class DerivativeTricks(InteractiveScene):
             for outcome in outcomes
         ))
 
-        self.play(ShowCreation(rect))
+        self.play(
+            ShowCreation(rect),
+            FadeOut(expanded[2]),
+        )
         self.wait(0.25)
         for arrow, outcome in zip(arrows, outcomes):
             self.play(
                 ShowCreation(arrow),
                 GrowFromPoint(outcome, rect.get_right())
             )
+            self.wait()
+
+
+class MotivateRootsOfUnity(InteractiveScene):
+    def construct(self):
+        # Add generating function
+        pieces = ["f(x)", "="]
+        n_range = list(range(0, 7))
+        for n in n_range:
+            pieces.extend([f"c_{{{n}}}", f"x^{{{n}}}", "+"])
+        pieces.extend(["\\cdots"])
+        polynomial = MTex("\\,".join(pieces), isolate=pieces)
+        polynomial.to_edge(UP)
+
+        exp_parts = VGroup(*(
+            polynomial.get_part_by_tex(f"x^{{{n}}}")
+            for n in n_range
+        ))
+        coef_parts = VGroup(*(
+            polynomial.get_part_by_tex(f"c_{{{n}}}")
+            for n in n_range
+        ))
+
+        fm1 = MTex(
+            "f({-1}) = c_0 - c_1 + c_2 - c_3 + c_4 - c_5 + c_6 - \\cdots",
+            tex_to_color_map={"{-1}": RED}
+        )
+        fm1.next_to(polynomial, DOWN, buff=1.5, aligned_edge=LEFT)
+
+        self.add(polynomial)
+
+        # Real number line
+        line = NumberLine((-4, 4), unit_size=2)
+        line.move_to(DOWN)
+        line.add_numbers()
+        self.play(Write(line))
+        self.wait()
+
+        # Show oscillation
+        v1 = Arrow(line.n2p(0), line.n2p(1), buff=0, color=BLUE)
+        vm1 = Arrow(line.n2p(0), line.n2p(-1), buff=0, color=RED)
+        vect = v1.copy()
+
+        self.play(Write(fm1[:6]))
+        self.wait()
+        self.play(FlashAround(exp_parts[0]))
+        self.play(
+            FadeTransform(exp_parts[0].copy(), vect),
+            Write(fm1[6:8]),
+        )
+        self.wait()
+        for n in range(1, 7):
+            self.play(FlashAround(exp_parts[n]))
+            self.play(
+                Transform(vect, [v1, vm1][n % 2], path_arc=PI)
+            )
+            self.wait()
+            self.play(
+                FadeTransform(
+                    coef_parts[n],
+                    fm1[5 + 3 * n:8 + 3 * n]
+                )
+            )
+            self.wait()
+        self.play(Write(fm1[-4:]))
+        self.wait()
+
+        # Bring in complex plane
+        plane_unit = 1.75
+        plane = ComplexPlane(
+            (-3, 3), (-2, 2),
+            axis_config=dict(unit_size=plane_unit)
+        )
+        plane.move_to(line.n2p(0) - plane.n2p(0))
+        plane.add_coordinate_labels(font_size=24)
+
+        plane_label = Text("Complex plane", font_size=36)
+        plane_label.set_backstroke()
+        plane_label.next_to(plane.get_corner(UL), DR, SMALL_BUFF)
+
+        self.add(plane, polynomial, vect)
+        sf = plane_unit / line.get_unit_size()
+        self.play(
+            Write(plane, lag_ratio=0.01),
+            FadeOut(fm1),
+            line.animate.scale(sf).set_opacity(0),
+            vect.animate.set_color(YELLOW).scale(sf, about_edge=LEFT),
+        )
+        self.remove(line)
+        self.play(Write(plane_label))
+        self.wait()
+
+        # Preview roots of unity
+        unit_circle = Circle(radius=plane_unit)
+        unit_circle.move_to(plane.n2p(0))
+        unit_circle.set_stroke(GREY, 2)
+
+        points = [
+            plane.n2p(np.exp(complex(0, angle)))
+            for angle in np.arange(0, TAU, TAU / 5)
+        ]
+        dots = GlowDots(points)
+
+        pentagon = Polygon(*points)
+        pentagon.set_stroke(TEAL, 1)
+        pentagon.set_fill(TEAL, 0.25)
+        pentagon.save_state()
+        pentagon.set_opacity(0)
+
+        self.add(pentagon, unit_circle, vect, dots)
+        self.play(
+            ShowCreation(unit_circle),
+            ShowCreation(dots)
+        )
+        self.wait()
+        self.play(pentagon.animate.restore())
+        self.wait()
+
+        last_rect = VMobject()
+        for n in range(11):
+            if n == 0:
+                continue
+            if n < len(exp_parts):
+                exp_part = exp_parts[n]
+            else:
+                exp_part = polynomial[-3:]
+            rect = SurroundingRectangle(exp_part, buff=0.05)
+            rect.round_corners()
+            rect.set_stroke(YELLOW, 2)
+            self.play(
+                FadeOut(last_rect),
+                ShowCreation(rect),
+                ApplyMethod(
+                    vect.put_start_and_end_on,
+                    plane.n2p(0), points[n % 5],
+                    path_arc=TAU / 5,
+                )
+            )
+            last_rect = rect
             self.wait()
 
 
@@ -1088,16 +1433,7 @@ class FifthRootsOfUnity(InteractiveScene):
         self.add(unit_circle)
         self.add(complex_plane_title)
 
-        # Add function label
-        function = MTex(
-            "f(x) = \\sum_{n = 0}^\\infty c_n x^n",
-            tex_to_color_map={"x": BLUE}
-        )
-        function.move_to(midpoint(plane.get_right(), RIGHT_SIDE))
-        function.to_edge(UP, buff=MED_SMALL_BUFF)
-        self.add(function)
-
-        # Roots of unity
+        # Setup roots
         roots = [np.exp(complex(0, n * TAU / 5)) for n in range(5)]
         root_points = list(map(plane.n2p, roots))
         root_dots = Group(*(
@@ -1115,6 +1451,21 @@ class FifthRootsOfUnity(InteractiveScene):
         ))
         self.disable_interaction(root_dots)
 
+        pentagon = Polygon(*root_points)
+        pentagon.set_stroke(TEAL, 2)
+        pentagon.set_fill(TEAL, 0.25)
+        self.add(pentagon)
+
+        # Add function label
+        function = MTex(
+            "f(x) = \\sum_{n = 0}^N c_n x^n",
+            tex_to_color_map={"x": BLUE}
+        )
+        function.move_to(midpoint(plane.get_right(), RIGHT_SIDE))
+        function.to_edge(UP, buff=MED_SMALL_BUFF)
+        self.add(function)
+
+        # Roots of unity
         arc = Arc(0, TAU / 5, radius=0.2, arc_center=plane.get_origin())
         arc.set_stroke(WHITE, 2)
         arc_label = MTex("2\\pi / 5", font_size=24)
@@ -1144,7 +1495,13 @@ class FifthRootsOfUnity(InteractiveScene):
             last = rhs
         exp_rhs.shift((trig_rhs[0].get_y() - exp_rhs[0].get_y()) * UP)
 
-        self.play(FadeInFromPoint(root_dots[1], plane.get_origin()))
+        self.play(
+            FadeInFromPoint(
+                root_dots[1], plane.n2p(1),
+                path_arc=TAU / 5,
+            ),
+            pentagon.animate.set_fill(opacity=0.1)
+        )
         self.play(Write(zeta_labels[1]))
         self.wait()
         self.play(
@@ -1196,7 +1553,8 @@ class FifthRootsOfUnity(InteractiveScene):
         expr.next_to(function, DOWN, LARGE_BUFF)
 
         self.play(
-            TransformMatchingShapes(function[:4].copy(), expr, run_time=1.5)
+            TransformMatchingShapes(function[:4].copy(), expr, run_time=1.5),
+            FadeOut(pentagon),
         )
         self.wait()
 
@@ -1256,7 +1614,10 @@ class FifthRootsOfUnity(InteractiveScene):
                     self.wait()
                 self.play(FadeOut(arrows))
                 # Animate kth power
-                self.animate_kth_power(plane, root_dots, k)
+                self.animate_kth_power(
+                    plane,
+                    root_dots, k,
+                )
                 self.wait()
 
         # Emphasize the upshot
@@ -1287,21 +1648,24 @@ class FifthRootsOfUnity(InteractiveScene):
         relation_group = VGroup(expr, brace, relations)
 
         answer = MTex(
-            "\\text{Answer} = \\frac{1}{5}\\sum_{k = 0}^4 f(\\zeta^k)",
+            "c_0 + c_5 + c_{10} + \\cdots"
+            "=\\frac{1}{5}\\sum_{k = 0}^4 f(\\zeta^k)",
             tex_to_color_map={"\\zeta": YELLOW}
         )
+        answer.set_width(5)
         answer.next_to(function, DOWN, LARGE_BUFF)
-        answer_rect = SurroundingRectangle(answer)
+        answer_rect = SurroundingRectangle(answer, buff=0.2)
+        answer_rect.round_corners()
         answer_rect.set_stroke(YELLOW, 2)
         self.disable_interaction(answer_rect)
 
         self.play(
             FadeOut(example, DOWN),
-            relation_group.animate.set_width(4).to_edge(DOWN),
+            relation_group.animate.set_width(4.5).to_edge(DOWN),
             Write(answer)
         )
         self.play(
-            FlashAround(answer),
+            VShowPassingFlash(answer_rect.copy()),
             FadeIn(answer_rect)
         )
         self.add(answer_rect, answer)
@@ -1319,8 +1683,8 @@ class FifthRootsOfUnity(InteractiveScene):
             relation_group,
         )
         lower_group.generate_target()
-        lower_group.target[0].match_width(relation_group)
         lower_group.target.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        lower_group.target.set_width(8.5)
         lower_group.target.to_corner(DR)
 
         plane_group = Group(
@@ -1372,9 +1736,11 @@ class FifthRootsOfUnity(InteractiveScene):
             zp1_label.set_backstroke(width=5)
             zp1_label.move_to(z_label, DL)
             zp1_label.shift(shift_vect)
+        zp1_labels[0].next_to(root_dots[0].get_center() + shift_vect, UL, SMALL_BUFF)
 
         new_circle = unit_circle.copy()
         new_circle.set_stroke(GREY_B, opacity=0.5)
+        self.disable_interaction(new_circle)
         self.replace(unit_circle, unit_circle, new_circle)
 
         self.remove(zeta_labels)
@@ -1387,31 +1753,24 @@ class FifthRootsOfUnity(InteractiveScene):
         )
         self.wait()
 
-        # Example value
-        lhss = VGroup(f_zeta[6:11], f_zeta[11:17], f_zeta[17:23]).copy()
-        lhss.generate_target()
-        lhss.target.scale(36 / 48)
-        lhss.target.arrange(DOWN, aligned_edge=LEFT)
-        lhss.target.next_to(plane, RIGHT, LARGE_BUFF, UP)
-        rhss = VGroup(*(
-            MTex(f"= \\big(1 + \\cos({deg}^\\circ)\\big) + i\\cdot \\sin({deg}^\\circ)", font_size=36)
-            for deg in 72 * np.arange(1, 4)
-        ))
-        for rhs, lhs in zip(rhss, lhss.target):
-            rhs.next_to(lhs, RIGHT)
+        # Estimate answer
+        estimate = MTex(
+            "= 2 \\cdot |\\zeta + 1|^2 \\cdot |\\zeta^2 + 1|^2",
+            **eq_kw
+        )
+        estimate.next_to(plane, RIGHT, buff=1.5, aligned_edge=UP)
 
-        dots = MTex("\\vdots")
-        dots.next_to(lhss.target[-1], DOWN)
-
-        crosses = VGroup(*(Cross(VGroup(lhs, rhs)) for lhs, rhs in zip(lhss.target, rhss)))
-        crosses.insert_n_curves(20)
-
-        self.play(MoveToTarget(lhss), Write(dots))
-        self.play(Write(rhss))
+        self.play(Write(estimate[1]))
         self.wait()
-        self.play(ShowCreation(crosses))
+        self.play(
+            Write(estimate[0]),
+            Write(estimate[2:9]),
+        )
         self.wait()
-        self.play(*map(FadeOut, [lhss, rhss, crosses, dots]))
+        self.play(
+            Write(estimate[9:]),
+        )
+        self.wait()
 
         # Setup for the trick
         box = Rectangle(
@@ -1425,11 +1784,8 @@ class FifthRootsOfUnity(InteractiveScene):
         trick_title = Text("The trick")
         trick_title.next_to(box.get_top(), DOWN, SMALL_BUFF)
 
-        self.remove(zp1_labels)
         self.play(
-            root_dots.animate.shift(-shift_vect),
-            new_circle.animate.shift(-shift_vect),
-            TransformFromCopy(zp1_labels, zeta_labels),
+            FadeOut(estimate),
             FadeOut(lower_group, DOWN),
             FadeIn(box),
             Write(trick_title),
@@ -1506,40 +1862,91 @@ class FifthRootsOfUnity(InteractiveScene):
             FadeIn(values[0], 0.5 * UP)
         )
         self.wait()
-
         self.remove(arrows, values)
         expr_group.add(*arrows, *values)
-        self.play(
-            ans_group.animate.scale(2.0, about_edge=UL),
-            expr_group.animate.scale(1 / 1.5, about_edge=DR),
+
+        # Rescale answer group
+        plane_group = Group(
+            plane, unit_circle, new_circle,
+            root_lines, root_dots, zp1_labels,
+            complex_plane_title,
         )
 
-        # Final answer
-        final_answer = MTex(
-            "\\text{Answer} = \\frac{1}{5}\\Big("
-            "2^{2{,}000} + 4 \\cdot 2^{400}\\Big)"
-        )
-        final_answer.align_to(answer, LEFT)
-        final_answer.align_to(plane, UP)
+        ans_group.generate_target()
+        ans_group.target.set_width(6.5, about_edge=LEFT)
+        ans_group.target.next_to(brace, DOWN)
+        ans_group.target.shift(1 * LEFT)
+        ans_group.target[0].set_stroke(opacity=0)
+
         f_zeta_rhs = Tex("=2^{400}").set_color(WHITE)
         f_zeta_rhs.next_to(f_zeta, RIGHT)
 
-        final_answer_rect = SurroundingRectangle(final_answer)
+        self.play(
+            MoveToTarget(ans_group),
+            expr_group.animate.scale(1 / 1.5, about_edge=DR),
+            plane_group.animate.scale(0.7, about_edge=DL),
+            TransformMatchingShapes(two_label, f_zeta_rhs),
+            FadeOut(brace),
+            run_time=2
+        )
+        self.wait()
+
+        # Final answer
+        final_answer = MTex(
+            "= \\frac{1}{5}\\Big("
+            "2^{2{,}000} + 4 \\cdot 2^{400}\\Big)"
+        )
+        final_answer.next_to(answer, RIGHT)
+
+        final_answer_rect = SurroundingRectangle(final_answer[1:], buff=0.2)
+        final_answer_rect.round_corners()
         final_answer_rect.set_stroke(YELLOW, 2)
         self.disable_interaction(final_answer_rect)
 
         self.play(
-            Transform(answer[:10].copy(), final_answer[:10]),
-            FadeTransform(answer[10:].copy(), VGroup(final_answer[10], final_answer[-1])),
-            TransformMatchingShapes(two_label, f_zeta_rhs),
-            FadeOut(brace),
-            FadeOut(answer_rect),
+            Write(final_answer[:5]),
+            Write(final_answer[-1]),
         )
         self.wait()
         self.play(
-            FadeTransform(values.copy(), final_answer[11:-1])
+            FadeTransform(values.copy(), final_answer[5:-1])
         )
         self.play(ShowCreation(final_answer_rect))
+        self.wait(note="Comment on dominant term")
+
+        # Smaller case
+        box = Rectangle(
+            width=(RIGHT_SIDE[0] - plane.get_right()[0]) - 1,
+            height=plane.get_height()
+        )
+        box.to_corner(DR)
+        box.align_to(plane, DOWN)
+        box.set_stroke(WHITE, 1)
+        box.set_fill(GREY_E, 1)
+        set_tex = get_set_tex(range(1, 6))
+        set_tex.next_to(box.get_left(), RIGHT, SMALL_BUFF)
+
+        rhs = MTex(
+            "\\rightarrow \\frac{1}{5}"
+            "\\Big(2^5 + 4 \\cdot 2^1\\Big)"
+            "= \\frac{1}{5}(32 + 8)"
+            "=8"
+        )
+        rhs.scale(0.9)
+        rhs.next_to(set_tex, RIGHT)
+
+        self.play(
+            FadeOut(expr_group),
+            Write(box),
+            Write(set_tex),
+        )
+        self.wait()
+        self.play(
+            Write(rhs[0]),
+            FadeTransform(final_answer.copy(), rhs[1:13])
+        )
+        self.wait()
+        self.play(Write(rhs[13:]))
         self.wait()
 
     def animate_kth_power(self, plane, dots, k):
@@ -1554,6 +1961,9 @@ class FifthRootsOfUnity(InteractiveScene):
             for angle in angles
         ]
         dots.save_state()
+        # pentagon.add_updater(lambda p: p.set_points_as_corners([
+        #     d.get_center() for d in [*dots, dots[0]]
+        # ]))
 
         self.play(*(
             MoveAlongPath(dot, path)
@@ -1563,39 +1973,159 @@ class FifthRootsOfUnity(InteractiveScene):
             self.wait()
             self.play(dots.animate.restore())
         else:
+            # self.play(FadeOut(pentagon))
             dots.restore()
-
-        # moving_plane = ComplexPlane((-2, 2), (-2, 2))
-        # moving_plane.replace(plane)
-        # moving_plane.prepare_for_nonlinear_transform()
-        # back_plane = plane.copy()
-        # back_plane.set_color(GREY_C)
-        # back_plane.fade(0.5)
-        # self.add(back_plane)
-        # self.bring_to_back(back_plane)
-        # self.replace(plane, moving_plane)
-
-        # def homotopy(x, y, z, t):
-        #     z = plane.p2n([x, y, z])
-        #     return plane.n2p(z**(1 + t * (k - 1)))
-
-        # self.play(
-        #     Homotopy(homotopy, dots),
-        #     Homotopy(homotopy, moving_plane),
-        # )
-        # self.wait()
-        # self.play(
-        #     FadeOut(moving_plane),
-        #     FadeIn(plane),
-        # )
-        # self.remove(back_plane)
-        # self.replace(moving_plane, plane)
+            # self.play(FadeInFromDown(pentagon))
+        # pentagon.clear_updaters()
 
     def get_highlight(self, mobject):
         result = super().get_highlight(mobject)
         if isinstance(mobject, Arrow):
             result.set_stroke(width=result.get_stroke_width())
         return result
+
+
+class JustifyLinearity(InteractiveScene):
+    n_terms = 8
+
+    def construct(self):
+        # Create polynomials
+        x_poly = self.get_polynomial("{x}", BLUE)
+        x_poly.to_edge(UP)
+
+        zeta_polys = VGroup(*(
+            self.get_polynomial("\\zeta", YELLOW, exp_multiple=n)
+            for n in range(5)
+        ))
+        zeta_polys.arrange(DOWN, buff=0.65, aligned_edge=LEFT)
+        zeta_polys.next_to(x_poly, DOWN, LARGE_BUFF)
+        x_poly.align_to(zeta_polys, LEFT)
+        polys = VGroup(x_poly, *zeta_polys)
+
+        # Align parts
+        low_poly = polys[-1]
+        for poly in polys[:-1]:
+            for i1, i2 in zip(poly.sep_indices, low_poly.sep_indices):
+                shift = (low_poly[i2].get_x(LEFT) - poly[i1].get_x(LEFT)) * RIGHT
+                poly[i1].shift(shift / 2)
+                poly[i1 + 1:].shift(shift)
+
+        # Prepare for grid sum
+        lhss = VGroup(*(
+            poly[:poly.sep_indices[0]]
+            for poly in zeta_polys
+        ))
+        lhss.save_state()
+        plusses = MTex("+", font_size=36).replicate(len(lhss) - 1)
+        group = VGroup(*it.chain(*zip(lhss, plusses)))
+        group.add(lhss[-1])
+        group.arrange(RIGHT, buff=MED_SMALL_BUFF)
+        group.next_to(x_poly, DOWN, LARGE_BUFF)
+
+        plusses.generate_target()
+        for plus, lhs1, lhs2 in zip(plusses.target, lhss.saved_state, lhss.saved_state[1:]):
+            plus.move_to(midpoint(lhs1.get_bottom(), lhs2.get_top()))
+            plus.scale(0.7)
+
+        self.add(x_poly)
+        self.play(Write(group))
+        self.wait()
+        self.play(
+            lhss.animate.restore(),
+            MoveToTarget(plusses),
+            path_arc=-90 * DEGREES,
+        )
+        self.wait()
+
+        # Write all right hand sides
+        anims = []
+        for poly in zeta_polys:
+            anims.append(FadeTransformPieces(
+                x_poly[x_poly.sep_indices[0]:].copy(),
+                poly[poly.sep_indices[0]:],
+            ))
+        self.play(LaggedStart(*anims, lag_ratio=0.5, run_time=3))
+        self.wait()
+
+        # Highlight columns
+        lower_sum = VGroup()
+        lp = polys[-1]
+        for j in range(len(x_poly.sep_indices) - 1):
+            polys.generate_target()
+            col = VGroup()
+            for poly in polys.target:
+                col.add(poly[poly.sep_indices[j] + 1:poly.sep_indices[j + 1]])
+            polys.target.set_fill(opacity=0.5)
+            col.set_fill(opacity=1)
+
+            if j % 5 == 0:
+                term = MTex(f"5c_{j}", font_size=36)
+            else:
+                term = MTex("0", font_size=36)
+            i1, i2 = lp.sep_indices[j:j + 2]
+            term.next_to(VGroup(lp[i1], lp[i2]), DOWN, buff=0.7)
+            plus = MTex("+", font_size=36)
+            plus.next_to(lp[i1], DOWN, buff=0.7)
+            if j == 0:
+                plus.set_opacity(0)
+            else:
+                plus.move_to(midpoint(lower_sum.get_right(), term.get_left()))
+            lower_sum.add(plus, term)
+
+            self.play(
+                FlashAround(col, run_time=2, time_width=2),
+                MoveToTarget(polys),
+                plusses.animate.set_fill(opacity=0.5),
+            )
+            self.wait()
+            self.play(
+                Write(plus),
+                *(
+                    FadeTransform(piece.copy(), term)
+                    for piece in col[1:]
+                )
+            )
+            self.wait()
+        self.play(polys.animate.set_opacity(1))
+        self.wait()
+
+    def get_polynomial(self, input_tex, color, exp_multiple=None, font_size=36):
+        if exp_multiple is not None:
+            tex = f"f({input_tex}^{exp_multiple}) ="
+        else:
+            tex = f"f({input_tex}) = "
+            exp_multiple = 1
+        tex += "c_0 + "
+        for n in range(1, self.n_terms):
+            tex += f"c_{{{n}}}{input_tex}^{{{exp_multiple * n}}} + "
+        tex += "\\cdots"
+        tex = tex.replace("+", "\\,+\\,")
+        tex = tex.replace("=", "\\,=\\,")
+        result = MTex(
+            tex,
+            tex_to_color_map={
+                input_tex: color,
+                "+": WHITE,
+                "=": WHITE,
+            },
+            font_size=font_size,
+        )
+        result.sep_indices = [
+            result.submobjects.index(part.family_members_with_points()[0])
+            for part in (*result.get_parts_by_tex("="), *result.get_parts_by_tex("+"))
+        ]
+        # result.arrange(RIGHT, aligned_edge=DOWN)
+        return result
+
+
+class ExpandOutKeyEquation(InteractiveScene):
+    def construct(self):
+        pass
+
+
+class ReflectOnNumericalAnswer(InteractiveScene):
+    def construct(self):
+        pass
 
 
 class GoThroughAllSubsets(InteractiveScene):
@@ -1829,6 +2359,22 @@ class GeneratingFunctions(InteractiveScene):
         self.wait()
         self.play(FadeIn(rhs, DOWN))
         self.wait()
+
+
+class AskAboutTaylorSeries(TeacherStudentsScene):
+    def construct(self):
+        self.student_says(
+            TexText("Can we use derivatives\\\\in some way?"),
+            student_index=0,
+        )
+        self.play(
+            self.teacher.animate.change("tease"),
+            self.get_student_changes(
+                None, "confused", "thinking",
+                look_at_arg=self.students[0].bubble,
+            ),
+        )
+        self.wait(4)
 
 
 class ToTheComplexPlane(InteractiveScene):
