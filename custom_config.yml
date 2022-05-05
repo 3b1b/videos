@@ -1,5 +1,6 @@
 directories:
   mirror_module_path: True
+  removed_mirror_prefix: "/Users/grant/cs/videos/"
   output: "/Users/grant/Dropbox/3Blue1Brown/videos"
   raster_images: "/Users/grant/Dropbox/3Blue1Brown/images/raster"
   vector_images: "/Users/grant/Dropbox/3Blue1Brown/images/vector"
