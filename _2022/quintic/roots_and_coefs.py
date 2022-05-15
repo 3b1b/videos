@@ -645,17 +645,14 @@ class RootCoefScene(Scene):
         if dot in self.coef_dots and dot is not self.dot_awaiting_loop:
             self.dot_awaiting_loop = dot
         self.add(dot)
-        self.refresh_locked_data()
 
     def carry_out_cycle(self):
         if self.dots_awaiting_cycle:
             self.tie_coefs_to_roots()
-            self.unlock_mobject_data()
             self.play(CyclicReplace(*self.dots_awaiting_cycle, run_time=self.cycle_run_time))
             self.remove_dot_aura()
         if self.dot_awaiting_loop is not None:
             self.tie_roots_to_coefs()
-            self.unlock_mobject_data()
             self.play(Rotate(
                 self.dot_awaiting_loop,
                 angle=TAU,
@@ -700,7 +697,6 @@ class RootCoefScene(Scene):
             dot.add_updater(lambda d: d.move_to(self.coef_plane.c2p(
                 *d.last_norm * normalize(self.coef_plane.p2c(d.get_center()))
             )))
-        self.refresh_locked_data()
 
     def on_key_release(self, symbol, modifiers):
         super().on_key_release(symbol, modifiers)
