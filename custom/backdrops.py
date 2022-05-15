@@ -51,7 +51,7 @@ class VideoWrapper(Scene):
         screen.to_edge(DOWN)
 
         if self.animate_boundary:
-            boundary = AnimatedBoundary(screen)
+            boundary = self.boundary = AnimatedBoundary(screen)
             self.add(boundary)
             wait_time = self.wait_time
         else:
@@ -60,7 +60,7 @@ class VideoWrapper(Scene):
         self.add(screen)
 
         if self.title:
-            title_text = TexText(
+            title_text = self.title_text = TexText(
                 self.title,
                 **self.title_config,
             )
