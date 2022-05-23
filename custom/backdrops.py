@@ -35,6 +35,7 @@ class Spotlight(Scene):
 
 class VideoWrapper(Scene):
     animate_boundary = True
+    animated_boundary_config = {"cycle_rate": 0.25}
     title = ""
     title_config = {
         "font_size": 60
@@ -51,7 +52,7 @@ class VideoWrapper(Scene):
         screen.to_edge(DOWN)
 
         if self.animate_boundary:
-            boundary = self.boundary = AnimatedBoundary(screen)
+            boundary = self.boundary = AnimatedBoundary(screen, **self.animated_boundary_config)
             self.add(boundary)
             wait_time = self.wait_time
         else:
