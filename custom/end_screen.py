@@ -1,6 +1,8 @@
 import random
 import os
 import json
+from tqdm import tqdm as ProgressDisplay
+
 
 from manimlib.animation.animation import Animation
 from manimlib.animation.composition import Succession
@@ -12,6 +14,7 @@ from manimlib.mobject.geometry import Line
 from manimlib.mobject.geometry import Rectangle
 from manimlib.mobject.geometry import Square
 from manimlib.mobject.svg.tex_mobject import TexText
+from manimlib.mobject.svg.text_mobject import Text
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.scene.scene import Scene
 from manimlib.utils.directories import get_directories
@@ -84,11 +87,12 @@ class PatreonEndScreen(Scene):
         # Build name list
         names = self.get_names()
 
-        name_labels = VGroup(*map(TexText, names))
+        name_labels = VGroup(*map(
+            Text, ProgressDisplay(names, leave=False, desc="Writing names")
+        ))
         name_labels.scale(self.patron_scale_val)
         for label in name_labels:
-            if label.get_width() > self.max_patron_width:
-                label.set_width(self.max_patron_width)
+            label.set_max_width(self.max_patron_width)
         columns = VGroup(*[
             VGroup(*name_labels[i::self.n_patron_columns])
             for i in range(self.n_patron_columns)
@@ -162,7 +166,7 @@ class PatreonEndScreen(Scene):
             modification_map = json.load(fp)
 
         for n1, n2 in modification_map.items():
-            name = name.replace("ā", "\\={a}")
+            # name = name.replace("ā", "\\={a}")
             if name.lower() == n1.lower():
                 name = n2
         if self.capitalize:
