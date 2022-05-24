@@ -73,6 +73,17 @@ class PiCreatureScene(InteractiveScene):
             if pi in mobjects
         ])
 
+    def pi_changes(self, *modes, look_at_arg=None, lag_ratio=0.5, run_time=1):
+        return LaggedStart(
+            *(
+                pi.change(mode, look_at_arg)
+                for pi, mode in zip(self.pi_creatures, modes)
+                if mode is not None
+            ),
+            lag_ratio=lag_ratio,
+            run_time=1,
+        )
+
     def introduce_bubble(self, *args, **kwargs):
         if isinstance(args[0], PiCreature):
             pi_creature = args[0]
@@ -294,7 +305,7 @@ class TeacherStudentsScene(PiCreatureScene):
         for student in self.students:
             student.look_at(self.teacher.eyes)
 
-        return [self.teacher] + list(self.students)
+        return [*self.students, self.teacher]
 
     def get_teacher(self):
         return self.teacher
@@ -330,38 +341,26 @@ class TeacherStudentsScene(PiCreatureScene):
         student = self.get_students()[kwargs.get("student_index", 2)]
         return self.pi_creature_thinks(student, *content, **kwargs)
 
-    def change_all_student_modes(self, mode, **kwargs):
-        self.change_student_modes(*[mode] * len(self.students), **kwargs)
+    def play_all_student_changes(self, mode, **kwargs):
+        self.play_student_changes(*[mode] * len(self.students), **kwargs)
 
-    def change_student_modes(self, *modes, **kwargs):
+    def play_student_changes(self, *modes, **kwargs):
         added_anims = kwargs.pop("added_anims", [])
         self.play(
             self.change_students(*modes, **kwargs),
             *added_anims
         )
 
-    def change_students(self, *modes, **kwargs):
-        pairs = list(zip(self.get_students(), modes))
-        pairs = [(s, m) for s, m in pairs if m is not None]
-        start = VGroup(*[s for s, m in pairs])
-        target = VGroup(*[s.copy().change_mode(m) for s, m in pairs])
-        if "look_at_arg" in kwargs:
-            for pi in target:
-                pi.look_at(kwargs["look_at_arg"])
-        anims = [
-            Transform(s, t)
-            for s, t in zip(start, target)
-        ]
+    def change_students(self, *modes, look_at_arg=None, lag_ratio=0.5, run_time=1):
         return LaggedStart(
-            *anims,
-            lag_ratio=kwargs.get("lag_ratio", 0.5),
+            *(
+                student.change(mode, look_at_arg)
+                for student, mode in zip(self.get_students(), modes)
+                if mode is not None
+            ),
+            lag_ratio=lag_ratio,
             run_time=1,
         )
-        # return Transform(
-        #     start, target,
-        #     lag_ratio=lag_ratio,
-        #     run_time=2
-        # )
 
     def zoom_in_on_thought_bubble(self, bubble=None, radius=FRAME_Y_RADIUS + FRAME_X_RADIUS):
         if bubble is None:
