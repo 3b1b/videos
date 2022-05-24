@@ -615,7 +615,7 @@ class AskAboutLongerLists(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["confused"]*3,
-            look_at_arg = self.teacher.get_top() + 2*UP
+            look_at = self.teacher.get_top() + 2*UP
         )
         self.play(self.teacher.look, UP)
         self.wait(5)
@@ -1471,7 +1471,7 @@ class FourDCase(SliderScene, TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = self.sliders
+            look_at = self.sliders
         )
         self.wait(4)
 
@@ -1491,7 +1491,7 @@ class FourDCase(SliderScene, TeacherStudentsScene):
         )
         self.play_student_changes(
             "erm", "confused", "hooray",
-            look_at_arg = self.sliders,
+            look_at = self.sliders,
             added_anims = [self.teacher.change, "plain"]
         )
         self.wait(5)
@@ -1508,7 +1508,7 @@ class FourDCase(SliderScene, TeacherStudentsScene):
         )
         self.play_student_changes(
             None, "pondering", "pondering",
-            look_at_arg = self.students[0].bubble,
+            look_at = self.students[0].bubble,
         )
         self.wait(4)
         self.play(RemovePiCreatureBubble(self.students[0]))
@@ -3386,7 +3386,7 @@ class Skeptic(TeacherStudentsScene, SliderScene):
         self.play(
             RemovePiCreatureBubble(
                 self.teacher, target_mode = "raise_right_hand",
-                look_at_arg = self.sliders
+                look_at = self.sliders
             ),
             *[
                 ApplyMethod(pi.change, "pondering")

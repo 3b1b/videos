@@ -280,11 +280,11 @@ class SourcesOfOriginality(TeacherStudentsScene):
             RemovePiCreatureBubble(
                 self.teacher,
                 target_mode="raise_right_hand",
-                look_at_arg=title,
+                look_at=title,
             ),
             self.change_students(
                 *["pondering"] * 3,
-                look_at_arg=title
+                look_at=title
             )
         )
         self.play(big_rect.restore)
@@ -311,7 +311,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             FadeIn(based_on_wastlund),
             self.change_students(
                 "sassy", "erm", "plain",
-                look_at_arg=based_on_wastlund
+                look_at=based_on_wastlund
             ),
         )
         self.wait()
@@ -383,7 +383,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             FadeIn(new_proof),
             self.teacher.change, "hooray",
         )
-        self.play_all_student_changes("hooray", look_at_arg=new_proof)
+        self.play_all_student_changes("hooray", look_at=new_proof)
         self.wait(5)
 
 
@@ -787,7 +787,7 @@ class TeacherShowing(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand", screen,
             self.change_students(
                 *["pondering"] * 3,
-                look_at_arg=screen
+                look_at=screen
             )
         )
         self.wait(5)
@@ -2946,7 +2946,7 @@ class LocalMathematician(PiCreatureScene):
                 randy, "Check these \\\\ out!",
                 target_mode="surprised",
                 bubble_kwargs={"height": 3, "width": 4},
-                look_at_arg=screen,
+                look_at=screen,
             ),
         )
         self.play(
@@ -2954,14 +2954,14 @@ class LocalMathematician(PiCreatureScene):
             RemovePiCreatureBubble(
                 randy, 
                 target_mode="raise_right_hand",
-                look_at_arg=screen,
+                look_at=screen,
             )
         )
         self.wait(2)
         self.play(
             PiCreatureSays(
                 mathy, "Ah yes, consider \\\\ $x^n - 1$ over $\\mathds{C}$...",
-                look_at_arg=randy.eyes
+                look_at=randy.eyes
             ),
             randy.change, "happy", mathy.eyes
         )
@@ -3034,7 +3034,7 @@ class ArmedWithTwoKeyFacts(TeacherStudentsScene, DistanceProductScene):
             LaggedStartMap(FadeIn, wallis_product),
             self.teacher.change_mode, "hooray",
             self.change_students(
-                *["thinking"] * 3, look_at_arg=wallis_product)
+                *["thinking"] * 3, look_at=wallis_product)
         )
         self.wait(2)
 
@@ -4141,7 +4141,7 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
             PiCreatureSays(
                 mathy,
                 "Whoa whoa whoa \\\\ there buddy",
-                look_at_arg=morty.eyes,
+                look_at=morty.eyes,
                 target_mode="sassy",
             ),
             morty.change, "guilty", mathy.eyes,
@@ -4153,7 +4153,7 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
             RemovePiCreatureBubble(
                 mathy,
                 target_mode="raise_right_hand",
-                look_at_arg=factors,
+                look_at=factors,
             ),
             morty.change, "pondering", factors,
             LaggedStartMap(FadeIn, factors),

@@ -15,7 +15,7 @@ class HappyHolidays(TeacherStudentsScene):
         self.add(self.get_snowflakes())
         self.play_student_changes(
             *["hooray"]*3,
-            look_at_arg = FRAME_Y_RADIUS*UP,
+            look_at = FRAME_Y_RADIUS*UP,
             added_anims = [self.teacher.change, "hooray"]
         )
         self.play(LaggedStartMap(
@@ -23,7 +23,7 @@ class HappyHolidays(TeacherStudentsScene):
         ), Animation(self.pi_creatures))
         self.play_student_changes(
             "happy", "wave_2", "wave_1",
-            look_at_arg = FRAME_Y_RADIUS*UP,
+            look_at = FRAME_Y_RADIUS*UP,
         )
         self.look_at(self.teacher.get_corner(UP+LEFT))
         self.wait(2)
@@ -335,7 +335,7 @@ class AboutToyPuzzles(UtilitiesPuzzleScene, TeacherStudentsScene, ThreeDScene):
             LaggedStartMap(FadeIn, self.students)
         )
         self.play_student_changes(
-            *["pondering"]*3, look_at_arg = everything
+            *["pondering"]*3, look_at = everything
         )
         self.wait(5)
 
@@ -1278,7 +1278,7 @@ class ShowRule(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["confused"]*3,
-            look_at_arg = rule
+            look_at = rule
         )
         self.wait(2)
         self.play(
@@ -1287,7 +1287,7 @@ class ShowRule(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["thinking"]*3, 
-            look_at_arg = rule
+            look_at = rule
         )
         self.wait(3)
 
@@ -1932,7 +1932,7 @@ class FunnyStory(TeacherStudentsScene):
                 self.teacher,
                 target_mode = "raise_right_hand"
             )],
-            look_at_arg = UP+2*RIGHT
+            look_at = UP+2*RIGHT
         )
         self.wait(5)
 

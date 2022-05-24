@@ -740,7 +740,7 @@ class StateOfBitcoin(TeacherStudentsScene):
                 all_text.to_edge, LEFT,
                 self.teacher.change_mode, "happy"
             ],
-            look_at_arg = gpu
+            look_at = gpu
         )
         self.play(
             Write(gpu_name),

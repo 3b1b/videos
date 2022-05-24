@@ -704,7 +704,7 @@ class OtherViewsOfDx(TeacherStudentsScene):
             self.get_students()[0],
             statements[3],
             target_mode = "maybe",
-            look_at_arg = 3*UP,
+            look_at = 3*UP,
             bubble_creation_class = FadeIn,
         )
         bubble_intro.update(1)
@@ -1043,7 +1043,7 @@ class GraphLimitExpression(GraphScene):
         self.wait()
         self.play(RemovePiCreatureBubble(
             randy, target_mode = "pondering",
-            look_at_arg = self.limit_point_hole
+            look_at = self.limit_point_hole
         ))
         self.play(
             self.ed_group.delta_lines.restore,
@@ -1412,7 +1412,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
         self.teacher_says("", bubble_kwargs = {"stroke_width" : 0})
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = UP+LEFT,
+            look_at = UP+LEFT,
             added_anims = [self.get_teacher().look_at, UP+LEFT]
         )
         self.wait(3)
@@ -1925,7 +1925,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         self.play(
             RemovePiCreatureBubble(
                 morty, target_mode = "pondering",
-                look_at_arg = func_1
+                look_at = func_1
             ),
             ReplacementTransform(
                 self.func_label.copy(),
@@ -2031,7 +2031,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         self.play(
             RemovePiCreatureBubble(
                 morty, target_mode = "raise_left_hand",
-                look_at_arg = self.func_1_group
+                look_at = self.func_1_group
             ),
             self.func_1_group.scale, self.tex_scale_value,
             self.func_1_group.move_to, 

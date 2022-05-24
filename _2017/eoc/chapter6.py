@@ -25,7 +25,7 @@ class ThisWasConfusing(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["confused"]*3,
-            look_at_arg = words,
+            look_at = words,
             added_anims = [Animation(self.get_teacher())]
         )
         self.wait()
@@ -540,7 +540,7 @@ class NameImplicitDifferentation(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["confused"]*3,
-            look_at_arg = derivative,
+            look_at = derivative,
             added_anims = [ReplacementTransform(equation.copy(), derivative)]
         )
         self.wait(2)

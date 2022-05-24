@@ -24,7 +24,7 @@ class HeresTheThing(TeacherStudentsScene):
         )
         self.play_student_changes(
             "raise_left_hand", "pondering", "erm",
-            look_at_arg=self.teacher.eyes,
+            look_at=self.teacher.eyes,
         )
         self.wait()
         self.teacher_says(

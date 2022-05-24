@@ -3279,7 +3279,7 @@ class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
             self.teacher.change, "speaking",
             self.change_students(
                 "pondering", "sassy", "happy",
-                look_at_arg=self.screen,
+                look_at=self.screen,
             )
         )
         self.wait(2)
@@ -3297,7 +3297,7 @@ class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
             self.teacher.change, "pondering", 3 * UP,
             self.change_students(
                 "pondering", "thinking", "thinking",
-                look_at_arg=3 * UP,
+                look_at=3 * UP,
             )
         )
         self.wait(6)

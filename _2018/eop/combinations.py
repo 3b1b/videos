@@ -1294,7 +1294,7 @@ class TeacherHoldingSomething(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = 2*UP+2*RIGHT
+            look_at = 2*UP+2*RIGHT
         )
         self.wait(6)
 
@@ -2636,7 +2636,7 @@ class StudentsGetConfused(PiCreatureScene):
             PiCreatureSays(
                 pi1, "Wait \\dots order matters now?",
                 target_mode = "confused",
-                look_at_arg = line
+                look_at = line
             )
         )
         self.play(
@@ -3198,7 +3198,7 @@ class WeirdKindOfCancelation(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = fraction
+            look_at = fraction
         )
 
         #Go through numerators

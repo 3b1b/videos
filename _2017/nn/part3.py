@@ -1839,7 +1839,7 @@ class WatchPreviousScene(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand", screen,
             self.change_students(
                 *["thinking"]*3,
-                look_at_arg = screen
+                look_at = screen
             ),
             ShowCreation(screen)
         )
@@ -2068,7 +2068,7 @@ class CannotFollowCode(TeacherStudentsScene):
         self.play(self.students[1].change, "sad")
         self.play_student_changes(
             "angry", "sad", "angry",
-            look_at_arg = self.teacher.eyes
+            look_at = self.teacher.eyes
         )
         self.play(self.teacher.change, "hesitant")
         self.wait(2)

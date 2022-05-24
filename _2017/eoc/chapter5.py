@@ -1085,7 +1085,7 @@ class AskAboutConstantOne(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "raise_right_hand", "thinking",
-            # look_at_arg = self.get_students()[1].bubble
+            # look_at = self.get_students()[1].bubble
         )
         self.wait(2)
         self.play(FadeOut(note[-1], run_time = 3))
@@ -1446,7 +1446,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = log_words
+            look_at = log_words
         )
         self.wait(2)
 
@@ -1634,7 +1634,7 @@ class ManyExponentialForms(TeacherStudentsScene):
         ])
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = exp
+            look_at = exp
         )
         self.wait(3)
 
@@ -1908,7 +1908,7 @@ class NextVideo(TeacherStudentsScene):
         self.add(series, brace, *this_tex[:3])
         self.play_student_changes(
             "confused", "pondering", "erm",
-            look_at_arg = this_tex
+            look_at = this_tex
         )
         self.play(ReplacementTransform(
             this_tex[1].copy(), this_tex[3]
@@ -1935,7 +1935,7 @@ class NextVideo(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = next_tex
+            look_at = next_tex
         )
         self.wait(3)
 

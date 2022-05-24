@@ -653,7 +653,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = words
+            look_at = words
         )
         self.play(words.to_corner, UP+RIGHT)
 

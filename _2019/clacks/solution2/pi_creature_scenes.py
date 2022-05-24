@@ -40,7 +40,7 @@ class OnAnsweringTwice(TeacherStudentsScene):
                 FadeInFromDown(oq),
                 self.change_students(
                     *["pondering"] * 3,
-                    look_at_arg=oq
+                    look_at=oq
                 )
             )
             shown_questions.add(oq)
@@ -76,7 +76,7 @@ class ComplainAboutRelevanceOfAnalogy(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             self.change_students(
                 "pondering", "erm", "pondering",
-                look_at_arg=self.hold_up_spot,
+                look_at=self.hold_up_spot,
             ),
             RemovePiCreatureBubble(self.students[2])
         )

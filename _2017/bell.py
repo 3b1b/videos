@@ -358,7 +358,7 @@ class AngryPiCreature(PiCreatureScene):
         self.pi_creature_says(
             "No, \\emph{locality} \\\\ must be wrong!",
             target_mode = "angry",
-            look_at_arg = 2*RIGHT,
+            look_at = 2*RIGHT,
             run_time = 1
         )
         self.wait(3)
@@ -402,7 +402,7 @@ class ShowALittleMath(TeacherStudentsScene):
         ] + [Write(exp2, run_time = 2)])
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = exp2
+            look_at = exp2
         )
         self.wait(2)
 

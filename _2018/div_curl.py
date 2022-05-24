@@ -307,7 +307,7 @@ class ShowWritingTrajectory(TeacherStudentsScene):
             self.teacher.change, "tease",
             self.change_students(
                 *["pondering"] * 3,
-                look_at_arg=self.screen
+                look_at=self.screen
             )
         )
 
@@ -906,7 +906,7 @@ class AskQuestions(TeacherStudentsScene):
         self.wait()
         self.look_at(self.screen)
         self.wait()
-        self.play_all_student_changes("hooray", look_at_arg=screen)
+        self.play_all_student_changes("hooray", look_at=screen)
         self.wait(3)
 
         topics.generate_target()
@@ -922,7 +922,7 @@ class AskQuestions(TeacherStudentsScene):
             MoveToTarget(topics),
             self.change_students(
                 "confused", "sassy", "erm",
-                look_at_arg=topics.target
+                look_at=topics.target
             ),
             self.teacher.change, "pondering", screen
         )
@@ -3281,7 +3281,7 @@ class AskAboutComputation(TeacherStudentsScene):
         )
         self.play_student_changes(
             * 3 * ["pondering"],
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(5)
 

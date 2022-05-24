@@ -1154,7 +1154,7 @@ class YellAtNetwork(PiCreatureScene, PreviewLearning):
             PiCreatureBubbleIntroduction(
                 randy, "Bad network!",
                 target_mode = "angry", 
-                look_at_arg = eyes,
+                look_at = eyes,
                 run_time = 1,
             ),
             eyes.look_at_anim(randy.eyes)
@@ -1165,7 +1165,7 @@ class YellAtNetwork(PiCreatureScene, PreviewLearning):
             FadeIn(desired),
             RemovePiCreatureBubble(
                 randy, target_mode = "sassy",
-                look_at_arg = desired
+                look_at = desired
             ),
             eyes.look_at_anim(desired)
         )
@@ -1423,7 +1423,7 @@ class NetworkGrowthMindset(YellAtNetwork):
             PiCreatureSays(
                 randy, "Awful, just awful!",
                 target_mode = "angry",
-                look_at_arg = eyes,
+                look_at = eyes,
                 run_time = 1,
             ),
             eyes.change_mode_anim("concerned_musician")
@@ -2948,7 +2948,7 @@ class ReactToPerformance(TeacherStudentsScene):
         self.teacher_says(last_words, target_mode = "hesitant")
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = self.teacher.bubble
+            look_at = self.teacher.bubble
         )
         self.wait()
 
@@ -3248,7 +3248,7 @@ class CannotDraw(PreviewLearning):
 
         self.play(PiCreatureSays(
             randy, "Draw a \\\\ 5 for me",
-            look_at_arg = eyes,
+            look_at = eyes,
             run_time = 1
         ))
         self.play(eyes.change_mode_anim("concerned_musician"))
@@ -3605,7 +3605,7 @@ class AskNetworkAboutMemorizing(YellAtNetwork):
         self.pi_creature_says(
             "Are you just \\\\ memorizing?",
             target_mode = "sassy",
-            look_at_arg = eyes,
+            look_at = eyes,
             run_time = 2
         )
         self.wait()

@@ -2446,7 +2446,7 @@ class ComplainAboutParityCheckWeakness(TeacherStudentsScene):
         self.wait()
         self.play_student_changes(
             "thinking", "pondering", "pondering",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[
                 FadeOut(self.students[1].bubble),
                 FadeOut(self.students[1].bubble.content),
@@ -3455,9 +3455,9 @@ class WhatIfTheresAndArrowInECCBits(TeacherStudentsScene):
         self.look_at(self.screen)
         self.wait(2)
         self.teacher_says("Try it!", target_mode="hooray")
-        self.play_student_changes(*3 * ["pondering"], look_at_arg=self.screen)
+        self.play_student_changes(*3 * ["pondering"], look_at=self.screen)
         self.wait(2)
-        self.play_student_changes(*3 * ["thinking"], look_at_arg=self.screen)
+        self.play_student_changes(*3 * ["thinking"], look_at=self.screen)
         self.wait(8)
 
 
@@ -3505,7 +3505,7 @@ class HalfAsPowerful(TeacherStudentsScene):
             added_anims=[self.teacher.change, "happy"]
         )
         self.play_student_changes(
-            "pondering", "pondering", look_at_arg=self.screen,
+            "pondering", "pondering", look_at=self.screen,
             added_anims=[self.teacher.change, "tease"]
         )
         self.look_at(self.screen)
@@ -4024,7 +4024,7 @@ class ChecksSpellOutPositionInBinary(Scene):
             randy, "Wait...",
             target_mode="confused",
             bubble_class=ThoughtBubble,
-            look_at_arg=boxes.get_top(),
+            look_at=boxes.get_top(),
         ))
         self.play(Blink(randy))
         self.wait()
@@ -5423,7 +5423,7 @@ class ButWhy(TeacherStudentsScene):
         )
         self.play_student_changes(
             "maybe", "erm", "confused",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.wait(6)
 
@@ -5830,7 +5830,7 @@ class ConflictingViewsOnXor(TeacherStudentsScene):
             student_index=2,
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.play_student_changes("pondering", "pondering", look_at_arg=self.screen)
+        self.play_student_changes("pondering", "pondering", look_at=self.screen)
         self.wait(2)
         self.student_says(
             "Why didn't you\\\\just use xors\\\\from the start?",
@@ -6285,9 +6285,9 @@ class ThinkingInTermsOfBits(Scene):
 class SimpleHoldUpBackground(TeacherStudentsScene):
     def construct(self):
         self.play(self.teacher.change, "raise_right_hand", 3 * UP)
-        self.play_student_changes("pondering", "thinking", "tease", look_at_arg=3 * UP)
+        self.play_student_changes("pondering", "thinking", "tease", look_at=3 * UP)
         self.wait(4)
-        self.play_student_changes("tease", "hesitant", "happy", look_at_arg=3 * UP)
+        self.play_student_changes("tease", "hesitant", "happy", look_at=3 * UP)
         self.wait(5)
 
 

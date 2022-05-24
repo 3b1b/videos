@@ -276,13 +276,13 @@ class PiTauDebate(PiCreatureScene):
         self.play(PiCreatureSays(
             pi, pi_value,
             target_mode = "angry",
-            look_at_arg = tau.eyes,
+            look_at = tau.eyes,
             # bubble_kwargs = {"width" : 3}
         ))
         self.play(PiCreatureSays(
             tau, tau_value,
             target_mode = "angry",
-            look_at_arg = pi.eyes,
+            look_at = pi.eyes,
             bubble_kwargs = {"width" : 3, "height" : 2},
         ))
         self.wait()
@@ -896,7 +896,7 @@ class AskPuzzle(TeacherStudentsScene):
         response[1].set_color(BLUE)
 
         self.teacher_says(series)
-        self.play_all_student_changes("pondering", look_at_arg = series)
+        self.play_all_student_changes("pondering", look_at = series)
         self.wait(3)
         self.play(
             FadeOut(self.teacher.bubble),
@@ -952,7 +952,7 @@ class ChangeTopic(PiCreatureScene):
         self.play(
             PiCreatureSays(pi, question),
             RemovePiCreatureBubble(
-                tau, target_mode = "pondering", look_at_arg = question,
+                tau, target_mode = "pondering", look_at = question,
             )
         )
         self.play(pi.change, "pondering", question)

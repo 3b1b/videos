@@ -304,7 +304,7 @@ class Introduction(TeacherStudentsScene):
         self.teacher_says(words, target_mode = "hooray")
         self.play_student_changes(
             *["hooray"]*3,
-            look_at_arg = series[1].get_left(),
+            look_at = series[1].get_left(),
             added_anims = [
                 ApplyMethod(this_video.restore, run_time = 3),
             ]
@@ -375,7 +375,7 @@ class Introduction(TeacherStudentsScene):
         student = self.get_students()[student_index]
         self.play_student_changes(
             "pondering", "sassy", "pondering",
-            look_at_arg = self.teacher.eyes,
+            look_at = self.teacher.eyes,
             added_anims = [
                 self.teacher.change_mode, "plain"
             ]
@@ -1536,7 +1536,7 @@ class ThinkLikeAMathematician(TeacherStudentsScene):
         self.wait(2)
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = self.teacher.eyes,
+            look_at = self.teacher.eyes,
             added_anims = [PiCreatureSays(
                 self.teacher, "But why did \\\\ that work?"
             )]
@@ -2224,7 +2224,7 @@ class WhoCaresAboutArea(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3, 
-            look_at_arg = point,
+            look_at = point,
             added_anims = [self.teacher.look_at, point]
 
         )
@@ -2707,7 +2707,7 @@ class NextVideos(TeacherStudentsScene):
             RemovePiCreatureBubble(
                 self.teacher,
                 target_mode = "raise_right_hand",
-                look_at_arg = this_video,
+                look_at = this_video,
             ),
             *it.chain(*[
                 [pi.change_mode, "pondering", pi.look_at, this_video]

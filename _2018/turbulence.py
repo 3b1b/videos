@@ -596,7 +596,7 @@ class CarefulWithLasers(TeacherStudentsScene):
             ShowCreation(laser),
             self.change_students(
                 "surprised", "hooray", "horrified",
-                look_at_arg=laser
+                look_at=laser
             )
         )
         self.teacher_says(
@@ -706,7 +706,7 @@ class AskAboutTurbulence(TeacherStudentsScene):
             FadeOut(VGroup(words[0], words[2])),
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=question
+                look_at=question
             )
         )
         self.play(

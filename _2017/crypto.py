@@ -222,7 +222,7 @@ class DisectQuestion(TeacherStudentsScene):
             self.play_student_changes(
                 *["confused"]*3,
                 added_anims = anims,
-                look_at_arg = word
+                look_at = word
             )
 
     def isolate_you(self):
@@ -1796,7 +1796,7 @@ class RemovedConnectionBetweenLedgerAndCash(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = ledger,
+            look_at = ledger,
             added_anims = [self.teacher.change, "happy"]
         )
         self.wait(3)
@@ -2444,7 +2444,7 @@ class ThisIsWellIntoTheWeeds(TeacherStudentsScene):
             idea.restore,
             RemovePiCreatureBubble(
                 self.teacher, target_mode = "hooray",
-                look_at_arg = lightbulb
+                look_at = lightbulb
             ),
         )
         self.play_student_changes(
@@ -4949,7 +4949,7 @@ class TopicsNotCovered(TeacherStudentsScene):
         for topic in topics:
             self.play_student_changes(
                 "confused", "thinking","pondering",
-                look_at_arg = topic,
+                look_at = topic,
                 added_anims = [LaggedStartMap(FadeIn, topic)]
             )
             self.wait()

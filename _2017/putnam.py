@@ -139,7 +139,7 @@ class NatureOf5sAnd6s(TeacherStudentsScene):
             FadeIn(self.teacher),
             self.change_students(
                 *["horrified"]*3,
-                look_at_arg = test
+                look_at = test
             )
         )
         self.wait()
@@ -1289,7 +1289,7 @@ class Formality(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = words
+            look_at = words
         )
         self.wait(8)
 

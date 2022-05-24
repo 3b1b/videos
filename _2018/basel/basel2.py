@@ -1921,7 +1921,7 @@ class ScreensIntroWrapper(TeacherStudentsScene):
         self.play(self.teacher.change, "raise_right_hand")
         self.play_student_changes(
             "pondering", "erm", "confused",
-            look_at_arg = point,
+            look_at = point,
         )
         self.play(self.teacher.look_at, point)
         self.wait(5)
@@ -2439,15 +2439,15 @@ class WeCanHaveMoreFunThanThat(TeacherStudentsScene):
             "We can have \\\\ more fun than that!",
             target_mode = "hooray"
         )
-        self.play_student_changes(*3*["erm"], look_at_arg = point)
+        self.play_student_changes(*3*["erm"], look_at = point)
         self.wait()
         self.play(
             RemovePiCreatureBubble(
                 self.teacher, 
                 target_mode = "raise_right_hand",
-                look_at_arg = point,
+                look_at = point,
             ),
-            self.change_students(*3*["pondering"], look_at_arg = point)
+            self.change_students(*3*["pondering"], look_at = point)
         )
         self.wait(3)
 

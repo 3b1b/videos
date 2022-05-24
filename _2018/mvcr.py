@@ -16,7 +16,7 @@ class HoldUpMultivariableChainRule(TeacherStudentsScene):
             FadeInFromDown(screen)
         )
         self.play_all_student_changes(
-            "confused", look_at_arg=screen
+            "confused", look_at=screen
         )
         self.look_at(screen)
         self.wait(10)

@@ -2965,7 +2965,7 @@ class PointOutSimplicityOfFormula(TeacherStudentsScene, GeneralBinomialDistribut
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = prob
+            look_at = prob
         )
         self.wait()
         self.student_says(

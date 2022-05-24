@@ -298,7 +298,7 @@ class AskAboutActuallySolving(TeacherStudentsScene):
         )
         self.play_student_changes(
             "confused", "sassy", "confused",
-            look_at_arg=ode,
+            look_at=ode,
         )
         self.wait()
         self.teacher_says(
@@ -411,7 +411,7 @@ class HungerForExactness(TeacherStudentsScene):
             RemovePiCreatureBubble(
                 you,
                 target_mode="raise_left_hand",
-                look_at_arg=proposed_solution,
+                look_at=proposed_solution,
             ),
             teacher.change, "pondering",
             students[0].change, "pondering",
@@ -449,7 +449,7 @@ class HungerForExactness(TeacherStudentsScene):
                 FadeIn(part, UP),
                 self.change_students(
                     *3 * [mode],
-                    look_at_arg=part,
+                    look_at=part,
                 )
             )
             self.wait()
@@ -501,7 +501,7 @@ class HungerForExactness(TeacherStudentsScene):
         )
         self.play_student_changes(
             "hooray", "sassy", "sassy",
-            look_at_arg=students[0].eyes.get_corner(UR),
+            look_at=students[0].eyes.get_corner(UR),
         )
         self.wait(2)
 

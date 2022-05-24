@@ -34,7 +34,7 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
         "bubble_kwargs": {},
         "content_introduction_class": Write,
         "content_introduction_kwargs": {},
-        "look_at_arg": None,
+        "look_at": None,
     }
 
     def __init__(self, pi_creature, *content, **kwargs):
@@ -48,8 +48,8 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
 
         pi_creature.generate_target()
         pi_creature.target.change_mode(self.target_mode)
-        if self.look_at_arg is not None:
-            pi_creature.target.look_at(self.look_at_arg)
+        if self.look_at is not None:
+            pi_creature.target.look_at(self.look_at)
 
         change_mode = MoveToTarget(pi_creature, **self.change_mode_kwargs)
         bubble_creation = self.bubble_creation_class(
@@ -74,7 +74,7 @@ class PiCreatureSays(PiCreatureBubbleIntroduction):
 class RemovePiCreatureBubble(AnimationGroup):
     CONFIG = {
         "target_mode": "plain",
-        "look_at_arg": None,
+        "look_at": None,
         "remover": True,
     }
 
@@ -84,8 +84,8 @@ class RemovePiCreatureBubble(AnimationGroup):
 
         pi_creature.generate_target()
         pi_creature.target.change_mode(self.target_mode)
-        if self.look_at_arg is not None:
-            pi_creature.target.look_at(self.look_at_arg)
+        if self.look_at is not None:
+            pi_creature.target.look_at(self.look_at)
 
         AnimationGroup.__init__(
             self,

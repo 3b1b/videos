@@ -233,9 +233,9 @@ class HoldUpMathExchange(TeacherStudentsScene):
 
         self.add(title)
         self.play(self.teacher.change, "raise_right_hand", ORIGIN),
-        self.play_all_student_changes("thinking", look_at_arg=ORIGIN)
+        self.play_all_student_changes("thinking", look_at=ORIGIN)
         self.wait(3)
-        self.play_all_student_changes("confused", look_at_arg=ORIGIN)
+        self.play_all_student_changes("confused", look_at=ORIGIN)
         self.wait(3)
 
 
@@ -935,7 +935,7 @@ class AskWhat(TeacherStudentsScene):
         self.student_says(
             "I'm sorry,\\\\what?!?",
             target_mode="angry",
-            look_at_arg=screen,
+            look_at=screen,
             student_index=2,
             added_anims=[
                 self.teacher.change, "happy", screen,
@@ -1070,7 +1070,7 @@ class AskAboutRelationToPrimes(TeacherStudentsScene):
         self.play(
             self.change_students(
                 *3 * ["maybe"],
-                look_at_arg=numbers,
+                look_at=numbers,
             ),
             self.teacher.change, "maybe", numbers,
             ShowCreation(arrow),
@@ -3526,7 +3526,7 @@ class Show280Computation(Scene):
 class TeacherHoldUp(TeacherStudentsScene):
     def construct(self):
         self.play_all_student_changes(
-            "pondering", look_at_arg=2 * UP,
+            "pondering", look_at=2 * UP,
             added_anims=[
                 self.teacher.change, "raise_right_hand"
             ]
@@ -4278,7 +4278,7 @@ class TalkAboutProof(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "tired",
-            look_at_arg=teacher.bubble,
+            look_at=teacher.bubble,
             lag_ratio=0.1,
         )
         self.play(
@@ -4310,7 +4310,7 @@ class TalkAboutProof(TeacherStudentsScene):
         self.play(ca[0].set_color, YELLOW)
         self.wait(2)
         self.play_all_student_changes(
-            "confused", look_at_arg=ca,
+            "confused", look_at=ca,
         )
         self.wait(4)
 

@@ -221,13 +221,13 @@ class LeaveItToComputers(TeacherStudentsScene):
             cramer_groups[0].next_to, cramer_groups[1], LEFT, MED_LARGE_BUFF,
             FadeIn(cramer_groups[1]),
             FadeOut(system),
-            self.change_students(*3 * ["horrified"], look_at_arg=UP),
+            self.change_students(*3 * ["horrified"], look_at=UP),
         )
         self.wait()
         self.play(
             FadeIn(cramer_groups[2]),
             cramer_groups[:2].next_to, cramer_groups[2], LEFT, MED_LARGE_BUFF,
-            self.change_students(*3 * ["horrified"], look_at_arg=UP),
+            self.change_students(*3 * ["horrified"], look_at=UP),
         )
         self.wait()
 
@@ -239,7 +239,7 @@ class LeaveItToComputers(TeacherStudentsScene):
             Write(rule_text),
             self.change_students(
                 "pondering", "erm", "maybe",
-                look_at_arg=brace,
+                look_at=brace,
             )
         )
         self.wait(3)
@@ -1600,7 +1600,7 @@ class TransformingAreasYCoord(LinearTransformationScene):
         self.play(randy.change, "confused", ip)
         self.play(Blink(randy), FadeIn(morty))
         self.play(
-            PiCreatureSays(morty, "Run with \\\\ me here...", look_at_arg=randy.eyes),
+            PiCreatureSays(morty, "Run with \\\\ me here...", look_at=randy.eyes),
             randy.look_at, morty.eyes,
         )
         self.play(Blink(morty))
@@ -2246,7 +2246,7 @@ class AreYouPausingAndPondering(TeacherStudentsScene):
             added_anims=[
                 RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand")
             ],
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(6)
 

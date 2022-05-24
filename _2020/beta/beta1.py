@@ -606,7 +606,7 @@ class LetsLookAtOneAnswer(TeacherStudentsScene):
             ]
         )
         self.look_at(self.screen)
-        self.play_all_student_changes("thinking", look_at_arg=self.screen)
+        self.play_all_student_changes("thinking", look_at=self.screen)
         self.wait(4)
 
 
@@ -923,7 +923,7 @@ class AskWhy(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Wait...why?",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.play(
             self.students[0].change, "confused", self.screen,
@@ -2065,7 +2065,7 @@ class ComplainAboutSimplisticModel(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand", axes,
             self.change_students(
                 "pondering", "erm", "sassy",
-                look_at_arg=axes,
+                look_at=axes,
             ),
             ShowCreation(
                 axes.graph,
@@ -3611,7 +3611,7 @@ class StateNeedForBayesRule(TeacherStudentsScene):
         )
         self.play_student_changes(
             "thinking", "thinking", "pondering",
-            look_at_arg=v_lines,
+            look_at=v_lines,
         )
         self.wait(2)
 
@@ -3622,7 +3622,7 @@ class StateNeedForBayesRule(TeacherStudentsScene):
                 FadeOut(v_lines, LEFT),
                 self.change_students(
                     "erm", "erm", "erm",
-                    look_at_arg=self.teacher.eyes,
+                    look_at=self.teacher.eyes,
                 )
             ]
         )

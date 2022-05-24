@@ -79,7 +79,7 @@ class QuadraticFormula(TeacherStudentsScene):
 
         self.play_student_changes(
             "angry", "tired", "sad",
-            look_at_arg=formula,
+            look_at=formula,
         )
         self.teacher_says(
             "It doesn't have\\\\to be this way.",
@@ -91,7 +91,7 @@ class QuadraticFormula(TeacherStudentsScene):
         self.wait(5)
         self.play_student_changes(
             "pondering", "thinking", "erm",
-            look_at_arg=formula
+            look_at=formula
         )
         self.wait(12)
 

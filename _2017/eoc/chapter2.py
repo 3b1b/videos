@@ -2510,7 +2510,7 @@ class Promotion(PiCreatureScene):
             PiCreatureSays(
                 mathy, "",
                 bubble_kwargs = {"width" : 5},
-                look_at_arg = morty.eyes,
+                look_at = morty.eyes,
             ),
             aops_logo.shift, 1.5*UP + 0.5*RIGHT
         )

@@ -110,7 +110,7 @@ class Introduction(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3, 
-            look_at_arg = disease_group
+            look_at = disease_group
         )
 
         poker_example.next_to(self.example, RIGHT)
@@ -1100,7 +1100,7 @@ class StatisticsVsEmpathy(PiCreatureScene):
         self.play(PiCreatureSays(
             morty, 
             "1 in 1{,}000 people \\\\ have this disease.",
-            look_at_arg = randy.eyes
+            look_at = randy.eyes
         ))
         self.play(randy.change, "pondering", morty.eyes)
         self.wait()
@@ -1118,7 +1118,7 @@ class StatisticsVsEmpathy(PiCreatureScene):
                 target_mode = "guilty",
                 bubble_class = ThoughtBubble,
                 content_introduction_class = FadeIn,
-                look_at_arg = sick_one,
+                look_at = sick_one,
             ),
             RemovePiCreatureBubble(morty)
         )
@@ -1223,13 +1223,13 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
         self.play(PiCreatureSays(
             randy, "I have the gift.",
             run_time = 1,
-            look_at_arg = morty.eyes,
+            look_at = morty.eyes,
         ))
         self.wait()
         self.play(RemovePiCreatureBubble(
             randy,
             target_mode = "happy",
-            look_at_arg = morty.eyes
+            look_at = morty.eyes
         ))
 
     def generate_random_number(self):
@@ -1266,7 +1266,7 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
         self.play(PiCreatureSays(
             randy, number_copy,
             target_mode = "hooray",
-            look_at_arg = morty.eyes
+            look_at = morty.eyes
         ))
         self.wait()
 
@@ -1293,13 +1293,13 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
             PiCreatureSays(
                 morty, "You probably \\\\ got lucky.",
                 target_mode = "sassy",
-                look_at_arg = randy.eyes,
+                look_at = randy.eyes,
                 bubble_kwargs = {"height" : 3, "width" : 4}
             ),
             RemovePiCreatureBubble(
                 randy, 
                 target_mode = "plain",
-                look_at_arg = morty.eyes,
+                look_at = morty.eyes,
             )
         )
         self.wait(2)
@@ -1442,7 +1442,7 @@ class ExampleMeasuresDisbeliefInStatistics(Introduction):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = statistics_to_belief
+            look_at = statistics_to_belief
         )
         self.wait(3)
 

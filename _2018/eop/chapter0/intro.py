@@ -43,7 +43,7 @@ class Introduction(TeacherStudentsScene):
         self.teacher_says(words, target_mode = "hooray")
         self.play_student_changes(
             *["hooray"]*3,
-            look_at_arg = series[1].get_left(),
+            look_at = series[1].get_left(),
             added_anims = [
                 ApplyMethod(this_video.restore, run_time = 3),
             ]

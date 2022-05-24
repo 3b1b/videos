@@ -161,7 +161,7 @@ class ButFirst(TeacherStudentsScene):
         ))
         self.play_student_changes(
             *["pondering"] * 3,
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.play(self.teacher.look_at, self.screen)
         self.wait(4)
@@ -275,7 +275,7 @@ class WhoCares(TeacherStudentsScene):
         #         FadeInFromDown, quotes,
         #         run_time=3
         #     ),
-        #     self.change_students(*3 * ["pondering"], look_at_arg=quotes)
+        #     self.change_students(*3 * ["pondering"], look_at=quotes)
         # )
         # self.wait(2)
 
@@ -311,7 +311,7 @@ class WhoCares(TeacherStudentsScene):
         #     ShowCreation(hn_rect),
         #     self.change_students(
         #         "erm", "thinking", "confused",
-        #         look_at_arg=hn_quote,
+        #         look_at=hn_quote,
         #     )
         # )
         # self.add_foreground_mobjects(vr_headsets)
@@ -322,7 +322,7 @@ class WhoCares(TeacherStudentsScene):
         #     ),
         #     self.change_students(
         #         *3 * ["sick"],
-        #         look_at_arg=hn_quote,
+        #         look_at=hn_quote,
         #         run_time=3
         #     )
         # )
@@ -345,7 +345,7 @@ class WhoCares(TeacherStudentsScene):
         t_quote.fade(1)
         t_quote.to_corner(UL)
         self.play(
-            self.change_students(*3 * ["pondering"], look_at_arg=quotes),
+            self.change_students(*3 * ["pondering"], look_at=quotes),
             t_quote.set_opacity, 1,
             t_quote.scale, 2,
             t_quote.to_corner, UL,
@@ -353,7 +353,7 @@ class WhoCares(TeacherStudentsScene):
         self.wait(2)
         self.play_student_changes(
             "pondering", "happy", "tease",
-            look_at_arg=t_quote
+            look_at=t_quote
         )
         self.wait(2)
         self.play(FadeOut(t_quote))
@@ -878,7 +878,7 @@ class RememberComplexNumbers(TeacherStudentsScene):
             FadeInFromDown(complex_number),
             self.change_students(
                 "thinking", "confused", "happy",
-                look_at_arg=complex_number.get_center() + UP
+                look_at=complex_number.get_center() + UP
             ),
             run_time=2
         )
@@ -1379,7 +1379,7 @@ class ExpandOutFullProduct(TeacherStudentsScene):
         self.play(Write(words))
         self.play_student_changes(
             "pondering", "confused", "erm",
-            look_at_arg=words
+            look_at=words
         )
         self.wait(5)
 

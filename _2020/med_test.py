@@ -1332,7 +1332,7 @@ class AskWhatTheParadoxIs(TeacherStudentsScene):
         self.student_says(
             "How's that\\\\a paradox?",
             target_mode="sassy",
-            look_at_arg=self.teacher.eyes,
+            look_at=self.teacher.eyes,
             student_index=2,
             added_anims=[
                 self.students[0].change, "pondering", image,
@@ -1372,7 +1372,7 @@ class AskWhatTheParadoxIs(TeacherStudentsScene):
             TransformFromCopy(lower_words, top_words[0]),
             RemovePiCreatureBubble(
                 self.teacher, target_mode="raise_right_hand",
-                look_at_arg=top_words,
+                look_at=top_words,
             ),
             *(ApplyMethod(pi.look_at, top_words) for pi in self.students)
         )
@@ -1929,7 +1929,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
         self.play(
             self.students[0].change, "thinking", p_triangle,
             RemovePiCreatureBubble(
-                self.students[1], target_mode="tease", look_at_arg=p_triangle,
+                self.students[1], target_mode="tease", look_at=p_triangle,
             ),
             self.students[2].change, "raise_right_hand", p_triangle,
             self.teacher.change, "tease", p_triangle,
@@ -1946,7 +1946,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
 
         self.play(
             FadeIn(v_paradox, shift=UP),
-            self.change_students(*3 * ["pondering"], look_at_arg=v_paradox),
+            self.change_students(*3 * ["pondering"], look_at=v_paradox),
             FadeOut(p_triangle, shift=UP),
             self.teacher.change, "raise_right_hand", v_paradox
         )
@@ -1978,7 +1978,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             ShowCreation(goal_line),
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=goal_line,
+                look_at=goal_line,
             )
         )
         self.wait()
@@ -2039,7 +2039,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.play(ShowCreationThenFadeAround(stats[1][1][1]))
         self.play_student_changes(
             "pondering", "thinking", "confused",
-            look_at_arg=stats[1]
+            look_at=stats[1]
         )
         self.wait()
 
@@ -2061,7 +2061,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             FadeIn(stats[2], 0.5 * UP),
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand", stats[2],
-            self.change_students(*3 * ["pondering"], look_at_arg=stats[2])
+            self.change_students(*3 * ["pondering"], look_at=stats[2])
         )
         self.play(ShowCreationThenFadeAround(stats[2][1][1]))
         self.wait(2)
@@ -2094,7 +2094,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "thinking", "confused",
-            look_at_arg=self.teacher.get_bottom(),
+            look_at=self.teacher.get_bottom(),
         )
         self.wait(2)
         self.student_says(
@@ -2112,7 +2112,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.wait(2)
         self.play_student_changes(
             "thinking", "hooray", "thinking",
-            look_at_arg=self.students[1].bubble.content,
+            look_at=self.students[1].bubble.content,
         )
         self.wait(3)
 
@@ -3433,7 +3433,7 @@ class RuleOfThumb(Scene):
             PiCreatureSays(
                 morty, "This equation\\\\is precisely true!",
                 bubble_kwargs={"height": 2, "width": 3},
-                look_at_arg=randy.eyes,
+                look_at=randy.eyes,
             ),
             GrowFromPoint(eq, morty.get_corner(UL)),
             FadeOut(approx, 0.25 * DL),
@@ -4140,7 +4140,7 @@ class AskWhyItWorks(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "erm", "confused",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.play(self.teacher.change, "happy")
         self.wait(3)
@@ -5238,7 +5238,7 @@ class ContrastTwoFormulas(Scene):
             content_introduction_class=FadeIn,
             bubble_creation_class=FadeIn,
             target_mode="raise_left_hand",
-            look_at_arg=morty.eyes,
+            look_at=morty.eyes,
             run_time=1,
         ))
         content = TexText("Bayes factor 100", tex_to_color_map={"$+$": GREEN})
@@ -5248,7 +5248,7 @@ class ContrastTwoFormulas(Scene):
             bubble_kwargs={"height": 2, "width": 3},
             content_introduction_class=FadeIn,
             bubble_creation_class=FadeIn,
-            look_at_arg=randy.eyes,
+            look_at=randy.eyes,
             run_time=1
         ))
         for x in range(2):
@@ -5695,7 +5695,7 @@ class AskAboutHowItsSoLow(TeacherStudentsScene):
         )
         self.play_student_changes(
             "confused", "maybe", "confused",
-            look_at_arg=question,
+            look_at=question,
         )
         self.wait()
         self.play(self.teacher.change, "tease", question)
@@ -5732,7 +5732,7 @@ class HowDoesUpdatingWork(TeacherStudentsScene):
             FadeIn(sample_pop, shift=UP, scale=1.5),
             self.change_students(
                 "pondering", "thinking", "pondering",
-                look_at_arg=sample_pop,
+                look_at=sample_pop,
             )
         )
         self.wait(2)

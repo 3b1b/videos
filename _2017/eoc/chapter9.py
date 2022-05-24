@@ -1977,7 +1977,7 @@ class ASecondIntegralSensation(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = numbers
+            look_at = numbers
         )
         self.play(Write(plusses))
         self.wait()
@@ -1986,7 +1986,7 @@ class ASecondIntegralSensation(TeacherStudentsScene):
 
         self.play_student_changes(
             *["confused"]*3,
-            look_at_arg = continuum,
+            look_at = continuum,
             added_anims = [Write(continuum, run_time = 2)]
         )
         self.play(ShowCreation(arrow))
@@ -2000,7 +2000,7 @@ class ASecondIntegralSensation(TeacherStudentsScene):
         self.wait(2)
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = sigma_to_integral,
+            look_at = sigma_to_integral,
             added_anims = [
                 Write(sigma_to_integral),
                 self.teacher.change_mode, "raise_right_hand"

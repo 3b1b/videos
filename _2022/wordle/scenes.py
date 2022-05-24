@@ -1073,7 +1073,7 @@ class AskWhatWorldeIs(TeacherStudentsScene):
         )
         self.play_student_changes(
             "raise_left_hand", "hesitant", "happy",
-            look_at_arg=self.students[0].bubble,
+            look_at=self.students[0].bubble,
         )
         self.wait(3)
 
@@ -1847,7 +1847,7 @@ class DescribeBit(TeacherStudentsScene):
         )
         self.play_student_changes(
             "happy", "pondering", "thinking",
-            look_at_arg=words
+            look_at=words
         )
         self.wait(4)
 
@@ -3186,7 +3186,7 @@ class WhatMakesWordleNice(TeacherStudentsScene):
             TexText("This is what makes wordle\\\\such a nice example"),
             added_anims=[self.change_students(
                 "pondering", "thinking", "erm",
-                look_at_arg=ORIGIN,
+                look_at=ORIGIN,
             )]
         )
         self.wait(5)
@@ -3378,7 +3378,7 @@ class FirstThoughtsOnCombination(Scene):
         self.play(PiCreatureBubbleIntroduction(
             morty,
             TexText("How should I measure\\\\guess quality?", font_size=36),
-            look_at_arg=example,
+            look_at=example,
             target_mode="pondering",
             bubble_class=ThoughtBubble,
             bubble_kwargs={"width": 4, "height": 3},

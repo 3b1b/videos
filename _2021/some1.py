@@ -129,7 +129,7 @@ class Featuring(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("tease"),
-            self.change_students(*3 * ["hooray"], look_at_arg=screen),
+            self.change_students(*3 * ["hooray"], look_at=screen),
             FadeIn(screen, UP)
         )
         self.play(Write(words))
@@ -138,7 +138,7 @@ class Featuring(TeacherStudentsScene):
         self.student_says(
             TexText("Anything\\\\else?"),
             target_mode="raise_left_hand",
-            look_at_arg=self.teacher,
+            look_at=self.teacher,
         )
         self.play(self.teacher.change("sassy"))
         self.wait(2)
@@ -305,7 +305,7 @@ class ButIHaveNoExperience(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pleading", "pondering", "pondering",
-            look_at_arg=self.students[0].bubble,
+            look_at=self.students[0].bubble,
         )
         self.students[0].look_at(self.teacher.eyes)
         self.play(self.teacher.change("tease", self.students[0].eyes))

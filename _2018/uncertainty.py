@@ -2414,7 +2414,7 @@ class AmbiguityInLongEchos(IntroduceDopplerRadar, PiCreatureScene):
                 "height": 1.5,
             },
             target_mode = "maybe",
-            look_at_arg = brace,
+            look_at = brace,
         ))
         self.play(Blink(randy))
         self.play(LaggedStartMap(
@@ -4480,7 +4480,7 @@ class Promotion(PiCreatureScene):
             PiCreatureSays(
                 mathy, "",
                 bubble_kwargs = {"width" : 5},
-                look_at_arg = morty.eyes,
+                look_at = morty.eyes,
             ),
             morty.change, "happy",
             aops_logo.shift, 1.5*UP + 0.5*RIGHT

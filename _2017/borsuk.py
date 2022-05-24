@@ -1641,7 +1641,7 @@ class ThinkAboutTheChoices(TeacherStudentsScene):
         """)
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
+            look_at = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
         )
         self.wait(3)
 
@@ -1883,7 +1883,7 @@ class CompareThisToSphereChoice(TeacherStudentsScene):
         """)
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
+            look_at = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
         )
         self.wait(3)
 

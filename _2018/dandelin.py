@@ -188,14 +188,14 @@ class HoldUpProof(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand", self.screen,
             self.change_students(
                 "pondering", "confused", "maybe",
-                look_at_arg=title
+                look_at=title
             )
         )
         self.look_at(title)
         self.wait(5)
         self.play_student_changes(
             "happy", "thinking", "hooray",
-            look_at_arg=title
+            look_at=title
         )
         self.wait(5)
 
@@ -872,7 +872,7 @@ class ShowMeasurementBook(TeacherStudentsScene):
             FadeIn(words, RIGHT),
             self.change_students(
                 "thinking", "happy", "pondering",
-                look_at_arg=arrow
+                look_at=arrow
             )
         )
         self.wait(3)
@@ -1688,7 +1688,7 @@ class ReactionToGlimpseOfGenius(TeacherStudentsScene, CreativeConstruction):
             GrowArrow(arrow),
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=clock
+                look_at=clock
             )
         )
         self.play(
@@ -1699,7 +1699,7 @@ class ReactionToGlimpseOfGenius(TeacherStudentsScene, CreativeConstruction):
             lightbulb.move_to, 2 * UP,
             self.change_students(
                 *3 * ["awe"],
-                look_at_arg=2 * UP
+                look_at=2 * UP
             ),
             run_time=1
         )

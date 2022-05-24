@@ -1138,7 +1138,7 @@ class HereWeTackle4d(TeacherStudentsScene):
         self.wait()
         self.play_student_changes(
             "erm", "thinking", "pondering",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(3)
         self.play_student_changes(
@@ -2164,7 +2164,7 @@ class IfYouNeedAWarmUp(TeacherStudentsScene):
             bubble_kwargs={"width": 3.5, "height": 3},
         )
         self.play_all_student_changes(
-            "pondering", look_at_arg=screen,
+            "pondering", look_at=screen,
         )
         self.wait(3)
         self.play(RemovePiCreatureBubble(self.teacher))
@@ -5461,7 +5461,7 @@ class ShowDistributionOfI(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "raise_left_hand", "erm",
-            look_at_arg=top_product,
+            look_at=top_product,
         )
         self.wait(2)
         self.play(
@@ -6161,7 +6161,7 @@ class ShareWithFriends(PiCreatureScene):
                 "height": 3,
             },
             target_mode="hooray",
-            look_at_arg=pi2.eyes,
+            look_at=pi2.eyes,
             added_anims=[
                 ApplyMethod(
                     pi2.change, "confused",

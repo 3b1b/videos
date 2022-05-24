@@ -705,7 +705,7 @@ class IveSeenThis(TeacherStudentsScene):
         self.student_says(
             "I've seen this one",
             target_mode="surprised",
-            look_at_arg=equation,
+            look_at=equation,
             added_anims=[
                 self.students[0].change("tease", equation),
                 self.students[1].change("happy", equation),
@@ -720,7 +720,7 @@ class IveSeenThis(TeacherStudentsScene):
             RemovePiCreatureBubble(
                 self.students[2],
                 target_mode="raise_right_hand",
-                look_at_arg=mandelbrot_outline,
+                look_at=mandelbrot_outline,
             ),
             FadeIn(mandelbrot_outline, 0.5 * UP, scale=2),
             self.students[0].change("pondering", mandelbrot_outline),
@@ -1084,7 +1084,7 @@ class AskAboutGeneralTheory(TeacherStudentsScene):
             TexText("Think about constructing\\\\a general theory"),
             added_anims=[self.change_students(
                 "pondering", "thinking", "pondering",
-                look_at_arg=UP,
+                look_at=UP,
             )]
         )
         self.wait(3)
@@ -1933,7 +1933,7 @@ class Cycles(FixedPoints):
             RemovePiCreatureBubble(
                 morty,
                 target_mode="pondering",
-                look_at_arg=z2c,
+                look_at=z2c,
             )
         )
         self.wait()
@@ -2298,18 +2298,18 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
             self.teacher.change("raise_right_hand", 3 * UR),
             self.change_students(
                 "raise_left_hand", "pondering", "pondering",
-                look_at_arg=3 * UR,
+                look_at=3 * UR,
             )
         )
         self.play_student_changes(
             "raise_left_hand", "erm", "erm",
-            look_at_arg=3 * UR,
+            look_at=3 * UR,
         )
         self.wait()
         self.play(self.teacher.change("tease", 3 * UR))
         self.play_student_changes(
             "confused", "pondering", "thinking",
-            look_at_arg=3 * UR,
+            look_at=3 * UR,
         )
         self.wait(8)
         return
@@ -3383,7 +3383,7 @@ class LattesExample(TeacherStudentsScene):
             self.teacher.change("raise_right_hand", 3 * UR),
             self.change_students(
                 "pondering", "happy", "tease",
-                look_at_arg=3 * UR
+                look_at=3 * UR
             )
         )
         self.wait(3)
@@ -3393,7 +3393,7 @@ class LattesExample(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "pondering", "pondering",
-            look_at_arg=example,
+            look_at=example,
         )
 
         self.play(
@@ -3401,7 +3401,7 @@ class LattesExample(TeacherStudentsScene):
             FadeIn(j_fact),
             self.change_students(
                 "erm", "erm", "erm",
-                look_at_arg=j_fact,
+                look_at=j_fact,
             ),
             self.teacher.change("raise_right_hand", j_fact)
         )
@@ -3433,7 +3433,7 @@ class LinksBelow(TeacherStudentsScene):
         self.teacher_says("Links below")
         self.play_student_changes(
             "pondering", "thinking", "pondering",
-            look_at_arg=FRAME_HEIGHT * DOWN,
+            look_at=FRAME_HEIGHT * DOWN,
         )
         self.wait(2)
         self.play(self.teacher.change("happy"))

@@ -1327,7 +1327,7 @@ class WhyTortureMatrices(TeacherStudentsScene):
     def construct(self):
         self.play_student_changes(
             "maybe", "confused", "erm",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         q_marks = VGroup()
         for student in self.students:
@@ -1342,7 +1342,7 @@ class WhyTortureMatrices(TeacherStudentsScene):
             added_anims=[FadeOut(q_marks)],
         )
         self.play(
-            self.change_students("confused", "pondering", "raise_left_hand", look_at_arg=self.screen),
+            self.change_students("confused", "pondering", "raise_left_hand", look_at=self.screen),
             self.teacher.change("tease", self.screen)
         )
         self.wait(2)
@@ -2809,7 +2809,7 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
         rect.to_corner(UR)
         self.play(
             morty.change("raise_right_hand", rect),
-            self.change_students("pondering", "pondering", "pondering", look_at_arg=rect),
+            self.change_students("pondering", "pondering", "pondering", look_at=rect),
             FadeIn(rect, UP)
         )
         self.wait(10)
@@ -4049,7 +4049,7 @@ class ThatsHorrifying(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "thinking", "hesitant",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.wait(3)
 
@@ -5051,7 +5051,7 @@ class StoryForAnotherTime(TeacherStudentsScene):
         self.teacher_says(
             TexText("The full story\\\\takes more time."),
             bubble_kwargs={"height": 3, "width": 3.5},
-            added_anims=[self.change_students("confused", "erm", "hesitant", look_at_arg=self.screen)]
+            added_anims=[self.change_students("confused", "erm", "hesitant", look_at=self.screen)]
         )
         self.wait(5)
 
@@ -5893,7 +5893,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
             self.teacher.change("raise_right_hand", trace_eq),
             FadeIn(trace_eq, 0.5 * UP),
         )
-        self.play_student_changes("pondering", "confused", "pondering", look_at_arg=trace_eq)
+        self.play_student_changes("pondering", "confused", "pondering", look_at=trace_eq)
         self.wait(2)
 
         text = TexText("Diagonalization $\\rightarrow$ Easier computation")

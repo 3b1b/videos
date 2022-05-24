@@ -452,7 +452,7 @@ class Antiderivative(PiCreatureScene):
         self.pi_creature_says(
             "But first!", 
             target_mode = "surprised",
-            look_at_arg = 50*OUT,
+            look_at = 50*OUT,
             added_anims = [group.to_edge, LEFT],
             run_time = 1,
         )

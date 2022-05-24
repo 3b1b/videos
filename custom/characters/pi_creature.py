@@ -173,10 +173,10 @@ class PiCreature(SVGMobject):
         self.look(point - self.eyes.get_center())
         return self
 
-    def change(self, new_mode, look_at_arg=None):
+    def change(self, new_mode, look_at=None):
         animation = self.animate.change_mode(new_mode)
-        if look_at_arg is not None:
-            animation = animation.look_at(look_at_arg)
+        if look_at is not None:
+            animation = animation.look_at(look_at)
         return animation
 
     def get_looking_direction(self):

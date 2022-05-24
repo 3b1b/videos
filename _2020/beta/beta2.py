@@ -704,7 +704,7 @@ class TeacherHoldingValue(TeacherStudentsScene):
         self.play(self.teacher.change, "raise_right_hand", self.screen)
         self.play_all_student_changes(
             "pondering",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.wait(8)
 
@@ -1547,7 +1547,7 @@ class ComplainAboutRuleChange(TeacherStudentsScene):
         self.teacher_says("You may enjoy\\\\``Measure theory''")
         self.play_all_student_changes(
             "pondering",
-            look_at_arg=self.teacher.bubble
+            look_at=self.teacher.bubble
         )
         self.wait(8)
 

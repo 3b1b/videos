@@ -345,7 +345,7 @@ class WhoCares(TeacherStudentsScene):
             PiCreatureSays(
                 self.students[1], "Ooh, quintics...",
                 target_mode="thinking",
-                look_at_arg=self.screen,
+                look_at=self.screen,
                 bubble_kwargs={
                     "direction": LEFT,
                     "width": 4,
@@ -372,7 +372,7 @@ class WhoCares(TeacherStudentsScene):
             self.students[0].change("confused", screen),
             RemovePiCreatureBubble(
                 self.students[1],
-                look_at_arg=self.students[2].eyes,
+                look_at=self.students[2].eyes,
                 target_mode="erm",
             ),
             lag_ratio=0.1,
@@ -952,7 +952,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         # Student asks about what the function is.
         self.student_says(
             TexText("Wait, what is that\\\\function exactly?"),
-            look_at_arg=image1,
+            look_at=image1,
             student_index=2,
             added_anims=[
                 self.students[0].change("confused", image1),
@@ -993,7 +993,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
 
         self.play_all_student_changes(
             "confused",
-            look_at_arg=image1,
+            look_at=image1,
         )
         self.teacher_says(
             Tex("P(x) = 0"),
@@ -1005,10 +1005,10 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         )
         self.wait(4)
         self.play(
-            RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at_arg=image1),
+            RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at=image1),
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=image1,
+                look_at=image1,
             ),
             FadeOut(image2),
         )
@@ -1432,7 +1432,7 @@ class AskAboutFractals(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "pondering",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(2)
 
@@ -1974,7 +1974,7 @@ class AssumingItsGood(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "pondering", "tease",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.pi_creatures.refresh_triangulation()
         self.wait(3)
@@ -1983,7 +1983,7 @@ class AssumingItsGood(TeacherStudentsScene):
 class PauseAndPonder(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Pause and\nponder", target_mode="hooray")
-        self.play_all_student_changes("thinking", look_at_arg=self.screen)
+        self.play_all_student_changes("thinking", look_at=self.screen)
         self.wait(4)
 
 
@@ -3110,7 +3110,7 @@ class ChaosOnBoundary(TeacherStudentsScene):
                 "width": 3,
             }
         )
-        self.play_all_student_changes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at=self.screen)
         self.wait(3)
 
 
@@ -3248,7 +3248,7 @@ class WhatsGoingOn(TeacherStudentsScene):
         self.student_says(
             "What the %$!* is\ngoing on?",
             target_mode="angry",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             student_index=2,
             added_anims=[LaggedStart(*(
                 pi.change("guilty", self.students[2].eyes)
@@ -3555,7 +3555,7 @@ class UnrelatedIdeas(TeacherStudentsScene):
 
         self.play_student_changes(
             "tease", "thinking", "raise_right_hand",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[self.teacher.change("happy")]
         )
         self.wait(2)
@@ -4313,7 +4313,7 @@ class ThinkAboutWhatPropertyMeans(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "thinking", "pondering",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(4)
 

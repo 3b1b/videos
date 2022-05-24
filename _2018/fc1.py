@@ -67,7 +67,7 @@ class CrossingOneMillion(TeacherStudentsScene):
             self.teacher.change, "pondering", number,
             self.change_students(
                 *["pondering"] * 3,
-                look_at_arg=number
+                look_at=number
             ),
         )
         self.play(

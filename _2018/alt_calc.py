@@ -1048,7 +1048,7 @@ class SetTheStage(TeacherStudentsScene):
             self.change_students(*3 * ["erm"])
         )
         self.wait(3)
-        self.play_all_student_changes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at=self.screen)
 
 
 class StandardDerivativeVisual(GraphScene):
@@ -2009,7 +2009,7 @@ class FeelsALittleCramped(TeacherStudentsScene):
         self.teacher_says(
             "Sure, but think \\\\ locally"
         )
-        self.play_all_student_changes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at=self.screen)
         self.wait(3)
 
 
@@ -2074,7 +2074,7 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
             PiCreatureSays(
                 friend, "Would this be valid? \\\\ If not, why not?",
                 target_mode="confused",
-                look_at_arg=frac,
+                look_at=frac,
                 bubble_kwargs={
                     "direction": RIGHT,
                     "width": 4,
@@ -2088,7 +2088,7 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
         anims = [
             RemovePiCreatureBubble(
                 friend, target_mode="pondering",
-                look_at_arg=frac
+                look_at=frac
             ),
         ]
         if self.remove_initial_rhs:
@@ -3375,14 +3375,14 @@ class NotBetterThanGraphs(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand"
         )
         self.play_all_student_changes(
-            "confused", look_at_arg=self.screen
+            "confused", look_at=self.screen
         )
         self.wait(3)
         self.teacher_says(
             "You must flex those \\\\ conceptual muscles",
             added_anims=[self.change_students(
                 *3 * ["thinking"],
-                look_at_arg=self.teacher.eyes
+                look_at=self.teacher.eyes
             )]
         )
         self.wait(3)

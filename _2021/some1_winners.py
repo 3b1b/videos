@@ -239,7 +239,7 @@ class Introduction(TeacherStudentsScene):
             ShowCreation(arrow),
             self.change_students(
                 "pondering", "pondering", "erm",
-                look_at_arg=salt,
+                look_at=salt,
             )
         )
         self.play(
@@ -661,7 +661,7 @@ class AlmostTooGood(TeacherStudentsScene):
         self.pi_creatures.flip().flip()
         self.teacher_says(
             TexText("Almost \\emph{too} good"),
-            look_at_arg=self.students[2].eyes,
+            look_at=self.students[2].eyes,
             added_anims=[self.change_students("happy", "tease", "hesitant")],
         )
         self.wait(4)
@@ -707,7 +707,7 @@ class SureSure(TeacherStudentsScene):
         self.students.flip().flip()
         self.teacher_says(
             "The point is \n not the winners",
-            look_at_arg=self.students[2].eyes,
+            look_at=self.students[2].eyes,
             bubble_kwargs={"height": 3, "width": 4}
         )
         self.play(PiCreatureSays(

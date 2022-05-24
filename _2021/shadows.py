@@ -734,7 +734,7 @@ class AskAboutAveraging(TeacherStudentsScene):
 
         self.play_student_changes(
             "maybe", "thinking", "erm",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[self.teacher.change("raise_right_hand", self.screen)]
         )
         self.wait(3)
@@ -742,7 +742,7 @@ class AskAboutAveraging(TeacherStudentsScene):
             PiCreatureBubbleIntroduction(
                 sts[2], TexText("What does that\\\\mean, exactly?"),
                 target_mode="hesitant",
-                look_at_arg=self.screen,
+                look_at=self.screen,
                 bubble_kwargs={"direction": LEFT}
             ),
             LaggedStart(
@@ -760,7 +760,7 @@ class AskAboutAveraging(TeacherStudentsScene):
         self.wait(4)
         self.student_says(
             TexText("But what defines a\\\\``random'' toss?"),
-            look_at_arg=self.screen,
+            look_at=self.screen,
             target_mode="hesitant",
             student_index=2,
             added_anims=[
@@ -779,7 +779,7 @@ class AskAboutAveraging(TeacherStudentsScene):
         self.wait(3)
         self.play_student_changes(
             "thinking", "tease", "pondering",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[self.teacher.change("tease", self.students)]
         )
         self.wait(4)
@@ -933,7 +933,7 @@ class PauseAndPonder(TeacherStudentsScene):
             TexText("The goal is\\\\not speed."),
             added_anims=[self.change_students(
                 "tease", "well", "pondering",
-                look_at_arg=self.screen
+                look_at=self.screen
             )]
         )
         self.wait(2)
@@ -950,7 +950,7 @@ class PauseAndPonder(TeacherStudentsScene):
                     direction=LEFT,
                 ),
                 target_mode="thinking",
-                look_at_arg=self.screen,
+                look_at=self.screen,
             )
         )
         self.wait(3)
@@ -1588,7 +1588,7 @@ class NotQuiteRight(TeacherStudentsScene):
             added_anims=[
                 self.change_students(
                     "pondering", "thinking", "erm",
-                    look_at_arg=self.screen,
+                    look_at=self.screen,
                 )
             ]
         )
@@ -2205,7 +2205,7 @@ class IsntThatObvious(TeacherStudentsScene):
                 "direction": LEFT,
             },
             target_mode="angry",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[LaggedStart(
                 self.teacher.change("guilty"),
                 self.students[0].change("pondering", self.screen),
@@ -3855,7 +3855,7 @@ class ThreeCamps(TeacherStudentsScene):
             self.play(
                 PiCreatureSays(
                     student, phrase, target_mode=mode,
-                    look_at_arg=image,
+                    look_at=image,
                     bubble_kwargs={
                         "direction": LEFT,
                         "width": 3,
@@ -5232,7 +5232,7 @@ class ComplainAboutProgress(TeacherStudentsScene):
         )
         self.play_student_changes(
             "guilty", "erm",
-            look_at_arg=self.students[2].eyes,
+            look_at=self.students[2].eyes,
             added_anims=[self.teacher.change("guilty")],
         )
         self.wait(4)
@@ -5842,7 +5842,7 @@ class ButSpheresAreSmooth(TeacherStudentsScene):
         )
         self.play_student_changes(
             "erm", "hesitant", "angry",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.wait(6)
 
@@ -6006,7 +6006,7 @@ class MultipleMathematicalBackgrounds(TeacherStudentsScene):
             self.teacher.change("raise_right_hand"),
             self.change_students(
                 "pondering", "thinking", "pondering",
-                look_at_arg=self.teacher.eyes,
+                look_at=self.teacher.eyes,
             ),
         )
         self.play(
@@ -6043,7 +6043,7 @@ class MultipleMathematicalBackgrounds(TeacherStudentsScene):
             self.teacher.change("raise_right_hand"),
             self.change_students(
                 "erm", "pondering", "thinking",
-                look_at_arg=self.students.get_center() + 4 * UP
+                look_at=self.students.get_center() + 4 * UP
             ),
             LaggedStartMap(FadeIn, methods, lag_ratio=0.5),
             LaggedStartMap(ShowCreation, new_lines, lag_ratio=0.5),
@@ -6541,7 +6541,7 @@ class GoalsOfMath(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("raise_right_hand", words),
-            self.change_students(*3 * ["pondering"], look_at_arg=words),
+            self.change_students(*3 * ["pondering"], look_at=words),
             Write(words)
         )
         self.wait(2)
@@ -6550,7 +6550,7 @@ class GoalsOfMath(TeacherStudentsScene):
             aq.animate.shift(0.5 * DOWN).set_opacity(0.2),
             Write(dni),
             self.teacher.change("well", words),
-            self.change_students(*3 * ["thinking"], look_at_arg=words)
+            self.change_students(*3 * ["thinking"], look_at=words)
         )
         self.wait(3)
 

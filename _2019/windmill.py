@@ -3336,7 +3336,7 @@ class FailureToEmpathize(PiCreatureScene):
         self.pi_creature_thinks(
             randy, equation,
             target_mode="confused",
-            look_at_arg=equation,
+            look_at=equation,
         )
         randy_group = VGroup(
             randy, randy.bubble,

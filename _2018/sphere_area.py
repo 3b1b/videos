@@ -2652,7 +2652,7 @@ class AskAboutDirectConnection(TeacherStudentsScene, SpecialThreeDScene):
             self.teacher.change, "raise_right_hand",
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=group,
+                look_at=group,
             ),
             LaggedStartMap(FadeInFromDown, group),
             LaggedStartMap(GrowArrow, arrows)
@@ -2737,7 +2737,7 @@ class NobodyLikesHomework(TeacherStudentsScene):
         )
         self.wait()
         self.play_all_student_changes(
-            "tired", look_at_arg=8 * RIGHT + 4 * DOWN,
+            "tired", look_at=8 * RIGHT + 4 * DOWN,
             added_anims=[self.teacher.change, "tease"]
         )
         self.wait(2)

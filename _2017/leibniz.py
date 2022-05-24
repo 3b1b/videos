@@ -337,7 +337,7 @@ class ShowSum(TeacherStudentsScene):
 
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = line,
+            look_at = line,
             added_anims = [
                 FadeIn(VGroup(line, dot)),
                 FadeIn(lhs),
@@ -530,7 +530,7 @@ class Outline(PiCreatureScene):
         question.next_to(self.pi_creature.body, LEFT, aligned_edge = UP)
         self.think(
             "Who am I really?",
-            look_at_arg = question,
+            look_at = question,
             added_anims = [
                 FadeIn(question)
             ]
@@ -1338,7 +1338,7 @@ class Given2DThinkComplex(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["thinking"]*3,
-            look_at_arg = plane
+            look_at = plane
         )
         self.wait(3)
 
@@ -1904,7 +1904,7 @@ class FactorOrdinaryNumber(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = equation,
+            look_at = equation,
             added_anims = [self.teacher.change_mode, "happy"]
         )
         self.wait()
@@ -1921,7 +1921,7 @@ class FactorOrdinaryNumber(TeacherStudentsScene):
             if alt_rhs is alt_rhs_list[-2]:
                 self.play_student_changes(
                     *["sassy"]*3,
-                    look_at_arg = alt_rhs,
+                    look_at = alt_rhs,
                     added_anims = [Write(title[0])]
                 )
             self.wait(2)
@@ -2310,7 +2310,7 @@ class FactorizationPattern(Scene):
             bubble_class = ThoughtBubble,
             bubble_kwargs = {"height" : 2, "width" : 3},
             target_mode = "confused",
-            look_at_arg = self.number_line,
+            look_at = self.number_line,
         ))
         self.play(Blink(randy))
         self.wait()
@@ -3325,7 +3325,7 @@ class SummarizeCountingRule(Show125Circle):
             bubble_class = ThoughtBubble,
             bubble_kwargs = {"height" : 3, "width" : 3},
             target_mode = "confused",
-            look_at_arg = self.count_words
+            look_at = self.count_words
         ))
         self.play(Blink(randy))
         self.wait()
@@ -4683,7 +4683,7 @@ class IntersectionOfTwoFields(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["thinking"]*3,
-            look_at_arg = mid_words
+            look_at = mid_words
         )
         self.wait(3)
 

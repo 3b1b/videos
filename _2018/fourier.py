@@ -87,7 +87,7 @@ class Introduction(TeacherStudentsScene):
 
         self.student_thinks(
             "What's that?",
-            look_at_arg = title,
+            look_at = title,
             target_mode = "confused",
             student_index = 1,
         )
@@ -1671,7 +1671,7 @@ class StudentsHorrifiedAtScene(TeacherStudentsScene):
     def construct(self):
         self.play_student_changes(
             *3*["horrified"],
-            look_at_arg = 2*UP + 3*LEFT
+            look_at = 2*UP + 3*LEFT
         )
         self.wait(4)
 

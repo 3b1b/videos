@@ -735,7 +735,7 @@ class AskWhatWillHappen(PiCreatureScene):
             "What will\\\\"
             "happen?",
             target_mode="maybe",
-            look_at_arg=4 * DR,
+            look_at=4 * DR,
         )
         self.wait(3)
 
@@ -1022,13 +1022,13 @@ class StepsOfTheAlgorithm(TeacherStudentsScene):
                 Write(step[1], run_time=2),
                 self.change_students(
                     *["pondering"] * 3,
-                    look_at_arg=step,
+                    look_at=step,
                 )
             )
             self.wait()
         self.play_student_changes(
             "sassy", "erm", "confused",
-            look_at_arg=steps,
+            look_at=steps,
             added_anims=[self.teacher.change, "happy"]
         )
         self.wait(3)
@@ -1374,7 +1374,7 @@ class CompareAlgorithmToPhysics(PiCreatureScene):
                 bubble_class=ThoughtBubble,
                 bubble_kwargs={"direction": LEFT},
                 target_mode="pondering",
-                look_at_arg=left_rect,
+                look_at=left_rect,
             ),
             LaggedStartMap(
                 FadeInFrom, digits,
@@ -1414,7 +1414,7 @@ class AskAboutWhy(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
         )
         self.play_all_student_changes(
-            "pondering", look_at_arg=circle
+            "pondering", look_at=circle
         )
         self.wait(2)
         self.play(

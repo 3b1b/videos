@@ -117,7 +117,7 @@ class AskWhyRewriteIt(TeacherStudentsScene):
         )
         self.play_student_changes(
             "thinking", "thinking", "thinking",
-            look_at_arg=4 * LEFT + 2 * UP
+            look_at=4 * LEFT + 2 * UP
         )
         self.wait(2)
 
@@ -134,7 +134,7 @@ class ReferenceKhanVideo(TeacherStudentsScene):
         )
         self.play_student_changes(
             "thinking", "pondering", "thinking",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait()
         self.play(FadeInFromDown(khan_logo))

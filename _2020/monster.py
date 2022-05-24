@@ -1346,7 +1346,7 @@ class IsItUseful(TeacherStudentsScene):
         self.play_student_changes("angry", "confused")
         self.wait(3)
         self.teacher_says("Extremely!")
-        self.play_student_changes("pondering", "thinking", "pondering", look_at_arg=self.screen)
+        self.play_student_changes("pondering", "thinking", "pondering", look_at=self.screen)
         self.wait(4)
 
 
@@ -1681,7 +1681,7 @@ class MentionGroupsInPhysics(TeacherStudentsScene):
             FadeOut(VGroup(self.teacher.bubble, self.teacher.bubble.content)),
             self.teacher.change, "raise_right_hand",
         )
-        self.play_student_changes("pondering", "pondering", "thinking", look_at_arg=nt_label)
+        self.play_student_changes("pondering", "pondering", "thinking", look_at=nt_label)
 
         # Theorem
         nt_label.generate_target()
@@ -1841,7 +1841,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "confused",
-            look_at_arg=r_sym,
+            look_at=r_sym,
         )
         self.wait(2)
         inclusion.remove(rot_icon)
@@ -1854,7 +1854,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
             inclusion.to_edge, LEFT,
             inclusion.set_color, GREY_B,
             Write(numeral),
-            self.change_students(*3 * ["pondering"], look_at_arg=numeral),
+            self.change_students(*3 * ["pondering"], look_at=numeral),
             self.teacher.change, "tease", numeral,
         )
         self.wait(2)
@@ -1925,7 +1925,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         self.play(
             FadeOut(VGroup(*ops[1][:3], ops[1][4]), UP),
             FadeIn(mult_dots, DOWN),
-            self.change_students(*3 * ["erm"], look_at_arg=mult_dots),
+            self.change_students(*3 * ["erm"], look_at=mult_dots),
         )
         self.wait(4)
         self.play(
@@ -1967,7 +1967,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
             LaggedStartMap(FadeIn, group_prod[1:], lag_ratio=0.5, run_time=2),
             self.change_students(
                 "sassy", "erm", "confused",
-                look_at_arg=group_prod,
+                look_at=group_prod,
             ),
             self.teacher.change, "raise_right_hand",
         )
@@ -2006,7 +2006,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
 
         self.play(
             FadeIn(sn_nums, lag_ratio=0.1),
-            self.change_students(*3 * ["pondering"], look_at_arg=snowflake)
+            self.change_students(*3 * ["pondering"], look_at=snowflake)
         )
         self.add(*sn_nums)
         self.play(
@@ -2977,7 +2977,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
                 MoveToTarget(question, run_time=2),
                 self.change_students(
                     "erm", "pondering", "pondering",
-                    look_at_arg=question.target
+                    look_at=question.target
                 )
             ]
         )
@@ -2985,7 +2985,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
         self.play(
             RemovePiCreatureBubble(
                 self.teacher, target_mode="tease",
-                look_at_arg=question.get_right(),
+                look_at=question.get_right(),
             ),
             question.set_x, 0,
         )
@@ -2999,7 +2999,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
             Write(caveat, run_time=1),
             question[1].next_to, caveat[0][-1], RIGHT, SMALL_BUFF, DOWN,
             question[1].match_color, caveat,
-            self.change_students(*3 * ["thinking"], look_at_arg=question)
+            self.change_students(*3 * ["thinking"], look_at=question)
         )
         question.add(caveat)
         self.wait(2)
@@ -3056,7 +3056,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
 
         self.play(
             FadeIn(suggestions[0], DOWN),
-            self.change_students(*3 * ["pondering"], look_at_arg=suggestions),
+            self.change_students(*3 * ["pondering"], look_at=suggestions),
             self.teacher.change, "happy",
         )
         self.wait()
@@ -3522,10 +3522,10 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
             "I...don't\\\\get it.",
             target_mode="confused",
             student_index=2,
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[self.teacher.change, "guilty"],
         )
-        self.play_student_changes("maybe", "tired", look_at_arg=self.screen)
+        self.play_student_changes("maybe", "tired", look_at=self.screen)
         self.wait(4)
 
         fp_words = TexText("Fact about\\\\polynomials")
@@ -3540,7 +3540,7 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
                 RemovePiCreatureBubble(self.students[2]),
             ]
         )
-        self.play_student_changes("pondering", "hesitant", "plain", look_at_arg=fp_words)
+        self.play_student_changes("pondering", "hesitant", "plain", look_at=fp_words)
         self.wait()
         as_words.next_to(fp_words, LEFT, buff=1.5)
         implies.move_to(midpoint(as_words.get_right(), fp_words.get_left()))
@@ -3548,7 +3548,7 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
         self.play(
             FadeIn(as_words, RIGHT),
             Write(implies),
-            self.change_students(*3 * ["pondering"], look_at_arg=as_words)
+            self.change_students(*3 * ["pondering"], look_at=as_words)
         )
         self.wait(5)
 
@@ -4100,11 +4100,11 @@ class ImSorryWhat(TeacherStudentsScene):
         self.student_says(
             "I'm sorry, what?!",
             target_mode="sassy",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
-        self.play_student_changes("angry", "maybe", "sassy", look_at_arg=self.screen)
+        self.play_student_changes("angry", "maybe", "sassy", look_at=self.screen)
         self.wait(3)
-        self.play_student_changes("pleading", "confused", "erm", look_at_arg=self.screen)
+        self.play_student_changes("pleading", "confused", "erm", look_at=self.screen)
         self.wait(5)
 
 
@@ -4115,7 +4115,7 @@ class TellMeTheresAChildrensBook(TeacherStudentsScene):
             target_mode="surprised",
             added_anims=[self.teacher.change, "tease"]
         )
-        self.play_student_changes("happy", "coin_flip_1", look_at_arg=self.screen)
+        self.play_student_changes("happy", "coin_flip_1", look_at=self.screen)
         self.look_at(self.screen)
         self.wait(5)
 

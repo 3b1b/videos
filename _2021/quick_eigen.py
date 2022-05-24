@@ -221,7 +221,7 @@ class Assumptions(TeacherStudentsScene):
             PiCreatureSays(self.teacher, TexText("I'm assuming you know\\\\ what eigenvalues are.")),
             self.change_students(
                 "erm", "happy", "tease",
-                look_at_arg=ORIGIN,
+                look_at=ORIGIN,
             ),
             run_time=2,
         )
@@ -315,8 +315,8 @@ class GoalOfRediscovery(TeacherStudentsScene):
         recap_words = Text("Quick recap")
         recap_words.move_to(self.screen, UP)
         self.play(
-            RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at_arg=recap_words),
-            self.change_students("pondering", "hesitant", "pondering", look_at_arg=recap_words),
+            RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at=recap_words),
+            self.change_students("pondering", "hesitant", "pondering", look_at=recap_words),
             GrowFromPoint(recap_words, self.teacher.get_corner(UL)),
         )
         self.wait(4)
@@ -1326,7 +1326,7 @@ class AskIfThatsBetter(Scene):
             PiCreatureSays(
                 randy, "Is that better?", target_mode="sassy",
                 bubble_kwargs={"direction": LEFT, "width": 4, "height": 2},
-                look_at_arg=UL
+                look_at=UL
             )
         )
         self.play(Blink(randy))
@@ -1435,7 +1435,7 @@ class Example1(TeacherStudentsScene):
         )
         self.play(
             Write(mat.get_entries(), lag_ratio=0.1, run_time=2),
-            self.change_students("pondering", "pondering", "thinking", look_at_arg=mat)
+            self.change_students("pondering", "pondering", "thinking", look_at=mat)
         )
         self.wait()
 
@@ -1478,7 +1478,7 @@ class Example1(TeacherStudentsScene):
             FadeIn(arrow, shift_vect),
             FadeIn(formula),
             FadeIn(form_rects),
-            self.change_students("pondering", "pondering", "pondering", look_at_arg=ORIGIN)
+            self.change_students("pondering", "pondering", "pondering", look_at=ORIGIN)
         )
         self.play(
             self.teacher.change("tease", formula),
@@ -1549,7 +1549,7 @@ class Example1(TeacherStudentsScene):
             FadeIn(lhs),
             FadeOut(diag_rects),
             self.teacher.change("happy"),
-            self.change_students("erm", "hesitant", "thinking", look_at_arg=prod_eq)
+            self.change_students("erm", "hesitant", "thinking", look_at=prod_eq)
         )
         self.play(det_path_anim(mat, run_time=1))
         self.play(
@@ -1568,7 +1568,7 @@ class Example1(TeacherStudentsScene):
         self.wait()
         self.play(
             Write(prod_eq[-2:]),
-            self.change_students("tease", "tease", "happy", look_at_arg=prod_eq.get_right()),
+            self.change_students("tease", "tease", "happy", look_at=prod_eq.get_right()),
         )
         self.play(
             FadeOut(p_rect),
@@ -2027,11 +2027,11 @@ class HeresTheThing(TeacherStudentsScene):
         self.student_says(
             "Wait, why?",
             target_mode="raise_right_hand",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             student_index=2,
         )
         self.play(
-            self.change_students("maybe", "confused", "raise_right_hand", look_at_arg=self.screen),
+            self.change_students("maybe", "confused", "raise_right_hand", look_at=self.screen),
             self.teacher.change("happy"),
         )
         self.wait(3)
@@ -2046,7 +2046,7 @@ class HeresTheThing(TeacherStudentsScene):
             for eye in pi.eyes:
                 eye.refresh_bounding_box()
         self.look_at(self.screen)
-        self.play_student_changes("tease", "thinking", "happy", look_at_arg=self.screen)
+        self.play_student_changes("tease", "thinking", "happy", look_at=self.screen)
         self.wait(3)
         words = TexText("Somewhat\\\\self-defeating")
         words.next_to(self.screen, RIGHT)
@@ -2447,7 +2447,7 @@ class MPIsSolvingCharPoly(TeacherStudentsScene):
         self.teacher_holds_up(formula)
         self.play_student_changes(
             "happy", "thinking", "tease",
-            look_at_arg=formula
+            look_at=formula
         )
         self.wait()
         self.play(
@@ -2457,7 +2457,7 @@ class MPIsSolvingCharPoly(TeacherStudentsScene):
         )
         self.play_student_changes(
             "erm", "pondering", "pondering",
-            look_at_arg=char_poly,
+            look_at=char_poly,
             added_anims=[GrowArrow(arrow)]
         )
         self.wait(3)

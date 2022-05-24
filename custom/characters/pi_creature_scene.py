@@ -73,10 +73,10 @@ class PiCreatureScene(InteractiveScene):
             if pi in mobjects
         ])
 
-    def pi_changes(self, *modes, look_at_arg=None, lag_ratio=0.5, run_time=1):
+    def pi_changes(self, *modes, look_at=None, lag_ratio=0.5, run_time=1):
         return LaggedStart(
             *(
-                pi.change(mode, look_at_arg)
+                pi.change(mode, look_at)
                 for pi, mode in zip(self.pi_creatures, modes)
                 if mode is not None
             ),
@@ -351,10 +351,10 @@ class TeacherStudentsScene(PiCreatureScene):
             *added_anims
         )
 
-    def change_students(self, *modes, look_at_arg=None, lag_ratio=0.5, run_time=1):
+    def change_students(self, *modes, look_at=None, lag_ratio=0.5, run_time=1):
         return LaggedStart(
             *(
-                student.change(mode, look_at_arg)
+                student.change(mode, look_at)
                 for student, mode in zip(self.get_students(), modes)
                 if mode is not None
             ),

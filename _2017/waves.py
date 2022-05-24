@@ -1055,7 +1055,7 @@ class ListRelevantWaveIdeas(TeacherStudentsScene):
                 FadeIn, topics,
                 run_time = 3
             )],
-            look_at_arg = title
+            look_at = title
         )
         self.play(
             Animation(title),
@@ -2364,7 +2364,7 @@ class EnergyOfWavesTeacherPortion(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = dot
+            look_at = dot
         )
         self.wait(2)
         self.play(Write(energy))
@@ -2380,7 +2380,7 @@ class EnergyOfWavesTeacherPortion(TeacherStudentsScene):
                 VGroup(*component_energy[4:])
             )
         )
-        self.play_student_changes(*["happy"]*3, look_at_arg = energy)
+        self.play_student_changes(*["happy"]*3, look_at = energy)
         self.wait()
 
     def show_both_ways_of_thinking_about_it(self):
@@ -2404,7 +2404,7 @@ class EnergyOfWavesTeacherPortion(TeacherStudentsScene):
             self.wait(2)
         self.play_student_changes(
             *["plain"]*3,
-            look_at_arg = self.dot,
+            look_at = self.dot,
             added_anims = [
                 self.teacher.change, "raise_right_hand", self.dot
             ]
@@ -3884,7 +3884,7 @@ class CompareWaveEquations(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = psi_rect,
+            look_at = psi_rect,
             added_anims = [
                 ShowCreation(psi_rect),
                 Write(state_words, run_time = 1)
@@ -4008,12 +4008,12 @@ class CompareWaveEquations(TeacherStudentsScene):
             self.teacher.change, "happy"
         )
         self.play_student_changes(
-            *["happy"]*3, look_at_arg = c_words
+            *["happy"]*3, look_at = c_words
         )
         self.play(Write(qm_words))
         self.play_student_changes(
             "erm", "confused", "pondering",
-            look_at_arg = qm_words
+            look_at = qm_words
         )
         self.wait()
 

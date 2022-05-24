@@ -19,7 +19,7 @@ class IveHeardOfThis(TeacherStudentsScene):
         )
         self.play_student_changes(
             "thinking", "hooray", "thinking",
-            look_at_arg=point,
+            look_at=point,
             added_anims=[self.teacher.change, "happy"]
         )
         self.wait(3)
@@ -36,7 +36,7 @@ class IveHeardOfThis(TeacherStudentsScene):
         )
         self.play_student_changes(
             "pondering", "maybe", "pondering",
-            look_at_arg=point,
+            look_at=point,
             added_anims=[self.teacher.change, "guilty"]
         )
         self.wait(5)
@@ -120,7 +120,7 @@ class SineCurveIsUnrealistic(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "pondering",
-            look_at_arg=3 * UP,
+            look_at=3 * UP,
         )
         self.wait(5)
 
@@ -133,7 +133,7 @@ class IfOnly(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "confused",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(3)
 
@@ -170,6 +170,6 @@ class SoWeGotNowhere(TeacherStudentsScene):
         )
         self.play_all_student_changes(
             "pondering",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(3)

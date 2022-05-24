@@ -1135,7 +1135,7 @@ class NextVideoWrapper(TeacherStudentsScene):
         self.play(ShowCreation(screen))
         self.play_student_changes(
             *["pondering"]*3,
-            look_at_arg = screen
+            look_at = screen
         )
         self.play(Animation(screen))
         self.wait(5)

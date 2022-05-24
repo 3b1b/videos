@@ -15,7 +15,7 @@ class WhyWouldYouCare(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             self.change_students(
                 "pondering", "erm", "thinking",
-                look_at_arg=self.screen,
+                look_at=self.screen,
             )
         )
         self.look_at(self.screen)
@@ -118,7 +118,7 @@ class HangOnThere(TeacherStudentsScene):
             RemovePiCreatureBubble(
                 student,
                 target_mode="raise_left_hand",
-                look_at_arg=group,
+                look_at=group,
             ),
             FadeInFromDown(group),
         )
@@ -165,7 +165,7 @@ class HangOnThere(TeacherStudentsScene):
 class YouSaidThisWasEasier(TeacherStudentsScene):
     def construct(self):
         self.play_all_student_changes(
-            "confused", look_at_arg=self.screen,
+            "confused", look_at=self.screen,
         )
         self.student_says(
             "I'm sorry, you said\\\\this was easier?",
@@ -205,7 +205,7 @@ class LooseWithLanguage(TeacherStudentsScene):
             FadeIn(terms[1], DOWN),
             self.change_students(
                 "thinking", "pondering", "erm",
-                look_at_arg=terms,
+                look_at=terms,
             )
         )
         self.play(FadeInFromDown(terms[0]))
@@ -229,7 +229,7 @@ class FormulaOutOfContext(TeacherStudentsScene):
         self.add(formula)
         self.play_all_student_changes(
             "horrified",
-            look_at_arg=formula,
+            look_at=formula,
         )
         self.play(self.teacher.change, "tease")
         self.wait(3)

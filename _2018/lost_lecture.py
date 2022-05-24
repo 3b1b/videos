@@ -3532,7 +3532,7 @@ class IKnowThisIsTricky(TeacherStudentsScene):
             added_anims=[
                 self.change_students(
                     *3 * ["horrified"],
-                    look_at_arg=self.screen
+                    look_at=self.screen
                 )
             ]
         )
@@ -4198,7 +4198,7 @@ class PatYourselfOnTheBack(TeacherStudentsScene):
             ),
             self.change_students(
                 *3 * ["pondering"],
-                look_at_arg=self.screen
+                look_at=self.screen
             )
         )
         self.look_at(UP)

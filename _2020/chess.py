@@ -1462,13 +1462,13 @@ class IGotThis(TeacherStudentsScene):
         self.student_says(
             "Pssh, I got this",
             target_mode="tease",
-            look_at_arg=self.screen,
+            look_at=self.screen,
             added_anims=[self.teacher.change, "happy", self.screen],
             run_time=2,
         )
         self.play_student_changes(
             "thinking", "pondering",
-            look_at_arg=self.screen
+            look_at=self.screen
         )
         self.wait(6)
 
@@ -3503,12 +3503,12 @@ class TryTheProofYourself(TeacherStudentsScene):
         self.teacher.bubble.set_fill(opacity=0)
         self.play_student_changes(
             "pondering", "thinking", "confused",
-            look_at_arg=self.screen,
+            look_at=self.screen,
         )
         self.wait(3)
-        self.play_student_changes("thinking", "pondering", "erm", look_at_arg=self.screen)
+        self.play_student_changes("thinking", "pondering", "erm", look_at=self.screen)
         self.wait(4)
-        self.play_student_changes("tease", "pondering", "thinking", look_at_arg=self.screen)
+        self.play_student_changes("tease", "pondering", "thinking", look_at=self.screen)
         self.wait(5)
 
 

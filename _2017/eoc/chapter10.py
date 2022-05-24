@@ -514,7 +514,7 @@ class ExampleApproximationWithCos(ExampleApproximationWithSine):
         self.play(PiCreatureBubbleIntroduction(
             randy, "How...?",
             bubble_class = ThoughtBubble,
-            look_at_arg = self.graph_origin,
+            look_at = self.graph_origin,
             target_mode = "confused"
         ))
         self.wait(2)
@@ -1139,7 +1139,7 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
             added_anims = list(map(FadeOut, [
                 approx_at_point, approx_rhs, real_result
             ])),
-            look_at_arg = approx_at_x
+            look_at = approx_at_x
         )
 
     def add_polynomial(self):
@@ -2471,7 +2471,7 @@ class ThisIsAStandardFormula(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["sad"]*3,
-            look_at_arg = FRAME_Y_RADIUS*UP
+            look_at = FRAME_Y_RADIUS*UP
         )
         self.wait(2)
 
@@ -2976,7 +2976,7 @@ class EachTermHasMeaning(TeacherStudentsScene):
         )
         self.play_student_changes(
             *["thinking"]*3,
-            look_at_arg = 4*UP
+            look_at = 4*UP
         )
         self.wait(3)
 

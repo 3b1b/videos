@@ -103,7 +103,7 @@ class IntroduceTriples(TeacherStudentsScene):
             self.play(LaggedStartMap(FadeIn, a_square))
             self.play_student_changes(
                 *["pondering"]*3,
-                look_at_arg = triangle,
+                look_at = triangle,
                 added_anims = [LaggedStartMap(FadeIn, b_square)]
             )
             self.play(self.teacher.change_mode, "happy")
@@ -168,7 +168,7 @@ class CompareToFermatsLastTheorem(TeacherStudentsScene):
         )
         self.play_student_changes(
             "sassy", "angry", "erm",
-            look_at_arg = low_expression,
+            look_at = low_expression,
             added_anims = [Transform(low_expression, expressions[3])]
         )
         for expression in expressions[4:]:
@@ -755,7 +755,7 @@ class ReframeOnLattice(PiCreatureScene):
         self.wait()
         self.play(RemovePiCreatureBubble(
             morty, target_mode = "pondering",
-            look_at_arg = self.example_label
+            look_at = self.example_label
         ))
 
     def work_out_square_algebraically(self):
@@ -2904,7 +2904,7 @@ class FinalProof(RationalPointsOnUnitCircle):
             morty, "Free to choose!",
             bubble_kwargs = {"height" : 1.5, "width" : 3},
             target_mode = "hooray",
-            look_at_arg = rect
+            look_at = rect
         ))
         self.play(Blink(morty))
         self.wait(2)

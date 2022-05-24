@@ -36,7 +36,7 @@ class Introduction(TeacherStudentsScene):
         self.add(*movements)
         self.play_student_changes(
             "pondering", "sad", "concerned_musician",
-            look_at_arg=10 * LEFT + 2 * DOWN
+            look_at=10 * LEFT + 2 * DOWN
         )
         self.teacher_says(
             "Wait, wait, wait!",
@@ -58,7 +58,7 @@ class StudentsWatching(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             self.change_students(
                 *3 * ["thinking"],
-                look_at_arg=self.screen
+                look_at=self.screen
             ),
             VFadeIn(self.pi_creatures, run_time=2)
         )
