@@ -128,7 +128,7 @@ class Featuring(TeacherStudentsScene):
         words.move_to(screen)
 
         self.play(
-            self.teacher.animate.change("tease"),
+            self.teacher.change("tease"),
             self.get_student_changes(*3 * ["hooray"], look_at_arg=screen),
             FadeIn(screen, UP)
         )
@@ -140,7 +140,7 @@ class Featuring(TeacherStudentsScene):
             target_mode="raise_left_hand",
             look_at_arg=self.teacher,
         )
-        self.play(self.teacher.animate.change("sassy"))
+        self.play(self.teacher.change("sassy"))
         self.wait(2)
 
 
@@ -148,7 +148,7 @@ class Constraints(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("What are the\\\\constraints?"),
-            added_anims=[self.teacher.animate.change("tease")]
+            added_anims=[self.teacher.change("tease")]
         )
         self.wait(3)
 
@@ -157,7 +157,7 @@ class TopicChoice(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("What kind of\\\\topics?"),
-            added_anims=[self.teacher.animate.change("tease")],
+            added_anims=[self.teacher.change("tease")],
             student_index=1,
         )
         self.wait(3)
@@ -277,13 +277,13 @@ class TeacherStudentPairing(Scene):
         self.play(
             Write(student_label),
             GrowArrow(student_arrow),
-            randy.animate.change("hooray", student_label)
+            randy.change("hooray", student_label)
         )
         self.wait()
         self.play(
             Write(teacher_label),
             GrowArrow(teacher_arrow),
-            morty.animate.change("pondering", teacher_label)
+            morty.change("pondering", teacher_label)
         )
         self.wait()
         for x in range(4):
@@ -308,7 +308,7 @@ class ButIHaveNoExperience(TeacherStudentsScene):
             look_at_arg=self.students[0].bubble,
         )
         self.students[0].look_at(self.teacher.eyes)
-        self.play(self.teacher.animate.change("tease", self.students[0].eyes))
+        self.play(self.teacher.change("tease", self.students[0].eyes))
 
         self.wait(4)
 
@@ -1066,15 +1066,15 @@ class Nicheness(Scene):
 class TransitionToProductionQuality(TeacherStudentsScene):
     def construct(self):
         self.play(
-            self.students[0].animate.change("pondering"),
-            self.students[2].animate.change("pondering"),
+            self.students[0].change("pondering"),
+            self.students[2].change("pondering"),
         )
         self.student_says(
             TexText("What parts of\\\\production quality matter?"),
             student_index=1
         )
         self.play(
-            self.teacher.animate.change("happy"),
+            self.teacher.change("happy"),
         )
         self.wait(3)
 
@@ -1193,12 +1193,12 @@ class WhereCanIEngageWithOthers(TeacherStudentsScene):
             TexText("Where can I find\\\\others joining SoME1?"),
             student_index=0,
             added_anims=[
-                self.students[1].animate.change("pondering", UL),
-                self.students[2].animate.change("pondering", UL),
+                self.students[1].change("pondering", UL),
+                self.students[2].change("pondering", UL),
             ]
         )
         self.play(
-            self.teacher.animate.change("tease"),
+            self.teacher.change("tease"),
         )
         self.wait(4)
 

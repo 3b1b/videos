@@ -15,6 +15,7 @@ universal_import_line: "from manim_imports_ext import *"
 #   intermediate_filetype: "xdv"
 style:
   font: "CMU Serif"
+  text_alignment: "CENTER"
   background_color: "#000000"
 camera_resolutions:
   default_resolution: "4k"

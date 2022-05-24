@@ -282,8 +282,8 @@ class PlanForThisVideo(TeacherStudentsScene):
         s0, s1, s2 = self.students
         self.play(
             PiCreatureSays(s0, TexText("But what\\\\is $e^{M}$?"), target_mode="raise_left_hand"),
-            s1.animate.change("erm", UL),
-            s2.animate.change("pondering", UL),
+            s1.change("erm", UL),
+            s2.change("pondering", UL),
         )
         self.wait()
         s0.bubble = None
@@ -292,8 +292,8 @@ class PlanForThisVideo(TeacherStudentsScene):
                 s2, TexText("And who cares?"), target_mode="sassy",
                 bubble_kwargs={"direction": LEFT},
             ),
-            s1.animate.change("hesitant", UL),
-            self.teacher.animate.change("guilty")
+            s1.change("hesitant", UL),
+            self.teacher.change("guilty")
         )
         self.wait(3)
 
@@ -324,14 +324,14 @@ class IntroduceTheComputation(Scene):
 
         self.add(randy)
         self.play(
-            randy.animate.change("pondering", matrix),
+            randy.change("pondering", matrix),
             Write(matrix.get_brackets()),
             ShowIncreasingSubsets(matrix.get_entries()),
         )
         self.play(
             matrix.animate.restore(),
             Write(base),
-            randy.animate.change("erm", base),
+            randy.change("erm", base),
         )
         self.play(Blink(randy))
 
@@ -375,7 +375,7 @@ class IntroduceTheComputation(Scene):
                 run_time=2,
                 rate_func=squish_rate_func(smooth, 0.5, 1),
             ),
-            randy.animate.change("angry", rhs),
+            randy.change("angry", rhs),
             ShowCreation(bubble),
             Write(bubble.content, run_time=1),
         )
@@ -446,7 +446,7 @@ class IntroduceTheComputation(Scene):
             FadeTransform(matrix.copy(), real_equation[1]),
             FadeIn(real_label, UR),
             GrowArrow(real_arrow),
-            randy.animate.change("thinking", real_label),
+            randy.change("thinking", real_label),
             morty.animate.look_at(real_label),
         )
         self.wait()
@@ -458,8 +458,8 @@ class IntroduceTheComputation(Scene):
                 for part in real_equation[4:]
                 if part not in xs
             )),
-            randy.animate.change("pondering", real_equation),
-            morty.animate.change("pondering", real_equation),
+            randy.change("pondering", real_equation),
+            morty.change("pondering", real_equation),
         )
         self.add(real_equation)
         self.play(Blink(morty))
@@ -563,8 +563,8 @@ class IntroduceTheComputation(Scene):
         sum_value.next_to(new_brace, DOWN)
         self.play(
             term_brace.animate.become(new_brace),
-            randy.animate.change("thinking", sum_value),
-            morty.animate.change("tease", sum_value),
+            randy.change("thinking", sum_value),
+            morty.change("tease", sum_value),
             *(FadeTransform(dec.copy().set_opacity(0), sum_value) for dec in term_values)
         )
         self.play(Blink(randy))
@@ -626,8 +626,8 @@ class IntroduceTheComputation(Scene):
                 *rects, *term_values,
             )),
             real_lhs.animate.set_opacity(0.2),
-            randy.animate.change("erm", real_equation),
-            morty.animate.change("thinking", real_equation),
+            randy.change("erm", real_equation),
+            morty.change("thinking", real_equation),
             run_time=1,
         )
         self.play(Blink(morty))
@@ -653,7 +653,7 @@ class IntroduceTheComputation(Scene):
         self.play(FlashAround(real_rhs))
         self.wait()
         self.play(
-            morty.animate.change("raise_right_hand", pii_rhs),
+            morty.change("raise_right_hand", pii_rhs),
             FadeTransformPieces(real_rhs.copy(), pii_rhs),
         )
         self.play(Blink(randy))
@@ -661,14 +661,14 @@ class IntroduceTheComputation(Scene):
             FadeTransformPieces(real_rhs.copy(), mat_rhs),
         )
         self.play(
-            randy.animate.change("maybe", mat_rhs),
+            randy.change("maybe", mat_rhs),
         )
         self.wait()
 
         why = Text("Why?", font_size=36)
         why.next_to(randy, UP, aligned_edge=LEFT)
         self.play(
-            randy.animate.change("confused", mat_rhs.get_corner(UL)),
+            randy.change("confused", mat_rhs.get_corner(UL)),
             Write(why),
         )
         self.play(Blink(randy))
@@ -694,8 +694,8 @@ class IntroduceTheComputation(Scene):
             MoveToTarget(to_right_group),
             FadeOut(why),
             FadeOut(reassurance),
-            randy.animate.change("pondering", mat_rhs),
-            morty.animate.change("tease"),
+            randy.change("pondering", mat_rhs),
+            morty.change("tease"),
         )
 
         pii_lhs = Tex("\\text{exp}\\left(\\pi i \\right) = ")[0]
@@ -713,8 +713,8 @@ class IntroduceTheComputation(Scene):
 
         self.play(
             FadeIn(pii_lhs),
-            randy.animate.change("thinking", pii_lhs),
-            randy.animate.change("tease", pii_lhs),
+            randy.change("thinking", pii_lhs),
+            randy.change("tease", pii_lhs),
         )
         self.play(FadeIn(mat_lhs))
         self.play(Blink(randy))
@@ -725,7 +725,7 @@ class IntroduceTheComputation(Scene):
                 lag_ratio=0.3,
                 run_time=2
             ),
-            randy.animate.change("raise_left_hand", pii_lhs),
+            randy.change("raise_left_hand", pii_lhs),
         )
         self.wait()
 
@@ -759,7 +759,7 @@ class IntroduceTheComputation(Scene):
 
         self.play(
             ShowCreation(crosses),
-            randy.animate.change("hesitant", crosses),
+            randy.change("hesitant", crosses),
         )
         self.play(Blink(randy))
         self.play(real_lhs.animate.set_opacity(1))
@@ -771,7 +771,7 @@ class IntroduceTheComputation(Scene):
             *(MoveToTarget(power) for power in powers),
             *(TransformFromCopy(real_equation[0], base) for base in bases),
             Write(equals),
-            randy.animate.change("sassy", powers),
+            randy.change("sassy", powers),
         )
         self.wait()
 
@@ -828,7 +828,7 @@ class IntroduceTheComputation(Scene):
         self.play(
             FadeOut(theorem_label, UP),
             FadeIn(discovery_label, UP),
-            randy2.animate.change("hesitant", theorem_label),
+            randy2.change("hesitant", theorem_label),
         )
         self.play(
             FadeOut(def_label, UP),
@@ -869,7 +869,7 @@ class IntroduceTheComputation(Scene):
                 Write(square_eq[2]),
                 Write(result.brackets),
             ),
-            randy.animate.change("pondering", square_eq),
+            randy.change("pondering", square_eq),
         )
         self.show_mat_mult(matrix, matrix, square_eq[0][2:11], square_eq[1][2:11], result.elements)
 
@@ -900,7 +900,7 @@ class IntroduceTheComputation(Scene):
             ReplacementTransform(square_eq[1], cube_eq[0][2]),
             ReplacementTransform(square_eq[2], cube_eq[1]),
             ReplacementTransform(square_eq[3], cube_eq[2][1]),
-            randy.animate.change("happy", cube_eq),
+            randy.change("happy", cube_eq),
         )
         self.play(
             LaggedStart(
@@ -909,7 +909,7 @@ class IntroduceTheComputation(Scene):
                 FadeIn(cube_eq[3]),
                 FadeIn(cube_eq[4].brackets),
             ),
-            randy.animate.change("tease", cube_eq),
+            randy.change("tease", cube_eq),
         )
         self.show_mat_mult(
             matrix, matrix_square,
@@ -946,7 +946,7 @@ class IntroduceTheComputation(Scene):
                 VGroup(*factor, *example_matrix),
                 example_scaled_matrix,
             ),
-            randy.animate.change("pondering", example_scaled_matrix),
+            randy.change("pondering", example_scaled_matrix),
         )
         self.wait()
 
@@ -975,8 +975,8 @@ class IntroduceTheComputation(Scene):
             FadeOut(example_scaled_matrix, UP),
             FadeIn(sum_eq[:-1], UP),
             FadeIn(sum_eq[-1].brackets, UP),
-            morty.animate.change("raise_right_hand", sum_eq),
-            randy.animate.change("thinking", sum_eq),
+            morty.change("raise_right_hand", sum_eq),
+            randy.change("thinking", sum_eq),
         )
 
         last_rects = VGroup()
@@ -995,16 +995,16 @@ class IntroduceTheComputation(Scene):
             Write(bubble),
             Write(bubble.content),
             FadeOut(sum_eq, UP),
-            randy.animate.change("sassy", mat_rhs),
-            morty.animate.change("guilty", randy.eyes),
+            randy.change("sassy", mat_rhs),
+            morty.change("guilty", randy.eyes),
         )
         self.play(Blink(randy))
         self.wait()
         self.play(
             FadeOut(bubble),
             bubble.content.animate.next_to(randy, RIGHT, aligned_edge=UP),
-            randy.animate.change("pondering", mat_rhs),
-            morty.animate.change("pondering", mat_rhs),
+            randy.change("pondering", mat_rhs),
+            morty.change("pondering", mat_rhs),
         )
 
         # Replace matrix
@@ -1022,7 +1022,7 @@ class IntroduceTheComputation(Scene):
         pi_mat.next_to(morty, UL)
 
         self.play(
-            morty.animate.change("raise_right_hand"),
+            morty.change("raise_right_hand"),
             FadeIn(pi_mat, UP)
         )
         self.play(Blink(morty))
@@ -1033,7 +1033,7 @@ class IntroduceTheComputation(Scene):
                 pi_mat_rhs.get_parts_by_tex(pi_mat_tex),
                 remover=True,
             ),
-            morty.animate.change("tease"),
+            morty.change("tease"),
         )
         self.wait()
 
@@ -1053,7 +1053,7 @@ class IntroduceTheComputation(Scene):
         self.play(
             GrowFromCenter(brace),
             FadeTransform(mat_parts[0].copy(), curr_sum_mob),
-            randy.animate.change("erm", curr_sum_mob),
+            randy.change("erm", curr_sum_mob),
         )
         self.wait()
 
@@ -1110,7 +1110,7 @@ class IntroduceTheComputation(Scene):
             partial_sum_mobs.append(new_sum_mob)
         self.play(
             FadeOut(last_n_label),
-            randy.animate.change("confused", curr_sum_mob),
+            randy.change("confused", curr_sum_mob),
         )
 
         # Ask why
@@ -1123,19 +1123,19 @@ class IntroduceTheComputation(Scene):
         later_text.next_to(epii, DOWN, aligned_edge=RIGHT)
 
         self.play(
-            randy.animate.change("maybe"),
+            randy.change("maybe"),
             FadeIn(why, UP),
             FadeOut(bubble.content, UP),
         )
         self.wait()
         self.play(
-            morty.animate.change("raise_right_hand"),
+            morty.change("raise_right_hand"),
             FadeIn(epii, UP),
         )
         self.play(Blink(morty))
         self.play(
             Write(later_text, run_time=1),
-            randy.animate.change("hesitant", morty.eyes)
+            randy.change("hesitant", morty.eyes)
         )
 
         # Show partial sums
@@ -1156,8 +1156,8 @@ class IntroduceTheComputation(Scene):
                 ),
                 shift=DOWN,
             ),
-            randy.animate.change("pondering", new_mat_rhs),
-            morty.animate.change("pondering", new_mat_rhs),
+            randy.change("pondering", new_mat_rhs),
+            morty.change("pondering", new_mat_rhs),
         )
 
         matrix = np.array([[3, 1, 4], [1, 5, 9], [2, 6, 5]])
@@ -1200,8 +1200,8 @@ class IntroduceTheComputation(Scene):
             n_label[1].next_to(n_label[0], RIGHT, SMALL_BUFF)
             self.wait(0.1)
         self.play(
-            randy.animate.change("erm"),
-            morty.animate.change("tease"),
+            randy.change("erm"),
+            morty.change("tease"),
             # LaggedStartMap(
             #     FadeOut, VGroup(brace, n_label, partial_sum_mobs[n]),
             #     shift=DOWN,
@@ -1343,10 +1343,10 @@ class WhyTortureMatrices(TeacherStudentsScene):
         )
         self.play(
             self.get_student_changes("confused", "pondering", "raise_left_hand", look_at_arg=self.screen),
-            self.teacher.animate.change("tease", self.screen)
+            self.teacher.change("tease", self.screen)
         )
         self.wait(2)
-        self.play(self.students[0].animate.change("erm"))
+        self.play(self.students[0].change("erm"))
         self.wait(7)
 
 
@@ -2682,7 +2682,7 @@ class SchroedingersEquationIntro(Scene):
         )
         self.play(Blink(randy))
         self.play(
-            randy.animate.change("pondering", state_label),
+            randy.change("pondering", state_label),
             psis.animate.match_color(state_label),
             FadeIn(state_label, 0.25 * DOWN),
             *map(GrowArrow, state_arrows),
@@ -2699,7 +2699,7 @@ class SchroedingersEquationIntro(Scene):
             state_arrows.animate.become(
                 VGroup(*(Arrow(state_label, psi) for psi in equation.get_parts_by_tex("\\psi")))
             ),
-            randy.animate.change("hesitant", equation)
+            randy.change("hesitant", equation)
         )
         self.play(FlashAround(equation[0], time_width=2, run_time=2))
         self.play(Blink(randy))
@@ -2713,7 +2713,7 @@ class SchroedingersEquationIntro(Scene):
             FadeIn(mat_label, 0.25 * UP),
         )
         self.wait()
-        self.play(randy.animate.change("confused", equation))
+        self.play(randy.change("confused", equation))
         self.play(Blink(randy))
         self.wait()
 
@@ -2751,7 +2751,7 @@ class SchroedingersEquationIntro(Scene):
             Write(operator_word, run_time=1),
             GrowArrow(cv_arrow),
             FadeIn(complex_valued),
-            randy.animate.change("horrified", equation),
+            randy.change("horrified", equation),
             lag_ratio=0.5
         ))
         self.play(Blink(randy))
@@ -2772,14 +2772,14 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
         bubble = s2.get_bubble(eq)
 
         self.play(
-            s2.animate.change("pondering", eq),
+            s2.change("pondering", eq),
             FadeIn(bubble, lag_ratio=0.2),
         )
         self.play(
             LaggedStart(
-                s0.animate.change("hesitant", eq),
-                s1.animate.change("erm", eq),
-                morty.animate.change("tease"),
+                s0.change("hesitant", eq),
+                s1.change("erm", eq),
+                morty.change("tease"),
             ),
             Write(eq[:2])
         )
@@ -2797,8 +2797,8 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
         )
         self.play(
             LaggedStart(
-                s0.animate.change("thinking"),
-                s1.animate.change("tease"),
+                s0.change("thinking"),
+                s1.change("tease"),
             )
         )
         self.wait(2)
@@ -2808,7 +2808,7 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
         rect.set_stroke(BLUE_B, 2)
         rect.to_corner(UR)
         self.play(
-            morty.animate.change("raise_right_hand", rect),
+            morty.change("raise_right_hand", rect),
             self.get_student_changes("pondering", "pondering", "pondering", look_at_arg=rect),
             FadeIn(rect, UP)
         )
@@ -3313,7 +3313,7 @@ class EBaseMisconception(Scene):
         )
         self.play(Blink(randy))
         self.wait(2)
-        self.play(randy.animate.change("tease"))
+        self.play(randy.change("tease"))
         self.play(Blink(randy))
         cross = Cross(randy.bubble.content, stroke_width=[0, 5, 5, 5, 0])
         for line in cross:
@@ -3321,7 +3321,7 @@ class EBaseMisconception(Scene):
         cross.scale(1.25)
         self.play(
             ShowCreation(cross),
-            randy.animate.change("guilty")
+            randy.change("guilty")
         )
         self.wait()
 
@@ -4030,9 +4030,9 @@ class ThatsHorrifying(TeacherStudentsScene):
             student_index=2,
             target_mode="pleading",
             added_anims=[LaggedStart(
-                self.students[0].animate.change("tired"),
-                self.students[1].animate.change("horrified"),
-                self.teacher.animate.change("guilty"),
+                self.students[0].change("tired"),
+                self.students[1].change("horrified"),
+                self.teacher.change("guilty"),
                 lag_ratio=0.5
             )]
         )
@@ -4911,7 +4911,7 @@ class JulietChidingRomeo(Scene):
                 bubble_kwargs={"height": 2.5, "width": 3.5},
                 target_mode="sassy",
             ),
-            romeo.animate.change("guilty"),
+            romeo.change("guilty"),
         )
         for x in range(2):
             self.play(Blink(juliet))
@@ -5890,7 +5890,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
         trace_eq.move_to(self.hold_up_spot, DOWN)
 
         self.play(
-            self.teacher.animate.change("raise_right_hand", trace_eq),
+            self.teacher.change("raise_right_hand", trace_eq),
             FadeIn(trace_eq, 0.5 * UP),
         )
         self.change_student_modes("pondering", "confused", "pondering", look_at_arg=trace_eq)
@@ -5921,7 +5921,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
         self.play(
             FadeIn(exp_deriv, scale=2),
             topics.animate.scale(0.5).to_corner(UL),
-            self.teacher.animate.change("tease", exp_deriv),
+            self.teacher.change("tease", exp_deriv),
         )
         self.change_student_modes("confused", "sassy", "angry")
         self.wait(6)
@@ -6377,8 +6377,8 @@ class OldComputationCode(Scene):
         sum_value.next_to(new_brace, DOWN)
         self.play(
             term_brace.animate.become(new_brace),
-            randy.animate.change("thinking", sum_value),
-            morty.animate.change("tease", sum_value),
+            randy.change("thinking", sum_value),
+            morty.change("tease", sum_value),
             *(FadeTransform(dec.copy().set_opacity(0), sum_value) for dec in term_values)
         )
         self.play(Blink(randy))

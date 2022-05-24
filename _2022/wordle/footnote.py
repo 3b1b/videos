@@ -19,7 +19,7 @@ class HeresTheThing(TeacherStudentsScene):
         thumbnail.move_to(self.hold_up_spot, DOWN)
 
         self.play(
-            self.teacher.animate.change("raise_right_hand"),
+            self.teacher.change("raise_right_hand"),
             FadeIn(thumbnail, UP),
         )
         self.change_student_modes(
@@ -110,7 +110,7 @@ class WhatWasTheBug(TeacherStudentsScene):
         self.student_says("What as the bug?")
         self.play(
             self.get_student_changes("raise_left_hand", "pondering", "raise_right_hand"),
-            self.teacher.animate.change("tired")
+            self.teacher.change("tired")
         )
         self.wait(3)
 
@@ -441,7 +441,7 @@ class SneakAttackInformationTheory(Scene):
         phone_outline.replace(phone).scale(0.8)
 
         self.play(
-            randy.animate.change("thinking", phone),
+            randy.change("thinking", phone),
             FadeIn(phone),
             Write(phone_outline, stroke_width=1, run_time=2),
         )
@@ -462,7 +462,7 @@ class SneakAttackInformationTheory(Scene):
 
         self.play(
             FadeIn(words[0], scale=2),
-            randy.animate.change("horrified", words),
+            randy.change("horrified", words),
             run_time=0.5
         )
         self.play(
@@ -472,7 +472,7 @@ class SneakAttackInformationTheory(Scene):
         self.play(Blink(randy))
         self.play(
             Write(ent_formula),
-            randy.animate.change("erm", ent_formula),
+            randy.change("erm", ent_formula),
         )
         self.play(Blink(randy))
         self.wait(2)
@@ -487,9 +487,9 @@ class HowAreYouFindingTheBest(TeacherStudentsScene):
             student_index=0,
         )
         self.play(
-            self.students[1].animate.change("pondering"),
-            self.students[2].animate.change("raise_left_hand"),
-            self.teacher.animate.change("happy")
+            self.students[1].change("pondering"),
+            self.students[2].change("raise_left_hand"),
+            self.teacher.change("happy")
         )
         self.wait(2)
 
@@ -804,7 +804,7 @@ class WhydYouHaveToRuinIt(TeacherStudentsScene):
         self.student_says(
             TexText("Why'd you have to\\\\ruin Wordle!"),
             target_mode="pleading",
-            added_anims=[self.teacher.animate.change("guilty")]
+            added_anims=[self.teacher.change("guilty")]
         )
         self.change_student_modes("sassy", "angry", "pleading")
         self.wait(3)
@@ -834,10 +834,10 @@ class ForgetTheBestWord(Scene):
         randy.bubble.add(text)
         self.play(
             FadeOut(randy.bubble, scale=0.25, shift=2 * DL),
-            randy.animate.change("erm")
+            randy.change("erm")
         )
         self.wait()
-        self.play(randy.animate.change("thinking", UR))
+        self.play(randy.change("thinking", UR))
         for x in range(2):
             self.play(Blink(randy))
             self.wait(2)

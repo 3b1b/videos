@@ -352,9 +352,9 @@ class WhoCares(TeacherStudentsScene):
                     "height": 2,
                 }
             ),
-            self.teacher.animate.change("happy"),
-            self.students[0].animate.change("thinking", screen),
-            self.students[2].animate.change("sassy", screen),
+            self.teacher.change("happy"),
+            self.students[0].change("thinking", screen),
+            self.students[2].change("sassy", screen),
             lag_ratio=0.1,
         ))
         self.wait(3)
@@ -368,8 +368,8 @@ class WhoCares(TeacherStudentsScene):
                     "height": 3,
                 }
             ),
-            self.teacher.animate.change("guilty"),
-            self.students[0].animate.change("confused", screen),
+            self.teacher.change("guilty"),
+            self.students[0].change("confused", screen),
             RemovePiCreatureBubble(
                 self.students[1],
                 look_at_arg=self.students[2].eyes,
@@ -955,17 +955,17 @@ class DontWorryAboutDetails(TeacherStudentsScene):
             look_at_arg=image1,
             student_index=2,
             added_anims=[
-                self.students[0].animate.change("confused", image1),
-                self.students[1].animate.change("confused", image1),
+                self.students[0].change("confused", image1),
+                self.students[1].change("confused", image1),
             ]
         )
-        self.play(self.teacher.animate.change("tease"))
+        self.play(self.teacher.change("tease"))
         self.wait(2)
         self.play(
-            self.students[0].animate.change("maybe", image1),
+            self.students[0].change("maybe", image1),
         )
         self.play(
-            self.students[1].animate.change("erm", image1),
+            self.students[1].change("erm", image1),
         )
         self.wait(3)
 
@@ -1098,7 +1098,7 @@ class ShowManyGraphs(Scene):
             *map(FadeOut, plots[1:]),
             FadeIn(randy),
         )
-        self.play(randy.animate.change("hooray"))
+        self.play(randy.change("hooray"))
         self.play(
             TransformMatchingShapes(
                 VGroup(*(
@@ -1159,7 +1159,7 @@ class ShowManyGraphs(Scene):
         form_copies = form[4:].replicate(50)
         self.play(
             ShowIncreasingSubsets(over_trillion, run_time=1),
-            randy.animate.change("thinking", over_trillion),
+            randy.change("thinking", over_trillion),
             LaggedStart(*(
                 FadeOut(form_copy, 4 * DOWN)
                 for form_copy in form_copies
@@ -1169,7 +1169,7 @@ class ShowManyGraphs(Scene):
             FadeOut(over_trillion),
             FadeOut(coco_logo),
             FadeOut(arrow),
-            randy.animate.change("happy"),
+            randy.change("happy"),
             Restore(form_group),
             Restore(plot_group),
         )
@@ -1209,9 +1209,9 @@ class ShowManyGraphs(Scene):
             FadeOut(form),
             FadeOut(form_name),
             FadeOut(equation),
-            randy.animate.change("plain"),
+            randy.change("plain"),
         )
-        self.play(randy.animate.change("erm", cubic))
+        self.play(randy.change("erm", cubic))
         self.wait()
         self.play(
             FadeOut(quadratic),
@@ -1222,7 +1222,7 @@ class ShowManyGraphs(Scene):
         self.play(
             ShowCreation(cubic_arrow),
             FadeIn(cubic_form, DOWN),
-            randy.animate.change("confused", cubic_name),
+            randy.change("confused", cubic_name),
         )
         self.play(Blink(randy))
 
@@ -1256,14 +1256,14 @@ class ShowManyGraphs(Scene):
             FadeIn(cubic_fade_rect),
             FadeTransform(cubic_name[0], quartic_name[0]),
             FadeTransform(cubic_name[1], quartic_name[1]),
-            randy.animate.change("erm", quartic_name),
+            randy.change("erm", quartic_name),
             low_fade_rect.animate.replace(quintic, stretch=True).scale(1.01),
             FadeIn(quartic_eq),
         )
         self.play(Write(main_form))
         self.wait()
         self.play(
-            randy.animate.change("horrified", details),
+            randy.change("horrified", details),
             Write(details, run_time=5)
         )
         self.play(randy.animate.look_at(details.get_bottom()))
@@ -1323,14 +1323,14 @@ class ShowManyGraphs(Scene):
                 lambda m: m.replace(quintic, stretch=True),
             ),
             VFadeOut(low_fade_rect),
-            randy.animate.change("tease", quintic_name),
+            randy.change("tease", quintic_name),
             FadeIn(quintic_eq),
         )
         self.play(Blink(randy))
         self.wait()
         self.play(
             FadeIn(subwords[0][0], 0.5 * DOWN),
-            randy.animate.change("erm", subwords),
+            randy.change("erm", subwords),
         )
         self.wait()
         self.play(FadeIn(subwords[1], 0.5 * DOWN))
@@ -1338,7 +1338,7 @@ class ShowManyGraphs(Scene):
         self.play(
             FadeIn(subwords[0][1]),
             LaggedStartMap(FadeIn, footnote, run_time=6, lag_ratio=0.5),
-            randy.animate.change("pondering", footnote)
+            randy.change("pondering", footnote)
         )
         self.play(Blink(randy))
         self.wait()
@@ -1417,8 +1417,8 @@ class AskAboutFractals(TeacherStudentsScene):
             target_mode="raise_right_hand",
             student_index=2,
             added_anims=[
-                self.students[0].animate.change("confused"),
-                self.students[1].animate.change("sassy"),
+                self.students[0].change("confused"),
+                self.students[1].change("sassy"),
             ]
         )
         self.wait()
@@ -2001,7 +2001,7 @@ class AltPauseAndPonder(Scene):
         ))
         self.play(Blink(morty))
         self.wait(2)
-        self.play(morty.animate.change("thinking"))
+        self.play(morty.change("thinking"))
         self.play(Blink(morty))
         self.wait()
 
@@ -3251,7 +3251,7 @@ class WhatsGoingOn(TeacherStudentsScene):
             look_at_arg=self.screen,
             student_index=2,
             added_anims=[LaggedStart(*(
-                pi.animate.change("guilty", self.students[2].eyes)
+                pi.change("guilty", self.students[2].eyes)
                 for pi in [self.teacher, *self.students[:2]]
             ), run_time=2)]
         )
@@ -3556,7 +3556,7 @@ class UnrelatedIdeas(TeacherStudentsScene):
         self.change_student_modes(
             "tease", "thinking", "raise_right_hand",
             look_at_arg=self.screen,
-            added_anims=[self.teacher.animate.change("happy")]
+            added_anims=[self.teacher.change("happy")]
         )
         self.wait(2)
         self.teacher_says(
@@ -3566,13 +3566,13 @@ class UnrelatedIdeas(TeacherStudentsScene):
                 "width": 4,
             },
             added_anims=[
-                s.animate.change("sassy", self.teacher.eyes)
+                s.change("sassy", self.teacher.eyes)
                 for s in self.students
             ]
         )
         self.play(LaggedStart(
-            self.students[2].animate.change("angry"),
-            self.teacher.animate.change("guilty"),
+            self.students[2].change("angry"),
+            self.teacher.change("guilty"),
             lag_ratio=0.7,
         ))
         self.wait(2)
@@ -3707,13 +3707,13 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
                 "width": 4,
             },
             added_anims=[
-                self.students[1].animate.change("confused", self.teacher.eyes),
-                self.students[2].animate.change("erm", self.teacher.eyes),
+                self.students[1].change("confused", self.teacher.eyes),
+                self.students[2].change("erm", self.teacher.eyes),
             ],
         )
         self.wait()
         self.play(
-            self.teacher.animate.change("shruggie"),
+            self.teacher.change("shruggie"),
         )
         self.wait()
         self.play(LaggedStart(
@@ -3725,8 +3725,8 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
                     "width": 4,
                 }
             ),
-            self.students[1].animate.change("maybe"),
-            self.students[2].animate.change("sassy"),
+            self.students[1].change("maybe"),
+            self.students[2].change("sassy"),
             lag_ratio=0.7,
         ))
         self.wait(2)
@@ -3743,7 +3743,7 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
             Write(question),
             ShowCreation(arrow),
             LaggedStart(*(
-                pi.animate.change(mode, question)
+                pi.change(mode, question)
                 for pi, mode in zip(self.pi_creatures, ("well", "erm", "sassy", "hesitant"))
             ))
         )
@@ -4556,9 +4556,9 @@ class MakeFunOfNextVideo(TeacherStudentsScene):
             target_mode="sassy",
             student_index=2,
             added_anims=[LaggedStart(
-                self.teacher.animate.change("guilty"),
-                self.students[0].animate.change("sassy"),
-                self.students[1].animate.change("hesitant"),
+                self.teacher.change("guilty"),
+                self.students[0].change("sassy"),
+                self.students[1].change("hesitant"),
             )]
         )
         self.wait()
@@ -4570,7 +4570,7 @@ class MakeFunOfNextVideo(TeacherStudentsScene):
             },
             target_mode="speaking",
             added_anims=[
-                self.students[0].animate.change("hesitant"),
+                self.students[0].change("hesitant"),
             ]
         )
         self.wait(3)
@@ -4590,7 +4590,7 @@ class Thanks(Scene):
         thanks = Text("Thank you")
         thanks.next_to(morty, LEFT)
         self.play(
-            morty.animate.change("gracious"),
+            morty.change("gracious"),
             FadeIn(thanks, lag_ratio=0.1)
         )
         for n in range(5):

@@ -1048,7 +1048,7 @@ class DrawPhone(Scene):
 
         self.play(
             LaggedStart(
-                morty.animate.change("thinking", phone),
+                morty.change("thinking", phone),
                 ShowCreation(bubble),
                 FadeIn(bubble.content, lag_ratio=0.1)
             ),
@@ -1068,7 +1068,7 @@ class AskWhatWorldeIs(TeacherStudentsScene):
             student_index=0,
             target_mode="raise_left_hand",
             added_anims=[
-                self.teacher.animate.change("tease")
+                self.teacher.change("tease")
             ]
         )
         self.change_student_modes(
@@ -1222,14 +1222,14 @@ class IntroduceGame(WordleScene):
 
         self.play(
             FadeOut(avoid, DOWN),
-            morty.animate.change("raise_LEFT_hand", most_common),
+            morty.change("raise_LEFT_hand", most_common),
             ShowIncreasingSubsets(most_common),
         )
         self.play(FadeIn(label))
         self.play(Blink(morty))
         self.wait()
         self.play(
-            morty.animate.change("pondering", most_common),
+            morty.change("pondering", most_common),
             LaggedStartMap(FadeOut, most_common, shift=RIGHT),
             LaggedStartMap(FadeIn, non_s_most_common, shift=RIGHT),
         )
@@ -1778,7 +1778,7 @@ class ButTheyreNotEquallyLikely(Scene):
                 randy, TexText("But they're \\emph{not}\\\\equally likely!"),
                 target_mode="angry",
             ),
-            morty.animate.change("guilty", randy.eyes),
+            morty.change("guilty", randy.eyes),
         )
         self.play(Blink(randy))
         self.wait()
@@ -1842,7 +1842,7 @@ class DescribeBit(TeacherStudentsScene):
         words.to_edge(RIGHT)
 
         self.play(
-            self.teacher.animate.change("raise_left_hand"),
+            self.teacher.change("raise_left_hand"),
             FadeIn(words, UP)
         )
         self.change_student_modes(
@@ -1857,10 +1857,10 @@ class DescribeBit(TeacherStudentsScene):
         self.play(
             words.animate.to_edge(UP),
             FadeIn(formula, UP),
-            self.teacher.animate.change("raise_right_hand", formula),
-            self.students[0].animate.change("erm", formula),
-            self.students[1].animate.change("confused", formula),
-            self.students[2].animate.change("pondering", formula),
+            self.teacher.change("raise_right_hand", formula),
+            self.students[0].change("erm", formula),
+            self.students[1].change("confused", formula),
+            self.students[2].change("pondering", formula),
         )
         self.wait(5)
 
@@ -2032,7 +2032,7 @@ class DefineInformation(Scene):
         self.play(Restore(randy))
         self.play(Blink(randy))
         self.wait()
-        self.play(randy.animate.change("maybe"))
+        self.play(randy.change("maybe"))
         self.play(Blink(randy))
         self.wait()
 
@@ -2304,11 +2304,11 @@ class AskAboutPhysicsRelation(TeacherStudentsScene):
             student_index=2,
             bubble_kwargs=dict(width=5, height=3, direction=LEFT),
         )
-        self.play(self.teacher.animate.change("tease"))
+        self.play(self.teacher.change("tease"))
         self.play(
-            self.students[0].animate.change("pondering", physics),
-            self.students[1].animate.change("pondering", physics),
-            self.students[2].animate.change("raise_left_hand", physics),
+            self.students[0].change("pondering", physics),
+            self.students[1].change("pondering", physics),
+            self.students[2].change("raise_left_hand", physics),
             Write(physics),
         )
         self.wait(3)
@@ -2545,7 +2545,7 @@ class MentionUsingWordFrequencies(TeacherStudentsScene):
             added_anims=[self.get_student_changes("hooray", "happy", "tease")]
         )
         self.wait()
-        self.play(self.students[1].animate.change("pondering"))
+        self.play(self.students[1].change("pondering"))
         self.wait(2)
 
 
@@ -3402,7 +3402,7 @@ class FirstThoughtsOnCombination(Scene):
 
         self.play(
             MoveToTarget(attempt),
-            morty.animate.change("shruggie", attempt),
+            morty.change("shruggie", attempt),
             FadeIn(arrow), FadeIn(plus),
         )
         self.wait()
@@ -3417,7 +3417,7 @@ class FirstThoughtsOnCombination(Scene):
         self.play(ShowCreation(cross))
         self.play(
             Write(better_words, run_time=1),
-            morty.animate.change("pondering", cross),
+            morty.change("pondering", cross),
         )
         self.play(Blink(morty))
         self.wait()

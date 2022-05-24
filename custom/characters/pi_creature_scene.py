@@ -387,6 +387,6 @@ class TeacherStudentsScene(PiCreatureScene):
         added_anims = added_anims or []
         self.play(
             FadeIn(mobject, shift=UP),
-            self.teacher.animate.change(target_mode, mobject),
+            self.teacher.change(target_mode, mobject),
             *added_anims
         )

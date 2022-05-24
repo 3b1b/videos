@@ -194,11 +194,11 @@ class Introduction(TeacherStudentsScene):
             self.play(Write(point))
             if point is points[1]:
                 self.play(
-                    morty.animate.change("hooray").look(ORIGIN),
+                    morty.change("hooray").look(ORIGIN),
                     FadeOut(BackgroundRectangle(morty, buff=0.25, fill_opacity=1))
                 )
                 self.play(Blink(morty))
-                self.play(morty.animate.change("tease", points[2]))
+                self.play(morty.change("tease", points[2]))
             else:
                 self.wait()
 
@@ -215,7 +215,7 @@ class Introduction(TeacherStudentsScene):
                 url, dots, points,
             )),
             FadeIn(self.background),
-            morty.animate.change("hesitant", winner_word),
+            morty.change("hesitant", winner_word),
             FadeTransform(pre_winner_word, winner_word[2:9]),
             LaggedStartMap(FadeIn, self.students),
         )
@@ -276,14 +276,14 @@ class Introduction(TeacherStudentsScene):
         self.play(
             MoveToTarget(arrow),
             FadeIn(bubble),
-            self.students[0].animate.change("thinking", bubble),
-            self.students[1].animate.change("pondering", bubble),
-            self.students[2].animate.change("pondering", bubble),
-            self.teacher.animate.change("happy", bubble),
+            self.students[0].change("thinking", bubble),
+            self.students[1].change("pondering", bubble),
+            self.students[2].change("pondering", bubble),
+            self.teacher.change("happy", bubble),
             winner_word.animate.scale(0.3).set_opacity(0.5).to_corner(UR),
         )
         self.play(
-            self.students[0].animate.change("raise_left_hand", video),
+            self.students[0].change("raise_left_hand", video),
             FadeIn(video, 0.5 * UP),
         )
         self.wait()
@@ -298,7 +298,7 @@ class Introduction(TeacherStudentsScene):
                 for bc in bubble_copies
             ), lag_ratio=0.5),
             LaggedStart(*(
-                student.animate.change("thinking", UR)
+                student.change("thinking", UR)
                 for student in self.students[1:]
             ), lag_ratio=0.5),
             run_time=2,
@@ -716,7 +716,7 @@ class SureSure(TeacherStudentsScene):
             bubble_kwargs={"height": 2, "width": 3}
         ))
         self.change_student_modes("sassy", "angry", "hesitant")
-        self.play(self.teacher.animate.change("guilty"))
+        self.play(self.teacher.change("guilty"))
         self.wait(4)
 
 

@@ -707,12 +707,12 @@ class IveSeenThis(TeacherStudentsScene):
             target_mode="surprised",
             look_at_arg=equation,
             added_anims=[
-                self.students[0].animate.change("tease", equation),
-                self.students[1].animate.change("happy", equation),
-                self.teacher.animate.change("happy", equation),
+                self.students[0].change("tease", equation),
+                self.students[1].change("happy", equation),
+                self.teacher.change("happy", equation),
             ]
         )
-        self.play(self.teacher.animate.change("tease"))
+        self.play(self.teacher.change("tease"))
         self.wait(2)
         self.add(mandelbrot_outline, *self.mobjects)
         self.play(
@@ -723,9 +723,9 @@ class IveSeenThis(TeacherStudentsScene):
                 look_at_arg=mandelbrot_outline,
             ),
             FadeIn(mandelbrot_outline, 0.5 * UP, scale=2),
-            self.students[0].animate.change("pondering", mandelbrot_outline),
-            self.students[1].animate.change("thinking", mandelbrot_outline),
-            self.teacher.animate.change("happy", self.students[2].eyes),
+            self.students[0].change("pondering", mandelbrot_outline),
+            self.students[1].change("thinking", mandelbrot_outline),
+            self.teacher.change("happy", self.students[2].eyes),
         )
         self.wait(4)
 
@@ -1332,7 +1332,7 @@ class FixedPoints(Scene):
                 *rational_parts, rect, solution_words,
             )),
             VFadeIn(morty),
-            morty.animate.change("tease"),
+            morty.change("tease"),
         )
         self.play(PiCreatureSays(
             morty, "Use derivatives!",
@@ -1354,7 +1354,7 @@ class FixedPoints(Scene):
         self.play(
             FadeInFromPoint(deriv_ineq, morty.get_corner(UL)),
             MoveToTarget(equation),
-            morty.animate.change("raise_right_hand")
+            morty.change("raise_right_hand")
         )
         self.play(Blink(morty))
 
@@ -1374,7 +1374,7 @@ class FixedPoints(Scene):
 
         self.play(
             TransformMatchingTex(equation.copy()[:3], newton_case[0]),
-            morty.animate.change("pondering", newton_case[0]),
+            morty.change("pondering", newton_case[0]),
         )
         self.wait()
         self.play(
@@ -1392,7 +1392,7 @@ class FixedPoints(Scene):
         self.wait()
         self.play(
             TransformMatchingTex(alt_line1[4:], newton_case[1][4:]),
-            morty.animate.change("tease", alt_line1),
+            morty.change("tease", alt_line1),
         )
         self.remove(alt_line1)
         self.add(newton_case[1])
@@ -1400,7 +1400,7 @@ class FixedPoints(Scene):
         self.play(Blink(morty))
         self.wait()
         self.play(
-            morty.animate.change("pondering", newton_case[2]),
+            morty.change("pondering", newton_case[2]),
             FadeIn(newton_case[2])
         )
         self.play(Blink(morty))
@@ -1427,7 +1427,7 @@ class FixedPoints(Scene):
         super_words.next_to(rect, DOWN, SMALL_BUFF)
 
         self.play(
-            morty.animate.change("thinking"),
+            morty.change("thinking"),
             ShowCreation(rect),
             FadeIn(super_words)
         )
@@ -1956,7 +1956,7 @@ class Cycles(FixedPoints):
             ChangeDecimalToValue(million, 1e6, run_time=2),
             VFadeIn(million),
             FadeOut(brace_tex),
-            morty.animate.change("raise_right_hand", fn_eq)
+            morty.change("raise_right_hand", fn_eq)
         )
         self.play(Blink(morty))
         self.play(
@@ -1982,7 +1982,7 @@ class Cycles(FixedPoints):
             FadeOut(z_labels),
             FadeOut(z_dots),
             FadeOut(n_arrows),
-            morty.animate.change("erm", dots),
+            morty.change("erm", dots),
             ShowCreation(dots, run_time=5),
         )
         self.wait()
@@ -2074,12 +2074,12 @@ class Cycles(FixedPoints):
         self.play(
             FadeIn(curr_poly),
             FadeIn(degree),
-            morty.animate.change("tease", curr_poly),
+            morty.change("tease", curr_poly),
         )
         for n, poly in enumerate(polys[1:]):
             anims = []
             if n == 4:
-                anims.append(morty.animate.change("erm"))
+                anims.append(morty.change("erm"))
             self.play(
                 curr_poly.animate.replace(poly[1]),
                 FadeIn(poly[::2]),
@@ -2295,7 +2295,7 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
             student_index=0,
         )
         self.play(
-            self.teacher.animate.change("raise_right_hand", 3 * UR),
+            self.teacher.change("raise_right_hand", 3 * UR),
             self.get_student_changes(
                 "raise_left_hand", "pondering", "pondering",
                 look_at_arg=3 * UR,
@@ -2306,7 +2306,7 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
             look_at_arg=3 * UR,
         )
         self.wait()
-        self.play(self.teacher.animate.change("tease", 3 * UR))
+        self.play(self.teacher.change("tease", 3 * UR))
         self.change_student_modes(
             "confused", "pondering", "thinking",
             look_at_arg=3 * UR,
@@ -2321,8 +2321,8 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
                 target_mode="tease",
                 run_time=1,
             ),
-            self.students[1].animate.change("thinking", self.teacher.eyes),
-            self.students[2].animate.change("thinking", self.teacher.eyes),
+            self.students[1].change("thinking", self.teacher.eyes),
+            self.students[2].change("thinking", self.teacher.eyes),
         )
         self.wait(2)
 
@@ -3380,7 +3380,7 @@ class LattesExample(TeacherStudentsScene):
         subwords.next_to(j_fact, DOWN)
 
         self.play(
-            self.teacher.animate.change("raise_right_hand", 3 * UR),
+            self.teacher.change("raise_right_hand", 3 * UR),
             self.get_student_changes(
                 "pondering", "happy", "tease",
                 look_at_arg=3 * UR
@@ -3388,7 +3388,7 @@ class LattesExample(TeacherStudentsScene):
         )
         self.wait(3)
         self.play(
-            self.teacher.animate.change("sassy", example),
+            self.teacher.change("sassy", example),
             Write(example)
         )
         self.change_student_modes(
@@ -3403,7 +3403,7 @@ class LattesExample(TeacherStudentsScene):
                 "erm", "erm", "erm",
                 look_at_arg=j_fact,
             ),
-            self.teacher.animate.change("raise_right_hand", j_fact)
+            self.teacher.change("raise_right_hand", j_fact)
         )
         self.play(FadeIn(subwords))
         self.wait(3)
@@ -3436,7 +3436,7 @@ class LinksBelow(TeacherStudentsScene):
             look_at_arg=FRAME_HEIGHT * DOWN,
         )
         self.wait(2)
-        self.play(self.teacher.animate.change("happy"))
+        self.play(self.teacher.change("happy"))
         self.wait(4)
 
 

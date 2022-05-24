@@ -234,7 +234,7 @@ class PreviewFraming(TeacherStudentsScene):
         self.play(
             # FadeInFromPoint(top_rect, morty.get_corner(UR)),
             DrawBorderThenFill(top_rect),
-            morty.animate.change("raise_right_hand", top_rect),
+            morty.change("raise_right_hand", top_rect),
             self.get_student_changes(
                 "erm", "thinking", "pondering",
                 look_at_arg=top_rect,
@@ -273,15 +273,15 @@ class PreviewFraming(TeacherStudentsScene):
         self.play(
             FadeIn(spoiler_rect, DOWN),
             LaggedStartMap(MoveToTarget, ss, run_time=1.5),
-            morty.animate.change("tease", ORIGIN),
+            morty.change("tease", ORIGIN),
             Write(spoiler_word),
         )
         self.play(Blink(morty))
         self.wait(3)
-        self.play(morty.animate.change("surprised", spoiler_rect))
+        self.play(morty.change("surprised", spoiler_rect))
         self.play(Blink(morty))
         self.wait(2)
-        self.play(morty.animate.change("hesitant", spoiler_rect))
+        self.play(morty.change("hesitant", spoiler_rect))
         self.wait()
         self.play(Blink(morty))
         self.wait(3)
@@ -501,13 +501,13 @@ class AnswerGuess(InteractiveScene):
         self.play(
             ShowCreation(count_rect),
             VFadeIn(randy),
-            randy.animate.change("maybe", count_rect),
+            randy.change("maybe", count_rect),
             Write(randy.bubble),
             Write(randy.bubble.content),
         )
         self.play(Blink(randy))
         self.wait()
-        self.play(randy.animate.change("thinking").look(DL))
+        self.play(randy.change("thinking").look(DL))
         self.play(Blink(randy))
         randy.add(randy.bubble, randy.bubble.content)
         self.wait()
@@ -850,9 +850,9 @@ class WhoCares(TeacherStudentsScene):
                 self.students[2], "Who cares?", target_mode="angry",
                 bubble_kwargs=dict(direction=LEFT),
             ),
-            self.teacher.animate.change("guilty"),
-            self.students[0].animate.change("sassy"),
-            self.students[0].animate.change("hesitant"),
+            self.teacher.change("guilty"),
+            self.students[0].change("sassy"),
+            self.students[0].change("hesitant"),
         )
         self.wait(3)
 
@@ -1396,7 +1396,7 @@ class ExampleWith5(InteractiveScene):
 
         self.play(
             VFadeIn(morty),
-            morty.animate.change("surprised", expanded),
+            morty.change("surprised", expanded),
             Write(words)
         )
         self.play(Blink(morty))
@@ -1508,9 +1508,9 @@ class SpecifyEmptySet(TeacherStudentsScene):
             bubble_kwargs=dict(direction=RIGHT),
             target_mode="raise_right_hand",
             added_anims=[
-                morty.animate.change("happy"),
-                ss[0].animate.change("hesitant"),
-                ss[0].animate.change("pondering"),
+                morty.change("happy"),
+                ss[0].change("hesitant"),
+                ss[0].change("pondering"),
             ]
         )
         self.wait()
@@ -1528,10 +1528,10 @@ class SpecifyEmptySet(TeacherStudentsScene):
         for fact in facts:
             self.play(
                 FadeIn(fact, 0.5 * UP),
-                morty.animate.change("raise_right_hand", fact),
-                ss[0].animate.change("pondering", fact),
-                ss[1].animate.change("pondering", fact),
-                ss[2].animate.change("pondering", fact),
+                morty.change("raise_right_hand", fact),
+                ss[0].change("pondering", fact),
+                ss[1].change("pondering", fact),
+                ss[2].change("pondering", fact),
                 last_facts.animate.shift(UP)
             )
             self.wait()
@@ -1539,8 +1539,8 @@ class SpecifyEmptySet(TeacherStudentsScene):
         self.wait()
         self.play(
             RemovePiCreatureBubble(ss[2], target_mode="happy"),
-            ss[0].animate.change("thinking"),
-            ss[1].animate.change("tease"),
+            ss[0].change("thinking"),
+            ss[1].change("tease"),
         )
         self.wait(3)
 
@@ -1724,7 +1724,7 @@ class QuestionPolynomial(InteractiveScene):
 
         self.play(
             TransformMatchingShapes(poly[5:].copy(), expansion, run_time=3, lag_ratio=0.01),
-            LaggedStart(*(pi.animate.change("pondering", expansion) for pi in pis))
+            LaggedStart(*(pi.change("pondering", expansion) for pi in pis))
         )
         self.play(LaggedStartMap(Blink, pis))
         self.wait()
@@ -2415,7 +2415,7 @@ class MotivateRootsOfUnity(InteractiveScene):
         self.play(Blink(morty))
         self.wait()
         self.play(
-            morty.animate.change("pondering", fm1).shift(UP),
+            morty.change("pondering", fm1).shift(UP),
             line.animate.shift(UP),
             FadeOut(VGroup(morty.bubble, morty.bubble.content), 0.5 * UP),
         )
@@ -2443,7 +2443,7 @@ class MotivateRootsOfUnity(InteractiveScene):
                 self.play(
                     FadeTransform(fm1_powers[n].copy(), vect),
                     FadeTransform(fm1_powers[n].copy(), power),
-                    morty.animate.change("surprised").shift(2 * RIGHT).set_opacity(0),
+                    morty.change("surprised").shift(2 * RIGHT).set_opacity(0),
                 )
                 self.remove(morty)
             else:
@@ -3381,7 +3381,7 @@ class JustifyLinearity(InteractiveScene):
         )
         self.play(
             Write(x_poly),
-            randy.animate.change("sad", x_poly),
+            randy.change("sad", x_poly),
         )
         self.play(Blink(randy))
         self.wait()
@@ -3412,7 +3412,7 @@ class JustifyLinearity(InteractiveScene):
         for mob in x_poly, group:
             self.play(
                 FlashAround(mob, time_width=2, run_time=2, color=mob[2].get_fill_color()),
-                randy.animate.change("pondering", mob),
+                randy.change("pondering", mob),
             )
             self.wait()
         self.play(
@@ -4077,14 +4077,14 @@ class AskAboutComplex(TeacherStudentsScene):
         ss = self.students
         self.student_says("Why complex\nnumbers?")
         self.play(
-            ss[0].animate.change("pondering"),
-            ss[1].animate.change("erm"),
-            morty.animate.change("tease"),
+            ss[0].change("pondering"),
+            ss[1].change("erm"),
+            morty.change("tease"),
         )
         self.wait(2)
         self.play(
             RemovePiCreatureBubble(ss[2], target_mode="erm", look_at_arg=morty.eyes),
-            morty.animate.change("hesitant"),
+            morty.change("hesitant"),
         )
         self.wait(2)
 
@@ -4107,14 +4107,14 @@ class AskAboutComplex(TeacherStudentsScene):
         lines.next_to(morty, UL).to_edge(UP)
 
         self.play(
-            morty.animate.change("raise_right_hand"),
+            morty.change("raise_right_hand"),
             FadeInFromPoint(fx, morty.get_center(), run_time=2),
-            ss[1].animate.change("hesitant", lines)
+            ss[1].change("hesitant", lines)
         )
         for line in lines[1:]:
             self.play(FadeIn(line, 0.5 * DOWN))
         self.wait()
-        self.play(morty.animate.change("tease"))
+        self.play(morty.change("tease"))
         self.wait()
 
         # Blank check
@@ -4150,14 +4150,14 @@ class AskAboutComplex(TeacherStudentsScene):
                 dots_in_set.select_part("x"),
                 path_arc=-45 * DEGREES,
             ),
-            morty.animate.change("raise_left_hand", dots_in_set),
+            morty.change("raise_left_hand", dots_in_set),
         )
         self.play(Write(dots_in_set[1:]))
         self.wait()
         self.play(
-            morty.animate.change("shruggie"),
-            ss[0].animate.change("pondering"),
-            ss[2].animate.change("hesitant"),
+            morty.change("shruggie"),
+            ss[0].change("pondering"),
+            ss[2].change("hesitant"),
             FadeOut(dots_in_set.select_part("\\mathds{R}"), UP),
             FadeIn(C_set, UP),
         )
@@ -4249,7 +4249,7 @@ class ProblemStatement(TeacherStudentsScene):
                 FadeInFromPoint(word, morty.get_corner(UL))
                 for word in words
             )),
-            morty.animate.change("raise_right_hand", title),
+            morty.change("raise_right_hand", title),
             self.get_student_changes("happy", "thinking", "happy", look_at_arg=title)
         )
         self.remove(words)
@@ -4295,7 +4295,7 @@ class ProblemStatement(TeacherStudentsScene):
         sum_groups = VGroup()
         for subset, sum_wrapper, mode_triple in zip(subsets, sum_wrappers, mode_triples):
             self.play(
-                morty.animate.change("tease", subset),
+                morty.change("tease", subset),
                 self.get_student_changes(*mode_triple, look_at_arg=subset),
                 set_tex_transform(set_tex, subset),
             )
@@ -4310,7 +4310,7 @@ class ProblemStatement(TeacherStudentsScene):
             self.wait()
             self.play(
                 Write(sum_wrapper),
-                morty.animate.change("hooray" if subset is subsets[-1] else "tease", subset),
+                morty.change("hooray" if subset is subsets[-1] else "tease", subset),
             )
             self.wait(2)
             mark = Checkmark() if sum(subset.values) % 5 == 0 else Exmark()
@@ -4358,7 +4358,7 @@ class ProblemStatement(TeacherStudentsScene):
                 self.students[2], "Who cares?", target_mode="angry",
                 bubble_kwargs=dict(direction=LEFT),
             ),
-            morty.animate.change("guilty"),
+            morty.change("guilty"),
             MoveToTarget(statement),
             FadeOut(sum_groups, LEFT)
         )
@@ -4369,7 +4369,7 @@ class ProblemStatement(TeacherStudentsScene):
                 target_mode="plain",
                 look_at_arg=ORIGIN,
             ),
-            morty.animate.change("sassy", self.students[2].eyes),
+            morty.change("sassy", self.students[2].eyes),
             self.get_student_changes(
                 "pondering", "pondering",
                 look_at_arg=ORIGIN,
@@ -4379,7 +4379,7 @@ class ProblemStatement(TeacherStudentsScene):
         self.play(Blink(morty))
         self.play(
             FlashAround(title, time_width=1),
-            morty.animate.change("raise_right_hand"),
+            morty.change("raise_right_hand"),
         )
         self.wait()
         return
@@ -4521,10 +4521,10 @@ class BookQuestionHighlight(InteractiveScene):
 class ConfusedPi(InteractiveScene):
     def construct(self):
         randy = Randolph(mode="erm", height=2)
-        self.play(randy.animate.change("maybe").look(UP))
+        self.play(randy.change("maybe").look(UP))
         self.play(Blink(randy))
         self.wait()
-        self.play(randy.animate.change("pondering").look(DL))
+        self.play(randy.change("pondering").look(DL))
         self.play(Blink(randy))
         self.wait(2)
 
@@ -4583,7 +4583,7 @@ class IsThereAGeometry(InteractiveScene):
         for x in range(2):
             self.play(Blink(randy))
             self.wait(2)
-            self.play(randy.animate.change("thinking"))
+            self.play(randy.change("thinking"))
 
 
 class RotationAnnotation(InteractiveScene):
@@ -4654,8 +4654,8 @@ class IsItHelpful(TeacherStudentsScene):
             "Is that helpful here?",
             student_index=2,
             added_anims=[LaggedStart(
-                self.students[0].animate.change("confused", self.screen),
-                self.students[1].animate.change("maybe", self.screen),
+                self.students[0].change("confused", self.screen),
+                self.students[1].change("maybe", self.screen),
                 lag_ratio=0.5,
             )]
         )
@@ -4668,7 +4668,7 @@ class IsItHelpful(TeacherStudentsScene):
                 look_at_arg=self.teacher.eyes,
             )]
         )
-        self.play(self.students[2].animate.change("angry"))
+        self.play(self.students[2].change("angry"))
         self.wait(3)
 
 
@@ -4685,7 +4685,7 @@ class NoteToPatrons(InteractiveScene):
         title.to_edge(UP)
 
         self.play(
-            morty.animate.change("raise_right_hand"),
+            morty.change("raise_right_hand"),
             FadeInFromPoint(title, morty.get_corner(UL)),
         )
         modes = ["happy", "tease", "shruggie", "gracious"]
@@ -4693,7 +4693,7 @@ class NoteToPatrons(InteractiveScene):
             if random.random() < 0.3:
                 self.play(Blink(morty))
             elif random.random() < 0.1:
-                self.play(morty.animate.change(
+                self.play(morty.change(
                     random.choice(modes),
                     title,
                 ))
@@ -4765,7 +4765,7 @@ class BeyondOurExample(TeacherStudentsScene):
             )]
         )
         self.wait(3)
-        self.play(self.teacher.animate.change("tease"))
+        self.play(self.teacher.change("tease"))
         self.change_student_modes("thinking", "tease", "tease")
         self.wait(2)
 
@@ -4796,9 +4796,9 @@ class WaitWhat(TeacherStudentsScene):
         self.student_says(
             TexText("Wait...can you\\\\explain that?", target_mode="confused"),
             added_anims=[
-                self.teacher.animate.change("guilty"),
-                self.students[0].animate.change("erm", self.screen),
-                self.students[1].animate.change("maybe", self.screen),
+                self.teacher.change("guilty"),
+                self.students[0].change("erm", self.screen),
+                self.students[1].change("maybe", self.screen),
             ]
         )
         self.wait()
@@ -4949,7 +4949,7 @@ class AskAboutTaylorSeries(TeacherStudentsScene):
             student_index=2,
         )
         self.play(
-            self.teacher.animate.change("tease"),
+            self.teacher.change("tease"),
             self.get_student_changes(
                 None, "confused", "thinking",
                 look_at_arg=self.students[2].bubble,
@@ -4979,7 +4979,7 @@ class TantalizinglyClose(InteractiveScene):
             FadeIn(randy),
         )
         self.play(
-            randy.animate.change("hooray"),
+            randy.change("hooray"),
             Write(words),
         )
         self.play(Blink(randy))
@@ -5019,7 +5019,7 @@ class StudentSaysWhat(TeacherStudentsScene):
             target_mode="angry"
         )
         self.play(
-            self.teacher.animate.change("happy"),
+            self.teacher.change("happy"),
             self.get_student_changes("confused", "sassy", "angry")
         )
         self.look_at(self.screen)
@@ -5039,13 +5039,13 @@ class FocusOnPropertiesNotValues(TeacherStudentsScene):
         words.move_to(self.hold_up_spot, DOWN).shift_onto_screen()
 
         self.play(
-            morty.animate.change('raise_right_hand'),
+            morty.change('raise_right_hand'),
             self.get_student_changes("erm", "confused", "hesitant", look_at_arg=words[0]),
             FadeIn(words[0], UP)
         )
         self.wait(3)
         self.play(
-            morty.animate.change("hooray", words[1]),
+            morty.change("hooray", words[1]),
             FadeIn(words[1], UP),
             words[0].animate.shift(2.5 * UP),
             self.get_student_changes("tease", "happy", "tease")
@@ -5137,7 +5137,7 @@ class HangInThereRecapPrep(TeacherStudentsScene):
         self.student_says(
             "Can you recap\nwhere we are?",
         )
-        self.change_student_modes("confused", "thinking", added_anims=[self.teacher.animate.change("happy")])
+        self.change_student_modes("confused", "thinking", added_anims=[self.teacher.change("happy")])
         self.wait(3)
 
 
@@ -5344,17 +5344,17 @@ class ReferenceZetaPromise(TeacherStudentsScene):
             target_mode="sassy",
             student_index=0,
             added_anims=[
-                ss[1].animate.change("hesitant"),
-                ss[2].animate.change("angry"),
+                ss[1].change("hesitant"),
+                ss[2].change("angry"),
             ]
         )
-        self.play(morty.animate.change("guilty"))
+        self.play(morty.change("guilty"))
         self.wait(3)
         self.play(
             RemovePiCreatureBubble(ss[0], target_mode="pondering", look_at_arg=self.screen),
-            ss[1].animate.change("pondering", self.screen),
-            ss[2].animate.change("thinking", self.screen),
-            morty.animate.change("raise_right_hand", self.screen)
+            ss[1].change("pondering", self.screen),
+            ss[2].change("thinking", self.screen),
+            morty.change("raise_right_hand", self.screen)
         )
         self.wait(4)
 

@@ -225,7 +225,7 @@ class Assumptions(TeacherStudentsScene):
             ),
             run_time=2,
         )
-        self.play(self.students[0].animate.change("guilty").look(LEFT))
+        self.play(self.students[0].change("guilty").look(LEFT))
         self.wait()
 
         eigen_expression = Tex("""
@@ -246,22 +246,22 @@ class Assumptions(TeacherStudentsScene):
         self.play(
             RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand"),
             FadeIn(eigen_expression, UP),
-            self.students[1].animate.change("hesitant"),
-            self.students[2].animate.change("sassy"),
+            self.students[1].change("hesitant"),
+            self.students[2].change("sassy"),
         )
         self.play(
             ShowCreation(cross),
             FadeIn(words, 0.25 * UP),
-            self.teacher.animate.change("tease", cross),
-            self.students[1].animate.change("pondering", cross),
-            self.students[2].animate.change("hesitant", cross),
+            self.teacher.change("tease", cross),
+            self.students[1].change("pondering", cross),
+            self.students[2].change("hesitant", cross),
         )
         self.wait(3)
         fade_rect = FullScreenFadeRectangle()
         fade_rect.set_fill(BLACK, opacity=0.7)
         self.add(fade_rect, self.students[0])
         self.play(FadeIn(fade_rect))
-        self.play(self.students[0].animate.change("maybe", cross))
+        self.play(self.students[0].change("maybe", cross))
         self.play(Blink(self.students[0]))
 
 
@@ -866,12 +866,12 @@ class OutlineThreeFacts(Scene):
         self.play(
             FadeIn(third_point_placeholder),
             VFadeIn(randy),
-            randy.animate.change("erm", third_point_placeholder)
+            randy.change("erm", third_point_placeholder)
         )
         self.play(Blink(randy))
         self.wait()
         self.play(
-            randy.animate.change("thinking", eq_m),
+            randy.change("thinking", eq_m),
             Write(eq_m)
         )
         self.play(
@@ -915,14 +915,14 @@ class OutlineThreeFacts(Scene):
         det_rect = SurroundingRectangle(VGroup(indices[1], det, eq_p)).set_stroke(PROD_COLOR)
 
         self.play(
-            randy.animate.change("raise_right_hand", ex_mat),
+            randy.change("raise_right_hand", ex_mat),
             FadeIn(ex_mat, RIGHT),
             FadeOut(group, RIGHT),
         )
         self.play(Blink(randy))
         self.wait()
 
-        self.play(FadeIn(tr_rect), randy.animate.change("pondering", tr_rhs))
+        self.play(FadeIn(tr_rect), randy.change("pondering", tr_rhs))
         self.play(
             Write(m_eq[:2]),
             LaggedStartMap(ShowCreation, diag_rects, lag_ratio=0.5, run_time=1),
@@ -941,7 +941,7 @@ class OutlineThreeFacts(Scene):
         self.play(FadeOut(tr_rect), FadeIn(det_rect), randy.animate.look_at(tr_rhs))
         self.play(
             Write(p_eq1[:2]),
-            randy.animate.change("hesitant", p_eq1),
+            randy.change("hesitant", p_eq1),
             FadeOut(mean_rect),
         )
 
@@ -960,7 +960,7 @@ class OutlineThreeFacts(Scene):
             FadeOut(off_diag_rects),
         )
         self.play(
-            randy.animate.change("tease", p_eq2),
+            randy.change("tease", p_eq2),
             FadeOut(p_eq1),
             FadeIn(p_eq2),
         )
@@ -976,7 +976,7 @@ class OutlineThreeFacts(Scene):
         self.add(full_rect, randy, ex)
         self.play(
             FadeIn(full_rect),
-            randy.animate.change("pondering", ORIGIN)
+            randy.change("pondering", ORIGIN)
         )
         for x in range(10):
             if random.random() < 0.5:
@@ -1335,7 +1335,7 @@ class AskIfThatsBetter(Scene):
             RemovePiCreatureBubble(randy, target_mode="thinking")
         )
         self.wait(2)
-        self.play(randy.animate.change("pondering", UL))
+        self.play(randy.change("pondering", UL))
         self.play(Blink(randy))
         self.wait()
 
@@ -1430,7 +1430,7 @@ class Example1(TeacherStudentsScene):
         mat.move_to(self.hold_up_spot, DOWN)
 
         self.play(
-            self.teacher.animate.change("raise_right_hand", mat),
+            self.teacher.change("raise_right_hand", mat),
             FadeIn(mat.get_brackets(), UP)
         )
         self.play(
@@ -1442,7 +1442,7 @@ class Example1(TeacherStudentsScene):
         bubble = ThoughtBubble(height=4, width=7)
         bubble.pin_to(self.students[2])
         self.play(
-            self.students[2].animate.change("tease", bubble),
+            self.students[2].change("tease", bubble),
             Write(bubble)
         )
         self.wait(3)
@@ -1481,7 +1481,7 @@ class Example1(TeacherStudentsScene):
             self.get_student_changes("pondering", "pondering", "pondering", look_at_arg=ORIGIN)
         )
         self.play(
-            self.teacher.animate.change("tease", formula),
+            self.teacher.change("tease", formula),
             *(pi.animate.look_at(formula) for pi in self.students),
         )
         self.wait()
@@ -1507,7 +1507,7 @@ class Example1(TeacherStudentsScene):
         )
         self.play(
             ShowCreation(diag_rects),
-            self.teacher.animate.change("tease", diag_rects),
+            self.teacher.change("tease", diag_rects),
             *(pi.animate.look_at(diag_rects) for pi in self.students),
         )
         self.wait()
@@ -1524,8 +1524,8 @@ class Example1(TeacherStudentsScene):
             self.play(
                 TransformFromCopy(m_eq[2], twos[i]),
                 FadeOut(m_rects[i]),
-                self.teacher.animate.change("raise_right_hand", twos),
-                *(pi.animate.change("thinking", twos) for pi in self.students)
+                self.teacher.change("raise_right_hand", twos),
+                *(pi.change("thinking", twos) for pi in self.students)
             )
         self.wait()
 
@@ -1548,7 +1548,7 @@ class Example1(TeacherStudentsScene):
             m_eq.animate.scale(0.7).next_to(mat, LEFT).to_edge(LEFT),
             FadeIn(lhs),
             FadeOut(diag_rects),
-            self.teacher.animate.change("happy"),
+            self.teacher.change("happy"),
             self.get_student_changes("erm", "hesitant", "thinking", look_at_arg=prod_eq)
         )
         self.play(det_path_anim(mat, run_time=1))
@@ -1557,7 +1557,7 @@ class Example1(TeacherStudentsScene):
             FadeTransform(mat.get_entries()[0].copy(), prod_eq[2]),
             FadeTransform(mat.get_entries()[3].copy(), prod_eq[2]),
             VFadeInThenOut(VGroup(*(SurroundingRectangle(e) for e in mat.get_entries()[0::3]))),
-            self.teacher.animate.change("coin_flip_1"),
+            self.teacher.change("coin_flip_1"),
         )
         self.play(
             FadeIn(prod_eq[3]),
@@ -1573,7 +1573,7 @@ class Example1(TeacherStudentsScene):
         self.play(
             FadeOut(p_rect),
             FadeTransform(prod_eq[-1].copy(), min1),
-            self.teacher.animate.change("raise_left_hand", min1),
+            self.teacher.change("raise_left_hand", min1),
             *(pi.animate.look_at(min1) for pi in self.students)
         )
         self.wait()
@@ -1587,7 +1587,7 @@ class Example1(TeacherStudentsScene):
         rhs.move_to(formula[4], LEFT)
 
         self.play(
-            self.teacher.animate.change("tease", rhs),
+            self.teacher.change("tease", rhs),
             TransformMatchingShapes(formula[4:6].copy(), rhs),
             formula[4:].animate.shift(UP),
         )
@@ -2032,7 +2032,7 @@ class HeresTheThing(TeacherStudentsScene):
         )
         self.play(
             self.get_student_changes("maybe", "confused", "raise_right_hand", look_at_arg=self.screen),
-            self.teacher.animate.change("happy"),
+            self.teacher.change("happy"),
         )
         self.wait(3)
         self.teacher_says(
@@ -2052,7 +2052,7 @@ class HeresTheThing(TeacherStudentsScene):
         words.next_to(self.screen, RIGHT)
         words.shift(RIGHT)
         self.play(
-            self.teacher.animate.change("guilty"),
+            self.teacher.change("guilty"),
             self.get_student_changes("sassy", "hesitant", "sassy"),
             Write(words),
         )
@@ -2246,15 +2246,15 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
         self.play(
             Write(bubble),
             Write(m_eq),
-            randy.animate.change("pondering", bubble)
+            randy.change("pondering", bubble)
         )
-        self.play(randy.animate.change("thinking", bubble))
+        self.play(randy.change("thinking", bubble))
         self.play(Blink(randy))
         self.wait()
         self.play(
             FadeIn(p_eq, 0.25 * UP),
             m_eq.animate.next_to(full_mat, RIGHT, aligned_edge=UP),
-            randy.animate.change("hesitant", full_mat),
+            randy.change("hesitant", full_mat),
             FadeOut(diag_rects),
         )
         self.play(det_path_anim(full_mat))
@@ -2262,7 +2262,7 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
         self.wait()
         self.play(
             FadeOut(bubble),
-            randy.animate.change("tease", p_eq2),
+            randy.change("tease", p_eq2),
             Transform(p_eq, p_eq2),
         )
         self.play(Blink(randy))
@@ -2289,12 +2289,12 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
 
         self.play(
             TransformMatchingShapes(full_mat.copy(), char_poly, run_time=2),
-            randy.animate.change("raise_left_hand", char_poly),
+            randy.change("raise_left_hand", char_poly),
         )
-        self.play(randy.animate.change("horrified", char_poly))
+        self.play(randy.change("horrified", char_poly))
         self.play(Blink(randy))
         self.wait()
-        self.play(randy.animate.change("tired"))
+        self.play(randy.change("tired"))
         self.wait()
 
 
@@ -2451,7 +2451,7 @@ class MPIsSolvingCharPoly(TeacherStudentsScene):
         )
         self.wait()
         self.play(
-            self.teacher.animate.change("hooray", char_poly),
+            self.teacher.change("hooray", char_poly),
             formula.animate.next_to(arrow, LEFT),
             FadeIn(char_poly, 0.5 * UP),
         )
