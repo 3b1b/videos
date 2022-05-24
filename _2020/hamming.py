@@ -2444,7 +2444,7 @@ class ComplainAboutParityCheckWeakness(TeacherStudentsScene):
         self.wait()
         self.play(self.teacher.change, "tease")
         self.wait()
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "pondering", "pondering",
             look_at_arg=self.screen,
             added_anims=[
@@ -3451,13 +3451,13 @@ class WhatIfTheresAndArrowInECCBits(TeacherStudentsScene):
             bubble_kwargs={'width': 5, 'height': 4, "direction": LEFT},
             added_anims=[self.teacher.change, "happy"]
         )
-        self.change_student_modes("confused", "confused")
+        self.play_student_changes("confused", "confused")
         self.look_at(self.screen)
         self.wait(2)
         self.teacher_says("Try it!", target_mode="hooray")
-        self.change_student_modes(*3 * ["pondering"], look_at_arg=self.screen)
+        self.play_student_changes(*3 * ["pondering"], look_at_arg=self.screen)
         self.wait(2)
-        self.change_student_modes(*3 * ["thinking"], look_at_arg=self.screen)
+        self.play_student_changes(*3 * ["thinking"], look_at_arg=self.screen)
         self.wait(8)
 
 
@@ -3504,7 +3504,7 @@ class HalfAsPowerful(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "happy"]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "pondering", look_at_arg=self.screen,
             added_anims=[self.teacher.change, "tease"]
         )
@@ -3519,7 +3519,7 @@ class WhatAboutTwoErrors(TeacherStudentsScene):
         )
         self.play(self.teacher.change, "guilty")
         self.look_at(self.screen)
-        self.change_student_modes("erm", "confused")
+        self.play_student_changes("erm", "confused")
         self.look_at(self.screen)
         self.wait(4)
 
@@ -3699,7 +3699,7 @@ class BlockSize256(Scene):
 class WellAlmost(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Well...\\\\almost", target_mode="hesitant")
-        self.change_student_modes("angry", "sassy", "confused")
+        self.play_student_changes("angry", "sassy", "confused")
         self.wait(3)
 
 
@@ -4232,13 +4232,13 @@ class LetsWalkThroughAnExample(TeacherStudentsScene):
             student_index=1,
             added_anims=[self.teacher.change, "happy"]
         )
-        self.change_student_modes("hooray", None, "hooray")
+        self.play_student_changes("hooray", None, "hooray")
         self.wait(5)
         self.teacher_says(
             "But of\\\\course!",
             target_mode="tease"
         )
-        self.change_student_modes("happy", "coin_flip_1", "happy")
+        self.play_student_changes("happy", "coin_flip_1", "happy")
         self.wait(4)
 
 
@@ -5421,7 +5421,7 @@ class ButWhy(TeacherStudentsScene):
             "Hang on...\\\\why?", target_mode="confused",
             added_anims=[self.teacher.change, "tease"]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "maybe", "erm", "confused",
             look_at_arg=self.screen,
         )
@@ -5816,7 +5816,7 @@ class WhatAboutTwoBitDetection(TeacherStudentsScene):
         self.look_at(self.screen)
         self.wait(4)
         self.play(self.teacher.change, "happy")
-        self.change_student_modes("confused", "erm", "pondering")
+        self.play_student_changes("confused", "erm", "pondering")
         self.wait(3)
 
 
@@ -5830,7 +5830,7 @@ class ConflictingViewsOnXor(TeacherStudentsScene):
             student_index=2,
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("pondering", "pondering", look_at_arg=self.screen)
+        self.play_student_changes("pondering", "pondering", look_at_arg=self.screen)
         self.wait(2)
         self.student_says(
             "Why didn't you\\\\just use xors\\\\from the start?",
@@ -6285,9 +6285,9 @@ class ThinkingInTermsOfBits(Scene):
 class SimpleHoldUpBackground(TeacherStudentsScene):
     def construct(self):
         self.play(self.teacher.change, "raise_right_hand", 3 * UP)
-        self.change_student_modes("pondering", "thinking", "tease", look_at_arg=3 * UP)
+        self.play_student_changes("pondering", "thinking", "tease", look_at_arg=3 * UP)
         self.wait(4)
-        self.change_student_modes("tease", "hesitant", "happy", look_at_arg=3 * UP)
+        self.play_student_changes("tease", "hesitant", "happy", look_at_arg=3 * UP)
         self.wait(5)
 
 

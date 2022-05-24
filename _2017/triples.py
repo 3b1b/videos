@@ -101,7 +101,7 @@ class IntroduceTriples(TeacherStudentsScene):
                 self.teacher.change_mode, "raise_right_hand"
             )
             self.play(LaggedStartMap(FadeIn, a_square))
-            self.change_student_modes(
+            self.play_student_changes(
                 *["pondering"]*3,
                 look_at_arg = triangle,
                 added_anims = [LaggedStartMap(FadeIn, b_square)]
@@ -147,7 +147,7 @@ class CompareToFermatsLastTheorem(TeacherStudentsScene):
         low_text.set_color(RED)
 
         self.add(square_expression, top_brace, top_text)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.play(self.teacher.change, "happy", run_time = 0)
         self.play(
             ReplacementTransform(
@@ -166,7 +166,7 @@ class CompareToFermatsLastTheorem(TeacherStudentsScene):
             GrowFromCenter(low_brace),
             FadeIn(low_text),
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "sassy", "angry", "erm",
             look_at_arg = low_expression,
             added_anims = [Transform(low_expression, expressions[3])]
@@ -310,7 +310,7 @@ class AskAboutFavoriteProof(TeacherStudentsScene):
             "What's you're \\\\ favorite proof?",
             target_mode = "raise_right_hand"
         )
-        self.change_student_modes("happy", "raise_right_hand", "happy")
+        self.play_student_changes("happy", "raise_right_hand", "happy")
         self.teacher_thinks("", target_mode = "thinking")
         self.wait()
         self.zoom_in_on_thought_bubble()
@@ -953,7 +953,7 @@ class ReframeOnLattice(PiCreatureScene):
 class TimeToGetComplex(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Time to \\\\ get complex")
-        self.change_student_modes("angry", "sassy", "pleading")
+        self.play_student_changes("angry", "sassy", "pleading")
         self.wait(2)
 
 class OneMoreExample(Scene):
@@ -1866,7 +1866,7 @@ class AskAboutHittingAllPoints(TeacherStudentsScene):
         )
         self.wait()
         self.teacher_says("No", target_mode = "sad")
-        self.change_student_modes(*["hesitant"]*3)
+        self.play_student_changes(*["hesitant"]*3)
         self.wait()
 
 class PointsWeMiss(VisualizeZSquared):
@@ -2023,7 +2023,7 @@ class PointsWeMissAreMultiplesOfOnesWeHit(TeacherStudentsScene):
         words.set_color_by_tex("miss", RED)
         words.set_color_by_tex("hit", GREEN)
         self.teacher_says(words)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class DrawSingleRadialLine(PointsWeMiss):
@@ -2569,7 +2569,7 @@ class SupposeMissingPoint(PointsWeMiss):
 class ProofTime(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Proof time!", target_mode = "hooray")
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
 
 class FinalProof(RationalPointsOnUnitCircle):

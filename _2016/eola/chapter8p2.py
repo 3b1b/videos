@@ -136,7 +136,7 @@ class BruteForceVerification(Scene):
 class ButWeCanDoBetter(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("But we can do \\\\ better than that")
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 class Prerequisites(Scene):
@@ -182,7 +182,7 @@ class DualityReview(TeacherStudentsScene):
         words = TexText("Quick", "duality", "review")
         words[1].set_color_by_gradient(BLUE, YELLOW)
         self.teacher_says(words, target_mode = "surprised")
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink(2)
 
 class DotProductToTransformSymbol(Scene):
@@ -769,9 +769,9 @@ class WhyAreWeDoingThis(TeacherStudentsScene):
         )
         self.random_blink()
         self.play(self.get_teacher().change_mode, "erm")
-        self.change_student_modes("plain", "confused", "raise_left_hand")
+        self.play_student_changes("plain", "confused", "raise_left_hand")
         self.random_blink()
-        self.change_student_modes("pondering", "confused", "raise_left_hand")
+        self.play_student_changes("pondering", "confused", "raise_left_hand")
         self.random_blink(5)
 
 class ThreeDTripleCrossProduct(Scene):
@@ -789,13 +789,13 @@ class NowForTheCoolPart(TeacherStudentsScene):
             "Now for the\\\\", 
             "cool part"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(2)
         self.teacher_says(
             "Let's answer the same question,\\\\",
             "but this time geometrically"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(2)
 
 class ThreeDDotProductProjection(Scene):

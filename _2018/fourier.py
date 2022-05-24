@@ -1669,7 +1669,7 @@ class DrawFrequencyPlot(WrapCosineGraphAroundCircle, PiCreatureScene):
 
 class StudentsHorrifiedAtScene(TeacherStudentsScene):
     def construct(self):
-        self.change_student_modes(
+        self.play_student_changes(
             *3*["horrified"],
             look_at_arg = 2*UP + 3*LEFT
         )
@@ -1681,7 +1681,7 @@ class AskAboutAlmostFouierName(TeacherStudentsScene):
             "``Almost'' Fourier transform?",
             target_mode = "sassy"
         )
-        self.change_student_modes("confused", "sassy", "confused")
+        self.play_student_changes("confused", "sassy", "confused")
         self.wait()
         self.teacher_says(
             "We'll get to the real \\\\ one in a few minutes",
@@ -2227,7 +2227,7 @@ class PauseAndPonder(TeacherStudentsScene):
             "Pause and \\\\ ponder!",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(4)
 
 class BeforeGettingToTheFullMath(TeacherStudentsScene):
@@ -2470,7 +2470,7 @@ class FilterOutHighPitch(AddingPureFrequencies, ShowCommutativeDiagram):
 class AskAboutInverseFourier(TeacherStudentsScene):
     def construct(self):
         self.student_says("Inverse Fourier?")
-        self.change_student_modes("confused", "raise_right_hand", "confused")
+        self.play_student_changes("confused", "raise_right_hand", "confused")
         self.wait(2)
 
 class ApplyFourierToFourier(DrawFrequencyPlot):
@@ -3532,7 +3532,7 @@ class TakeAStepBack(TeacherStudentsScene):
             "Hang on, go over \\\\ that again?",
             target_mode = "confused"
         ),
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.play(self.teacher.change, "happy")
         self.wait(3)
 
@@ -3827,7 +3827,7 @@ class OneSmallNote(TeacherStudentsScene):
             "Just one \\\\ small note...",
             # target_mode = 
         )
-        self.change_student_modes("erm", "happy", "sassy")
+        self.play_student_changes("erm", "happy", "sassy")
         self.wait(2)
 
 class BoundsAtInfinity(SummarizeFormula):
@@ -4096,7 +4096,7 @@ class SubscribeOrBinge(PiCreatureScene):
 class CloseWithAPuzzle(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Close with a puzzle!", run_time = 1)
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(3)
 
 class PuzzleDescription(Scene):

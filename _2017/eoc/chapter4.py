@@ -173,7 +173,7 @@ class TransitionFromLastVideo(TeacherStudentsScene):
                 ]
             )
         self.wait()
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         words = list(map(TexText, [
             "composition", "product", 
             "composition", "sum",
@@ -691,7 +691,7 @@ class DiscussProducts(TeacherStudentsScene):
             target_mode = "raise_right_hand"
         ))
         self.play(Write(wrong_product_rule))
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "confused", "erm",
             added_anims = [
                 not_equals.scale, 1.3,
@@ -707,7 +707,7 @@ class DiscussProducts(TeacherStudentsScene):
                 wrong_product_rule.to_corner, UP+LEFT
             ]
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class NotGraphsForProducts(GraphScene):
@@ -1386,7 +1386,7 @@ class MneumonicExample(TeacherStudentsScene):
             Write(deriv_q),
             self.get_teacher().change_mode, "raise_right_hand"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
 
         left_words = VGroup(*words[:2])
         left_terms = VGroup(*deriv[:2])
@@ -1420,7 +1420,7 @@ class MneumonicExample(TeacherStudentsScene):
 
         self.play(self.get_teacher().change_mode, "shruggie")
         self.wait()
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(3)
 
 class ConstantMultiplication(TeacherStudentsScene):
@@ -1434,7 +1434,7 @@ class ConstantMultiplication(TeacherStudentsScene):
             added_anims = [question.copy().to_edge, UP]
         )
         self.play(self.get_teacher().change_mode, "happy")
-        self.change_student_modes("pondering", "hooray", "pondering")
+        self.play_student_changes("pondering", "hooray", "pondering")
         self.wait(3)
 
 class ConstantMultiplicationFigure(IntroduceProductAsArea):

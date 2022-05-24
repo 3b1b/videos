@@ -332,7 +332,7 @@ class ShamelessPlug(TeacherStudentsScene):
             "But why $4\\pi R^2$?",
             target_mode="maybe"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "maybe", "happy",
             added_anims=[self.teacher.change, "happy"]
         )

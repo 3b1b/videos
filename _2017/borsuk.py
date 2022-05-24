@@ -525,7 +525,7 @@ class DiscussApplicability(TeacherStudentsScene):
             Minimize sharding,
             allocate resources evenly
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class ThreeJewelCase(FiveJewelCase):
@@ -560,7 +560,7 @@ class RepeatedShuffling(IntroduceStolenNecklaceProblem):
 class NowForTheTopology(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Now for the \\\\ topology")
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(3)
 
 class ExternallyAnimatedScene(Scene):
@@ -627,7 +627,7 @@ class ShearThenProjectnOntoEquatorAntipodalCollisionIn3D(ExternallyAnimatedScene
 class ClassicExample(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("The classic example...")
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(2)
 
 class AntipodalEarthPoints(ExternallyAnimatedScene):
@@ -701,7 +701,7 @@ class AlternateAntipodalCollision(ExternallyAnimatedScene):
 class AskWhy(TeacherStudentsScene):
     def construct(self):
         self.student_says("But...why?")
-        self.change_student_modes("pondering", None, "thinking")
+        self.play_student_changes("pondering", None, "thinking")
         self.play(self.get_teacher().change_mode, "happy")
         self.wait(3)
 
@@ -999,7 +999,7 @@ class MentionGenerality(TeacherStudentsScene, ThreeDScene):
                 for pi in self.get_pi_creatures()
             ]
         )
-        self.change_student_modes("pondering", "erm", "confused")
+        self.play_student_changes("pondering", "erm", "confused")
         self.wait()
         self.play(*[
             ApplyMethod(pi.look_at, arrow)
@@ -1243,7 +1243,7 @@ class MentionMakingNecklaceProblemContinuous(TeacherStudentsScene):
             Translate this into
             a continuous problem.
         """)
-        self.change_student_modes("confused", "pondering", "erm")
+        self.play_student_changes("confused", "pondering", "erm")
         self.wait(3)
 
 class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
@@ -1639,7 +1639,7 @@ class ThinkAboutTheChoices(TeacherStudentsScene):
             Think about the choices
             behind a division...
         """)
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
         )
@@ -1881,7 +1881,7 @@ class CompareThisToSphereChoice(TeacherStudentsScene):
             Compare this to choosing
             a point on the sphere.
         """)
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = FRAME_X_RADIUS*RIGHT+FRAME_Y_RADIUS*DOWN
         )
@@ -2417,7 +2417,7 @@ class WhatAboutGeneralCase(TeacherStudentsScene):
             What about when
             there's more than 2 jewels?
         """)
-        self.change_student_modes("confused", None, "sassy")
+        self.play_student_changes("confused", None, "sassy")
         self.wait()
         self.play(self.get_teacher().change_mode, "thinking")
         self.wait()
@@ -2426,7 +2426,7 @@ class WhatAboutGeneralCase(TeacherStudentsScene):
             higher-dimensional spheres """, 
             target_mode = "hooray"
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(2)
 
 class Simple3DSpace(ExternallyAnimatedScene):

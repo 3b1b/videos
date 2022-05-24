@@ -761,7 +761,7 @@ class DeclareNewTransformation(TeacherStudentsScene):
         )
         words[-1].set_color(GREEN)
         self.teacher_says(words)
-        self.change_student_modes("pondering", "sassy")
+        self.play_student_changes("pondering", "sassy")
         self.random_blink()
 
 class PlayInReverse(FullRankExmapleDet):

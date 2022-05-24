@@ -303,7 +303,7 @@ class ButIHaveNoExperience(TeacherStudentsScene):
             student_index=0,
             target_mode="pleading",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pleading", "pondering", "pondering",
             look_at_arg=self.students[0].bubble,
         )

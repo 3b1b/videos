@@ -391,7 +391,7 @@ class LayersOfLightbulbs(Scene):
 
 class Test(Scene):
     def construct(self):
-        # self.change_all_student_modes("hooray")
+        # self.play_all_student_changes("hooray")
         # self.teacher.change("raise_right_hand")
         # self.look_at(3 * UP)
         randy = Randolph()

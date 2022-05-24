@@ -266,7 +266,7 @@ class ClassWatching(TeacherStudentsScene):
             pi.look_at(rect)
 
         self.random_blink(5)
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_left_hand",
             "raise_right_hand",            
             "sassy",
@@ -510,7 +510,7 @@ class KindWordsOnEoLA(TeacherStudentsScene):
             run_time = 2
         )
         self.random_blink()
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.random_blink()
         self.play(self.get_teacher().change_mode, "happy")
         self.random_blink()
@@ -667,7 +667,7 @@ class EndScreen(TeacherStudentsScene):
             """,
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink()
 
 

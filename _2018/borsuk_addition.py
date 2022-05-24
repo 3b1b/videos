@@ -14,7 +14,7 @@ class Introduction(TeacherStudentsScene):
             Animation(VectorizedPoint(self.hold_up_spot)),
             self.teacher.change, "raise_right_hand",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "sassy", "pleading"
         )
         self.wait()
@@ -34,7 +34,7 @@ class Introduction(TeacherStudentsScene):
             )
             movements.append(student.center_tracker)
         self.add(*movements)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "sad", "concerned_musician",
             look_at_arg=10 * LEFT + 2 * DOWN
         )

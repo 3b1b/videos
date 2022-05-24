@@ -695,7 +695,7 @@ class AskAboutTurbulence(TeacherStudentsScene):
             target_mode='raise_left_hand',
             added_anims=[morty.change, 'pondering']
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "raise_left_hand", "confused",
         )
         self.wait(3)
@@ -1516,7 +1516,7 @@ class FiveThirds(TeacherStudentsScene):
             "5/3", "is a sort of fundamental\\\\ constant of turbulence"
         )
         self.teacher_says(words)
-        self.change_student_modes("pondering", "maybe", "erm")
+        self.play_student_changes("pondering", "maybe", "erm")
         self.play(
             FadeOut(self.teacher.bubble),
             FadeOut(words[1]),
@@ -1524,7 +1524,7 @@ class FiveThirds(TeacherStudentsScene):
             words[0].scale, 1.5,
             words[0].move_to, self.hold_up_spot
         )
-        self.change_student_modes("thinking", "pondering", "hooray")
+        self.play_student_changes("thinking", "pondering", "hooray")
         self.wait(3)
 
 

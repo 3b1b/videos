@@ -17,7 +17,7 @@ class IveHeardOfThis(TeacherStudentsScene):
             },
             run_time=1,
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "hooray", "thinking",
             look_at_arg=point,
             added_anims=[self.teacher.change, "happy"]
@@ -34,7 +34,7 @@ class IveHeardOfThis(TeacherStudentsScene):
             },
             run_time=1,
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "maybe", "pondering",
             look_at_arg=point,
             added_anims=[self.teacher.change, "guilty"]
@@ -107,7 +107,7 @@ class SineCurveIsUnrealistic(TeacherStudentsScene):
             },
             target_mode="angry"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "guilty", "angry", "hesitant",
             added_anims=[
                 self.teacher.change, "tease"
@@ -118,7 +118,7 @@ class SineCurveIsUnrealistic(TeacherStudentsScene):
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand"
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering",
             look_at_arg=3 * UP,
         )
@@ -131,7 +131,7 @@ class IfOnly(TeacherStudentsScene):
             "If only!",
             target_mode="angry"
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused",
             look_at_arg=self.screen
         )
@@ -147,7 +147,7 @@ class SoWeGotNowhere(TeacherStudentsScene):
                 self.teacher.change, "guilty"
             ]
         )
-        self.change_all_student_modes("angry")
+        self.play_all_student_changes("angry")
         self.wait()
         text = Tex(
             "&\\text{Actually,}\\\\",
@@ -168,7 +168,7 @@ class SoWeGotNowhere(TeacherStudentsScene):
                 "height": 3.5,
             }
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering",
             look_at_arg=self.screen
         )

@@ -1133,7 +1133,7 @@ class HuntForPi(TeacherStudentsScene):
             bubble_kwargs={"direction": LEFT},
             target_mode="hooray"
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "hooray",
             added_anims=[self.teacher.change, "happy"]
         )
@@ -1348,7 +1348,7 @@ class AnnouncePhaseDiagram(CircleDiagramFromSlidingBlocks):
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(pd_words)
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "pondering",
             added_anims=[ShowCreationThenFadeOut(pd_words_border)]
         )
@@ -1358,7 +1358,7 @@ class AnnouncePhaseDiagram(CircleDiagramFromSlidingBlocks):
             GrowArrow(simple_arrow),
             self.teacher.change, "hooray",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "happy", "thinking",
         )
         self.wait(3)
@@ -2081,7 +2081,7 @@ class AskAboutTheta(TeacherStudentsScene):
             "But what is $\\theta$?",
             target_mode="raise_left_hand",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "sassy", "raise_left_hand",
             added_anims=[self.teacher.change, "happy"]
         )
@@ -2853,10 +2853,10 @@ class TangentTaylorSeries(TeacherStudentsScene):
             TransformFromCopy(series[14:], example[16:]),
             *map(GrowFromCenter, [example[i] for i in (8, 10, 13, 15)])
         )
-        self.change_student_modes("happy", "confused", "sad")
+        self.play_student_changes("happy", "confused", "sad")
         self.play(ShowCreation(error_rect))
         self.play(ShowIncreasingSubsets(error_decimal))
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.wait(3)
 
 
@@ -3055,7 +3055,7 @@ class AltShowTwoPopulations(ShowTwoPopulations):
 class SimpleTeacherHolding(TeacherStudentsScene):
     def construct(self):
         self.play(self.teacher.change, "raise_right_hand")
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait(3)
 
 

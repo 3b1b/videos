@@ -272,7 +272,7 @@ class WhyPeopleMayKnowIt(TeacherStudentsScene):
             student_index = 1,
             target_mode = "raise_right_hand"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_left_hand",
             "raise_right_hand",
             "raise_left_hand",
@@ -751,7 +751,7 @@ class IgnoreNegatives(TeacherStudentsScene):
         only_s_gt_1[-3].set_color(YELLOW)
 
 
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         words = TexText(
             "Ignore $s \\le 1$ \\dots \\\\",
             "For now."
@@ -760,7 +760,7 @@ class IgnoreNegatives(TeacherStudentsScene):
         words[1].set_color(BLACK)
         self.teacher_says(words)
         self.play(words[1].set_color, WHITE)
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.play(
             GrowFromCenter(brace),
             Write(only_s_gt_1),
@@ -2123,7 +2123,7 @@ class DontKnowDerivatives(TeacherStudentsScene):
             """,
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 class IntroduceAnglePreservation(VisualizingSSquared):
@@ -2563,7 +2563,7 @@ class ThatsHowZetaIsDefined(TeacherStudentsScene):
             So that's how
             $\\zeta(s)$ is defined
         """)
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.random_blink(2)
 
     def add_zeta_definition(self):
@@ -2692,14 +2692,14 @@ class ButWhatIsTheExensions(TeacherStudentsScene):
             """,
             target_mode = "sassy"
         )
-        self.change_student_modes("confused", "sassy", "confused")
+        self.play_student_changes("confused", "sassy", "confused")
         self.random_blink(2)
         self.teacher_says("""
             You're $\\$1{,}000{,}000$ richer
             if you can answer
             that fully
         """, target_mode = "shruggie")
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(3)
 
 class MathematiciansLookingAtFunctionEquation(Scene):

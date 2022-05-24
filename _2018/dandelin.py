@@ -193,7 +193,7 @@ class HoldUpProof(TeacherStudentsScene):
         )
         self.look_at(title)
         self.wait(5)
-        self.change_student_modes(
+        self.play_student_changes(
             "happy", "thinking", "hooray",
             look_at_arg=title
         )
@@ -744,7 +744,7 @@ class AskWhyAreTheyTheSame(TeacherStudentsScene):
         self.look_at(self.screen)
         self.wait(3)
         self.play(morty.change, "thinking", self.screen)
-        self.change_student_modes("maybe", "erm", "confused")
+        self.play_student_changes("maybe", "erm", "confused")
         self.look_at(self.screen)
         self.wait(3)
 
@@ -865,7 +865,7 @@ class ShowMeasurementBook(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(measurement)
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.wait()
         self.play(
             GrowArrow(arrow),

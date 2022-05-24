@@ -1132,9 +1132,9 @@ class ReflectOnQuadraticApproximation(TeacherStudentsScene):
             real_result.shift, 1.5*DOWN,
             real_result.set_fill, None, 1,
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
-        self.change_student_modes(
+        self.play_student_changes(
             *["plain"]*3,
             added_anims = list(map(FadeOut, [
                 approx_at_point, approx_rhs, real_result
@@ -1306,7 +1306,7 @@ class MoreTerms(TeacherStudentsScene):
             "More terms!",
             target_mode = "surprised",
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(3)
 
 class CubicAndQuarticApproximations(ConstructQuadraticApproximation):
@@ -2469,7 +2469,7 @@ class ThisIsAStandardFormula(TeacherStudentsScene):
             "You will see this \\\\ in your texts",
             run_time = 1
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["sad"]*3,
             look_at_arg = FRAME_Y_RADIUS*UP
         )
@@ -2641,7 +2641,7 @@ class ShowSecondTerm(TeacherStudentsScene):
             ShowCreation(box),
             FadeIn(words),
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(3)
 
 class SecondTermIntuition(AreaIsDerivative):
@@ -2974,7 +2974,7 @@ class EachTermHasMeaning(TeacherStudentsScene):
             target_mode = "hooray",
             bubble_kwargs = {"height" : 3, "width" : 4}
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["thinking"]*3,
             look_at_arg = 4*UP
         )
@@ -3013,7 +3013,7 @@ class AskAboutInfiniteSum(TeacherStudentsScene):
         self.teacher_says(
             "We could call \\\\ it an end here"
         )
-        self.change_student_modes(*["erm"]*3)
+        self.play_student_changes(*["erm"]*3)
         self.wait(3)
         self.play(
             RemovePiCreatureBubble(self.teacher),
@@ -3580,7 +3580,7 @@ class MoreToBeSaid(TeacherStudentsScene):
         self.teacher_says(
             "About everything",
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait()
         self.remove()
         self.pi_creatures = []##Hack

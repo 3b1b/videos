@@ -37,7 +37,7 @@ class WhatDoesItReallyMean(TeacherStudentsScene):
         self.play(*[
             ApplyMethod(pi.look_at, ORIGIN) for pi in self.get_pi_creatures()
         ])
-        self.change_all_student_modes("pondering", look_at_arg=UP)
+        self.play_all_student_changes("pondering", look_at_arg=UP)
         self.wait(3)
-        self.change_student_modes("confused", look_at_arg=UP)
+        self.play_student_changes("confused", look_at_arg=UP)
         self.wait(3)

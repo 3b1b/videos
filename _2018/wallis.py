@@ -206,7 +206,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             target_mode="speaking",
             run_time=1
         )
-        self.change_student_modes("happy", "confused", "erm")
+        self.play_student_changes("happy", "confused", "erm")
         self.wait(2)
 
     def break_down_value_of_math_presentations(self):
@@ -383,7 +383,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             FadeIn(new_proof),
             self.teacher.change, "hooray",
         )
-        self.change_all_student_modes("hooray", look_at_arg=new_proof)
+        self.play_all_student_changes("hooray", look_at_arg=new_proof)
         self.wait(5)
 
 
@@ -4546,7 +4546,7 @@ class JustTechnicalities(TeacherStudentsScene):
         self.teacher_says(
             "These are just \\\\ technicalities"
         )
-        self.change_all_student_modes("happy")
+        self.play_all_student_changes("happy")
         self.play(RemovePiCreatureBubble(
             self.teacher, target_mode="raise_right_hand",
         ))

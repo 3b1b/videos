@@ -342,10 +342,10 @@ class ShowWritingTrajectory(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             path_arc=30 * DEGREES
         )
-        self.change_student_modes("erm", "sassy", "confused")
+        self.play_student_changes("erm", "sassy", "confused")
         self.look_at(screen)
         self.wait(2)
-        self.change_student_modes("pondering", "confused", "sassy")
+        self.play_student_changes("pondering", "confused", "sassy")
         self.wait(2)
 
         bubble = self.teacher.get_bubble(
@@ -370,7 +370,7 @@ class ShowWritingTrajectory(TeacherStudentsScene):
             s0.move_to(s0.target_center)
 
         self.add(Mobject.add_updater(s0, update_s0))
-        self.change_student_modes("tired", "horrified", "sad")
+        self.play_student_changes("tired", "horrified", "sad")
         self.play(s0.look, LEFT)
         self.wait(4)
 
@@ -672,7 +672,7 @@ class ThatsKindOfInteresting(TeacherStudentsScene):
             student_index=2,
             added_anims=[self.teacher.change, "happy"]
         )
-        self.change_student_modes("happy", "happy")
+        self.play_student_changes("happy", "happy")
         self.wait(2)
 
 
@@ -906,7 +906,7 @@ class AskQuestions(TeacherStudentsScene):
         self.wait()
         self.look_at(self.screen)
         self.wait()
-        self.change_all_student_modes("hooray", look_at_arg=screen)
+        self.play_all_student_changes("hooray", look_at_arg=screen)
         self.wait(3)
 
         topics.generate_target()
@@ -1016,7 +1016,7 @@ class WhyAreYouTellingUsThis(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("angry", "sassy", "angry")
+        self.play_student_changes("angry", "sassy", "angry")
         self.wait(2)
 
 
@@ -2236,7 +2236,7 @@ class FromKAWrapper(TeacherStudentsScene):
         )
         self.look_at(screen)
         self.wait(2)
-        self.change_student_modes("erm", "happy", "confused")
+        self.play_student_changes("erm", "happy", "confused")
         self.wait(3)
         self.teacher_says(
             "Our focus is \\\\ the 2d version",
@@ -2706,7 +2706,7 @@ class RelevantInNonSpatialCircumstances(TeacherStudentsScene):
             """,
             target_mode="hooray"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "sassy", "confused", "hesitant"
         )
         self.wait(3)
@@ -3267,7 +3267,7 @@ class AskAboutComputation(TeacherStudentsScene):
             "\\emph{compute} $\\textbf{div}$ and $\\textbf{curl}$?",
             target_mode="sassy",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "sassy", "angry",
             added_anims=[self.teacher.change, "guilty"]
         )
@@ -3279,7 +3279,7 @@ class AskAboutComputation(TeacherStudentsScene):
             target_mode="speaking",
             bubble_kwargs={"width": 4, "height": 3}
         )
-        self.change_student_modes(
+        self.play_student_changes(
             * 3 * ["pondering"],
             look_at_arg=self.screen
         )

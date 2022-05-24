@@ -22,7 +22,7 @@ class HeresTheThing(TeacherStudentsScene):
             self.teacher.change("raise_right_hand"),
             FadeIn(thumbnail, UP),
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_left_hand", "pondering", "erm",
             look_at_arg=self.teacher.eyes,
         )
@@ -806,7 +806,7 @@ class WhydYouHaveToRuinIt(TeacherStudentsScene):
             target_mode="pleading",
             added_anims=[self.teacher.change("guilty")]
         )
-        self.change_student_modes("sassy", "angry", "pleading")
+        self.play_student_changes("sassy", "angry", "pleading")
         self.wait(3)
         self.teacher_says(
             TexText("But ``salet'' is probably\\\\not the best for us"),

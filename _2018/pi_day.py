@@ -448,7 +448,7 @@ class HistoryOfOurPeople(TeacherStudentsScene):
             "Today: The history \\\\ of our people.",
             bubble_kwargs = {"width" : 4, "height" : 3}
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.wait()
         self.play(*[
             ApplyMethod(pi.change, "happy", self.screen)
@@ -896,7 +896,7 @@ class AskPuzzle(TeacherStudentsScene):
         response[1].set_color(BLUE)
 
         self.teacher_says(series)
-        self.change_all_student_modes("pondering", look_at_arg = series)
+        self.play_all_student_changes("pondering", look_at_arg = series)
         self.wait(3)
         self.play(
             FadeOut(self.teacher.bubble),
@@ -908,7 +908,7 @@ class AskPuzzle(TeacherStudentsScene):
                 target_mode = "raise_left_hand"
             )
         )
-        self.change_student_modes(
+        self.play_student_changes(
             None, "confused", "confused",
             added_anims = [self.students[0].look_at, question]
         )
@@ -921,7 +921,7 @@ class AskPuzzle(TeacherStudentsScene):
             question.next_to, series, DOWN, MED_LARGE_BUFF, LEFT,
             PiCreatureSays(self.teacher, response)
         )
-        self.change_all_student_modes("erm")
+        self.play_all_student_changes("erm")
         self.wait(3)
 
 class ChangeTopic(PiCreatureScene):

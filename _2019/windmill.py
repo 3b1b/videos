@@ -2151,7 +2151,7 @@ class SixOnSix(Describe2011IMO):
 class AlwaysStartSimple(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Always start\\\\simple")
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait(3)
 
 
@@ -3229,7 +3229,7 @@ class TwoTakeaways(TeacherStudentsScene):
             GrowFromPoint(title, self.hold_up_spot),
             self.teacher.change, "raise_right_hand",
         )
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait()
         for item in items:
             self.play(FadeIn(item, LEFT))

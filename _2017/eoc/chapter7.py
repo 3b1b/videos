@@ -1396,7 +1396,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
             title.restore,
             self.get_teacher().change_mode, "raise_right_hand",
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait()
         self.student_says(
             "Isn't that pretty \\\\ technical?",
@@ -1410,7 +1410,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
         self.look_at(self.get_teacher().eyes, self.get_students())
         self.wait()
         self.teacher_says("", bubble_kwargs = {"stroke_width" : 0})
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = UP+LEFT,
             added_anims = [self.get_teacher().look_at, UP+LEFT]
@@ -1425,7 +1425,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
             words, 
             bubble_kwargs = {"height" : 3, "width" : 6}
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(6)
 
 class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
@@ -2830,7 +2830,7 @@ class CannotUseLHopital(TeacherStudentsScene):
             bubble_kwargs = {"height" : 2.5},
             target_mode = "hesitant"
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(3)
 
 class NextVideo(TeacherStudentsScene):
@@ -2877,7 +2877,7 @@ class NextVideo(TeacherStudentsScene):
             Write(VGroup(*ftc.get_parts_by_tex(part)))
             for part in ("-", "=", "over", "(x)")
         ])
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(3)
 
 class Chapter7PatreonThanks(PatreonThanks):

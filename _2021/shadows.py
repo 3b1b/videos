@@ -732,7 +732,7 @@ class AskAboutAveraging(TeacherStudentsScene):
         sts = self.students
         tch = self.teacher
 
-        self.change_student_modes(
+        self.play_student_changes(
             "maybe", "thinking", "erm",
             look_at_arg=self.screen,
             added_anims=[self.teacher.change("raise_right_hand", self.screen)]
@@ -777,7 +777,7 @@ class AskAboutAveraging(TeacherStudentsScene):
         self.wait(2)
         self.teacher_says(TexText("Hold off until\\\\the end"))
         self.wait(3)
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "tease", "pondering",
             look_at_arg=self.screen,
             added_anims=[self.teacher.change("tease", self.students)]
@@ -5230,7 +5230,7 @@ class ComplainAboutProgress(TeacherStudentsScene):
             TexText("Wait, is that all\\\\we've accomplished?"),
             target_mode="angry",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "guilty", "erm",
             look_at_arg=self.students[2].eyes,
             added_anims=[self.teacher.change("guilty")],
@@ -5840,7 +5840,7 @@ class ButSpheresAreSmooth(TeacherStudentsScene):
             student_index=2,
             added_anims=[self.teacher.change("guilty")]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "hesitant", "angry",
             look_at_arg=self.screen,
         )

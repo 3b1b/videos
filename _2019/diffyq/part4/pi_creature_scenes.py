@@ -30,14 +30,14 @@ class SolveForWavesNothingElse(TeacherStudentsScene):
             student_index=2,
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("pondering", "pondering", "sassy")
+        self.play_student_changes("pondering", "pondering", "sassy")
         self.look_at(self.screen)
         self.wait(4)
         self.student_says(
             "But nothing else!",
             target_mode="angry",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "concerned_musician",
             "concerned_musician",
             "angry",
@@ -156,7 +156,7 @@ class HangOnThere(TeacherStudentsScene):
             ),
             self.teacher.change, "thinking",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "confused", "angry"
         )
         self.wait(3)
@@ -164,7 +164,7 @@ class HangOnThere(TeacherStudentsScene):
 
 class YouSaidThisWasEasier(TeacherStudentsScene):
     def construct(self):
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused", look_at_arg=self.screen,
         )
         self.student_says(
@@ -227,7 +227,7 @@ class FormulaOutOfContext(TeacherStudentsScene):
         formula.next_to(self.students, UP, LARGE_BUFF)
 
         self.add(formula)
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "horrified",
             look_at_arg=formula,
         )

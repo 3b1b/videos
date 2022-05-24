@@ -157,7 +157,7 @@ class Anniversary(TeacherStudentsScene):
                 )
             ]
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
 
     def complain(self):
         self.student_says(
@@ -165,7 +165,7 @@ class Anniversary(TeacherStudentsScene):
             student_index = 0,
             target_mode = "sassy",
         )
-        self.change_student_modes(*["sassy"]*3)
+        self.play_student_changes(*["sassy"]*3)
         self.play(self.get_teacher().change_mode, "shruggie")
         self.wait(2)
 
@@ -212,7 +212,7 @@ class WatchingScreen(PiCreatureScene):
 class LetsStudyTheBasics(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Let's learn some \\\\ group theory!")
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
 
 class JustGiveMeAQuickExplanation(TeacherStudentsScene):
@@ -605,7 +605,7 @@ class SymmetriesOfSquare(ThreeDScene):
 class ManyGroupsAreInfinite(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Many groups are infinite")
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class CircleSymmetries(Scene):
@@ -798,7 +798,7 @@ class HowDoSymmetriesPlayWithEachOther(TeacherStudentsScene):
             "How do symmetries \\\\ play with each other?",
             target_mode = "hesitant",
         )
-        self.change_student_modes("pondering", "maybe", "confused")
+        self.play_student_changes("pondering", "maybe", "confused")
         self.wait(2)
 
 class AddSquareSymmetries(SymmetriesOfSquare):
@@ -1223,7 +1223,7 @@ class NumbersAsActionsQ(TeacherStudentsScene):
             "Numbers are actions?",
             target_mode = "confused",
         )
-        self.change_student_modes("pondering", "confused", "erm")
+        self.play_student_changes("pondering", "confused", "erm")
         self.play(self.get_teacher().change_mode, "happy")
         self.wait(3)
 
@@ -2358,7 +2358,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         )
         for mob in three_twos:
             self.play(Write(mob, run_time = 1))
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
         self.play(
             FadeIn(five_twos.brace),
@@ -2394,7 +2394,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.wait()
         self.play(Write(lhs))
         self.wait()
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait()
 
         general_equation = Tex("2^{x+y}=", "2^x", "2^y")
@@ -2451,7 +2451,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.wait()
 
         self.teacher_says("Extend the \\\\ definition")
-        self.change_student_modes("pondering", "confused", "erm")
+        self.play_student_changes("pondering", "confused", "erm")
         self.wait()
 
         half_expression = Tex(

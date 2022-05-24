@@ -51,7 +51,7 @@ class DoTheSameForCross(TeacherStudentsScene):
         words.set_color_by_tex("cross products", YELLOW)
         self.teacher_says(words, target_mode = "surprised")
         self.random_blink(2)
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink()
 
 class ListSteps(Scene):
@@ -1117,7 +1117,7 @@ class PlayAround(TeacherStudentsScene):
             Play with the idea if
             you wish to understand it 
         """)
-        self.change_student_modes("pondering", "happy", "happy")
+        self.play_student_changes("pondering", "happy", "happy")
         self.random_blink(2)
         self.student_thinks("", student_index = 0)
         self.zoom_in_on_thought_bubble()
@@ -1262,9 +1262,9 @@ class TechnicallyNotTheDotProduct(TeacherStudentsScene):
             That was technically
             not the cross product
         """)
-        self.change_student_modes("confused")
-        self.change_student_modes("confused", "angry")
-        self.change_student_modes("confused", "angry", "sassy")
+        self.play_student_changes("confused")
+        self.play_student_changes("confused", "angry")
+        self.play_student_changes("confused", "angry", "sassy")
         self.random_blink(3)
 
 class ThreeDShowParallelogramAndCrossProductVector(Scene):
@@ -1620,7 +1620,7 @@ class ThereIsAReason(TeacherStudentsScene):
         )
         words.set_color_by_tex("reason", YELLOW)
         self.teacher_says(words, target_mode = "surprised")
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_right_hand", "confused", "raise_left_hand"
         )
         self.random_blink()

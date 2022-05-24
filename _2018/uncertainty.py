@@ -350,7 +350,7 @@ class MentionUncertaintyPrinciple(TeacherStudentsScene):
                 {"sigma" : 0.1*RIGHT},
                 run_time = 3,
             )
-            self.change_student_modes("thinking", "erm", "sassy")
+            self.play_student_changes("thinking", "erm", "sassy")
             self.play(
                 dot_cloud.gaussian_distribution_wrapper.change_parameters,
                 {"sigma" : 0.1*RIGHT},
@@ -652,7 +652,7 @@ class StartWithIntuition(TeacherStudentsScene):
                 "width" : 3,
             },
         )
-        self.change_student_modes("pondering", "erm", "maybe")
+        self.play_student_changes("pondering", "erm", "maybe")
         self.look_at(VectorizedPoint(4*LEFT + 2*UP))
         self.wait(5)
 
@@ -1114,7 +1114,7 @@ class BringInFourierTranform(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             fourier.restore
         )
-        self.change_student_modes("happy", "erm", "confused")
+        self.play_student_changes("happy", "erm", "confused")
         self.look_at(3*LEFT + 2*UP)
         self.wait(3)
 
@@ -1672,7 +1672,7 @@ class MentionDopplerRadar(TeacherStudentsScene):
             self.teacher.change, "hooray",
             words.restore
         )
-        self.change_student_modes("pondering", "erm", "sassy")
+        self.play_student_changes("pondering", "erm", "sassy")
         self.wait(2)
         self.play(
             self.teacher.change, "happy",
@@ -2157,7 +2157,7 @@ class MentionPRFNuance(TeacherStudentsScene):
                 )
             ],
         )
-        self.change_student_modes(*3*["hesitant"])
+        self.play_student_changes(*3*["hesitant"])
         self.wait(2)
 
 
@@ -3695,7 +3695,7 @@ class WhatDoesTheFourierTradeoffTellUs(TeacherStudentsScene):
             target_mode = "surprised",
             bubble_kwargs = {"width" : 4, "height" : 3}
         )
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(4)
 
 class FourierTransformOfWaveFunction(Scene):
@@ -4268,7 +4268,7 @@ class BetterTranslation(TeacherStudentsScene):
                 translation
             )
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(2)
 
 class ThinkOfHeisenbergUncertainty(PiCreatureScene):

@@ -730,11 +730,11 @@ class StateOfBitcoin(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             rate.restore,
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.play(LaggedStartMap(FadeIn, kilogoogle))
-        self.change_student_modes(*["surprised"]*3)
+        self.play_student_changes(*["surprised"]*3)
         self.wait()
-        self.change_student_modes(
+        self.play_student_changes(
             *["plain"]*3,
             added_anims = [
                 all_text.to_edge, LEFT,
@@ -754,7 +754,7 @@ class StateOfBitcoin(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
         )
 
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             added_anims = [Write(asic_rate)]
         )

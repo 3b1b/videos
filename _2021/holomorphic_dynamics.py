@@ -1092,7 +1092,7 @@ class AskAboutGeneralTheory(TeacherStudentsScene):
             TexText("What questions would\\\\you ask?"),
             target_mode="tease",
         )
-        self.change_student_modes("thinking", "pondering")
+        self.play_student_changes("thinking", "pondering")
         self.wait(3)
 
         self.embed()
@@ -2301,13 +2301,13 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
                 look_at_arg=3 * UR,
             )
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_left_hand", "erm", "erm",
             look_at_arg=3 * UR,
         )
         self.wait()
         self.play(self.teacher.change("tease", 3 * UR))
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "pondering", "thinking",
             look_at_arg=3 * UR,
         )
@@ -3391,7 +3391,7 @@ class LattesExample(TeacherStudentsScene):
             self.teacher.change("sassy", example),
             Write(example)
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "pondering", "pondering",
             look_at_arg=example,
         )
@@ -3431,7 +3431,7 @@ class LinksBelow(TeacherStudentsScene):
     def construct(self):
         self.pi_creatures.flip().flip()
         self.teacher_says("Links below")
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "pondering",
             look_at_arg=FRAME_HEIGHT * DOWN,
         )

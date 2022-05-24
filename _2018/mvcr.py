@@ -15,7 +15,7 @@ class HoldUpMultivariableChainRule(TeacherStudentsScene):
             morty.change, "raise_right_hand",
             FadeInFromDown(screen)
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused", look_at_arg=screen
         )
         self.look_at(screen)

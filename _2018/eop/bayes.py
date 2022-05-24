@@ -435,7 +435,7 @@ class HowDoesPokerWork(TeacherStudentsScene):
             target_mode = "confused",
             run_time = 1
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(2)
 
 class YourGutKnowsBayesRule(TeacherStudentsScene):
@@ -444,7 +444,7 @@ class YourGutKnowsBayesRule(TeacherStudentsScene):
             "Your gut knows \\\\ Bayes' rule.",
             run_time = 1
         )
-        self.change_student_modes("confused", "gracious", "guilty")
+        self.play_student_changes("confused", "gracious", "guilty")
         self.wait(3)
 
 class UpdatePokerPrior(SampleSpaceScene):
@@ -1133,7 +1133,7 @@ class NextVideoWrapper(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand"
         )
         self.play(ShowCreation(screen))
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = screen
         )
@@ -1536,7 +1536,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
 class MoreExamples(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("More examples!", target_mode = "hooray")
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
 
 class MusicExample(SampleSpaceScene, PiCreatureScene):

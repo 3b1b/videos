@@ -93,7 +93,7 @@ class Introduce(TeacherStudentsScene):
             target_mode = "hooray",
             run_time = 2
         )
-        self.change_student_modes("thinking", "happy", "sassy")
+        self.play_student_changes("thinking", "happy", "sassy")
         self.random_blink(2)
 
 class ReactionsToTattoo(PiCreatureScene):
@@ -180,7 +180,7 @@ class TeachObscureTrigFunctions(TeacherStudentsScene):
             "$\\cot(\\theta)$",
         )
         content = self.teacher.bubble.content.copy()
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.student_says(
             "But why?",
             target_mode = "pleading",

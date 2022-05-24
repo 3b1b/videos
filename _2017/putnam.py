@@ -162,7 +162,7 @@ class NatureOf5sAnd6s(TeacherStudentsScene):
             MoveToTarget(mover),
             self.teacher.change, "raise_right_hand",
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.play(Transform(mover[1], new_words))
         self.look_at((FRAME_X_RADIUS*RIGHT + FRAME_Y_RADIUS*UP)/2)
         self.wait(4)
@@ -239,10 +239,10 @@ class HowDoYouStart(TeacherStudentsScene):
             "How do you even start?",
             target_mode = "raise_left_hand"
         )
-        self.change_student_modes("confused", "raise_left_hand", "erm")
+        self.play_student_changes("confused", "raise_left_hand", "erm")
         self.wait()
         self.teacher_says("Try a simpler case.")
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(2)
 
 class TwoDCase(Scene):
@@ -802,7 +802,7 @@ class AverageSizeOfSphericalTriangleSectionSupplement(Scene):
 class TryASurfaceIntegral(TeacherStudentsScene):
     def construct(self):
         self.student_says("Can you do \\\\ a surface integral?")
-        self.change_student_modes("confused", "raise_left_hand", "confused")
+        self.play_student_changes("confused", "raise_left_hand", "confused")
         self.wait()
         self.teacher_says(
             "I mean...you can \\emph{try}",
@@ -1140,7 +1140,7 @@ class ThisIsWhereItGetsGood(TeacherStudentsScene):
             "This is where \\\\ things get good",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
 
 class ContrastTwoRandomProcesses(TwoDCase):
@@ -1279,7 +1279,7 @@ class Formality(TeacherStudentsScene):
             "How would you \\\\ write that down?",
             target_mode = "sassy"
         )
-        self.change_student_modes("confused", "sassy", "erm")
+        self.play_student_changes("confused", "sassy", "erm")
         self.wait()
         self.play(
             Write(words),
@@ -1287,7 +1287,7 @@ class Formality(TeacherStudentsScene):
             FadeOut(self.students[1].bubble.content),
             self.teacher.change, "raise_right_hand"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = words
         )

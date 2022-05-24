@@ -233,9 +233,9 @@ class HoldUpMathExchange(TeacherStudentsScene):
 
         self.add(title)
         self.play(self.teacher.change, "raise_right_hand", ORIGIN),
-        self.change_all_student_modes("thinking", look_at_arg=ORIGIN)
+        self.play_all_student_changes("thinking", look_at_arg=ORIGIN)
         self.wait(3)
-        self.change_all_student_modes("confused", look_at_arg=ORIGIN)
+        self.play_all_student_changes("confused", look_at_arg=ORIGIN)
         self.wait(3)
 
 
@@ -2544,7 +2544,7 @@ class IntroduceTotientJargon(TeacherStudentsScene):
             "More jargon!",
             target_mode="hooray",
         )
-        self.change_all_student_modes("erm")
+        self.play_all_student_changes("erm")
         words = self.teacher.bubble.content
 
         words.generate_target()
@@ -3525,7 +3525,7 @@ class Show280Computation(Scene):
 
 class TeacherHoldUp(TeacherStudentsScene):
     def construct(self):
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering", look_at_arg=2 * UP,
             added_anims=[
                 self.teacher.change, "raise_right_hand"
@@ -4276,7 +4276,7 @@ class TalkAboutProof(TeacherStudentsScene):
             "...er...it's a\\\\bit complicated",
             target_mode="guilty",
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "tired",
             look_at_arg=teacher.bubble,
             lag_ratio=0.1,
@@ -4309,7 +4309,7 @@ class TalkAboutProof(TeacherStudentsScene):
         self.wait(2)
         self.play(ca[0].set_color, YELLOW)
         self.wait(2)
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused", look_at_arg=ca,
         )
         self.wait(4)
@@ -4710,7 +4710,7 @@ class BePlayful(TeacherStudentsScene):
             "So be playful!",
             target_mode="hooray",
         )
-        self.change_student_modes("thinking", "hooray", "happy")
+        self.play_student_changes("thinking", "hooray", "happy")
         self.wait(3)
 
 

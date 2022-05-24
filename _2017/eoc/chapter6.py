@@ -23,7 +23,7 @@ class ThisWasConfusing(TeacherStudentsScene):
             words.set_fill, None, 1,
             words.shift, 0.5*UP
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["confused"]*3,
             look_at_arg = words,
             added_anims = [Animation(self.get_teacher())]
@@ -538,7 +538,7 @@ class NameImplicitDifferentation(TeacherStudentsScene):
             self.get_teacher().change_mode, "raise_right_hand",
             ShowCreation(arrow)
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["confused"]*3,
             look_at_arg = derivative,
             added_anims = [ReplacementTransform(equation.copy(), derivative)]
@@ -551,7 +551,7 @@ class NameImplicitDifferentation(TeacherStudentsScene):
                 group.to_corner, UP+LEFT,
             ]
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(3)
 
 class Ladder(VMobject):
@@ -1824,7 +1824,7 @@ class TryOtherExamples(TeacherStudentsScene):
             target_mode = "raise_right_hand"
         ))
         self.play(Write(formula, run_time = 1))
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
         self.play(formula.to_corner, UP+LEFT)
         self.wait()
@@ -2210,7 +2210,7 @@ class AskAboutNaturalLog(TeacherStudentsScene):
             new derivatives""",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.play(RemovePiCreatureBubble(
             self.get_teacher(),
             target_mode = "raise_right_hand"
@@ -2572,7 +2572,7 @@ class FinalWords(TeacherStudentsScene):
         formula.next_to(self.get_teacher().get_corner(UP+LEFT), UP)
 
         self.teacher_says(words)
-        self.change_student_modes("erm", "hooray", "sassy")
+        self.play_student_changes("erm", "hooray", "sassy")
         self.play(
             FadeOut(self.teacher.bubble),
             FadeOut(VGroup(*words[:1])),
@@ -2581,7 +2581,7 @@ class FinalWords(TeacherStudentsScene):
             self.teacher.look_at, formula,
             Write(formula, run_time = 2),
         )
-        self.change_student_modes("pondering", "confused", "thinking")
+        self.play_student_changes("pondering", "confused", "thinking")
         self.wait(3)
 
         ##Show series

@@ -606,7 +606,7 @@ class LetsLookAtOneAnswer(TeacherStudentsScene):
             ]
         )
         self.look_at(self.screen)
-        self.change_all_student_modes("thinking", look_at_arg=self.screen)
+        self.play_all_student_changes("thinking", look_at_arg=self.screen)
         self.wait(4)
 
 
@@ -939,7 +939,7 @@ class AskWhy(TeacherStudentsScene):
         )
         self.wait(2)
         self.teacher_says("Let's dive in!", target_mode="hooray")
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.wait(3)
 
 
@@ -3609,7 +3609,7 @@ class StateNeedForBayesRule(TeacherStudentsScene):
                 for v_line in v_lines
             ]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "thinking", "pondering",
             look_at_arg=v_lines,
         )

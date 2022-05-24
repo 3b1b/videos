@@ -651,7 +651,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
             words[0].shift, MED_LARGE_BUFF*UP,
             FadeIn(words[1]),
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = words
         )
@@ -923,7 +923,7 @@ class MoreAThanI(TeacherStudentsScene):
             "More \\\\ A than I",
             target_mode = "hesitant"
         )
-        self.change_student_modes("sad", "erm", "tired")
+        self.play_student_changes("sad", "erm", "tired")
         self.wait(2)
 
 class BreakDownName(Scene):
@@ -1374,7 +1374,7 @@ class DiscussChoiceForHiddenLayers(TeacherStudentsScene):
         )
         self.wait()
         self.play(self.teacher.change, "shruggie")
-        self.change_student_modes("erm", "confused", "sassy")
+        self.play_student_changes("erm", "confused", "sassy")
         self.wait()
         self.student_says(
             "Why 2 \\\\ layers?",
@@ -2141,7 +2141,7 @@ class ManyTasksBreakDownLikeThis(TeacherStudentsScene):
             "Many", "recognition", "tasks\\\\",
             "break down like this"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait()
         content = self.teacher.bubble.content
         pre_word = content[1]
@@ -3328,7 +3328,7 @@ class EvenWhenItWorks(TeacherStudentsScene):
             "Even when it works,\\\\",
             "dig into why."
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(7)
 
 class IntroduceWeightMatrix(NetworkScene):

@@ -1446,7 +1446,7 @@ class NotANeuroScientist(TeacherStudentsScene):
             self.teacher.change, "guilty", words,
             run_time = 1,
         )
-        self.change_student_modes(*3*["sassy"])
+        self.play_student_changes(*3*["sassy"])
         self.play(
             ShowCreation(rect),
             Write(no_claim_words, run_time = 1),
@@ -2066,7 +2066,7 @@ class CannotFollowCode(TeacherStudentsScene):
             student_index = 1
         )
         self.play(self.students[1].change, "sad")
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "sad", "angry",
             look_at_arg = self.teacher.eyes
         )
@@ -3627,7 +3627,7 @@ class IsntThatOverSimplified(TeacherStudentsScene):
             target_mode = "raise_right_hand",
             run_time = 1
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "raise_right_hand", "pondering"
         )
         self.wait()
@@ -4208,7 +4208,7 @@ class PatYourselfOnTheBack(TeacherStudentsScene):
             "Pat yourself on \\\\ the back!",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(3)
 
 class ThatsALotToThinkAbout(TeacherStudentsScene):
@@ -4217,7 +4217,7 @@ class ThatsALotToThinkAbout(TeacherStudentsScene):
             "That's a lot to \\\\ think about!",
             target_mode = "surprised"
         )
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(4)
 
 class LayersOfComplexity(Scene):

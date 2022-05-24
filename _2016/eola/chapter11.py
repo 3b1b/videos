@@ -550,14 +550,14 @@ class OtherVectorishThings(TeacherStudentsScene):
         )
         words.set_color_by_tex("vectorish", YELLOW)
         self.teacher_says(words)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "raise_right_hand", "erm"
         )
         self.random_blink(2)
         words = TexText("...like", "functions")
         words.set_color_by_tex("functions", PINK)
         self.teacher_says(words)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(2)
         self.teacher_thinks("")
         self.zoom_in_on_thought_bubble(self.get_teacher().bubble)
@@ -1054,7 +1054,7 @@ class WhatDoesLinearMean(TeacherStudentsScene):
         )
         words.set_color_by_tex("linear", BLUE)
         self.student_says(words)
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink(4)
 
 class FormalDefinitionOfLinear(LinearTransformationScene):
@@ -1292,7 +1292,7 @@ class CalcStudentsKnowThatDerivIsLinear(TeacherStudentsScene):
         )
         words.set_color_by_tex("$\\dfrac{d}{dx}$", BLUE)
         self.teacher_says(words)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "confused", "erm"
         )
         self.random_blink(3)
@@ -1410,7 +1410,7 @@ class ProposeDerivativeAsMatrix(TeacherStudentsScene):
             target_mode = "hooray"
         )
         self.random_blink()
-        self.change_student_modes("pondering", "confused", "erm")
+        self.play_student_changes("pondering", "confused", "erm")
         self.random_blink(3)
 
 class PolynomialsHaveArbitrarilyLargeDegree(Scene):
@@ -1906,7 +1906,7 @@ class MatrixVectorMultiplicationAndDerivative(TeacherStudentsScene):
             Write(words),
             self.get_teacher().change_mode, "hooray"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(3)
 
 class CompareTermsInLinearAlgebraToFunction(Scene):
@@ -2424,20 +2424,20 @@ class TextbooksAreAbstract(TeacherStudentsScene):
             with grid lines...
             """
         )
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink(2)
         self.teacher_says(
             "...then in some different\\\\",
             "context, like a function space"
         )
-        self.change_student_modes(*["pondering"]*2)
+        self.play_student_changes(*["pondering"]*2)
         self.random_blink()
         self.teacher_says(
             "Only then should you\\\\",
             "think from the axioms",
             target_mode = "surprised"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink()
 
 class LastAskWhatAreVectors(TeacherStudentsScene):
@@ -2540,7 +2540,7 @@ class GoodLuck(TeacherStudentsScene):
             "Good luck with \\\\ your future learning!",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 

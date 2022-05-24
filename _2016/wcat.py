@@ -259,7 +259,7 @@ class WhenIWasAKid(TeacherStudentsScene):
             """,
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait()
 
         speaker.look_at(children)
@@ -1872,9 +1872,9 @@ class ThatsTheProof(TeacherStudentsScene):
             target_mode = "hooray",
             width = 4
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.random_blink()
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "sassy", "erm"
         )
         self.teacher_says(
@@ -1895,7 +1895,7 @@ class TryItYourself(TeacherStudentsScene):
             edifying exercise.
         """)
         self.random_blink()
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(2)
 
         pi = self.get_students()[1]
@@ -1918,7 +1918,7 @@ class OneMoreAnimation(TeacherStudentsScene):
             One more animation,
             but first...
         """)
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink()
 
 class PatreonThanks(Scene):

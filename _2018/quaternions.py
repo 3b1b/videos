@@ -1136,12 +1136,12 @@ class HereWeTackle4d(TeacherStudentsScene):
         )
         self.look_at(self.screen)
         self.wait()
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "thinking", "pondering",
             look_at_arg=self.screen
         )
         self.wait(3)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "confused", "happy"
         )
         self.look_at(self.screen)
@@ -1154,11 +1154,11 @@ class HereWeTackle4d(TeacherStudentsScene):
                 rate_func=squish_rate_func(smooth, 0.2, 1)
             )
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.play(self.teacher.change, "happy")
         self.look_at(self.screen)
         self.wait(3)
-        self.change_student_modes("pondering", "happy", "thinking")
+        self.play_student_changes("pondering", "happy", "thinking")
         self.wait(4)
 
 
@@ -1756,7 +1756,7 @@ class TextbookQuaternionDefinition(TeacherStudentsScene):
         self.look_at(equation.get_corner(UR))
         self.play(self.teacher.change, "sassy", equation)
         self.wait(2)
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.look_at(equation)
         self.wait()
         self.play(self.teacher.change, "thinking", equation)
@@ -2163,7 +2163,7 @@ class IfYouNeedAWarmUp(TeacherStudentsScene):
             "If you need \\\\ a warm up",
             bubble_kwargs={"width": 3.5, "height": 3},
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering", look_at_arg=screen,
         )
         self.wait(3)
@@ -3276,7 +3276,7 @@ class MentionImpossibilityOf3dNumbers(TeacherStudentsScene):
             "Such 3d numbers \\\\ have no good \\\\ multiplication rule",
             bubble_kwargs={"width": 4, "height": 3},
         )
-        self.change_all_student_modes("confused")
+        self.play_all_student_changes("confused")
         self.wait(2)
         self.play(
             self.students[1].change, "maybe",
@@ -5459,7 +5459,7 @@ class ShowDistributionOfI(TeacherStudentsScene):
             "What does it do \\\\ to other quaternions?",
             target_mode="raise_left_hand"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "raise_left_hand", "erm",
             look_at_arg=top_product,
         )
@@ -5484,7 +5484,7 @@ class ShowDistributionOfI(TeacherStudentsScene):
             )
             for tex in ["q", "\\cdot"]
         ])
-        self.change_all_student_modes("thinking")
+        self.play_all_student_changes("thinking")
         self.wait(3)
 
 
@@ -6003,7 +6003,7 @@ class RotationsOfCube(SpecialThreeDScene):
 class OneFinalPoint(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("One final point!")
-        self.change_student_modes("happy", "tease", "thinking")
+        self.play_student_changes("happy", "tease", "thinking")
         self.wait(3)
 
 
@@ -6141,7 +6141,7 @@ class HoldUpQuanta(TeacherStudentsScene):
             FadeInFromDown(logo),
             self.teacher.change, "raise_right_hand"
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.play(
             GrowArrow(arrow),
             GrowFromPoint(words, arrow.get_start())

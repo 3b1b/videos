@@ -692,7 +692,7 @@ class TeacherHoldingUp(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand"
         )
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.look_at(ORIGIN)
         self.wait(5)
 
@@ -3612,7 +3612,7 @@ class OneMoreTrick(TeacherStudentsScene):
         for student in self.students:
             student.change("tired")
         self.teacher_says("Just one more \\\\ tricky bit!")
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.wait(3)
 
 
@@ -4189,7 +4189,7 @@ class PatYourselfOnTheBack(TeacherStudentsScene):
             "Pat yourself \\\\ on the back!",
             target_mode="hooray"
         )
-        self.change_all_student_modes("happy")
+        self.play_all_student_changes("happy")
         self.wait(3)
         self.play(
             RemovePiCreatureBubble(
@@ -4203,7 +4203,7 @@ class PatYourselfOnTheBack(TeacherStudentsScene):
         )
         self.look_at(UP)
         self.wait(8)
-        self.change_student_modes(*3 * ["thinking"])
+        self.play_student_changes(*3 * ["thinking"])
         self.look_at(UP)
         self.wait(12)
         self.teacher_says("I just love this!")

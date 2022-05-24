@@ -77,7 +77,7 @@ class QuadraticFormula(TeacherStudentsScene):
         formula.next_to(self.students, UP, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         self.add(formula)
 
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "tired", "sad",
             look_at_arg=formula,
         )
@@ -89,7 +89,7 @@ class QuadraticFormula(TeacherStudentsScene):
             }
         )
         self.wait(5)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "erm",
             look_at_arg=formula
         )

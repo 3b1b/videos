@@ -1911,7 +1911,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
             target_mode="sassy",
             student_index=1
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "sassy", "angry",
             added_anims=[self.teacher.change, "guilty"]
         )
@@ -2037,7 +2037,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             RemovePiCreatureBubble(self.students[0]),
         )
         self.play(ShowCreationThenFadeAround(stats[1][1][1]))
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "confused",
             look_at_arg=stats[1]
         )
@@ -2092,7 +2092,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             ),
             self.teacher.change, "tease", stats[3]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "confused",
             look_at_arg=self.teacher.get_bottom(),
         )
@@ -2110,7 +2110,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             ]
         )
         self.wait(2)
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "hooray", "thinking",
             look_at_arg=self.students[1].bubble.content,
         )
@@ -4138,7 +4138,7 @@ class AskWhyItWorks(TeacherStudentsScene):
             "Huh?  Why does\\\\that work?",
             target_mode="confused",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "erm", "confused",
             look_at_arg=self.screen,
         )
@@ -5693,7 +5693,7 @@ class AskAboutHowItsSoLow(TeacherStudentsScene):
             student_index=1,
             target_mode="maybe",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "maybe", "confused",
             look_at_arg=question,
         )

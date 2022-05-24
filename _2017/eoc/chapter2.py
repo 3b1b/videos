@@ -93,9 +93,9 @@ class Introduction(TeacherStudentsScene):
             "very subtle idea",
             target_mode = "well"
         )
-        self.change_student_modes(None, "pondering", "thinking")
+        self.play_student_changes(None, "pondering", "thinking")
         self.play(Write(goals[2], run_time = 2))
-        self.change_student_modes("erm")
+        self.play_student_changes("erm")
         self.student_says(
             "Instantaneous rate of change", "?",
             student_index = 0,
@@ -880,7 +880,7 @@ class VelocityAtIndividualPointsVsPairs(GraphCarTrajectory):
 class FirstRealWorld(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("First, the real world.")
-        self.change_student_modes(
+        self.play_student_changes(
             "happy", "hooray", "happy"
         )
         self.wait(3)
@@ -1490,7 +1490,7 @@ class UseOfDImpliesApproaching(TeacherStudentsScene):
         """)
         VGroup(*statement[-4:-2]).set_color(TIME_COLOR)
         self.teacher_says(statement)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(4)
 
 class LeadIntoASpecificExample(TeacherStudentsScene, SecantLineToTangentLine):
@@ -1949,14 +1949,14 @@ class TCubedExample(SecantLineToTangentLine):
 
 class YouWouldntDoThisEveryTime(TeacherStudentsScene):
     def construct(self):
-        self.change_student_modes(
+        self.play_student_changes(
             "pleading", "guilty", "hesitant",
             run_time = 0
         )
         self.teacher_says(
             "You wouldn't do this \\\\ every time"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(2)
         self.student_thinks(
             "$\\frac{d(t^3)}{dt} = 3t^2$",
@@ -2420,7 +2420,7 @@ class NextVideos(TeacherStudentsScene):
             ])
         )
         self.wait(2)
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(3)
 
 class Chapter2PatreonThanks(PatreonThanks):

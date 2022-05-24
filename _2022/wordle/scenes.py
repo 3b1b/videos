@@ -1071,7 +1071,7 @@ class AskWhatWorldeIs(TeacherStudentsScene):
                 self.teacher.change("tease")
             ]
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_left_hand", "hesitant", "happy",
             look_at_arg=self.students[0].bubble,
         )
@@ -1845,7 +1845,7 @@ class DescribeBit(TeacherStudentsScene):
             self.teacher.change("raise_left_hand"),
             FadeIn(words, UP)
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "happy", "pondering", "thinking",
             look_at_arg=words
         )

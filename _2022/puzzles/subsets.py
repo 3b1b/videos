@@ -408,7 +408,7 @@ class RiemannHypothesisMention(TeacherStudentsScene):
             )]
         )
         self.wait(3)
-        self.change_student_modes("pondering", "pondering", "tease")
+        self.play_student_changes("pondering", "pondering", "tease")
         self.wait(3)
 
 
@@ -4256,7 +4256,7 @@ class ProblemStatement(TeacherStudentsScene):
         self.add(title)
         self.play(ShowCreation(underline))
         self.wait(2)
-        self.change_student_modes("pondering", "erm", "tease", look_at_arg=title)
+        self.play_student_changes("pondering", "erm", "tease", look_at_arg=title)
         self.wait(3)
 
         # Statement
@@ -4732,7 +4732,7 @@ class FirstTrick(TeacherStudentsScene):
             target_mode="tease",
             run_time=1
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "sassy",
             look_at_arg=self.screen
         )
@@ -4745,7 +4745,7 @@ class FirstTrick(TeacherStudentsScene):
             target_mode="confused",
             look_at_arg=self.teacher.eyes,
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "pondering",
             look_at_arg=self.screen,
         )
@@ -4766,7 +4766,7 @@ class BeyondOurExample(TeacherStudentsScene):
         )
         self.wait(3)
         self.play(self.teacher.change("tease"))
-        self.change_student_modes("thinking", "tease", "tease")
+        self.play_student_changes("thinking", "tease", "tease")
         self.wait(2)
 
 
@@ -4803,7 +4803,7 @@ class WaitWhat(TeacherStudentsScene):
         )
         self.wait()
         self.look_at(self.screen)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "confused", "maybe",
             look_at_arg=self.screen,
         )
@@ -4960,7 +4960,7 @@ class AskAboutTaylorSeries(TeacherStudentsScene):
             "It's not a\nbad idea...",
             target_mode="hesitant",
         )
-        self.change_student_modes("plain", "maybe", "pondering", look_at_arg=self.screen)
+        self.play_student_changes("plain", "maybe", "pondering", look_at_arg=self.screen)
         self.wait(4)
 
 
@@ -5123,7 +5123,7 @@ class ConjugatePairFact(InteractiveScene):
 class HangInThereRecapPrep(TeacherStudentsScene):
     def construct(self):
         # Hang on
-        self.change_student_modes(
+        self.play_student_changes(
             "dejected", "tired", "concerned_musician",
             look_at_arg=self.screen,
         )
@@ -5137,7 +5137,7 @@ class HangInThereRecapPrep(TeacherStudentsScene):
         self.student_says(
             "Can you recap\nwhere we are?",
         )
-        self.change_student_modes("confused", "thinking", added_anims=[self.teacher.change("happy")])
+        self.play_student_changes("confused", "thinking", added_anims=[self.teacher.change("happy")])
         self.wait(3)
 
 

@@ -22,7 +22,7 @@ class OnAnsweringTwice(TeacherStudentsScene):
             target_mode="raise_left_hand",
             added_anims=[self.teacher.change, "thinking"]
         )
-        self.change_student_modes("sassy", "angry")
+        self.play_student_changes("sassy", "angry")
         self.wait()
         self.play(
             RemovePiCreatureBubble(self.students[2]),
@@ -50,13 +50,13 @@ class OnAnsweringTwice(TeacherStudentsScene):
 class AskAboutEqualMassMomentumTransfer(TeacherStudentsScene):
     def construct(self):
         self.student_says("Why?")
-        self.change_student_modes("confused", "confused")
+        self.play_student_changes("confused", "confused")
         self.wait()
         self.play(
             RemovePiCreatureBubble(self.students[2]),
             self.teacher.change, "raise_right_hand"
         )
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.look_at(self.hold_up_spot + 2 * UP)
         self.wait(5)
 
@@ -67,7 +67,7 @@ class ComplainAboutRelevanceOfAnalogy(TeacherStudentsScene):
             "Why would \\\\ you care",
             target_mode="maybe"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "sassy", "maybe",
             added_anims=[self.teacher.change, "guilty"]
         )
@@ -95,7 +95,7 @@ class ReplaceOneTrickySceneWithAnother(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "happy"],
         )
-        self.change_student_modes("erm", "sassy", "angry")
+        self.play_student_changes("erm", "sassy", "angry")
         self.wait(4)
         self.play(
             RemovePiCreatureBubble(self.students[1]),

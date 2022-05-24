@@ -74,7 +74,7 @@ class ContrastPDEToODE(TeacherStudentsScene):
             )
         )
         self.look_at(words)
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "thinking", "tease",
         )
         self.wait(3)
@@ -95,7 +95,7 @@ class AskAboutWhereEquationComesFrom(TeacherStudentsScene, WriteHeatEquationTemp
             student_index=2,
             bubble_kwargs={"direction": RIGHT},
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "confused", "sassy",
         )
         self.wait()
@@ -115,7 +115,7 @@ class AskWhyRewriteIt(TeacherStudentsScene):
         self.teacher_says(
             "One step closer\\\\to derivatives"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "thinking", "thinking",
             look_at_arg=4 * LEFT + 2 * UP
         )
@@ -132,7 +132,7 @@ class ReferenceKhanVideo(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "pondering", "thinking",
             look_at_arg=self.screen
         )

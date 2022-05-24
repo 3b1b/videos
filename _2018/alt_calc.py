@@ -1048,7 +1048,7 @@ class SetTheStage(TeacherStudentsScene):
             self.change_students(*3 * ["erm"])
         )
         self.wait(3)
-        self.change_all_student_modes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at_arg=self.screen)
 
 
 class StandardDerivativeVisual(GraphScene):
@@ -2009,7 +2009,7 @@ class FeelsALittleCramped(TeacherStudentsScene):
         self.teacher_says(
             "Sure, but think \\\\ locally"
         )
-        self.change_all_student_modes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at_arg=self.screen)
         self.wait(3)
 
 
@@ -2019,7 +2019,7 @@ class HowDoesThisSolveProblems(TeacherStudentsScene):
             "Is this...useful?",
             target_mode="confused"
         )
-        self.change_student_modes("maybe", "confused", "sassy")
+        self.play_student_changes("maybe", "confused", "sassy")
         self.play(self.teacher.change, "happy")
         self.wait(3)
 
@@ -2910,7 +2910,7 @@ class LetsSwitchToTheTransformationalView(TeacherStudentsScene):
             "Lose the \\\\ graphs!",
             target_mode="hooray"
         )
-        self.change_student_modes("hooray", "erm", "surprised")
+        self.play_student_changes("hooray", "erm", "surprised")
         self.wait(5)
 
 
@@ -3374,7 +3374,7 @@ class NotBetterThanGraphs(TeacherStudentsScene):
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand"
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused", look_at_arg=self.screen
         )
         self.wait(3)

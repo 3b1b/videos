@@ -1425,7 +1425,7 @@ class ComplainAboutNotKnowingTheStats(TeacherStudentsScene):
             "Are people expected\\\\to know that?",
             student_index=2
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "sassy", "sassy",
         )
         self.play(self.teacher.change, "hesitant")
@@ -1435,9 +1435,9 @@ class ComplainAboutNotKnowingTheStats(TeacherStudentsScene):
             "No, but did you\\\\think to estimate it?",
             bubble_kwargs={"width": 4.5, "height": 3.5},
         )
-        self.change_all_student_modes("guilty")
+        self.play_all_student_changes("guilty")
         self.wait(2)
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait(3)
 
 

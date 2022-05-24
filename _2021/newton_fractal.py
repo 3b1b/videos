@@ -991,7 +991,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         self.add(image2)
         self.play(Restore(frame))
 
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "confused",
             look_at_arg=image1,
         )
@@ -1430,7 +1430,7 @@ class AskAboutFractals(TeacherStudentsScene):
             },
             target_mode="happy"
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering",
             look_at_arg=self.screen
         )
@@ -1972,7 +1972,7 @@ class AssumingItsGood(TeacherStudentsScene):
                 "height": 3, "width": 4,
             }
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "pondering", "tease",
             look_at_arg=self.screen
         )
@@ -1983,7 +1983,7 @@ class AssumingItsGood(TeacherStudentsScene):
 class PauseAndPonder(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Pause and\nponder", target_mode="hooray")
-        self.change_all_student_modes("thinking", look_at_arg=self.screen)
+        self.play_all_student_changes("thinking", look_at_arg=self.screen)
         self.wait(4)
 
 
@@ -3110,7 +3110,7 @@ class ChaosOnBoundary(TeacherStudentsScene):
                 "width": 3,
             }
         )
-        self.change_all_student_modes("pondering", look_at_arg=self.screen)
+        self.play_all_student_changes("pondering", look_at_arg=self.screen)
         self.wait(3)
 
 
@@ -3553,7 +3553,7 @@ class UnrelatedIdeas(TeacherStudentsScene):
         self.screen.set_height(4, about_edge=UL)
         self.add(self.screen)
 
-        self.change_student_modes(
+        self.play_student_changes(
             "tease", "thinking", "raise_right_hand",
             look_at_arg=self.screen,
             added_anims=[self.teacher.change("happy")]
@@ -4311,7 +4311,7 @@ class ThinkAboutWhatPropertyMeans(TeacherStudentsScene):
                 "width": 4,
             }
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "pondering",
             look_at_arg=self.screen
         )

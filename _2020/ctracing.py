@@ -313,7 +313,7 @@ class WhatAboutPeopleWithoutPhones(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("angry", "angry", "sassy")
+        self.play_student_changes("angry", "angry", "sassy")
         self.wait()
         self.play(self.teacher.change, "tease")
         self.wait()

@@ -147,12 +147,12 @@ class LetsGoInOneSentence(TeacherStudentsScene):
         self.teacher_says(
             "Here we go, \\\\", "one sentence!"
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.teacher_says(
             "Or three...", "",
             target_mode="guilty"
         )
-        self.change_all_student_modes("sassy")
+        self.play_all_student_changes("sassy")
         self.wait(4)
 
 

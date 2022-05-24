@@ -591,7 +591,7 @@ class LandscapeOfTools(TeacherStudentsScene):
                 look_at_arg=bubble,
             )
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "thinking", look_at_arg=bayes,
         )
         self.wait()

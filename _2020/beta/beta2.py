@@ -702,7 +702,7 @@ class CarFactoryNumbers(Scene):
 class TeacherHoldingValue(TeacherStudentsScene):
     def construct(self):
         self.play(self.teacher.change, "raise_right_hand", self.screen)
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering",
             look_at_arg=self.screen,
         )
@@ -1542,10 +1542,10 @@ class ComplainAboutRuleChange(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "tease"]
         )
-        self.change_student_modes("erm", "confused")
+        self.play_student_changes("erm", "confused")
         self.wait(4)
         self.teacher_says("You may enjoy\\\\``Measure theory''")
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering",
             look_at_arg=self.teacher.bubble
         )

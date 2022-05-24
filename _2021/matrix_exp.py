@@ -1325,7 +1325,7 @@ class Show90DegreePowers(ShowHigherMatrixPowers):
 
 class WhyTortureMatrices(TeacherStudentsScene):
     def construct(self):
-        self.change_student_modes(
+        self.play_student_changes(
             "maybe", "confused", "erm",
             look_at_arg=self.screen,
         )
@@ -3332,7 +3332,7 @@ class OneFinalPoint(TeacherStudentsScene):
             TexText("One final point\\\\about one-dimension"),
             bubble_kwargs={"height": 3, "width": 4},
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "happy", "hesitant", "tease",
             added_anims=[self.teacher.animate.look_at(self.students[2])]
         )
@@ -4047,7 +4047,7 @@ class ThatsHorrifying(TeacherStudentsScene):
             bubble_kwargs={"height": 3, "width": 3.5},
             target_mode="tease"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "hesitant",
             look_at_arg=self.screen,
         )
@@ -5893,7 +5893,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
             self.teacher.change("raise_right_hand", trace_eq),
             FadeIn(trace_eq, 0.5 * UP),
         )
-        self.change_student_modes("pondering", "confused", "pondering", look_at_arg=trace_eq)
+        self.play_student_changes("pondering", "confused", "pondering", look_at_arg=trace_eq)
         self.wait(2)
 
         text = TexText("Diagonalization $\\rightarrow$ Easier computation")
@@ -5923,7 +5923,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
             topics.animate.scale(0.5).to_corner(UL),
             self.teacher.change("tease", exp_deriv),
         )
-        self.change_student_modes("confused", "sassy", "angry")
+        self.play_student_changes("confused", "sassy", "angry")
         self.wait(6)
 
 

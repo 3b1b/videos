@@ -134,7 +134,7 @@ class OneMustViewThroughTransformations(TeacherStudentsScene):
         )
         words.set_color_by_tex("transformations", BLUE)
         self.teacher_says(words)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering",
             "plain",
             "raise_right_hand"
@@ -504,7 +504,7 @@ class AskAboutSymmetry(TeacherStudentsScene):
             question,
             target_mode = "raise_left_hand"
         )
-        self.change_student_modes("confused")
+        self.play_student_changes("confused")
         self.play(self.get_teacher().change_mode, "pondering")
         self.play(self.get_teacher().look, RIGHT)
         self.play(self.get_teacher().look, LEFT)
@@ -655,7 +655,7 @@ class LurkingQuestion(TeacherStudentsScene):
         #     target_mode = "raise_left_hand",
         #     width = 6,
         # )
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_right_hand", "confused", "raise_left_hand"
         )
         self.random_blink(5)
@@ -1328,7 +1328,7 @@ class WhatAboutTheGeometricView(TeacherStudentsScene):
             """, 
             target_mode = "raise_right_hand"
         )
-        self.change_student_modes("pondering", "raise_right_hand", "pondering")
+        self.play_student_changes("pondering", "raise_right_hand", "pondering")
         self.random_blink(2)
 
 class SomeKindOfConnection(Scene):
@@ -1397,7 +1397,7 @@ class SomeKindOfConnection(Scene):
 class AnExampleWillClarify(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("An example will clarify...")
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 class ImagineYouDontKnowThis(Scene):
@@ -2006,7 +2006,7 @@ class NoticeWhatHappenedHere(TeacherStudentsScene):
             Notice what 
             happened here
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink()
 
 class AbstractNumericAssociation(AssociationBetweenMatricesAndVectors):
@@ -2199,9 +2199,9 @@ class YouMustKnowPersonality(TeacherStudentsScene):
             vector's personality
         """)
         self.random_blink()
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink()
-        self.change_student_modes("pondering", "plain", "pondering")
+        self.play_student_changes("pondering", "plain", "pondering")
         self.random_blink()
 
 class WhatTheVectorWantsToBe(Scene):

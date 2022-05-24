@@ -538,7 +538,7 @@ class PiCreaturesAreIntrigued(AltTeacherStudentsScene):
             "You can extend \\\\ this to 2d",
             bubble_kwargs = {"width" : 4, "height" : 3}
         )
-        self.change_student_modes("pondering", "confused", "erm")
+        self.play_student_changes("pondering", "confused", "erm")
         self.look_at(self.screen)
         self.wait(3)
 
@@ -663,7 +663,7 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
             self.teacher.change, "happy"
         )
         self.play(Write(f_equals_0))
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait()
 
         #
@@ -700,13 +700,13 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
             self.change_students(*["erm"]*3)
         )
         self.teacher_holds_up(two_d_equation)
-        self.change_all_student_modes("horrified")
+        self.play_all_student_changes("horrified")
         self.wait()
         self.play(
             FadeOut(two_d_equation),
             FadeInFromDown(complex_group),
         )
-        self.change_all_student_modes("confused")
+        self.play_all_student_changes("confused")
         self.wait(3)
 
 class InputOutputScene(Scene):
@@ -1432,7 +1432,7 @@ class Rearrange2DEquation(AltTeacherStudentsScene):
 
 
         self.teacher_holds_up(equations[0])
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.play(Transform(
             *equations,
             run_time = 1.5,
@@ -2410,7 +2410,7 @@ class BackToEquationSolving(AltTeacherStudentsScene):
         self.teacher_says(
             "Back to solving \\\\ equations"
         )
-        self.change_all_student_modes("hooray")
+        self.play_all_student_changes("hooray")
         self.play(*[
             ApplyMethod(pi.look_at, self.screen)
             for pi in self.pi_creatures

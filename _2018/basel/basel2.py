@@ -1919,7 +1919,7 @@ class ScreensIntroWrapper(TeacherStudentsScene):
     def construct(self):
         point = VectorizedPoint(FRAME_X_RADIUS*LEFT/2 + FRAME_Y_RADIUS*UP/2)
         self.play(self.teacher.change, "raise_right_hand")
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "erm", "confused",
             look_at_arg = point,
         )
@@ -2439,7 +2439,7 @@ class WeCanHaveMoreFunThanThat(TeacherStudentsScene):
             "We can have \\\\ more fun than that!",
             target_mode = "hooray"
         )
-        self.change_student_modes(*3*["erm"], look_at_arg = point)
+        self.play_student_changes(*3*["erm"], look_at_arg = point)
         self.wait()
         self.play(
             RemovePiCreatureBubble(
@@ -2741,8 +2741,8 @@ class HomeworkWrapper(Scene):
 class HeresWhereThingsGetGood(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Now for the \\\\ good part!")
-        self.change_student_modes(*["hooray"]*3)
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["hooray"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait()
 
 class DiameterTheorem(TeacherStudentsScene):
@@ -3781,7 +3781,7 @@ class YayIPTApplies(TeacherStudentsScene):
             bubble_kwargs = {"width" : 5},
             target_mode = "surprised"
         )
-        self.change_student_modes(*3*["hooray"])
+        self.play_student_changes(*3*["hooray"])
         self.wait(2)
 
 class WalkThroughOneMoreStep(TeacherStudentsScene):
@@ -3907,7 +3907,7 @@ class ButWait(TeacherStudentsScene):
             target_mode = "angry",
             run_time = 1,
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "sassy", "angry", "sassy",
             added_anims = [self.teacher.change, "guilty"],
             run_time = 1
@@ -3921,7 +3921,7 @@ class ButWait(TeacherStudentsScene):
         )
         self.wait(3)
         self.teacher_says("Yes, but that's \\\\ very close.")
-        self.change_student_modes(*["plain"]*3)
+        self.play_student_changes(*["plain"]*3)
         self.wait(2)
 
 class FinalSumManipulationScene(PiCreatureScene):

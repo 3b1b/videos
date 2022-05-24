@@ -1061,7 +1061,7 @@ class HowCanWeVisualizeSolutions(TeacherStudentsScene):
         )
         self.look_at(self.screen),
         self.wait(1)
-        self.change_student_modes("thinking", "erm", "confused")
+        self.play_student_changes("thinking", "erm", "confused")
         self.wait(5)
 
 
@@ -1466,7 +1466,7 @@ class IGotThis(TeacherStudentsScene):
             added_anims=[self.teacher.change, "happy", self.screen],
             run_time=2,
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "thinking", "pondering",
             look_at_arg=self.screen
         )
@@ -3501,14 +3501,14 @@ class TryTheProofYourself(TeacherStudentsScene):
             },
         )
         self.teacher.bubble.set_fill(opacity=0)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "thinking", "confused",
             look_at_arg=self.screen,
         )
         self.wait(3)
-        self.change_student_modes("thinking", "pondering", "erm", look_at_arg=self.screen)
+        self.play_student_changes("thinking", "pondering", "erm", look_at_arg=self.screen)
         self.wait(4)
-        self.change_student_modes("tease", "pondering", "thinking", look_at_arg=self.screen)
+        self.play_student_changes("tease", "pondering", "thinking", look_at_arg=self.screen)
         self.wait(5)
 
 

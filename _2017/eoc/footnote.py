@@ -29,7 +29,7 @@ class Introduce(TeacherStudentsScene):
 
         self.teacher_says(words, run_time = 2)
         taylor_series = words.get_part_by_tex("Taylor").copy()
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.play(
             RemovePiCreatureBubble(
                 self.teacher,
@@ -55,7 +55,7 @@ class Introduce(TeacherStudentsScene):
         self.play(ShowCreation(arrow))
         self.wait()
         self.play(Transform(second_deriv, derivs[2]))
-        self.change_student_modes(*["erm"]*3)
+        self.play_student_changes(*["erm"]*3)
         self.wait()
         self.play(second_deriv.restore)
         self.wait(2)
@@ -341,7 +341,7 @@ class IntroduceNotation(TeacherStudentsScene):
             "What's that notation?",
             target_mode = "raise_left_hand"
         )
-        self.change_student_modes("confused", "raise_left_hand", "confused")
+        self.play_student_changes("confused", "raise_left_hand", "confused")
         self.play(
             FadeIn(
                 clunky_deriv,

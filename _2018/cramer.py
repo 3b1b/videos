@@ -214,7 +214,7 @@ class LeaveItToComputers(TeacherStudentsScene):
         )
         self.remove(denom_mover)
         self.add(cg)
-        self.change_all_student_modes("sassy")
+        self.play_all_student_changes("sassy")
         self.wait(2)
         self.play(
             cramer_groups[0].scale, 1 / scale_factor,
@@ -340,7 +340,7 @@ class WhyLearnIt(TeacherStudentsScene):
             student_index=2,
             target_mode="angry",
         )
-        self.change_all_student_modes("angry")
+        self.play_all_student_changes("angry")
         self.wait()
         self.play(
             self.teacher.change, "raise_right_hand",
@@ -905,7 +905,7 @@ class ThinkOfPuzzleAsLinearCombination(SetupSimpleSystemOfEquations):
 class WrongButHelpful(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("What's next is wrong, \\\\ but helpful")
-        self.change_student_modes("sassy", "sad", "angry")
+        self.play_student_changes("sassy", "sad", "angry")
         self.wait(3)
 
 
@@ -1453,7 +1453,7 @@ class TransitionToParallelogramIdea(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("confused", "sassy", "angry")
+        self.play_student_changes("confused", "sassy", "angry")
         self.wait()
         self.teacher_says(
             teacher_words,
@@ -2221,7 +2221,7 @@ class ThinkItThroughYourself(TeacherStudentsScene):
             "Try thinking \\\\ it through!",
             target_mode="hooray"
         )
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait(4)
 
 
@@ -2241,7 +2241,7 @@ class AreYouPausingAndPondering(TeacherStudentsScene):
             added_anims=[self.change_students(*3 * ["guilty"])]
         )
         self.wait()
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "thinking",
             added_anims=[
                 RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand")

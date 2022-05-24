@@ -1649,13 +1649,13 @@ class TangentLinesAreNotEverything(TeacherStudentsScene):
             one way to visualize 
             derivatives
         """)
-        self.change_student_modes("raise_left_hand", "pondering", "erm")
+        self.play_student_changes("raise_left_hand", "pondering", "erm")
         self.random_blink(3)
 
 class OnToIntegrals(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("On to integrals!", target_mode = "hooray")
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 class IntroduceConcentricRings(CircleScene):
@@ -2014,12 +2014,12 @@ class AskAboutGeneralCircles(TeacherStudentsScene):
             beyond this circle
             example?
         """)
-        self.change_student_modes("confused")
+        self.play_student_changes("confused")
         self.random_blink(2)
         self.teacher_says(
             "All in due time",
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(2)
 
 class GraphIntegral(GraphScene):
@@ -2194,7 +2194,7 @@ class MoreOnThisLater(TeacherStudentsScene):
             More details on
             integrals later
         """)
-        self.change_student_modes(
+        self.play_student_changes(
             "raise_right_hand", 
             "raise_left_hand",
             "raise_left_hand",
@@ -2408,7 +2408,7 @@ class NameTheFundamentalTheorem(TeacherStudentsScene):
                 for pi in self.get_pi_creatures()
             ]
         )
-        self.change_student_modes("pondering", "confused", "erm")
+        self.play_student_changes("pondering", "confused", "erm")
         self.random_blink()
         self.teacher_says("""
             This is known as
@@ -2420,7 +2420,7 @@ class NameTheFundamentalTheorem(TeacherStudentsScene):
             We'll get here
             in due time.
         """)
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(2)
 
 class CalculusInANutshell(CircleScene):

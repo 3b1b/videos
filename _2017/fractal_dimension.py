@@ -134,7 +134,7 @@ class WhatAreFractals(TeacherStudentsScene):
             student_index = 2,
             width = 6
         )
-        self.change_student_modes("thinking", "pondering", None)
+        self.play_student_changes("thinking", "pondering", None)
         self.wait()
 
         name = TexText("Benoit Mandelbrot")
@@ -492,7 +492,7 @@ class ShowIdealizations(Scene):
 class SayFractalDimension(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Fractal dimension")
-        self.change_student_modes("confused", "hesitant", "pondering")
+        self.play_student_changes("confused", "hesitant", "pondering")
         self.wait(3)
 
 class ExamplesOfDimension(Scene):
@@ -581,13 +581,13 @@ class OfCourseItsMadeUp(TeacherStudentsScene):
             Fractal dimension
             \\emph{is} a made up concept...
         """)
-        self.change_student_modes(*["hesitant"]*3)
+        self.play_student_changes(*["hesitant"]*3)
         self.wait(2)
         self.teacher_says(
             """But it's useful!""",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.wait(3)
 
 class FourSelfSimilarShapes(Scene):
@@ -1487,7 +1487,7 @@ class ThisIsSelfSimilarityDimension(TeacherStudentsScene):
             This is called
             ``self-similarity dimension''
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class ShowSeveralSelfSimilarityDimensions(Scene):
@@ -1688,7 +1688,7 @@ class WhatDoYouMeanByMass(TeacherStudentsScene):
             "What do you mean \\\\ by mass?",
             target_mode = "sassy"
         )
-        self.change_student_modes("pondering", "sassy", "confused")
+        self.play_student_changes("pondering", "sassy", "confused")
         self.wait()
         self.play(self.get_teacher().change_mode, "thinking")
         self.wait(2)
@@ -2299,7 +2299,7 @@ class ReadyForRealDefinition(TeacherStudentsScene):
             Now for what
             fractals really are.
         """)
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait(2)
 
 class DefineFractal(TeacherStudentsScene):
@@ -2308,13 +2308,13 @@ class DefineFractal(TeacherStudentsScene):
             Fractals are shapes
             with a non-integer dimension.
         """)
-        self.change_student_modes("thinking", "happy", "erm")
+        self.play_student_changes("thinking", "happy", "erm")
         self.wait(3)
         self.teacher_says(
             "Kind of...",
             target_mode = "sassy"
         )
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.play(*[
             ApplyMethod(pi.look, DOWN)
             for pi in self.get_pi_creatures()
@@ -2415,7 +2415,7 @@ class HoldUpCoilExample(TeacherStudentsScene):
             for pi in self.get_students()
         ])
         self.wait(5)
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.play(*[
             ApplyMethod(pi.look_at, point)
             for pi in self.get_students()
@@ -2697,7 +2697,7 @@ class ChangeWorldview(TeacherStudentsScene):
             This changes how
             you see the world.
         """)
-        self.change_student_modes(*["thinking"]*3)
+        self.play_student_changes(*["thinking"]*3)
         self.wait(3)
 
 class CompareBritainAndNorway(Scene):

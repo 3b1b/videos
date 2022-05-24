@@ -1026,7 +1026,7 @@ class StepsOfTheAlgorithm(TeacherStudentsScene):
                 )
             )
             self.wait()
-        self.change_student_modes(
+        self.play_student_changes(
             "sassy", "erm", "confused",
             look_at_arg=steps,
             added_anims=[self.teacher.change, "happy"]
@@ -1403,7 +1403,7 @@ class AskAboutWhy(TeacherStudentsScene):
         ke_conservation.move_to(circle)
 
         self.student_says("But why?")
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "raise_left_hand", "sassy",
             added_anims=[self.teacher.change, "happy"]
         )
@@ -1413,7 +1413,7 @@ class AskAboutWhy(TeacherStudentsScene):
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand",
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "pondering", look_at_arg=circle
         )
         self.wait(2)
@@ -1421,7 +1421,7 @@ class AskAboutWhy(TeacherStudentsScene):
             Write(ke_conservation),
             circle.stretch, 1.5, 0,
         )
-        self.change_all_student_modes("confused")
+        self.play_all_student_changes("confused")
         self.look_at(circle)
         self.wait(3)
 

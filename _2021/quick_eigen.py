@@ -2046,7 +2046,7 @@ class HeresTheThing(TeacherStudentsScene):
             for eye in pi.eyes:
                 eye.refresh_bounding_box()
         self.look_at(self.screen)
-        self.change_student_modes("tease", "thinking", "happy", look_at_arg=self.screen)
+        self.play_student_changes("tease", "thinking", "happy", look_at_arg=self.screen)
         self.wait(3)
         words = TexText("Somewhat\\\\self-defeating")
         words.next_to(self.screen, RIGHT)
@@ -2445,7 +2445,7 @@ class MPIsSolvingCharPoly(TeacherStudentsScene):
         arrow.next_to(char_poly, LEFT)
 
         self.teacher_holds_up(formula)
-        self.change_student_modes(
+        self.play_student_changes(
             "happy", "thinking", "tease",
             look_at_arg=formula
         )
@@ -2455,7 +2455,7 @@ class MPIsSolvingCharPoly(TeacherStudentsScene):
             formula.animate.next_to(arrow, LEFT),
             FadeIn(char_poly, 0.5 * UP),
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "pondering", "pondering",
             look_at_arg=char_poly,
             added_anims=[GrowArrow(arrow)]

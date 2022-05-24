@@ -26,7 +26,7 @@ class PoseAbstractDerivative(TeacherStudentsScene):
             compute $\\frac{df}{dx}(x)$
         """)
         content_copy = self.teacher.bubble.content.copy()
-        self.change_student_modes("sad", "confused", "erm")
+        self.play_student_changes("sad", "confused", "erm")
         self.wait()
         self.student_says(
             "Why?", target_mode = "sassy",
@@ -2125,7 +2125,7 @@ class SquareRootOfX(Scene):
 class MentionSine(TeacherStudentsScene):
     def construct(self):
         self.teacher_says("Let's tackle $\\sin(\\theta)$")
-        self.change_student_modes("pondering", "hooray", "erm")
+        self.play_student_changes("pondering", "hooray", "erm")
         self.wait(2)
         self.student_thinks("")
         self.zoom_in_on_thought_bubble()
@@ -2467,7 +2467,7 @@ class LookToFunctionsMeaning(TeacherStudentsScene):
             Look to the function's
             actual meaning
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(3)
 
 class DerivativeFromZoomingInOnSine(IntroduceUnitCircleWithSine, ZoomedScene):

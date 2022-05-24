@@ -670,7 +670,7 @@ class FakeDiagram(TeacherStudentsScene):
             ShowCreation(circle),
             self.teacher.change_mode, "hooray"
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.play(
             Write(words),
             ShowCreation(arrow),
@@ -1083,7 +1083,7 @@ class AskAboutConstantOne(TeacherStudentsScene):
             "Is there a base where\\\\",
             "that constant is 1?"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "raise_right_hand", "thinking",
             # look_at_arg = self.get_students()[1].bubble
         )
@@ -1096,7 +1096,7 @@ class AskAboutConstantOne(TeacherStudentsScene):
             "$e = 2.71828\\dots$",
             target_mode = "hooray"
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(3)
 
 class WhyPi(PiCreatureScene):
@@ -1251,7 +1251,7 @@ class ApplyChainRule(TeacherStudentsScene):
         circle.scale(1.5)
 
         self.teacher_says("Think of the \\\\ chain rule")
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.play(
             Write(deriv),
             RemovePiCreatureBubble(
@@ -1435,7 +1435,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
             self.exp_c.next_to, equation, LEFT, 2*LARGE_BUFF,
             self.exp_c.to_edge, UP,
         )
-        self.change_student_modes("confused", "sassy", "erm")
+        self.play_student_changes("confused", "sassy", "erm")
         self.play(
             Write(log_words),
             ShowCreation(
@@ -1444,7 +1444,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
                 rate_func = squish_rate_func(smooth, 0.5, 1)
             )
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = log_words
         )
@@ -1632,7 +1632,7 @@ class ManyExponentialForms(TeacherStudentsScene):
             )
             for part, a in zip(exp[1], np.linspace(0, 0.7, len(exp[1])))
         ])
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = exp
         )
@@ -1906,7 +1906,7 @@ class NextVideo(TeacherStudentsScene):
         )
 
         self.add(series, brace, *this_tex[:3])
-        self.change_student_modes(
+        self.play_student_changes(
             "confused", "pondering", "erm",
             look_at_arg = this_tex
         )
@@ -1933,7 +1933,7 @@ class NextVideo(TeacherStudentsScene):
             Write(next_tex),
             self.get_teacher().change_mode, "raise_right_hand"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = next_tex
         )

@@ -2174,7 +2174,7 @@ class WeDontHaveThat(TeacherStudentsScene):
             target_mode="angry",
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "angry",
             look_at_arg=self.teacher.eyes
         )
@@ -2432,7 +2432,7 @@ class SARS2002(TeacherStudentsScene):
             self.change_students(look_at_arg=n_cases),
         )
         self.wait()
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "thinking", look_at_arg=n_cases,
         )
         self.play(self.teacher.change, "tease")
@@ -2920,7 +2920,7 @@ class WhyChooseJustOne(TeacherStudentsScene):
             "For science!", target_mode="hooray",
             look_at_arg=self.students[2].eyes,
         )
-        self.change_student_modes("hesitant", "hesitant", "hesitant")
+        self.play_student_changes("hesitant", "hesitant", "hesitant")
         self.wait(3)
 
         self.embed()

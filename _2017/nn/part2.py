@@ -1208,7 +1208,7 @@ class ThisIsVeryComplicated(TeacherStudentsScene):
             target_mode = "surprised",
             run_time = 1,
         )
-        self.change_student_modes(*3*["guilty"])
+        self.play_student_changes(*3*["guilty"])
         self.wait(2)
 
 class EmphasizeComplexityOfCostFunction(IntroduceCostFunction):
@@ -1813,7 +1813,7 @@ class LocalVsGlobal(TeacherStudentsScene):
             Local minimum = Doable \\\\
             Global minimum = Crazy hard
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.wait(2)
 
 class TwoVariableInputSpace(Scene):
@@ -2145,7 +2145,7 @@ class ConfusedAboutHighDimension(TeacherStudentsScene):
             "13{,}002-dimensional \\\\ nudge?",
             target_mode = "confused"
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(2)
         self.teacher_thinks(
             "",
@@ -2943,10 +2943,10 @@ class ReactToPerformance(TeacherStudentsScene):
             target_mode = "surprised",
             run_time = 1
         )
-        self.change_student_modes(*["hooray"]*3)
+        self.play_student_changes(*["hooray"]*3)
         self.wait()
         self.teacher_says(last_words, target_mode = "hesitant")
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = self.teacher.bubble
         )
@@ -2988,7 +2988,7 @@ class NotAtAll(TeacherStudentsScene, PreviewLearning):
             words, target_mode = "guilty",
             run_time = 1
         )
-        self.change_student_modes(*["sassy"]*3)
+        self.play_student_changes(*["sassy"]*3)
         self.play(
             self.teacher.change, "concerned_musician",
             words[1].set_color, WHITE

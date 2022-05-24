@@ -77,7 +77,7 @@ class Introduction(TeacherStudentsScene):
         self.play(*list(map(FadeIn, [bayes, intuition])))
         self.play(Write(arrow))
         self.play(ShowCreation(cross))
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.wait(2)
 
         self.bayes_to_intuition = group
@@ -108,7 +108,7 @@ class Introduction(TeacherStudentsScene):
                 target_mode = "hesitant"
             )
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3, 
             look_at_arg = disease_group
         )
@@ -167,7 +167,7 @@ class Introduction(TeacherStudentsScene):
         self.play(bayes.to_edge, UP)
         self.play(Write(something_else))
         self.play(new_group.next_to, self.example, UP, SMALL_BUFF)
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "confused", "hesitant",
             added_anims = [self.teacher.change_mode, "happy"]
         )
@@ -985,7 +985,7 @@ class ShowTheFormula(TeacherStudentsScene):
         #Show rhs
         self.play(formula.shift, UP)
         self.play(Write(rhs))
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.look_at(rhs)
         self.wait(2)
 
@@ -1440,7 +1440,7 @@ class ExampleMeasuresDisbeliefInStatistics(Introduction):
             LaggedStartMap(FadeIn, statistics_to_belief),
             cross.move_to, arrow
         )
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"]*3,
             look_at_arg = statistics_to_belief
         )

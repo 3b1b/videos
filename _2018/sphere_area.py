@@ -1955,7 +1955,7 @@ class WhyAreWeDoingThis(TeacherStudentsScene):
             bubble_kwargs={"direction": LEFT},
             target_mode="hesitant"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "maybe", "pondering", "hesitant",
             added_anims=[self.teacher.change, "tease"]
         )
@@ -1963,7 +1963,7 @@ class WhyAreWeDoingThis(TeacherStudentsScene):
         self.play(
             RemovePiCreatureBubble(self.students[2]),
             self.teacher.change, "raise_right_hand",
-            self.change_student_modes(*2 * ["pondering"])
+            self.play_student_changes(*2 * ["pondering"])
         )
         self.look_at(self.screen)
         self.wait(2)
@@ -2669,7 +2669,7 @@ class AskAboutDirectConnection(TeacherStudentsScene, SpecialThreeDScene):
                 run_time=1.5,
             )
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "erm", "sassy", "raise_right_hand",
         )
         self.wait(2)
@@ -2731,12 +2731,12 @@ class ExercisesGiveLearning(MovingCameraScene):
 
 class NobodyLikesHomework(TeacherStudentsScene):
     def construct(self):
-        self.change_student_modes(
+        self.play_student_changes(
             "angry", "pleading", "angry",
             added_anims=[self.teacher.change, "guilty"]
         )
         self.wait()
-        self.change_all_student_modes(
+        self.play_all_student_changes(
             "tired", look_at_arg=8 * RIGHT + 4 * DOWN,
             added_anims=[self.teacher.change, "tease"]
         )
@@ -3356,7 +3356,7 @@ class YouCouldIntegrate(TeacherStudentsScene):
             "We'll be a bit \\\\ more Archimedean",
             target_mode="speaking"
         )
-        self.change_all_student_modes("confused")
+        self.play_all_student_changes("confused")
         self.wait()
 
 
@@ -3650,7 +3650,7 @@ class PatronWords(Scene):
 class PlushMe(TeacherStudentsScene):
     def construct(self):
         self.student_says("Plushie me?")
-        self.change_student_modes("happy", None, "happy")
+        self.play_student_changes("happy", None, "happy")
         self.play(self.teacher.change, "confused")
         self.wait()
         self.teacher_says("...why?", target_mode="maybe")

@@ -154,12 +154,12 @@ class ButFirst(TeacherStudentsScene):
             student.change("surprised")
 
         self.teacher_says("But first!")
-        self.change_all_student_modes("happy")
+        self.play_all_student_changes("happy")
         self.play(RemovePiCreatureBubble(
             self.teacher,
             target_mode="raise_right_hand"
         ))
-        self.change_student_modes(
+        self.play_student_changes(
             *["pondering"] * 3,
             look_at_arg=self.screen,
         )
@@ -264,7 +264,7 @@ class WhoCares(TeacherStudentsScene):
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
-        self.change_student_modes("angry", "sassy", "sad")
+        self.play_student_changes("angry", "sassy", "sad")
         self.wait(2)
         self.play(
             RemovePiCreatureBubble(self.students[1]),
@@ -351,7 +351,7 @@ class WhoCares(TeacherStudentsScene):
             t_quote.to_corner, UL,
         )
         self.wait(2)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "happy", "tease",
             look_at_arg=t_quote
         )
@@ -872,7 +872,7 @@ class RememberComplexNumbers(TeacherStudentsScene):
         self.teacher_says(
             "Remember how \\\\ complex numbers \\\\ compute rotations"
         )
-        self.change_all_student_modes("pondering")
+        self.play_all_student_changes("pondering")
         self.wait()
         self.play(
             FadeInFromDown(complex_number),
@@ -882,7 +882,7 @@ class RememberComplexNumbers(TeacherStudentsScene):
             ),
             run_time=2
         )
-        self.change_student_modes(
+        self.play_student_changes(
         )
         self.wait(5)
 
@@ -1377,7 +1377,7 @@ class ExpandOutFullProduct(TeacherStudentsScene):
         )
         self.wait(2)
         self.play(Write(words))
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "confused", "erm",
             look_at_arg=words
         )

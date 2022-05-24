@@ -85,7 +85,7 @@ class StudentsFindThisConfusing(TeacherStudentsScene):
             equation,
             added_anims = [MoveToTarget(question2)]
         )
-        self.change_student_modes(*["confused"]*3)
+        self.play_student_changes(*["confused"]*3)
         self.random_blink(3)
 
 class ShowComments(Scene):
@@ -97,7 +97,7 @@ class EigenThingsArentAllThatBad(TeacherStudentsScene):
             "Eigen-things aren't \\\\ actually so bad",
             target_mode = "hooray"
         )
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "pondering", "erm"
         )
         self.random_blink(4)
@@ -641,13 +641,13 @@ class WordsOnComputation(TeacherStudentsScene):
             "details of computation...",
             target_mode = "guilty"
         )
-        self.change_student_modes("angry", "sassy", "angry")
+        self.play_student_changes("angry", "sassy", "angry")
         self.random_blink()
         self.teacher_says(
             "...but I'll hit the \\\\",
             "important parts"
         )
-        self.change_student_modes(*["happy"]*3)
+        self.play_student_changes(*["happy"]*3)
         self.random_blink(3)
 
 class SymbolicEigenvectors(Scene):
@@ -1757,7 +1757,7 @@ class EigenvalueCanHaveMultipleEigenVectors(TeacherStudentsScene):
             have more that a line
             full of eigenvectors
         """)
-        self.change_student_modes(*["pondering"]*3)
+        self.play_student_changes(*["pondering"]*3)
         self.random_blink(2)
 
 class ScalingExample(LinearTransformationScene):
@@ -1789,7 +1789,7 @@ class IntroduceEigenbasis(TeacherStudentsScene):
         ]))
         words1.set_color(YELLOW)
         self.teacher_says(words1)
-        self.change_student_modes(
+        self.play_student_changes(
             "pondering", "raise_right_hand", "erm"
         )
         self.random_blink()
@@ -2074,7 +2074,7 @@ class WhatAreTheOddsOfThat(TeacherStudentsScene):
             odds of that happening?
         """)
         self.random_blink()
-        self.change_student_modes("pondering")
+        self.play_student_changes("pondering")
         self.random_blink(3)
 
 class LastVideo(Scene):
@@ -2279,7 +2279,7 @@ class CannotDoWithWithAllTransformations(TeacherStudentsScene):
             Not all matrices
             can become diagonal
         """)
-        self.change_student_modes(*["tired"]*3)
+        self.play_student_changes(*["tired"]*3)
         self.random_blink(2)
 
 

@@ -715,7 +715,7 @@ class SureSure(TeacherStudentsScene):
             "Yeah, yeah, sure\n it isn't...",
             bubble_kwargs={"height": 2, "width": 3}
         ))
-        self.change_student_modes("sassy", "angry", "hesitant")
+        self.play_student_changes("sassy", "angry", "hesitant")
         self.play(self.teacher.change("guilty"))
         self.wait(4)
 
