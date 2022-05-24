@@ -174,7 +174,7 @@ class PiCreature(SVGMobject):
         return self
 
     def change(self, new_mode, look_at_arg=None):
-        animation = self.change_mode(new_mode)
+        animation = self.animate.change_mode(new_mode)
         if look_at_arg is not None:
             animation = animation.look_at(look_at_arg)
         return animation
