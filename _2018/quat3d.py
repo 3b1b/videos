@@ -275,7 +275,7 @@ class WhoCares(TeacherStudentsScene):
         #         FadeInFromDown, quotes,
         #         run_time=3
         #     ),
-        #     self.get_student_changes(*3 * ["pondering"], look_at_arg=quotes)
+        #     self.change_students(*3 * ["pondering"], look_at_arg=quotes)
         # )
         # self.wait(2)
 
@@ -309,7 +309,7 @@ class WhoCares(TeacherStudentsScene):
         # hn_rect.shift(0.225 * RIGHT + 0.75 * DOWN)
         # self.play(
         #     ShowCreation(hn_rect),
-        #     self.get_student_changes(
+        #     self.change_students(
         #         "erm", "thinking", "confused",
         #         look_at_arg=hn_quote,
         #     )
@@ -320,7 +320,7 @@ class WhoCares(TeacherStudentsScene):
         #         FadeInFrom, vr_headsets,
         #         lambda m: (m, UP),
         #     ),
-        #     self.get_student_changes(
+        #     self.change_students(
         #         *3 * ["sick"],
         #         look_at_arg=hn_quote,
         #         run_time=3
@@ -345,7 +345,7 @@ class WhoCares(TeacherStudentsScene):
         t_quote.fade(1)
         t_quote.to_corner(UL)
         self.play(
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=quotes),
+            self.change_students(*3 * ["pondering"], look_at_arg=quotes),
             t_quote.set_opacity, 1,
             t_quote.scale, 2,
             t_quote.to_corner, UL,
@@ -876,7 +876,7 @@ class RememberComplexNumbers(TeacherStudentsScene):
         self.wait()
         self.play(
             FadeInFromDown(complex_number),
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "confused", "happy",
                 look_at_arg=complex_number.get_center() + UP
             ),
@@ -1371,7 +1371,7 @@ class ExpandOutFullProduct(TeacherStudentsScene):
         )
         self.play(
             LaggedStartMap(GrowFromCenter, braces),
-            self.get_student_changes(
+            self.change_students(
                 "confused", "horrified", "confused"
             )
         )

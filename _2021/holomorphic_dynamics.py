@@ -1082,7 +1082,7 @@ class AskAboutGeneralTheory(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("Think about constructing\\\\a general theory"),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "pondering", "thinking", "pondering",
                 look_at_arg=UP,
             )]
@@ -1556,7 +1556,7 @@ class UseNewton(TeacherStudentsScene):
             },
             target_mode="hooray",
             added_anims=[
-                self.get_student_changes("confused", "erm", "maybe")
+                self.change_students("confused", "erm", "maybe")
             ]
         )
         self.wait(2)
@@ -2296,7 +2296,7 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change("raise_right_hand", 3 * UR),
-            self.get_student_changes(
+            self.change_students(
                 "raise_left_hand", "pondering", "pondering",
                 look_at_arg=3 * UR,
             )
@@ -3381,7 +3381,7 @@ class LattesExample(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("raise_right_hand", 3 * UR),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "happy", "tease",
                 look_at_arg=3 * UR
             )
@@ -3399,7 +3399,7 @@ class LattesExample(TeacherStudentsScene):
         self.play(
             example.animate.to_edge(UP),
             FadeIn(j_fact),
-            self.get_student_changes(
+            self.change_students(
                 "erm", "erm", "erm",
                 look_at_arg=j_fact,
             ),

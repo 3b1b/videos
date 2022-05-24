@@ -382,7 +382,7 @@ class WhoCares(TeacherStudentsScene):
             "Who doesn't",
             target_mode="hooray",
             bubble_kwargs={"height": 3, "width": 4},
-            added_anims=[self.get_student_changes("pondering", "pondering", "confused")]
+            added_anims=[self.change_students("pondering", "pondering", "confused")]
         )
         self.wait(3)
 
@@ -975,7 +975,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
                 "width": 4,
                 "height": 3,
             },
-            added_anims=[self.get_student_changes("confused", "maybe", "pondering")]
+            added_anims=[self.change_students("confused", "maybe", "pondering")]
         )
         self.wait()
         self.look_at(image1)
@@ -1006,7 +1006,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         self.wait(4)
         self.play(
             RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at_arg=image1),
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=image1,
             ),

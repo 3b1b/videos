@@ -167,7 +167,7 @@ class LeaveItToComputers(TeacherStudentsScene):
         self.play(
             Write(system),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes("pondering", "thinking", "hooray")
+            self.change_students("pondering", "thinking", "hooray")
         )
         self.wait(2)
         self.play(
@@ -176,7 +176,7 @@ class LeaveItToComputers(TeacherStudentsScene):
                 target_mode="shruggie",
             ),
             MoveToTarget(system, path_arc=90 * DEGREES),
-            self.get_student_changes(*["confused"] * 3)
+            self.change_students(*["confused"] * 3)
         )
         self.wait(3)
 
@@ -221,13 +221,13 @@ class LeaveItToComputers(TeacherStudentsScene):
             cramer_groups[0].next_to, cramer_groups[1], LEFT, MED_LARGE_BUFF,
             FadeIn(cramer_groups[1]),
             FadeOut(system),
-            self.get_student_changes(*3 * ["horrified"], look_at_arg=UP),
+            self.change_students(*3 * ["horrified"], look_at_arg=UP),
         )
         self.wait()
         self.play(
             FadeIn(cramer_groups[2]),
             cramer_groups[:2].next_to, cramer_groups[2], LEFT, MED_LARGE_BUFF,
-            self.get_student_changes(*3 * ["horrified"], look_at_arg=UP),
+            self.change_students(*3 * ["horrified"], look_at_arg=UP),
         )
         self.wait()
 
@@ -237,7 +237,7 @@ class LeaveItToComputers(TeacherStudentsScene):
         self.play(
             GrowFromCenter(brace),
             Write(rule_text),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "erm", "maybe",
                 look_at_arg=brace,
             )
@@ -344,7 +344,7 @@ class WhyLearnIt(TeacherStudentsScene):
         self.wait()
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes("erm", "happy" "pondering"),
+            self.change_students("erm", "happy" "pondering"),
             RemovePiCreatureBubble(self.students[2], target_mode="pondering"),
         )
         self.look_at(self.screen)
@@ -1457,7 +1457,7 @@ class TransitionToParallelogramIdea(TeacherStudentsScene):
         self.wait()
         self.teacher_says(
             teacher_words,
-            added_anims=[self.get_student_changes(*["pondering"] * 3)]
+            added_anims=[self.change_students(*["pondering"] * 3)]
         )
         self.wait()
 
@@ -2238,7 +2238,7 @@ class AreYouPausingAndPondering(TeacherStudentsScene):
         self.teacher_says(
             "Are you pausing \\\\ and pondering?",
             target_mode="sassy",
-            added_anims=[self.get_student_changes(*3 * ["guilty"])]
+            added_anims=[self.change_students(*3 * ["guilty"])]
         )
         self.wait()
         self.change_all_student_modes(

@@ -933,7 +933,7 @@ class SixChooseThreeInOtherContext(Scene):
 #             FadeOut(self.students[1].bubble),
 #             FadeOut(formula),
 #             self.teacher.change, "raise_right_hand",
-#             self.get_student_changes(*["pondering"]*3)
+#             self.change_students(*["pondering"]*3)
 #         )
 
 #     def show_pattern(self):

@@ -1946,7 +1946,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
 
         self.play(
             FadeIn(v_paradox, shift=UP),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=v_paradox),
+            self.change_students(*3 * ["pondering"], look_at_arg=v_paradox),
             FadeOut(p_triangle, shift=UP),
             self.teacher.change, "raise_right_hand", v_paradox
         )
@@ -1976,7 +1976,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.look_at(goal, added_anims=[FadeIn(goal, shift=0.5 * UP)])
         self.play(
             ShowCreation(goal_line),
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=goal_line,
             )
@@ -2061,7 +2061,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             FadeIn(stats[2], 0.5 * UP),
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand", stats[2],
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=stats[2])
+            self.change_students(*3 * ["pondering"], look_at_arg=stats[2])
         )
         self.play(ShowCreationThenFadeAround(stats[2][1][1]))
         self.wait(2)
@@ -2437,7 +2437,7 @@ class MoreExamples(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "More examples!", target_mode="hooray",
-            added_anims=[self.get_student_changes("tired", "erm", "happy", run_time=2)]
+            added_anims=[self.change_students("tired", "erm", "happy", run_time=2)]
         )
         self.wait(3)
 
@@ -5713,7 +5713,7 @@ class HowDoesUpdatingWork(TeacherStudentsScene):
         )
         self.play(
             teacher.change, "happy",
-            self.get_student_changes("confused", "erm", "raise_right_hand"),
+            self.change_students("confused", "erm", "raise_right_hand"),
         )
         self.look_at(self.screen)
         self.wait(3)
@@ -5730,7 +5730,7 @@ class HowDoesUpdatingWork(TeacherStudentsScene):
             RemovePiCreatureBubble(students[2]),
             teacher.change, "raise_right_hand",
             FadeIn(sample_pop, shift=UP, scale=1.5),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "thinking", "pondering",
                 look_at_arg=sample_pop,
             )
@@ -5740,7 +5740,7 @@ class HowDoesUpdatingWork(TeacherStudentsScene):
             FadeIn(bayes_factor, shift=UP, scale=1.5),
             sample_pop.shift, UP,
             teacher.change, "hooray",
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "confused", "erm",
             )
         )
@@ -6405,7 +6405,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
                 bubble_kwargs={"height": 2, "width": 2},
                 target_mode="hesitant",
             ),
-            self.get_student_changes("confused", "erm", "pondering")
+            self.change_students("confused", "erm", "pondering")
         )
         self.wait(3)
 

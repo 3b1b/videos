@@ -1228,7 +1228,7 @@ class ExampleTypicalODE(TeacherStudentsScene):
         )
         self.play(
             FadeIn(examples[1], UP),
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=examples,
             ),

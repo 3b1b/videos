@@ -980,7 +980,7 @@ class FeynmanSaysItBest(TeacherStudentsScene):
         self.teacher_says(
             "Feynman says \\\\ it best",
             added_anims=[
-                self.get_student_changes(
+                self.change_students(
                     "hooray", "happy", "erm"
                 )
             ]
@@ -1109,13 +1109,13 @@ class AskAboutInfiniteIntelligence(TeacherStudentsScene):
             target_mode="confused"
         )
         self.play(
-            self.get_student_changes("horrified", "confused", "sad"),
+            self.change_students("horrified", "confused", "sad"),
             self.teacher.change, "happy",
         )
         self.wait()
         self.teacher_says(
             "Stay focused, \\\\ go full screen, \\\\ and you'll be fine.",
-            added_anims=[self.get_student_changes(*["happy"] * 3)]
+            added_anims=[self.change_students(*["happy"] * 3)]
         )
         self.wait()
         self.look_at(self.screen)
@@ -2729,7 +2729,7 @@ class HistoryOfAngularMomentum(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(group),
-            self.get_student_changes(*3 * ["pondering"])
+            self.change_students(*3 * ["pondering"])
         )
         self.wait()
         self.play(
@@ -2996,7 +2996,7 @@ class AskWhy(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change, "happy",
-            self.get_student_changes(
+            self.change_students(
                 "raise_left_hand", "sassy", "confused"
             )
         )
@@ -3530,7 +3530,7 @@ class IKnowThisIsTricky(TeacherStudentsScene):
                 "height": 3,
             },
             added_anims=[
-                self.get_student_changes(
+                self.change_students(
                     *3 * ["horrified"],
                     look_at_arg=self.screen
                 )
@@ -4196,7 +4196,7 @@ class PatYourselfOnTheBack(TeacherStudentsScene):
                 self.teacher,
                 target_mode="raise_right_hand"
             ),
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=self.screen
             )

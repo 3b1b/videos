@@ -2478,7 +2478,7 @@ class AskAboutArctanOfSmallValues(TeacherStudentsScene):
         self.play(
             FadeInFromDown(equation1),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 "erm", "sassy", "confused"
             )
         )
@@ -2495,7 +2495,7 @@ class AskAboutArctanOfSmallValues(TeacherStudentsScene):
                 VGroup(*[equation1[i] for i in (0, 1, 3)]),
                 VGroup(*[equation2[i] for i in (2, 3, 5)]),
             ),
-            self.get_student_changes(
+            self.change_students(
                 "confused", "erm", "sassy",
             ),
         )
@@ -2838,7 +2838,7 @@ class TangentTaylorSeries(TeacherStudentsScene):
         )
         self.play(
             ShowCreation(series_error_rect),
-            self.get_student_changes(*3 * ["pondering"])
+            self.change_students(*3 * ["pondering"])
         )
         self.play(FadeOut(series_error_rect))
         self.play(

@@ -602,7 +602,7 @@ class LetsLookAtOneAnswer(TeacherStudentsScene):
         self.teacher_says(
             "Let me show you\\\\one answer.",
             added_anims=[
-                self.get_student_changes("pondering", "thinking", "pondering")
+                self.change_students("pondering", "thinking", "pondering")
             ]
         )
         self.look_at(self.screen)
@@ -2063,7 +2063,7 @@ class ComplainAboutSimplisticModel(TeacherStudentsScene):
         self.add(axes)
         self.play(
             self.teacher.change, "raise_right_hand", axes,
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "erm", "sassy",
                 look_at_arg=axes,
             ),
@@ -3620,7 +3620,7 @@ class StateNeedForBayesRule(TeacherStudentsScene):
             added_anims=[
                 FadeOut(plot, LEFT),
                 FadeOut(v_lines, LEFT),
-                self.get_student_changes(
+                self.change_students(
                     "erm", "erm", "erm",
                     look_at_arg=self.teacher.eyes,
                 )

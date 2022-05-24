@@ -30,7 +30,7 @@ class WhatDoesItReallyMean(TeacherStudentsScene):
         )
         self.teacher_says(
             "Don't worry -- philosophy\\\\ can come later!",
-            added_anims=[self.get_student_changes(*3 * ["happy"])],
+            added_anims=[self.change_students(*3 * ["happy"])],
         )
         self.wait(2)
         self.play(RemovePiCreatureBubble(self.teacher))

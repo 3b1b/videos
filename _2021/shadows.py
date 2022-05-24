@@ -931,7 +931,7 @@ class PauseAndPonder(TeacherStudentsScene):
 
         self.teacher_says(
             TexText("The goal is\\\\not speed."),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "tease", "well", "pondering",
                 look_at_arg=self.screen
             )]
@@ -957,7 +957,7 @@ class PauseAndPonder(TeacherStudentsScene):
         self.teacher_says(
             "Pause and ponder!",
             target_mode="well",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "pondering", "tease", "thinking"
             )],
             run_time=1
@@ -1586,7 +1586,7 @@ class NotQuiteRight(TeacherStudentsScene):
             target_mode="hesitant",
             bubble_kwargs={"height": 3, "width": 4},
             added_anims=[
-                self.get_student_changes(
+                self.change_students(
                     "pondering", "thinking", "erm",
                     look_at_arg=self.screen,
                 )
@@ -6004,7 +6004,7 @@ class MultipleMathematicalBackgrounds(TeacherStudentsScene):
         self.add(words)
         self.play(
             self.teacher.change("raise_right_hand"),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "thinking", "pondering",
                 look_at_arg=self.teacher.eyes,
             ),
@@ -6016,7 +6016,7 @@ class MultipleMathematicalBackgrounds(TeacherStudentsScene):
         self.wait(3)
         self.play(
             self.teacher.change("dejected").look(UP),
-            self.get_student_changes("hesitant", "well", "thinking"),
+            self.change_students("hesitant", "well", "thinking"),
             LaggedStartMap(FadeOut, lines, scale=0.5),
             FadeOut(words, DOWN),
         )
@@ -6041,7 +6041,7 @@ class MultipleMathematicalBackgrounds(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("raise_right_hand"),
-            self.get_student_changes(
+            self.change_students(
                 "erm", "pondering", "thinking",
                 look_at_arg=self.students.get_center() + 4 * UP
             ),
@@ -6541,7 +6541,7 @@ class GoalsOfMath(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("raise_right_hand", words),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=words),
+            self.change_students(*3 * ["pondering"], look_at_arg=words),
             Write(words)
         )
         self.wait(2)
@@ -6550,7 +6550,7 @@ class GoalsOfMath(TeacherStudentsScene):
             aq.animate.shift(0.5 * DOWN).set_opacity(0.2),
             Write(dni),
             self.teacher.change("well", words),
-            self.get_student_changes(*3 * ["thinking"], look_at_arg=words)
+            self.change_students(*3 * ["thinking"], look_at_arg=words)
         )
         self.wait(3)
 

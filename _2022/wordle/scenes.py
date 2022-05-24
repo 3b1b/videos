@@ -2542,7 +2542,7 @@ class MentionUsingWordFrequencies(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("Next step: Integrate\\\\word frequency data"),
-            added_anims=[self.get_student_changes("hooray", "happy", "tease")]
+            added_anims=[self.change_students("hooray", "happy", "tease")]
         )
         self.wait()
         self.play(self.students[1].change("pondering"))
@@ -3184,7 +3184,7 @@ class WhatMakesWordleNice(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("This is what makes wordle\\\\such a nice example"),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "pondering", "thinking", "erm",
                 look_at_arg=ORIGIN,
             )]

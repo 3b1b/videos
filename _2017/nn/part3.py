@@ -1837,7 +1837,7 @@ class WatchPreviousScene(TeacherStudentsScene):
 
         self.play(
             self.teacher.change, "raise_right_hand", screen,
-            self.get_student_changes(
+            self.change_students(
                 *["thinking"]*3,
                 look_at_arg = screen
             ),
@@ -2027,14 +2027,14 @@ class SwimmingInTerms(TeacherStudentsScene):
         terms.to_edge(UP)
         self.play(
             LaggedStartMap(FadeIn, terms),
-            self.get_student_changes(*["horrified"]*3)
+            self.change_students(*["horrified"]*3)
         )
         self.wait()
         self.play(
             terms[-1].next_to, self.teacher.get_corner(UP+LEFT), UP,
             FadeOut(VGroup(*terms[:-1])),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.wait()
 
@@ -2075,7 +2075,7 @@ class CannotFollowCode(TeacherStudentsScene):
         self.teacher_says(
             "Let's get to the \\\\ calculus then",
             target_mode = "hooray",
-            added_anims = [self.get_student_changes(*3*["plain"])],
+            added_anims = [self.change_students(*3*["plain"])],
             run_time = 1
         )
         self.wait(2)

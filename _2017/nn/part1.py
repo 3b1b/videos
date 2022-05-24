@@ -645,7 +645,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
         self.play(
             words[0].restore,
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes("pondering", "erm", "sassy")
+            self.change_students("pondering", "erm", "sassy")
         )
         self.play(
             words[0].shift, MED_LARGE_BUFF*UP,
@@ -668,7 +668,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
                 VGroup(self.words[1].copy()),
                 network_mob.layers
             ),
-            self.get_student_changes(
+            self.change_students(
                 *["confused"]*3,
                 lag_ratio = 0
             ),
@@ -775,7 +775,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
         self.play(
             DrawBorderThenFill(videos[0]),
             FadeIn(structure),
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.wait()
         self.play(DrawBorderThenFill(videos[1]))

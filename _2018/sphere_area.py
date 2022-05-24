@@ -2650,7 +2650,7 @@ class AskAboutDirectConnection(TeacherStudentsScene, SpecialThreeDScene):
 
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=group,
             ),

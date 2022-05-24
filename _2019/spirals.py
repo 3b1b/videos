@@ -1068,7 +1068,7 @@ class AskAboutRelationToPrimes(TeacherStudentsScene):
         group.next_to(self.pi_creatures, UP, LARGE_BUFF)
 
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["maybe"],
                 look_at_arg=numbers,
             ),
@@ -3871,7 +3871,7 @@ class PhraseDirichletsTheoremFor10(TeacherStudentsScene):
         self.play(
             FadeInFromDown(denom),
             teacher.change, "raise_right_hand",
-            self.get_student_changes(*["pondering"] * 3),
+            self.change_students(*["pondering"] * 3),
         )
         self.wait()
         self.play(FadeInFromDown(x_example))
@@ -3904,7 +3904,7 @@ class PhraseDirichletsTheoremFor10(TeacherStudentsScene):
                 rate_func=linear,
             ),
             VFadeOut(x_example, run_time=8),
-            self.get_student_changes(*["thinking"] * 3),
+            self.change_students(*["thinking"] * 3),
             Blink(
                 teacher,
                 run_time=4,
@@ -4296,7 +4296,7 @@ class TalkAboutProof(TeacherStudentsScene):
             FadeInFromDown(ca),
             FadeOut(teacher.bubble),
             FadeOut(teacher.bubble.content),
-            self.get_student_changes(*["pondering"] * 3),
+            self.change_students(*["pondering"] * 3),
         )
         self.wait()
         self.play(

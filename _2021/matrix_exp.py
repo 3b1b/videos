@@ -1342,7 +1342,7 @@ class WhyTortureMatrices(TeacherStudentsScene):
             added_anims=[FadeOut(q_marks)],
         )
         self.play(
-            self.get_student_changes("confused", "pondering", "raise_left_hand", look_at_arg=self.screen),
+            self.change_students("confused", "pondering", "raise_left_hand", look_at_arg=self.screen),
             self.teacher.change("tease", self.screen)
         )
         self.wait(2)
@@ -2809,7 +2809,7 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
         rect.to_corner(UR)
         self.play(
             morty.change("raise_right_hand", rect),
-            self.get_student_changes("pondering", "pondering", "pondering", look_at_arg=rect),
+            self.change_students("pondering", "pondering", "pondering", look_at_arg=rect),
             FadeIn(rect, UP)
         )
         self.wait(10)
@@ -3732,7 +3732,7 @@ class TryToDefineExp(TeacherStudentsScene):
 
         self.play(
             PiCreatureSays(self.teacher, words, target_mode="surprised"),
-            self.get_student_changes("pondering", "thinking", "pondering"),
+            self.change_students("pondering", "thinking", "pondering"),
         )
         for pi in self.students:
             for eye in pi.eyes:
@@ -5051,7 +5051,7 @@ class StoryForAnotherTime(TeacherStudentsScene):
         self.teacher_says(
             TexText("The full story\\\\takes more time."),
             bubble_kwargs={"height": 3, "width": 3.5},
-            added_anims=[self.get_student_changes("confused", "erm", "hesitant", look_at_arg=self.screen)]
+            added_anims=[self.change_students("confused", "erm", "hesitant", look_at_arg=self.screen)]
         )
         self.wait(5)
 
@@ -5903,7 +5903,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
         self.play(
             trace_eq.animate.shift(UP),
             FadeIn(text, 0.5 * UP),
-            self.get_student_changes("erm", "tease", "maybe"),
+            self.change_students("erm", "tease", "maybe"),
         )
         for pi in self.pi_creatures:  # Why?
             pi.eyes[0].refresh_bounding_box()
@@ -6238,7 +6238,7 @@ class LetsSumUp(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "Let's review",
-            added_anims=[self.get_student_changes("thinking", "pondering", "thinking")]
+            added_anims=[self.change_students("thinking", "pondering", "thinking")]
         )
         self.wait(3)
 

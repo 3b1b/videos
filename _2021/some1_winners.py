@@ -222,7 +222,7 @@ class Introduction(TeacherStudentsScene):
         self.play(
             Write(winner_word[:2]),
             Write(winner_word[-2:]),
-            self.get_student_changes("sassy", "raise_right_hand", "raise_left_hand"),
+            self.change_students("sassy", "raise_right_hand", "raise_left_hand"),
         )
         self.wait(4)
 
@@ -237,7 +237,7 @@ class Introduction(TeacherStudentsScene):
         self.play(
             FadeIn(salt, lag_ratio=0.1),
             ShowCreation(arrow),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "pondering", "erm",
                 look_at_arg=salt,
             )
@@ -662,7 +662,7 @@ class AlmostTooGood(TeacherStudentsScene):
         self.teacher_says(
             TexText("Almost \\emph{too} good"),
             look_at_arg=self.students[2].eyes,
-            added_anims=[self.get_student_changes("happy", "tease", "hesitant")],
+            added_anims=[self.change_students("happy", "tease", "hesitant")],
         )
         self.wait(4)
 

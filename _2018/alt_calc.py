@@ -1038,14 +1038,14 @@ class SetTheStage(TeacherStudentsScene):
         self.add(self.screen)
         self.teacher_holds_up(
             ordinary,
-            added_anims=[self.get_student_changes(*3 * ["sassy"])]
+            added_anims=[self.change_students(*3 * ["sassy"])]
         )
         self.wait()
         self.play(
             ordinary.shift, UP,
             FadeInFromDown(transformational),
             self.teacher.change, "hooray",
-            self.get_student_changes(*3 * ["erm"])
+            self.change_students(*3 * ["erm"])
         )
         self.wait(3)
         self.change_all_student_modes("pondering", look_at_arg=self.screen)
@@ -3367,7 +3367,7 @@ class NotBetterThanGraphs(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change, "guilty",
-            self.get_student_changes("sad", "sassy", "hesitant")
+            self.change_students("sad", "sassy", "hesitant")
         )
         self.wait(2)
         self.play(
@@ -3380,7 +3380,7 @@ class NotBetterThanGraphs(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             "You must flex those \\\\ conceptual muscles",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 *3 * ["thinking"],
                 look_at_arg=self.teacher.eyes
             )]

@@ -44,7 +44,7 @@ class Introduction(TeacherStudentsScene):
         )
         self.remove(*movements)
         self.play(
-            self.get_student_changes(*3 * ["hesitant"]),
+            self.change_students(*3 * ["hesitant"]),
             *[
                 Restore(student.center_tracker)
                 for student in self.students
@@ -56,7 +56,7 @@ class StudentsWatching(TeacherStudentsScene):
     def construct(self):
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["thinking"],
                 look_at_arg=self.screen
             ),

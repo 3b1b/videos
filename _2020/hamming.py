@@ -1109,7 +1109,7 @@ class Reinvention(TeacherStudentsScene):
     def construct(self):
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*3 * ["pondering"]),
+            self.change_students(*3 * ["pondering"]),
         )
         self.wait(3)
         self.student_says(
@@ -4882,7 +4882,7 @@ class AskHowItsImplemented(TeacherStudentsScene):
         self.student_says("How do you\\\\implement this?")
         self.play(
             self.teacher.change, "happy",
-            self.get_student_changes("pondering", "confused"),
+            self.change_students("pondering", "confused"),
         )
         self.look_at(self.screen)
         self.wait(6)
@@ -5810,7 +5810,7 @@ class WhatAboutTwoBitDetection(TeacherStudentsScene):
             "What about\\\\detecting\\\\two bit errors?"
         )
         self.play(
-            self.get_student_changes("angry", "maybe", "raise_left_hand"),
+            self.change_students("angry", "maybe", "raise_left_hand"),
             self.teacher.change, "guilty",
         )
         self.look_at(self.screen)

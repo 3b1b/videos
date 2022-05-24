@@ -594,7 +594,7 @@ class CarefulWithLasers(TeacherStudentsScene):
             pi.add_updater(lambda p: p.look_at(laser[1]))
         self.play(
             ShowCreation(laser),
-            self.get_student_changes(
+            self.change_students(
                 "surprised", "hooray", "horrified",
                 look_at_arg=laser
             )
@@ -704,7 +704,7 @@ class AskAboutTurbulence(TeacherStudentsScene):
             FadeOut(randy.bubble),
             ReplacementTransform(VGroup(words[1], words[3]), question),
             FadeOut(VGroup(words[0], words[2])),
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["pondering"],
                 look_at_arg=question
             )
@@ -931,7 +931,7 @@ class VorticityDoesNotImplyTurbulence(TeacherStudentsScene):
         self.play(t_to_v.shift, 2 * UP,)
         self.play(
             TransformFromCopy(t_to_v, v_to_t, path_arc=PI / 2),
-            self.get_student_changes(
+            self.change_students(
                 "erm", "confused", "sassy",
                 run_time=1
             ),

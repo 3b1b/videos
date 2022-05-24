@@ -1041,7 +1041,7 @@ class WhatAreWeDoingHere(TeacherStudentsScene):
         self.student_says(
             "Wait, what are we\\\\doing here then?",
             target_mode="sassy",
-            added_anims=[self.get_student_changes("hesitant", "angry", "sassy")],
+            added_anims=[self.change_students("hesitant", "angry", "sassy")],
             run_time=2
         )
         self.play(self.teacher.change, "tease")
@@ -1057,7 +1057,7 @@ class HowCanWeVisualizeSolutions(TeacherStudentsScene):
                 "width": 4,
                 "fill_opacity": 0,
             },
-            added_anims=[self.get_student_changes("pondering", "thinking", "pondering")]
+            added_anims=[self.change_students("pondering", "thinking", "pondering")]
         )
         self.look_at(self.screen),
         self.wait(1)

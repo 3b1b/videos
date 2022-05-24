@@ -296,7 +296,7 @@ class ShowWritingTrajectory(TeacherStudentsScene):
                 run_time=5,
             ),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*["sassy"] * 3)
+            self.change_students(*["sassy"] * 3)
         )
         self.play(
             LaggedStartMap(
@@ -305,7 +305,7 @@ class ShowWritingTrajectory(TeacherStudentsScene):
                 remover=True
             ),
             self.teacher.change, "tease",
-            self.get_student_changes(
+            self.change_students(
                 *["pondering"] * 3,
                 look_at_arg=self.screen
             )
@@ -897,7 +897,7 @@ class AskQuestions(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
             FadeOut(self.students[0].bubble),
             FadeOut(self.students[0].bubble.content),
-            self.get_student_changes(*["pondering"] * 3)
+            self.change_students(*["pondering"] * 3)
         )
         self.play(
             FadeInFromDown(curl),
@@ -920,7 +920,7 @@ class AskQuestions(TeacherStudentsScene):
 
         self.play(
             MoveToTarget(topics),
-            self.get_student_changes(
+            self.change_students(
                 "confused", "sassy", "erm",
                 look_at_arg=topics.target
             ),
@@ -1247,7 +1247,7 @@ class QuickNoteOnDrawingThese(TeacherStudentsScene):
         self.teacher_says(
             "Quick note on \\\\ drawing vector fields",
             bubble_kwargs={"width": 5, "height": 3},
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "confused", "erm", "sassy"
             )]
         )
@@ -2230,7 +2230,7 @@ class FromKAWrapper(TeacherStudentsScene):
         screen = self.screen
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "confused", "hooray",
             )
         )
@@ -2241,7 +2241,7 @@ class FromKAWrapper(TeacherStudentsScene):
         self.teacher_says(
             "Our focus is \\\\ the 2d version",
             bubble_kwargs={"width": 4, "height": 3},
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "happy", "hooray", "happy"
             )]
         )

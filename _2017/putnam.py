@@ -137,7 +137,7 @@ class NatureOf5sAnd6s(TeacherStudentsScene):
             test.scale, self.test_scale_val,
             test.to_corner, UP+LEFT,
             FadeIn(self.teacher),
-            self.get_student_changes(
+            self.change_students(
                 *["horrified"]*3,
                 look_at_arg = test
             )

@@ -1934,7 +1934,7 @@ class WhenIWasFirstLearning(TeacherStudentsScene):
     def construct(self):
         self.teacher.change_mode("raise_right_hand")
         self.play(
-            self.get_student_changes("pondering", "thinking", "tease"),
+            self.change_students("pondering", "thinking", "tease"),
             self.teacher.change, "thinking",
         )
 

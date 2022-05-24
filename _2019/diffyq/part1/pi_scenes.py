@@ -124,7 +124,7 @@ class SoWhatIsThetaThen(TeacherStudentsScene):
         self.teacher_says(
             "First, you must appreciate\\\\"
             "a deep truth...",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 *3 * ["confused"]
             )]
         )
@@ -220,7 +220,7 @@ class ProveTeacherWrong(TeacherStudentsScene):
         self.play(
             ShowCreation(arrow),
             # FadeInFromDown(q_mark),
-            self.get_student_changes("confused", "confused")
+            self.change_students("confused", "confused")
         )
         self.wait(4)
         self.change_student_modes(
@@ -304,7 +304,7 @@ class AskAboutActuallySolving(TeacherStudentsScene):
         self.teacher_says(
             "What do you mean\\\\ by ``solve''?",
             target_mode="speaking",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 *3 * ["erm"]
             )]
         )
@@ -431,7 +431,7 @@ class HungerForExactness(TeacherStudentsScene):
             ode.move_to, self.hold_up_spot, DOWN,
             ode.shift, LEFT,
             teacher.change, "raise_right_hand",
-            self.get_student_changes(*3 * ["pondering"])
+            self.change_students(*3 * ["pondering"])
         )
         self.wait()
         ode.save_state()
@@ -447,7 +447,7 @@ class HungerForExactness(TeacherStudentsScene):
         for part, mode in zip(solution, modes):
             self.play(
                 FadeIn(part, UP),
-                self.get_student_changes(
+                self.change_students(
                     *3 * [mode],
                     look_at_arg=part,
                 )
@@ -461,7 +461,7 @@ class HungerForExactness(TeacherStudentsScene):
         self.play(
             FadeOut(solution, 2 * LEFT),
             Restore(ode),
-            self.get_student_changes(
+            self.change_students(
                 "sick", "angry", "tired",
             )
         )

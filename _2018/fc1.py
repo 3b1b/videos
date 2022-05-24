@@ -49,7 +49,7 @@ class CrossingOneMillion(TeacherStudentsScene):
             words,
             added_anims=[
                 ApplyMethod(self.teacher.change, "hesitant"),
-                self.get_student_changes(
+                self.change_students(
                     "sassy", "speaking", "happy"
                 ),
                 number.scale, 0.5,
@@ -65,7 +65,7 @@ class CrossingOneMillion(TeacherStudentsScene):
             ChangeDecimalToValue(number, 2**20, run_time=3),
             ChangeDecimalToValue(remainder, 0.1, run_time=3),
             self.teacher.change, "pondering", number,
-            self.get_student_changes(
+            self.change_students(
                 *["pondering"] * 3,
                 look_at_arg=number
             ),

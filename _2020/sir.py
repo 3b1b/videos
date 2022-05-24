@@ -2322,7 +2322,7 @@ class ThatsNotHowIBehave(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change, "guilty",
-            self.get_student_changes("erm", "erm", "sassy")
+            self.change_students("erm", "erm", "sassy")
         )
         self.look_at(self.screen)
         self.wait(20)
@@ -2414,7 +2414,7 @@ class SARS2002(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeIn(image, DOWN, run_time=2),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "thinking", "pondering",
                 look_at_arg=image,
             )
@@ -2429,7 +2429,7 @@ class SARS2002(TeacherStudentsScene):
                 lambda m, a: m.set_opacity(a),
             ),
             ChangeDecimalToValue(n_cases[0], 8098),
-            self.get_student_changes(look_at_arg=n_cases),
+            self.change_students(look_at_arg=n_cases),
         )
         self.wait()
         self.change_all_student_modes(
@@ -2911,7 +2911,7 @@ class WhyChooseJustOne(TeacherStudentsScene):
             run_time=1,
         )
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 "confused", "confused", "sassy",
             ),
         )

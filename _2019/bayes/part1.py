@@ -3277,7 +3277,7 @@ class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
 
         self.play(
             self.teacher.change, "speaking",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "sassy", "happy",
                 look_at_arg=self.screen,
             )
@@ -3287,7 +3287,7 @@ class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeIn(words, DOWN),
-            self.get_student_changes("erm", "pondering", "confused")
+            self.change_students("erm", "pondering", "confused")
         )
         self.wait(2)
         self.play(
@@ -3295,7 +3295,7 @@ class AskAboutWhenProbabilityIsIntuitive(TeacherStudentsScene):
             words.center,
             words.to_edge, UP,
             self.teacher.change, "pondering", 3 * UP,
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "thinking", "thinking",
                 look_at_arg=3 * UP,
             )

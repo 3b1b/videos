@@ -13,7 +13,7 @@ class WhyWouldYouCare(TeacherStudentsScene):
         self.play(
             RemovePiCreatureBubble(self.students[2]),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "erm", "thinking",
                 look_at_arg=self.screen,
             )
@@ -203,7 +203,7 @@ class LooseWithLanguage(TeacherStudentsScene):
         )
         self.play(
             FadeIn(terms[1], DOWN),
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "pondering", "erm",
                 look_at_arg=terms,
             )

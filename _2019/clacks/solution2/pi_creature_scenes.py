@@ -26,7 +26,7 @@ class OnAnsweringTwice(TeacherStudentsScene):
         self.wait()
         self.play(
             RemovePiCreatureBubble(self.students[2]),
-            self.get_student_changes("erm", "erm"),
+            self.change_students("erm", "erm"),
             ApplyMethod(
                 question.move_to, self.hold_up_spot, DOWN,
                 path_arc=-90 * DEGREES,
@@ -38,7 +38,7 @@ class OnAnsweringTwice(TeacherStudentsScene):
             self.play(
                 shown_questions.shift, 0.85 * UP,
                 FadeInFromDown(oq),
-                self.get_student_changes(
+                self.change_students(
                     *["pondering"] * 3,
                     look_at_arg=oq
                 )
@@ -74,7 +74,7 @@ class ComplainAboutRelevanceOfAnalogy(TeacherStudentsScene):
         self.wait(2)
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "erm", "pondering",
                 look_at_arg=self.hold_up_spot,
             ),
@@ -100,7 +100,7 @@ class ReplaceOneTrickySceneWithAnother(TeacherStudentsScene):
         self.play(
             RemovePiCreatureBubble(self.students[1]),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*3 * ["pondering"])
+            self.change_students(*3 * ["pondering"])
         )
         self.look_at(self.hold_up_spot + 2 * UP)
         self.wait(5)
@@ -111,7 +111,7 @@ class NowForTheGoodPart(TeacherStudentsScene):
         self.teacher_says(
             r"Now for the \\ good part!",
             target_mode="hooray",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "hooray", "surprised", "happy"
             )],
         )

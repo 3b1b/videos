@@ -1132,7 +1132,7 @@ class HereWeTackle4d(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(titles[0]),
-            self.get_student_changes("confused", "horrified", "sad")
+            self.change_students("confused", "horrified", "sad")
         )
         self.look_at(self.screen)
         self.wait()
@@ -1738,13 +1738,13 @@ class TextbookQuaternionDefinition(TeacherStudentsScene):
 
         self.play(
             LaggedStartMap(FadeInFromDown, defining_products),
-            self.get_student_changes(*3 * ["confused"]),
+            self.change_students(*3 * ["confused"]),
             self.teacher.change, "raise_right_hand",
         )
         self.play(ShowCreation(def_rect))
         self.play(
             Write(equation, run_time=4, lag_ratio=0.2),
-            self.get_student_changes(
+            self.change_students(
                 "horrified", "pleading", "sick",
                 equation
             ),
@@ -5894,7 +5894,7 @@ class MentionCommutativity(TeacherStudentsScene):
         self.play(
             FadeInFromDown(general_eq),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes("erm", "confused", "sassy")
+            self.change_students("erm", "confused", "sassy")
         )
         self.play(FadeIn(words, RIGHT))
         self.wait(2)
@@ -5902,7 +5902,7 @@ class MentionCommutativity(TeacherStudentsScene):
             ReplacementTransform(words, joke),
             general_eq.shift, UP,
             FadeInFromDown(ij_eq),
-            self.get_student_changes(*["pondering"] * 3)
+            self.change_students(*["pondering"] * 3)
         )
         self.look_at(self.screen)
         self.wait(3)

@@ -316,7 +316,7 @@ class MentionUncertaintyPrinciple(TeacherStudentsScene):
         self.play(
             Write(title),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.play(
             Write(dot_brace_anim.mobject, run_time = 1)
@@ -338,7 +338,7 @@ class MentionUncertaintyPrinciple(TeacherStudentsScene):
         self.play(
             vector_cloud.gaussian_distribution_wrapper.change_parameters,
             {"sigma" : RIGHT},
-            self.get_student_changes(*3*["confused"]),
+            self.change_students(*3*["confused"]),
             run_time = 3,
         )
         #Back and forth
@@ -1096,7 +1096,7 @@ class CrossOutDefinitenessAndCertainty(TeacherStudentsScene):
             ShowCreation(crosses[0])
         )
         self.play(
-            self.get_student_changes(*3*["erm"]),
+            self.change_students(*3*["erm"]),
             ShowCreation(crosses[1])
         )
         self.wait(2)
@@ -1459,7 +1459,7 @@ class AskAboutLongVsShort(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change, "happy",
-            self.get_student_changes("pondering", "confused", "raise_right_hand")
+            self.change_students("pondering", "confused", "raise_right_hand")
         )
         self.wait(5)
 
@@ -1676,7 +1676,7 @@ class MentionDopplerRadar(TeacherStudentsScene):
         self.wait(2)
         self.play(
             self.teacher.change, "happy",
-            self.get_student_changes(*["thinking"]*3)
+            self.change_students(*["thinking"]*3)
         )
         self.wait()
         dish.set_stroke(width = 0)
@@ -2113,7 +2113,7 @@ class MentionPRFNuance(TeacherStudentsScene):
             ShowCreation(shift_graph),
             FadeIn(brace),
             Write(displayed_doppler_shift, run_time = 1),
-            self.get_student_changes(*3*["sassy"]),
+            self.change_students(*3*["sassy"]),
         )
         self.play(
             UpdateFromAlphaFunc(
@@ -3124,7 +3124,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
         self.play(
             Write(xi_words),
             GrowArrow(xi_arrow),
-            self.get_student_changes("confused", "erm", "sassy"),
+            self.change_students("confused", "erm", "sassy"),
             stopped_wave_propagation
         )
         self.play(
@@ -3133,7 +3133,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
         )
         self.play(
             LaggedStartMap(ShowCreation, v_lines),
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.play(LaggedStartMap(FadeOut, v_lines))
         self.wait()
@@ -3194,7 +3194,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
             ApplyMethod(full_formula.shift, DOWN),
             FadeOut(self.students[0].bubble),
             FadeOut(self.students[0].bubble.content),
-            self.get_student_changes(*3*["pondering"]),
+            self.change_students(*3*["pondering"]),
             self.teacher.change, "pondering",
         )
         self.play(wave_propagation)
@@ -4228,7 +4228,7 @@ class BetterTranslation(TeacherStudentsScene):
         english_term.fade(1)
         self.play(
             english_term.restore,
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.wait()
 

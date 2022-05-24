@@ -878,7 +878,7 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
         themes.next_to(arrow, DOWN)
 
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 "sad", "tired", "pleading"
             ),
             self.teacher.change, "raise_right_hand",
@@ -888,11 +888,11 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
         self.wait(2)
         self.play(
             ShowCreation(arrow),
-            self.get_student_changes(*3 * ["pondering"]),
+            self.change_students(*3 * ["pondering"]),
         )
         self.play(
             FadeIn(themes, UP),
-            self.get_student_changes(*3 * ["thinking"]),
+            self.change_students(*3 * ["thinking"]),
             self.teacher.change, "happy"
         )
         self.wait(4)

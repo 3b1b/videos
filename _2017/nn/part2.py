@@ -79,7 +79,7 @@ class ShowLastVideo(TeacherStudentsScene):
         )
         self.play(
             Write(title),
-            self.get_student_changes(*["thinking"]*3)
+            self.change_students(*["thinking"]*3)
         )
         self.play(
             Animation(title),
@@ -2150,7 +2150,7 @@ class ConfusedAboutHighDimension(TeacherStudentsScene):
         self.teacher_thinks(
             "",
             bubble_kwargs = {"width" : 6, "height" : 4},
-            added_anims = [self.get_student_changes(*["plain"]*3)]
+            added_anims = [self.change_students(*["plain"]*3)]
         )
         self.zoom_in_on_thought_bubble()
 
@@ -3441,7 +3441,7 @@ class PauseAndPonder(TeacherStudentsScene):
         )
         self.play(
             ShowCreation(screen),
-            self.get_student_changes(*["pondering"]*3),
+            self.change_students(*["pondering"]*3),
         )
         self.wait(6)
 

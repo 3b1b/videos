@@ -1685,7 +1685,7 @@ class AskAboutAlmostFouierName(TeacherStudentsScene):
         self.wait()
         self.teacher_says(
             "We'll get to the real \\\\ one in a few minutes",
-            added_anims = [self.get_student_changes(*["plain"]*3)]
+            added_anims = [self.change_students(*["plain"]*3)]
         )
         self.wait(2)
 
@@ -2241,7 +2241,7 @@ class BeforeGettingToTheFullMath(TeacherStudentsScene):
         self.play(
             Write(formula),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(*["confused"]*3)
+            self.change_students(*["confused"]*3)
         )
         self.wait()
         self.play(
@@ -2250,7 +2250,7 @@ class BeforeGettingToTheFullMath(TeacherStudentsScene):
                 path_arc = TAU/16,
                 rate_func = running_start,
             ),
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.teacher_says("Consider sound editing\\dots")
         self.wait(3)
@@ -3184,7 +3184,7 @@ class BuildUpExpressionStepByStep(TeacherStudentsScene):
             FadeIn(two_pi_i),
         )
         self.play(
-            self.get_student_changes(*["pondering"]*3),
+            self.change_students(*["pondering"]*3),
             FadeIn(t),
         )
         self.play(
@@ -3955,7 +3955,7 @@ class MoreToCover(TeacherStudentsScene):
         self.teacher_says(
             "SO MUCH!",
             target_mode = "surprised",
-            added_anims = [self.get_student_changes(*3*["happy"])],
+            added_anims = [self.change_students(*3*["happy"])],
             run_time = 0.5
         )
         self.wait(2)

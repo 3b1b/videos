@@ -1155,7 +1155,7 @@ class ThatJustSeemsUseless(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change, "guilty",
-            self.get_student_changes(*3*['sassy'])
+            self.change_students(*3*['sassy'])
         )
         self.wait()
 
@@ -2447,7 +2447,7 @@ class WeCanHaveMoreFunThanThat(TeacherStudentsScene):
                 target_mode = "raise_right_hand",
                 look_at_arg = point,
             ),
-            self.get_student_changes(*3*["pondering"], look_at_arg = point)
+            self.change_students(*3*["pondering"], look_at_arg = point)
         )
         self.wait(3)
 
@@ -2785,7 +2785,7 @@ class DiameterTheorem(TeacherStudentsScene):
         )
         self.play(
             ShowCreation(perp_mark),
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.add_foreground_mobjects(perp_mark)
         self.add(triangle_update_anim)
@@ -2867,7 +2867,7 @@ class InscribedeAngleThreorem(TeacherStudentsScene):
         self.play(
             ShowCreation(half_angle_mark),
             Write(theta_halves),
-            self.get_student_changes(*["pondering"]*3)
+            self.change_students(*["pondering"]*3)
         )
         self.add_foreground_mobjects(half_angle_mark, theta_halves)
         self.add(shape_update_anim)

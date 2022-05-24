@@ -1723,7 +1723,7 @@ class MentionGroupsInPhysics(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeIn(examples[0], UP),
-            self.get_student_changes("confused", "erm", "pondering")
+            self.change_students("confused", "erm", "pondering")
         )
         self.look_at(rule)
         self.wait()
@@ -1854,7 +1854,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
             inclusion.to_edge, LEFT,
             inclusion.set_color, GREY_B,
             Write(numeral),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=numeral),
+            self.change_students(*3 * ["pondering"], look_at_arg=numeral),
             self.teacher.change, "tease", numeral,
         )
         self.wait(2)
@@ -1925,7 +1925,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         self.play(
             FadeOut(VGroup(*ops[1][:3], ops[1][4]), UP),
             FadeIn(mult_dots, DOWN),
-            self.get_student_changes(*3 * ["erm"], look_at_arg=mult_dots),
+            self.change_students(*3 * ["erm"], look_at_arg=mult_dots),
         )
         self.wait(4)
         self.play(
@@ -1937,7 +1937,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
                 FadeIn(mob)
                 for mob in [*ops[0][0::2], *ops[1][:3], ops[1][4]]
             ]),
-            self.get_student_changes(*3 * ["happy"]),
+            self.change_students(*3 * ["happy"]),
         )
         self.wait(2)
 
@@ -1965,7 +1965,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
             FadeOut(inclusion, LEFT),
             MoveToTarget(rot_icon),
             LaggedStartMap(FadeIn, group_prod[1:], lag_ratio=0.5, run_time=2),
-            self.get_student_changes(
+            self.change_students(
                 "sassy", "erm", "confused",
                 look_at_arg=group_prod,
             ),
@@ -2006,7 +2006,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
 
         self.play(
             FadeIn(sn_nums, lag_ratio=0.1),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=snowflake)
+            self.change_students(*3 * ["pondering"], look_at_arg=snowflake)
         )
         self.add(*sn_nums)
         self.play(
@@ -2037,7 +2037,7 @@ class ElementsAsAbstractions(TeacherStudentsScene):
         )
         self.play(
             FadeOut(line),
-            self.get_student_changes(*3 * ["thinking"])
+            self.change_students(*3 * ["thinking"])
         )
         self.wait(3)
 
@@ -2975,7 +2975,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
             target_mode="hooray",
             added_anims=[
                 MoveToTarget(question, run_time=2),
-                self.get_student_changes(
+                self.change_students(
                     "erm", "pondering", "pondering",
                     look_at_arg=question.target
                 )
@@ -2999,7 +2999,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
             Write(caveat, run_time=1),
             question[1].next_to, caveat[0][-1], RIGHT, SMALL_BUFF, DOWN,
             question[1].match_color, caveat,
-            self.get_student_changes(*3 * ["thinking"], look_at_arg=question)
+            self.change_students(*3 * ["thinking"], look_at_arg=question)
         )
         question.add(caveat)
         self.wait(2)
@@ -3016,7 +3016,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
             cross,
             added_anims=[
                 ShowCreation(cross),
-                self.get_student_changes("erm", "sassy", "hesitant")
+                self.change_students("erm", "sassy", "hesitant")
             ]
         )
         self.wait()
@@ -3032,7 +3032,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
                 for i, j in [(0, 0), (1, 4), (2, 2), (3, 5)]
             ],
             FadeOut(cross),
-            self.get_student_changes("happy", "thinking", "tease"),
+            self.change_students("happy", "thinking", "tease"),
         )
         self.play(
             self.teacher.change, "speaking", abs_question,
@@ -3056,7 +3056,7 @@ class AskAboutAllTheGroups(TeacherStudentsScene):
 
         self.play(
             FadeIn(suggestions[0], DOWN),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=suggestions),
+            self.change_students(*3 * ["pondering"], look_at_arg=suggestions),
             self.teacher.change, "happy",
         )
         self.wait()
@@ -3548,7 +3548,7 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
         self.play(
             FadeIn(as_words, RIGHT),
             Write(implies),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=as_words)
+            self.change_students(*3 * ["pondering"], look_at_arg=as_words)
         )
         self.wait(5)
 

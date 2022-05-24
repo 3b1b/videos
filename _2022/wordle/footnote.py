@@ -33,7 +33,7 @@ class HeresTheThing(TeacherStudentsScene):
             bubble_kwargs=dict(width=3.5, height=2.5),
             run_time=1,
             added_anims=[
-                self.get_student_changes("dance_3", "frustrated", "sassy"),
+                self.change_students("dance_3", "frustrated", "sassy"),
                 thumbnail.animate.to_corner(UL),
             ]
         )
@@ -109,7 +109,7 @@ class WhatWasTheBug(TeacherStudentsScene):
     def construct(self):
         self.student_says("What as the bug?")
         self.play(
-            self.get_student_changes("raise_left_hand", "pondering", "raise_right_hand"),
+            self.change_students("raise_left_hand", "pondering", "raise_right_hand"),
             self.teacher.change("tired")
         )
         self.wait(3)
@@ -810,7 +810,7 @@ class WhydYouHaveToRuinIt(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             TexText("But ``salet'' is probably\\\\not the best for us"),
-            added_anims=[self.get_student_changes("confused", "sassy", "hesitant")]
+            added_anims=[self.change_students("confused", "sassy", "hesitant")]
         )
         self.wait(3)
 

@@ -657,7 +657,7 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
             run_time = 1.5,
             path_arc = TAU/2
         ))
-        self.play(self.get_student_changes(*["pondering"]*3))
+        self.play(self.change_students(*["pondering"]*3))
         self.play(
             GrowFromCenter(brace),
             self.teacher.change, "happy"
@@ -697,7 +697,7 @@ class RewriteEquationWithTeacher(AltTeacherStudentsScene):
                 path_arc = -TAU/4,
             ),
             self.teacher.change, "hesitant",
-            self.get_student_changes(*["erm"]*3)
+            self.change_students(*["erm"]*3)
         )
         self.teacher_holds_up(two_d_equation)
         self.change_all_student_modes("horrified")
@@ -1121,7 +1121,7 @@ class TwoDScreenInOurThreeDWorld(AltTeacherStudentsScene, ThreeDScene):
         )
         self.play(
             LaggedStartMap(GrowFromCenter, dots, run_time = 1),
-            self.get_student_changes(*3*["erm"]),
+            self.change_students(*3*["erm"]),
         )
         self.play(LaggedStartMap(MoveToTarget, dots, path_arc = -TAU/4))
         self.wait(3)
@@ -1443,7 +1443,7 @@ class Rearrange2DEquation(AltTeacherStudentsScene):
                 GrowFromCenter(brace),
                 Write(zero_eq, run_time = 1)
             ),
-            self.get_student_changes(*["happy"]*3)
+            self.change_students(*["happy"]*3)
         )
         self.play(*[
             ApplyMethod(pi.change, "thinking", self.screen)

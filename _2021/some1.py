@@ -129,7 +129,7 @@ class Featuring(TeacherStudentsScene):
 
         self.play(
             self.teacher.change("tease"),
-            self.get_student_changes(*3 * ["hooray"], look_at_arg=screen),
+            self.change_students(*3 * ["hooray"], look_at_arg=screen),
             FadeIn(screen, UP)
         )
         self.play(Write(words))

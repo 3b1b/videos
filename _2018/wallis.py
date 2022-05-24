@@ -282,7 +282,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
                 target_mode="raise_right_hand",
                 look_at_arg=title,
             ),
-            self.get_student_changes(
+            self.change_students(
                 *["pondering"] * 3,
                 look_at_arg=title
             )
@@ -309,7 +309,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
 
         self.play(
             FadeIn(based_on_wastlund),
-            self.get_student_changes(
+            self.change_students(
                 "sassy", "erm", "plain",
                 look_at_arg=based_on_wastlund
             ),
@@ -785,7 +785,7 @@ class TeacherShowing(TeacherStudentsScene):
         self.play(
             ShowCreation(screen),
             self.teacher.change, "raise_right_hand", screen,
-            self.get_student_changes(
+            self.change_students(
                 *["pondering"] * 3,
                 look_at_arg=screen
             )
@@ -3027,13 +3027,13 @@ class ArmedWithTwoKeyFacts(TeacherStudentsScene, DistanceProductScene):
                         *it.chain(group.family_members_with_points()))
                 ),
                 self.teacher.change, "raise_right_hand",
-                self.get_student_changes(*["pondering"] * 3)
+                self.change_students(*["pondering"] * 3)
             )
         wallis_product.move_to(labels).to_edge(RIGHT)
         self.play(
             LaggedStartMap(FadeIn, wallis_product),
             self.teacher.change_mode, "hooray",
-            self.get_student_changes(
+            self.change_students(
                 *["thinking"] * 3, look_at_arg=wallis_product)
         )
         self.wait(2)
@@ -4994,14 +4994,14 @@ class Conclusion(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(wallis_product),
-            self.get_student_changes("thinking", "hooray", "surprised")
+            self.change_students("thinking", "hooray", "surprised")
         )
         self.wait()
         self.play(
             self.teacher.change, "hooray",
             FadeInFromDown(sine_formula),
             wallis_product.to_edge, UP,
-            self.get_student_changes("pondering", "thinking", "erm")
+            self.change_students("pondering", "thinking", "erm")
         )
         self.wait(3)
         self.play(
@@ -5014,7 +5014,7 @@ class Conclusion(TeacherStudentsScene):
             FadeIn(euler),
             LaggedStartMap(FadeIn, basel_problem),
             self.teacher.change, "happy",
-            self.get_student_changes("sassy", "confused", "hesitant")
+            self.change_students("sassy", "confused", "hesitant")
         )
         self.wait(2)
 
@@ -5032,7 +5032,7 @@ class Conclusion(TeacherStudentsScene):
         self.play(
             ShowCreation(basel_rect),
             self.teacher.change, "surprised",
-            self.get_student_changes(*["happy"] * 3)
+            self.change_students(*["happy"] * 3)
         )
         self.wait(5)
 

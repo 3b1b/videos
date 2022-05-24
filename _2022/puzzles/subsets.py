@@ -235,7 +235,7 @@ class PreviewFraming(TeacherStudentsScene):
             # FadeInFromPoint(top_rect, morty.get_corner(UR)),
             DrawBorderThenFill(top_rect),
             morty.change("raise_right_hand", top_rect),
-            self.get_student_changes(
+            self.change_students(
                 "erm", "thinking", "pondering",
                 look_at_arg=top_rect,
             ),
@@ -245,7 +245,7 @@ class PreviewFraming(TeacherStudentsScene):
         self.play(
             tt0.animate.restore(),
             FadeIn(tt1, lag_ratio=0.1),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "hesitant", "sassy",
                 look_at_arg=top_rect,
             ),
@@ -402,7 +402,7 @@ class RiemannHypothesisMention(TeacherStudentsScene):
         self.teacher_says(
             "This is what the $1M\nRiemann Hypothesis\nis all about",
             bubble_kwargs=dict(width=4, height=3),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "erm", "happy", "thinking",
                 look_at_arg=self.screen,
             )]
@@ -4138,7 +4138,7 @@ class AskAboutComplex(TeacherStudentsScene):
 
         self.play(
             Write(new_line),
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "hesitant", "pondering",
                 look_at_arg=new_line,
             ),
@@ -4250,7 +4250,7 @@ class ProblemStatement(TeacherStudentsScene):
                 for word in words
             )),
             morty.change("raise_right_hand", title),
-            self.get_student_changes("happy", "thinking", "happy", look_at_arg=title)
+            self.change_students("happy", "thinking", "happy", look_at_arg=title)
         )
         self.remove(words)
         self.add(title)
@@ -4265,7 +4265,7 @@ class ProblemStatement(TeacherStudentsScene):
 
         self.play(
             FadeIn(statement),
-            self.get_student_changes(*3 * ["pondering"], look_at_arg=statement),
+            self.change_students(*3 * ["pondering"], look_at_arg=statement),
             FadeOut(VGroup(title, underline), UP)
         )
         self.wait()
@@ -4274,7 +4274,7 @@ class ProblemStatement(TeacherStudentsScene):
                 FlashAround(int_part)
                 for int_part in get_integer_parts(set_tex)
             ), lag_ratio=0.05, run_time=3),
-            self.get_student_changes("erm", "sassy", "confused", look_at_arg=statement),
+            self.change_students("erm", "sassy", "confused", look_at_arg=statement),
         )
         self.wait(2)
 
@@ -4296,7 +4296,7 @@ class ProblemStatement(TeacherStudentsScene):
         for subset, sum_wrapper, mode_triple in zip(subsets, sum_wrappers, mode_triples):
             self.play(
                 morty.change("tease", subset),
-                self.get_student_changes(*mode_triple, look_at_arg=subset),
+                self.change_students(*mode_triple, look_at_arg=subset),
                 set_tex_transform(set_tex, subset),
             )
             elem_rects = VGroup(*(
@@ -4335,7 +4335,7 @@ class ProblemStatement(TeacherStudentsScene):
             sum_groups.add(sum_group)
 
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 "erm", "confused", "hesitant",
                 look_at_arg=statement,
             )
@@ -4370,7 +4370,7 @@ class ProblemStatement(TeacherStudentsScene):
                 look_at_arg=ORIGIN,
             ),
             morty.change("sassy", self.students[2].eyes),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "pondering",
                 look_at_arg=ORIGIN,
             ),
@@ -4534,7 +4534,7 @@ class HowManyIntotal(TeacherStudentsScene):
         self.teacher_says(
             TexText("How many total\\\\subsets are there?"),
             bubble_kwargs=dict(width=4, height=3),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "happy", "pondering", "tease",
                 look_at_arg=self.screen,
             )],
@@ -4663,7 +4663,7 @@ class IsItHelpful(TeacherStudentsScene):
         self.teacher_says(
             "Honestly...\nnot really.",
             target_mode="shruggie",
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "sassy", "erm",
                 look_at_arg=self.teacher.eyes,
             )]
@@ -4759,7 +4759,7 @@ class BeyondOurExample(TeacherStudentsScene):
             "are useful beyond\n"
             "our one example.",
             bubble_kwargs=dict(width=4, height=3),
-            added_anims=[self.get_student_changes(
+            added_anims=[self.change_students(
                 "happy", "jamming", "tease",
                 look_at_arg=self.screen,
             )]
@@ -4876,7 +4876,7 @@ class ObviouslyOne(TeacherStudentsScene):
         self.student_says(
             TexText("Obviously $z = 1$!"), target_mode="angry",
             bubble_kwargs=dict(direction=RIGHT),
-            added_anims=[self.get_student_changes("sassy", "hesitant")]
+            added_anims=[self.change_students("sassy", "hesitant")]
         )
         self.wait(4)
 
@@ -4950,7 +4950,7 @@ class AskAboutTaylorSeries(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change("tease"),
-            self.get_student_changes(
+            self.change_students(
                 None, "confused", "thinking",
                 look_at_arg=self.students[2].bubble,
             ),
@@ -5020,7 +5020,7 @@ class StudentSaysWhat(TeacherStudentsScene):
         )
         self.play(
             self.teacher.change("happy"),
-            self.get_student_changes("confused", "sassy", "angry")
+            self.change_students("confused", "sassy", "angry")
         )
         self.look_at(self.screen)
         self.wait(4)
@@ -5040,7 +5040,7 @@ class FocusOnPropertiesNotValues(TeacherStudentsScene):
 
         self.play(
             morty.change('raise_right_hand'),
-            self.get_student_changes("erm", "confused", "hesitant", look_at_arg=words[0]),
+            self.change_students("erm", "confused", "hesitant", look_at_arg=words[0]),
             FadeIn(words[0], UP)
         )
         self.wait(3)
@@ -5048,7 +5048,7 @@ class FocusOnPropertiesNotValues(TeacherStudentsScene):
             morty.change("hooray", words[1]),
             FadeIn(words[1], UP),
             words[0].animate.shift(2.5 * UP),
-            self.get_student_changes("tease", "happy", "tease")
+            self.change_students("tease", "happy", "tease")
         )
         self.wait(4)
 
@@ -5131,7 +5131,7 @@ class HangInThereRecapPrep(TeacherStudentsScene):
         self.teacher_says(
             "Hang in\nthere!",
             target_mode="tease",
-            added_anims=[self.get_student_changes("plain", "tease", "hesitant")]
+            added_anims=[self.change_students("plain", "tease", "hesitant")]
         )
         self.wait(4)
         self.student_says(

@@ -336,11 +336,11 @@ class TeacherStudentsScene(PiCreatureScene):
     def change_student_modes(self, *modes, **kwargs):
         added_anims = kwargs.pop("added_anims", [])
         self.play(
-            self.get_student_changes(*modes, **kwargs),
+            self.change_students(*modes, **kwargs),
             *added_anims
         )
 
-    def get_student_changes(self, *modes, **kwargs):
+    def change_students(self, *modes, **kwargs):
         pairs = list(zip(self.get_students(), modes))
         pairs = [(s, m) for s, m in pairs if m is not None]
         start = VGroup(*[s for s, m in pairs])

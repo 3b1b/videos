@@ -1841,12 +1841,12 @@ class HarderThanExpected(TeacherStudentsScene):
             FadeInFromDown(title),
             ShowCreation(line),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes("pondering", "confused", "sassy")
+            self.change_students("pondering", "confused", "sassy")
         )
         self.wait()
         self.play(
             FadeIn(words, UP),
-            self.get_student_changes(*3 * ["horrified"]),
+            self.change_students(*3 * ["horrified"]),
         )
         self.wait(3)
 

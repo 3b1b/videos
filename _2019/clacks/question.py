@@ -699,7 +699,7 @@ class AskAboutSoundlessness(TeacherStudentsScene):
             "Focus on \\\\ collisions",
             target_mode="speaking",
             added_anims=[
-                self.get_student_changes("pondering", "confused", "thinking")
+                self.change_students("pondering", "confused", "thinking")
             ]
         )
         self.look_at(self.screen)
@@ -1020,7 +1020,7 @@ class StepsOfTheAlgorithm(TeacherStudentsScene):
             )
             self.play(
                 Write(step[1], run_time=2),
-                self.get_student_changes(
+                self.change_students(
                     *["pondering"] * 3,
                     look_at_arg=step,
                 )

@@ -57,7 +57,7 @@ class ThisIsAFootnote(TeacherStudentsScene):
         # Show main video
         self.play(
             FadeInFromDown(image_group),
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "hooray", "tease",
                 look_at_arg=image
             )
@@ -67,7 +67,7 @@ class ThisIsAFootnote(TeacherStudentsScene):
             self.teacher.change, "speaking",
         )
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "erm", "thinking"
             )
         )
@@ -75,7 +75,7 @@ class ThisIsAFootnote(TeacherStudentsScene):
         self.play(
             self.teacher.change, "raise_right_hand",
             FadeInFromDown(formula),
-            self.get_student_changes(*3 * ["pondering"])
+            self.change_students(*3 * ["pondering"])
         )
         self.wait()
 
@@ -119,7 +119,7 @@ class ThisIsAFootnote(TeacherStudentsScene):
             FadeOut(image_group, 2 * LEFT),
             FadeOut(asterisk, 2 * LEFT),
             self.teacher.look_at, 4 * UP,
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "erm", "confused",
                 look_at_arg=4 * UP
             )
@@ -541,7 +541,7 @@ class ClassLooking(TeacherStudentsScene):
     def construct(self):
         self.play(
             self.teacher.change, "pondering",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "confused", "sassy",
                 look_at_arg=self.screen,
             ),
@@ -551,7 +551,7 @@ class ClassLooking(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
         )
         self.play(
-            self.get_student_changes(
+            self.change_students(
                 "thinking", "pondering", "pondering",
                 look_at_arg=self.hold_up_spot + 2 * UP,
             )
@@ -566,7 +566,7 @@ class LandscapeOfTools(TeacherStudentsScene):
 
         self.play(
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 *3 * ["confused"],
                 look_at_arg=group,
             ),
@@ -586,7 +586,7 @@ class LandscapeOfTools(TeacherStudentsScene):
             bayes.move_to, bubble.get_bubble_center(),
             DrawBorderThenFill(bubble),
             self.teacher.change, "happy",
-            self.get_student_changes(
+            self.change_students(
                 "pondering", "erm", "erm",
                 look_at_arg=bubble,
             )
@@ -599,7 +599,7 @@ class LandscapeOfTools(TeacherStudentsScene):
             FadeOut(bayes),
             bubble.set_fill, BLACK, 0.2,
             bubble.set_stroke, WHITE, 1,
-            self.get_student_changes(
+            self.change_students(
                 "pleading", "guilty", "guilty",
             ),
             self.teacher.change, "hesitant"

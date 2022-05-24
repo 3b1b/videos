@@ -62,14 +62,14 @@ class ContrastPDEToODE(TeacherStudentsScene):
             student.change, "raise_right_hand",
         )
         self.play(
-            self.get_student_changes("pondering", "pondering", "hooray"),
+            self.change_students("pondering", "pondering", "hooray"),
             self.teacher.change, "happy"
         )
         self.wait(3)
         self.play(
             Swap(ode, pde),
             self.teacher.change, "raise_right_hand",
-            self.get_student_changes(
+            self.change_students(
                 "erm", "sassy", "confused"
             )
         )

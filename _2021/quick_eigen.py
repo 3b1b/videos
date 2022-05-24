@@ -219,7 +219,7 @@ class Assumptions(TeacherStudentsScene):
     def construct(self):
         self.play(
             PiCreatureSays(self.teacher, TexText("I'm assuming you know\\\\ what eigenvalues are.")),
-            self.get_student_changes(
+            self.change_students(
                 "erm", "happy", "tease",
                 look_at_arg=ORIGIN,
             ),
@@ -305,7 +305,7 @@ class GoalOfRediscovery(TeacherStudentsScene):
     def construct(self):
         self.play(
             PiCreatureSays(self.teacher, TexText("The goal is\\\\rediscovery")),
-            self.get_student_changes(
+            self.change_students(
                 "happy", "tease", "hooray",
                 run_time=1.5,
             )
@@ -316,7 +316,7 @@ class GoalOfRediscovery(TeacherStudentsScene):
         recap_words.move_to(self.screen, UP)
         self.play(
             RemovePiCreatureBubble(self.teacher, target_mode="raise_right_hand", look_at_arg=recap_words),
-            self.get_student_changes("pondering", "hesitant", "pondering", look_at_arg=recap_words),
+            self.change_students("pondering", "hesitant", "pondering", look_at_arg=recap_words),
             GrowFromPoint(recap_words, self.teacher.get_corner(UL)),
         )
         self.wait(4)
@@ -1435,7 +1435,7 @@ class Example1(TeacherStudentsScene):
         )
         self.play(
             Write(mat.get_entries(), lag_ratio=0.1, run_time=2),
-            self.get_student_changes("pondering", "pondering", "thinking", look_at_arg=mat)
+            self.change_students("pondering", "pondering", "thinking", look_at_arg=mat)
         )
         self.wait()
 
@@ -1478,7 +1478,7 @@ class Example1(TeacherStudentsScene):
             FadeIn(arrow, shift_vect),
             FadeIn(formula),
             FadeIn(form_rects),
-            self.get_student_changes("pondering", "pondering", "pondering", look_at_arg=ORIGIN)
+            self.change_students("pondering", "pondering", "pondering", look_at_arg=ORIGIN)
         )
         self.play(
             self.teacher.change("tease", formula),
@@ -1549,7 +1549,7 @@ class Example1(TeacherStudentsScene):
             FadeIn(lhs),
             FadeOut(diag_rects),
             self.teacher.change("happy"),
-            self.get_student_changes("erm", "hesitant", "thinking", look_at_arg=prod_eq)
+            self.change_students("erm", "hesitant", "thinking", look_at_arg=prod_eq)
         )
         self.play(det_path_anim(mat, run_time=1))
         self.play(
@@ -1568,7 +1568,7 @@ class Example1(TeacherStudentsScene):
         self.wait()
         self.play(
             Write(prod_eq[-2:]),
-            self.get_student_changes("tease", "tease", "happy", look_at_arg=prod_eq.get_right()),
+            self.change_students("tease", "tease", "happy", look_at_arg=prod_eq.get_right()),
         )
         self.play(
             FadeOut(p_rect),
@@ -2031,13 +2031,13 @@ class HeresTheThing(TeacherStudentsScene):
             student_index=2,
         )
         self.play(
-            self.get_student_changes("maybe", "confused", "raise_right_hand", look_at_arg=self.screen),
+            self.change_students("maybe", "confused", "raise_right_hand", look_at_arg=self.screen),
             self.teacher.change("happy"),
         )
         self.wait(3)
         self.teacher_says(
             TexText("Here's the thing..."),
-            added_anims=[self.get_student_changes("sassy", "plain", "hesitant")],
+            added_anims=[self.change_students("sassy", "plain", "hesitant")],
             target_mode="hesitant",
         )
         self.wait(2)
@@ -2053,7 +2053,7 @@ class HeresTheThing(TeacherStudentsScene):
         words.shift(RIGHT)
         self.play(
             self.teacher.change("guilty"),
-            self.get_student_changes("sassy", "hesitant", "sassy"),
+            self.change_students("sassy", "hesitant", "sassy"),
             Write(words),
         )
         self.wait(4)
@@ -2065,7 +2065,7 @@ class NotAllHopeIsLost(TeacherStudentsScene):
             TexText("There's still a\\\\good example here"),
             target_mode="speaking",
             bubble_kwargs={"height": 3, "width": 4},
-            added_anims=[self.get_student_changes("erm", "sassy", "hesitant")],
+            added_anims=[self.change_students("erm", "sassy", "hesitant")],
         )
         self.wait(2)
 
