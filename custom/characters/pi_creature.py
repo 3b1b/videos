@@ -7,6 +7,7 @@ from manimlib.constants import *
 from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.svg.drawings import ThoughtBubble
+from manimlib.mobject.svg.drawings import SpeechBubble
 from manimlib.mobject.svg.svg_mobject import SVGMobject
 from manimlib.mobject.svg.text_mobject import Text
 from manimlib.mobject.types.vectorized_mobject import VGroup
@@ -173,12 +174,6 @@ class PiCreature(SVGMobject):
         self.look(point - self.eyes.get_center())
         return self
 
-    def change(self, new_mode, look_at=None):
-        animation = self.animate.change_mode(new_mode)
-        if look_at is not None:
-            animation = animation.look_at(look_at)
-        return animation
-
     def get_looking_direction(self):
         vect = self.eyes[0].pupil.get_center() - self.eyes[0].get_center()
         return normalize(vect)
@@ -209,17 +204,15 @@ class PiCreature(SVGMobject):
             self.to_corner(DOWN + LEFT, **kwargs)
         return self
 
-    def get_bubble(self, content, **kwargs):
-        bubble_class = kwargs.get("bubble_class", ThoughtBubble)
-        bubble = bubble_class(**kwargs)
+    def get_bubble(self, content, bubble_class=ThoughtBubble, **bubble_config):
+        bubble = bubble_class(**bubble_config)
         if len(content) > 0:
             if isinstance(content[0], str):
                 content_mob = Text(content)
             else:
                 content_mob = content
             bubble.add_content(content_mob)
-            if "height" not in kwargs and "width" not in kwargs:
-                bubble.resize_to_content()
+            bubble.resize_to_content()
         bubble.pin_to(self)
         self.bubble = bubble
         return bubble
@@ -245,6 +238,40 @@ class PiCreature(SVGMobject):
             body.copy().pointwise_become_partial(body, *alpha_range)
             for alpha_range in (self.right_arm_range, self.left_arm_range)
         ])
+
+    # Animations
+
+    def change(self, new_mode, look_at=None):
+        animation = self.animate.change_mode(new_mode)
+        if look_at is not None:
+            animation = animation.look_at(look_at)
+        return animation
+
+    def say(self, content, mode="speaking", look_at=None, **kwargs):
+        from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
+        return PiCreatureBubbleIntroduction(
+            self, content,
+            target_mode=mode,
+            look_at=look_at,
+            bubble_class=SpeechBubble,
+            **kwargs,
+        )
+
+    def think(self, content, mode="thinking", look_at=None, **kwargs):
+        from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
+        return PiCreatureBubbleIntroduction(
+            self, content,
+            target_mode=mode,
+            look_at=look_at,
+            bubble_class=ThoughtBubble,
+            **kwargs,
+        )
+
+    def debubble(self, mode="plain", look_at=None, **kwargs):
+        from custom.characters.pi_creature_animations import RemovePiCreatureBubble
+        return RemovePiCreatureBubble(
+            self, target_mode=mode, look_at=look_at, **kwargs
+        )
 
 
 def get_all_pi_creature_modes():
