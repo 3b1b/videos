@@ -57,6 +57,7 @@ class PiCreature(SVGMobject):
     def __init__(self, mode="plain", **kwargs):
         digest_config(self, kwargs)
         self.mode = mode
+        self.bubble = None
         color = kwargs.pop("color", self.color)
 
         super().__init__(
@@ -242,6 +243,14 @@ class PiCreature(SVGMobject):
             for alpha_range in (self.right_arm_range, self.left_arm_range)
         ])
 
+    # Overrides
+
+    def become(self, mobject):
+        super().become(mobject)
+        if isinstance(mobject, PiCreature):
+            self.bubble = mobject.bubble
+        return self
+
     # Animations
 
     def change(self, new_mode, look_at=None):
@@ -271,10 +280,11 @@ class PiCreature(SVGMobject):
         )
 
     def replace_bubble(self, content, mode="pondering", look_at=None, **kwargs):
-        if not hasattr(self, "bubble") or self.bubble is None:
+        if self.bubble is None:
             return self.change(mode, look_at)
         old_bubble = self.bubble
-        new_bubble = self.get_bubble(content, bubble_class=old_bubble.__class__, **kwargs)
+        new_bubble = self.get_bubble(content, bubble_type=old_bubble.__class__, **kwargs)
+        self.bubble = new_bubble
         return AnimationGroup(
             ReplacementTransform(old_bubble, new_bubble),
             FadeTransform(old_bubble.content, new_bubble.content),
@@ -282,10 +292,18 @@ class PiCreature(SVGMobject):
         )
 
     def debubble(self, mode="plain", look_at=None, **kwargs):
+        if self.bubble is None:
+            logging.log(
+                logging.WARNING,
+                f"Calling debubble on PiCreature with no bubble",
+            )
+            return self.change(mode, look_at)
         from custom.characters.pi_creature_animations import RemovePiCreatureBubble
-        return RemovePiCreatureBubble(
+        result = RemovePiCreatureBubble(
             self, target_mode=mode, look_at=look_at, **kwargs
         )
+        self.bubble = None
+        return result
 
 
 def get_all_pi_creature_modes():
