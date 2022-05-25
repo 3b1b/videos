@@ -90,9 +90,7 @@ class PiCreatureScene(InteractiveScene):
         content,
         bubble_class=SpeechBubble,
         target_mode=None,
-        max_bubble_height=None,
-        max_bubble_width=None,
-        bubble_direction=None,
+        look_at=None,
         bubble_kwargs=dict(),
         bubble_removal_kwargs=dict(),
         added_anims=[],
@@ -113,11 +111,6 @@ class PiCreatureScene(InteractiveScene):
                 return False
             return True
 
-        bubble_kwargs["max_height"] = max_bubble_height
-        bubble_kwargs["max_width"] = max_bubble_width
-        if bubble_direction is not None:
-            bubble_kwargs["direction"] = bubble_direction
-
         pi_creatures_with_bubbles = list(filter(has_bubble, self.get_pi_creatures()))
         if pi_creature in pi_creatures_with_bubbles:
             pi_creatures_with_bubbles.remove(pi_creature)
@@ -130,15 +123,15 @@ class PiCreatureScene(InteractiveScene):
             anims += [
                 ReplacementTransform(old_bubble, bubble),
                 FadeTransform(old_bubble.content, bubble.content),
-                pi_creature.change_mode, target_mode
+                pi_creature.change(target_mode, look_at)
             ]
         else:
             anims.append(PiCreatureBubbleIntroduction(
                 pi_creature,
                 content,
+                target_mode=target_mode,
                 bubble_class=bubble_class,
                 bubble_kwargs=bubble_kwargs,
-                target_mode=target_mode,
                 **kwargs
             ))
         anims += [
@@ -313,16 +306,13 @@ class TeacherStudentsScene(PiCreatureScene):
         return self.students
 
     def teacher_says(self, content, **kwargs):
-        return self.pi_creature_says(
-            self.get_teacher(), content, **kwargs
-        )
+        return self.pi_creature_says(self.get_teacher(), content, **kwargs)
 
     def student_says(
         self, content,
         target_mode=None,
         bubble_direction=LEFT,
         index=2,
-        pi_modes=None,
         **kwargs
     ):
         if target_mode is None:
@@ -330,28 +320,22 @@ class TeacherStudentsScene(PiCreatureScene):
                 "raise_right_hand",
                 "raise_left_hand",
             ])
-        student = self.get_students()[index]
-        added_anims = kwargs.get("added_anims", [])
-        if pi_modes is not None:
-            if len(pi_modes) > index:
-                pi_modes[index] = None
-            added_anims.append(self.pi_changes(*pi_modes))
         return self.pi_creature_says(
-            student, content,
+            self.get_students()[index], content,
             target_mode=target_mode,
             bubble_direction=bubble_direction,
-            added_anims=added_anims,
             **kwargs
         )
 
     def teacher_thinks(self, content, **kwargs):
-        return self.pi_creature_thinks(
-            self.get_teacher(), content, **kwargs
-        )
+        return self.pi_creature_thinks(self.get_teacher(), content, **kwargs)
 
-    def student_thinks(self, content, **kwargs):
-        student = self.get_students()[kwargs.get("index", 2)]
-        return self.pi_creature_thinks(student, content, **kwargs)
+    def student_thinks(self, content, target_mode=None, index=2, **kwargs):
+        return self.pi_creature_thinks(
+            self.get_students()[index], content,
+            target_mode=target_mode,
+            **kwargs
+        )
 
     def play_all_student_changes(self, mode, **kwargs):
         self.play_student_changes(*[mode] * len(self.students), **kwargs)

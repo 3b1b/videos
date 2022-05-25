@@ -28,30 +28,32 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
     def __init__(
         self, pi_creature, content,
         target_mode="speaking",
+        look_at=None,
         bubble_class=SpeechBubble,
+        max_bubble_height=None,
+        max_bubble_width=None,
+        bubble_direction=None,
+        bubble_kwargs={},
         bubble_creation_class=DrawBorderThenFill,
         bubble_creation_kwargs={},
-        bubble_kwargs={},
         content_introduction_class=Write,
         content_introduction_kwargs={},
-        look_at=None,
         **kwargs,
     ):
+        bubble_kwargs["max_height"] = max_bubble_height
+        bubble_kwargs["max_width"] = max_bubble_width
+        if bubble_direction is not None:
+            bubble_kwargs["direction"] = bubble_direction
         bubble = pi_creature.get_bubble(
             content, bubble_class=bubble_class,
             **bubble_kwargs
         )
         Group(bubble, bubble.content).shift_onto_screen()
 
-        bubble_creation = bubble_creation_class(
-            bubble, **bubble_creation_kwargs
-        )
-        content_introduction = content_introduction_class(
-            bubble.content, **content_introduction_kwargs
-        )
         super().__init__(
             pi_creature.change(target_mode, look_at),
-            bubble_creation, content_introduction,
+            bubble_creation_class(bubble, **bubble_creation_kwargs),
+            content_introduction_class(bubble.content, **content_introduction_kwargs),
             **kwargs
         )
 
