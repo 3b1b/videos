@@ -3,6 +3,9 @@ import logging
 
 import numpy as np
 
+from manimlib.animation.composition import AnimationGroup
+from manimlib.animation.fading import FadeTransform
+from manimlib.animation.transform import ReplacementTransform
 from manimlib.constants import *
 from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import Circle
@@ -265,6 +268,17 @@ class PiCreature(SVGMobject):
             look_at=look_at,
             bubble_class=ThoughtBubble,
             **kwargs,
+        )
+
+    def replace_bubble(self, content, mode="pondering", look_at=None, **kwargs):
+        if not hasattr(self, "bubble") or self.bubble is None:
+            return self.change(mode, look_at)
+        old_bubble = self.bubble
+        new_bubble = self.get_bubble(content, bubble_class=old_bubble.__class__, **kwargs)
+        return AnimationGroup(
+            ReplacementTransform(old_bubble, new_bubble),
+            FadeTransform(old_bubble.content, new_bubble.content),
+            self.change(mode, look_at)
         )
 
     def debubble(self, mode="plain", look_at=None, **kwargs):
