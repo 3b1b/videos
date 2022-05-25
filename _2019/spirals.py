@@ -1197,7 +1197,7 @@ class QuestionIsMisleading(TeacherStudentsScene):
         self.students[0].bubble = None
         self.teacher_says(
             "Er...not exactly",
-            bubble_kwargs={"width": 3, "height": 2},
+            bubble_config={"width": 3, "height": 2},
             target_mode="guilty"
         )
         self.wait(3)

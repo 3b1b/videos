@@ -93,7 +93,7 @@ class AskAboutWhereEquationComesFrom(TeacherStudentsScene, WriteHeatEquationTemp
             "Um...why?",
             target_mode="sassy",
             index=2,
-            bubble_kwargs={"direction": RIGHT},
+            bubble_config={"direction": RIGHT},
         )
         self.play_student_changes(
             "confused", "confused", "sassy",
@@ -109,7 +109,7 @@ class AskWhyRewriteIt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Why?", index=1,
-            bubble_kwargs={"height": 2, "width": 2},
+            bubble_config={"height": 2, "width": 2},
         )
         self.students[1].bubble = None
         self.teacher_says(

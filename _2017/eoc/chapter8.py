@@ -421,7 +421,7 @@ class AskAboutAntiderivative(PlotVelocity):
         self.play(PiCreatureSays(
             randy, words, 
             target_mode = "confused",
-            bubble_kwargs = {"height" : 3, "width" : 4},
+            bubble_config = {"height" : 3, "width" : 4},
         ))
         self.play(Blink(randy))
         self.wait()
@@ -616,7 +616,7 @@ class ConstantVelocityPlot(PlotVelocity):
         randy.to_corner(DOWN+LEFT)
         bubble = randy.get_bubble(
             "Distance \\\\ is area?",
-            bubble_class = ThoughtBubble,
+            bubble_type = ThoughtBubble,
             height = 3,
             width = 4,
             fill_opacity = 1,

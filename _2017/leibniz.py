@@ -429,7 +429,7 @@ class ShowCalculus(PiCreatureScene):
         self.wait()
         self.pi_creature_says(
             "Where's the \\\\ circle?",
-            bubble_kwargs = {"width" : 4, "height" : 3},
+            bubble_config = {"width" : 4, "height" : 3},
             target_mode = "maybe"
         )
         self.look_at(rhs_group[0])
@@ -1526,7 +1526,7 @@ class IntroduceComplexConjugate(LatticePointScene):
             PiCreatureSays(
                 morty, "Now it's a \\\\ factoring problem!",
                 target_mode = "hooray",
-                bubble_kwargs = {"width" : 5, "height" : 3}
+                bubble_config = {"width" : 5, "height" : 3}
             )
         )
         self.play(
@@ -1614,7 +1614,7 @@ class IntroduceComplexConjugate(LatticePointScene):
             morty, "More geometry!",
             target_mode = "hooray",
             run_time = 2,
-            bubble_kwargs = {"height" : 2, "width" : 4}
+            bubble_config = {"height" : 2, "width" : 4}
         ))
         self.play(Blink(randy))
         self.play(
@@ -1624,7 +1624,7 @@ class IntroduceComplexConjugate(LatticePointScene):
             PiCreatureSays(
                 randy, "???",
                 target_mode = "maybe",
-                bubble_kwargs = {"width" : 3, "height" : 2}
+                bubble_config = {"width" : 3, "height" : 2}
             )
         )
         self.play(
@@ -1932,7 +1932,7 @@ class FactorOrdinaryNumber(TeacherStudentsScene):
             PiCreatureSays(
                 self.teacher,
                 "It's similar for \\\\ Gaussian integers",
-                bubble_kwargs = {"height" : 3.5}
+                bubble_config = {"height" : 3.5}
             )
         )
         self.play_student_changes(*["happy"]*3)
@@ -2061,7 +2061,7 @@ class IntroduceGaussianPrimes(LatticePointScene, PiCreatureScene):
         self.play(FadeIn(morty))
         self.play(PiCreatureSays(
             morty, "\\emph{Almost} unique",
-            bubble_kwargs = {"height" : 2, "width" : 5},
+            bubble_config = {"height" : 2, "width" : 5},
         ))
         self.wait()
         self.play(RemovePiCreatureBubble(morty, target_mode = "pondering"))
@@ -2307,8 +2307,8 @@ class FactorizationPattern(Scene):
         self.play(FadeIn(randy))
         self.play(PiCreatureBubbleIntroduction(
             randy, "Wait...why?",
-            bubble_class = ThoughtBubble,
-            bubble_kwargs = {"height" : 2, "width" : 3},
+            bubble_type = ThoughtBubble,
+            bubble_config = {"height" : 2, "width" : 3},
             target_mode = "confused",
             look_at = self.number_line,
         ))
@@ -3322,8 +3322,8 @@ class SummarizeCountingRule(Show125Circle):
         self.play(FadeIn(randy))
         self.play(PiCreatureBubbleIntroduction(
             randy, "What about \\\\ factors of 2?",
-            bubble_class = ThoughtBubble,
-            bubble_kwargs = {"height" : 3, "width" : 3},
+            bubble_type = ThoughtBubble,
+            bubble_config = {"height" : 3, "width" : 3},
             target_mode = "confused",
             look_at = self.count_words
         ))
@@ -3562,7 +3562,7 @@ class IntroduceChi(FactorizationPattern):
 
         self.play(PiCreatureSays(
             morty, "$\\chi$ is ``multiplicative''",
-            bubble_kwargs = {"height" : 2.5, "width" : 5}
+            bubble_config = {"height" : 2.5, "width" : 5}
         ))
         self.play(Blink(morty))
         self.morty = morty

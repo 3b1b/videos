@@ -1972,7 +1972,7 @@ class ShowTrueDistribution(PiCreatureScene):
         self.play(PiCreatureSays(
             randy, "It's not representative!",
             target_mode = "pleading",
-            bubble_kwargs = {"fill_opacity" : 1}
+            bubble_config = {"fill_opacity" : 1}
         ))
         self.wait(2)
 

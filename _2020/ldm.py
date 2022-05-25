@@ -44,7 +44,7 @@ class OldStreamIntro(Scene):
         morty.to_corner(DL)
         self.play(PiCreatureSays(
             morty, "The lesson will\\\\begin soon.",
-            bubble_kwargs={
+            bubble_config={
                 "height": 2,
                 "width": 3,
             },
@@ -83,7 +83,7 @@ class QuadraticFormula(TeacherStudentsScene):
         )
         self.teacher_says(
             "It doesn't have\\\\to be this way.",
-            bubble_kwargs={
+            bubble_config={
                 "width": 4,
                 "height": 3,
             }

@@ -80,7 +80,7 @@ class ThisVideo(TeacherStudentsScene):
         self.play(FadeIn(series, lag_ratio = 0.5))
         self.teacher_says(
             "A new view of \\\\ the fundamental theorem",
-            bubble_kwargs = {"height" : 3},
+            bubble_config = {"height" : 3},
             added_anims = [
                 this_video.shift, this_video.get_height()*DOWN/2,
                 this_video.set_color, YELLOW,
@@ -540,7 +540,7 @@ class TryToAddInfinitelyManyPoints(AverageOfSineStart):
         self.play(FadeIn(randy))
         self.play(PiCreatureBubbleIntroduction(
             randy, "Use an integral!",
-            bubble_class = ThoughtBubble,
+            bubble_type = ThoughtBubble,
             target_mode = "hooray"
         ))
         self.play(Blink(randy))

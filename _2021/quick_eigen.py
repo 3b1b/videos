@@ -1325,7 +1325,7 @@ class AskIfThatsBetter(Scene):
         self.play(
             PiCreatureSays(
                 randy, "Is that better?", target_mode="sassy",
-                bubble_kwargs={"direction": LEFT, "width": 4, "height": 2},
+                bubble_config={"direction": LEFT, "width": 4, "height": 2},
                 look_at=UL
             )
         )
@@ -1346,7 +1346,7 @@ class OutstandingChannel(Scene):
         morty.to_corner(DR)
         self.play(PiCreatureSays(
             morty, TexText("Outstanding\\\\channel"), target_mode="hooray",
-            bubble_kwargs={"height": 3, "width": 4}
+            bubble_config={"height": 3, "width": 4}
         ))
         self.play(Blink(morty))
         self.wait()
@@ -2064,7 +2064,7 @@ class NotAllHopeIsLost(TeacherStudentsScene):
         self.teacher_says(
             TexText("There's still a\\\\good example here"),
             target_mode="speaking",
-            bubble_kwargs={"height": 3, "width": 4},
+            bubble_config={"height": 3, "width": 4},
             added_anims=[self.change_students("erm", "sassy", "hesitant")],
         )
         self.wait(2)

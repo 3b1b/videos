@@ -706,7 +706,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
         self.student_says(
             "Why the layers?",
             index = 2,
-            bubble_kwargs = {"direction" : LEFT}
+            bubble_config = {"direction" : LEFT}
         )
         self.wait()
         self.play(RemovePiCreatureBubble(self.students[2]))
@@ -1379,7 +1379,7 @@ class DiscussChoiceForHiddenLayers(TeacherStudentsScene):
         self.student_says(
             "Why 2 \\\\ layers?",
             index = 1,
-            bubble_kwargs = {"direction" : RIGHT},
+            bubble_config = {"direction" : RIGHT},
             run_time = 1,
             target_mode = "raise_left_hand",
         )

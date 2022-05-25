@@ -2176,7 +2176,7 @@ class ShowPatternInformationExamples(WordleDistributions):
 
         self.play(PiCreatureSays(
             randy, TexText("I thought this\\\\was a word game"),
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
             target_mode="pleading"
         ))
 
@@ -2302,7 +2302,7 @@ class AskAboutPhysicsRelation(TeacherStudentsScene):
             TexText("What does this have\\\\to do with thermodynamics?"),
             target_mode="raise_right_hand",
             index=2,
-            bubble_kwargs=dict(width=5, height=3, direction=LEFT),
+            bubble_config=dict(width=5, height=3, direction=LEFT),
         )
         self.play(self.teacher.change("tease"))
         self.play(
@@ -3380,8 +3380,8 @@ class FirstThoughtsOnCombination(Scene):
             TexText("How should I measure\\\\guess quality?", font_size=36),
             look_at=example,
             target_mode="pondering",
-            bubble_class=ThoughtBubble,
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_type=ThoughtBubble,
+            bubble_config={"width": 4, "height": 3},
         ))
         self.play(Blink(morty))
         self.wait()

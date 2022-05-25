@@ -708,12 +708,12 @@ class SureSure(TeacherStudentsScene):
         self.teacher_says(
             "The point is \n not the winners",
             look_at=self.students[2].eyes,
-            bubble_kwargs={"height": 3, "width": 4}
+            bubble_config={"height": 3, "width": 4}
         )
         self.play(PiCreatureSays(
             self.students[0],
             "Yeah, yeah, sure\n it isn't...",
-            bubble_kwargs={"height": 2, "width": 3}
+            bubble_config={"height": 2, "width": 3}
         ))
         self.play_student_changes("sassy", "angry", "hesitant")
         self.play(self.teacher.change("guilty"))

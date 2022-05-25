@@ -1371,8 +1371,8 @@ class CompareAlgorithmToPhysics(PiCreatureScene):
             FadeOut(left_rect),
             PiCreatureBubbleIntroduction(
                 morty, "This doesn't seem \\\\ like me...",
-                bubble_class=ThoughtBubble,
-                bubble_kwargs={"direction": LEFT},
+                bubble_type=ThoughtBubble,
+                bubble_config={"direction": LEFT},
                 target_mode="pondering",
                 look_at=left_rect,
             ),

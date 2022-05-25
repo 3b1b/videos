@@ -1116,7 +1116,7 @@ class StatisticsVsEmpathy(PiCreatureScene):
             PiCreatureBubbleIntroduction(
                 randy, sick_group,
                 target_mode = "guilty",
-                bubble_class = ThoughtBubble,
+                bubble_type = ThoughtBubble,
                 content_introduction_class = FadeIn,
                 look_at = sick_one,
             ),
@@ -1294,7 +1294,7 @@ class IntroduceTelepathyExample(StatisticsVsEmpathy):
                 morty, "You probably \\\\ got lucky.",
                 target_mode = "sassy",
                 look_at = randy.eyes,
-                bubble_kwargs = {"height" : 3, "width" : 4}
+                bubble_config = {"height" : 3, "width" : 4}
             ),
             RemovePiCreatureBubble(
                 randy, 
@@ -1403,7 +1403,7 @@ class NonchalantReactionToPositiveTest(TestScene):
         self.pi_creature_says(
             words,
             target_mode = "shruggie",
-            bubble_kwargs = {
+            bubble_config = {
                 "direction" : RIGHT,
                 "width" : 6,
                 "height" : 3,
@@ -1473,7 +1473,7 @@ class ExampleMeasuresDisbeliefInStatistics(Introduction):
 class AlwaysPictureTheSpaceOfPossibilities(PiCreatureScene):
     def construct(self):
         self.pi_creature_thinks(
-            "", bubble_kwargs = {
+            "", bubble_config = {
                 "height" : 4.5,
                 "width" : 8,
             }

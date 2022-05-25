@@ -337,7 +337,7 @@ class PiGesture1(Scene):
     def construct(self):
         randy = Randolph(mode="raise_right_hand", height=2)
         bubble = randy.get_bubble(
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=2, width=3,
         )
         bubble.write("This one's\\\\great")
@@ -356,7 +356,7 @@ class PiGesture2(Scene):
         # randy.flip()
         randy.set_color(GREY_BROWN)
         bubble = randy.get_bubble(
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=2, width=3,
             direction=LEFT,
         )
@@ -374,7 +374,7 @@ class PiGesture3(Scene):
         randy = Randolph(mode="hooray", height=2)
         randy.flip()
         bubble = randy.get_bubble(
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=2, width=3,
             direction=LEFT,
         )

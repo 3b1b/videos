@@ -107,7 +107,7 @@ class ExperienceProblemSolver(PiCreatureScene):
         self.pi_creature_says(
             jenny, jenny_words, 
             target_mode = "hooray",
-            bubble_kwargs = {"height" : 2, "width" : 3}
+            bubble_config = {"height" : 2, "width" : 3}
         )
         self.wait()
         self.play(
@@ -157,7 +157,7 @@ class ExperienceProblemSolver(PiCreatureScene):
 
         self.pi_creature_thinks(
             jenny, "",
-            bubble_kwargs = {"width" : 5, "height" : 4.2},
+            bubble_config = {"width" : 5, "height" : 4.2},
             added_anims = [
                 FadeOut(self.to_fade),
                 FadeOut(self.equation),
@@ -1841,7 +1841,7 @@ class IntroducePascalsTriangle(Scene):
         self.play(FadeIn(morty))
         self.play(PiCreatureSays(
             morty, "Keep in mind \\\\ what these mean.",
-            bubble_kwargs = {
+            bubble_config = {
                 "width" : 3.5,
                 "height" : 2.5,
             }

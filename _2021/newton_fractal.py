@@ -279,7 +279,7 @@ class PragmaticOrigins(Scene):
             self.play(PiCreatureSays(
                 morty, "How do you\nfind theses?",
                 target_mode="tease",
-                bubble_kwargs={
+                bubble_config={
                     "width": 4,
                     "height": 2.5,
                 }
@@ -346,7 +346,7 @@ class WhoCares(TeacherStudentsScene):
                 self.students[1], "Ooh, quintics...",
                 target_mode="thinking",
                 look_at=self.screen,
-                bubble_kwargs={
+                bubble_config={
                     "direction": LEFT,
                     "width": 4,
                     "height": 2,
@@ -362,7 +362,7 @@ class WhoCares(TeacherStudentsScene):
             PiCreatureSays(
                 self.students[2], "Who cares?",
                 target_mode="tired",
-                bubble_kwargs={
+                bubble_config={
                     "direction": LEFT,
                     "width": 4,
                     "height": 3,
@@ -381,7 +381,7 @@ class WhoCares(TeacherStudentsScene):
         self.teacher_says(
             "Who doesn't",
             target_mode="hooray",
-            bubble_kwargs={"height": 3, "width": 4},
+            bubble_config={"height": 3, "width": 4},
             added_anims=[self.change_students("pondering", "pondering", "confused")]
         )
         self.wait(3)
@@ -971,7 +971,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
 
         self.teacher_says(
             TexText("Just some\\\\polynomial"),
-            bubble_kwargs={
+            bubble_config={
                 "width": 4,
                 "height": 3,
             },
@@ -998,7 +998,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         self.teacher_says(
             Tex("P(x) = 0"),
             target_mode="tease",
-            bubble_kwargs={
+            bubble_config={
                 "width": 3,
                 "height": 3,
             }
@@ -1424,7 +1424,7 @@ class AskAboutFractals(TeacherStudentsScene):
         self.wait()
         self.teacher_says(
             TexText("We're getting\\\\there"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             },
@@ -1968,7 +1968,7 @@ class AssumingItsGood(TeacherStudentsScene):
         self.pi_creatures.refresh_triangulation()
         self.teacher_says(
             TexText("Assuming this\\\\approximation\\\\is decent...", font_size=42),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3, "width": 4,
             }
         )
@@ -1994,7 +1994,7 @@ class AltPauseAndPonder(Scene):
         self.play(PiCreatureSays(
             morty, TexText("Pause and\\\\Ponder", font_size=36),
             target_mode="hooray",
-            bubble_kwargs={
+            bubble_config={
                 "height": 2,
                 "width": 3,
             }
@@ -3105,7 +3105,7 @@ class ChaosOnBoundary(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("Chaos at\\\\the boundary"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 3,
             }
@@ -3561,7 +3561,7 @@ class UnrelatedIdeas(TeacherStudentsScene):
         self.wait(2)
         self.teacher_says(
             TexText("Unrelated\\\\ideas"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             },
@@ -3702,7 +3702,7 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
         self.student_says(
             TexText("Why is it\\\\so complicated?"),
             index=0,
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             },
@@ -3720,7 +3720,7 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
             PiCreatureSays(
                 self.teacher, TexText("Math is what\\\\it is"),
                 target_mode="well",
-                bubble_kwargs={
+                bubble_config={
                     "height": 3,
                     "width": 4,
                 }
@@ -4306,7 +4306,7 @@ class ThinkAboutWhatPropertyMeans(TeacherStudentsScene):
 
         self.teacher_says(
             TexText("Think about what\\\\this tells us."),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             }
@@ -4564,7 +4564,7 @@ class MakeFunOfNextVideo(TeacherStudentsScene):
         self.wait()
         self.teacher_says(
             TexText("Wait, for real\\\\this time!"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 3,
             },

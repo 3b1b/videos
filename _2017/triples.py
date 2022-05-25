@@ -745,7 +745,7 @@ class ReframeOnLattice(PiCreatureScene):
             PiCreatureSays(
                 morty, "Try squaring \\\\ it!",
                 target_mode = "hooray",
-                bubble_kwargs = {"width" : 4, "height" : 3},
+                bubble_config = {"width" : 4, "height" : 3},
             )
         )
         self.play(
@@ -2902,7 +2902,7 @@ class FinalProof(RationalPointsOnUnitCircle):
         )
         self.play(PiCreatureSays(
             morty, "Free to choose!",
-            bubble_kwargs = {"height" : 1.5, "width" : 3},
+            bubble_config = {"height" : 1.5, "width" : 3},
             target_mode = "hooray",
             look_at = rect
         ))

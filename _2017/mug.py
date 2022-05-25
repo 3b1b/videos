@@ -675,7 +675,7 @@ class TwoKindsOfViewers(PiCreatureScene, UtilitiesPuzzleScene):
         self.wait()
         self.pi_creature_thinks(
             pi1, "",
-            bubble_kwargs = {"width" : 3, "height" : 2},
+            bubble_config = {"width" : 3, "height" : 2},
             target_mode = "thinking"
         )
         self.play(pi2.change, "confused", eulers)

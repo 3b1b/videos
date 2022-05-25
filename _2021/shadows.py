@@ -743,7 +743,7 @@ class AskAboutAveraging(TeacherStudentsScene):
                 sts[2], TexText("What does that\\\\mean, exactly?"),
                 target_mode="hesitant",
                 look_at=self.screen,
-                bubble_kwargs={"direction": LEFT}
+                bubble_config={"direction": LEFT}
             ),
             LaggedStart(
                 sts[0].change("confused", self.screen),
@@ -942,9 +942,9 @@ class PauseAndPonder(TeacherStudentsScene):
             PiCreatureBubbleIntroduction(
                 self.students[2],
                 Lightbulb(),
-                bubble_class=ThoughtBubble,
+                bubble_type=ThoughtBubble,
                 bubble_creation_class=lambda m: FadeIn(m, lag_ratio=0.1),
-                bubble_kwargs=dict(
+                bubble_config=dict(
                     height=3,
                     width=3,
                     direction=LEFT,
@@ -1584,7 +1584,7 @@ class NotQuiteRight(TeacherStudentsScene):
         self.teacher_says(
             "Not quite right...",
             target_mode="hesitant",
-            bubble_kwargs={"height": 3, "width": 4},
+            bubble_config={"height": 3, "width": 4},
             added_anims=[
                 self.change_students(
                     "pondering", "thinking", "erm",
@@ -2199,7 +2199,7 @@ class IsntThatObvious(TeacherStudentsScene):
         self.remove(self.background)
         self.student_says(
             TexText("Isn't that obvious?"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
                 "direction": LEFT,
@@ -3856,12 +3856,12 @@ class ThreeCamps(TeacherStudentsScene):
                 PiCreatureSays(
                     student, phrase, target_mode=mode,
                     look_at=image,
-                    bubble_kwargs={
+                    bubble_config={
                         "direction": LEFT,
                         "width": 3,
                         "height": height,
                     },
-                    bubble_class=ThoughtBubble,
+                    bubble_type=ThoughtBubble,
                     run_time=2
                 )
             )

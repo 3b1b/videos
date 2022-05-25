@@ -854,7 +854,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
         )
         self.play(PiCreatureSays(
             randy, "Who cares?", 
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
             target_mode = "angry",
         ))
         self.wait(2)

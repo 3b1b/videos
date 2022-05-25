@@ -1586,7 +1586,7 @@ class ThinkAboutSettlingUp(Scene):
             randy, 
             "You don't \\emph{actually} \\\\" + \
             "need to settle up $\\dots$",
-            bubble_class = ThoughtBubble,
+            bubble_type = ThoughtBubble,
             target_mode = "thinking"
         ))
         self.play(Blink(randy))

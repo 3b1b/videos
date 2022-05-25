@@ -175,7 +175,7 @@ class YouSaidThisWasEasier(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             "Bear with\\\\me",
-            bubble_kwargs={"height": 3, "width": 3},
+            bubble_config={"height": 3, "width": 3},
         )
         self.look_at(self.screen)
         self.wait(3)
@@ -198,7 +198,7 @@ class LooseWithLanguage(TeacherStudentsScene):
 
         self.teacher_says(
             "Loose with\\\\language",
-            bubble_kwargs={"width": 3, "height": 3},
+            bubble_config={"width": 3, "height": 3},
             run_time=2,
         )
         self.play(

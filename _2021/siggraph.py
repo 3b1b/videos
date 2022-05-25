@@ -16,7 +16,7 @@ class ThreePis(Scene):
         for pi, word, mode in zip(pis, words, modes):
             bubble = pi.get_bubble(
                 word,
-                bubble_class=SpeechBubble,
+                bubble_type=SpeechBubble,
                 height=3, width=3, direction=RIGHT
             )
             bubble.add(bubble.content)

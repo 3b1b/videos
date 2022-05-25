@@ -536,7 +536,7 @@ class PiCreaturesAreIntrigued(AltTeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "You can extend \\\\ this to 2d",
-            bubble_kwargs = {"width" : 4, "height" : 3}
+            bubble_config = {"width" : 4, "height" : 3}
         )
         self.play_student_changes("pondering", "confused", "erm")
         self.look_at(self.screen)
@@ -1399,7 +1399,7 @@ class SoWeFoundTheZeros(AltTeacherStudentsScene):
             "Aha! So we \\\\ found the solutions!",
             target_mode = "hooray",
             index = 2,
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
         )
         self.wait()
         self.teacher_says(
@@ -1710,7 +1710,7 @@ class AskAboutHowToGeneralizeSigns(AltTeacherStudentsScene):
             added_anims = [
                 self.teacher.change, "plain",
             ],
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
             run_time = 1,
         )
         self.play(

@@ -1130,7 +1130,7 @@ class HuntForPi(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Hunt for $\\pi$!",
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
             target_mode="hooray"
         )
         self.play_all_student_changes(

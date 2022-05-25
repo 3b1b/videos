@@ -538,7 +538,7 @@ class IntroScene(PiCreatureScene):
 
         self.look_at(pi_squared)
         self.pi_creature_thinks(thought,target_mode = "confused",
-            bubble_kwargs = { "height" : 2.5, "width" : 5 })
+            bubble_config = { "height" : 2.5, "width" : 5 })
         self.look_at(pi_squared)
 
         self.wait()

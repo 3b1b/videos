@@ -701,7 +701,7 @@ class DiscussProducts(TeacherStudentsScene):
         self.wait()
         self.teacher_says(
             "Think about the \\\\ underlying meaning",
-            bubble_kwargs = {"height" : 3},
+            bubble_config = {"height" : 3},
             added_anims = [
                 wrong_product_rule.scale, 0.7,
                 wrong_product_rule.to_corner, UP+LEFT

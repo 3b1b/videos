@@ -1523,7 +1523,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
             morty, 
             """This is equivalent to
             the discrete case. """,
-            bubble_kwargs = {
+            bubble_config = {
                 "height" : 3, 
                 "direction" : LEFT,
             }

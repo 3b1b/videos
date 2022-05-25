@@ -734,7 +734,7 @@ class AskWhyAreTheyTheSame(TeacherStudentsScene):
             "Why on earth \\\\ are these the same?",
             index=2,
             target_mode="sassy",
-            bubble_kwargs={"direction": LEFT}
+            bubble_config={"direction": LEFT}
         )
         bubble = self.students[2].bubble
         self.play(

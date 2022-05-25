@@ -1337,7 +1337,7 @@ class FixedPoints(Scene):
         self.play(PiCreatureSays(
             morty, "Use derivatives!",
             target_mode="hooray",
-            bubble_kwargs={
+            bubble_config={
                 "height": 2,
                 "width": 4,
             }
@@ -1550,7 +1550,7 @@ class UseNewton(TeacherStudentsScene):
                 "You could solve\\\\ $A(z) - z\\cdot B(z) = 0$ \\\\",
                 "using Newton's method"
             ),
-            bubble_kwargs={
+            bubble_config={
                 "width": 4,
                 "height": 3,
             },
@@ -1923,7 +1923,7 @@ class Cycles(FixedPoints):
         self.play(
             PiCreatureSays(
                 morty, "How many solutions?",
-                bubble_kwargs={"height": 2, "width": 4}
+                bubble_config={"height": 2, "width": 4}
             ),
         )
         self.play(Blink(morty))
@@ -2288,7 +2288,7 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("How often does\\\\this happen?"),
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             },

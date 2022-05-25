@@ -1045,7 +1045,7 @@ class RevisitTwoDCase(TwoDCase):
         self.play(
             PiCreatureSays(
                 randy, "Seems \\\\ convoluted",
-                bubble_kwargs = {"height" : 2, "width" : 2},
+                bubble_config = {"height" : 2, "width" : 2},
                 target_mode = "confused"
             )
         )

@@ -143,7 +143,7 @@ class TakeOver(PiCreatureScene):
         self.add(morty, henry)
         self.pi_creature_says(
             "Muahaha!  All \\\\ mine now.",
-            bubble_kwargs={"fill_opacity": 0.5},
+            bubble_config={"fill_opacity": 0.5},
             bubble_creation_class=FadeIn,
             target_mode="conniving",
             added_anims=[henry.rotate, 5 * DEGREES]
@@ -2992,7 +2992,7 @@ class AskWhy(TeacherStudentsScene):
             "Um...why?",
             target_mode="confused",
             index=2,
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
         )
         self.play(
             self.teacher.change, "happy",
@@ -3525,7 +3525,7 @@ class IKnowThisIsTricky(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "All you need is \\\\ infinite intelligence",
-            bubble_kwargs={
+            bubble_config={
                 "width": 4,
                 "height": 3,
             },

@@ -1433,7 +1433,7 @@ class ComplainAboutNotKnowingTheStats(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             "No, but did you\\\\think to estimate it?",
-            bubble_kwargs={"width": 4.5, "height": 3.5},
+            bubble_config={"width": 4.5, "height": 3.5},
         )
         self.play_all_student_changes("guilty")
         self.wait(2)

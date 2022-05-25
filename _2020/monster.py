@@ -302,7 +302,7 @@ class AskAboutFavoriteMegaNumber(TeacherStudentsScene):
         self.teacher_says(
             "And we want\\\\you to join!",
             target_mode="surprised",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
             },

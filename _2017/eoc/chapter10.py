@@ -513,7 +513,7 @@ class ExampleApproximationWithCos(ExampleApproximationWithSine):
         self.play(FadeIn(randy))
         self.play(PiCreatureBubbleIntroduction(
             randy, "How...?",
-            bubble_class = ThoughtBubble,
+            bubble_type = ThoughtBubble,
             look_at = self.graph_origin,
             target_mode = "confused"
         ))
@@ -2972,7 +2972,7 @@ class EachTermHasMeaning(TeacherStudentsScene):
         self.teacher_says(
             "Each term \\\\ has meaning!",
             target_mode = "hooray",
-            bubble_kwargs = {"height" : 3, "width" : 4}
+            bubble_config = {"height" : 3, "width" : 4}
         )
         self.play_student_changes(
             *["thinking"]*3,
@@ -3072,7 +3072,7 @@ class AskAboutInfiniteSum(TeacherStudentsScene):
         self.remove(self.crowd_copy[0])
         self.teacher_says(
             "Be careful",
-            bubble_kwargs = {
+            bubble_config = {
                 "width" : 3,
                 "height" : 2
             },
@@ -3572,7 +3572,7 @@ class MoreToBeSaid(TeacherStudentsScene):
         self.teacher_says(
             "There's still \\\\ more to learn!",
             target_mode = "surprised",
-            bubble_kwargs = {"height" : 3, "width" : 4}
+            bubble_config = {"height" : 3, "width" : 4}
         )
         for word in words:
             self.play(FadeIn(word))

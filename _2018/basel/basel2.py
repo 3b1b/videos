@@ -614,7 +614,7 @@ class IntroScene(PiCreatureScene):
         thought = Group(q_circle, q_mark)
         q_mark.set_height(0.8 * q_circle.get_height())
         self.pi_creature_thinks(thought,target_mode = "confused",
-            bubble_kwargs = { "height" : 2, "width" : 3 })
+            bubble_config = { "height" : 2, "width" : 3 })
 
         self.wait()
 
@@ -1151,7 +1151,7 @@ class ThatJustSeemsUseless(TeacherStudentsScene):
             "How would \\\\ that help?",
             target_mode = "sassy",
             index = 2,
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
         )
         self.play(
             self.teacher.change, "guilty",
@@ -3778,7 +3778,7 @@ class YayIPTApplies(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "Heyo!  The Inverse \\\\ Pythagorean Theorem \\\\ applies!",
-            bubble_kwargs = {"width" : 5},
+            bubble_config = {"width" : 5},
             target_mode = "surprised"
         )
         self.play_student_changes(*3*["hooray"])

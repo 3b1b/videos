@@ -2945,7 +2945,7 @@ class LocalMathematician(PiCreatureScene):
             PiCreatureSays(
                 randy, "Check these \\\\ out!",
                 target_mode="surprised",
-                bubble_kwargs={"height": 3, "width": 4},
+                bubble_config={"height": 3, "width": 4},
                 look_at=screen,
             ),
         )

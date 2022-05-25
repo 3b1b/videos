@@ -1029,7 +1029,7 @@ class GraphLimitExpression(GraphScene):
                 What \\emph{exactly} do you
                 mean by ``approach''
             """,
-            bubble_kwargs = {
+            bubble_config = {
                 "height" : 3,
                 "width" : 5,
                 "fill_opacity" : 1,
@@ -1409,7 +1409,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
         )
         self.look_at(self.get_teacher().eyes, self.get_students())
         self.wait()
-        self.teacher_says("", bubble_kwargs = {"stroke_width" : 0})
+        self.teacher_says("", bubble_config = {"stroke_width" : 0})
         self.play_student_changes(
             *["pondering"]*3,
             look_at = UP+LEFT,
@@ -1423,7 +1423,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
         words.set_color_by_tex("real", YELLOW)
         self.teacher_says(
             words, 
-            bubble_kwargs = {"height" : 3, "width" : 6}
+            bubble_config = {"height" : 3, "width" : 6}
         )
         self.play_student_changes(*["happy"]*3)
         self.wait(6)
@@ -2022,7 +2022,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
         self.pi_creature_says(
             morty, "Is there a \\\\ better way?",
-            bubble_kwargs = {
+            bubble_config = {
                 "height" : 3,
                 "width" : 4,
             },
@@ -2827,7 +2827,7 @@ class CannotUseLHopital(TeacherStudentsScene):
         answer.set_color_by_tex("dx", GREEN)
         self.teacher_says(
             answer,
-            bubble_kwargs = {"height" : 2.5},
+            bubble_config = {"height" : 2.5},
             target_mode = "hesitant"
         )
         self.play_student_changes(*["confused"]*3)

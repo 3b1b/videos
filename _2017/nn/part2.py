@@ -516,7 +516,7 @@ class NotSciFi(TeacherStudentsScene):
         self.student_says(
             "Should we \\\\ be worried?", index = 2,
             target_mode = "confused",
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
             run_time = 1,
         )
         self.wait()
@@ -530,7 +530,7 @@ class NotSciFi(TeacherStudentsScene):
         self.student_says(
             "Even worse!", 
             target_mode = "horrified",
-            bubble_kwargs = {
+            bubble_config = {
                 "direction" : LEFT, 
                 "width" : 3,
                 "height" : 2,
@@ -2149,7 +2149,7 @@ class ConfusedAboutHighDimension(TeacherStudentsScene):
         self.wait(2)
         self.teacher_thinks(
             "",
-            bubble_kwargs = {"width" : 6, "height" : 4},
+            bubble_config = {"width" : 6, "height" : 4},
             added_anims = [self.change_students(*["plain"]*3)]
         )
         self.zoom_in_on_thought_bubble()

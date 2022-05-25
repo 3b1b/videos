@@ -299,7 +299,7 @@ class ButWhy(TeacherStudentsScene):
             "But why?",
             index=2,
             target_mode=self.student_mode,
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
         )
         self.play(
             self.teacher.change, self.teacher_mode, self.students[2]
@@ -1952,7 +1952,7 @@ class WhyAreWeDoingThis(TeacherStudentsScene):
         self.student_says(
             "Hang on, what \\\\ are we doing?",
             index=2,
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
             target_mode="hesitant"
         )
         self.play_student_changes(
@@ -3348,7 +3348,7 @@ class YouCouldIntegrate(TeacherStudentsScene):
         self.student_says(
             "Integrate?",
             index=2,
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
         )
         self.play(self.teacher.change, "hesitant")
         self.wait()

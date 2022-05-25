@@ -470,7 +470,7 @@ class WantToLearnQM(TeacherStudentsScene):
                 question, 
                 content_introduction_kwargs = {"run_time" : 2},
                 index = i,
-                bubble_kwargs = {"fill_opacity" : 1},
+                bubble_config = {"fill_opacity" : 1},
                 bubble_creation_class = FadeIn,
             )
             bubble = self.students[i].bubble

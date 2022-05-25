@@ -3373,7 +3373,7 @@ class Skeptic(TeacherStudentsScene, SliderScene):
         self.wait(4)
         bubble = self.teacher.get_bubble(
             "It's much \\\\ more playful!",
-            bubble_class = SpeechBubble
+            bubble_type = SpeechBubble
         )
         bubble.resize_to_content()
         VGroup(bubble, bubble.content).next_to(self.teacher, UP+LEFT)

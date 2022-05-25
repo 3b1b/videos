@@ -10,7 +10,7 @@ class IveHeardOfThis(TeacherStudentsScene):
             "I've heard\\\\", "of this!",
             index=1,
             target_mode="hooray",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 3,
                 "direction": RIGHT,
@@ -27,7 +27,7 @@ class IveHeardOfThis(TeacherStudentsScene):
             "But who\\\\", "cares?",
             index=1,
             target_mode="maybe",
-            bubble_kwargs={
+            bubble_config={
                 "direction": RIGHT,
                 "width": 3,
                 "height": 3,
@@ -100,7 +100,7 @@ class SineCurveIsUnrealistic(TeacherStudentsScene):
         self.student_says(
             "But that would\\\\never happen!",
             index=1,
-            bubble_kwargs={
+            bubble_config={
                 "direction": RIGHT,
                 "height": 3,
                 "width": 4,
@@ -163,7 +163,7 @@ class SoWeGotNowhere(TeacherStudentsScene):
         self.teacher_says(
             text,
             content_introduction_class=FadeIn,
-            bubble_kwargs={
+            bubble_config={
                 "width": 4,
                 "height": 3.5,
             }

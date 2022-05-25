@@ -349,7 +349,7 @@ class ShowWritingTrajectory(TeacherStudentsScene):
         self.wait(2)
 
         bubble = self.teacher.get_bubble(
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=3, width=5
         )
         complex_words.generate_target()
@@ -1246,7 +1246,7 @@ class QuickNoteOnDrawingThese(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "Quick note on \\\\ drawing vector fields",
-            bubble_kwargs={"width": 5, "height": 3},
+            bubble_config={"width": 5, "height": 3},
             added_anims=[self.change_students(
                 "confused", "erm", "sassy"
             )]
@@ -2240,7 +2240,7 @@ class FromKAWrapper(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             "Our focus is \\\\ the 2d version",
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
             added_anims=[self.change_students(
                 "happy", "hooray", "happy"
             )]
@@ -3277,7 +3277,7 @@ class AskAboutComputation(TeacherStudentsScene):
             "with my work \\\\" +
             "at Khan Academy?",
             target_mode="speaking",
-            bubble_kwargs={"width": 4, "height": 3}
+            bubble_config={"width": 4, "height": 3}
         )
         self.play_student_changes(
             * 3 * ["pondering"],

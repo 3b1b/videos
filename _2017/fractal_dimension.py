@@ -1896,7 +1896,7 @@ class BoxCountingWithDisk(BoxCountingScene):
         self.play(PiCreatureSays(
             randy, "Is it?",
             target_mode = "sassy",
-            bubble_kwargs = {"direction" : LEFT}
+            bubble_config = {"direction" : LEFT}
         ))
         self.play(Blink(randy))
         self.wait()

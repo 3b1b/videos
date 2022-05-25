@@ -2161,7 +2161,7 @@ class IfYouNeedAWarmUp(TeacherStudentsScene):
 
         self.teacher_says(
             "If you need \\\\ a warm up",
-            bubble_kwargs={"width": 3.5, "height": 3},
+            bubble_config={"width": 3.5, "height": 3},
         )
         self.play_all_student_changes(
             "pondering", look_at=screen,
@@ -3274,7 +3274,7 @@ class MentionImpossibilityOf3dNumbers(TeacherStudentsScene):
 
         self.teacher_says(
             "Such 3d numbers \\\\ have no good \\\\ multiplication rule",
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
         )
         self.play_all_student_changes("confused")
         self.wait(2)
@@ -6155,7 +6155,7 @@ class ShareWithFriends(PiCreatureScene):
 
         self.pi_creature_says(
             pi1, "Come learn about \\\\ quaternions!",
-            bubble_kwargs={
+            bubble_config={
                 "direction": LEFT,
                 "width": 4,
                 "height": 3,

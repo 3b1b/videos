@@ -3202,7 +3202,7 @@ class BuildUpExpressionStepByStep(TeacherStudentsScene):
         self.wait(3)
         self.teacher_says(
             "Just one final \\\\ distinction.",
-            bubble_kwargs = {"height" : 2.5, "width" : 3.5},
+            bubble_config = {"height" : 2.5, "width" : 3.5},
             added_anims = [expression.to_corner, UP+RIGHT]
         )
         self.wait(3)

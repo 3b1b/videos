@@ -647,7 +647,7 @@ class StartWithIntuition(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "You already \\\\ have this \\\\ intuition",
-            bubble_kwargs = {
+            bubble_config = {
                 "height" : 3.5,
                 "width" : 3,
             },
@@ -2407,8 +2407,8 @@ class AmbiguityInLongEchos(IntroduceDopplerRadar, PiCreatureScene):
         self.play(FadeIn(randy))
         self.play(PiCreatureBubbleIntroduction(
             randy, "Who cares?",
-            bubble_class = ThoughtBubble,
-            bubble_kwargs = {
+            bubble_type = ThoughtBubble,
+            bubble_config = {
                 "direction" : LEFT,
                 "width" : 2,
                 "height": 1.5,
@@ -3153,7 +3153,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
         student = self.students[2]
         self.student_says(
             "Hang on...",
-            bubble_kwargs = {"height" : 2, "width" : 2, "direction" : LEFT},
+            bubble_config = {"height" : 2, "width" : 2, "direction" : LEFT},
             target_mode = "sassy",
             index = 2,
             added_anims = [self.teacher.change, "plain"]
@@ -3183,7 +3183,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
         wave_propagation.update_config(rate_func = lambda t : t)
         self.student_says(
             "Physics is \\\\ just weird",
-            bubble_kwargs = {"height" : 2.5, "width" : 3},
+            bubble_config = {"height" : 2.5, "width" : 3},
             target_mode = "shruggie",
             index = 0,
             added_anims = [ApplyMethod(full_formula.shift, UP)]
@@ -3224,7 +3224,7 @@ class AskPhysicists(PiCreatureScene):
             PiCreatureSays(
                 physy2,
                 "Take the Schrödinger equation \\\\ with $H = \\frac{p^2}{2m}+V(x)$",
-                bubble_kwargs = {"fill_opacity" : 0.9},
+                bubble_config = {"fill_opacity" : 0.9},
             ),
         )
         self.play(
@@ -3232,7 +3232,7 @@ class AskPhysicists(PiCreatureScene):
                 physy1,
                 "Even classically position and \\\\ momentum are conjugate",
                 target_mode = "surprised",
-                bubble_kwargs = {"fill_opacity" : 0.9},
+                bubble_config = {"fill_opacity" : 0.9},
             ),
         )
         self.play(
@@ -3240,7 +3240,7 @@ class AskPhysicists(PiCreatureScene):
                 physy3,
                 "Consider special relativity \\\\ together with $E = hf$",
                 target_mode = "hooray",
-                bubble_kwargs = {"fill_opacity" : 0.9},
+                bubble_config = {"fill_opacity" : 0.9},
             ),
             morty.change, "guilty"
         )
@@ -3693,7 +3693,7 @@ class WhatDoesTheFourierTradeoffTellUs(TeacherStudentsScene):
         self.teacher_says(
             "So! What does \\\\ the Fourier trade-off \\\\ tell us?",
             target_mode = "surprised",
-            bubble_kwargs = {"width" : 4, "height" : 3}
+            bubble_config = {"width" : 4, "height" : 3}
         )
         self.play_student_changes(*["thinking"]*3)
         self.wait(4)
@@ -3981,7 +3981,7 @@ class AskAboutUncertainty(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "What does this have \\\\ to do with ``certainty''",
-            bubble_kwargs = {"direction" : LEFT},
+            bubble_config = {"direction" : LEFT},
             index = 2
         )
         self.play(PiCreatureSays(
@@ -4337,8 +4337,8 @@ class ThinkOfHeisenbergUncertainty(PiCreatureScene):
 
         self.play(PiCreatureBubbleIntroduction(
             morty, "Heisenberg \\\\ uncertainty \\\\ principle",
-            bubble_class = ThoughtBubble,
-            bubble_kwargs = {"height" : 4, "width" : 4, "direction" : RIGHT},
+            bubble_type = ThoughtBubble,
+            bubble_config = {"height" : 4, "width" : 4, "direction" : RIGHT},
             target_mode = "pondering"
         ))
         self.wait()
@@ -4479,7 +4479,7 @@ class Promotion(PiCreatureScene):
         self.play(
             PiCreatureSays(
                 mathy, "",
-                bubble_kwargs = {"width" : 5},
+                bubble_config = {"width" : 5},
                 look_at = morty.eyes,
             ),
             morty.change, "happy",

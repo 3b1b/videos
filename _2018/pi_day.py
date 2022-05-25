@@ -277,13 +277,13 @@ class PiTauDebate(PiCreatureScene):
             pi, pi_value,
             target_mode = "angry",
             look_at = tau.eyes,
-            # bubble_kwargs = {"width" : 3}
+            # bubble_config = {"width" : 3}
         ))
         self.play(PiCreatureSays(
             tau, tau_value,
             target_mode = "angry",
             look_at = pi.eyes,
-            bubble_kwargs = {"width" : 3, "height" : 2},
+            bubble_config = {"width" : 3, "height" : 2},
         ))
         self.wait()
 
@@ -446,7 +446,7 @@ class HistoryOfOurPeople(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "Today: The history \\\\ of our people.",
-            bubble_kwargs = {"width" : 4, "height" : 3}
+            bubble_config = {"width" : 4, "height" : 3}
         )
         self.play_all_student_changes("hooray")
         self.wait()

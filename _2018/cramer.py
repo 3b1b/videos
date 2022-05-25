@@ -336,7 +336,7 @@ class WhyLearnIt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "What?!?  Then why \\\\ learn it?",
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
             index=2,
             target_mode="angry",
         )

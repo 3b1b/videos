@@ -1247,7 +1247,7 @@ class StandardDerivativeVisual(GraphScene):
         self.play(FadeIn(morty))
         self.play(PiCreatureSays(
             morty, "Don't think of \\\\ this as the definition",
-            bubble_kwargs={"height": 2, "width": 4}
+            bubble_config={"height": 2, "width": 4}
         ))
         self.play(Blink(morty))
         self.wait()
@@ -2075,7 +2075,7 @@ class IntroduceContinuedFractionPuzzle(PiCreatureScene):
                 friend, "Would this be valid? \\\\ If not, why not?",
                 target_mode="confused",
                 look_at=frac,
-                bubble_kwargs={
+                bubble_config={
                     "direction": RIGHT,
                     "width": 4,
                     "height": 3,
@@ -2358,7 +2358,7 @@ class ThinkAboutWithRepeatedApplication(IntroduceContinuedFractionPuzzle):
         self.play(
             PiCreatureSays(
                 randy, "Obviously not!",
-                bubble_kwargs={"width": 3, "height": 2},
+                bubble_config={"width": 3, "height": 2},
                 target_mode="angry",
                 run_time=1,
             ),

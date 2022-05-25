@@ -117,7 +117,7 @@ class SupportPitch1(Scene):
 
         b1 = randy.get_bubble(
             self.words1,
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=3,
             width=4,
         )
@@ -125,7 +125,7 @@ class SupportPitch1(Scene):
         b1.shift(0.25 * UP)
         b2 = morty.get_bubble(
             self.words2,
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             height=3,
             width=4,
         )

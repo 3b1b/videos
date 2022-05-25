@@ -30,7 +30,7 @@ class HeresTheThing(TeacherStudentsScene):
         self.teacher_says(
             TexText("Right, here's\\\\the thing...", font_size=40),
             target_mode="hesitant",
-            bubble_kwargs=dict(width=3.5, height=2.5),
+            bubble_config=dict(width=3.5, height=2.5),
             run_time=1,
             added_anims=[
                 self.change_students("dance_3", "frustrated", "sassy"),
@@ -792,7 +792,7 @@ class WeCanDoBetter(Scene):
         morty.to_corner(DR)
         self.play(PiCreatureSays(
             morty, TexText("We can do\\\\better!"),
-            bubble_kwargs=dict(width=3.5, height=2.5, fill_opacity=0.95),
+            bubble_config=dict(width=3.5, height=2.5, fill_opacity=0.95),
         ))
         for x in range(2):
             self.play(Blink(morty))
@@ -825,7 +825,7 @@ class ForgetTheBestWord(Scene):
 
         self.play(PiCreatureBubbleIntroduction(
             randy, text,
-            bubble_class=ThoughtBubble,
+            bubble_type=ThoughtBubble,
             target_mode="confused",
         ))
         self.play(Blink(randy))

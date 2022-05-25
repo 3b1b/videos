@@ -88,16 +88,16 @@ class PiCreatureScene(InteractiveScene):
         self,
         pi_creature,
         content,
-        bubble_class=SpeechBubble,
+        bubble_type=SpeechBubble,
         target_mode=None,
         look_at=None,
-        bubble_kwargs=dict(),
+        bubble_config=dict(),
         bubble_removal_kwargs=dict(),
         added_anims=[],
         **kwargs
     ):
         if target_mode is None:
-            target_mode = "thinking" if bubble_class is ThoughtBubble else "speaking"
+            target_mode = "thinking" if bubble_type is ThoughtBubble else "speaking"
 
         anims = []
         on_screen_mobjects = self.get_mobject_family_members()
@@ -111,8 +111,8 @@ class PiCreatureScene(InteractiveScene):
             old_bubble = pi_creature.bubble
             bubble = pi_creature.get_bubble(
                 content,
-                bubble_class=bubble_class,
-                **bubble_kwargs
+                bubble_type=bubble_type,
+                **bubble_config
             )
             anims += [
                 ReplacementTransform(old_bubble, bubble),
@@ -124,8 +124,8 @@ class PiCreatureScene(InteractiveScene):
                 pi_creature,
                 content,
                 target_mode=target_mode,
-                bubble_class=bubble_class,
-                bubble_kwargs=bubble_kwargs,
+                bubble_type=bubble_type,
+                bubble_config=bubble_config,
                 **kwargs
             ))
         anims += [
@@ -137,10 +137,10 @@ class PiCreatureScene(InteractiveScene):
         self.play(*anims, **kwargs)
 
     def pi_creature_says(self, pi_creature, content, **kwargs):
-        self.introduce_bubble(pi_creature, content, bubble_class=SpeechBubble, **kwargs)
+        self.introduce_bubble(pi_creature, content, bubble_type=SpeechBubble, **kwargs)
 
     def pi_creature_thinks(self, pi_creature, content, **kwargs):
-        self.introduce_bubble(pi_creature, content, bubble_class=ThoughtBubble, **kwargs)
+        self.introduce_bubble(pi_creature, content, bubble_type=ThoughtBubble, **kwargs)
 
     def say(self, content, **kwargs):
         self.pi_creature_says(self.get_primary_pi_creature(), content, **kwargs)

@@ -2425,7 +2425,7 @@ class ComplainAboutParityCheckWeakness(TeacherStudentsScene):
                 self.students[1],
                 "Wait, it fails\\\\for two flips?",
                 target_mode="sassy",
-                bubble_kwargs={
+                bubble_config={
                     "height": 3,
                     "width": 3,
                 }
@@ -2437,7 +2437,7 @@ class ComplainAboutParityCheckWeakness(TeacherStudentsScene):
             PiCreatureSays(
                 self.students[2], "Weak!",
                 target_mode="angry",
-                bubble_kwargs={"direction": LEFT}
+                bubble_config={"direction": LEFT}
             ),
             self.students[0].change, "hesitant"
         )
@@ -3448,7 +3448,7 @@ class WhatIfTheresAndArrowInECCBits(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "What if an\\\\error-correction bit\\\\needs to be corrected?",
-            bubble_kwargs={'width': 5, 'height': 4, "direction": LEFT},
+            bubble_config={'width': 5, 'height': 4, "direction": LEFT},
             added_anims=[self.teacher.change, "happy"]
         )
         self.play_student_changes("confused", "confused")
@@ -4023,7 +4023,7 @@ class ChecksSpellOutPositionInBinary(Scene):
         self.play(PiCreatureBubbleIntroduction(
             randy, "Wait...",
             target_mode="confused",
-            bubble_class=ThoughtBubble,
+            bubble_type=ThoughtBubble,
             look_at=boxes.get_top(),
         ))
         self.play(Blink(randy))
@@ -6142,7 +6142,7 @@ class HammingThinking(Scene):
         self.wait()
         self.play(PiCreatureBubbleIntroduction(
             randy, "What's the most efficient\\\\I could conceivably be?",
-            bubble_class=ThoughtBubble,
+            bubble_type=ThoughtBubble,
         ))
         self.wait()
 

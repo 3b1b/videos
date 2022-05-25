@@ -18,7 +18,7 @@ class OnAnsweringTwice(TeacherStudentsScene):
 
         self.student_says(
             "But we already \\\\ solved it",
-            bubble_kwargs={"direction": LEFT},
+            bubble_config={"direction": LEFT},
             target_mode="raise_left_hand",
             added_anims=[self.teacher.change, "thinking"]
         )

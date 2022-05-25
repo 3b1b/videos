@@ -29,24 +29,24 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
         self, pi_creature, content,
         target_mode="speaking",
         look_at=None,
-        bubble_class=SpeechBubble,
+        bubble_type=SpeechBubble,
         max_bubble_height=None,
         max_bubble_width=None,
         bubble_direction=None,
-        bubble_kwargs={},
+        bubble_config={},
         bubble_creation_class=DrawBorderThenFill,
         bubble_creation_kwargs={},
         content_introduction_class=Write,
         content_introduction_kwargs={},
         **kwargs,
     ):
-        bubble_kwargs["max_height"] = max_bubble_height
-        bubble_kwargs["max_width"] = max_bubble_width
+        bubble_config["max_height"] = max_bubble_height
+        bubble_config["max_width"] = max_bubble_width
         if bubble_direction is not None:
-            bubble_kwargs["direction"] = bubble_direction
+            bubble_config["direction"] = bubble_direction
         bubble = pi_creature.get_bubble(
-            content, bubble_class=bubble_class,
-            **bubble_kwargs
+            content, bubble_type=bubble_type,
+            **bubble_config
         )
         Group(bubble, bubble.content).shift_onto_screen()
 
@@ -61,7 +61,7 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
 class PiCreatureSays(PiCreatureBubbleIntroduction):
     CONFIG = {
         "target_mode": "speaking",
-        "bubble_class": SpeechBubble,
+        "bubble_type": SpeechBubble,
     }
 
 

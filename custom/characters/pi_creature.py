@@ -208,8 +208,8 @@ class PiCreature(SVGMobject):
             self.to_corner(DOWN + LEFT, **kwargs)
         return self
 
-    def get_bubble(self, content, bubble_class=ThoughtBubble, **bubble_config):
-        bubble = bubble_class(**bubble_config)
+    def get_bubble(self, content, bubble_type=ThoughtBubble, **bubble_config):
+        bubble = bubble_type(**bubble_config)
         if len(content) > 0:
             if isinstance(content[0], str):
                 content_mob = Text(content)
@@ -265,7 +265,7 @@ class PiCreature(SVGMobject):
             self, content,
             target_mode=mode,
             look_at=look_at,
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
             **kwargs,
         )
 
@@ -275,7 +275,7 @@ class PiCreature(SVGMobject):
             self, content,
             target_mode=mode,
             look_at=look_at,
-            bubble_class=ThoughtBubble,
+            bubble_type=ThoughtBubble,
             **kwargs,
         )
 

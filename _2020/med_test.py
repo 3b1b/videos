@@ -2045,7 +2045,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
 
         self.student_says(
             generate_answer("\\text{ is} \\\\ \\text{a little over } 50\\%"),
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
             index=1,
             target_mode="speaking",
             run_time=1,
@@ -2068,7 +2068,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
 
         self.student_says(
             generate_answer("\\approx \\frac{1}{100}"),
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
             index=0,
             target_mode="tease",
             run_time=1,
@@ -2099,7 +2099,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.wait(2)
         self.student_says(
             generate_answer("\\text{ is} \\\\ \\text{a little below } 50\\%"),
-            bubble_kwargs={"width": 4, "height": 3},
+            bubble_config={"width": 4, "height": 3},
             index=1,
             target_mode="speaking",
             run_time=1,
@@ -3432,7 +3432,7 @@ class RuleOfThumb(Scene):
         self.play(
             PiCreatureSays(
                 morty, "This equation\\\\is precisely true!",
-                bubble_kwargs={"height": 2, "width": 3},
+                bubble_config={"height": 2, "width": 3},
                 look_at=randy.eyes,
             ),
             GrowFromPoint(eq, morty.get_corner(UL)),
@@ -5234,7 +5234,7 @@ class ContrastTwoFormulas(Scene):
         self.play(FadeIn(pis))
         self.play(PiCreatureSays(
             randy, "How accurate is\\\\the test?",
-            bubble_kwargs={"height": 2, "width": 3},
+            bubble_config={"height": 2, "width": 3},
             content_introduction_class=FadeIn,
             bubble_creation_class=FadeIn,
             target_mode="raise_left_hand",
@@ -5245,7 +5245,7 @@ class ContrastTwoFormulas(Scene):
         self.play(PiCreatureSays(
             morty, content,
             target_mode="hooray",
-            bubble_kwargs={"height": 2, "width": 3},
+            bubble_config={"height": 2, "width": 3},
             content_introduction_class=FadeIn,
             bubble_creation_class=FadeIn,
             look_at=randy.eyes,
@@ -5488,7 +5488,7 @@ class FailedPromises(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Are you still doing\\\\``Probabilities\\\\of probabilities''?",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3.5,
                 "width": 4.5,
             },
@@ -5499,7 +5499,7 @@ class FailedPromises(TeacherStudentsScene):
         self.students[0].bubble = None
         self.student_says(
             "And what about\\\\Differential equations?",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
                 "direction": LEFT,
@@ -6402,7 +6402,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
             PiCreatureSays(
                 self.teacher,
                 "Well...",
-                bubble_kwargs={"height": 2, "width": 2},
+                bubble_config={"height": 2, "width": 2},
                 target_mode="hesitant",
             ),
             self.change_students("confused", "erm", "pondering")

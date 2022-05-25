@@ -1052,7 +1052,7 @@ class HowCanWeVisualizeSolutions(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "How can we\\\\visualize solutions",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 4,
                 "fill_opacity": 0,
@@ -3495,7 +3495,7 @@ class TryTheProofYourself(TeacherStudentsScene):
         self.teacher_says(
             "Can you predict\\\\the proof?",
             target_mode="hooray",
-            bubble_kwargs={
+            bubble_config={
                 "height": 3,
                 "width": 3,
             },

@@ -401,7 +401,7 @@ class RiemannHypothesisMention(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             "This is what the $1M\nRiemann Hypothesis\nis all about",
-            bubble_kwargs=dict(width=4, height=3),
+            bubble_config=dict(width=4, height=3),
             added_anims=[self.change_students(
                 "erm", "happy", "thinking",
                 look_at=self.screen,
@@ -848,7 +848,7 @@ class WhoCares(TeacherStudentsScene):
         self.play(
             PiCreatureSays(
                 self.students[2], "Who cares?", target_mode="angry",
-                bubble_kwargs=dict(direction=LEFT),
+                bubble_config=dict(direction=LEFT),
             ),
             self.teacher.change("guilty"),
             self.students[0].change("sassy"),
@@ -1505,7 +1505,7 @@ class SpecifyEmptySet(TeacherStudentsScene):
         ss = self.students
         self.student_says(
             "Do we count\nthe empty set?",
-            bubble_kwargs=dict(direction=RIGHT),
+            bubble_config=dict(direction=RIGHT),
             target_mode="raise_right_hand",
             added_anims=[
                 morty.change("happy"),
@@ -1685,7 +1685,7 @@ class QuestionPolynomial(InteractiveScene):
             anim = PiCreatureSays(
                 pi, question,
                 target_mode=mode, look_at=poly,
-                bubble_kwargs=dict(width=4, height=2.5),
+                bubble_config=dict(width=4, height=2.5),
             )
             pi.set_opacity(0)
             anims.append(anim)
@@ -2408,7 +2408,7 @@ class MotivateRootsOfUnity(InteractiveScene):
             Write(line),
             PiCreatureSays(
                 morty, TexText("Visualize the\\\\rotations", font_size=36),
-                bubble_kwargs=dict(width=3, height=2)
+                bubble_config=dict(width=3, height=2)
             ),
         )
         self.add(fm1)
@@ -3375,7 +3375,7 @@ class JustifyLinearity(InteractiveScene):
         self.play(
             PiCreatureSays(
                 randy, TexText("But $f$ is more\\\\complicated than that!", font_size=36),
-                bubble_kwargs=dict(width=4, height=2),
+                bubble_config=dict(width=4, height=2),
                 target_mode="pleading",
             )
         )
@@ -4356,7 +4356,7 @@ class ProblemStatement(TeacherStudentsScene):
         self.play(
             PiCreatureSays(
                 self.students[2], "Who cares?", target_mode="angry",
-                bubble_kwargs=dict(direction=LEFT),
+                bubble_config=dict(direction=LEFT),
             ),
             morty.change("guilty"),
             MoveToTarget(statement),
@@ -4533,7 +4533,7 @@ class HowManyIntotal(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("How many total\\\\subsets are there?"),
-            bubble_kwargs=dict(width=4, height=3),
+            bubble_config=dict(width=4, height=3),
             added_anims=[self.change_students(
                 "happy", "pondering", "tease",
                 look_at=self.screen,
@@ -4577,8 +4577,8 @@ class IsThereAGeometry(InteractiveScene):
             randy, TexText("Is there a\\\\geometric structure?"),
             target_mode="pondering",
             look_at=[10, -3, 0],
-            bubble_class=ThoughtBubble,
-            bubble_kwargs=dict(width=3, height=1.75)
+            bubble_type=ThoughtBubble,
+            bubble_config=dict(width=3, height=1.75)
         ))
         for x in range(2):
             self.play(Blink(randy))
@@ -4601,7 +4601,7 @@ class RotationAnnotation(InteractiveScene):
             PiCreatureSays(
                 morty, TexText("Think about\\\\the half turn", font_size=24),
                 look_at=arc,
-                bubble_kwargs=dict(width=2, height=1.5)
+                bubble_config=dict(width=2, height=1.5)
             )
         )
         self.play(Blink(morty))
@@ -4758,7 +4758,7 @@ class BeyondOurExample(TeacherStudentsScene):
             "Generating functions\n"
             "are useful beyond\n"
             "our one example.",
-            bubble_kwargs=dict(width=4, height=3),
+            bubble_config=dict(width=4, height=3),
             added_anims=[self.change_students(
                 "happy", "jamming", "tease",
                 look_at=self.screen,
@@ -4875,7 +4875,7 @@ class ObviouslyOne(TeacherStudentsScene):
         self.wait()
         self.student_says(
             TexText("Obviously $z = 1$!"), target_mode="angry",
-            bubble_kwargs=dict(direction=RIGHT),
+            bubble_config=dict(direction=RIGHT),
             added_anims=[self.change_students("sassy", "hesitant")]
         )
         self.wait(4)
@@ -4945,7 +4945,7 @@ class AskAboutTaylorSeries(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("Can we use derivatives\\\\in some way?"),
-            bubble_kwargs=dict(width=4, height=3, direction=LEFT),
+            bubble_config=dict(width=4, height=3, direction=LEFT),
             index=2,
         )
         self.play(
@@ -5148,7 +5148,7 @@ class AskIfItMakesSense(InteractiveScene):
 
         self.play(PiCreatureBubbleIntroduction(
             randy, Text("Does this...\nmake sense?", font_size=36),
-            bubble_kwargs=dict(width=3.5, height=2),
+            bubble_config=dict(width=3.5, height=2),
             target_mode="maybe",
         ))
         self.play(Blink(randy))

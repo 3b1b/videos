@@ -290,7 +290,7 @@ class PlanForThisVideo(TeacherStudentsScene):
         self.play(
             PiCreatureSays(
                 s2, TexText("And who cares?"), target_mode="sassy",
-                bubble_kwargs={"direction": LEFT},
+                bubble_config={"direction": LEFT},
             ),
             s1.change("hesitant", UL),
             self.teacher.change("guilty")
@@ -354,7 +354,7 @@ class IntroduceTheComputation(Scene):
             TexText("I'm sorry,\\\\what?!").scale(0.75),
             height=2,
             width=3,
-            bubble_class=SpeechBubble,
+            bubble_type=SpeechBubble,
         )
 
         self.play(
@@ -3308,7 +3308,7 @@ class EBaseMisconception(Scene):
             PiCreatureSays(
                 randy, TexText("This function is\\\\about about $e$", tex_to_color_map={"$e$": BLUE}),
                 target_mode="thinking",
-                bubble_kwargs={"height": 3, "width": 4},
+                bubble_config={"height": 3, "width": 4},
             )
         )
         self.play(Blink(randy))
@@ -3330,7 +3330,7 @@ class OneFinalPoint(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("One final point\\\\about one-dimension"),
-            bubble_kwargs={"height": 3, "width": 4},
+            bubble_config={"height": 3, "width": 4},
         )
         self.play_student_changes(
             "happy", "hesitant", "tease",
@@ -4044,7 +4044,7 @@ class ThatsHorrifying(TeacherStudentsScene):
         self.wait(2)
         self.teacher_says(
             "Just wait",
-            bubble_kwargs={"height": 3, "width": 3.5},
+            bubble_config={"height": 3, "width": 3.5},
             target_mode="tease"
         )
         self.play_student_changes(
@@ -4908,7 +4908,7 @@ class JulietChidingRomeo(Scene):
         self.play(
             PiCreatureSays(
                 juliet, TexText("It just seems like \\\\ your feelings aren't \\\\ real"),
-                bubble_kwargs={"height": 2.5, "width": 3.5},
+                bubble_config={"height": 2.5, "width": 3.5},
                 target_mode="sassy",
             ),
             romeo.change("guilty"),
@@ -5050,7 +5050,7 @@ class StoryForAnotherTime(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
             TexText("The full story\\\\takes more time."),
-            bubble_kwargs={"height": 3, "width": 3.5},
+            bubble_config={"height": 3, "width": 3.5},
             added_anims=[self.change_students("confused", "erm", "hesitant", look_at=self.screen)]
         )
         self.wait(5)
