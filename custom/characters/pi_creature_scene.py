@@ -102,16 +102,10 @@ class PiCreatureScene(InteractiveScene):
         anims = []
         on_screen_mobjects = self.get_mobject_family_members()
 
-        def has_bubble(pi):
-            if not hasattr(pi, "bubble"):
-                return False
-            if not pi.bubble:
-                return False
-            if pi.bubble not in on_screen_mobjects:
-                return False
-            return True
-
-        pi_creatures_with_bubbles = list(filter(has_bubble, self.get_pi_creatures()))
+        pi_creatures_with_bubbles = [
+            pi for pi in self.get_pi_creatures()
+            if pi.bubble in on_screen_mobjects
+        ]
         if pi_creature in pi_creatures_with_bubbles:
             pi_creatures_with_bubbles.remove(pi_creature)
             old_bubble = pi_creature.bubble
@@ -361,7 +355,7 @@ class TeacherStudentsScene(PiCreatureScene):
     def zoom_in_on_thought_bubble(self, bubble=None, radius=FRAME_Y_RADIUS + FRAME_X_RADIUS):
         if bubble is None:
             for pi in self.get_pi_creatures():
-                if hasattr(pi, "bubble") and isinstance(pi.bubble, ThoughtBubble):
+                if isinstance(pi.bubble, ThoughtBubble):
                     bubble = pi.bubble
                     break
             if bubble is None:
