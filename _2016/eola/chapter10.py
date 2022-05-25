@@ -54,13 +54,13 @@ class StudentsFindThisConfusing(TeacherStudentsScene):
         self.random_blink()
         self.student_says(
             "Why are we doing this?",
-            student_index = 0,
+            index = 0,
             run_time = 2,
         )
         question1 = students[0].bubble.content.copy()
         self.student_says(
             "What does this actually mean?",
-            student_index = 2,
+            index = 2,
             added_anims = [
                 question1.scale, 0.8,
                 question1.to_edge, LEFT,

@@ -1333,7 +1333,7 @@ class AskWhatTheParadoxIs(TeacherStudentsScene):
             "How's that\\\\a paradox?",
             target_mode="sassy",
             look_at=self.teacher.eyes,
-            student_index=2,
+            index=2,
             added_anims=[
                 self.students[0].change, "pondering", image,
                 self.students[1].change, "pondering", image,
@@ -1909,7 +1909,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
         self.student_says(
             "I'm sorry, is that\\\\a paradox?",
             target_mode="sassy",
-            student_index=1
+            index=1
         )
         self.play_student_changes(
             "angry", "sassy", "angry",
@@ -2024,7 +2024,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.student_says(
             generate_answer("\\approx \\frac{1}{11}"),
             target_mode="hooray",
-            student_index=0,
+            index=0,
             run_time=1,
         )
         self.wait(3)
@@ -2046,7 +2046,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.student_says(
             generate_answer("\\text{ is} \\\\ \\text{a little over } 50\\%"),
             bubble_kwargs={"width": 4, "height": 3},
-            student_index=1,
+            index=1,
             target_mode="speaking",
             run_time=1,
             added_anims=[
@@ -2069,7 +2069,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.student_says(
             generate_answer("\\approx \\frac{1}{100}"),
             bubble_kwargs={"width": 4, "height": 3},
-            student_index=0,
+            index=0,
             target_mode="tease",
             run_time=1,
         )
@@ -2100,7 +2100,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
         self.student_says(
             generate_answer("\\text{ is} \\\\ \\text{a little below } 50\\%"),
             bubble_kwargs={"width": 4, "height": 3},
-            student_index=1,
+            index=1,
             target_mode="speaking",
             run_time=1,
             added_anims=[
@@ -5492,7 +5492,7 @@ class FailedPromises(TeacherStudentsScene):
                 "height": 3.5,
                 "width": 4.5,
             },
-            student_index=0,
+            index=0,
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
@@ -5504,7 +5504,7 @@ class FailedPromises(TeacherStudentsScene):
                 "width": 4,
                 "direction": LEFT,
             },
-            student_index=2,
+            index=2,
             target_mode="angry",
             added_anims=[self.students[1].change, "hesitant"],
         )
@@ -5690,7 +5690,7 @@ class AskAboutHowItsSoLow(TeacherStudentsScene):
         )
         self.student_says(
             question,
-            student_index=1,
+            index=1,
             target_mode="maybe",
         )
         self.play_student_changes(
@@ -6395,7 +6395,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
         self.student_says(
             "Bayes' rule says\\\\ 8.5\\%, right?",
             target_mode="hooray",
-            student_index=1,
+            index=1,
         )
         self.wait()
         self.play(
@@ -6471,7 +6471,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
 
         self.student_says(
             "What's the appropriate\\\\math here?",
-            student_index=1,
+            index=1,
             added_anims=[
                 FadeOut(tweet),
                 FadeOut(underline),

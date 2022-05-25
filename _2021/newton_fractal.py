@@ -953,7 +953,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         self.student_says(
             TexText("Wait, what is that\\\\function exactly?"),
             look_at=image1,
-            student_index=2,
+            index=2,
             added_anims=[
                 self.students[0].change("confused", image1),
                 self.students[1].change("confused", image1),
@@ -1415,7 +1415,7 @@ class AskAboutFractals(TeacherStudentsScene):
         self.student_says(
             "Fractals?",
             target_mode="raise_right_hand",
-            student_index=2,
+            index=2,
             added_anims=[
                 self.students[0].change("confused"),
                 self.students[1].change("sassy"),
@@ -3249,7 +3249,7 @@ class WhatsGoingOn(TeacherStudentsScene):
             "What the %$!* is\ngoing on?",
             target_mode="angry",
             look_at=self.screen,
-            student_index=2,
+            index=2,
             added_anims=[LaggedStart(*(
                 pi.change("guilty", self.students[2].eyes)
                 for pi in [self.teacher, *self.students[:2]]
@@ -3701,7 +3701,7 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("Why is it\\\\so complicated?"),
-            student_index=0,
+            index=0,
             bubble_kwargs={
                 "height": 3,
                 "width": 4,
@@ -4554,7 +4554,7 @@ class MakeFunOfNextVideo(TeacherStudentsScene):
         self.student_says(
             TexText("``Next part''...I've\\\\heard that before."),
             target_mode="sassy",
-            student_index=2,
+            index=2,
             added_anims=[LaggedStart(
                 self.teacher.change("guilty"),
                 self.students[0].change("sassy"),

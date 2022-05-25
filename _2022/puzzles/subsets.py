@@ -4652,7 +4652,7 @@ class IsItHelpful(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Is that helpful here?",
-            student_index=2,
+            index=2,
             added_anims=[LaggedStart(
                 self.students[0].change("confused", self.screen),
                 self.students[1].change("maybe", self.screen),
@@ -4741,7 +4741,7 @@ class FirstTrick(TeacherStudentsScene):
         # Here
         self.student_says(
             TexText("Huh? What is $x$?"),
-            student_index=2,
+            index=2,
             target_mode="confused",
             look_at=self.teacher.eyes,
         )
@@ -4946,7 +4946,7 @@ class AskAboutTaylorSeries(TeacherStudentsScene):
         self.student_says(
             TexText("Can we use derivatives\\\\in some way?"),
             bubble_kwargs=dict(width=4, height=3, direction=LEFT),
-            student_index=2,
+            index=2,
         )
         self.play(
             self.teacher.change("tease"),
@@ -5342,7 +5342,7 @@ class ReferenceZetaPromise(TeacherStudentsScene):
         self.student_says(
             TexText("Didn't you once promise\\\\a video about $\\zeta(s)$ and primes?"),
             target_mode="sassy",
-            student_index=0,
+            index=0,
             added_anims=[
                 ss[1].change("hesitant"),
                 ss[2].change("angry"),

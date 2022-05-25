@@ -2063,7 +2063,7 @@ class CannotFollowCode(TeacherStudentsScene):
         self.student_says(
             "I...er...can't follow\\\\ that code at all.",
             target_mode = "confused",
-            student_index = 1
+            index = 1
         )
         self.play(self.students[1].change, "sad")
         self.play_student_changes(

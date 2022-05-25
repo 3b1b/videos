@@ -1065,7 +1065,7 @@ class AskWhatWorldeIs(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "What is Wordle?",
-            student_index=0,
+            index=0,
             target_mode="raise_left_hand",
             added_anims=[
                 self.teacher.change("tease")
@@ -2301,7 +2301,7 @@ class AskAboutPhysicsRelation(TeacherStudentsScene):
         self.student_says(
             TexText("What does this have\\\\to do with thermodynamics?"),
             target_mode="raise_right_hand",
-            student_index=2,
+            index=2,
             bubble_kwargs=dict(width=5, height=3, direction=LEFT),
         )
         self.play(self.teacher.change("tease"))

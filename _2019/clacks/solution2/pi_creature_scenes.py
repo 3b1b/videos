@@ -91,7 +91,7 @@ class ReplaceOneTrickySceneWithAnother(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "This replaces one tricky\\\\problem with another",
-            student_index=1,
+            index=1,
             target_mode="sassy",
             added_anims=[self.teacher.change, "happy"],
         )

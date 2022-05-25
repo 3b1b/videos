@@ -337,7 +337,7 @@ class WhyLearnIt(TeacherStudentsScene):
         self.student_says(
             "What?!?  Then why \\\\ learn it?",
             bubble_kwargs={"direction": LEFT},
-            student_index=2,
+            index=2,
             target_mode="angry",
         )
         self.play_all_student_changes("angry")

@@ -507,14 +507,14 @@ class NotSciFi(TeacherStudentsScene):
         students = self.students
         self.student_says(
             "Machines learning?!?",
-            student_index = 0,
+            index = 0,
             target_mode = "pleading",
             run_time = 1,
         )
         bubble = students[0].bubble
         students[0].bubble = None
         self.student_says(
-            "Should we \\\\ be worried?", student_index = 2,
+            "Should we \\\\ be worried?", index = 2,
             target_mode = "confused",
             bubble_kwargs = {"direction" : LEFT},
             run_time = 1,
@@ -2765,7 +2765,7 @@ class AskHowItDoes(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "How well \\\\ does it do?",
-            student_index = 0
+            index = 0
         )
         self.wait(5)
 

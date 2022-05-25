@@ -239,14 +239,14 @@ class WhyPeopleMayKnowIt(TeacherStudentsScene):
         ]))
         self.random_blink()
         self.student_thinks(
-            mercenary_thought, student_index = 2,
+            mercenary_thought, index = 2,
             target_mode = "surprised",
         )
         student = self.get_students()[2]
         self.random_blink()
         self.wait(2)
         self.student_thinks(
-            divergent_sum, student_index = 1,
+            divergent_sum, index = 1,
             added_anims = [student.change_mode, "plain"]
         )
         student = self.get_students()[1]
@@ -269,7 +269,7 @@ class WhyPeopleMayKnowIt(TeacherStudentsScene):
         #Ask about continuation
         self.student_says(
             TexText("Can you explain \\\\" , "``analytic continuation''?"),
-            student_index = 1,
+            index = 1,
             target_mode = "raise_right_hand"
         )
         self.play_student_changes(
@@ -2113,7 +2113,7 @@ class DontKnowDerivatives(TeacherStudentsScene):
             for complex functions
             """,
             target_mode = "confused",
-            student_index = 2
+            index = 2
         )
         self.random_blink(2)
         self.teacher_says(

@@ -2821,7 +2821,7 @@ class LooksLikeYoureMissingSome(TeacherStudentsScene):
         self.student_says(
             "Looks like you're \\\\ missing a few",
             target_mode = "sassy",
-            student_index = 0,
+            index = 0,
         )
         self.play(self.teacher.change, "guilty")
         self.wait(3)

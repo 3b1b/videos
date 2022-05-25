@@ -391,7 +391,7 @@ class IntroduceNotation(TeacherStudentsScene):
         self.wait(2)
         self.student_says(
             "How does one... \\\\ read that?",
-            student_index = 0,
+            index = 0,
         )
         self.play(self.teacher.change, "happy")
         self.wait(2)

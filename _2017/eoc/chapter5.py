@@ -48,7 +48,7 @@ class LastVideo(TeacherStudentsScene):
         self.play(Write(known_formulas))
         self.wait()
         self.student_says(
-            exp_question, student_index = 1,
+            exp_question, index = 1,
             added_anims = [self.get_teacher().change_mode, "pondering"]
         )
         self.wait(3)

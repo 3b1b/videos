@@ -622,7 +622,7 @@ class AskAboutLongerLists(TeacherStudentsScene):
         self.student_says(
             "I...don't see it.",
             target_mode = "maybe",
-            student_index = 0
+            index = 0
         )
         self.wait(3)
 
@@ -1503,7 +1503,7 @@ class FourDCase(SliderScene, TeacherStudentsScene):
         self.student_says(
             "Okay...now what?",
             target_mode = "raise_left_hand",
-            student_index = 0,
+            index = 0,
             added_anims = [self.teacher.change, "plain"]
         )
         self.play_student_changes(
@@ -1764,7 +1764,7 @@ class ShowDistanceFormula(TeacherStudentsScene):
             self.teacher.change, "raise_right_hand",
         )
         self.wait(3)
-        self.student_says("Why?", student_index = 0)
+        self.student_says("Why?", index = 0)
         self.play(self.teacher.change, "thinking")
         self.wait(3)
 
@@ -1877,7 +1877,7 @@ class AskAboutHigherDimensions(TeacherStudentsScene):
         self.student_thinks(
             "$\\sqrt{N} - 1$",
             target_mode = "happy",
-            student_index = 1
+            index = 1
         )
         self.wait()
         pi = self.students[1]
@@ -3251,13 +3251,13 @@ class QuestionsFromStudents(TeacherStudentsScene):
         self.wait(2)
         self.student_says(
             "How do you think \\\\ about volume?",
-            student_index = 0,
+            index = 0,
             content_introduction_class = FadeIn,
         )
         self.wait()
         self.student_says(
             "How do cubes work?",
-            student_index = 2,
+            index = 2,
             run_time = 2,
         )
         self.wait(2)
@@ -3357,7 +3357,7 @@ class Skeptic(TeacherStudentsScene, SliderScene):
 
         self.student_says(
             analytic_thought,
-            student_index = 0,
+            index = 0,
             target_mode = "sassy",
             added_anims = [self.teacher.change, "guilty"]
         )

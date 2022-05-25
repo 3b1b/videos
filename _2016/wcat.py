@@ -329,7 +329,7 @@ class WhenIWasAKid(TeacherStudentsScene):
         self.random_blink()
         self.student_says(
             "How is this math?",
-            student_index = -1,
+            index = -1,
             target_mode = "pleading",
             width = 5, 
             height = 3,

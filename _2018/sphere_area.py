@@ -297,7 +297,7 @@ class ButWhy(TeacherStudentsScene):
             student.change("pondering", self.screen)
         self.student_says(
             "But why?",
-            student_index=2,
+            index=2,
             target_mode=self.student_mode,
             bubble_kwargs={"direction": LEFT},
         )
@@ -1951,7 +1951,7 @@ class WhyAreWeDoingThis(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Hang on, what \\\\ are we doing?",
-            student_index=2,
+            index=2,
             bubble_kwargs={"direction": LEFT},
             target_mode="hesitant"
         )
@@ -3347,7 +3347,7 @@ class YouCouldIntegrate(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Integrate?",
-            student_index=2,
+            index=2,
             bubble_kwargs={"direction": LEFT},
         )
         self.play(self.teacher.change, "hesitant")

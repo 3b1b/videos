@@ -2991,7 +2991,7 @@ class AskWhy(TeacherStudentsScene):
         self.student_says(
             "Um...why?",
             target_mode="confused",
-            student_index=2,
+            index=2,
             bubble_kwargs={"direction": LEFT},
         )
         self.play(

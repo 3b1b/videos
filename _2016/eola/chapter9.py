@@ -1564,7 +1564,7 @@ class AksAboutTranslatingColumns(TeacherStudentsScene):
         words = TexText("Translate columns of")
         matrix.next_to(words, DOWN)
         words.add(matrix)
-        self.student_says(words, student_index = 0)
+        self.student_says(words, index = 0)
         self.random_blink(2)
 
         student = self.get_students()[0]

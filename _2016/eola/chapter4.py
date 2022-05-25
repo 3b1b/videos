@@ -727,7 +727,7 @@ class NeverForget(TeacherStudentsScene):
         self.setup()
         self.teacher_says("Never forget what \\\\ this represents!")
         self.random_blink()
-        self.student_thinks("", student_index = 0)
+        self.student_thinks("", index = 0)
         def warp(point):
             point += 2*DOWN+RIGHT
             return 20*point/get_norm(point)

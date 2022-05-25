@@ -2028,7 +2028,7 @@ class HeresTheThing(TeacherStudentsScene):
             "Wait, why?",
             target_mode="raise_right_hand",
             look_at=self.screen,
-            student_index=2,
+            index=2,
         )
         self.play(
             self.change_students("maybe", "confused", "raise_right_hand", look_at=self.screen),

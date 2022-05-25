@@ -1455,7 +1455,7 @@ class AskAboutLongVsShort(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "What happens if we \\\\ change the length of \\\\ the signal?",
-            student_index = 2,
+            index = 2,
         )
         self.play(
             self.teacher.change, "happy",
@@ -3155,7 +3155,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
             "Hang on...",
             bubble_kwargs = {"height" : 2, "width" : 2, "direction" : LEFT},
             target_mode = "sassy",
-            student_index = 2,
+            index = 2,
             added_anims = [self.teacher.change, "plain"]
         )
         student.bubble.add(student.bubble.content)
@@ -3185,7 +3185,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
             "Physics is \\\\ just weird",
             bubble_kwargs = {"height" : 2.5, "width" : 3},
             target_mode = "shruggie",
-            student_index = 0,
+            index = 0,
             added_anims = [ApplyMethod(full_formula.shift, UP)]
         )
         self.wait()
@@ -3982,7 +3982,7 @@ class AskAboutUncertainty(TeacherStudentsScene):
         self.student_says(
             "What does this have \\\\ to do with ``certainty''",
             bubble_kwargs = {"direction" : LEFT},
-            student_index = 2
+            index = 2
         )
         self.play(PiCreatureSays(
             self.students[0], 

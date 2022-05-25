@@ -1150,7 +1150,7 @@ class ThatJustSeemsUseless(TeacherStudentsScene):
         self.student_says(
             "How would \\\\ that help?",
             target_mode = "sassy",
-            student_index = 2,
+            index = 2,
             bubble_kwargs = {"direction" : LEFT},
         )
         self.play(

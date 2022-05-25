@@ -89,7 +89,7 @@ class Introduction(TeacherStudentsScene):
             "What's that?",
             look_at = title,
             target_mode = "confused",
-            student_index = 1,
+            index = 1,
         )
         self.play(
             GrowArrow(arrow),
@@ -99,7 +99,7 @@ class Introduction(TeacherStudentsScene):
         self.student_thinks(
             "Pssht, I got this",
             target_mode = "tease",
-            student_index = 2,
+            index = 2,
             added_anims = [RemovePiCreatureBubble(self.students[1])]
         )
         self.play(self.teacher.change, "hesitant")

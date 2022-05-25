@@ -1339,7 +1339,7 @@ class IsItUseful(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Is any of\\\\this useful?",
-            student_index=2,
+            index=2,
             target_mode="sassy",
             added_anims=[self.teacher.change, "guilty"]
         )
@@ -3521,7 +3521,7 @@ class CommentOnNontrivialFactFromGroupDecomposition(TeacherStudentsScene):
         self.student_says(
             "I...don't\\\\get it.",
             target_mode="confused",
-            student_index=2,
+            index=2,
             look_at=self.screen,
             added_anims=[self.teacher.change, "guilty"],
         )

@@ -669,7 +669,7 @@ class ThatsKindOfInteresting(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Cool!", target_mode="hooray",
-            student_index=2,
+            index=2,
             added_anims=[self.teacher.change, "happy"]
         )
         self.play_student_changes("happy", "happy")
@@ -889,7 +889,7 @@ class AskQuestions(TeacherStudentsScene):
         self.wait()
         self.student_says(
             "And you mentioned \\\\ complex numbers?",
-            student_index=0,
+            index=0,
         )
         self.wait(3)
         self.play(

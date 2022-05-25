@@ -1114,7 +1114,7 @@ class Reinvention(TeacherStudentsScene):
         self.wait(3)
         self.student_says(
             "I see where\\\\this is going",
-            student_index=0,
+            index=0,
             target_mode="tease",
         )
         self.look_at(self.students[0].bubble)
@@ -4229,7 +4229,7 @@ class LetsWalkThroughAnExample(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Can we walk through\\\\a full example?",
-            student_index=1,
+            index=1,
             added_anims=[self.teacher.change, "happy"]
         )
         self.play_student_changes("hooray", None, "hooray")
@@ -5827,7 +5827,7 @@ class ConflictingViewsOnXor(TeacherStudentsScene):
         self.student_says(
             "Um...can you\\\\say that again?",
             target_mode="confused",
-            student_index=2,
+            index=2,
             added_anims=[self.teacher.change, "guilty"]
         )
         self.play_student_changes("pondering", "pondering", look_at=self.screen)
@@ -5835,7 +5835,7 @@ class ConflictingViewsOnXor(TeacherStudentsScene):
         self.student_says(
             "Why didn't you\\\\just use xors\\\\from the start?",
             target_mode="sassy",
-            student_index=1,
+            index=1,
         )
         self.look_at(self.students[1].bubble)
         self.wait(5)

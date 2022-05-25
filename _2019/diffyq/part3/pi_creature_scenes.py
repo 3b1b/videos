@@ -8,7 +8,7 @@ class IveHeardOfThis(TeacherStudentsScene):
         point.move_to(3 * RIGHT + 2 * UP)
         self.student_says(
             "I've heard\\\\", "of this!",
-            student_index=1,
+            index=1,
             target_mode="hooray",
             bubble_kwargs={
                 "height": 3,
@@ -25,7 +25,7 @@ class IveHeardOfThis(TeacherStudentsScene):
         self.wait(3)
         self.student_says(
             "But who\\\\", "cares?",
-            student_index=1,
+            index=1,
             target_mode="maybe",
             bubble_kwargs={
                 "direction": RIGHT,
@@ -99,7 +99,7 @@ class SineCurveIsUnrealistic(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "But that would\\\\never happen!",
-            student_index=1,
+            index=1,
             bubble_kwargs={
                 "direction": RIGHT,
                 "height": 3,

@@ -1563,7 +1563,7 @@ class UseNewton(TeacherStudentsScene):
         self.student_says(
             Text("Too meta..."),
             target_mode="sassy",
-            student_index=2,
+            index=2,
         )
         self.wait(3)
 
@@ -2292,7 +2292,7 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
                 "height": 3,
                 "width": 4,
             },
-            student_index=0,
+            index=0,
         )
         self.play(
             self.teacher.change("raise_right_hand", 3 * UR),

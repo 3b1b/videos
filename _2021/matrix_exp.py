@@ -1338,7 +1338,7 @@ class WhyTortureMatrices(TeacherStudentsScene):
         self.wait(2)
         self.student_says(
             TexText("Why...would you\\\\ever want\\\\to do that?"),
-            student_index=2,
+            index=2,
             added_anims=[FadeOut(q_marks)],
         )
         self.play(
@@ -4027,7 +4027,7 @@ class ThatsHorrifying(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("You want us to\\\\do what?"),
-            student_index=2,
+            index=2,
             target_mode="pleading",
             added_anims=[LaggedStart(
                 self.students[0].change("tired"),

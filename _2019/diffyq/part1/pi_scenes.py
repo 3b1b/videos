@@ -292,7 +292,7 @@ class AskAboutActuallySolving(TeacherStudentsScene):
         self.student_says(
             "Yeah yeah, but how do\\\\"
             "you actually \\emph{solve} it?",
-            student_index=1,
+            index=1,
             target_mode="sassy",
             added_anims=[morty.change, "thinking"],
         )
@@ -491,7 +491,7 @@ class HungerForExactness(TeacherStudentsScene):
         self.student_says(
             "Let $\\text{P}(\\mu, g, L; t)$ be a\\\\"
             "function satisfying this ODE.",
-            student_index=0,
+            index=0,
             target_mode="speaking",
             added_anims=[
                 FadeOut(mystery),

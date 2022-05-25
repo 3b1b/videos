@@ -705,7 +705,7 @@ class LayOutPlan(TeacherStudentsScene, NetworkScene):
     def ask_about_layers(self):
         self.student_says(
             "Why the layers?",
-            student_index = 2,
+            index = 2,
             bubble_kwargs = {"direction" : LEFT}
         )
         self.wait()
@@ -1378,7 +1378,7 @@ class DiscussChoiceForHiddenLayers(TeacherStudentsScene):
         self.wait()
         self.student_says(
             "Why 2 \\\\ layers?",
-            student_index = 1,
+            index = 1,
             bubble_kwargs = {"direction" : RIGHT},
             run_time = 1,
             target_mode = "raise_left_hand",
@@ -1387,7 +1387,7 @@ class DiscussChoiceForHiddenLayers(TeacherStudentsScene):
         self.wait()
         self.student_says(
             "Why 16?",
-            student_index = 0,
+            index = 0,
             run_time = 1,
         )
         self.play(neurons_anim, run_time = 3)
@@ -1440,13 +1440,13 @@ class AskAboutPropogationAndTraining(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "How does one layer \\\\ influence the next?",
-            student_index = 0,
+            index = 0,
             run_time = 1
         )
         self.wait()
         self.student_says(
             "How does \\\\ training work?",
-            student_index = 2,
+            index = 2,
             run_time = 1
         )
         self.wait(3)
@@ -4133,7 +4133,7 @@ class ComplicationIsReassuring(TeacherStudentsScene):
         self.student_says(
             "It kind of has to \\\\ be complicated, right?",
             target_mode = "speaking",
-            student_index = 0
+            index = 0
         )
         self.play(self.teacher.change, "happy")
         self.wait(4)

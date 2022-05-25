@@ -926,7 +926,7 @@ class SixChooseThreeInOtherContext(Scene):
 #         for i in 2, 11, 14:
 #             formula[i].set_color(YELLOW)
 
-#         self.student_thinks(formula, student_index = 1)
+#         self.student_thinks(formula, index = 1)
 #         self.play(self.teacher.change, "sassy")
 #         self.wait(2)
 #         self.play(

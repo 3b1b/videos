@@ -131,7 +131,7 @@ class WhatAreFractals(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "But what \\emph{is} a fractal?",
-            student_index = 2,
+            index = 2,
             width = 6
         )
         self.play_student_changes("thinking", "pondering", None)

@@ -371,8 +371,8 @@ class Introduction(TeacherStudentsScene):
             rule.next_to(self.teacher.get_corner(UP+LEFT), UP)
             rule.shift_onto_screen()
 
-        student_index = 1
-        student = self.get_students()[student_index]
+        index = 1
+        student = self.get_students()[index]
         self.play_student_changes(
             "pondering", "sassy", "pondering",
             look_at = self.teacher.eyes,

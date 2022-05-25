@@ -1477,7 +1477,7 @@ class IntroduceTransformationView(NumberlineTransformationScene):
 
 class ExamplePlease(TeacherStudentsScene):
     def construct(self):
-        self.student_says("Example?", student_index=0)
+        self.student_says("Example?", index=0)
         self.teacher_holds_up(Tex("f(x) = x^2").scale(1.5))
         self.wait(2)
 

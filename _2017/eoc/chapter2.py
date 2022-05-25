@@ -98,7 +98,7 @@ class Introduction(TeacherStudentsScene):
         self.play_student_changes("erm")
         self.student_says(
             "Instantaneous rate of change", "?",
-            student_index = 0,
+            index = 0,
         )
         self.wait()
 

@@ -651,7 +651,7 @@ class LurkingQuestion(TeacherStudentsScene):
         #     Wait, why are the
         #     two views connected?
         #     """,
-        #     student_index = 2,
+        #     index = 2,
         #     target_mode = "raise_left_hand",
         #     width = 6,
         # )

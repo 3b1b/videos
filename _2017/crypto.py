@@ -376,7 +376,7 @@ class NoCommentOnSpeculation(TeacherStudentsScene):
 
         self.student_says(
             "But...what are they?",
-            student_index = 0,
+            index = 0,
             target_mode = "confused"
         )
         self.wait(2)

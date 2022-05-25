@@ -1423,7 +1423,7 @@ class ComplainAboutNotKnowingTheStats(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             "Are people expected\\\\to know that?",
-            student_index=2
+            index=2
         )
         self.play_student_changes(
             "sassy", "sassy",

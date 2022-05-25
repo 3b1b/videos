@@ -994,7 +994,7 @@ class TransformationsAndOperators(TeacherStudentsScene):
         self.student_says("""
             Are these the same
             as ``linear operators''?
-        """, student_index = 0)
+        """, index = 0)
         self.random_blink()
         teacher = self.get_teacher()
         bubble = teacher.get_bubble(SpeechBubble, height = 2, width = 2)

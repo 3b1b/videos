@@ -6,7 +6,7 @@ class WhyWouldYouCare(TeacherStudentsScene):
         self.student_says(
             "Who cares!",
             target_mode="sassy",
-            student_index=2,
+            index=2,
             added_anims=[self.teacher.change, "guilty"],
         )
         self.wait()
@@ -27,7 +27,7 @@ class SolveForWavesNothingElse(TeacherStudentsScene):
         self.student_says(
             "Sure, we can\\\\solve it for\\\\sums of waves...",
             target_mode="sassy",
-            student_index=2,
+            index=2,
             added_anims=[self.teacher.change, "guilty"]
         )
         self.play_student_changes("pondering", "pondering", "sassy")
@@ -107,7 +107,7 @@ class HangOnThere(TeacherStudentsScene):
             "Hang on\\\\hang on\\\\hang on...",
             target_mode="surprised",
             content_introduction_class=FadeIn,
-            student_index=2,
+            index=2,
             added_anims=[
                 self.teacher.change, "guilty"
             ],

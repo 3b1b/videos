@@ -158,7 +158,7 @@ class TopicChoice(TeacherStudentsScene):
         self.student_says(
             TexText("What kind of\\\\topics?"),
             added_anims=[self.teacher.change("tease")],
-            student_index=1,
+            index=1,
         )
         self.wait(3)
 
@@ -300,7 +300,7 @@ class ButIHaveNoExperience(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("But I have no\\\\experience!"),
-            student_index=0,
+            index=0,
             target_mode="pleading",
         )
         self.play_student_changes(
@@ -1071,7 +1071,7 @@ class TransitionToProductionQuality(TeacherStudentsScene):
         )
         self.student_says(
             TexText("What parts of\\\\production quality matter?"),
-            student_index=1
+            index=1
         )
         self.play(
             self.teacher.change("happy"),
@@ -1191,7 +1191,7 @@ class WhereCanIEngageWithOthers(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("Where can I find\\\\others joining SoME1?"),
-            student_index=0,
+            index=0,
             added_anims=[
                 self.students[1].change("pondering", UL),
                 self.students[2].change("pondering", UL),

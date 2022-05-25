@@ -656,7 +656,7 @@ class OtherViewsOfDx(TeacherStudentsScene):
         #Question
         self.student_says(
             statements[0],
-            student_index = 1,
+            index = 1,
             target_mode = "confused"
         )
         self.play(ReplacementTransform(
@@ -1789,7 +1789,7 @@ class TheoryHeavy(TeacherStudentsScene):
         derivative.add(epsilon_delta, arrow)
         self.student_says(
             "How do you \\\\ compute limits?",
-            student_index = 2,
+            index = 2,
             added_anims = [
                 derivative.scale, 0.8,
                 derivative.to_corner, UP+LEFT

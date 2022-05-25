@@ -732,7 +732,7 @@ class AskWhyAreTheyTheSame(TeacherStudentsScene):
         morty = self.teacher
         self.student_says(
             "Why on earth \\\\ are these the same?",
-            student_index=2,
+            index=2,
             target_mode="sassy",
             bubble_kwargs={"direction": LEFT}
         )

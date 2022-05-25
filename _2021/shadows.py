@@ -755,14 +755,14 @@ class AskAboutAveraging(TeacherStudentsScene):
         self.student_says(
             "Can we do an experiment?",
             target_mode="raise_left_hand",
-            student_index=1,
+            index=1,
         )
         self.wait(4)
         self.student_says(
             TexText("But what defines a\\\\``random'' toss?"),
             look_at=self.screen,
             target_mode="hesitant",
-            student_index=2,
+            index=2,
             added_anims=[
                 self.teacher.change("guilty"),
                 self.students[0].change("erm"),
@@ -5837,7 +5837,7 @@ class ButSpheresAreSmooth(TeacherStudentsScene):
         self.student_says(
             TexText("But spheres don't\\\\have flat faces!"),
             target_mode="angry",
-            student_index=2,
+            index=2,
             added_anims=[self.teacher.change("guilty")]
         )
         self.play_student_changes(
@@ -6559,7 +6559,7 @@ class InfatuationWithGenerality(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("Why are mathematicians\\\\obsessed with abstractions?"),
-            student_index=0,
+            index=0,
             added_anims=[
                 self.students[1].change("tease"),
                 self.students[2].change("pondering"),

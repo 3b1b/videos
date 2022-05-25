@@ -1398,7 +1398,7 @@ class SoWeFoundTheZeros(AltTeacherStudentsScene):
         self.student_says(
             "Aha! So we \\\\ found the solutions!",
             target_mode = "hooray",
-            student_index = 2,
+            index = 2,
             bubble_kwargs = {"direction" : LEFT},
         )
         self.wait()
@@ -1706,7 +1706,7 @@ class AskAboutHowToGeneralizeSigns(AltTeacherStudentsScene):
         self.student_says(
             question,
             target_mode = "sassy",
-            student_index = 2,
+            index = 2,
             added_anims = [
                 self.teacher.change, "plain",
             ],

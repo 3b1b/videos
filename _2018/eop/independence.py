@@ -2971,7 +2971,7 @@ class PointOutSimplicityOfFormula(TeacherStudentsScene, GeneralBinomialDistribut
         self.student_says(
             "Simpler than I feared",
             target_mode = "hooray",
-            student_index = 0,
+            index = 0,
             added_anims = [prob.to_corner, UP+RIGHT]
         )
         self.wait()
@@ -3318,7 +3318,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
             self.wait()
         self.student_says(
             "Is that valid?", target_mode = "sassy",
-            student_index = 0,
+            index = 0,
             run_time = 1
         )
         self.play(self.teacher.change, "guilty")

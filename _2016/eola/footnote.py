@@ -40,7 +40,7 @@ class PeakOutsideFlatland(TeacherStudentsScene):
         self.teacher_says("Peak outside flatland")
         self.wait()
         student = self.get_students()[0]
-        self.student_thinks(student_index = 0)
+        self.student_thinks(index = 0)
         student.bubble.make_green_screen()
         self.wait()
 

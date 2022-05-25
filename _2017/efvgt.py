@@ -162,7 +162,7 @@ class Anniversary(TeacherStudentsScene):
     def complain(self):
         self.student_says(
             "Why were you \\\\ talking so fast?",
-            student_index = 0,
+            index = 0,
             target_mode = "sassy",
         )
         self.play_student_changes(*["sassy"]*3)

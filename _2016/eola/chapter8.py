@@ -1119,7 +1119,7 @@ class PlayAround(TeacherStudentsScene):
         """)
         self.play_student_changes("pondering", "happy", "happy")
         self.random_blink(2)
-        self.student_thinks("", student_index = 0)
+        self.student_thinks("", index = 0)
         self.zoom_in_on_thought_bubble()
 
 class BiggerWhenPerpendicular(LinearTransformationScene):

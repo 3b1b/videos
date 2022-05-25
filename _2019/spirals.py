@@ -936,7 +936,7 @@ class AskWhat(TeacherStudentsScene):
             "I'm sorry,\\\\what?!?",
             target_mode="angry",
             look_at=screen,
-            student_index=2,
+            index=2,
             added_anims=[
                 self.teacher.change, "happy", screen,
                 self.students[0].change, "confused", screen,
@@ -1186,7 +1186,7 @@ class QuestionIsMisleading(TeacherStudentsScene):
         self.student_says(
             "Whoa, is this some\\\\divine hidden structure\\\\in the primes?",
             target_mode="surprised",
-            student_index=0,
+            index=0,
             added_anims=[
                 self.students[1].change, "pondering",
                 self.students[2].change, "pondering",
@@ -4262,7 +4262,7 @@ class TalkAboutProof(TeacherStudentsScene):
         # Ask question
         self.student_says(
             "So how'd he\\\\prove it?",
-            student_index=0,
+            index=0,
         )
         bubble = students[0].bubble
         students[0].bubble = None

@@ -484,7 +484,7 @@ class HowAreYouFindingTheBest(TeacherStudentsScene):
     def construct(self):
         self.student_says(
             TexText("What exactly is this\\\\``final analysis''?"),
-            student_index=0,
+            index=0,
         )
         self.play(
             self.students[1].change("pondering"),
