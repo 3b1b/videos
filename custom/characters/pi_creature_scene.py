@@ -84,37 +84,46 @@ class PiCreatureScene(InteractiveScene):
             run_time=1,
         )
 
-    def introduce_bubble(self, *args, **kwargs):
-        if isinstance(args[0], PiCreature):
-            pi_creature = args[0]
-            content = args[1:]
-        else:
-            pi_creature = self.get_primary_pi_creature()
-            content = args
-
-        bubble_class = kwargs.pop("bubble_class", SpeechBubble)
-        target_mode = kwargs.pop(
-            "target_mode",
-            "thinking" if bubble_class is ThoughtBubble else "speaking"
-        )
-        bubble_kwargs = kwargs.pop("bubble_kwargs", {})
-        bubble_removal_kwargs = kwargs.pop("bubble_removal_kwargs", {})
-        added_anims = kwargs.pop("added_anims", [])
+    def introduce_bubble(
+        self,
+        pi_creature,
+        content,
+        bubble_class=SpeechBubble,
+        target_mode=None,
+        max_bubble_height=None,
+        max_bubble_width=None,
+        bubble_direction=None,
+        bubble_kwargs=dict(),
+        bubble_removal_kwargs=dict(),
+        added_anims=[],
+        **kwargs
+    ):
+        if target_mode is None:
+            target_mode = "thinking" if bubble_class is ThoughtBubble else "speaking"
 
         anims = []
         on_screen_mobjects = self.get_mobject_family_members()
 
         def has_bubble(pi):
-            return hasattr(pi, "bubble") and \
-                pi.bubble is not None and \
-                pi.bubble in on_screen_mobjects
+            if not hasattr(pi, "bubble"):
+                return False
+            if not pi.bubble:
+                return False
+            if pi.bubble not in on_screen_mobjects:
+                return False
+            return True
+
+        bubble_kwargs["max_height"] = max_bubble_height
+        bubble_kwargs["max_width"] = max_bubble_width
+        if bubble_direction is not None:
+            bubble_kwargs["direction"] = bubble_direction
 
         pi_creatures_with_bubbles = list(filter(has_bubble, self.get_pi_creatures()))
         if pi_creature in pi_creatures_with_bubbles:
             pi_creatures_with_bubbles.remove(pi_creature)
             old_bubble = pi_creature.bubble
             bubble = pi_creature.get_bubble(
-                *content,
+                content,
                 bubble_class=bubble_class,
                 **bubble_kwargs
             )
@@ -126,7 +135,7 @@ class PiCreatureScene(InteractiveScene):
         else:
             anims.append(PiCreatureBubbleIntroduction(
                 pi_creature,
-                *content,
+                content,
                 bubble_class=bubble_class,
                 bubble_kwargs=bubble_kwargs,
                 target_mode=target_mode,
@@ -140,27 +149,17 @@ class PiCreatureScene(InteractiveScene):
 
         self.play(*anims, **kwargs)
 
-    def pi_creature_says(self, *args, **kwargs):
-        self.introduce_bubble(
-            *args,
-            bubble_class=SpeechBubble,
-            **kwargs
-        )
+    def pi_creature_says(self, pi_creature, content, **kwargs):
+        self.introduce_bubble(pi_creature, content, bubble_class=SpeechBubble, **kwargs)
 
-    def pi_creature_thinks(self, *args, **kwargs):
-        self.introduce_bubble(
-            *args,
-            bubble_class=ThoughtBubble,
-            **kwargs
-        )
+    def pi_creature_thinks(self, pi_creature, content, **kwargs):
+        self.introduce_bubble(pi_creature, content, bubble_class=ThoughtBubble, **kwargs)
 
-    def say(self, *content, **kwargs):
-        self.pi_creature_says(
-            self.get_primary_pi_creature(), *content, **kwargs)
+    def say(self, content, **kwargs):
+        self.pi_creature_says(self.get_primary_pi_creature(), content, **kwargs)
 
-    def think(self, *content, **kwargs):
-        self.pi_creature_thinks(
-            self.get_primary_pi_creature(), *content, **kwargs)
+    def think(self, content, **kwargs):
+        self.pi_creature_thinks(self.get_primary_pi_creature(), content, **kwargs)
 
     def anims_from_play_args(self, *args, **kwargs):
         """
@@ -313,33 +312,46 @@ class TeacherStudentsScene(PiCreatureScene):
     def get_students(self):
         return self.students
 
-    def teacher_says(self, *content, **kwargs):
+    def teacher_says(self, content, **kwargs):
         return self.pi_creature_says(
-            self.get_teacher(), *content, **kwargs
+            self.get_teacher(), content, **kwargs
         )
 
-    def student_says(self, *content, **kwargs):
-        if "target_mode" not in kwargs:
+    def student_says(
+        self, content,
+        target_mode=None,
+        bubble_direction=LEFT,
+        index=2,
+        pi_modes=None,
+        **kwargs
+    ):
+        if target_mode is None:
             target_mode = random.choice([
                 "raise_right_hand",
                 "raise_left_hand",
             ])
-            kwargs["target_mode"] = target_mode
-        if "bubble_kwargs" not in kwargs:
-            kwargs["bubble_kwargs"] = {"direction": LEFT}
-        student = self.get_students()[kwargs.get("student_index", 2)]
+        student = self.get_students()[index]
+        added_anims = kwargs.get("added_anims", [])
+        if pi_modes is not None:
+            if len(pi_modes) > index:
+                pi_modes[index] = None
+            added_anims.append(self.pi_changes(*pi_modes))
         return self.pi_creature_says(
-            student, *content, **kwargs
+            student, content,
+            target_mode=target_mode,
+            bubble_direction=bubble_direction,
+            added_anims=added_anims,
+            **kwargs
         )
 
-    def teacher_thinks(self, *content, **kwargs):
+    def teacher_thinks(self, content, **kwargs):
         return self.pi_creature_thinks(
-            self.get_teacher(), *content, **kwargs
+            self.get_teacher(), content, **kwargs
         )
 
-    def student_thinks(self, *content, **kwargs):
-        student = self.get_students()[kwargs.get("student_index", 2)]
-        return self.pi_creature_thinks(student, *content, **kwargs)
+    def student_thinks(self, content, **kwargs):
+        student = self.get_students()[kwargs.get("index", 2)]
+        return self.pi_creature_thinks(student, content, **kwargs)
 
     def play_all_student_changes(self, mode, **kwargs):
         self.play_student_changes(*[mode] * len(self.students), **kwargs)

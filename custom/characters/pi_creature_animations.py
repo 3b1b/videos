@@ -25,41 +25,33 @@ class Blink(ApplyMethod):
 
 
 class PiCreatureBubbleIntroduction(AnimationGroup):
-    CONFIG = {
-        "target_mode": "speaking",
-        "bubble_class": SpeechBubble,
-        "change_mode_kwargs": {},
-        "bubble_creation_class": DrawBorderThenFill,
-        "bubble_creation_kwargs": {},
-        "bubble_kwargs": {},
-        "content_introduction_class": Write,
-        "content_introduction_kwargs": {},
-        "look_at": None,
-    }
-
-    def __init__(self, pi_creature, *content, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(
+        self, pi_creature, content,
+        target_mode="speaking",
+        bubble_class=SpeechBubble,
+        bubble_creation_class=DrawBorderThenFill,
+        bubble_creation_kwargs={},
+        bubble_kwargs={},
+        content_introduction_class=Write,
+        content_introduction_kwargs={},
+        look_at=None,
+        **kwargs,
+    ):
         bubble = pi_creature.get_bubble(
-            *content,
-            bubble_class=self.bubble_class,
-            **self.bubble_kwargs
+            content, bubble_class=bubble_class,
+            **bubble_kwargs
         )
         Group(bubble, bubble.content).shift_onto_screen()
 
-        pi_creature.generate_target()
-        pi_creature.target.change_mode(self.target_mode)
-        if self.look_at is not None:
-            pi_creature.target.look_at(self.look_at)
-
-        change_mode = MoveToTarget(pi_creature, **self.change_mode_kwargs)
-        bubble_creation = self.bubble_creation_class(
-            bubble, **self.bubble_creation_kwargs
+        bubble_creation = bubble_creation_class(
+            bubble, **bubble_creation_kwargs
         )
-        content_introduction = self.content_introduction_class(
-            bubble.content, **self.content_introduction_kwargs
+        content_introduction = content_introduction_class(
+            bubble.content, **content_introduction_kwargs
         )
-        AnimationGroup.__init__(
-            self, change_mode, bubble_creation, content_introduction,
+        super().__init__(
+            pi_creature.change(target_mode, look_at),
+            bubble_creation, content_introduction,
             **kwargs
         )
 
