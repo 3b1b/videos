@@ -259,7 +259,7 @@ class PiCreature(SVGMobject):
             animation = animation.look_at(look_at)
         return animation
 
-    def say(self, content, mode="speaking", look_at=None, **kwargs):
+    def says(self, content, mode="speaking", look_at=None, **kwargs):
         from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
         return PiCreatureBubbleIntroduction(
             self, content,
@@ -269,7 +269,7 @@ class PiCreature(SVGMobject):
             **kwargs,
         )
 
-    def think(self, content, mode="thinking", look_at=None, **kwargs):
+    def thinks(self, content, mode="thinking", look_at=None, **kwargs):
         from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
         return PiCreatureBubbleIntroduction(
             self, content,
