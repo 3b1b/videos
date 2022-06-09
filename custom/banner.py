@@ -1,6 +1,7 @@
 from manimlib.constants import *
 from manimlib.mobject.coordinate_systems import NumberPlane
 from manimlib.mobject.svg.tex_mobject import TexText
+from manimlib.mobject.svg.text_mobject import Text
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.frame import FullScreenFadeRectangle
 from manimlib.scene.scene import Scene
@@ -10,22 +11,19 @@ from custom.characters.pi_creature import Randolph
 
 
 class Banner(Scene):
-    CONFIG = {
-        "camera_config": {
-            "pixel_height": 1440,
-            "pixel_width": 2560,
-        },
-        "pi_height": 1.25,
-        "pi_bottom": 0.25 * DOWN,
-        "use_date": False,
-        "date": "Sunday, February 3rd",
-        "message_height": 0.4,
-        "add_supporter_note": False,
-        "pre_date_text": "Next video on ",
-    }
+    camera_config = dict(pixel_height=1440, pixel_width=2560)
+    pi_height = 1.25
+    pi_bottom = 0.25 * DOWN
+    use_date = False
+    message = None
+    date = "Sunday, February 3rd"
+    message_height = 0.4
+    add_supporter_note = False
+    pre_date_text = "Next video on "
 
     def construct(self):
         # Background
+        self.add(FullScreenFadeRectangle().set_fill(BLACK, 1))
         plane = NumberPlane(
             (-10, 10), (-14, 14),
             axis_config={"stroke_color": BLUE_A}
@@ -34,7 +32,7 @@ class Banner(Scene):
             line.set_stroke(width=line.get_stroke_width() / 2)
         self.add(
             plane,
-            FullScreenFadeRectangle(fill_opacity=0.25),
+            # FullScreenFadeRectangle().set_fill(BLACK, 0.25),
         )
 
         # Pis
@@ -78,23 +76,25 @@ class Banner(Scene):
         )
 
     def get_message(self):
+        if self.message:
+            return Text(self.message)
         if self.use_date:
             return self.get_date_message()
         else:
             return self.get_probabalistic_message()
 
     def get_probabalistic_message(self):
-        return TexText(
+        return Text(
             "New video every day ",
             "(with probability 0.05)",
-            tex_to_color_map={"Sunday": YELLOW},
+            t2c={"Sunday": YELLOW},
         )
 
     def get_date_message(self):
-        return TexText(
+        return Text(
             self.pre_date_text,
             self.date,
-            tex_to_color_map={self.date: YELLOW},
+            t2c={self.date: YELLOW},
         )
 
     def get_supporter_note(self):
