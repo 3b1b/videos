@@ -5434,7 +5434,8 @@ class Thumbnail(InteractiveScene):
             axis_config=dict(stroke_color=GREY_B),
         )
         plane.set_width(FRAME_WIDTH)
-        plane.move_to(0.75 * DOWN)
+        plane.scale(1.2)
+        # plane.move_to(0.75 * DOWN)
         # plane.add_coordinate_labels(font_size=24)
 
         circle = Circle(radius=get_norm(plane.n2p(1) - plane.n2p(0)))
@@ -5466,7 +5467,7 @@ class Thumbnail(InteractiveScene):
         question.to_edge(UP, buff=0.25)
         br = VGroup(BackgroundRectangle(question[:2], buff=SMALL_BUFF), BackgroundRectangle(question[2], buff=SMALL_BUFF))
         br.set_fill(BLACK, 2)
-        self.add(br, question)
+        # self.add(br, question)
 
         # Complex
 
@@ -5475,5 +5476,5 @@ class Thumbnail(InteractiveScene):
         # words.add_background_rectangle(opacity=0.95, buff=MED_SMALL_BUFF)
         words.set_width(FRAME_WIDTH / 2 - 0.1)
         words.to_corner(DL, buff=SMALL_BUFF)
-        self.add(words)
-        self.wait()
+        # self.add(words)
+        # self.wait()
