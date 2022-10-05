@@ -1,13 +1,13 @@
 directories:
   mirror_module_path: True
   removed_mirror_prefix: "/Users/grant/cs/videos/"
-  output: "/Users/grant/Dropbox/3Blue1Brown/videos"
-  raster_images: "/Users/grant/Dropbox/3Blue1Brown/images/raster"
-  vector_images: "/Users/grant/Dropbox/3Blue1Brown/images/vector"
-  pi_creature_images: "/Users/grant/Dropbox/3Blue1Brown/images/pi_creature/svg"
-  sounds: "/Users/grant/Dropbox/3Blue1Brown/sounds"
-  data: "/Users/grant/Dropbox/3Blue1Brown/data"
-  temporary_storage: "/Users/grant/Dropbox/3Blue1Brown/manim_cache"
+  output: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos"
+  raster_images: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/images/raster"
+  vector_images: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/images/vector"
+  pi_creature_images: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/images/pi_creature/svg"
+  sounds: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/sounds"
+  data: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/data"
+  temporary_storage: "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/manim_cache"
 universal_import_line: "from manim_imports_ext import *"
 # tex:
 #   executable: "xelatex -no-pdf"
@@ -22,3 +22,4 @@ camera_resolutions:
 window_position: UR
 window_monitor: 0
 full_screen: False
+
