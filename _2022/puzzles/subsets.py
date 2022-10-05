@@ -5478,3 +5478,67 @@ class Thumbnail(InteractiveScene):
         words.to_corner(DL, buff=SMALL_BUFF)
         # self.add(words)
         # self.wait()
+
+
+class AltThumbnail(InteractiveScene):
+    def construct(self):
+        # Organize sets
+        subsets = [
+            subset
+            for subset in get_subsets(range(1, 10))
+            if sum(subset) % 5 == 0
+        ]
+        n_shown = 28
+        shown_sets = VGroup(*(get_set_tex(ss) for ss in subsets[:n_shown]))
+        shown_sets.arrange(DOWN, aligned_edge=LEFT)
+        shown_sets[n_shown // 2:].next_to(shown_sets[:n_shown // 2], RIGHT, MED_LARGE_BUFF)
+        shown_sets.refresh_bounding_box()
+        shown_sets.set_height(FRAME_HEIGHT - 1)
+        shown_sets.center().to_edge(LEFT)
+
+        dots = Tex("\\vdots")
+        dots.replace(shown_sets[-1], dim_to_match=1)
+        shown_sets.replace_submobject(-1, dots)
+
+        self.add(shown_sets)
+
+        # Phrase
+        text = Text("Use complex numbers", font_size=90)
+        text.set_color(YELLOW)
+        text.set_x(2)
+        text.to_edge(UP)
+        text.set_backstroke(width=20)
+
+        subtext = Text("...of course")
+        subtext.next_to(text, DOWN, buff=MED_LARGE_BUFF, aligned_edge=RIGHT)
+
+        self.add(text)
+        self.add(subtext)
+
+        # Unit circle
+        plane = ComplexPlane(
+            (-2, 2), (-2, 2),
+            background_line_style=dict(stroke_color=BLUE_D, stroke_width=3),
+            faded_line_ratio=1,
+            axis_config=dict(stroke_color=GREY_B),
+        )
+        plane.set_width(9.5)
+        plane.match_x(text)
+        plane.to_edge(UP, buff=0)
+
+        circle = Circle(radius=get_norm(plane.n2p(1) - plane.n2p(0)))
+        circle.move_to(plane.n2p(0))
+        circle.set_stroke(WHITE, 2)
+
+        points = [plane.n2p(np.exp(complex(0, angle))) for angle in np.arange(0, TAU, TAU / 5)]
+        glow_dots = GlowDots(points, radius=0.5)
+        dots = DotCloud(points, radius=0.05, color=YELLOW)
+        lines = VGroup(*(Line(plane.n2p(0), point) for point in points))
+        lines.set_stroke(YELLOW, 4)
+
+        self.add(plane)
+        self.add(circle)
+        self.add(lines)
+        self.add(dots)
+        self.add(glow_dots)
+        self.add(text, subtext)
