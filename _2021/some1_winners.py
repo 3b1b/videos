@@ -426,13 +426,18 @@ class FiltrationProcess(Scene):
 
 
 class AllVideosOrdered(Scene):
+    slug_file = "some1_video_urls_ordered.txt"
+    grid_size = 3
+    time_per_image = 0.2
+
     def construct(self):
-        n = 3
+        n = self.grid_size
         N = n**2
-        time_per_image = 1 / 5
+        time_per_image = self.time_per_image
         buffer_size = 2 * N
 
-        slugs = get_youtube_slugs("some1_video_urls_ordered.txt")
+        slugs = get_youtube_slugs(self.slug_file)
+        random.shuffle(slugs)
         log.info(f"Number of slugs: {len(slugs)}")
         image_slots = ScreenRectangle().get_grid(n, n, buff=0.2)
         image_slots.set_height(FRAME_HEIGHT)
