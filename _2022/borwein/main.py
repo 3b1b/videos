@@ -19,7 +19,7 @@ def rect_func(x):
 
 
 def get_fifteenth_frac_tex():
-    return "{467{,}807{,}924{,}713{,}440{,}738{,}696{,}537{,}864{,}469 \\over 467{,}807{,}924{,}720{,}320{,}453{,}655{,}260{,}875{,}000}"
+    return R"{467{,}807{,}924{,}713{,}440{,}738{,}696{,}537{,}864{,}469 \over 467{,}807{,}924{,}720{,}320{,}453{,}655{,}260{,}875{,}000}"
 
 
 class ShowIntegrals(InteractiveScene):
@@ -31,16 +31,25 @@ class ShowIntegrals(InteractiveScene):
 
         graph = axes.get_graph(sinc, color=BLUE)
         graph.set_stroke(width=3)
+        points = graph.get_anchors()
+        right_sinc = VMobject().set_points_smoothly(points[len(points) // 2:])
+        left_sinc = VMobject().set_points_smoothly(points[:len(points) // 2]).reverse_points()
+        VGroup(left_sinc, right_sinc).match_style(graph).make_jagged()
 
-        func_label = MTex("{\\sin(x) \\over x}")
+        func_label = MTex(R"{\sin(x) \over x}")
         func_label.move_to(axes, UP).to_edge(LEFT)
 
         self.add(axes)
+        self.play(
+            Write(func_label),
+            ShowCreation(right_sinc, remover=True, run_time=3),
+            ShowCreation(left_sinc, remover=True, run_time=3),
+        )
         self.add(graph)
-        self.add(func_label)
+        self.wait()
 
         # Discuss sinc function?
-        sinc_label = Tex("\\text{sinc}(x)")
+        sinc_label = Tex(R"\text{sinc}(x)")
         sinc_label.next_to(func_label, UR, buff=LARGE_BUFF)
         arrow = Arrow(func_label, sinc_label)
 
@@ -48,8 +57,8 @@ class ShowIntegrals(InteractiveScene):
         one_over_x_graph.set_stroke(YELLOW, 2)
         one_over_x_label = Tex("1 / x")
         one_over_x_label.next_to(axes.i2gp(1, one_over_x_graph), RIGHT)
-        sine_wave = axes.get_graph(np.sin)
-        sine_wave.set_stroke(TEAL, 3)
+        sine_wave = axes.get_graph(np.sin, x_range=(0, 8 * PI)).set_stroke(TEAL, 3)
+        half_sinc = axes.get_graph(sinc, x_range=(0, 8 * PI)).set_stroke(BLUE, 3)
 
         self.play(
             GrowArrow(arrow),
@@ -65,11 +74,15 @@ class ShowIntegrals(InteractiveScene):
         self.play(
             ShowCreation(one_over_x_graph),
             FadeIn(one_over_x_label),
-            Transform(sine_wave, graph, remover=True),
-            graph.animate.set_stroke(width=3, opacity=1)
+            Transform(sine_wave, half_sinc),
         )
         self.wait()
-        self.play(*map(FadeOut, (one_over_x_graph, one_over_x_label)))
+        self.play(
+            FadeOut(one_over_x_graph),
+            FadeOut(one_over_x_label),
+            FadeOut(sine_wave),
+            graph.animate.set_stroke(width=3, opacity=1),
+        )
 
         # At 0
         hole = Dot()
@@ -77,9 +90,9 @@ class ShowIntegrals(InteractiveScene):
         hole.set_fill(BLACK, 1)
         hole.move_to(axes.c2p(0, 1))
 
-        zero_eq = Tex("{\\sin(0) \\over 0} = ???")
+        zero_eq = Tex(R"{\sin(0) \over 0} = ???")
         zero_eq.next_to(hole, UR)
-        lim = Tex("\\lim_{x \\to 0} {\\sin(x) \\over x} = 1")
+        lim = Tex(R"\lim_{x \to 0} {\sin(x) \over x} = 1")
         lim.move_to(zero_eq, LEFT)
         x_tracker = ValueTracker(1.5 * PI)
         get_x = x_tracker.get_value
@@ -104,7 +117,7 @@ class ShowIntegrals(InteractiveScene):
         # Area under curve
         area = self.get_area(axes, graph)
         int1 = self.get_integral(1)
-        rhs = Tex("=\\pi")
+        rhs = Tex(R"=\pi")
         rhs.next_to(int1, RIGHT)
 
         origin = axes.get_origin()
@@ -141,7 +154,7 @@ class ShowIntegrals(InteractiveScene):
         low_sinc.set_stroke(BLUE, 2)
         low_graph = low_axes.get_graph(lambda x: sinc(x / 3))
         low_graph.set_stroke(WHITE, 2)
-        low_label = Tex("{\\sin(x / 3) \\over x / 3}")
+        low_label = Tex(R"{\sin(x / 3) \over x / 3}")
         low_label.match_x(int1[1]).shift(1.75 * LEFT).match_y(low_axes.get_top())
 
         self.play(
@@ -170,9 +183,9 @@ class ShowIntegrals(InteractiveScene):
                 new_int.scale(0.7)
             new_int.move_to(curr_int, LEFT)
             if n < 8:  # TODO
-                new_rhs = MTex("=\\pi")
+                new_rhs = MTex(R"=\pi")
             else:
-                new_rhs = MTex("\\approx \\pi - 4.62 \\times 10^{-11}")
+                new_rhs = MTex(R"\approx \pi - 4.62 \times 10^{-11}")
             new_rhs.next_to(new_int, RIGHT)
 
             new_graph = axes.get_graph(lambda x, n=n: multi_sinc(x, n))
@@ -197,7 +210,7 @@ class ShowIntegrals(InteractiveScene):
             if n < 8:
                 new_low_graph = low_axes.get_graph(lambda x, n=n: sinc(x / (2 * n + 1)))
                 new_low_graph.match_style(low_graph)
-                new_low_label = Tex(f"{{\\sin(x / {2 * n + 1}) \\over x / {2 * n + 1}}}")
+                new_low_label = Tex(fR"{{\sin(x / {2 * n + 1}) \over x / {2 * n + 1}}}")
                 new_low_label.move_to(low_label)
                 if n == 4:
                     new_low_label.shift(0.5 * UP)
@@ -217,7 +230,7 @@ class ShowIntegrals(InteractiveScene):
             low_label = new_low_label
 
         # More accurate rhs
-        new_rhs = Tex(f"= {get_fifteenth_frac_tex()} \\pi")
+        new_rhs = Tex(Rf"= {get_fifteenth_frac_tex()} \pi")
         new_rhs.next_to(curr_int, DOWN, buff=LARGE_BUFF)
 
         self.play(
@@ -228,9 +241,9 @@ class ShowIntegrals(InteractiveScene):
         self.wait()
 
     def get_axes(self,
-                 x_range=(-15 * PI, 15 * PI, PI),
-                 y_range=(-1, 1, 0.5),
-                 width=2.0 * FRAME_WIDTH,
+                 x_range=(-10 * PI, 10 * PI, PI),
+                 y_range=(-0.5, 1, 0.5),
+                 width=1.3 * FRAME_WIDTH,
                  height=3.5,
                  ):
         axes = Axes(x_range, y_range, width=width, height=height)
@@ -241,7 +254,7 @@ class ShowIntegrals(InteractiveScene):
                 axes.x_axis.add_numbers(
                     u * np.arange(PI, 15 * PI, PI),
                     unit=PI,
-                    unit_tex="\\pi",
+                    unit_tex=R"\pi",
                     font_size=20
                 )
         return axes
@@ -259,10 +272,10 @@ class ShowIntegrals(InteractiveScene):
 
     def get_integral(self, n):
         return Tex(
-            "\\int_{-\\infty}^\\infty",
-            "{\\sin(x) \\over x}",
+            R"\int_{-\infty}^\infty",
+            R"{\sin(x) \over x}",
             *(
-                "{\\sin(x/" + str(k) + ") \\over x / " + str(k) + "}"
+                Rf"{{\sin(x/{k}) \over x / {k} }}"
                 for k in range(3, 2 * n + 1, 2)
             ),
             "dx"
@@ -282,7 +295,7 @@ class WriteOutIntegrals(InteractiveScene):
         ints.center()
 
         for integral in ints:
-            integral.set_color_by_tex("\\sin", BLUE)
+            integral.set_color_by_tex("\sin", BLUE)
             integral.set_color_by_tex("x/3", TEAL)
             integral.set_color_by_tex("x/5", GREEN)
             integral.set_color_by_tex("x/13", YELLOW)
@@ -315,42 +328,42 @@ class WriteOutIntegrals(InteractiveScene):
     def get_integrals(self):
         return VGroup(
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(x)}{x}",
-                "dx = ", "\\pi"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(x)}{x}",
+                R"dx = ", R"\pi"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(x)}{x}",
-                "\\frac{\\sin(x/3)}{x/3}",
-                "dx = ", "\\pi"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(x)}{x}",
+                R"\frac{\sin(x/3)}{x/3}",
+                "dx = ", R"\pi"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(x)}{x}",
-                "\\frac{\\sin(x/3)}{x/3}",
-                "\\frac{\\sin(x/5)}{x/5}",
-                "dx = ", "\\pi"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(x)}{x}",
+                R"\frac{\sin(x/3)}{x/3}",
+                R"\frac{\sin(x/5)}{x/5}",
+                "dx = ", R"\pi"
             ),
-            Tex("\\vdots"),
+            Tex(R"\vdots"),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(x)}{x}",
-                "\\frac{\\sin(x/3)}{x/3}",
-                "\\frac{\\sin(x/5)}{x/5}",
-                "\\dots",
-                "\\frac{\\sin(x/13)}{x/13}",
-                "dx = ", "\\pi"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(x)}{x}",
+                R"\frac{\sin(x/3)}{x/3}",
+                R"\frac{\sin(x/5)}{x/5}",
+                R"\dots",
+                R"\frac{\sin(x/13)}{x/13}",
+                "dx = ", R"\pi"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(x)}{x}",
-                "\\frac{\\sin(x/3)}{x/3}",
-                "\\frac{\\sin(x/5)}{x/5}",
-                "\\dots",
-                "\\frac{\\sin(x/13)}{x/13}",
-                "\\frac{\\sin(x/15)}{x/15}",
-                "dx = ", f"({SUB_ONE_FACTOR}\\dots)", "\\pi",
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(x)}{x}",
+                R"\frac{\sin(x/3)}{x/3}",
+                R"\frac{\sin(x/5)}{x/5}",
+                R"\dots",
+                R"\frac{\sin(x/13)}{x/13}",
+                R"\frac{\sin(x/15)}{x/15}",
+                "dx = ", fR"({SUB_ONE_FACTOR}\dots)", R"\pi",
             ),
         )
 
@@ -359,42 +372,42 @@ class WriteOutIntegralsWithPi(WriteOutIntegrals):
     def get_integrals(self):
         result = VGroup(
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(\\pi x)}{\\pi x}",
-                "dx = ", "1.0"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(\pi x)}{\pi x}",
+                R"dx = ", "1.0"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(\\pi x)}{\\pi x}",
-                "\\frac{\\sin(\\pi x/3)}{\\pi x/3}",
-                "dx = ", "1.0"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(\pi x)}{\pi x}",
+                R"\frac{\sin(\pi x/3)}{\pi x/3}",
+                R"dx = ", "1.0"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(\\pi x)}{\\pi x}",
-                "\\frac{\\sin(\\pi x/3)}{\\pi x/3}",
-                "\\frac{\\sin(\\pi x/5)}{\\pi x/5}",
-                "dx = ", "1.0"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(\pi x)}{\pi x}",
+                R"\frac{\sin(\pi x/3)}{\pi x/3}",
+                R"\frac{\sin(\pi x/5)}{\pi x/5}",
+                R"dx = ", "1.0"
             ),
-            Tex("\\vdots"),
+            Tex("\vdots"),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(\\pi x)}{\\pi x}",
-                "\\frac{\\sin(\\pi x/3)}{\\pi x/3}",
-                "\\frac{\\sin(\\pi x/5)}{\\pi x/5}",
-                "\\dots",
-                "\\frac{\\sin(\\pi x/13)}{\\pi x/13}",
-                "dx = ", "1.0"
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(\pi x)}{\pi x}",
+                R"\frac{\sin(\pi x/3)}{\pi x/3}",
+                R"\frac{\sin(\pi x/5)}{\pi x/5}",
+                R"\dots",
+                R"\frac{\sin(\pi x/13)}{\pi x/13}",
+                R"dx = ", "1.0"
             ),
             Tex(
-                "\\int_{-\\infty}^\\infty",
-                "\\frac{\\sin(\\pi x)}{\\pi x}",
-                "\\frac{\\sin(\\pi x/3)}{\\pi x/3}",
-                "\\frac{\\sin(\\pi x/5)}{\\pi x/5}",
-                "\\dots",
-                "\\frac{\\sin(\\pi x/13)}{\\pi x/13}",
-                "\\frac{\\sin(\\pi x/15)}{\\pi x/15}",
-                "dx = ", f"{SUB_ONE_FACTOR}\\dots", ".",
+                R"\int_{-\infty}^\infty",
+                R"\frac{\sin(\pi x)}{\pi x}",
+                R"\frac{\sin(\pi x/3)}{\pi x/3}",
+                R"\frac{\sin(\pi x/5)}{\pi x/5}",
+                R"\dots",
+                R"\frac{\sin(\pi x/13)}{\pi x/13}",
+                R"\frac{\sin(\pi x/15)}{\pi x/15}",
+                R"dx = ", fR"{SUB_ONE_FACTOR}\dots", ".",
             ),
         )
         result[-1][-1].scale(0)
@@ -647,11 +660,11 @@ class MovingAverages(InteractiveScene):
 
     def get_rect_func_def(self):
         return MTex(
-            """\\text{rect}(x) :=
-            \\begin{cases}
-                1 & \\text{if } \\text{-}\\frac{1}{2} < x < \\frac{1}{2} \\\\
-                0 & \\text{otherwise}
-            \\end{cases}"""
+            R"""\text{rect}(x) :=
+            \begin{cases}
+                1 & \text{if } \text{-}\frac{1}{2} < x < \frac{1}{2} \
+                0 & \text{otherwise}
+            \end{cases}"""
         )
 
     def get_axes(self, x_range=(-1, 1, 0.25), y_range=(0, 1, 0.25), width=13.0, height=2.5):
@@ -673,11 +686,11 @@ class LongerTimescaleMovingAverages(MovingAverages):
 
     def get_rect_func_def(self):
         return MTex(
-            """\\text{rect}_2(x) :=
-            \\begin{cases}
-                1 & \\text{if } \\text{-}1 < x < 1 \\\\
-                0 & \\text{otherwise}
-            \\end{cases}"""
+            R"""\text{rect}_2(x) :=
+            \begin{cases}
+                1 & \text{if } \text{-}1 < x < 1 \\
+                0 & \text{otherwise}
+            \end{cases}"""
         )
 
     def get_axes(self, x_range=(-2, 2, 0.25), *args, **kwargs):
@@ -688,7 +701,7 @@ class LongerTimescaleMovingAverages(MovingAverages):
         for k in range(3, min(2 * n + 3, 9), 2):
             result += "- " + f"1 / {k}"
         if n > 3:
-            result += f" - \\cdots - 1 / {2 * n + 1}"
+            result += fR" - \cdots - 1 / {2 * n + 1}"
         return result
 
 
@@ -723,7 +736,7 @@ class ShowReciprocalSums(InteractiveScene):
             tex_parts.append("+")
             tally += 1 / (2 * k + 1)
         tex_parts[-1] = "="
-        tex_parts.append("{:.06f}\\dots".format(tally))
+        tex_parts.append(R"{:.06f}\dots".format(tally))
         return Tex(*tex_parts)
 
 
@@ -742,7 +755,7 @@ class Convolutions(InteractiveScene):
     g_graph_x_step = 0.1
     f_label_tex = "f(x)"
     g_label_tex = "g(t - x)"
-    fg_label_tex = "f(x) \\cdot g(t - x)"
+    fg_label_tex = "f(x) \cdot g(t - x)"
     t_color = TEAL
     area_line_dx = 0.05
     jagged_product = False
@@ -845,7 +858,7 @@ class Convolutions(InteractiveScene):
         ))
 
         conv_label = Tex(
-            "(f * g)(t) := \\int_{-\\infty}^\\infty f(x) \\cdot g(t - x) dx",
+            R"(f * g)(t) := \int_{-\infty}^\infty f(x) \cdot g(t - x) dx",
             font_size=36
         )
         conv_label.next_to(conv_axes, UP)
@@ -919,7 +932,7 @@ class MovingAverageAsConvolution(Convolutions):
         rect.set_stroke(width=0)
         rect.set_fill(YELLOW, 0.5)
         rect.set_gloss(1)
-        area_label = Tex("\\text{Area } = 1", font_size=36)
+        area_label = Tex(R"\text{Area } = 1", font_size=36)
         area_label.next_to(rect, UL)
         arrow = Arrow(area_label.get_bottom(), rect.get_center())
 
@@ -1013,9 +1026,9 @@ class RectConvolutionsNewNotation(MovingAverages):
         rect_defs[0].next_to(axes1, UP).shift_onto_screen()
 
         conv_labels = VGroup(
-            Tex("\\big[\\text{rect} * \\text{rect}_3\\big](x)"),
-            Tex("\\big[\\text{rect} * \\text{rect}_3 * \\text{rect}_5\\big](x)"),
-            Tex("\\big[\\text{rect} * \\text{rect}_3 * \\text{rect}_5 * \\text{rect}_7 \\big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3\big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5\big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5 * \text{rect}_7 \big](x)"),
         )
         conv_labels.scale(0.75)
         conv_labels.match_x(axes3).match_y(rect_defs)
@@ -1087,49 +1100,49 @@ class RectConvolutionsNewNotation(MovingAverages):
         )
 
     def get_rect_k_def(self, k):
-        return Tex(f"\\text{{rect}}_{{{k}}}(x) := {k} \\cdot \\text{{rect}}({k}x)")[0]
+        return Tex(fR"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
 
 
 class RectConvolutionFacts(InteractiveScene):
     def construct(self):
-        # Try
+        # Equations
         equations = VGroup(
-            Tex("\\text{rect}", "(0)", "=", "1.0"),
+            Tex(R"\text{rect}", "(0)", "=", "1.0"),
             Tex(
-                "\\big[",
-                "\\text{rect}", "*",
-                "\\text{rect}_3",
-                "\\big]", "(0)", "=", "1.0"
+                R"\big[",
+                R"\text{rect}", "*",
+                R"\text{rect}_3",
+                R"\big]", "(0)", "=", "1.0"
             ),
             Tex(
-                "\\big[",
-                "\\text{rect}", "*",
-                "\\text{rect}_3", "*",
-                "\\text{rect}_5",
-                "\\big]", "(0)", "=", "1.0"
+                R"\big[",
+                R"\text{rect}", "*",
+                R"\text{rect}_3", "*",
+                R"\text{rect}_5",
+                R"\big]", "(0)", "=", "1.0"
             ),
-            Tex("\\vdots"),
+            Tex(R"\vdots"),
             Tex(
-                "\\big[",
-                "\\text{rect}", "*",
-                "\\text{rect}_3", "*",
-                "\\text{rect}_5", "*", "\\cdots",
-                "\\text{rect}_{13}",
-                "\\big]", "(0)", "=", "1.0"
+                R"\big[",
+                R"\text{rect}", "*",
+                R"\text{rect}_3", "*",
+                R"\text{rect}_5", "*", R"\cdots", "*",
+                R"\text{rect}_{13}",
+                R"\big]", "(0)", "=", "1.0"
             ),
             Tex(
-                "\\big[",
-                "\\text{rect}", "*",
-                "\\text{rect}_3", "*",
-                "\\text{rect}_5", "*", "\\cdots", "*",
-                "\\text{rect}_{13}", "*",
-                "\\text{rect}_{15}",
-                "\\big]", "(0)", "=", SUB_ONE_FACTOR + "\\dots"
+                R"\big[",
+                R"\text{rect}", "*",
+                R"\text{rect}_3", "*",
+                R"\text{rect}_5", "*", R"\cdots", "*",
+                R"\text{rect}_{13}", "*",
+                R"\text{rect}_{15}",
+                R"\big]", "(0)", "=", SUB_ONE_FACTOR + R"\dots"
             ),
         )
 
         for eq in equations:
-            eq.set_color_by_tex("\\text{rect}", BLUE)
+            eq.set_color_by_tex(R"\text{rect}", BLUE)
             eq.set_color_by_tex("_3", TEAL)
             eq.set_color_by_tex("_5", GREEN)
             eq.set_color_by_tex("_{13}", YELLOW)
@@ -1164,12 +1177,95 @@ class RectConvolutionFacts(InteractiveScene):
 
 class ReplaceXWithPiX(InteractiveScene):
     def construct(self):
-        pass
+        # Setup graphs
+        axes = Axes((-int(8 * PI), int(8 * PI)), (-0.5, 1.0, 0.5), width=FRAME_WIDTH * PI + 1, height=4)
+        axes.shift(DOWN)
+        axes.x_axis.add_numbers(num_decimal_places=0, font_size=20)
+        axes.y_axis.add_numbers(num_decimal_places=1, font_size=20)
+        sinc_graph = axes.get_graph(sinc)
+        sinc_graph.set_stroke(BLUE, 1)
+        sinc_pi_graph = sinc_graph.copy().stretch(1 / PI, 0, about_point=axes.get_origin())
+
+        dx = 0.01
+        sinc_area = axes.get_riemann_rectangles(
+            sinc_graph,
+            dx=dx,
+            colors=(BLUE, BLUE),
+            fill_opacity=0.5,
+        )
+        sinc_area.sort(lambda p: abs(p[0]))
+        sinc_pi_area = sinc_area.copy().stretch(1 / PI, 0, about_point=axes.get_origin())
+
+        partial_area = sinc_area[:len(sinc_area) // 3]
+        self.add(partial_area, axes, sinc_graph)
+
+        # Setup labels
+        sinc_label = MTex(R"\int_{-\infty}^\infty \frac{\sin(x)}{x} dx = \pi")
+        sinc_label.next_to(axes, UP).to_edge(LEFT)
+        kw = dict(tex_to_color_map={R"\pi": TEAL})
+        sinc_pi_label = MTex(
+            R"\int_{-\infty}^\infty \frac{\sin(\pi x)}{\pi x} dx = 1.0",
+            **kw
+        )
+        sinc_pi_label.move_to(sinc_label).to_edge(RIGHT)
+
+        instead_of = Text("Instead of", color=YELLOW, font_size=60)
+        instead_of.next_to(sinc_label, UP, buff=0.7, aligned_edge=LEFT)
+        focus_on = Text("Focus on", color=YELLOW, font_size=60)
+        focus_on.next_to(sinc_pi_label, UP, buff=0.7, aligned_edge=LEFT)
+
+        self.add(instead_of, sinc_label)
+        self.play(Write(partial_area, stroke_width=1.0))
+        self.add(sinc_area, axes, sinc_graph)
+        self.wait()
+
+        # Squish
+        x_to_pix = MTex(R"x \rightarrow \pi x", **kw)
+        x_to_pix.match_y(instead_of)
+
+        squish_arrows = VGroup(Vector(RIGHT), Vector(LEFT))
+        squish_arrows.arrange(RIGHT, buff=1.5)
+        squish_arrows.move_to(axes.c2p(0, 0.5))
+
+        rect_kw = dict(buff=MED_SMALL_BUFF, stroke_width=1.5)
+        rect = SurroundingRectangle(sinc_label, **rect_kw)
+        sinc_graph.save_state()
+        sinc_area.save_state()
+
+        self.play(LaggedStart(
+            FadeIn(x_to_pix),
+            TransformMatchingShapes(sinc_label.copy(), sinc_pi_label),
+            FadeTransform(instead_of.copy(), focus_on)
+        ))
+        self.wait()
+        self.play(
+            Transform(sinc_graph, sinc_pi_graph),
+            Transform(sinc_area, sinc_pi_area),
+            FadeIn(squish_arrows, scale=0.35),
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            ShowCreation(rect),
+            FadeOut(squish_arrows, scale=3),
+            sinc_area.animate.restore(),
+            sinc_graph.animate.restore(),
+        )
+        self.play(FlashAround(sinc_label[-1], run_time=2))
+        self.wait()
+        self.play(
+            rect.animate.become(SurroundingRectangle(sinc_pi_label, **rect_kw)),
+            Transform(sinc_graph, sinc_pi_graph, run_time=2),
+            Transform(sinc_area, sinc_pi_area, run_time=2),
+            FadeIn(squish_arrows, scale=0.35, run_time=2),
+
+        )
+        self.play(FlashAround(sinc_pi_label[-3:], run_time=2))
+        self.wait()
 
 
-class FourierWrapper(InteractiveScene):
-    def construct(self):
-        pass
+class FourierWrapper(VideoWrapper):
+    title = "Fourier Transforms"
 
 
 class FourierProblemSolvingSchematic(InteractiveScene):
@@ -1179,4 +1275,226 @@ class FourierProblemSolvingSchematic(InteractiveScene):
 
 class WhatWeNeedToShow(InteractiveScene):
     def construct(self):
-        pass
+        # Title
+        title = Text("What we must show", font_size=60)
+        title.to_edge(UP, buff=MED_SMALL_BUFF)
+        title.set_backstroke(width=5)
+        underline = Line(LEFT, RIGHT)
+        underline.set_width(6)
+        underline.set_stroke(GREY_A, width=(0, 3, 3, 3, 3, 0))
+        underline.insert_n_curves(100)
+        underline.next_to(title, DOWN, buff=0.05)
+
+        self.add(underline, title)
+
+        # Expressions
+        t2c = {
+            R"\mathcal{F}": TEAL,
+            R"{t}": BLUE,
+            R"{\omega}": YELLOW,
+            R"{k}": RED,
+        }
+        kw = dict(tex_to_color_map=t2c, font_size=36)
+        expressions = VGroup(
+            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t})}{\pi {t}} \right]({\omega}) = \text{rect}({\omega})", **kw),
+            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t} / {k})}{{t} / {k}} \right]({\omega}) = {k} \cdot \text{rect}({k}{\omega})", **kw),
+            MTex(R"\int_{-\infty}^\infty f({t}) dt = \mathcal{F}\left[ f({t}) \right](0)", **kw),
+            MTex(R"\int_{-\infty}^\infty \frac{\sin(\pi {t})}{\pi {t}} dt = \text{rect}(0) = 1", **kw),
+            MTex(R"\mathcal{F}\left[ f({t}) \cdot g({t}) \right] = \mathcal{F}[f({t})] * \mathcal{F}[g({t})]", **kw),
+            MTex(
+                R"""\mathcal{F}\left[ \frac{\sin(\pi {t})}{\pi {t}} \cdot \frac{\sin(\pi {t} / 3)}{\pi {t} / 3} \right]
+                = \big[ \text{rect} * \text{rect}_3 \big]""",
+                **kw
+            ),
+        )
+        expressions.set_stroke(width=0)
+        key_facts = expressions[0::2]
+        examples = expressions[1::2]
+        key_facts.arrange(DOWN, buff=1.5, aligned_edge=LEFT)
+        key_facts.next_to(underline, DOWN, MED_LARGE_BUFF).to_edge(LEFT)
+        for fact, example in zip(key_facts, examples):
+            example.next_to(fact, RIGHT, buff=2.0)
+
+        ft_sinc, int_to_eval, conv_theorem = key_facts
+        ft_sinck, sinc_int_to_rect_0, conv_theorem_ex = examples
+
+        # FT of sinc
+        ft_sinc.next_to(underline, DOWN, MED_LARGE_BUFF)
+
+        width = FRAME_WIDTH / 2 - 1
+        axes1 = Axes((-4, 4), (-1, 1), width=width, height=3)
+        axes2 = Axes((-1, 1, 0.25), (0, 2), width=width, height=1.5)
+
+        axes1.to_corner(DL)
+        axes2.shift(axes1.get_origin() - axes2.get_origin())
+        axes2.to_edge(RIGHT)
+
+        axes1.add(Tex("t", color=BLUE, font_size=24).next_to(axes1.x_axis.get_right(), UP, 0.2))
+        axes2.add(Tex(R"\omega", color=YELLOW, font_size=24).next_to(axes2.x_axis.get_right(), UP, 0.2))
+        axes1.add_coordinate_labels(font_size=20)
+        axes2.add_coordinate_labels(x_values=np.arange(-1, 1.5, 0.5), font_size=20, num_decimal_places=1)
+
+        k_tracker = ValueTracker(1)
+        get_k = k_tracker.get_value
+        globals().update(locals())
+
+        graph1 = axes1.get_graph(lambda x: 0, color=BLUE)
+        axes1.bind_graph_to_func(graph1, lambda x: np.sinc(x / get_k()))
+
+        graph2 = VMobject().set_stroke(YELLOW, 3)
+
+        def update_graph2(graph):
+            k = get_k()
+            graph.set_points_as_corners([
+                axes2.c2p(-1, 0),
+                axes2.c2p(-0.5 / k, 0),
+                axes2.c2p(-0.5 / k, k),
+                axes2.c2p(0.5 / k, k),
+                axes2.c2p(0.5 / k, 0),
+                axes2.c2p(1, 0),
+            ])
+            return graph
+
+        graph2.add_updater(update_graph2)
+
+        graph1_label = MTex(R"{\sin(\pi {t}) \over \pi {t} }", **kw)
+        graph2_label = MTex(R"\text{rect}({\omega})", **kw)
+        graph1_label.move_to(axes1.c2p(-2, 1))
+        graph2_label.move_to(axes2.c2p(0.5, 2))
+
+        arrow = Arrow(axes1.c2p(2, 0.5), axes2.c2p(-0.5, 1), path_arc=-PI / 3)
+        arrow.set_color(TEAL)
+        arrow_copy = arrow.copy()
+        arrow_copy.rotate(PI, about_point=midpoint(axes1.c2p(4, 0), axes2.c2p(-1, 0)))
+        arrow_label = MTex(R"\mathcal{F}", color=TEAL)
+        arrow_label.next_to(arrow, UP, SMALL_BUFF)
+        arrow_label_copy = arrow_label.copy()
+        arrow_label_copy.next_to(arrow_copy.pfp(0.5), UP)
+
+        self.play(
+            FadeIn(axes1),
+            ShowCreation(graph1),
+            FadeIn(graph1_label, UP)
+        )
+        self.wait()
+        self.play(
+            ShowCreation(arrow),
+            FadeIn(arrow_label, RIGHT + 0.2 * UP),
+            FadeIn(axes2),
+        )
+        self.play(
+            Write(graph2_label),
+            ShowCreation(graph2)
+        )
+        self.wait()
+        self.play(
+            TransformFromCopy(arrow, arrow_copy, path_arc=PI / 2),
+            TransformFromCopy(arrow_label, arrow_label_copy, path_arc=PI / 2),
+        )
+        self.wait()
+
+        self.play(LaggedStart(
+            FadeTransform(arrow_label.copy(), ft_sinc[0]),
+            FadeTransform(graph1_label.copy(), ft_sinc[2:12]),
+            Write(VGroup(ft_sinc[1], ft_sinc[12])),
+        ))
+        self.wait()
+        self.play(Write(ft_sinc[13:17]))
+        self.play(
+            FadeTransform(graph2_label.copy(), ft_sinc[17:])
+        )
+        self.add(ft_sinc)
+        self.wait()
+
+        # Generalize
+        graph1_gen_label = MTex(R"{\sin(\pi {t} / {k}) \over \pi {t} / {k} }", **kw)
+        graph2_gen_label = MTex(R"{k} \cdot \text{rect}({k} {\omega})", **kw)
+        graph1_gen_label.move_to(graph1_label)
+        graph2_gen_label.move_to(graph2_label)
+        ft_sinck.move_to(ft_sinc)
+
+        self.play(LaggedStart(
+            FadeOut(graph1_label, UP),
+            FadeIn(graph1_gen_label, UP),
+            FadeOut(graph2_label, UP),
+            FadeIn(graph2_gen_label, UP),
+        ))
+        self.play(
+            FadeOut(ft_sinc, UP),
+            FadeIn(ft_sinck, UP)
+        )
+        self.wait()
+        self.play(k_tracker.animate.set_value(3), run_time=3)
+        self.wait()
+        self.play(k_tracker.animate.set_value(1), run_time=3)
+        self.wait()
+        self.play(ft_sinck.animate.set_height(0.5).to_corner(UL))
+        self.wait()
+
+        # Area to evaluate
+        k_tracker.set_value(1)
+        int_to_eval.next_to(underline, DOWN, MED_LARGE_BUFF)
+        sinc_int_to_rect_0.move_to(int_to_eval)
+
+        area = axes1.get_riemann_rectangles(
+            axes1.get_graph(np.sinc),
+            colors=(BLUE, BLUE),
+            dx=0.01
+        )
+        area.set_stroke(WHITE, 0)
+        x0 = axes1.get_origin()[0]
+        area.sort(lambda p, x0=x0: abs(p[0] - x0))
+
+        dot = GlowDot(color=BLUE)
+        dot.set_glow_factor(0.5)
+        dot.set_radius(0.1)
+        dot.move_to(int_to_eval[11:].get_center())
+
+        self.play(FadeIn(int_to_eval, DOWN))
+        self.play(FlashAround(int_to_eval[:10], run_time=2, time_width=1.5))
+        self.play(Write(area))
+        self.wait()
+        self.play(FlashAround(int_to_eval[11:], run_time=2, time_width=1.5))
+        self.play(dot.animate.move_to(axes2.c2p(0, 1)), run_time=1.5)
+        self.wait()
+        self.play(
+            int_to_eval.animate.set_height(0.5).next_to(ft_sinck, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        )
+        self.play(FadeIn(sinc_int_to_rect_0, RIGHT))
+        self.wait()
+        self.play(FadeOut(sinc_int_to_rect_0))
+
+        # Convolution fact
+        conv_theorem.set_height(0.45)
+        conv_theorem.next_to(underline, DOWN, MED_LARGE_BUFF)
+        conv_theorem_ex.next_to(underline, DOWN, MED_LARGE_BUFF)
+        conv_theorem_name = TexText("``Convolution theorem''", font_size=60)
+        conv_theorem_name.next_to(conv_theorem, DOWN, buff=MED_LARGE_BUFF)
+        conv_theorem_name.set_color(YELLOW)
+
+        self.play(FadeIn(conv_theorem, DOWN))
+        self.wait()
+        self.play(
+            FadeIn(conv_theorem_ex, DOWN),
+            FadeOut(conv_theorem, DOWN),
+        )
+        self.wait()
+        self.play(
+            FadeOut(conv_theorem_ex, UP),
+            FadeIn(conv_theorem, UP),
+        )
+        self.play(Write(conv_theorem_name))
+
+        # Reorganize
+        top_row = VGroup(ft_sinck, int_to_eval)
+        top_row.generate_target()
+        top_row.target.scale(1.7)
+        top_row.target.arrange(RIGHT, buff=LARGE_BUFF)
+        top_row.target.next_to(underline, DOWN, MED_LARGE_BUFF)
+
+        self.play(LaggedStart(
+            MoveToTarget(top_row),
+            conv_theorem.animate.next_to(top_row.target, DOWN, MED_LARGE_BUFF),
+            FadeOut(conv_theorem_name),
+        ))
+        self.wait()
