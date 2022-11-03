@@ -22,6 +22,37 @@ def get_fifteenth_frac_tex():
     return R"{467{,}807{,}924{,}713{,}440{,}738{,}696{,}537{,}864{,}469 \over 467{,}807{,}924{,}720{,}320{,}453{,}655{,}260{,}875{,}000}"
 
 
+def get_sinc_tex(k=1):
+    div_k = f"/ {k}" if k > 1 else ""
+    return Rf"{{\sin(x {div_k}) \over x {div_k}}}"
+
+
+def get_multi_sinc_integral(ks=[1], dots_at=None, rhs="", insertion=""):
+    result = Tex(
+        R"\int_{-\infty}^\infty",
+        insertion,
+        *(
+            get_sinc_tex(k) if k != dots_at else R"\dots"
+            for k in ks
+        ),
+        "dx",
+        rhs,
+    )
+    t2c = {
+        R"\sin": BLUE,
+        "x / 3": TEAL,
+        "x / 5": GREEN_B,
+        "x / 7": GREEN_C,
+        "x / 9": interpolate_color(GREEN, YELLOW, 1 / 3),
+        "x / 11": interpolate_color(GREEN, YELLOW, 2 / 3),
+        "x / 13": YELLOW,
+        "x / 15": RED_B,
+    }
+    for tex, color in t2c.items():
+        result.set_color_by_tex(tex, color)
+    return result
+
+
 class ShowIntegrals(InteractiveScene):
     add_axis_labels = True
 
@@ -124,11 +155,13 @@ class ShowIntegrals(InteractiveScene):
         pos_area = VGroup(*(r for r in area if r.get_center()[1] > origin[1]))
         neg_area = VGroup(*(r for r in area if r.get_center()[1] < origin[1]))
 
+        self.add(area, axes, graph)
+        area.set_fill(opacity=1)
         self.play(
-            Write(area, stroke_color=WHITE, lag_ratio=0.01),
+            Write(area, stroke_color=WHITE, lag_ratio=0.01, run_time=4),
             ReplacementTransform(func_label, int1[1]),
             Write(int1[::2]),
-            graph.animate.set_stroke(width=1)
+            graph.animate.set_stroke(width=1),
         )
         self.add(int1)
         self.wait()
@@ -282,6 +315,170 @@ class ShowIntegrals(InteractiveScene):
         ).to_corner(UL)
 
 
+class SineLimit(InteractiveScene):
+    def construct(self):
+        axes = Axes((-4, 4), (-2, 2), width=14, height=7, axis_config=dict(tick_size=0))
+        radius = axes.x_axis.unit_size
+        circle = Circle(radius=radius)
+        circle.move_to(axes.get_origin())
+        circle.set_stroke(WHITE, 1)
+
+        self.add(axes, circle)
+
+        # Set up components
+        x_tracker = ValueTracker(1)
+        get_x = x_tracker.get_value
+        origin = axes.get_origin()
+
+        def get_point():
+            x = get_x()
+            return axes.c2p(math.cos(x), math.sin(x))
+
+        arc = VMobject().set_stroke(YELLOW, 3)
+        arc.add_updater(lambda m: m.match_points(Arc(
+            radius=radius,
+            arc_center=origin,
+            start_angle=0,
+            angle=get_x(),
+        )))
+
+        h_line = Line()
+        h_line.set_stroke(RED)
+        h_line.add_updater(lambda m: m.put_start_and_end_on(
+            get_point(),
+            get_point()[0] * RIGHT,
+        ))
+
+        radial_line = Line()
+        radial_line.add_updater(lambda m: m.put_start_and_end_on(origin, get_point()))
+
+        one_label = Integer(1, font_size=24)
+        one_label.add_updater(lambda m: m.next_to(
+            radial_line.get_center(),
+            normalize(rotate_vector(radial_line.get_vector(), PI / 2)),
+            buff=SMALL_BUFF,
+        ))
+        sine_label = Tex(R"\sin(x)", font_size=24)
+        sine_label.set_backstroke()
+        sine_label.add_updater(lambda m: m.set_max_height(0.2 * h_line.get_height()))
+        sine_label.add_updater(lambda m: m.next_to(h_line, LEFT, buff=0.25 * m.get_width()))
+
+        x_label = Tex("x", font_size=24)
+        x_label.add_updater(lambda m: m.match_width(sine_label[0][4]))
+        x_label.add_updater(lambda m: m.next_to(arc.pfp(0.5), RIGHT, buff=m.get_height()))
+
+        self.add(arc, h_line, radial_line)
+        self.add(one_label)
+        self.add(sine_label)
+        self.add(x_label)
+
+        value_label = VGroup(
+            Tex(R"\frac{\sin(x)}{x} = "),
+            DecimalNumber(1, num_decimal_places=4)
+        )
+        value_label.arrange(RIGHT, buff=SMALL_BUFF)
+        value_label.fix_in_frame()
+        value_label.to_corner(UR)
+        value_label.add_updater(lambda m: m[1].set_value(math.sin(get_x()) / get_x()))
+        self.add(value_label)
+
+        # Zoom in
+        frame = self.camera.frame
+        frame.set_height(4)
+        x_tracker.add_updater(lambda m: m.set_value((1 / (self.time**1.5 + 1.5))))
+        self.add(x_tracker)
+
+        target_frame = frame.deepcopy()
+        target_frame.add_updater(lambda m: m.set_height(4 * h_line.get_height()).move_to(h_line.get_bottom()))
+        self.add(target_frame)
+
+        alpha_tracker = ValueTracker(0)
+        get_alpha = alpha_tracker.get_value
+
+        self.play(
+            UpdateFromFunc(
+                frame, lambda m: m.interpolate(m, target_frame, get_alpha()),
+                run_time=15,
+            ),
+            alpha_tracker.animate.set_value(1 / 30).set_anim_args(run_time=1)
+        )
+
+
+class WriteFullIntegrals(InteractiveScene):
+    def construct(self):
+        # Integrals
+        ints = VGroup(*(
+            get_multi_sinc_integral(range(1, n, 2), rhs=R"= \pi")
+            for n in range(3, 19, 2)
+        ))
+        ints.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
+        ints.center().to_corner(UL)
+        for inter in ints:
+            inter[-1].scale(1.5, about_edge=LEFT)
+
+        q_marks = Tex("???", color=RED).scale(2)
+        q_marks.next_to(ints[-1], RIGHT, buff=MED_LARGE_BUFF)
+        correction = Tex("- 0.0000000000462...").scale(1.25)
+        correction.next_to(ints[-1], RIGHT, SMALL_BUFF)
+
+        # Show all
+        frame = self.camera.frame
+        ds = ValueTracker(0)
+        frame.add_updater(lambda m, dt: m.scale(1 + 0.02 * dt, about_edge=UL).shift(ds.get_value() * dt * DOWN))
+
+        self.add(ints[0], ds)
+        for i in range(len(ints) - 1):
+            self.wait(2)
+            anims = [TransformMatchingTex(ints[i].copy(), ints[i + 1])]
+            if i < 6:
+                anims.append(ds.animate.increment_value(0.1))
+            self.play(*anims)
+        frame.clear_updaters()
+        self.play(Write(q_marks), frame.animate.scale(1.1, about_edge=UL).shift(2 * DOWN), run_time=2)
+        self.wait()
+        self.play(FadeTransform(q_marks, correction))
+        self.wait()
+
+
+class WriteMoreFullIntegrals(InteractiveScene):
+    def construct(self):
+        # Unfortunate copy pasting, but I'm in a rush
+        # Integrals
+        ints = VGroup(*(
+            get_multi_sinc_integral(range(1, n, 2), rhs=R"= \pi")
+            for n in range(3, 17, 2)
+        ))
+        ints.add(get_multi_sinc_integral(range(1, 17, 2), rhs=R"= (0.99999999998529)\pi"))
+        ints.add(get_multi_sinc_integral(range(1, 19, 2), rhs=R"= (0.99999998807962)\pi"))
+        ints.add(get_multi_sinc_integral(range(1, 21, 2), rhs=R"= (0.99999990662610)\pi"))
+        ints.add(get_multi_sinc_integral(range(1, 23, 2), rhs=R"= (0.99999972286332)\pi"))
+
+        ints.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
+        ints.center().to_corner(UL)
+        for inter in ints:
+            inter[-1].scale(1.5, about_edge=LEFT)
+
+        # Show all
+        frame = self.camera.frame
+        ds = ValueTracker(0)
+        frame.add_updater(lambda m, dt: m.scale(1 + 0.04 * dt, about_edge=UL).shift(ds.get_value() * dt * DOWN))
+
+        key_map = dict(
+            (ints[n][-1].get_tex(), ints[n + 1][-1].get_tex())
+            for n in range(-4, -1, 1)
+        )
+
+        self.add(ints[0], ds)
+        for i in range(len(ints) - 1):
+            self.wait()
+            anims = [TransformMatchingTex(ints[i].copy(), ints[i + 1], key_map=key_map)]
+            if i < 6:
+                anims.append(ds.animate.increment_value(0.1))
+            self.play(*anims)
+        self.wait(3)
+        frame.clear_updaters()
+
+
 class WriteOutIntegrals(InteractiveScene):
     def construct(self):
         # Integrals
@@ -293,13 +490,6 @@ class WriteOutIntegrals(InteractiveScene):
         ints[-1][-2:].next_to(ints[-1][:-2], RIGHT, SMALL_BUFF)
         ints[3].shift(SMALL_BUFF * LEFT)
         ints.center()
-
-        for integral in ints:
-            integral.set_color_by_tex("\sin", BLUE)
-            integral.set_color_by_tex("x/3", TEAL)
-            integral.set_color_by_tex("x/5", GREEN)
-            integral.set_color_by_tex("x/13", YELLOW)
-            integral.set_color_by_tex("x/15", RED_B)
 
         # Show all
         self.add(ints[0])
@@ -327,49 +517,27 @@ class WriteOutIntegrals(InteractiveScene):
 
     def get_integrals(self):
         return VGroup(
-            Tex(
-                R"\int_{-\infty}^\infty",
-                R"\frac{\sin(x)}{x}",
-                R"dx = ", R"\pi"
-            ),
-            Tex(
-                R"\int_{-\infty}^\infty",
-                R"\frac{\sin(x)}{x}",
-                R"\frac{\sin(x/3)}{x/3}",
-                "dx = ", R"\pi"
-            ),
-            Tex(
-                R"\int_{-\infty}^\infty",
-                R"\frac{\sin(x)}{x}",
-                R"\frac{\sin(x/3)}{x/3}",
-                R"\frac{\sin(x/5)}{x/5}",
-                "dx = ", R"\pi"
-            ),
+            get_multi_sinc_integral([1], rhs=R"= \pi"),
+            get_multi_sinc_integral([1, 3], rhs=R"= \pi"),
+            get_multi_sinc_integral([1, 3, 5], rhs=R"= \pi"),
             Tex(R"\vdots"),
-            Tex(
-                R"\int_{-\infty}^\infty",
-                R"\frac{\sin(x)}{x}",
-                R"\frac{\sin(x/3)}{x/3}",
-                R"\frac{\sin(x/5)}{x/5}",
-                R"\dots",
-                R"\frac{\sin(x/13)}{x/13}",
-                "dx = ", R"\pi"
-            ),
-            Tex(
-                R"\int_{-\infty}^\infty",
-                R"\frac{\sin(x)}{x}",
-                R"\frac{\sin(x/3)}{x/3}",
-                R"\frac{\sin(x/5)}{x/5}",
-                R"\dots",
-                R"\frac{\sin(x/13)}{x/13}",
-                R"\frac{\sin(x/15)}{x/15}",
-                "dx = ", fR"({SUB_ONE_FACTOR}\dots)", R"\pi",
-            ),
+            get_multi_sinc_integral([1, 3, 5, 7, 13], dots_at=7, rhs=R"= \pi"),
+            get_multi_sinc_integral([1, 3, 5, 7, 13, 15], dots_at=7, rhs=Rf"= ({SUB_ONE_FACTOR}\dots)\pi"),
         )
 
 
 class WriteOutIntegralsWithPi(WriteOutIntegrals):
     def get_integrals(self):
+        t2c = {
+            R"\sin": BLUE,
+            "x/3": TEAL,
+            "x/5": GREEN_B,
+            "x/7": GREEN_C,
+            "x/9": interpolate_color(GREEN, YELLOW, 1 / 3),
+            "x/11": interpolate_color(GREEN, YELLOW, 2 / 3),
+            "x/13": YELLOW,
+            "x/15": RED_B,
+        }
         result = VGroup(
             Tex(
                 R"\int_{-\infty}^\infty",
@@ -389,12 +557,12 @@ class WriteOutIntegralsWithPi(WriteOutIntegrals):
                 R"\frac{\sin(\pi x/5)}{\pi x/5}",
                 R"dx = ", "1.0"
             ),
-            Tex("\vdots"),
+            Tex(R"\vdots"),
             Tex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
-                R"\frac{\sin(\pi x/5)}{\pi x/5}",
+                # R"\frac{\sin(\pi x/5)}{\pi x/5}",
                 R"\dots",
                 R"\frac{\sin(\pi x/13)}{\pi x/13}",
                 R"dx = ", "1.0"
@@ -403,15 +571,126 @@ class WriteOutIntegralsWithPi(WriteOutIntegrals):
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
-                R"\frac{\sin(\pi x/5)}{\pi x/5}",
+                # R"\frac{\sin(\pi x/5)}{\pi x/5}",
                 R"\dots",
                 R"\frac{\sin(\pi x/13)}{\pi x/13}",
                 R"\frac{\sin(\pi x/15)}{\pi x/15}",
-                R"dx = ", fR"{SUB_ONE_FACTOR}\dots", ".",
+                R"dx = ", fR"{SUB_ONE_FACTOR}\dots", "."
             ),
         )
         result[-1][-1].scale(0)
+        for mob in result:
+            for tex, color in t2c.items():
+                mob.set_color_by_tex(tex, color)
         return result
+
+
+class InsertTwoCos(InteractiveScene):
+    dx = 0.025
+
+    def construct(self):
+        # Formulas
+        n_range = list(range(3, 17, 2))
+        integrals = VGroup(
+            get_multi_sinc_integral([1], rhs=R"= \pi"),
+            *(
+                get_multi_sinc_integral(range(1, n, 2), insertion=R"2\cos(x)", rhs=R"= \pi")
+                for n in n_range
+            )
+        )
+        integrals.scale(0.75)
+        for inter in integrals:
+            inter.to_edge(UP)
+
+        self.add(integrals[0])
+
+        # Graphs
+        axes = Axes((-4 * PI, 4 * PI, PI), (-2, 2, 1), width=FRAME_WIDTH + 1, height=6)
+        axes.to_edge(DOWN, buff=SMALL_BUFF)
+        axes.x_axis.add_numbers(unit_tex=R"\pi", unit=PI)
+
+        graphs = VGroup(
+            axes.get_graph(sinc),
+            *(
+                axes.get_graph(
+                    lambda x, n=n: 2 * math.cos(x) * multi_sinc(x, n + 1),
+                    x_range=(-4 * PI, 4 * PI, 0.01)
+                )
+                for n in range(len(n_range))
+            )
+        )
+        graphs.set_stroke(WHITE, 2)
+
+        areas = VGroup(*(
+            axes.get_riemann_rectangles(
+                graph,
+                dx=self.dx,
+                colors=(BLUE_D, BLUE_D),
+                fill_opacity=1
+            )
+            for graph in graphs
+        ))
+
+        self.add(areas[0], axes, graphs[0])
+
+        # Progress
+        for i in range(len(integrals) - 1):
+            self.play(
+                TransformMatchingTex(integrals[i], integrals[i + 1]),
+                ReplacementTransform(graphs[i], graphs[i + 1]),
+                ReplacementTransform(areas[i], areas[i + 1]),
+            )
+            self.add(areas[i + 1], axes, graphs[i + 1])
+            if i == 0:
+                self.play(FlashAround(integrals[i + 1][1], run_time=2, time_width=1))
+            self.wait()
+
+
+class WriteTwoCosPattern(InteractiveScene):
+    def construct(self):
+        # Integrals
+        integrals = VGroup(
+            *(
+                get_multi_sinc_integral(range(1, n, 2), insertion=R"2\cos(x)", rhs=R"= \pi")
+                for n in range(1, 7, 2)
+            ),
+            Tex(R"\vdots"),
+            get_multi_sinc_integral([1, 3, 5, 111], dots_at=5, insertion=R"2\cos(x)", rhs=R"= \pi"),
+            get_multi_sinc_integral([1, 3, 5, 111, 113], dots_at=5, insertion=R"2\cos(x)", rhs=R"= \pi"),
+        )
+        integrals.scale(0.75)
+        for inter in integrals:
+            inter[-1].scale(1.5, about_edge=LEFT)
+
+        integrals.arrange(DOWN, buff=0.8, aligned_edge=RIGHT)
+        integrals.set_height(FRAME_HEIGHT - 1)
+        integrals.move_to(2 * LEFT)
+
+        integrals[-1][-3].set_color(RED)
+
+        self.add(integrals[0])
+        for i in [0, 1, 2, 4]:
+            j = i + 2 if i == 2 else i + 1
+            anims = [TransformMatchingTex(integrals[i].copy(), integrals[j])]
+            if i == 2:
+                anims.append(Write(integrals[3], run_time=1))
+            self.play(*anims)
+            self.wait(0.5)
+        self.add(integrals)
+
+        # RHS
+        text = Text("A tiny-but-definitely-positive number\nthat my computer couldn't evaluate\nin a reasonable amount of time")
+        text.scale(0.5)
+        parens = Tex("()")[0]
+        parens.match_height(text)
+        parens[0].next_to(text, LEFT, SMALL_BUFF)
+        parens[1].next_to(text, RIGHT, SMALL_BUFF)
+        minus = Tex("-").next_to(parens, LEFT)
+        rhs = VGroup(minus, parens, text)
+
+        rhs.next_to(integrals[-1], RIGHT, buff=SMALL_BUFF)
+        self.play(Write(rhs))
+        self.wait()
 
 
 class MovingAverages(InteractiveScene):
@@ -662,7 +941,7 @@ class MovingAverages(InteractiveScene):
         return MTex(
             R"""\text{rect}(x) :=
             \begin{cases}
-                1 & \text{if } \text{-}\frac{1}{2} < x < \frac{1}{2} \
+                1 & \text{if } \text{-}\frac{1}{2} < x < \frac{1}{2} \\
                 0 & \text{otherwise}
             \end{cases}"""
         )
@@ -686,7 +965,7 @@ class LongerTimescaleMovingAverages(MovingAverages):
 
     def get_rect_func_def(self):
         return MTex(
-            R"""\text{rect}_2(x) :=
+            R"""\text{long\_rect}(x) :=
             \begin{cases}
                 1 & \text{if } \text{-}1 < x < 1 \\
                 0 & \text{otherwise}
@@ -706,6 +985,8 @@ class LongerTimescaleMovingAverages(MovingAverages):
 
 
 class ShowReciprocalSums(InteractiveScene):
+    max_shown_parts = 10
+
     def construct(self):
         # Equations
         equations = VGroup(*(
@@ -731,13 +1012,207 @@ class ShowReciprocalSums(InteractiveScene):
     def get_sum(self, n):
         tex_parts = []
         tally = 0
+        msp = self.max_shown_parts
         for k in range(1, n + 1):
-            tex_parts.append(f"1 / {2 * k + 1}")
-            tex_parts.append("+")
+            new_parts = [f"1 / {2 * k + 1}", "+"]
+            if n > msp:
+                if k < msp - 1 or k == n:
+                    tex_parts.extend(new_parts)
+                elif k == msp - 1:
+                    tex_parts.extend([R"\cdots", "+"])
+            else:
+                tex_parts.extend(new_parts)
             tally += 1 / (2 * k + 1)
         tex_parts[-1] = "="
         tex_parts.append(R"{:.06f}\dots".format(tally))
         return Tex(*tex_parts)
+
+
+class LongerReciprocalSums(ShowReciprocalSums):
+    max_shown_parts = 5
+
+    def construct(self):
+        # Test
+        equations = VGroup(*(
+            self.get_sum(n)
+            for n in [1, 2, 3, 4, 54, 55, 56]
+        ))
+        dots = Tex(R"\vdots")
+        group = VGroup(*equations[:4], dots, *equations[4:])
+        group.arrange(DOWN, buff=0.35, aligned_edge=RIGHT)
+        dots.shift(2 * LEFT)
+        for eq in equations:
+            eq.set_color_by_tex_to_color_map({
+                "1 / 3": BLUE,
+                "1 / 5": interpolate_color(BLUE, GREEN, 1 / 3),
+                "1 / 7": interpolate_color(BLUE, GREEN, 2 / 3),
+                "1 / 9": GREEN,
+                "1 / 109": YELLOW,
+                "1 / 111": interpolate_color(YELLOW, RED, 1 / 2),
+                "1 / 113": RED,
+            })
+
+        self.add(equations[0])
+        for eq1, eq2 in zip(equations, equations[1:]):
+            anims = [FadeTransformPieces(eq1.copy(), eq2)]
+            if eq1 is equations[3]:
+                anims.append(Write(dots))
+            self.play(*anims)
+            self.wait(0.5)
+
+
+class MoreGeneralFact(InteractiveScene):
+    dx = 0.025
+
+    def construct(self):
+        # Equation
+        inters = VGroup(*(
+            get_multi_sinc_integral(range(1, n, 2), rhs=R"= \pi")
+            for n in range(3, 11, 2)
+        ))
+        inters.scale(0.75)
+        inters.to_edge(UP)
+
+        # Graph
+        axes = Axes((-4 * PI, 4 * PI, PI), (-0.5, 1, 0.5), width=FRAME_WIDTH + 1, height=4)
+        axes.x_axis.add_numbers(unit=PI, unit_tex=R"\pi")
+        axes.to_edge(DOWN)
+
+        graphs = VGroup(*(
+            axes.get_graph(lambda x, n=n: multi_sinc(x, n))
+            for n in range(1, 5)
+        ))
+        graphs.set_stroke(WHITE, 2)
+        areas = VGroup(*(
+            axes.get_riemann_rectangles(
+                graph, colors=(BLUE_D, BLUE_D), dx=self.dx, fill_opacity=1,
+            )
+            for graph in graphs
+        ))
+        for area in areas:
+            area.sort(lambda p: abs(p[0]))
+
+        self.add(areas[0], axes, graphs[0], inters[0])
+
+        for i in range(3):
+            self.play(
+                ReplacementTransform(areas[i], areas[i + 1]),
+                TransformMatchingTex(inters[i], inters[i + 1]),
+                ReplacementTransform(graphs[i], graphs[i + 1]),
+            )
+            self.add(areas[i + 1], axes, graphs[i + 1], inters[i + 1])
+        self.wait()
+
+        # Generalize
+        inner_group = inters[-1][2:5]
+        rect = SurroundingRectangle(inner_group, buff=SMALL_BUFF).set_stroke(YELLOW, 1)
+        brace = Brace(rect)
+        brace_text = brace.get_text("Nothing special", font_size=36)
+
+        general_group = Tex(
+            R"\frac{\sin(a_1 x)}{a_1 x}",
+            R"\cdots",
+            R"\frac{\sin(a_n x)}{a_n x}",
+        )
+        general_group.set_submobject_colors_by_gradient(TEAL, GREEN)
+        general_group.match_height(inner_group)
+        general_group.move_to(inner_group, LEFT)
+
+        self.play(
+            ShowCreation(rect),
+            GrowFromCenter(brace),
+            FadeIn(brace_text, 0.5 * DOWN),
+        )
+        self.wait()
+        self.play(
+            FadeOut(inner_group, UP),
+            FadeIn(general_group, UP),
+            rect.animate.match_points(SurroundingRectangle(general_group, buff=SMALL_BUFF)),
+            brace.animate.become(Brace(general_group, DOWN, buff=MED_SMALL_BUFF)),
+            FadeOut(brace_text),
+            inters[-1][5:].animate.next_to(general_group, RIGHT, SMALL_BUFF),
+        )
+        self.wait()
+
+        # Sum condition
+        sum_tex = brace.get_tex(R"a_1 + \cdots + a_n < 1")[0]
+        lt = Tex("<")
+        eq = inters[-1][-1][0]
+        lt.move_to(eq)
+
+        self.play(FadeIn(sum_tex, 0.5 * DOWN))
+        self.play(FlashAround(inters[-1][-1], run_time=2, time_width=1))
+        self.wait()
+        self.play(Rotate(sum_tex[-2], PI))
+        self.play(
+            FadeOut(eq, 0.5 * UP),
+            FadeIn(lt, 0.5 * UP),
+        )
+        self.wait()
+
+
+class WaysToCombineFunctions(InteractiveScene):
+    def construct(self):
+        # Axes
+        axes1, axes2, axes3 = all_axes = VGroup(*(
+            Axes((-5, 5), (0, 2), width=FRAME_WIDTH - 2, height=FRAME_HEIGHT / 3 - 1.0)
+            for x in range(3)
+        ))
+        all_axes.arrange(DOWN, buff=1.0)
+
+        self.add(all_axes)
+
+        # Functions
+        def f(x):
+            return np.sin(x) + 1
+
+        def g(x):
+            return np.exp(-x**2)
+
+        f_graph = axes1.get_graph(f, color=BLUE)
+        g_graph = axes2.get_graph(g, color=YELLOW)
+
+        f_label = Tex(R"f(x) = \sin(x) + 1", color=BLUE)[0]
+        g_label = Tex(R"g(x) = e^{-x^2}", color=YELLOW)[0]
+        f_label.move_to(axes1.c2p(-1.5, 1.5))
+        g_label.move_to(axes2.c2p(-1.5, 1.5))
+
+        self.play(
+            LaggedStart(FadeIn(f_graph), FadeIn(g_graph)),
+            LaggedStart(FadeIn(f_label), FadeIn(g_label)),
+        )
+        self.wait()
+
+        # Combinations
+        sum_graph = axes3.get_graph(lambda x: f(x) + g(x), color=GREEN)
+        prod_graph = axes3.get_graph(lambda x: f(x) * g(x), color=GREEN)
+        dx = 0.1
+        x_samples = np.arange(*axes1.x_range[:2], dx)
+        conv_samples = np.convolve(f(x_samples), g(x_samples), mode="same") * dx * 0.5
+        conv_graph = VMobject().set_points_smoothly(axes3.c2p(x_samples, conv_samples))
+        conv_graph.match_style(prod_graph)
+        graphs = (sum_graph, prod_graph, conv_graph)
+
+        sum_label = Tex("[f + g](x)")
+        prod_label = Tex(R"[f \cdot g](x)")
+        conv_label = Tex(R"[f * g](x)")
+        labels = (sum_label, prod_label, conv_label)
+        for label in labels:
+            label.move_to(axes3.c2p(-1.5, 1.5))
+
+        words = VGroup(*map(Text, ["Addition", "Multiplication", "Convolution"]))
+        for word, label in zip(words, labels):
+            word.next_to(label, UP)
+
+        for graph, label, word in zip(graphs, labels, words):
+            self.play(
+                Transform(f_graph.copy(), graph.copy(), remover=True),
+                TransformFromCopy(g_graph, graph),
+                TransformMatchingShapes(VGroup(*f_label[:4], *g_label[:4]).copy(), label),
+                FadeIn(word)
+            )
+            self.wait()
+            self.play(*map(FadeOut, [graph, label, word]))
 
 
 class Convolutions(InteractiveScene):
@@ -755,7 +1230,7 @@ class Convolutions(InteractiveScene):
     g_graph_x_step = 0.1
     f_label_tex = "f(x)"
     g_label_tex = "g(t - x)"
-    fg_label_tex = "f(x) \cdot g(t - x)"
+    fg_label_tex = R"f(x) \cdot g(t - x)"
     t_color = TEAL
     area_line_dx = 0.05
     jagged_product = False
@@ -839,8 +1314,8 @@ class Convolutions(InteractiveScene):
         # Show convolution
         dx = 0.1
         x_samples = np.arange(x_min, x_max + dx, dx)
-        f_samples = self.f(x_samples)
-        g_samples = self.g(x_samples)
+        f_samples = np.array([self.f(x) for x in x_samples])
+        g_samples = np.array([self.g(x) for x in x_samples])
         conv_samples = np.convolve(f_samples, g_samples, mode='same')
         conv_graph = self.conv_graph = VMobject().set_style(**self.conv_graph_style)
         conv_graph.set_points_as_corners(conv_axes.c2p(x_samples, conv_samples * dx))
@@ -900,9 +1375,31 @@ class Convolutions(InteractiveScene):
         return np.exp(-x**2) * np.sin(2 * x)
 
 
-class ShowFlippingOfGraph(InteractiveScene):
+class AltConvolutions(Convolutions):
+    jagged_product = True
+
     def construct(self):
-        pass
+        super().construct()
+        t_indicator = self.t_indicator
+        g_axes = self.all_axes[1]
+
+        # Sample values
+        for t in [3, -3, -1.0]:
+            self.play(t_indicator.animate.set_x(g_axes.c2p(t, 0)[0]), run_time=3)
+            self.wait()
+
+    def f(self, x):
+        if x < -2:
+            return -0.5
+        elif x < -1:
+            return x + 1.5
+        elif x < 1:
+            return -0.5 * x
+        else:
+            return 0.5 * x - 1
+
+    def g(self, x):
+        return np.exp(-3 * x**2)
 
 
 class MovingAverageAsConvolution(Convolutions):
@@ -922,8 +1419,8 @@ class MovingAverageAsConvolution(Convolutions):
         self.add(*fake_ys, *self.mobjects)
 
         # Sample values
-        for t in [3, -3, -1.0]:
-            self.play(t_indicator.animate.set_x(g_axes.c2p(t, 0)[0]), run_time=3)
+        for t in [2, -2, -1.0]:
+            self.play(t_indicator.animate.set_x(g_axes.c2p(t, 0)[0]), run_time=5)
             self.wait()
 
         # Show area
@@ -943,6 +1440,19 @@ class MovingAverageAsConvolution(Convolutions):
         )
         self.wait()
 
+        # Average
+        avg_label = TexText(R"Average value of\\$f(x)$ in the window", font_size=24)
+        avg_label.move_to(area_label, DL)
+        shift_value = self.all_axes[2].get_origin() - g_axes.get_origin()
+        avg_label.shift(shift_value)
+        arrow2 = arrow.copy().shift(shift_value)
+
+        self.play(
+            FadeIn(avg_label, lag_ratio=0.1),
+            ShowCreation(arrow2)
+        )
+        self.wait()
+
         # Rescale
         y_axes = VGroup(*(axes.y_axis for axes in self.all_axes[1:3]))
         fake_ys = y_axes.copy()
@@ -957,8 +1467,7 @@ class MovingAverageAsConvolution(Convolutions):
                 ),
                 self.conv_graph.animate.stretch(sf, 1, about_point=self.all_axes[3].get_origin()),
                 rect.animate.stretch(sf, 1, about_edge=DOWN),
-                area_label.animate.set_opacity(0),
-                arrow.animate.set_opacity(0),
+                VGroup(area_label, avg_label, arrow, arrow2).animate.set_opacity(0),
                 run_time=2
             )
             self.wait()
@@ -1063,30 +1572,38 @@ class RectConvolutionsNewNotation(MovingAverages):
         self.wait()
 
         # Show the rest
-        for k in range(2):
-            left_graph = rect_graphs[k] if k == 0 else conv_graphs[k - 1]
-            left_label = rect_defs[k] if k == 0 else conv_labels[k - 1]
+        for n in range(2):
+            left_graph = rect_graphs[n] if n == 0 else conv_graphs[n - 1]
+            left_label = rect_defs[n] if n == 0 else conv_labels[n - 1]
+            k = 2 * n + 5
+            new_rect = Rectangle(axes2.x_axis.unit_size / k, axes2.y_axis.unit_size * k)
+            new_rect.set_stroke(width=0)
+            new_rect.set_fill(YELLOW, 0.5)
+            new_rect.move_to(axes2.get_origin(), DOWN)
             self.play(
                 FadeOut(left_graph, 1.5 * LEFT),
                 FadeOut(left_label, 1.5 * LEFT),
-                FadeOut(rect_defs[k + 1]),
-                FadeOut(rect_graphs[k + 1]),
-                conv_labels[k].animate.match_x(axes1),
-                conv_graphs[k].animate.match_x(axes1),
+                FadeOut(rect_defs[n + 1]),
+                FadeOut(rect_graphs[n + 1]),
+                conv_labels[n].animate.match_x(axes1),
+                conv_graphs[n].animate.match_x(axes1),
             )
             self.play(
-                Write(rect_defs[k + 2], stroke_color=WHITE),
-                ShowCreation(rect_graphs[k + 2]),
+                Write(rect_defs[n + 2], stroke_color=WHITE),
+                ShowCreation(rect_graphs[n + 2]),
+                FadeIn(new_rect),
                 run_time=1,
             )
-            left_conv = conv_labels[k][0][1:-4]
+            self.wait()
+            left_conv = conv_labels[n][0][1:-4]
             r = len(left_conv) + 1
             self.play(
-                Transform(left_conv.copy(), conv_labels[k + 1][0][1:r], remover=True, path_arc=-PI / 3),
-                Transform(rect_defs[2][:5].copy(), conv_labels[k + 1][0][r + 1:r + 6], remover=True, path_arc=-PI / 3),
-                FadeIn(conv_labels[k + 1][0], lag_ratio=0.1, time_span=(0.5, 1.5)),
-                ShowCreation(conv_graphs[k + 1]),
+                Transform(left_conv.copy(), conv_labels[n + 1][0][1:r], remover=True, path_arc=-PI / 3),
+                Transform(rect_defs[2][:5].copy(), conv_labels[n + 1][0][r + 1:r + 6], remover=True, path_arc=-PI / 3),
+                FadeIn(conv_labels[n + 1][0], lag_ratio=0.1, time_span=(0.5, 1.5)),
+                ShowCreation(conv_graphs[n + 1]),
             )
+            self.play(FadeOut(new_rect))
             self.wait()
 
     def get_rect_k_graph(self, axes, k):
@@ -1100,7 +1617,7 @@ class RectConvolutionsNewNotation(MovingAverages):
         )
 
     def get_rect_k_def(self, k):
-        return Tex(fR"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
+        return Tex(Rf"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
 
 
 class RectConvolutionFacts(InteractiveScene):
@@ -1125,16 +1642,14 @@ class RectConvolutionFacts(InteractiveScene):
             Tex(
                 R"\big[",
                 R"\text{rect}", "*",
-                R"\text{rect}_3", "*",
-                R"\text{rect}_5", "*", R"\cdots", "*",
+                R"\text{rect}_3", "*", R"\cdots", "*",
                 R"\text{rect}_{13}",
                 R"\big]", "(0)", "=", "1.0"
             ),
             Tex(
                 R"\big[",
                 R"\text{rect}", "*",
-                R"\text{rect}_3", "*",
-                R"\text{rect}_5", "*", R"\cdots", "*",
+                R"\text{rect}_3", "*", R"\cdots", "*",
                 R"\text{rect}_{13}", "*",
                 R"\text{rect}_{15}",
                 R"\big]", "(0)", "=", SUB_ONE_FACTOR + R"\dots"
@@ -1152,7 +1667,7 @@ class RectConvolutionFacts(InteractiveScene):
         equations[3].match_x(equations[2][-1])
         equations[-1][:-1].align_to(equations[-2][-2], RIGHT)
         equations[-1][-1].next_to(equations[-1][:-1], RIGHT)
-        equations.set_width(FRAME_WIDTH - 1)
+        equations.set_width(FRAME_WIDTH - 4)
         equations.center()
 
         # Show all (largely copy pasted...)
@@ -1190,8 +1705,9 @@ class ReplaceXWithPiX(InteractiveScene):
         sinc_area = axes.get_riemann_rectangles(
             sinc_graph,
             dx=dx,
-            colors=(BLUE, BLUE),
-            fill_opacity=0.5,
+            colors=(BLUE_E, BLUE_E),
+            negative_color=RED_E,
+            fill_opacity=1.0,
         )
         sinc_area.sort(lambda p: abs(p[0]))
         sinc_pi_area = sinc_area.copy().stretch(1 / PI, 0, about_point=axes.get_origin())
@@ -1209,6 +1725,15 @@ class ReplaceXWithPiX(InteractiveScene):
         )
         sinc_pi_label.move_to(sinc_label).to_edge(RIGHT)
 
+        eq_pi = sinc_label[-2:]
+        eq_one = sinc_pi_label[-4:]
+
+        pi_rect = SurroundingRectangle(eq_pi).set_stroke(BLUE, 2)
+        one_rect = SurroundingRectangle(eq_one).set_stroke(BLUE, 2)
+        want_to_show = Text("want to show", font_size=36)
+        want_to_show.next_to(pi_rect, DOWN, aligned_edge=LEFT)
+        want_to_show.set_color(BLUE)
+
         instead_of = Text("Instead of", color=YELLOW, font_size=60)
         instead_of.next_to(sinc_label, UP, buff=0.7, aligned_edge=LEFT)
         focus_on = Text("Focus on", color=YELLOW, font_size=60)
@@ -1217,6 +1742,11 @@ class ReplaceXWithPiX(InteractiveScene):
         self.add(instead_of, sinc_label)
         self.play(Write(partial_area, stroke_width=1.0))
         self.add(sinc_area, axes, sinc_graph)
+        self.wait()
+        self.play(
+            ShowCreation(pi_rect),
+            FadeIn(want_to_show, 0.5 * DOWN)
+        )
         self.wait()
 
         # Squish
@@ -1228,7 +1758,7 @@ class ReplaceXWithPiX(InteractiveScene):
         squish_arrows.move_to(axes.c2p(0, 0.5))
 
         rect_kw = dict(buff=MED_SMALL_BUFF, stroke_width=1.5)
-        rect = SurroundingRectangle(sinc_label, **rect_kw)
+        rect = SurroundingRectangle(sinc_pi_label, **rect_kw)
         sinc_graph.save_state()
         sinc_area.save_state()
 
@@ -1245,22 +1775,16 @@ class ReplaceXWithPiX(InteractiveScene):
             run_time=2
         )
         self.wait()
+        self.play(ShowCreation(one_rect))
+        self.wait()
+        self.play(ShowCreation(rect))
+        self.wait()
         self.play(
-            ShowCreation(rect),
             FadeOut(squish_arrows, scale=3),
             sinc_area.animate.restore(),
             sinc_graph.animate.restore(),
+            rect.animate.become(SurroundingRectangle(VGroup(sinc_label, want_to_show), **rect_kw)),
         )
-        self.play(FlashAround(sinc_label[-1], run_time=2))
-        self.wait()
-        self.play(
-            rect.animate.become(SurroundingRectangle(sinc_pi_label, **rect_kw)),
-            Transform(sinc_graph, sinc_pi_graph, run_time=2),
-            Transform(sinc_area, sinc_pi_area, run_time=2),
-            FadeIn(squish_arrows, scale=0.35, run_time=2),
-
-        )
-        self.play(FlashAround(sinc_pi_label[-3:], run_time=2))
         self.wait()
 
 
@@ -1297,7 +1821,7 @@ class WhatWeNeedToShow(InteractiveScene):
         kw = dict(tex_to_color_map=t2c, font_size=36)
         expressions = VGroup(
             MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t})}{\pi {t}} \right]({\omega}) = \text{rect}({\omega})", **kw),
-            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t} / {k})}{{t} / {k}} \right]({\omega}) = {k} \cdot \text{rect}({k}{\omega})", **kw),
+            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t} / {k})}{\pi {t} / {k}} \right]({\omega}) = {k} \cdot \text{rect}({k}{\omega})", **kw),
             MTex(R"\int_{-\infty}^\infty f({t}) dt = \mathcal{F}\left[ f({t}) \right](0)", **kw),
             MTex(R"\int_{-\infty}^\infty \frac{\sin(\pi {t})}{\pi {t}} dt = \text{rect}(0) = 1", **kw),
             MTex(R"\mathcal{F}\left[ f({t}) \cdot g({t}) \right] = \mathcal{F}[f({t})] * \mathcal{F}[g({t})]", **kw),
@@ -1464,6 +1988,31 @@ class WhatWeNeedToShow(InteractiveScene):
         self.wait()
         self.play(FadeOut(sinc_int_to_rect_0))
 
+        # Many dots
+        dx = 0.1
+        dots = Group(*(
+            GlowDot(
+                axes2.c2p(x, rect_func(x)),
+                color=TEAL
+            )
+            for x in np.arange(-1, 1 + dx, dx)
+        ))
+        thick_graph = VGroup(
+            axes1.get_graph(np.sinc, x_range=(-1, 4)),
+            axes1.get_graph(np.sinc, x_range=(-4, 1)).reverse_points(),
+        )
+        thick_graph.set_stroke(YELLOW, 6)
+
+        self.play(FadeIn(dots, DOWN, lag_ratio=0.5, run_time=5))
+        self.wait()
+        self.play(
+            VShowPassingFlash(thick_graph[0], run_time=4, time_width=1),
+            VShowPassingFlash(thick_graph[1], run_time=4, time_width=1),
+            FadeOut(area)
+        )
+        self.wait()
+        self.play(FadeOut(dots))
+
         # Convolution fact
         conv_theorem.set_height(0.45)
         conv_theorem.next_to(underline, DOWN, MED_LARGE_BUFF)
@@ -1486,15 +2035,265 @@ class WhatWeNeedToShow(InteractiveScene):
         self.play(Write(conv_theorem_name))
 
         # Reorganize
-        top_row = VGroup(ft_sinck, int_to_eval)
-        top_row.generate_target()
-        top_row.target.scale(1.7)
-        top_row.target.arrange(RIGHT, buff=LARGE_BUFF)
-        top_row.target.next_to(underline, DOWN, MED_LARGE_BUFF)
+        facts = VGroup(ft_sinck, int_to_eval, conv_theorem)
+        facts.generate_target()
+        facts.target[:2].scale(1.7)
+        facts.target.scale(0.8)
+        facts.target.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
+        facts.target.next_to(ORIGIN, RIGHT).to_edge(UP, buff=MED_SMALL_BUFF)
+        bullets = VGroup(*(
+            Dot().next_to(fact, LEFT)
+            for fact in facts.target
+        ))
+
+        self.play(
+            MoveToTarget(facts),
+            title.animate.next_to(facts.target, LEFT, LARGE_BUFF),
+            Uncreate(underline),
+            FadeOut(conv_theorem_name),
+            Write(bullets)
+        )
+        self.wait()
+
+
+class ConvolutionTheoremDiagram(InteractiveScene):
+    def construct(self):
+        # Axes
+        width = FRAME_WIDTH / 2 - 1
+        height = 1.5
+        left_axes = VGroup(*(
+            Axes((-4, 4), (-0.5, 1, 0.5), width=width, height=height)
+            for x in range(3)
+        ))
+        right_axes = VGroup(*(
+            Axes((-1, 1, 0.5), (0, 1), width=width, height=2 * height / 3)
+            for x in range(3)
+        ))
+
+        left_axes.arrange(DOWN, buff=1.0)
+        left_axes[-1].to_edge(DOWN, buff=MED_SMALL_BUFF)
+        left_axes.set_x(-FRAME_WIDTH / 4)
+        for a1, a2 in zip(left_axes, right_axes):
+            a2.shift(a1.get_origin() - a2.get_origin())
+        right_axes.set_x(FRAME_WIDTH / 4)
+
+        # Graphs
+        left_graphs = VGroup(
+            left_axes[0].get_graph(np.sinc, color=BLUE),
+            left_axes[1].get_graph(lambda x: np.sinc(x / 2), color=YELLOW),
+            left_axes[2].get_graph(lambda x: np.sinc(x) * np.sinc(x / 2), color=GREEN),
+        )
+        left_graphs.set_stroke(width=2)
+        right_graphs = VGroup(
+            VMobject().set_points_as_corners([
+                right_axes[0].c2p(x, y) for x, y in [
+                    (-1, 0), (-0.5, 0), (-0.5, 1),
+                    (0.5, 1), (0.5, 0), (1, 0),
+                ]
+            ]).set_stroke(BLUE, 2),
+            VMobject().set_points_as_corners([
+                right_axes[1].c2p(x, y) for x, y in [
+                    (-1, 0), (-0.5 / 2, 0), (-0.5 / 2, 2),
+                    (0.5 / 2, 2), (0.5 / 2, 0), (1, 0),
+                ]
+            ]).set_stroke(YELLOW, 2),
+            VMobject().set_points_as_corners([
+                right_axes[2].c2p(x, y) for x, y in [
+                    (-1, 0), (-0.75, 0), (-0.25, 1),
+                    (0.25, 1), (0.75, 0), (1, 0),
+                ]
+            ]).set_stroke(GREEN, 2),
+        )
+
+        left_plots = VGroup(*(VGroup(axes, graph) for axes, graph in zip(left_axes, left_graphs)))
+        right_plots = VGroup(*(VGroup(axes, graph) for axes, graph in zip(right_axes, right_graphs)))
+
+        # Labels
+        left_labels = VGroup(
+            Tex(R"\frac{\sin(\pi x)}{\pi x}")[0],
+            Tex(R"\frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
+            Tex(R"\frac{\sin(\pi x)}{\pi x} \cdot \frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
+        )
+        right_labels = VGroup(*(
+            Tex(
+                Rf"\mathcal{{F}}\left[{ll.get_tex()}\right]",
+                tex_to_color_map={R"\mathcal{F}": TEAL}
+            )
+            for ll in left_labels
+        ))
+        VGroup(left_labels, right_labels).scale(0.5)
+
+        for label_group, axes_group, x in (left_labels, left_axes, -2), (right_labels, right_axes, -0.85):
+            for label, axes in zip(label_group, axes_group):
+                label.move_to(axes.c2p(x, 1))
+        VGroup(left_labels[2], right_labels[2]).shift(0.5 * UP)
+
+        ft_arrows = VGroup(*(
+            Arrow(l1.get_right(), l2.get_left(), buff=0.2, path_arc=arc, color=TEAL, stroke_width=3)
+            for l1, l2, arc in zip(left_labels, right_labels, (-0.3, -0.75, -1.0))
+        ))
+
+        # Left animations
+        self.play(
+            LaggedStartMap(FadeIn, left_plots[:2], lag_ratio=0.5),
+            LaggedStartMap(FadeIn, left_labels[:2], lag_ratio=0.5),
+            run_time=1
+        )
+        self.wait()
+        self.play(
+            Transform(left_plots[0].copy(), left_plots[2].copy(), remover=True),
+            TransformFromCopy(left_plots[1], left_plots[2], remover=True),
+            FadeTransform(left_labels[0].copy(), left_labels[2][:len(left_labels[0])]),
+            FadeTransform(left_labels[1].copy(), left_labels[2][len(left_labels[0]):]),
+        )
+        self.add(left_plots[2])
+        self.wait()
+        self.play(
+            ShowCreation(ft_arrows[2]),
+            FadeTransform(left_labels[2].copy(), right_labels[2]),
+            FadeIn(right_plots[2]),
+        )
+        self.wait()
+
+        # Right animations
+        for i in range(2):
+            self.play(
+                ShowCreation(ft_arrows[i]),
+                FadeTransform(left_labels[i].copy(), right_labels[i]),
+                FadeIn(right_plots[i]),
+            )
+        self.wait()
+
+        right_labels[2].generate_target()
+        equation = VGroup(
+            right_labels[2].target,
+            Tex("=").scale(0.75),
+            right_labels[0].copy(),
+            Tex("*").scale(0.75),
+            right_labels[1].copy(),
+        )
+        equation.arrange(RIGHT, buff=SMALL_BUFF)
+        equation.next_to(right_axes[2], UP, SMALL_BUFF)
 
         self.play(LaggedStart(
-            MoveToTarget(top_row),
-            conv_theorem.animate.next_to(top_row.target, DOWN, MED_LARGE_BUFF),
-            FadeOut(conv_theorem_name),
+            ft_arrows[2].animate.put_start_and_end_on(
+                ft_arrows[2].get_start(),
+                right_labels[2].target.get_left() + SMALL_BUFF * UL,
+            ),
+            MoveToTarget(right_labels[2]),
+            Write(equation[1]),
+            FadeTransform(right_labels[0].copy(), equation[2]),
+            Write(equation[3]),
+            FadeTransform(right_labels[1].copy(), equation[4]),
+            run_time=2
         ))
+
+        # Show convolution
+        x_unit = right_axes[1].x_axis.unit_size
+        y_unit = right_axes[1].y_axis.unit_size
+        rect = Rectangle(width=x_unit / 2, height=2 * y_unit)
+        rect.set_stroke(YELLOW, 1)
+        rect.set_fill(YELLOW, 0)
+        rect.move_to(right_axes[1].get_origin(), DOWN)
+
+        dot = GlowDot(color=GREEN)
+        dot.move_to(right_graphs[2].get_start())
+
+        self.add(rect, right_plots)
+        self.play(
+            rect.animate.move_to(right_axes[0].c2p(-1, 0), DOWN).set_fill(opacity=0.5),
+            FadeIn(dot),
+        )
+        self.play(
+            MoveAlongPath(dot, right_graphs[2]),
+            UpdateFromFunc(rect, lambda m: m.match_x(dot)),
+            run_time=8,
+        )
+        self.play(FadeOut(rect), FadeOut(dot))
+
+        # Show signed area
+        area = left_axes[2].get_riemann_rectangles(
+            left_graphs[2],
+            dx=0.01,
+            colors=(BLUE_D, BLUE_D),
+            fill_opacity=1.0,
+        )
+        o = area.get_center()
+        area.sort(lambda p: abs(p[0] - o[0]))
+
+        self.add(area, left_axes[2], left_graphs[2])
+        self.play(Write(area, stroke_width=1, run_time=2))
+        self.wait()
+        rect.set_fill(opacity=0.2)
+        rect.set_stroke(width=0)
+        self.play(
+            MoveAlongPath(dot, right_graphs[2], rate_func=lambda t: smooth(1 - 0.5 * t)),
+            MoveAlongPath(dot.copy(), right_graphs[2], rate_func=lambda t: smooth(0.5 * t)),
+            # UpdateFromFunc(rect, lambda m: m.match_x(dot)),
+            run_time=1,
+        )
+        self.play(FlashAround(dot, buff=0, run_time=2, time_width=1))
+        self.wait()
+
+
+class MultiplyBigNumbers(InteractiveScene):
+    def construct(self):
+        # Numbers
+        numbers = VGroup(
+            Integer(3141592653589793238),
+            Integer(2718281828459045235),
+        )
+        numbers.arrange(DOWN, aligned_edge=RIGHT)
+        numbers.scale(1.5)
+        numbers.move_to(1.0 * DOWN)
+        underline = Underline(numbers).set_stroke(WHITE, 2)
+        underline.stretch(1.2, 0, about_edge=RIGHT)
+        times = Tex(R"\times")
+        times.scale(1.5)
+        times.next_to(underline.get_left(), UR)
+
+        self.add(numbers)
+        self.add(underline, times)
+
+        # Prep run time
+        d_label = TexText("Two $d$-digit numbers", tex_to_color_map={"$d$": YELLOW})
+        d_label.next_to(numbers, UP, buff=LARGE_BUFF)
+        d2_label = Tex(R"\mathcal{O}(d^2)", font_size=60, tex_to_color_map={"d": YELLOW})
+        dlogd_label = Tex(R"\mathcal{O}({d} \cdot \text{log}({d}))", font_size=60, tex_to_color_map={"{d}": YELLOW})
+        os = VGroup(d2_label, dlogd_label)
+        os.arrange(RIGHT, buff=2.5)
+        os.next_to(d_label, UP, buff=LARGE_BUFF)
+        # cross = Exmark().scale(2).next_to(d2_label, RIGHT)
+        cross = Cross(d2_label)
+        cross.insert_n_curves(50).set_stroke(RED, (0, 8, 8, 8, 8, 0))
+        check = Checkmark().scale(2).next_to(dlogd_label, RIGHT)
+        q_marks = Tex("???", font_size=72)
+        q_marks.next_to(d2_label, RIGHT)
+
+        # Square run time
+        for num in numbers:
+            num.digits = num[::-1]
+            num.digits.remove(*num[-4::-4])
+            num.digit_highlights = VGroup(*(
+                VHighlight(digit, color_bounds=(YELLOW, YELLOW_E), max_stroke_addition=8)
+                for digit in num.digits
+            ))
+
+        self.add(d_label)
+        self.play(FadeIn(d2_label, UP), FadeIn(q_marks, UP))
+        for dh2 in numbers[1].digit_highlights:
+            self.add(dh2, numbers[1])
+            self.play(
+                ShowSubmobjectsOneByOne(numbers[0].digit_highlights.copy(), remover=True),
+                run_time=0.5
+            )
+            self.remove(dh2)
+
+        # d * log(d)
+        self.play(
+            ShowCreation(cross),
+            FadeOut(q_marks),
+            FadeTransform(d2_label.copy(), dlogd_label)
+        )
+        self.play(Write(check))
         self.wait()
