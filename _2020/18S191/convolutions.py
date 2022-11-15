@@ -5,7 +5,7 @@ def box_blur(n):
     return np.ones((n, n)) / (n**2)
 
 
-class ConvolutionIntroduction(ThreeDScene):
+class ConvolutionIntroduction(InteractiveScene):
     def construct(self):
         frame = self.camera.frame
 
@@ -13,7 +13,8 @@ class ConvolutionIntroduction(ThreeDScene):
         image = Image.open(get_full_raster_image_path("Mario"))
 
         arr = np.array(image)
-        arr = arr[80::40, 0::40]
+        skip = 40
+        arr = arr[skip::skip, 0::skip, :3]
         height, width = arr.shape[:2]
 
         pixel_array = VGroup(*[
@@ -46,7 +47,7 @@ class ConvolutionIntroduction(ThreeDScene):
                     else:
                         value = DecimalNumber(x, num_decimal_places=3)
                     value.set_width(square.get_width() * 0.7)
-                    value.set_stroke(BLACK, 1, background=True)
+                    value.set_backstroke(BLACK, 3)
                     value.move_to(square)
                     square.add(value)
                     kernel_array.add(square)
@@ -89,30 +90,25 @@ class ConvolutionIntroduction(ThreeDScene):
                 step(n)
                 if surface is not None:
                     surface.move_to(kernel_array, IN)
-                self.wait(time / (stop - start))
+                self.wait(time / (stop - start), ignore_presenter_mode=True)
 
         # Setup zooming
         def zoom_to_kernel():
             self.play(
-                frame.set_height, 1.5 * kernel_array.get_height(),
-                frame.move_to, kernel_array,
+                frame.animate.set_height(1.5 * kernel_array.get_height()).move_to(kernel_array),
                 run_time=2
             )
 
         def zoom_to_new_pixel():
             self.play(
-                frame.set_height, 1.5 * kernel_array.get_height(),
-                frame.move_to, right_rect,
+                frame.animate.set_height(1.5 * kernel_array.get_height()).move_to(right_rect),
                 run_time=2
             )
 
         def reset_frame():
-            self.play(
-                frame.to_default_state
-            )
+            self.play(frame.animate.to_default_state())
 
         # Example walking
-        # walk(0, 151, 15)
         last_i = 0
         next_i = 151
         walk(last_i, next_i, 5)
@@ -124,24 +120,20 @@ class ConvolutionIntroduction(ThreeDScene):
         self.wait()
         reset_frame()
 
-        # last_i = next_i
-        # next_i = 200
-        # walk(151, 200, 2)
-        # self.wait(0.5)
-        # zoom_to_kernel()
-        # self.wait()
+        last_i = next_i
+        next_i = 390
+        walk(151, next_i, 2)
+        self.wait(0.5)
+        zoom_to_kernel()
+        self.wait()
         # reset_frame()
-        # zoom_to_new_pixel()
-        # self.wait()
-        # reset_frame()
+        zoom_to_new_pixel()
+        self.wait()
+        reset_frame()
 
         last_i = next_i
         next_i = len(pixel_array)
         walk(last_i, next_i, 10)
-        # self.wait()
-        # zoom_to_kernel()
-        # self.wait()
-        # reset_frame()
         self.wait()
 
         # Gauss kernel
@@ -158,7 +150,7 @@ class ConvolutionIntroduction(ThreeDScene):
         kernel = gauss_kernel
         new_array.set_fill(BLACK, 0)
 
-        walk(0, 200, time=5)
+        walk(0, 206, time=5)
         # walk(0, 200, time=10)
         self.wait()
         zoom_to_kernel()
@@ -181,20 +173,17 @@ class ConvolutionIntroduction(ThreeDScene):
         update_surface(gaussian)
         self.play(
             FadeIn(gaussian),
-            frame.set_phi, 70 * DEGREES,
-            frame.set_theta, 10 * DEGREES,
+            frame.animate.reorient(10, 70),
             run_time=3
         )
         self.wait()
         self.play(
-            frame.set_height, 8,
-            frame.set_theta, 0,
-            frame.set_x, 0,
+            frame.animate.set_height(8).reorient(0, 60).set_x(-1),
             run_time=3,
         )
 
         # More walking
         walk(200, len(pixel_array), time=10, surface=gaussian)
         self.wait()
-        self.play(frame.to_default_state, run_time=2)
+        self.play(frame.animate.to_default_state(), run_time=2)
         self.wait()
