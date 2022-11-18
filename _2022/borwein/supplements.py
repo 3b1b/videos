@@ -347,26 +347,6 @@ class EngineersSinc(InteractiveScene):
         self.wait()
 
 
-class Intimidation(InteractiveScene):
-    def construct(self):
-        pis = VGroup(*(Randolph(color=color) for color in (BLUE_C, BLUE_E, BLUE_D)))
-        pis.arrange(DOWN, buff=LARGE_BUFF)
-        pis.set_height(FRAME_HEIGHT - 1)
-        pis.move_to(FRAME_WIDTH * LEFT / 4)
-
-        self.play(LaggedStart(*(
-            pi.change("pondering", look_at=3 * UR)
-            for pi in pis
-        )))
-        self.play(LaggedStart(*(Blink(pi) for pi in pis)))
-        self.wait()
-        self.play(LaggedStart(*(
-            pi.change(mode, look_at=3 * UR)
-            for pi, mode in zip(pis, ("horrified", "maybe", "tired"))
-        )))
-        self.wait(2)
-
-
 class ThinkAboutMovingAverages(TeacherStudentsScene):
     def construct(self):
         morty = self.teacher

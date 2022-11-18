@@ -224,43 +224,89 @@ class WaysToCombine(InteractiveScene):
             seq.match_y(axes3)
 
         # Operation labels
-        op_labels = VGroup(*map(Text, ["Addition", "Multiplication", "Convolution"]))
-        op_labels.set_color(TEAL)
-        for op_label, seq, graph_label in zip(op_labels, seqs[2:], graph_labels[2:]):
-            op_label.next_to(seq, UP, MED_LARGE_BUFF, aligned_edge=LEFT)
-            mini_op_label = op_label.copy().scale(0.7)
-            mini_op_label.next_to(graph_label, UP, aligned_edge=LEFT)
-            op_label.add(*mini_op_label)
+        op_labels = VGroup()
+        left_op_labels = VGroup(*map(Text, ["Addition", "Multiplication", "Convolution"]))
+        left_op_labels.set_color(TEAL)
+        for left_op_label, seq, graph_label in zip(left_op_labels, seqs[2:], graph_labels[2:]):
+            left_op_label.next_to(seq, UP, MED_LARGE_BUFF, aligned_edge=LEFT)
+            right_op_label = left_op_label.copy().scale(0.7)
+            right_op_label.next_to(graph_label, UP, aligned_edge=LEFT)
+            op_labels.add(VGroup(left_op_label, right_op_label))
 
-        # Animate
+        # Introduce
+        kw = dict(lag_ratio=0.7)
         self.play(
-            LaggedStartMap(Write, seqs[:2]),
-            run_time=1,
+            LaggedStartMap(Write, seqs[:2], **kw),
+            run_time=2,
         )
         self.play(
             FadeIn(v_line),
-            LaggedStartMap(FadeIn, all_axes[:2]),
-            LaggedStartMap(ShowCreation, VGroup(f_graph, g_graph)),
-            LaggedStartMap(FadeIn, graph_labels[:2]),
-            lag_ratio=0.5
+            LaggedStartMap(FadeIn, all_axes[:2], **kw),
+            LaggedStartMap(ShowCreation, VGroup(f_graph, g_graph), **kw),
+            LaggedStartMap(FadeIn, graph_labels[:2], **kw),
+            run_time=2
         )
         self.wait()
+
+        # Ways to combine?
+        all_boxes = VGroup(*(SurroundingRectangle(m[2:]) for m in seqs[:3]))
+        all_boxes.set_stroke(width=2)
+        boxes = all_boxes[:2]
+        boxes[0].set_color(BLUE)
+        boxes[1].set_color(YELLOW)
+        mystery_box = all_boxes[2]
+        mystery_box.set_color(GREEN)
+        q_marks = Text("????")
+        q_marks.space_out_submobjects(1.5)
+        q_marks.move_to(mystery_box)
+        box_arrows = VGroup(*(
+            Arrow(box.get_right(), mystery_box.get_corner(UR), path_arc=-PI / 3)
+            for box in boxes
+        ))
+
+        self.play(
+            *map(Write, box_arrows),
+            FadeIn(boxes),
+            *(
+                Transform(
+                    box.copy().set_stroke(width=0, opacity=0),
+                    mystery_box.copy(),
+                    path_arc=-PI / 3,
+                    remover=True
+                )
+                for box in boxes
+            )
+        )
+        self.add(mystery_box)
+        comb_graph = sum_graph.copy()
+        self.play(
+            Write(q_marks),
+            ReplacementTransform(axes1.copy(), axes3),
+            Transform(axes2.copy(), axes3.copy(), remover=True),
+            ReplacementTransform(f_graph.copy(), comb_graph),
+            Transform(g_graph.copy(), comb_graph.copy(), remover=True),
+        )
+        self.play(Transform(comb_graph, prod_graph))
+        self.play(Transform(comb_graph, conv_graph))
+        self.play(LaggedStartMap(FadeOut, VGroup(
+            *boxes, *box_arrows, mystery_box, q_marks, comb_graph
+        )))
+
+        # Sums and products
         tuples = [
             (sum_seq, sum_label, axes3, sum_graph, op_labels[0]),
             (prod_seq, prod_label, axes3, prod_graph, op_labels[1])
         ]
         for seq, label, axes, graph, op_label in tuples:
-            self.play(
-                FadeTransformPieces(seq1_tex.copy(), seq),
-                FadeTransformPieces(seq2_tex.copy(), seq),
-                ReplacementTransform(axes1.copy(), axes),
-                Transform(axes2.copy(), axes.copy(), remover=True),
-                ReplacementTransform(f_graph.copy(), graph),
-                Transform(g_graph.copy(), graph.copy(), remover=True),
+            self.play(LaggedStart(
+                TransformMatchingShapes(
+                    VGroup(*seq1_tex[:2], *seq2_tex[:2]).copy(),
+                    seq[:4]
+                ),
                 TransformMatchingShapes(graph_labels[:2].copy(), label),
                 FadeIn(op_label, DOWN)
-            )
-            self.wait()  # TODO, go point by point
+            ))
+            self.add(axes)
             # Go point by point
             value_rects = VGroup(*(
                 VGroup(*map(SurroundingRectangle, s[-8::2]))
@@ -268,32 +314,76 @@ class WaysToCombine(InteractiveScene):
             ))
             dots = Group(*(GlowDot(color=WHITE) for x in range(3)))
             self.play(
+                *map(FadeIn, [seq[4], seq[-1]]),
                 *(
                     VFadeInThenOut(rects, lag_ratio=0.5)
                     for rects in value_rects
                 ),
-                *(
-                    MoveAlongPath(dot, graph)
-                    for dot, graph in zip(dots, [f_graph, g_graph, graph])
-                ),
+                LaggedStart(*(
+                    FadeIn(seq[n:n + 2 if n < 11 else n + 1])
+                    for n in range(5, 12, 2)
+                ), lag_ratio=0.5),
+                run_time=2
+            )
+            self.play(
+                ShowCreation(graph, rate_func=linear),
+                UpdateFromFunc(dots[2], lambda m: m.move_to(graph.get_end())),
                 *(
                     UpdateFromAlphaFunc(dot, lambda d, a: d.set_opacity(min(10 * a * (1 - a), 1)))
                     for dot in dots
                 ),
-                run_time=3
+                *(
+                    MoveAlongPath(dot, graph)
+                    for dot, graph in zip(dots, [f_graph, g_graph])
+                ),
+                run_time=4
             )
+            self.wait()
             self.play(*map(FadeOut, [seq, label, graph, op_label]))
 
-        self.play(
-            FadeTransformPieces(seq1_tex.copy(), conv_seq),
-            FadeTransformPieces(seq2_tex.copy(), conv_seq),
-        )
-        self.play(
-            ReplacementTransform(f_graph.copy(), conv_graph),
-            Transform(g_graph.copy(), conv_graph.copy(), remover=True),
-            TransformMatchingShapes(graph_labels[:2].copy(), conv_label)
-        )
-        self.play(Write(op_labels[2]))
+        # Convolutions
+        self.play(LaggedStart(
+            TransformMatchingShapes(
+                VGroup(*seq1_tex[:2], *seq2_tex[:2]).copy(),
+                conv_seq[:4],
+            ),
+            FadeIn(op_labels[2][0], DOWN),
+            TransformMatchingShapes(graph_labels[:2].copy(), conv_label),
+            FadeIn(op_labels[2][1], DOWN),
+        ))
+        self.play(FadeIn(conv_seq[4:], lag_ratio=0.2, run_time=2))
+
+        # Hint at computation
+        nums1 = seq1_tex[3::2]
+        nums2 = seq2_tex[3::2]
+        for mobs in nums1, nums2:
+            for i, mob in enumerate(mobs):
+                mob.index = i
+        nums3 = conv_seq[5::2]
+
+        nums1.set_color(BLUE)
+        nums2.set_color(YELLOW)
+
+        last_group = VGroup()
+        for n, num3 in enumerate(nums3):
+            rect = SurroundingRectangle(num3, buff=SMALL_BUFF)
+            rect.set_stroke(TEAL, 2)
+            rect.round_corners()
+            pairs = get_aligned_pairs(nums1, nums2, n)
+            lines = VGroup(*(Line(m1, m2) for m1, m2 in pairs))
+            lines.set_stroke(TEAL, 2)
+
+            group = VGroup(rect, lines)
+            self.play(FadeIn(group), FadeOut(last_group), run_time=0.25)
+            self.wait(0.25)
+            last_group = group
+        self.play(FadeOut(last_group, run_time=0.5))
+        self.wait()
+
+        # Conv graph
+        self.play(ShowCreation(conv_graph, run_time=3))
+        self.wait()
+        self.play(MoveAlongPath(GlowDot(color=WHITE), conv_graph, run_time=5, remover=True))
         self.wait()
 
 
@@ -316,8 +406,9 @@ class DiceExample(InteractiveScene):
         red_dice.save_state()
 
         self.play(LaggedStart(
-            FadeIn(blue_dice, lag_ratio=0.2),
-            FadeIn(red_dice, lag_ratio=0.2),
+            FadeIn(blue_dice, lag_ratio=0.1, shift=0.25 * UP, run_time=2, rate_func=overshoot),
+            FadeIn(red_dice, lag_ratio=0.1, shift=0.25 * UP, run_time=2, rate_func=overshoot),
+            lag_ratio=0.2
         ))
         self.wait()
         self.play(
@@ -335,7 +426,7 @@ class DiceExample(InteractiveScene):
         # Add all mini dice
         mini_dice = VGroup()
         for n, square in enumerate(grid):
-            i, j = n // 6, n % 6
+            j, i = n // 6, n % 6
             blue = blue_dice[i].copy()
             red = red_dice[j].copy()
             blue.sum = i + j + 2
@@ -410,11 +501,10 @@ class DiceExample(InteractiveScene):
         self.wait()
 
         # Slide rows across
-        shift_vect = ORIGIN
         self.play(
-            red_dice.animate.rotate(PI, about_point=red_dice[0].get_center()).shift(shift_vect).set_anim_args(path_arc=PI),
-            blue_dice.animate.shift(shift_vect),
+            Rotate(red_dice, PI),
         )
+        self.wait()
 
         last_prob_label = VMobject()
         last_rects = VMobject()
@@ -475,9 +565,9 @@ class DiceExample(InteractiveScene):
         self.wait()
         self.play(
             Write(question, run_time=1),
-            FadeOut(sixths, 0.25 * UP, lag_ratio=0.2),
-            FadeIn(new_prob_labels, 0.25 * UP, lag_ratio=0.2),
-            MoveToTarget(all_dice)
+            FadeOut(sixths, 0.25 * UP, lag_ratio=0.03, run_time=4),
+            FadeIn(new_prob_labels, 0.25 * UP, lag_ratio=0.03, run_time=4),
+            MoveToTarget(all_dice, run_time=3)
         )
         self.wait()
 
@@ -527,9 +617,10 @@ class DiceExample(InteractiveScene):
                     die.prob_label = label
                     die.add(label)
                 self.play(
-                    FadeIn(VGroup(*blue_labels, *red_labels), shift=0.25 * UP, lag_ratio=0.1),
-                    FadeOut(old_prob_labels, shift=0.25 * UP, lag_ratio=0.1),
-                    FadeOut(rhs),
+                    FadeIn(VGroup(*blue_labels, *red_labels), shift=0.25 * UP, lag_ratio=0.04),
+                    FadeOut(old_prob_labels, shift=0.25 * UP, lag_ratio=0.04),
+                    FadeOut(rhs, time_span=(0, 1)),
+                    run_time=4
                 )
             else:
                 n += 1
@@ -1003,8 +1094,10 @@ class SimpleExample(InteractiveScene):
             self.play(
                 FadeIn(new_rects),
                 FadeOut(old_rects),
-                FadeTransform(prod, prod.target),
-                run_time=0.5
+                FadeTransform(prod, prod.target[:len(prod)]),
+                FadeIn(prod.target[len(prod):], scale=2),
+                FlashAround(prod.target, time_width=1),
+                run_time=1.0
             )
             old_rects = new_rects
         self.play(FadeOut(old_rects))
@@ -1077,6 +1170,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
             v_line.set_y(0)
             v_lines.add(v_line)
         v_lines.add(v_lines[-1].copy().set_x(top_bars.get_right()[0]))
+        # v_lines.set_stroke(opacity=0)
 
         # Set up new distribution
         conv_dist = np.convolve(dist1, dist2)
@@ -1265,6 +1359,7 @@ class MovingAverageExample(InteractiveScene):
     dist1 = [*5 * [0.1], *5 * [1], *5 * [0.1], *5 * [1], *5 * [0.1]]
     dist2 = 5 * [0.2]
     march_anim_run_time = 1.0
+    always_preview_result = True
 
     def construct(self):
         # All bars
@@ -1343,6 +1438,12 @@ class MovingAverageExample(InteractiveScene):
                 Restore(rect),
                 run_time=self.march_anim_run_time,
             )
+
+            if self.always_preview_result:
+                self.add(conv_bars)
+                conv_bars.set_opacity(0.5)
+                conv_bar.set_opacity(1)
+
             self.wait(0.5)
 
             last_rects = rects
@@ -1361,121 +1462,107 @@ class AltMovingAverage(MovingAverageExample):
     dist2 = [0.1, 0.2, 0.4, 0.2, 0.1]
 
 
-class TransitionToContinuousProbability(InteractiveScene):
+class AltMovingAverageFast(AltMovingAverage):
+    march_anim_run_time = 0
+
+
+class MovingAverageFast2(AltMovingAverageFast):
+    always_preview_result = True
+
+
+class CompareSizes(InteractiveScene):
     def construct(self):
-        # Setup axes and initial graph
-        axes = Axes((0, 12), (0, 1, 0.2), width=14, height=5)
-        axes.to_edge(LEFT, LARGE_BUFF)
+        # Show them all!
+        int_arr1 = [3, 1, 4, 1, 5, 9]
+        int_arr2 = [5, 7, 7]
+        conv_arr = np.convolve(int_arr1, int_arr2)
 
-        def pd(x):
-            return (x**4) * np.exp(-x) / 8.0
+        arrays = VGroup()
+        for arr in (int_arr1, int_arr2, conv_arr):
+            squares = Square().get_grid(1, len(arr), buff=0)
+            squares.set_height(0.7)
+            squares.set_stroke(WHITE, 1)
+            squares.set_fill(GREY_E, 1)
+            for square, elem in zip(squares, arr):
+                int_mob = Integer(elem).move_to(square)
+                square.add(int_mob)
+            arrays.add(squares)
 
-        graph = axes.get_graph(pd)
-        graph.set_stroke(WHITE, 2)
-        bars = axes.get_riemann_rectangles(graph, dx=1, x_range=(0, 6), input_sample_type="right")
-        bars.set_stroke(WHITE, 3)
+        top_arr, low_arr, conv_arr = arrays
 
-        y_label = Text("Probability", font_size=24)
-        y_label.next_to(axes.y_axis, UP, SMALL_BUFF)
+        arrays.arrange(DOWN, buff=1.0)
+        arrays[:2].shift(UP)
+        VGroup(*(square[0] for square in arrays[2])).set_opacity(0)
 
-        self.add(axes)
-        self.add(y_label)
-        self.add(*bars)
+        self.add(*arrays)
 
-        # Label as die probabilities
-        dice = get_die_faces(fill_color=BLUE_E, dot_color=WHITE, stroke_width=1)
-        dice.set_height(0.5)
-        for bar, die in zip(bars, dice):
-            die.next_to(bar, DOWN)
+        # Length labels
+        braces = VGroup(*(Brace(arr, vect, buff=SMALL_BUFF) for arr, vect in zip(arrays, [UP, DOWN, DOWN])))
+        brace_labels = VGroup(*(brace.get_tex(tex, buff=SMALL_BUFF) for brace, tex in zip(braces, ["n", "m", "n + m - 1"])))
+        braces[1].add_updater(lambda m: m.match_x(arrays[1]))
+        brace_labels[1].add_updater(lambda m: m.match_x(arrays[1]))
 
-        self.play(FadeIn(dice, 0.1 * UP, lag_ratio=0.05, rate_func=overshoot))
-        self.wait()
-        self.play(FadeOut(dice, RIGHT, rate_func=running_start, run_time=1, path_arc=-PI / 5, lag_ratio=0.01))
+        self.add(braces, brace_labels)
 
-        # Make continuous
-        all_rects = VGroup(*(
-            axes.get_riemann_rectangles(
-                graph,
-                x_range=(0, min(6 + n, 12)),
-                dx=(1 / n),
-                input_sample_type="right",
-            ).set_stroke(WHITE, width=(2.0 / n), opacity=(2.0 / n), background=False)
-            for n in (*range(1, 10), *range(10, 20, 2), *range(20, 100, 5))
-        ))
-        area = all_rects[-1]
-        area.set_stroke(width=0)
+        # Flip
+        self.remove(low_arr)
+        fake_arr = low_arr.deepcopy()
+        fake_arr.generate_target(use_deepcopy=True)
+        fake_arr.target.rotate(PI)
+        for square in fake_arr.target:
+            square[0].rotate(PI)
+        self.play(MoveToTarget(fake_arr, path_arc=PI, lag_ratio=0.01))
+        self.remove(fake_arr)
+        low_arr.rotate(PI)
+        for square in low_arr:
+            square[0].rotate(PI)
 
-        self.remove(bars)
-        self.play(ShowSubmobjectsOneByOne(all_rects, rate_func=bezier([0, 0, 0, 0, 1, 1]), run_time=5))
-        self.play(ShowCreation(graph))
-        self.wait()
+        # March!
+        for arr in (top_arr, low_arr):
+            for index, square in enumerate(arr):
+                square.index = index
 
-        # Show continuous value
-        x_tracker = ValueTracker(0)
-        get_x = x_tracker.get_value
-        tip = ArrowTip(angle=PI / 2)
-        tip.set_height(0.25)
-        tip.add_updater(lambda m: m.move_to(axes.c2p(get_x(), 0), UP))
-        x_label = DecimalNumber(font_size=36)
-        x_label.add_updater(lambda m: m.set_value(get_x()))
-        x_label.add_updater(lambda m: m.next_to(tip, DOWN, buff=0.2, aligned_edge=LEFT))
+        for n in range(len(conv_arr)):
+            self.play(
+                get_row_shift(top_arr, low_arr, n),
+                run_time=0.5
+            )
+            pairs = get_aligned_pairs(top_arr, low_arr, n)
+            rects = VGroup(*(
+                SurroundingRectangle(pair, buff=-0.05)
+                for pair in pairs
+            ))
+            self.add(rects)
+            conv_arr[n].set_opacity(1)
+            self.play(ShowIncreasingSubsets(rects, int_func=np.ceil), run_time=0.5)
+            self.wait(0.25)
+            self.remove(rects)
 
-        self.play(FadeIn(tip), FadeIn(x_label))
-        self.play(x_tracker.animate.set_value(12), run_time=6)
-        self.remove(tip, x_label)
+        # Truncate
+        brace = braces[2]
+        brace_label = brace_labels[2]
 
-        # Labels
-        x_label = Text("Value of XYZ next year")
-        x_label.next_to(axes.c2p(4, 0), DOWN, buff=0.45)
+        small_brace = Brace(conv_arr[2:-2], DOWN, buff=SMALL_BUFF)
+        small_brace_label = small_brace.get_text("Only consider full overlaps")
 
-        density = Text("Probability density")
-        density.match_height(y_label)
-        density.move_to(y_label, LEFT)
-        cross = Cross(y_label)
+        mid_brace = Brace(conv_arr[1:-1], DOWN, buff=SMALL_BUFF)
+        mid_brace_label = mid_brace.get_text("Match biggest input size")
 
-        self.play(Write(x_label))
-        self.wait()
-        self.play(ShowCreation(cross))
         self.play(
-            VGroup(y_label, cross).animate.shift(0.5 * UP),
-            FadeIn(density)
+            Transform(brace, small_brace),
+            FadeTransform(brace_label, small_brace_label),
+            conv_arr[:2].animate.set_opacity(0.25),
+            conv_arr[-2:].animate.set_opacity(0.25),
+        )
+        self.wait()
+        self.play(
+            Transform(brace, mid_brace),
+            FadeTransform(small_brace_label, mid_brace_label),
+            conv_arr[1].animate.set_opacity(1),
+            conv_arr[-2].animate.set_opacity(1),
         )
         self.wait()
 
-        # Interpretation
-        range_tracker = ValueTracker([0, 12])
-
-        def update_area(area):
-            values = range_tracker.get_value()
-            x1, x2 = axes.x_axis.n2p(values)[:, 0]
-            for bar in area:
-                if x1 < bar.get_x() < x2:
-                    bar.set_opacity(1)
-                else:
-                    bar.set_opacity(0.25)
-
-        area.add_updater(update_area)
-
-        v_lines = Line(DOWN, UP).replicate(2)
-        v_lines.set_stroke(GREY_A, 1)
-        v_lines.set_height(FRAME_HEIGHT)
-
-        def update_v_lines(v_lines):
-            values = range_tracker.get_value()
-            for value, line in zip(values, v_lines):
-                line.move_to(axes.c2p(value, 0), DOWN)
-
-        v_lines.add_updater(update_v_lines)
-
-        self.play(
-            range_tracker.animate.set_value([3, 5]),
-            VFadeIn(v_lines),
-            run_time=2,
-        )
-        self.wait()
-        for pair in [(5, 6), (1, 3), (2.5, 3), (2, 7), (4, 5), (0, 12)]:
-            self.play(range_tracker.animate.set_value(pair), run_time=2)
-            self.wait()
 
 # Image processing
 
@@ -1494,14 +1581,18 @@ class ImageConvolution(InteractiveScene):
     def setup(self):
         super().setup()
         # Set up the pixel grids
-        array = self.get_pixel_value_array()
+        pixels = self.get_pixel_value_array() / 255.0
         kernel = self.get_kernel()
         if self.scalar_conv:
-            conv = scipy.signal.fftconvolve(array.mean(2), kernel, mode='same')
+            conv = scipy.signal.convolve(pixels.mean(2), kernel, mode='same')
         else:
-            conv = scipy.signal.fftconvolve(array, np.expand_dims(kernel, 2), mode='same')
+            conv = scipy.signal.convolve(pixels, np.expand_dims(kernel, 2), mode='same')
+        conv *= 2  # Delete
 
-        pixel_array = self.get_pixel_array(array)
+        if not self.scalar_conv:
+            conv = np.clip(conv, 0, 1)
+
+        pixel_array = self.get_pixel_array(pixels)
         kernel_array = self.get_kernel_array(kernel, pixel_array, tex=self.kernel_tex)
         conv_array = self.get_pixel_array(conv)
         conv_array.set_fill(opacity=0)
@@ -1547,12 +1638,12 @@ class ImageConvolution(InteractiveScene):
         for pixel, value in zip(pixel_array, it.chain(*array)):
             if value.size == 3:
                 # Value is rgb valued
-                rgb = np.abs(value / 255).clip(0, 1)
+                rgb = np.abs(value).clip(0, 1)
                 if self.grayscale:
                     rgb[:] = rgb.mean()
             else:
                 # Treat as scalar, color red for negative green for positive
-                rgb = [max(-value / 255, 0), max(value / 255, 0), max(value / 255, 0)]
+                rgb = [max(-value, 0), max(value, 0), max(value, 0)]
             pixel.set_fill(rgb_to_color(rgb), 1.0)
         pixel_array.set_height(self.image_height)
         pixel_array.set_max_width(5.75)
@@ -1603,26 +1694,122 @@ class ImageConvolution(InteractiveScene):
             run_time=run_time
         )
 
-    def zoom_to_new_pixel(self, run_time=2):
+    def zoom_to_new_pixel(self, run_time=4):
         ka = self.kernel_array
         ca = self.conv_array
+        frame = self.camera.frame
+        curr_center = frame.get_center().copy()
+        index = int(self.index_tracker.get_value())
+        new_center = ca[index].get_center()
+        center_func = bezier([curr_center, curr_center, new_center, new_center])
+
+        target_height = 1.5 * ka.get_height()
+        height_func = bezier([
+            frame.get_height(), frame.get_height(), FRAME_HEIGHT,
+            target_height, target_height,
+        ])
         self.play(
-            self.camera.frame.animate.set_height(1.5 * ka.get_height()).move_to(ca[int(self.index_tracker.get_value())]),
-            run_time=run_time
+            UpdateFromAlphaFunc(frame, lambda m, a: m.set_height(height_func(a)).move_to(center_func(a))),
+            run_time=run_time,
+            rate_func=linear,
         )
 
-    def reset_frame(self, run_time=1):
+    def reset_frame(self, run_time=2):
         self.play(
             self.camera.frame.animate.to_default_state(),
             run_time=run_time
         )
+
+    def show_pixel_sum(self, tex=None, convert_to_vect=True, row_len=9):
+        # Setup sum
+        ka = self.kernel_array
+        pa = self.pixel_array
+        frame = self.camera.frame
+
+        rgb_vects = VGroup()
+        lil_pixels = VGroup()
+        expr = VGroup()
+
+        ka_copy = VGroup()
+        stroke_width = 2 * FRAME_HEIGHT / frame.get_height()
+
+        lil_height = 1.0
+        for square in ka:
+            ka_copy.add(square.copy().set_stroke(TEAL, stroke_width))
+            sc = square.get_center()
+            pixel = pa[np.argmin([get_norm(p.get_center() - sc) for p in pa])]
+            color = pixel.get_fill_color()
+            rgb = color_to_rgb(color)
+            rgb_vect = DecimalMatrix(rgb.reshape((3, 1)), num_decimal_places=2)
+            rgb_vect.set_height(lil_height)
+            rgb_vect.set_color(color)
+            if get_norm(rgb) < 0.1:
+                rgb_vect.set_color(WHITE)
+            rgb_vects.add(rgb_vect)
+
+            lil_pixel = pixel.copy()
+            lil_pixel.match_width(rgb_vect)
+            lil_pixel.set_stroke(WHITE, stroke_width)
+            lil_pixels.add(lil_pixel)
+
+            if tex:
+                lil_coef = Tex(tex, font_size=36)
+            else:
+                lil_coef = square[0].copy()
+                lil_coef.set_height(lil_height * 0.5)
+            expr.add(lil_coef, lil_pixel, Tex("+", font_size=48))
+
+        expr[-1].scale(0, about_edge=LEFT)  # Stray plus
+        rows = VGroup(*(
+            expr[n:n + 3 * row_len]
+            for n in range(0, len(expr), 3 * row_len)
+        ))
+        for row in rows:
+            row.arrange(RIGHT, buff=0.2)
+        rows.arrange(DOWN, buff=0.4, aligned_edge=LEFT)
+
+        expr.set_max_width(FRAME_WIDTH - 1)
+        expr.to_edge(UP)
+        expr.fix_in_frame()
+
+        for vect, pixel in zip(rgb_vects, lil_pixels):
+            vect.move_to(pixel)
+            vect.set_max_width(pixel.get_width())
+        rgb_vects.fix_in_frame()
+
+        # Reveal top
+        top_bar = FullScreenRectangle().set_fill(BLACK, 1)
+        top_bar.set_height(rgb_vects.get_height() + 0.5, stretch=True, about_edge=UP)
+        top_bar.fix_in_frame()
+
+        self.play(
+            frame.animate.scale(1.2, about_edge=DOWN),
+            FadeIn(top_bar, 2 * DOWN),
+        )
+
+        # Show sum
+        for n in range(len(ka_copy)):
+            self.remove(*ka_copy)
+            self.add(ka_copy[n])
+            self.add(expr[:3 * n + 2])
+            self.wait(0.25)
+        self.remove(*ka_copy)
+        if convert_to_vect:
+            self.play(LaggedStart(*(
+                Transform(lil_pixel, rgb_vect)
+                for lil_pixel, rgb_vect in zip(lil_pixels, rgb_vects)
+            )))
+        self.wait()
+
+        result = VGroup(top_bar, expr)
+        return result
 
 
 class BoxBlurMario(ImageConvolution):
     kernel_tex = "1 / 9"
     image_name = "MarioSmall"
     pixel_stroke_opacity = 0.5
-    stops = (141, 360)
+    stops = (131, 360)
     final_run_time = 8
 
     def construct(self):
@@ -1630,12 +1817,16 @@ class BoxBlurMario(ImageConvolution):
         for index in self.stops:
             self.set_index(index)
             self.zoom_to_kernel()
+            if index == self.stops[0]:
+                top_bar = self.show_pixel_sum(tex=R"\frac{1}{9}")
             self.wait()
-            self.reset_frame()
-            self.zoom_to_new_pixel()
+            self.zoom_to_new_pixel(run_time=8)
             self.wait()
+            if index == self.stops[0]:
+                self.play(FadeOut(top_bar))
             self.reset_frame()
         self.set_index(len(self.pixel_array) - 1, run_time=self.final_run_time)
+        self.wait()
 
 
 class BoxBlurCat(BoxBlurMario):
@@ -1647,6 +1838,7 @@ class BoxBlurCat(BoxBlurMario):
 class GaussianBluMario(ImageConvolution):
     kernel_decimal_places = 3
     focus_index = 256
+    final_run_time = 10
 
     def construct(self):
         # March!
@@ -1676,15 +1868,18 @@ class GaussianBluMario(ImageConvolution):
             run_time=3
         )
         self.wait()
+        top_bar = self.show_pixel_sum(convert_to_vect=False)
+        self.wait()
         self.zoom_to_new_pixel()
         self.wait()
         self.play(
-            frame.animate.set_height(8).reorient(0, 60).set_x(0),
+            frame.animate.set_height(8).reorient(0, 60).move_to(ORIGIN),
+            FadeOut(top_bar, time_span=(0, 1)),
             run_time=3,
         )
 
         # More walking
-        self.set_index(len(self.pixel_array), run_time=10)
+        self.set_index(len(self.pixel_array), run_time=self.final_run_time)
         self.wait()
 
     def get_kernel(self):
@@ -1700,6 +1895,18 @@ class GaussianBluMario(ImageConvolution):
 
 class GaussianBlurCat(GaussianBluMario):
     image_name = "PixelArtCat"
+    focus_index = 254
+
+    def construct(self):
+        for arr in self.pixel_array, self.conv_array:
+            arr.set_stroke(width=0.5, opacity=0.5)
+        super().construct()
+
+
+class GaussianBlurCatNoPause(GaussianBlurCat):
+    stops = ()
+    focus_index = 0
+    final_run_time = 30
 
 
 class SobelFilter1(ImageConvolution):
@@ -1738,7 +1945,6 @@ class SobelFilter1(ImageConvolution):
             ), rate_func=there_and_back_with_pause, run_time=3)
             self.add(kernel)
             self.wait()
-            self.reset_frame()
             self.zoom_to_new_pixel()
             self.wait()
             self.reset_frame()
@@ -1759,7 +1965,169 @@ class SobelFilter2(SobelFilter1):
         return super().get_kernel().T
 
 
+class SobelFilterCat(SobelFilter1):
+    scalar_conv = True
+    image_name = "PixelArtCat"
+    pixel_stroke_width = 1
+    pixel_stroke_opacity = 0.2
+    kernel_color = WHITE
+    stops = ()
+    grayscale = False
+
+
+class SobelFilterKirby(SobelFilter2):
+    image_name = "KirbySmall"
+    grayscale = False
+
+
+class SharpenFilter(ImageConvolution):
+    image_name = "KirbySmall"
+    kernel_decimal_places = 1
+    grayscale = False
+
+    def construct(self):
+        for arr in self.pixel_array, self.conv_array:
+            arr.set_stroke(WHITE, 0.25, 0.5)
+        for square in self.kernel_array:
+            square[0].scale(0.6)
+        self.set_index(len(self.pixel_array) - 1, run_time=20)
+
+    def get_kernel(self):
+        return np.array([
+            [0.0, 0.0, -0.25, 0.0, 0.0],
+            [0.0, -0.25, -0.5, -0.25, 0.0],
+            [-0.25, -0.5, 5.0, -0.5, -0.25],
+            [0.0, -0.25, -0.5, -0.25, 0.0],
+            [0.0, 0.0, -0.25, 0.0, 0.0],
+        ])
+
+
 # Convolution theorem
+
+
+class ContrastConvolutionToMultiplication(InteractiveScene):
+    def construct(self):
+        # Set up divide
+        v_line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        v_line.set_stroke(GREY, 2)
+
+        kw = dict(font_size=60)
+        conv_name = Text("Convolution", **kw)
+        mult_name = Text("Multiplication", **kw)
+        conv_name.set_x(-FRAME_WIDTH / 4).to_edge(UP)
+        mult_name.set_x(FRAME_WIDTH / 4).to_edge(UP)
+
+        self.add(v_line)
+        self.add(conv_name)
+        self.add(mult_name)
+
+        # Set up arrays
+        arr1 = np.arange(1, 6)
+        arr2 = np.arange(6, 11)
+        conv = np.convolve(arr1, arr2)
+        prod = arr1 * arr2
+        quart = FRAME_WIDTH / 4
+
+        left_arrays, right_arrays = (
+            VGroup(*(
+                self.get_array_mobject(arr, color)
+                for arr, color in [(arr1, BLUE), (arr2, YELLOW)]
+            )).arrange(DOWN, buff=1.0).move_to(vect * quart + UP)
+            for vect in [LEFT, RIGHT]
+        )
+
+        conv_array = self.get_array_mobject(conv, color=TEAL)
+        prod_array = self.get_array_mobject(prod, color=TEAL)
+        conv_array.next_to(left_arrays, DOWN, buff=1.5)
+        prod_array.next_to(right_arrays, DOWN, buff=1.5)
+
+        self.add(left_arrays)
+        self.add(right_arrays)
+
+        # Show convolution
+        top_arr = left_arrays[0]
+        low_arr = left_arrays[1]
+        low_arr.generate_target()
+        low_arr.target.rotate(PI, about_point=low_arr.elements[0].get_center())
+        for elem in low_arr.target[1:-1]:
+            elem.rotate(PI)
+        low_arr.target[2:-2:2].set_y(low_arr[1].get_y(DOWN))
+        self.play(
+            FadeIn(VGroup(conv_array[0], conv_array[-1])),
+            MoveToTarget(low_arr, path_arc=PI),
+        )
+        for n, elem in enumerate(conv_array.elements):
+            pairs = get_aligned_pairs(top_arr.elements, low_arr.elements, n)
+
+            self.play(
+                get_row_shift(top_arr.elements, low_arr.elements, n),
+                MaintainPositionRelativeTo(low_arr[::2], low_arr.elements),
+                run_time=0.25
+            )
+
+            lines = VGroup(*(Line(m1, m2, buff=0.1) for m1, m2 in pairs))
+            lines.set_stroke(TEAL, 1)
+
+            self.add(lines, elem)
+
+            tally = 0
+            for (m1, m2), line in zip(pairs, lines):
+                tally += m1.get_value() * m2.get_value()
+                lines.set_stroke(width=1)
+                line.set_stroke(width=4)
+                elem.set_value(tally)
+                self.wait(0.25)
+            self.wait(0.25)
+            self.remove(lines)
+            self.add(conv_array[2 * n + 2])
+        self.wait()
+
+        # Show multiplication
+        low_arr = right_arrays[0]
+        top_arr = right_arrays[1]
+        lines = VGroup(*(
+            Line(e1, e2, buff=0.1)
+            for e1, e2 in zip(top_arr.elements, low_arr.elements)
+        ))
+        lines.set_stroke(TEAL, 1)
+
+        self.play(
+            FadeIn(VGroup(prod_array[0], prod_array[-1])),
+            FadeIn(lines),
+        )
+        for n, elem in enumerate(prod_array.elements):
+            lines.set_stroke(width=1)
+            lines[n].set_stroke(width=4)
+            self.add(elem)
+            self.add(prod_array[2 * n + 2])
+            self.wait(0.5)
+        self.play(FadeOut(lines))
+
+    def get_array_mobject(self, array, color=WHITE, font_size=48):
+        kw = dict(font_size=font_size)
+        result = VGroup(Tex("[", **kw))
+        commas = VGroup()
+        elements = VGroup()
+        for index, elem in enumerate(array):
+            int_mob = Integer(elem, **kw)
+            int_mob.index = index
+            elements.add(int_mob)
+            result.add(int_mob)
+            comma = Tex(",", **kw)
+            commas.add(comma)
+            result.add(comma)
+        result.remove(commas[-1])
+        commas.remove(commas[-1])
+        result.add(Tex("]", **kw))
+        result.arrange(RIGHT, buff=0.1)
+        commas.set_y(result[1].get_y(DOWN))
+
+        elements.set_color(color)
+        result.elements = elements
+        result.commas = commas
+
+        return result
+
 
 class BigPolynomials(InteractiveScene):
     def construct(self):
@@ -2085,9 +2453,580 @@ class DataPointsToPolynomial(InteractiveScene):
                 ShowCreationThenFadeOut(circles[n], run_time=1.5),
                 FadeIn(dots[n]),
                 Transform(graph, graphs[n]),
+                FadeIn(poly_tex[2 * n - 1:2 * n + 1], time_span=(0, 1), lag_ratio=0.1),
+                run_time=2
             )
-            self.play(Write(poly_tex[2 * n - 1:2 * n + 1]))
             self.wait()
+
+
+class PolynomialSystem(InteractiveScene):
+    N = 8
+
+    def construct(self):
+        # Setup polynomials
+        frame = self.camera.frame
+        N = self.N
+        coefs = VGroup(*(MTex(Rf"c_{{{n}}}") for n in range(N)))
+        coefs.set_submobject_colors_by_gradient(BLUE, TEAL)
+        x_powers = VGroup(*(MTex(Rf"x^{{{n}}}") for n in range(N)))
+        poly_x = self.get_polynomial(coefs, x_powers)
+
+        top_lhs = MTex("h(x) = ")
+        top_lhs.next_to(poly_x[0][0], LEFT, buff=0.1)
+        top_eq = VGroup(top_lhs, poly_x)
+        top_eq.center()
+
+        fg = MTex(R"f(x) \cdot g(x)")
+        eq = MTex("=")
+        eq.rotate(PI / 2)
+        eq.next_to(top_lhs[:4], UP)
+        fg.next_to(eq, UP).shift_onto_screen()
+
+        self.add(top_eq)
+
+        # Suppose you don't know coefficients
+        words = Text("Suppose these are a mystery")
+        words.next_to(poly_x, UP, buff=2.0)
+        arrows = VGroup(*(
+            Arrow(
+                interpolate(
+                    words.get_corner(DL) + 0.5 * RIGHT,
+                    words.get_corner(DR) + 0.5 * LEFT,
+                    n / (N - 1)),
+                coef,
+                color=coef.get_color(),
+            )
+            for n, coef in enumerate(poly_x.coefs)
+        ))
+
+        self.play(
+            FadeIn(words, lag_ratio=0.1),
+            LaggedStartMap(GrowArrow, arrows),
+            LaggedStart(*(
+                FlashAround(coef, time_width=1)
+                for coef in poly_x.coefs
+            ), lag_ratio=0.1, run_time=3)
+        )
+        self.wait()
+        self.play(
+            Write(eq),
+            FadeIn(fg, 0.25 * UP)
+        )
+        self.wait()
+
+        # Sweep away
+        self.play(
+            LaggedStart(
+                FadeOut(words, UP),
+                FadeOut(arrows, 2 * UP, lag_ratio=0.05),
+                FadeOut(fg, UP),
+                FadeOut(eq, 1.5 * UP),
+                top_eq.animate.to_edge(UP)
+            ),
+            frame.animate.set_height(11, about_edge=UR),
+            run_time=2
+        )
+
+        # Set up the large system
+        lhss = VGroup(*(MTex(f"h({n})=") for n in range(N)))
+        rhss = VGroup(*(
+            self.get_polynomial(
+                coefs.copy(),
+                # VGroup(*(Integer(x**n) for n in range(N)))
+                VGroup(*(MTex(f"{x}^{{{n}}}") for n in range(N)))
+            )
+            for x in range(N)
+        ))
+        equations = VGroup()
+        for lhs, rhs in zip(lhss, rhss):
+            lhs.next_to(rhs[0][0], LEFT, 0.1)
+            equations.add(VGroup(lhs, rhs))
+        equations.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        equations.next_to(top_eq, DOWN, aligned_edge=LEFT, buff=1.5)
+
+        self.play(
+            LaggedStart(*(
+                FadeTransform(top_eq.copy(), eq)
+                for eq in equations
+            ), lag_ratio=0.02, run_time=3),
+        )
+
+        # Suppose you _do_ know h(0), h(1), h(2), etc.
+        words2 = Text("But suppose\nyou do know\nthese", t2s={"do": ITALIC})
+        words2.set_color(YELLOW)
+        words2.move_to(midpoint(equations.get_left(), frame.get_left()))
+        words2.align_to(equations, UP)
+
+        self.play(
+            Write(words2),
+            LaggedStart(*(FlashAround(lhs[:4], time_width=1.5) for lhs in lhss), run_time=5, lag_ratio=0.1)
+        )
+        self.wait()
+
+        # Trow out the inputs
+        inputs = VGroup(*(lhs[2] for lhs in lhss))
+        inputs.save_state()
+        consts = VGroup(*(
+            power
+            for eq in rhss
+            for power in eq.powers
+        ))
+        boxes = VGroup(*(VGroup(SurroundingRectangle(const, buff=0)) for const in consts))
+        boxes.set_stroke(RED, 1)
+
+        self.play(
+            FadeOut(words2, LEFT, rate_func=running_start),
+            inputs.animate.set_color(RED).shift(2 * LEFT).set_anim_args(run_time=1.5, lag_ratio=0.2, path_arc=PI / 2),
+            Transform(consts, boxes, lag_ratio=0.01, run_time=3),
+        )
+        self.play(FadeOut(inputs, LEFT, lag_ratio=0.2, rate_func=running_start))
+        inputs.restore()
+        inputs.set_opacity(0)
+        self.add(lhss)
+
+        # Add roots of unity
+        kw = dict(tex_to_color_map={R"\omega": YELLOW})
+        omega_def = Tex(
+            Rf"""
+            \text{{Let }} \omega = e^{{2\pi i / {N}}} \qquad
+            \text{{Notice }} \omega^{{{N}}} = 1
+            """,
+            font_size=60,
+            **kw
+        )
+        omega_def.next_to(lhss, UP, buff=1.5, aligned_edge=LEFT)
+
+        all_omega_powers = [
+            VGroup(*(
+                MTex(Rf"\omega^{{{(k * n) % N}}}", **kw)
+                for n in range(N)
+            ))
+            for k in range(0, N)
+        ]
+        new_rhss = VGroup(*(
+            self.get_polynomial(coefs.copy(), omega_powers)
+            for omega_powers in all_omega_powers
+        ))
+
+        new_lhss = VGroup(
+            *(MTex(Rf"h(\omega^{n}) = ") for n in range(N))
+        )
+
+        self.play(
+            frame.animate.set_height(13, about_edge=DR),
+            FadeIn(omega_def),
+            top_eq.animate.shift(1.75 * UP),
+        )
+        for old_lhs, old_rhs, new_lhs, new_rhs in zip(lhss, rhss, new_lhss, new_rhss):
+            new_lhs.move_to(old_lhs, LEFT)
+            new_rhs.next_to(new_lhs, RIGHT, buff=0.1)
+            new_lhs[2].set_color(YELLOW)
+            self.play(
+                FadeTransformPieces(old_lhs, new_lhs),
+                FadeTransformPieces(old_rhs, new_rhs),
+            )
+        self.wait()
+
+        # Label as DFT
+        brace = Brace(new_lhss, LEFT)
+        kw = dict(font_size=60)
+        label = TexText(R"Discrete\\Fourier\\Transform", alignment=R"\raggedright", isolate=list("DFT"), **kw)
+        label.next_to(brace, LEFT)
+
+        sub_label = TexText("of $(c_i)$", **kw)[0]
+        sub_label[2:].set_color(BLUE)
+        sub_label.next_to(label, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+
+        self.play(GrowFromCenter(brace), FadeIn(label))
+        self.play(Write(sub_label))
+        self.wait()
+
+        # Show redundancy
+        last_rects = VGroup()
+        for n in range(N):
+            tex = Rf"\omega^{{{n}}}"
+            rects = VGroup()
+            for rhs in new_rhss:
+                for power in rhs.powers[1:]:
+                    if power.get_tex() == tex:
+                        rects.add(SurroundingRectangle(power))
+            rects.set_stroke(RED, 3)
+            self.play(FadeIn(rects), FadeOut(last_rects))
+            last_rects = rects
+        self.play(FadeOut(last_rects))
+
+        # Set up two arrays
+        pre_h_list = VGroup(*(lhs[:5] for lhs in new_lhss))
+        h_list = pre_h_list.copy()
+        h_list.next_to(new_lhss, LEFT, buff=2.0)
+        h_rect = SurroundingRectangle(h_list, buff=0.25)
+        h_rect.set_stroke(WHITE, 1)
+        h_rect.set_fill(GREY_E, 1)
+
+        c_list = poly_x.coefs.copy()
+        for c, h in zip(c_list, h_list):
+            c.scale(1.25)
+            c.move_to(h)
+
+        c_rect = h_rect.copy()
+        c_rect.shift(5 * LEFT)
+        c_list.move_to(c_rect)
+
+        short_label = TexText("DFT", isolate=list("DFT"))
+        short_label.next_to(h_rect, UP, buff=0.5).shift(sub_label.get_width() * LEFT / 2)
+
+        self.play(
+            FadeIn(c_rect),
+            TransformFromCopy(new_rhss[0].coefs, c_list, path_arc=-PI / 3)
+        )
+        self.play(
+            TransformMatchingTex(label, short_label),
+            sub_label.animate.scale(48 / 60).next_to(short_label, RIGHT),
+            FadeInFromPoint(h_rect, pre_h_list.get_center()),
+            TransformFromCopy(pre_h_list, h_list),
+        )
+
+        # Indicate fast back and forth
+        top_arrow = Arrow(c_rect, h_rect).shift(2 * UP)
+        low_arrow = Arrow(h_rect, c_rect).shift(2 * DOWN)
+
+        for arrow in (top_arrow, low_arrow):
+            fft_label = Text("FFT")
+            fft_label.next_to(arrow, UP)
+            run_time = Tex(R"\mathcal{O}\big(N\log(N)\big)")
+            run_time.next_to(arrow, DOWN)
+            arrow.fft_label = fft_label
+            arrow.run_time = run_time
+
+            self.play(
+                GrowArrow(arrow),
+                FadeIn(fft_label, arrow.get_vector())
+            )
+            self.play(FadeIn(run_time, 0.5 * DOWN))
+            self.wait()
+
+    def get_polynomial(self, coefs, powers, buff=0.1):
+        result = VGroup()
+        result.plusses = VGroup()
+        result.dots = VGroup()
+        for coef, power in zip(coefs, powers):
+            if power is powers[0]:
+                power.scale(0, about_edge=LEFT)
+            plus = Tex("+")  # Font size?
+            result.add(coef)
+            if isinstance(power, Integer):
+                dot = Tex(R"\cdot")
+            else:
+                dot = VGroup(VectorizedPoint())
+            result.dots.add(dot)
+            result.add(dot)
+            result.add(power, plus)
+            result.plusses.add(plus)
+        result.remove(result[-1])  # Stray plus
+        result.arrange(RIGHT, buff=buff)
+        for mob in result:
+            mob.shift(mob[0].get_y(DOWN) * DOWN)
+        for coef, dot in zip(coefs, result.dots):
+            if not isinstance(dot, Tex):
+                coef.shift(buff * RIGHT)
+        result.dots.set_y(result.get_y())
+        result.coefs = coefs
+        result.powers = powers
+        return result
+
+
+class RootsOfUnity(InteractiveScene):
+    def construct(self):
+        # Add plane
+        plane = ComplexPlane((-2, 2), (-2, 2))
+        plane.scale(2.0 / 1.5)
+        plane.to_corner(UL)
+        plane.add_coordinate_labels([1, 1j], font_size=24)
+
+        circle = Circle(radius=plane.x_axis.get_unit_size())
+        circle.move_to(plane.n2p(0))
+        circle.set_stroke(YELLOW, 2)
+
+        N = 8
+        roots = [np.exp(TAU * 1j * k / N) for k in range(N)]
+        root_dots = Group(*(GlowDot(plane.n2p(root)) for root in roots))
+        root_lines = VGroup(*(Line(plane.n2p(0), d.get_center()) for d in root_dots))
+        root_lines.set_stroke(YELLOW, 1)
+
+        self.add(plane)
+        self.add(root_lines[0], root_dots[0])
+        self.play(
+            ShowCreation(circle),
+            Rotate(Group(root_lines[0], root_dots[0]), TAU, about_point=plane.n2p(0)),
+            run_time=2,
+        )
+        self.wait()
+
+        # Show powers
+        kw = dict(tex_to_color_map={R"\omega": YELLOW}, font_size=36)
+        max_power = 3 * N
+        powers = VGroup(*(
+            Tex(Rf"\omega^{{{k}}}", **kw)
+            for k in range(max_power)
+        ))
+        powers.set_backstroke(BLACK, 3)
+        for power, line in zip(powers, it.cycle(root_lines)):
+            vect = line.get_vector()
+            vect += UP if line.get_vector()[1] > -0.1 else DOWN
+            vect += RIGHT if line.get_vector()[0] > -0.1 else LEFT
+            power.next_to(line.get_end(), normalize(vect), buff=SMALL_BUFF)
+
+        shown_powers = VGroup(powers[0])
+        moving_power = powers[0].copy()
+        for k in range(max_power - 1):
+            shown_powers.generate_target()
+            shown_powers.target.set_opacity(0.8)
+            if k > N - 1:
+                shown_powers.target[(k + 1) % N].set_opacity(0)
+
+            self.play(
+                Transform(moving_power, powers[k + 1]),
+                Transform(root_lines[k % N].copy(), root_lines[(k + 1) % N], remover=True),
+                Transform(root_dots[k % N].copy(), root_dots[(k + 1) % N], remover=True),
+                MoveToTarget(shown_powers),
+                path_arc=TAU / N
+            )
+            self.add(root_lines[:k + 2], root_dots[:k + 2])
+            if k < N - 1:
+                shown_powers.add(powers[k + 1])
+        self.play(
+            FadeOut(moving_power),
+            powers[:N].animate.set_opacity(1)
+        )
+        self.wait()
+
+
+class AlgorithmOutline(InteractiveScene):
+    def construct(self):
+        # Title
+        title = Text("Fast(?) convolution algorithm")
+        title.to_edge(UP, buff=0.35)
+        title.set_backstroke(BLACK, 3)
+        underline = Underline(title, buff=-0.05).scale(1.5)
+        underline.insert_n_curves(20)
+        underline.set_stroke(GREY, (0, 3, 3, 3, 0))
+        self.add(underline, title)
+
+        # Arrays
+        t2c = {
+            tex: BLUE
+            for tex in [R"\textbf{a}", "a_0", "a_1", "a_2", "a_{n - 1}"]
+        }
+        t2c.update({
+            tex: TEAL
+            for tex in [R"\textbf{b}", "b_0", "b_1", "b_2", "b_{m - 1}"]
+        })
+        tex_kw = dict(tex_to_color_map=t2c, font_size=36)
+        lists = VGroup(
+            MTex(R"\textbf{a} = [a_0, a_1, a_2, \dots, a_{n - 1}]", **tex_kw),
+            MTex(R"\textbf{b} = [b_0, b_1, b_2, \dots, b_{m - 1}]", **tex_kw),
+            MTex(R"""\textbf{a} * \textbf{b} = \left[\begin{array}{l}
+                    a_0 b_0, \\
+                    a_0 b_1 + a_1 b_0, \\
+                    a_0 b_2 + a_1 b_1  + a_2 b_0, \\
+                    \quad \vdots \\
+                    a_{n - 1} b_{m - 1}
+            \end{array}\right]""", **tex_kw),
+        )
+        lists.arrange(DOWN, buff=1.7, aligned_edge=LEFT)
+        lists.next_to(underline, DOWN, LARGE_BUFF)
+        lists.to_edge(LEFT)
+        lists[2][4:].scale(0.7, about_edge=LEFT)
+        lists[2].refresh_bounding_box()
+        lists[2].to_edge(DOWN, buff=MED_SMALL_BUFF)
+        conv_rect = SurroundingRectangle(lists[2], buff=SMALL_BUFF)
+        conv_rect.set_stroke(YELLOW, 2)
+        q_marks = Text("???", color=YELLOW)
+        q_marks.next_to(conv_rect, RIGHT, MED_SMALL_BUFF)
+
+        self.add(lists[:2])
+        self.play(ShowCreation(underline))
+        self.play(
+            TransformMatchingShapes(VGroup(*lists[0], *lists[1]).copy(), lists[2]),
+            FadeIn(conv_rect),
+            FadeIn(q_marks),
+        )
+        self.wait()
+
+        # Show polynomials
+        polys = VGroup(
+            MTex(R"f(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_{n - 1}x^{n - 1}", **tex_kw),
+            MTex(R"g(x) = b_0 + b_1 x + b_2 x^2 + \cdots + b_{m - 1}x^{m - 1}", **tex_kw),
+        )
+        for poly, listy in zip(polys, lists):
+            poly.next_to(listy, DOWN, aligned_edge=LEFT)
+
+        axes = VGroup(*(
+            Axes((-3, 3), (-2, 2), width=5, height=1.5)
+            for x in range(3)
+        ))
+        axes.to_edge(RIGHT)
+        axes[0].match_y(polys[0])
+        axes[1].match_y(polys[1])
+        axes[2].move_to(2 * axes[1].get_origin() - axes[0].get_origin())
+
+        def f(x):
+            return 0.2 * (x + 3) * (x + 1) * (x - 2)
+
+        def g(x):
+            return 0.1 * (x + 2) * (x + 0) * (x - 3.25)
+
+        graphs = VGroup(
+            axes[0].get_graph(f, color=BLUE),
+            axes[1].get_graph(g, color=TEAL),
+            axes[2].get_graph(lambda x: f(x) * g(x), color=YELLOW),
+        )
+        graphs.set_stroke(width=2)
+
+        label_kw = dict(font_size=24)
+        graph_labels = VGroup(
+            MTex("f(x)", **label_kw).move_to(axes[0], UL),
+            MTex("g(x)", **label_kw).move_to(axes[1], UL),
+            MTex(R"f(x) \cdot g(x)", **label_kw).move_to(axes[2], UL),
+        )
+
+        self.play(
+            LaggedStart(*(
+                TransformFromCopy(listy.copy(), poly)
+                for listy, poly in zip(lists, polys)
+            )),
+            LaggedStartMap(FadeIn, axes[:2]),
+            LaggedStartMap(ShowCreation, graphs[:2]),
+            LaggedStartMap(FadeIn, graph_labels[:2]),
+            lag_ratio=0.5,
+        )
+        self.wait()
+
+        # Show samples
+        x_samples = np.arange(-3, 3.5, 0.5)
+        f_points, g_points, fg_points = all_points = [
+            [ax.i2gp(x, graph) for x in x_samples]
+            for ax, graph in zip(axes, graphs)
+        ]
+
+        f_dots, g_dots, fg_dots = all_dots = Group(*(
+            Group(*(GlowDot(point, color=WHITE, glow_factor=0.8, radius=0.07) for point in points))
+            for points in all_points
+        ))
+
+        self.play(
+            FadeIn(f_dots, lag_ratio=0.7),
+            FadeIn(g_dots, lag_ratio=0.7),
+            run_time=5
+        )
+        self.wait()
+        self.play(
+            TransformFromCopy(axes[1], axes[2]),
+            TransformMatchingShapes(graph_labels[:2].copy(), graph_labels[2]),
+            LaggedStart(*(
+                Transform(Group(fd, gd).copy(), Group(fgd), remover=True)
+                for fd, gd, fgd in zip(*all_dots)
+            ), lag_ratio=0.5, run_time=5)
+        )
+        self.add(fg_dots)
+        self.play(ShowCreation(graphs[2], run_time=2))
+        self.wait()
+
+        # Show arrow
+        final_arrow = Arrow(graph_labels[2], conv_rect.get_corner(UR), path_arc=PI / 5)
+        final_arrow.set_color(RED)
+
+        self.play(Write(final_arrow))
+        self.wait()
+
+        # Erase graphs
+        crosses = VGroup(*map(Cross, axes[:2]))
+        for cross in crosses:
+            cross.insert_n_curves(20)
+            cross.set_stroke(RED, (0, 10, 10, 10, 0))
+
+        self.play(
+            LaggedStartMap(ShowCreation, crosses, lag_ratio=0.5, run_time=2),
+            polys[0].animate.scale(0.5, about_edge=DL),
+            polys[1].animate.scale(0.5, about_edge=DL),
+            LaggedStartMap(FadeOut, Group(
+                final_arrow, axes[2], graph_labels[2], fg_dots, graphs[2], q_marks,
+            ))
+        )
+        self.play(
+            LaggedStartMap(FadeOut, Group(
+                axes[0], graphs[0], graph_labels[0], f_dots, crosses[0],
+                axes[1], graphs[1], graph_labels[1], g_dots, crosses[1],
+            ), shift=0.2 * RIGHT)
+        )
+
+        # Show FFTs
+        t2c = {
+            tex: RED
+            for tex in [R"\hat{\textbf{a}}", R"\hat{a}_0", R"\hat{a}_1", R"\hat{a}_2", R"\hat{a}_{m + n - 1}"]
+        }
+        t2c.update({
+            tex: MAROON_C
+            for tex in [R"\hat{\textbf{b}}", R"\hat{b}_0", R"\hat{b}_1", R"\hat{b}_2", R"\hat{b}_{m + n - 1}"]
+        })
+        fft_kw = dict(tex_to_color_map=t2c, font_size=36, isolate=["="])
+        fft_lists = VGroup(
+            MTex(R"\hat{\textbf{a}} = [\hat{a}_0, \hat{a}_1, \hat{a}_2, \dots, \hat{a}_{m + n - 1}]", **fft_kw),
+            MTex(R"\hat{\textbf{b}} = [\hat{b}_0, \hat{b}_1, \hat{b}_2, \dots, \hat{b}_{m + n - 1}]", **fft_kw),
+            MTex(R"""\hat{\textbf{a}} \cdot \hat{\textbf{b}} = [
+                    \hat{a}_0 \hat{b}_0,
+                    \hat{a}_1 \hat{b}_1,
+                    \hat{a}_2 \hat{b}_2,
+                    \dots,
+            ]""", **fft_kw),
+        )
+        for fft_list in fft_lists:
+            fft_list.shift(-fft_list.select_part("=").get_center())
+        fft_lists.to_edge(RIGHT)
+
+        arrows = VGroup()
+        arrow_labels = VGroup()
+        for orig_list, fft_list, n in zip(lists, fft_lists, it.count()):
+            fft_list.match_y(orig_list)
+            arrow = Arrow(orig_list, fft_list, buff=0.3)
+            arrow.label = Text("Inverse FFT" if n == 2 else "FFT", font_size=36)
+            arrow.label.next_to(arrow, UP)
+            arrow_labels.add(arrow.label)
+            arrows.add(arrow)
+        arrows[2].rotate(PI)
+
+        mult_arrow = Vector(2 * DOWN).move_to(VGroup(fft_lists[1], fft_lists[2]).get_center())
+        mult_arrow.label = Text("Multiply\n(pointwise)", font_size=36)
+        mult_arrow.label.next_to(mult_arrow, RIGHT)
+
+        kw = dict(lag_ratio=0.75, run_time=2)
+        self.play(
+            title[:4].animate.match_x(title[4:7], RIGHT),
+            FadeOut(title[4:7], 0.1 * DOWN, lag_ratio=0.1),
+        )
+        self.play(
+            LaggedStartMap(FadeIn, fft_lists[:2], shift=1.5 * RIGHT, **kw),
+            LaggedStartMap(GrowArrow, arrows[:2], **kw),
+            LaggedStartMap(FadeIn, arrow_labels[:2], shift=0.5 * RIGHT, **kw),
+        )
+        self.wait()
+        self.play(LaggedStart(
+            polys[0].animate.scale(1.5, about_edge=DL),
+            polys[1].animate.scale(1.5, about_edge=DL),
+            lag_ratio=0.5,
+        ))
+        self.wait()
+        self.play(
+            FadeIn(fft_lists[2], DOWN),
+            GrowArrow(mult_arrow),
+            FadeIn(mult_arrow.label, 0.5 * DOWN)
+        )
+        self.wait()
+        self.play(
+            GrowArrow(arrows[2]),
+            FadeIn(arrow_labels[2], shift=LEFT),
+        )
+        self.wait()
 
 
 # TODO
@@ -2135,7 +3074,130 @@ class FourierCoefficients(InteractiveScene):
             last = equation
 
 
-# Interactives
+class EndScreen(PatreonEndScreen):
+    pass
+
+
+# Continuous case
+
+
+class TransitionToContinuousProbability(InteractiveScene):
+    def construct(self):
+        # Setup axes and initial graph
+        axes = Axes((0, 12), (0, 1, 0.2), width=14, height=5)
+        axes.to_edge(LEFT, LARGE_BUFF)
+
+        def pd(x):
+            return (x**4) * np.exp(-x) / 8.0
+
+        graph = axes.get_graph(pd)
+        graph.set_stroke(WHITE, 2)
+        bars = axes.get_riemann_rectangles(graph, dx=1, x_range=(0, 6), input_sample_type="right")
+        bars.set_stroke(WHITE, 3)
+
+        y_label = Text("Probability", font_size=24)
+        y_label.next_to(axes.y_axis, UP, SMALL_BUFF)
+
+        self.add(axes)
+        self.add(y_label)
+        self.add(*bars)
+
+        # Label as die probabilities
+        dice = get_die_faces(fill_color=BLUE_E, dot_color=WHITE, stroke_width=1)
+        dice.set_height(0.5)
+        for bar, die in zip(bars, dice):
+            die.next_to(bar, DOWN)
+
+        self.play(FadeIn(dice, 0.1 * UP, lag_ratio=0.05, rate_func=overshoot))
+        self.wait()
+        self.play(FadeOut(dice, RIGHT, rate_func=running_start, run_time=1, path_arc=-PI / 5, lag_ratio=0.01))
+
+        # Make continuous
+        all_rects = VGroup(*(
+            axes.get_riemann_rectangles(
+                graph,
+                x_range=(0, min(6 + n, 12)),
+                dx=(1 / n),
+                input_sample_type="right",
+            ).set_stroke(WHITE, width=(2.0 / n), opacity=(2.0 / n), background=False)
+            for n in (*range(1, 10), *range(10, 20, 2), *range(20, 100, 5))
+        ))
+        area = all_rects[-1]
+        area.set_stroke(width=0)
+
+        self.remove(bars)
+        self.play(ShowSubmobjectsOneByOne(all_rects, rate_func=bezier([0, 0, 0, 0, 1, 1]), run_time=5))
+        self.play(ShowCreation(graph))
+        self.wait()
+
+        # Show continuous value
+        x_tracker = ValueTracker(0)
+        get_x = x_tracker.get_value
+        tip = ArrowTip(angle=PI / 2)
+        tip.set_height(0.25)
+        tip.add_updater(lambda m: m.move_to(axes.c2p(get_x(), 0), UP))
+        x_label = DecimalNumber(font_size=36)
+        x_label.add_updater(lambda m: m.set_value(get_x()))
+        x_label.add_updater(lambda m: m.next_to(tip, DOWN, buff=0.2, aligned_edge=LEFT))
+
+        self.play(FadeIn(tip), FadeIn(x_label))
+        self.play(x_tracker.animate.set_value(12), run_time=6)
+        self.remove(tip, x_label)
+
+        # Labels
+        x_label = Text("Value of XYZ next year")
+        x_label.next_to(axes.c2p(4, 0), DOWN, buff=0.45)
+
+        density = Text("Probability density")
+        density.match_height(y_label)
+        density.move_to(y_label, LEFT)
+        cross = Cross(y_label)
+
+        self.play(Write(x_label))
+        self.wait()
+        self.play(ShowCreation(cross))
+        self.play(
+            VGroup(y_label, cross).animate.shift(0.5 * UP),
+            FadeIn(density)
+        )
+        self.wait()
+
+        # Interpretation
+        range_tracker = ValueTracker([0, 12])
+
+        def update_area(area):
+            values = range_tracker.get_value()
+            x1, x2 = axes.x_axis.n2p(values)[:, 0]
+            for bar in area:
+                if x1 < bar.get_x() < x2:
+                    bar.set_opacity(1)
+                else:
+                    bar.set_opacity(0.25)
+
+        area.add_updater(update_area)
+
+        v_lines = Line(DOWN, UP).replicate(2)
+        v_lines.set_stroke(GREY_A, 1)
+        v_lines.set_height(FRAME_HEIGHT)
+
+        def update_v_lines(v_lines):
+            values = range_tracker.get_value()
+            for value, line in zip(values, v_lines):
+                line.move_to(axes.c2p(value, 0), DOWN)
+
+        v_lines.add_updater(update_v_lines)
+
+        self.play(
+            range_tracker.animate.set_value([3, 5]),
+            VFadeIn(v_lines),
+            run_time=2,
+        )
+        self.wait()
+        for pair in [(5, 6), (1, 3), (2.5, 3), (2, 7), (4, 5), (0, 12)]:
+            self.play(range_tracker.animate.set_value(pair), run_time=2)
+            self.wait()
+
+
 class Convolutions(InteractiveScene):
     axes_config = dict(
         x_range=(-3, 3, 1),
@@ -2296,6 +3358,7 @@ class Convolutions(InteractiveScene):
         for i, axes in enumerate(all_axes):
             x_label = Tex("x" if i < 3 else "t", font_size=24)
             x_label.next_to(axes.x_axis.get_right(), UP, MED_SMALL_BUFF)
+            axes.x_label = x_label
             axes.x_axis.add(x_label)
             axes.y_axis.ticks.set_opacity(0)
             axes.x_axis.ticks.stretch(0.5, 1)
@@ -2671,13 +3734,13 @@ class DiagonalSlices(ProbConvolutions):
 
 class RepeatedConvolution(MovingAverageAsConvolution):
     resolution = 0.01
-    n_iterations = 20
+    n_iterations = 12
 
     def construct(self):
         # Clean the board
         dx = self.resolution
         axes1, axes2, axes3, conv_axes = self.all_axes
-        conv_axes.y_axis.match_height(axes1.y_axis)
+        conv_axes.y_axis.stretch(1.5 / 2.0, 1)
         g_graph = self.g_graph
 
         x_min, x_max = axes1.x_range[:2]
@@ -2690,6 +3753,8 @@ class RepeatedConvolution(MovingAverageAsConvolution):
         self.remove(self.conv_graph)
         self.remove(self.conv_graph_dot)
         self.remove(self.conv_graph_line)
+        for axes in self.all_axes[:3]:
+            axes.x_label.set_opacity(0)
 
         # New f graph
         f_graph = g_graph.deepcopy()
@@ -2749,10 +3814,16 @@ class RepeatedConvolution(MovingAverageAsConvolution):
             )
             self.play(FadeOut(endpoint_dot))
             shift_value = axes1.get_origin() - conv_axes.get_origin()
+            cg_anim = conv_graph.animate.stretch(1 / 1.5, 1, about_point=conv_axes.get_origin())
+            cg_anim.shift(shift_value)
+            cg_anim.match_style(f_graph)
             self.play(
-                conv_graph.animate.shift(shift_value).match_style(f_graph),
+                cg_anim,
                 FadeOut(f_graph, shift_value),
+                FadeOut(axes1, shift_value),
+                Transform(conv_axes.deepcopy(), axes1, remover=True)
             )
+            self.add(axes1, conv_graph)
 
             f_samples[:] = conv_samples
             f_graph = conv_graph
@@ -2775,7 +3846,6 @@ class RepeatedConvolution(MovingAverageAsConvolution):
 
     def f(self, x):
         return rect_func(x)
-
 
 
 # Final

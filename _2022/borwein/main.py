@@ -1766,8 +1766,8 @@ class MultiplyBigNumbers(InteractiveScene):
     def construct(self):
         # Numbers
         numbers = VGroup(
-            Integer(3141592653589793238),
-            Integer(2718281828459045235),
+            MTex("3{,}141{,}592{,}653{,}589{,}793{,}238"),
+            MTex("2{,}718{,}281{,}828{,}459{,}045{,}235"),
         )
         numbers.arrange(DOWN, aligned_edge=RIGHT)
         numbers.scale(1.5)
@@ -1782,10 +1782,10 @@ class MultiplyBigNumbers(InteractiveScene):
         self.add(underline, times)
 
         # Prep run time
-        d_label = TexText("Two $d$-digit numbers", tex_to_color_map={"$d$": YELLOW})
+        d_label = TexText("Two $N$-digit numbers", tex_to_color_map={"$N$": YELLOW})
         d_label.next_to(numbers, UP, buff=LARGE_BUFF)
-        d2_label = Tex(R"\mathcal{O}(d^2)", font_size=60, tex_to_color_map={"d": YELLOW})
-        dlogd_label = Tex(R"\mathcal{O}({d} \cdot \text{log}({d}))", font_size=60, tex_to_color_map={"{d}": YELLOW})
+        d2_label = Tex(R"\mathcal{O}(N^2)", font_size=60, tex_to_color_map={"N": YELLOW})
+        dlogd_label = Tex(R"\mathcal{O}({N} \cdot \text{log}({N}))", font_size=60, tex_to_color_map={"{N}": YELLOW})
         os = VGroup(d2_label, dlogd_label)
         os.arrange(RIGHT, buff=2.5)
         os.next_to(d_label, UP, buff=LARGE_BUFF)
@@ -1793,7 +1793,7 @@ class MultiplyBigNumbers(InteractiveScene):
         cross = Cross(d2_label)
         cross.insert_n_curves(50).set_stroke(RED, (0, 8, 8, 8, 8, 0))
         check = Checkmark().scale(2).next_to(dlogd_label, RIGHT)
-        q_marks = Tex("???", font_size=72)
+        q_marks = Tex("?", font_size=72)
         q_marks.next_to(d2_label, RIGHT)
 
         # Square run time
@@ -1810,8 +1810,11 @@ class MultiplyBigNumbers(InteractiveScene):
         for dh2 in numbers[1].digit_highlights:
             self.add(dh2, numbers[1])
             self.play(
-                ShowSubmobjectsOneByOne(numbers[0].digit_highlights.copy(), remover=True),
-                run_time=0.5
+                ShowSubmobjectsOneByOne(
+                    numbers[0].digit_highlights.copy(),
+                    remover=True
+                ),
+                run_time=1.0
             )
             self.remove(dh2)
 
