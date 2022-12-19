@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 from manim_imports_ext import *
 from _2022.borwein.main import *
-from typing import Union
 import scipy.signal
-
-ManimColor = Union[str, Color]
 
 
 class DieFace(VGroup):
@@ -1207,7 +1206,6 @@ class MovingAverageExample(InteractiveScene):
                 run_time=self.march_anim_run_time,
             )
 
-            globals().update(locals())
             self.play(
                 *(
                     FadeTransform(label.copy(), value)
@@ -1367,8 +1365,7 @@ class ImageConvolution(InteractiveScene):
         else:
             conv = scipy.signal.convolve(pixels, np.expand_dims(kernel, 2), mode='same')
 
-        if not self.scalar_conv:
-            conv = np.clip(conv, 0, 1)
+        conv = np.clip(conv, -1, 1)
 
         pixel_array = self.get_pixel_array(pixels)
         kernel_array = self.get_kernel_array(kernel, pixel_array, tex=self.kernel_tex)
@@ -1591,7 +1588,7 @@ class BoxBlurMario(ImageConvolution):
     final_run_time = 8
 
     def construct(self):
-        # March!
+        # March
         for index in self.stops:
             self.set_index(index)
             self.zoom_to_kernel()
