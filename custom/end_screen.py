@@ -26,23 +26,21 @@ from custom.characters.pi_creature_animations import Blink
 
 
 class PatreonEndScreen(Scene):
-    CONFIG = {
-        "title_text": "Clicky Stuffs",
-        "show_pis": True,
-        "max_patron_group_size": 20,
-        "patron_scale_val": 0.8,
-        "n_patron_columns": 4,
-        "max_patron_width": 5,
-        "randomize_order": False,
-        "capitalize": True,
-        "name_y_spacing": 0.6,
-        "thanks_words": "Funded by viewers, visit 3b1b.co/support to learn more",
-        "scroll_time": 20,
-    }
+    title_text = "Clicky Stuffs"
+    show_pis = True
+    max_patron_group_size = 20
+    patron_scale_val = 0.8
+    n_patron_columns = 4
+    max_patron_width = 5
+    randomize_order = False
+    capitalize = True
+    name_y_spacing = 0.6
+    thanks_words = "Funded by viewers, visit 3b1b.co/support to learn more"
+    scroll_time = 20
 
     def construct(self):
         # Add title
-        title = self.title = TexText(self.title_text)
+        title = self.title = Text(self.title_text)
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(title)

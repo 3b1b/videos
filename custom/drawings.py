@@ -1,14 +1,12 @@
-from manim_imports_ext import *
+from manimlib import *
 
 
 # Related to pi creatures
 class Car(SVGMobject):
-    CONFIG = {
-        "file_name": "Car",
-        "height": 1,
-        "color": GREY_B,
-        "light_colors": [BLACK, BLACK],
-    }
+    file_name = "Car"
+    height = 1
+    color = GREY_B
+    light_colors = [BLACK, BLACK]
 
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
@@ -93,15 +91,16 @@ class Car(SVGMobject):
 
 
 class MoveCar(ApplyMethod):
-    CONFIG = {
-        "moving_forward": True,
-        "run_time": 5,
-    }
-
-    def __init__(self, car, target_point, **kwargs):
+    def __init__(self, car, target_point, run_time=5, moving_forward=True, **kwargs):
+        self.moving_forward = moving_forward
         self.check_if_input_is_car(car)
         self.target_point = target_point
-        super().__init__(car.move_to, target_point, **kwargs)
+        super().__init__(
+            car.move_to,
+            target_point,
+            run_time=run_time,
+            **kwargs
+        )
 
     def check_if_input_is_car(self, car):
         if not isinstance(car, Car):
@@ -129,16 +128,14 @@ class MoveCar(ApplyMethod):
 
 
 class PartyHat(SVGMobject):
-    CONFIG = {
-        "file_name": "party_hat",
-        "height": 1.5,
-        "pi_creature": None,
-        "stroke_width": 0,
-        "fill_opacity": 1,
-        "frills_colors": [MAROON_B, PURPLE],
-        "cone_color": GREEN,
-        "dots_colors": [YELLOW],
-    }
+    file_name = "party_hat"
+    height = 1.5
+    pi_creature = None
+    stroke_width = 0
+    fill_opacity = 1
+    frills_colors = [MAROON_B, PURPLE]
+    cone_color = GREEN
+    dots_colors = [YELLOW]
     NUM_FRILLS = 7
     NUM_DOTS = 6
 
@@ -158,13 +155,11 @@ class PartyHat(SVGMobject):
 
 
 class SunGlasses(SVGMobject):
-    CONFIG = {
-        "file_name": "sunglasses",
-        "glasses_width_to_eyes_width": 1.1,
-    }
+    file_name = "sunglasses"
+    glasses_width_to_eyes_width = 1.1
 
     def __init__(self, pi_creature, **kwargs):
-        SVGMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_stroke(WHITE, width=0)
         self.set_fill(GREY, 1)
         self.set_width(
@@ -174,16 +169,13 @@ class SunGlasses(SVGMobject):
 
 
 class Headphones(SVGMobject):
-    CONFIG = {
-        "file_name": "headphones",
-        "height": 2,
-        "y_stretch_factor": 0.5,
-        "color": GREY,
-    }
+    file_name = "headphones"
+    height = 2
+    y_stretch_factor = 0.5
+    color = GREY
 
     def __init__(self, pi_creature=None, **kwargs):
-        digest_config(self, kwargs)
-        SVGMobject.__init__(self, file_name=self.file_name, **kwargs)
+        super().__init__(file_name=self.file_name, **kwargs)
         self.stretch(self.y_stretch_factor, 1)
         self.set_height(self.height)
         self.set_stroke(width=0)
@@ -196,14 +188,23 @@ class Headphones(SVGMobject):
 
 
 class Guitar(SVGMobject):
-    CONFIG = {
-        "file_name": "guitar",
-        "height": 2.5,
-        "fill_color": GREY_D,
-        "fill_opacity": 1,
-        "stroke_color": WHITE,
-        "stroke_width": 0.5,
-    }
+    file_name = "guitar"
+
+    def __init__(
+        self,
+        height=2.5,
+        fill_color=GREY_D,
+        fill_opacity=1,
+        stroke_color=WHITE,
+        stroke_width=0.5,
+    ):
+        super().__init__(
+            height=height,
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+        )
 
 
 # Cards
@@ -212,31 +213,44 @@ class DeckOfCards(VGroup):
     def __init__(self, **kwargs):
         possible_values = list(map(str, list(range(1, 11)))) + ["J", "Q", "K"]
         possible_suits = ["hearts", "diamonds", "spades", "clubs"]
-        VGroup.__init__(self, *[
+        super().__init__(*(
             PlayingCard(value=value, suit=suit, **kwargs)
             for value in possible_values
             for suit in possible_suits
-        ])
+        ))
 
 
 class PlayingCard(VGroup):
-    CONFIG = {
-        "value": None,
-        "suit": None,
-        "key": None,  # String like "8H" or "KS"
-        "height": 2,
-        "height_to_width": 3.5 / 2.5,
-        "card_height_to_symbol_height": 7,
-        "card_width_to_corner_num_width": 10,
-        "card_height_to_corner_num_height": 10,
-        "color": GREY_A,
-        "turned_over": False,
-        "possible_suits": ["hearts", "diamonds", "spades", "clubs"],
-        "possible_values": list(map(str, list(range(2, 11)))) + ["J", "Q", "K", "A"],
-    }
+    def __init__(
+        self,
+        key=None,  # String like "8H" or "KS"
+        value=None,
+        suit=None,
+        height=2,
+        height_to_width=3.5 / 2.5,
+        card_height_to_symbol_height=7,
+        card_width_to_corner_num_width=10,
+        card_height_to_corner_num_height=10,
+        color=GREY_A,
+        turned_over=False,
+        possible_suits=["hearts", "diamonds", "spades", "clubs"],
+        possible_values=list(map(str, list(range(2, 11)))) + ["J", "Q", "K", "A"],
+        **kwargs,
+    ):
+        self.key = key
+        self.value = value
+        self.suit = suit
+        self.height = height
+        self.height_to_width = height_to_width
+        self.card_height_to_symbol_height = card_height_to_symbol_height
+        self.card_width_to_corner_num_width = card_width_to_corner_num_width
+        self.card_height_to_corner_num_height = card_height_to_corner_num_height
+        self.color = color
+        self.turned_over = turned_over
+        self.possible_suits = possible_suits
+        self.possible_values = possible_values
 
-    def __init__(self, key=None, **kwargs):
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.key = key
         self.add(Rectangle(
@@ -436,41 +450,20 @@ class PlayingCard(VGroup):
 
 
 class SuitSymbol(SVGMobject):
-    CONFIG = {
-        "height": 0.5,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "red": "#D02028",
-        "black": BLACK,
-    }
-
     def __init__(self, suit_name, **kwargs):
-        digest_config(self, kwargs)
-        suits_to_colors = {
-            "hearts": self.red,
-            "diamonds": self.red,
-            "spades": self.black,
-            "clubs": self.black,
-        }
-        if suit_name not in suits_to_colors:
+        suits = {"hearts", "diamonds", "spades", "clubs"}
+        if suit_name not in suits:
             raise Exception("Invalid suit name")
-        SVGMobject.__init__(self, file_name=suit_name, **kwargs)
-
-        color = suits_to_colors[suit_name]
-        self.set_stroke(width=0)
-        self.set_fill(color, 1)
-        self.set_height(self.height)
+        super().__init__(file_name=suit_name, **kwargs)
 
 
 # Logos
 class AoPSLogo(SVGMobject):
-    CONFIG = {
-        "file_name": "aops_logo",
-        "height": 1.5,
-    }
+    file_name = "aops_logo"
+    height = 1.5
 
     def __init__(self, **kwargs):
-        SVGMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_stroke(WHITE, width=0)
         colors = [BLUE_E, "#008445", GREEN_B]
         index_lists = [
@@ -487,16 +480,5 @@ class AoPSLogo(SVGMobject):
 
 
 class BitcoinLogo(SVGMobject):
-    CONFIG = {
-        "file_name": "Bitcoin_logo",
-        "height": 1,
-        "fill_color": "#f7931a",
-        "inner_color": WHITE,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-    }
-
-    def __init__(self, **kwargs):
-        SVGMobject.__init__(self, **kwargs)
-        self[0].set_fill(self.fill_color, self.fill_opacity)
-        self[1].set_fill(self.inner_color, 1)
+    file_name = "Bitcoin_logo"
+    height = 1

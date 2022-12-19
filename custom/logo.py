@@ -1,11 +1,15 @@
+from __future__ import annotations 
+
 import numpy as np
 import itertools as it
+import random
 
 from manimlib.constants import *
 from manimlib.scene.scene import Scene
 from manimlib.mobject.geometry import AnnularSector
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.geometry import Polygon
+from manimlib.mobject.svg.text_mobject import Text
 from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.mobject.types.vectorized_mobject import VGroup
 from manimlib.mobject.types.vectorized_mobject import VMobject
@@ -22,30 +26,28 @@ from manimlib.animation.creation import Write
 
 
 class Logo(VMobject):
-    CONFIG = {
-        "pupil_radius": 1.0,
-        "outer_radius": 2.0,
-        "iris_background_blue": "#74C0E3",
-        "iris_background_brown": "#8C6239",
-        "blue_spike_colors": [
-            "#528EA3",
-            "#3E6576",
-            "#224C5B",
-            BLACK,
-        ],
-        "brown_spike_colors": [
-            "#754C24",
-            "#603813",
-            "#42210b",
-            BLACK,
-        ],
-        "n_spike_layers": 4,
-        "n_spikes": 28,
-        "spike_angle": TAU / 28,
-    }
+    pupil_radius: float = 1.0
+    outer_radius: float = 2.0
+    iris_background_blue: ManimColor = "#74C0E3"
+    iris_background_brown: ManimColor = "#8C6239"
+    blue_spike_colors: list[ManimColor] = [
+        "#528EA3",
+        "#3E6576",
+        "#224C5B",
+        BLACK,
+    ]
+    brown_spike_colors: list[ManimColor] = [
+        "#754C24",
+        "#603813",
+        "#42210b",
+        BLACK,
+    ]
+    n_spike_layers: int = 4
+    n_spikes: int = 28
+    spike_angle: float = TAU / 28
 
     def __init__(self, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add_iris_back()
         self.add_spikes()
         self.add_pupil()
@@ -160,6 +162,7 @@ class Logo(VMobject):
             fill_color=BLACK,
             fill_opacity=1,
             stroke_width=0,
+            stroke_color=BLACK,
             sheen=0.0,
         )
         self.pupil.rotate(90 * DEGREES)
@@ -211,7 +214,7 @@ class LogoGenerationTemplate(Scene):
         frame.shift(DOWN)
 
         self.logo = Logo()
-        name = TexText("3Blue1Brown")
+        name = Text("3Blue1Brown")
         name.scale(2.5)
         name.next_to(self.logo, DOWN, buff=MED_LARGE_BUFF)
         name.set_gloss(0.2)
@@ -384,9 +387,7 @@ class LogoTest(Scene):
 
 
 class LogoGenerationFlurry(LogoGenerationTemplate):
-    CONFIG = {
-        "random_seed": 2,
-    }
+    random_seed: int = 2
 
     def get_logo_animations(self, logo):
         layers = logo.spike_layers
@@ -421,6 +422,12 @@ class LogoGenerationFlurry(LogoGenerationTemplate):
             ]),
             Animation(logo.pupil),
         ]
+
+
+class WrittenLogo(LogoGenerationTemplate):
+    def get_logo_animations(self, logo):
+        return [Write(logo, stroke_color=None, stroke_width=2, run_time=3, lag_ratio=5e-3)]
+
 
 
 class LogoGenerationFivefold(LogoGenerationTemplate):

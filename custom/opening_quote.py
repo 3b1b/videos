@@ -7,21 +7,19 @@ from manimlib.utils.rate_functions import linear
 
 
 class OpeningQuote(Scene):
-    CONFIG = {
-        "quote": [],
-        "quote_arg_separator": " ",
-        "highlighted_quote_terms": {},
-        "author": "",
-        "fade_in_kwargs": {
-            "lag_ratio": 0.5,
-            "rate_func": linear,
-            "run_time": 5,
-        },
-        "text_size": "\\Large",
-        "use_quotation_marks": True,
-        "top_buff": 1.0,
-        "author_buff": 1.0,
+    quote = []
+    quote_arg_separator = " "
+    highlighted_quote_terms = {}
+    author = ""
+    fade_in_kwargs = {
+        "lag_ratio": 0.5,
+        "rate_func": linear,
+        "run_time": 5,
     }
+    text_size = R"\Large"
+    use_quotation_marks = True
+    top_buff = 1.0
+    author_buff = 1.0
 
     def construct(self):
         self.quote = self.get_quote()

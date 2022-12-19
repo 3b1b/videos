@@ -6,6 +6,7 @@ from custom.characters.pi_creature import *
 from custom.characters.pi_creature_animations import *
 from custom.characters.pi_creature_scene import *
 from custom.deprecated import *
+from custom.drawings import *
 from custom.end_screen import *
 from custom.filler import *
 from custom.logo import *

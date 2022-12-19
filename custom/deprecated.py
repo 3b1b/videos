@@ -4,7 +4,7 @@
 # of fading which are now covered by arguments passed into FadeIn and
 # FadeOut
 
-from manim_imports_ext import *
+from manimlib.animation.fading import FadeIn, FadeOut
 
 
 class FadeInFromDown(FadeIn):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manimlib.constants import *
 from manimlib.mobject.coordinate_systems import NumberPlane
 from manimlib.mobject.svg.tex_mobject import TexText
@@ -8,6 +10,10 @@ from manimlib.scene.scene import Scene
 
 from custom.characters.pi_creature import Mortimer
 from custom.characters.pi_creature import Randolph
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from manimlib.typing import Vect3
 
 
 class Banner(Scene):
@@ -25,8 +31,11 @@ class Banner(Scene):
         # Background
         self.add(FullScreenFadeRectangle().set_fill(BLACK, 1))
         plane = NumberPlane(
-            (-10, 10), (-14, 14),
-            axis_config={"stroke_color": BLUE_A}
+            (-7, 7), (-5, 5),
+            height=10 * 1.5,
+            width=14 * 1.5,
+            axis_config={"stroke_color": BLUE_A},
+            faded_line_ratio=4,
         )
         for line in plane.family_members_with_points():
             line.set_stroke(width=line.get_stroke_width() / 2)
@@ -85,7 +94,7 @@ class Banner(Scene):
 
     def get_probabalistic_message(self):
         return Text(
-            "New video every day ",
+            "New video every day " + \
             "(with probability 0.05)",
             t2c={"Sunday": YELLOW},
         )
@@ -105,19 +114,17 @@ class Banner(Scene):
 
 
 class CurrBanner(Banner):
-    CONFIG = {
-        "camera_config": {
-            "pixel_height": 1440,
-            "pixel_width": 2560,
-        },
-        "pi_height": 1.25,
-        "pi_bottom": 0.25 * DOWN,
-        "use_date": False,
-        "date": "Wednesday, March 15th",
-        "message_scale_val": 0.9,
-        "add_supporter_note": False,
-        "pre_date_text": "Next video on ",
+    camera_config: dict = {
+        "pixel_height": 1440,
+        "pixel_width": 2560,
     }
+    pi_height: float = 1.25
+    pi_bottom: Vect3 = 0.25 * DOWN
+    use_date: bool = False
+    date: str = "Wednesday, March 15th"
+    message_scale_val: float = 0.9
+    add_supporter_note: bool = False
+    pre_date_text: str = "Next video on "
 
     def construct(self):
         super().construct()

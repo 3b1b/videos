@@ -10,9 +10,6 @@ from manimlib.mobject.changing import AnimatedBoundary
 from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.animation.creation import Write
 
-# from manimlib.mobject.svg.text_mobject import Text
-
-
 class Spotlight(Scene):
     title = ""
     title_font_size = 60
@@ -37,9 +34,9 @@ class VideoWrapper(Scene):
     animate_boundary = True
     animated_boundary_config = {"cycle_rate": 0.25}
     title = ""
-    title_config = {
-        "font_size": 60
-    }
+    title_config = dict(
+        font_size=60
+    )
     wait_time = 32
     screen_height = 6.25
 
