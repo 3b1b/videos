@@ -1,3 +1,6 @@
+from __future__ import annotations
+from collections.abc import Iterable
+
 import random
 
 from manimlib.animation.transform import ReplacementTransform
@@ -26,18 +29,20 @@ from custom.characters.pi_creature_animations import Blink
 from custom.characters.pi_creature_animations import PiCreatureBubbleIntroduction
 from custom.characters.pi_creature_animations import RemovePiCreatureBubble
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from manimlib.typing import ManimColor, Vect3
+
 
 class PiCreatureScene(InteractiveScene):
-    CONFIG = {
-        "total_wait_time": 0,
-        "seconds_to_blink": 3,
-        "pi_creatures_start_on_screen": True,
-        "default_pi_creature_kwargs": {
-            "color": BLUE,
-            "flip_at_start": False,
-        },
-        "default_pi_creature_start_corner": DL,
-    }
+    total_wait_time: float = 0
+    seconds_to_blink: float = 3
+    pi_creatures_start_on_screen: bool = True
+    default_pi_creature_kwargs: dict = dict(
+        color=BLUE,
+        flip_at_start=False,
+    )
+    default_pi_creature_start_corner: Vect3 = DL
 
     def setup(self):
         super().setup()
@@ -46,21 +51,21 @@ class PiCreatureScene(InteractiveScene):
         if self.pi_creatures_start_on_screen:
             self.add(*self.pi_creatures)
 
-    def create_pi_creatures(self):
+    def create_pi_creatures(self) -> VGroup | Iterable[PiCreature]:
         """
         Likely updated for subclasses
         """
-        return VGroup(self.create_pi_creature())
+        return [self.create_pi_creature()]
 
-    def create_pi_creature(self):
+    def create_pi_creature(self) -> PiCreature:
         pi_creature = PiCreature(**self.default_pi_creature_kwargs)
         pi_creature.to_corner(self.default_pi_creature_start_corner)
         return pi_creature
 
-    def get_pi_creatures(self):
+    def get_pi_creatures(self) -> VGroup:
         return self.pi_creatures
 
-    def get_primary_pi_creature(self):
+    def get_primary_pi_creature(self) -> PiCreature:
         return self.pi_creatures[0]
 
     def any_pi_creatures_on_screen(self):
@@ -68,10 +73,10 @@ class PiCreatureScene(InteractiveScene):
 
     def get_on_screen_pi_creatures(self):
         mobjects = self.get_mobject_family_members()
-        return VGroup(*[
+        return VGroup(*(
             pi for pi in self.get_pi_creatures()
             if pi in mobjects
-        ])
+        ))
 
     def pi_changes(self, *modes, look_at=None, lag_ratio=0.5, run_time=1):
         return LaggedStart(
@@ -240,34 +245,24 @@ class PiCreatureScene(InteractiveScene):
 
 
 class MortyPiCreatureScene(PiCreatureScene):
-    CONFIG = {
-        "default_pi_creature_kwargs": {
-            "color": GREY_BROWN,
-            "flip_at_start": True,
-        },
-        "default_pi_creature_start_corner": DR,
-    }
+    default_pi_creature_kwargs: dict = dict(
+        color=GREY_BROWN,
+        flip_at_start=True,
+    )
+    default_pi_creature_start_corner: Vect3 = DR
 
 
 class TeacherStudentsScene(PiCreatureScene):
-    CONFIG = {
-        "student_colors": [BLUE_D, BLUE_E, BLUE_C],
-        "teacher_color": GREY_BROWN,
-        "background_color": GREY_E,
-        "student_scale_factor": 0.8,
-        "seconds_to_blink": 2,
-        "screen_height": 4,
-    }
+    student_colors: list[ManimColor] = [BLUE_D, BLUE_E, BLUE_C]
+    teacher_color: ManimColor = GREY_BROWN
+    background_color: ManimColor = GREY_E
+    student_scale_factor: float = 0.8
+    seconds_to_blink: float = 2
+    screen_height: float = 4
 
     def setup(self):
         super().setup()
-        self.background = FullScreenFadeRectangle(
-            fill_color=self.background_color,
-            fill_opacity=1,
-        )
-        self.disable_interaction(self.background)
-        self.add(self.background)
-        self.bring_to_back(self.background)
+        self.add_background(self.background_color)
         self.screen = ScreenRectangle(
             height=self.screen_height,
             fill_color=BLACK,
@@ -275,6 +270,15 @@ class TeacherStudentsScene(PiCreatureScene):
         )
         self.screen.to_corner(UP + LEFT)
         self.hold_up_spot = self.teacher.get_corner(UP + LEFT) + MED_LARGE_BUFF * UP
+
+    def add_background(self, color: ManimColor):
+        self.background = FullScreenFadeRectangle(
+            fill_color=color,
+            fill_opacity=1,
+        )
+        self.disable_interaction(self.background)
+        self.add(self.background)
+        self.bring_to_back(self.background)
 
     def create_pi_creatures(self):
         self.teacher = Mortimer(color=self.teacher_color)

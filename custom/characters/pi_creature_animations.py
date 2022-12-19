@@ -1,4 +1,5 @@
-from manimlib.animation.animation import Animation
+from __future__ import annotations
+
 from manimlib.animation.composition import AnimationGroup
 from manimlib.animation.fading import FadeOut
 from manimlib.animation.creation import DrawBorderThenFill
@@ -7,39 +8,47 @@ from manimlib.animation.transform import ApplyMethod
 from manimlib.animation.transform import MoveToTarget
 from manimlib.constants import *
 from manimlib.mobject.mobject import Group
+from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.svg.drawings import SpeechBubble
-from manimlib.utils.config_ops import digest_config
 from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.rate_functions import there_and_back
 
-from custom.characters.pi_class import PiCreatureClass
+from custom.characters.pi_creature import PiCreature
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Callable
+    from manimlib.typing import Vect3
 
 class Blink(ApplyMethod):
-    CONFIG = {
-        "rate_func": squish_rate_func(there_and_back)
-    }
-
-    def __init__(self, pi_creature, **kwargs):
-        ApplyMethod.__init__(self, pi_creature.blink, **kwargs)
+    def __init__(
+        self,
+        pi_creature: PiCreature,
+        rate_func: Callable = squish_rate_func(there_and_back),
+        **kwargs
+    ):
+        super().__init__(pi_creature.blink, rate_func=rate_func, **kwargs)
 
 
 class PiCreatureBubbleIntroduction(AnimationGroup):
     def __init__(
-        self, pi_creature, content,
-        target_mode="speaking",
-        look_at=None,
-        bubble_type=SpeechBubble,
-        max_bubble_height=None,
-        max_bubble_width=None,
-        bubble_direction=None,
-        bubble_config={},
-        bubble_creation_class=DrawBorderThenFill,
-        bubble_creation_kwargs={},
-        content_introduction_class=Write,
-        content_introduction_kwargs={},
+        self,
+        pi_creature: PiCreature,
+        content: str,
+        target_mode: str = "speaking",
+        look_at: Mobject | Vect3 | None = None,
+        bubble_type: type = SpeechBubble,
+        max_bubble_height: float | None = None,
+        max_bubble_width: float | None = None,
+        bubble_direction: Vect3 | None = None,
+        bubble_config=dict(),
+        bubble_creation_class: type = DrawBorderThenFill,
+        bubble_creation_kwargs: dict = dict(),
+        content_introduction_class: type = Write,
+        content_introduction_kwargs: dict = dict(),
         **kwargs,
     ):
+        bubble_config = dict(bubble_config)
         bubble_config["max_height"] = max_bubble_height
         bubble_config["max_width"] = max_bubble_width
         if bubble_direction is not None:
@@ -59,30 +68,40 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
 
 
 class PiCreatureSays(PiCreatureBubbleIntroduction):
-    CONFIG = {
-        "target_mode": "speaking",
-        "bubble_type": SpeechBubble,
-    }
+    def __init__(
+        self,
+        pi_creature: PiCreature,
+        content: str,
+        target_mode: str = "speaking",
+        bubble_type: type = SpeechBubble,
+        **kwargs,
+    ):
+        super().__init__(
+            pi_creature, content,
+            target_mode=target_mode,
+            bubble_type=bubble_type,
+            **kwargs
+        )
 
 
 class RemovePiCreatureBubble(AnimationGroup):
-    CONFIG = {
-        "target_mode": "plain",
-        "look_at": None,
-        "remover": True,
-    }
-
-    def __init__(self, pi_creature, **kwargs):
+    def __init__(
+        self,
+        pi_creature: PiCreature,
+        target_mode: str = "plain",
+        look_at: Mobject | Vect3 | None = None,
+        remover: bool = True,
+        **kwargs
+    ):
         assert hasattr(pi_creature, "bubble")
-        digest_config(self, kwargs, locals())
+        self.pi_creature = pi_creature
 
         pi_creature.generate_target()
-        pi_creature.target.change_mode(self.target_mode)
-        if self.look_at is not None:
-            pi_creature.target.look_at(self.look_at)
+        pi_creature.target.change_mode(target_mode)
+        if look_at is not None:
+            pi_creature.target.look_at(look_at)
 
-        AnimationGroup.__init__(
-            self,
+        super().__init__(
             MoveToTarget(pi_creature),
             FadeOut(pi_creature.bubble),
             FadeOut(pi_creature.bubble.content),
@@ -93,25 +112,3 @@ class RemovePiCreatureBubble(AnimationGroup):
         self.pi_creature.bubble = None
         if scene is not None:
             scene.add(self.pi_creature)
-
-
-class FlashThroughClass(Animation):
-    CONFIG = {
-        "highlight_color": GREEN,
-    }
-
-    def __init__(self, mobject, mode="linear", **kwargs):
-        if not isinstance(mobject, PiCreatureClass):
-            raise Exception("FlashThroughClass mobject must be a PiCreatureClass")
-        digest_config(self, kwargs)
-        self.indices = list(range(mobject.height * mobject.width))
-        if mode == "random":
-            np.random.shuffle(self.indices)
-        Animation.__init__(self, mobject, **kwargs)
-
-    def interpolate_mobject(self, alpha):
-        index = int(np.floor(alpha * self.mobject.height * self.mobject.width))
-        for pi in self.mobject:
-            pi.set_color(BLUE_E)
-        if index < self.mobject.height * self.mobject.width:
-            self.mobject[self.indices[index]].set_color(self.highlight_color)
