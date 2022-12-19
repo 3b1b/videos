@@ -3,6 +3,16 @@ from manim_imports_ext import *
 ## Warning, much of what is in this class
 ## likely not supported anymore.
 
+
+def drag_pixels(frames):
+    curr = frames[0]
+    new_frames = []
+    for frame in frames:
+        curr += (curr == 0) * np.array(frame)
+        new_frames.append(np.array(curr))
+    return new_frames
+
+
 class LogoGeneration(Scene):
     CONFIG = {
         "radius"               : 1.5,
