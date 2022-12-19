@@ -32,6 +32,15 @@ class AmbientPermutations(Scene):
             text.sort()
 
 
+class WriteName(InteractiveScene):
+    def construct(self):
+        self.play(Write(
+            Text("Évariste Galois", font_size=90).to_corner(UL),
+            run_time=3
+        ))
+        self.wait()
+
+
 class TimelineTransition(InteractiveScene):
     def construct(self):
         pass
@@ -120,4 +129,58 @@ class InfamousCoquette(InteractiveScene):
         quote.set_stroke(BLACK, 0)
         quote.set_fill(BLACK)
         self.play(Write(quote, run_time=3))
+        self.wait()
+
+
+class NightBeforeQuote(InteractiveScene):
+    def construct(self):
+        # Write
+        quote = TexText("""
+            ``You will publicly ask Jacobi\\\\
+            or Gauss to give their opinion\\\\
+            not on the truth but on the\\\\
+            importance of the theorems.''
+        """, alignment="")[0]
+
+        quote.to_edge(RIGHT)
+        self.play(FadeIn(quote, run_time=2, lag_ratio=0.025))
+        self.wait()
+        self.play(quote[33:-2].animate.set_color(YELLOW).set_anim_args(lag_ratio=0.5, run_time=3))
+        self.wait(2)
+
+
+class CauchyFourierPoisson(InteractiveScene):
+    def construct(self):
+        # Test
+        self.add(FullScreenRectangle(fill_color="#211F22", fill_opacity=1))
+        folder = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2022/galois/artwork/chapter 1/Portraits/"
+        images = Group(
+            ImageMobject(os.path.join(folder, "Cauchy-Portrait-Cutoff")),
+            ImageMobject(os.path.join(folder, "Fourier-Portrait")),
+            ImageMobject(os.path.join(folder, "Poisson-Portrait-Outpainted")),
+        )
+        for image in images:
+            image.set_width(4)
+        images[0].set_width(3.5)
+        images.arrange(RIGHT, aligned_edge=DOWN)
+        images.set_width(FRAME_WIDTH - 1)
+        images.to_edge(UP, buff=LARGE_BUFF)
+
+        # Names
+        names = VGroup(
+            Text("Augustin Cauchy"),
+            Text("Joseph Fourier"),
+            Text("Siméon Poisson"),
+        )
+        for name, image in zip(names, images):
+            name.next_to(image, DOWN)
+            name.set_fill(GREY_A)
+        names[1:].shift(SMALL_BUFF * RIGHT)
+
+        # Animations
+        kw = dict(lag_ratio=0.5, run_time=3)
+        self.play(
+            LaggedStart(*(FadeIn(image, 0.5 * UP, scale=1.1) for image in images), **kw),
+            LaggedStart(*(Write(name, rate_func=squish_rate_func(smooth, 0, 0.85)) for name in names), **kw),
+        )
         self.wait()
