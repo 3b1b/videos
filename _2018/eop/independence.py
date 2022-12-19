@@ -1,6 +1,6 @@
 from manim_imports_ext import *
 
-from scene.scene import ProgressDisplay
+from tqdm import tqdm as ProgressDisplay
 import scipy
 
 #revert_to_original_skipping_status
@@ -31,19 +31,6 @@ def get_quiz(*questions):
     quiz.questions = q_mobs
     quiz.scale(0.7)
     return quiz
-
-class Checkmark(TexFromPresetString):
-    CONFIG = {
-        "tex" : "\\checkmark",
-        "color" : GREEN
-    }
-
-class Xmark(TexFromPresetString):
-    CONFIG = {
-        "tex" : "\\times",
-        "color" : RED
-    }
-
 
 
 def get_slot_group(
