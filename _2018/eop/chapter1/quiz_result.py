@@ -2,8 +2,6 @@ from manim_imports_ext import *
 from _2018.eop.reusable_imports import *
 from _2018.eop.independence import *
 
-from for_3b1b_videos.pi_class import PiCreatureClass
-
 class QuizResult(PiCreatureScene):
     CONFIG = {
         "pi_creatures_start_on_screen" : False,
@@ -33,7 +31,7 @@ class QuizResult(PiCreatureScene):
         spacing_students_y = 2.2
 
         all_students = PiCreatureClass(
-            width = nb_students_x, height = nb_students_y)# VGroup()
+            width = nb_students_x, height = nb_students_y)# Defunct()
         student_points = []
         grades = []
         grades_count = []
