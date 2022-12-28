@@ -10,7 +10,7 @@ class WhatDoesItReallyMean(TeacherStudentsScene):
     }
 
     def construct(self):
-        student_q = TexText(
+        student_q = OldTexText(
             "What does", "``probability''\\\\",
             "\\emph{actually}", "mean?"
         )

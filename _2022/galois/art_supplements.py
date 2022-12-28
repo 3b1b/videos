@@ -121,7 +121,7 @@ class LastWordsQuote(InteractiveScene):
 class InfamousCoquette(InteractiveScene):
     def construct(self):
         # Write quote
-        quote = TexText(
+        quote = OldTexText(
             "``I die the victim of an infamous coquette and her two dupes.''",
         )
         quote.to_edge(UP)
@@ -135,7 +135,7 @@ class InfamousCoquette(InteractiveScene):
 class NightBeforeQuote(InteractiveScene):
     def construct(self):
         # Write
-        quote = TexText("""
+        quote = OldTexText("""
             ``You will publicly ask Jacobi\\\\
             or Gauss to give their opinion\\\\
             not on the truth but on the\\\\

@@ -80,8 +80,8 @@ class PreviewThreeExamples(InteractiveScene):
 
         # Titles
         titles = VGroup(
-            TexText("S.A. = $\\pi^2 R^2$"),
-            Tex("\\pi = 4").scale(1.5),
+            OldTexText("S.A. = $\\pi^2 R^2$"),
+            OldTex("\\pi = 4").scale(1.5),
             Text("All triangles\nare isosceles"),
         )
         titles.set_width(rects[0].get_width())
@@ -134,7 +134,7 @@ class Intro(TeacherStudentsScene):
 class SimpleSphereQuestion(InteractiveScene):
     def construct(self):
         # Intro statement
-        text = TexText("A ``proof'' of a formula for\\\\the surface area of a sphere")
+        text = OldTexText("A ``proof'' of a formula for\\\\the surface area of a sphere")
         text.set_stroke(WHITE, 0)
 
         rect = Rectangle(width=TAU, height=TAU / 4)
@@ -297,7 +297,7 @@ class SphereExample(InteractiveScene):
         # Show equator
         circ_label = Text("Circumference")
         circ_label.next_to(vslices[2], DOWN)
-        circ_formula = Tex("2\\pi R")
+        circ_formula = OldTex("2\\pi R")
         circ_formula.next_to(vslices[2], DOWN)
         circ_formula.set_stroke(WHITE, 0)
         equator = pre_slices[2]
@@ -325,7 +325,7 @@ class SphereExample(InteractiveScene):
         # Arc height
         edge = Line(vslices.get_corner(DL), vslices[0][0].get_top())
         edge.set_stroke(PINK, 2)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(edge.get_center(), LEFT, SMALL_BUFF)
         arc = Arc(0, 90 * DEGREES)
         arc.match_style(edge)
@@ -333,7 +333,7 @@ class SphereExample(InteractiveScene):
         arc.rotate(-10 * DEGREES, LEFT)
         arc.shift(pre_slices[0][0].get_points()[0] - arc.get_end())
 
-        arc_form = Tex("{\\pi \\over 2} R")
+        arc_form = OldTex("{\\pi \\over 2} R")
         arc_form.scale(0.5)
         arc_form.next_to(arc.pfp(0.5), RIGHT)
         arc_form2 = arc_form.copy()
@@ -359,7 +359,7 @@ class SphereExample(InteractiveScene):
         arc_tex = "{\\pi \\over 2} R"
         circ_tex = "2\\pi R"
         eq_parts = ["\\text{Area}", "=", arc_tex, "\\times", circ_tex, "=", "\\pi^2 R^2"]
-        equation = MTex(" ".join(eq_parts), isolate=eq_parts)
+        equation = Tex(" ".join(eq_parts), isolate=eq_parts)
         equation.center().to_edge(UP, buff=LARGE_BUFF)
         rect = SurroundingRectangle(equation.select_parts(eq_parts[-1]))
         rect.set_stroke(YELLOW, 2)
@@ -406,7 +406,7 @@ class SomethingSomethingLimits(TeacherStudentsScene):
 
 class PiEqualsFourOverlay(InteractiveScene):
     def construct(self):
-        words = TexText("Fine, as long as\\\\$\\pi = 4$")
+        words = OldTexText("Fine, as long as\\\\$\\pi = 4$")
         words.scale(2)
         words.set_color(RED)
         self.play(Write(words, stroke_color=WHITE))
@@ -417,9 +417,9 @@ class Proof2Slide(InteractiveScene):
     def construct(self):
         # Setup
         self.add(FullScreenRectangle())
-        title = TexText("``Proof'' \\#2", font_size=60)
+        title = OldTexText("``Proof'' \\#2", font_size=60)
         title.to_edge(UP)
-        subtitle = Tex("\\pi = 4", font_size=60)
+        subtitle = OldTex("\\pi = 4", font_size=60)
         subtitle.next_to(title, DOWN)
         subtitle.set_color(RED)
         self.add(title, subtitle)
@@ -552,7 +552,7 @@ class CircleExample(InteractiveScene):
         ulp = lh[0].get_top()
         width_line = Line(ulp, rh.get_corner(UR))
         width_line.set_stroke(YELLOW, 3)
-        width_form = Tex("\\pi R")
+        width_form = OldTex("\\pi R")
         width_form.next_to(width_line, UP)
 
         semi_circ = Arc(angle=PI)
@@ -562,12 +562,12 @@ class CircleExample(InteractiveScene):
 
         height_line = Line(lh.get_corner(DL), ulp)
         height_line.set_stroke(PINK, 3)
-        height_form = Tex("R")
+        height_form = OldTex("R")
         height_form.next_to(height_line, LEFT)
 
         radial_line = Line(sectors.get_center(), sectors.get_right())
         radial_line.match_style(height_line)
-        pre_R_label = Tex("R").next_to(radial_line, UP, SMALL_BUFF)
+        pre_R_label = OldTex("R").next_to(radial_line, UP, SMALL_BUFF)
 
         self.play(ShowCreation(width_line))
         self.play(TransformFromCopy(width_line, semi_circ, path_arc=-PI / 2, run_time=2))
@@ -582,7 +582,7 @@ class CircleExample(InteractiveScene):
         self.wait()
 
         # Area
-        rhs = Tex("=\\pi R^2")
+        rhs = OldTex("=\\pi R^2")
         question.generate_target()
         question.target.match_y(sectors).match_x(lh)
         question.target[-1].scale(0, about_edge=LEFT)
@@ -722,7 +722,7 @@ class SphereSectorAnalysis(Scene):
                 stroke_width=2,
             )
 
-        phi_label = Tex("\\phi", font_size=30)
+        phi_label = OldTex("\\phi", font_size=30)
 
         def get_angle_label():
             arc = Arc(start_angle=90 * DEGREES, angle=-get_phi(), radius=0.5, n_components=8)
@@ -752,7 +752,7 @@ class SphereSectorAnalysis(Scene):
         angle_label[1].add_updater(lambda m: m.move_to(get_angle_label()[1]))
         lat_line_radius = get_lat_line_radius()
         lat_line_radius.add_updater(lambda m: m.match_points(get_lat_line_radius()))
-        lat_line_label = Tex("R\\sin(\\phi)", font_size=24)
+        lat_line_label = OldTex("R\\sin(\\phi)", font_size=24)
         lat_line_label.rotate(90 * DEGREES, RIGHT).rotate(90 * DEGREES, IN)
         lat_line_label.next_to(lat_line_radius, OUT, SMALL_BUFF)
 
@@ -783,7 +783,7 @@ class SphereSectorAnalysis(Scene):
 
         # Show delta theta
         brace = Brace(Line(ORIGIN, radius * dtheta * RIGHT), UP, buff=SMALL_BUFF)
-        delta_theta = Tex("\\Delta \\theta", font_size=36)
+        delta_theta = OldTex("\\Delta \\theta", font_size=36)
         delta_theta.next_to(brace, UP, buff=SMALL_BUFF)
         dt_label = VGroup(brace, delta_theta)
         dt_label.rotate(90 * DEGREES, RIGHT)
@@ -794,8 +794,8 @@ class SphereSectorAnalysis(Scene):
         self.wait()
 
         # Exact formula
-        formula1 = Tex("2\\pi", " R \\sin(\\phi)", "\\cdot", "{\\Delta \\theta", " \\over 2\\pi}")
-        formula2 = Tex("R \\sin(\\phi)", "\\cdot", "\\Delta \\theta")
+        formula1 = OldTex("2\\pi", " R \\sin(\\phi)", "\\cdot", "{\\Delta \\theta", " \\over 2\\pi}")
+        formula2 = OldTex("R \\sin(\\phi)", "\\cdot", "\\Delta \\theta")
         for formula in formula1, formula2:
             formula.to_corner(UR)
             formula.fix_in_frame()
@@ -819,9 +819,9 @@ class SphereSectorAnalysis(Scene):
             width=PI,
         )
         axes.y_axis.add(Text("Wedge width", font_size=24, color=RED).next_to(axes.c2p(0, 1), LEFT))
-        axes.x_axis.add(Tex("\\pi / 2", font_size=24).next_to(axes.c2p(PI / 2, 0), DOWN))
-        axes.x_axis.add(Tex("\\pi", font_size=24).next_to(axes.c2p(PI, 0), DOWN))
-        axes.x_axis.add(Tex("\\phi", font_size=24).next_to(axes.c2p(PI, 0), UR, buff=SMALL_BUFF))
+        axes.x_axis.add(OldTex("\\pi / 2", font_size=24).next_to(axes.c2p(PI / 2, 0), DOWN))
+        axes.x_axis.add(OldTex("\\pi", font_size=24).next_to(axes.c2p(PI, 0), DOWN))
+        axes.x_axis.add(OldTex("\\phi", font_size=24).next_to(axes.c2p(PI, 0), UR, buff=SMALL_BUFF))
         axes.to_corner(UL)
         axes.fix_in_frame()
         graph = axes.get_graph(lambda x: math.sin(x), x_range=[0, PI / 2])
@@ -855,11 +855,11 @@ class FalseVsTrueSurfaceAreaOverlay(InteractiveScene):
     def construct(self):
         false_answer = VGroup(
             Text("False answer", color=RED),
-            Tex("\\pi^2 R^2"),
+            OldTex("\\pi^2 R^2"),
         )
         true_answer = VGroup(
             Text("True answer", color=GREEN),
-            Tex("4\\pi R^2"),
+            OldTex("4\\pi R^2"),
         )
         answers = VGroup(false_answer, true_answer)
         for answer in answers:
@@ -972,8 +972,8 @@ class FakeAreaManipulation(InteractiveScene):
         lil_lines[1].set_stroke(WHITE, 3)
 
         slope_labels = VGroup(
-            TexText("Slope =", " $5 / 2$"),
-            TexText("Slope =", " $7 / 3$"),
+            OldTexText("Slope =", " $5 / 2$"),
+            OldTexText("Slope =", " $7 / 3$"),
         )
         for line, label in zip(lil_lines, slope_labels):
             label.next_to(line.pfp(0.5), UL, buff=0.7)
@@ -1125,7 +1125,7 @@ class ContrastSphericalGeometry(InteractiveScene):
             VMobject().pointwise_become_partial(mesh[26], 16 / 20, 19 / 20).reverse_points(),
         )
         sph_tri.set_stroke(BLUE, 3)
-        sph_tri_angle_labels = MTex("\\alpha\\beta\\gamma", font_size=30, **kw)
+        sph_tri_angle_labels = Tex("\\alpha\\beta\\gamma", font_size=30, **kw)
         sph_tri_angle_labels.set_backstroke()
         for label, curve in zip(sph_tri_angle_labels, sph_tri):
             label.curve = curve
@@ -1136,8 +1136,8 @@ class ContrastSphericalGeometry(InteractiveScene):
 
         # Equations
         angle_equations = VGroup(
-            MTex("\\alpha + \\beta + \\gamma > 180^\\circ", **kw),
-            MTex("\\alpha + \\beta + \\gamma = 180^\\circ", **kw),
+            Tex("\\alpha + \\beta + \\gamma > 180^\\circ", **kw),
+            Tex("\\alpha + \\beta + \\gamma = 180^\\circ", **kw),
         )
         for eq, title in zip(angle_equations, titles):
             eq.next_to(title, DOWN, buff=1.5)
@@ -1176,8 +1176,8 @@ class ContrastSphericalGeometry(InteractiveScene):
 
         # Write area formulas
         area_formulas = VGroup(
-            MTex("\\text{Area}(\\Delta) = (\\alpha + \\beta + \\gamma - \\pi) R^2", **kw),
-            MTex("\\text{Area}(\\Delta) = \\frac{1}{2} bh")
+            Tex("\\text{Area}(\\Delta) = (\\alpha + \\beta + \\gamma - \\pi) R^2", **kw),
+            Tex("\\text{Area}(\\Delta) = \\frac{1}{2} bh")
         )
         for title, formula in zip(titles, area_formulas):
             formula.move_to(title).shift(1.5 * DOWN)
@@ -1189,8 +1189,8 @@ class ContrastSphericalGeometry(InteractiveScene):
 
         # Mention Gaussian Curvature
         curvature_words = VGroup(
-            TexText("Gaussian curvature > 0", color=GREEN_B),
-            TexText("Gaussian curvature = 0", color=YELLOW),
+            OldTexText("Gaussian curvature > 0", color=GREEN_B),
+            OldTexText("Gaussian curvature = 0", color=YELLOW),
         )
         for words, eq in zip(curvature_words, angle_equations):
             words.next_to(eq, DOWN, MED_LARGE_BUFF)
@@ -1237,7 +1237,7 @@ class ContrastSphericalGeometry(InteractiveScene):
             arc.shift(v2)
             arcs.add(arc)
 
-        labels = MTex("\\alpha \\beta \\gamma", font_size=30)
+        labels = Tex("\\alpha \\beta \\gamma", font_size=30)
         for label, arc in zip(labels, arcs):
             vect = normalize(arc.pfp(0.5) - midpoint(arc.get_start(), arc.get_end()))
             label.move_to(arc.pfp(0.5))
@@ -1304,7 +1304,7 @@ class SquareCircleExample(InteractiveScene):
         # Ask about circumference
         radial_line = Line(ORIGIN, circle.get_right())
         radial_line.set_stroke(WHITE, 1)
-        radius_label = Tex("1")
+        radius_label = OldTex("1")
         radius_label.next_to(radial_line, UP, SMALL_BUFF)
 
         circum = circle.copy()
@@ -1348,7 +1348,7 @@ class SquareCircleExample(InteractiveScene):
         new_radii.save_state()
         new_radii.space_out_submobjects(1.1)
 
-        perimeter_label = TexText("Perimeter = $8$")
+        perimeter_label = OldTexText("Perimeter = $8$")
         perimeter_label.to_edge(UP)
 
         self.play(ShowCreation(square), run_time=3)
@@ -1413,7 +1413,7 @@ class SquareCircleExample(InteractiveScene):
         t_indicator.set_height(0.1)
         t_indicator.set_fill(RED, 1)
         t_indicator.set_stroke(WHITE, 0)
-        t_label = VGroup(Tex("t = "), DecimalNumber())
+        t_label = VGroup(OldTex("t = "), DecimalNumber())
         t_label.arrange(RIGHT)
         t_label.next_to(t_axis, UP, buff=LARGE_BUFF)
         VGroup(t_axis, t_label).to_edge(UP)
@@ -1423,8 +1423,8 @@ class SquareCircleExample(InteractiveScene):
         dot.add_updater(lambda d: d.move_to(square.pfp(get_t())))
         t_indicator.add_updater(lambda m: m.move_to(t_axis.n2p(get_t()), DOWN))
 
-        c_labels = VGroup(*(Tex(f"c_{n}(t)") for n in range(len(approx_curves))))
-        c_labels.add(Tex("c_\\infty (t)"))
+        c_labels = VGroup(*(OldTex(f"c_{n}(t)") for n in range(len(approx_curves))))
+        c_labels.add(OldTex("c_\\infty (t)"))
         for label in c_labels:
             label.scale(0.75)
             label.add_updater(lambda m: m.next_to(dot, UR, buff=-SMALL_BUFF))
@@ -1469,8 +1469,8 @@ class SquareCircleExample(InteractiveScene):
             self.wait(0.5)
 
         # Write limits
-        lim_tex_ex = MTex("\\lim_{n \\to \\infty} c_{n}(" + "{:.1f}".format(get_t()) + ")")
-        lim_tex = Tex("c_\\infty(t)", ":=", "\\lim_{n \\to \\infty} c_{n}(t)")
+        lim_tex_ex = Tex("\\lim_{n \\to \\infty} c_{n}(" + "{:.1f}".format(get_t()) + ")")
+        lim_tex = OldTex("c_\\infty(t)", ":=", "\\lim_{n \\to \\infty} c_{n}(t)")
         for lt in lim_tex_ex, lim_tex:
             lt.next_to(t_axis, DOWN, aligned_edge=LEFT, buff=2.0)
         lim_arrow = Arrow(lim_tex_ex.get_corner(UL), dot.get_center(), buff=0.1, stroke_width=2, color=YELLOW)
@@ -1505,8 +1505,8 @@ class SquareCircleExample(InteractiveScene):
             "\\Big(": WHITE,
             "\\Big)": WHITE,
         }
-        lim_len = MTex("\\lim_{n \\to \\infty}\\Big(\\text{len}\\big(c_n(t)\\big) \\Big) = 8", tex_to_color_map=t2c)
-        len_lim = MTex("\\text{len} \\Big( \\lim_{n \\to \\infty} c_n(t) \\Big) = 2\\pi", tex_to_color_map=t2c)
+        lim_len = Tex("\\lim_{n \\to \\infty}\\Big(\\text{len}\\big(c_n(t)\\big) \\Big) = 8", tex_to_color_map=t2c)
+        len_lim = Tex("\\text{len} \\Big( \\lim_{n \\to \\infty} c_n(t) \\Big) = 2\\pi", tex_to_color_map=t2c)
         lims = VGroup(lim_len, len_lim)
         lim_len.next_to(lim_tex, DOWN, LARGE_BUFF, aligned_edge=LEFT)
 
@@ -1520,7 +1520,7 @@ class SquareCircleExample(InteractiveScene):
         )
 
         len_lim.next_to(lim_len, DOWN, buff=2.0, aligned_edge=LEFT)
-        not_eq = Tex("\\ne", font_size=96)
+        not_eq = OldTex("\\ne", font_size=96)
         not_eq.rotate(90 * DEGREES)
         not_eq.move_to(VGroup(len_lim, lim_len))
         not_eq.match_x(len_lim)
@@ -1593,11 +1593,11 @@ class UpshotOfLimitExample(InteractiveScene):
         # Various limits
         n = 4
         numbers = VGroup(
-            Tex("1.4"),
-            Tex("1.41"),
-            Tex("1.414"),
-            Tex("1.4142"),
-            Tex("\\sqrt{2}")
+            OldTex("1.4"),
+            OldTex("1.41"),
+            OldTex("1.414"),
+            OldTex("1.4142"),
+            OldTex("\\sqrt{2}")
         )
         numbers.scale(1.25)
         properties = VGroup(
@@ -1614,7 +1614,7 @@ class UpshotOfLimitExample(InteractiveScene):
             )),
             VGroup(
                 *TexText("Len = 8").replicate(n),
-                TexText("Len = $2\\pi$")
+                OldTexText("Len = $2\\pi$")
             )
         )
         fourier_example = Group(
@@ -1624,13 +1624,13 @@ class UpshotOfLimitExample(InteractiveScene):
             )),
             VGroup(
                 *TexText("Continuous").replicate(n),
-                TexText("Discontinuous")
+                OldTexText("Discontinuous")
             )
         )
         examples = Group(rational_example, circle_example, fourier_example)
 
         for objs, descs in examples:
-            arrow = Tex("\\cdots \\, \\rightarrow", font_size=72)
+            arrow = OldTex("\\cdots \\, \\rightarrow", font_size=72)
             group = Group(*objs[:n], arrow, objs[n])
             for x, mob in enumerate(group):
                 mob.move_to(2.75 * x * RIGHT)
@@ -1709,7 +1709,7 @@ class WhyWeNeedProofs(TeacherStudentsScene):
 class Proof3Slide(InteractiveScene):
     def construct(self):
         self.add(FullScreenRectangle())
-        title = TexText("``Proof'' \\#3", font_size=60)
+        title = OldTexText("``Proof'' \\#3", font_size=60)
         subtitle = Text("All triangles are isosceles", font_size=60, color=BLUE)
         title.to_edge(UP)
         subtitle.next_to(title, DOWN)
@@ -1724,7 +1724,7 @@ class Proof3Slide(InteractiveScene):
         A, B, C = tri.get_top(), tri.get_corner(DL), tri.get_corner(DR)
         AB = Line(A, B, color=YELLOW)
         AC = Line(A, C, color=TEAL)
-        eq = Tex("\\overline{AB}", " = ", "\\overline{AC}")
+        eq = OldTex("\\overline{AB}", " = ", "\\overline{AC}")
         eq.next_to(tri, UP)
         eq[0].match_color(AB)
         eq[2].match_color(AC)
@@ -1853,8 +1853,8 @@ class IntegralError(InteractiveScene):
         # Inequality
         error_label.generate_target()
         error_label.target.scale(0.7)
-        sum_squares = MTex("< \\sum \\Delta", isolate="\\Delta")
-        rhs = VGroup(Tex("="), DecimalNumber(num_decimal_places=4))
+        sum_squares = Tex("< \\sum \\Delta", isolate="\\Delta")
+        rhs = VGroup(OldTex("="), DecimalNumber(num_decimal_places=4))
         rhs.arrange(RIGHT)
         rhs[1].set_value(0.3417)
 
@@ -2054,8 +2054,8 @@ class FalseEuclidFollowup(InteractiveScene):
         for letter, vert in zip(labels, tri.get_vertices()):
             letter.next_to(vert, normalize(vert - tri.get_center_of_mass()), SMALL_BUFF)
 
-        equation = MTex("\\overline{AB} = \\overline{AC}")
-        equation2 = MTex("\\overline{AB} = \\overline{AC} = \\overline{BC}")
+        equation = Tex("\\overline{AB} = \\overline{AC}")
+        equation2 = Tex("\\overline{AB} = \\overline{AC} = \\overline{BC}")
         equation.next_to(labels, LEFT, aligned_edge=UP)
         equation2.move_to(equation).to_edge(LEFT)
         words = Text("All triangles are\nisosceles")
@@ -2100,7 +2100,7 @@ class FalseEuclidFollowup(InteractiveScene):
         # Three possibilities
         possibilities = VGroup(
             Text("1. This is true"),
-            TexText("2. Euclid's axioms $\\Rightarrow$ falsehoods")[0],
+            OldTexText("2. Euclid's axioms $\\Rightarrow$ falsehoods")[0],
             Text("3. This proof has a flaw"),
         )
         possibilities.arrange(DOWN, buff=1.0, aligned_edge=LEFT)
@@ -2182,7 +2182,7 @@ class SideSumTruthiness(InteractiveScene):
         self.add(AE, EC, A, E, C, *labels)
 
         # Equation
-        eq = Tex("\\overline{AE} + \\overline{EC} = \\overline{AC}", font_size=60)
+        eq = OldTex("\\overline{AE} + \\overline{EC} = \\overline{AC}", font_size=60)
         eq.to_corner(UR)
 
         labels = VGroup(
@@ -2230,14 +2230,14 @@ class PythagoreanProofSketch(InteractiveScene):
         b_square.move_to(big_square, DR)
         b_square.set_fill(RED_D, 0.75)
 
-        a_square_label = MTex("a^2").move_to(a_square)
-        b_square_label = MTex("b^2").move_to(b_square)
+        a_square_label = Tex("a^2").move_to(a_square)
+        b_square_label = Tex("b^2").move_to(b_square)
 
         # Pre triangle
         pre_tri = tris[0].copy()
         pre_tri.scale(1.5)
         pre_tri.shift(-pre_tri.get_center_of_mass())
-        side_labels = MTex("abc")
+        side_labels = Tex("abc")
         side_labels[0].next_to(pre_tri, LEFT)
         side_labels[1].next_to(pre_tri, DOWN)
         side_labels[2].next_to(pre_tri.get_center(), UR)
@@ -2246,7 +2246,7 @@ class PythagoreanProofSketch(InteractiveScene):
         self.add(side_labels)
 
         # Equation
-        equation = MTex("a^2 + b^2 = c^2", isolate=["a^2", "+", "b^2", "=", "c^2"])
+        equation = Tex("a^2 + b^2 = c^2", isolate=["a^2", "+", "b^2", "=", "c^2"])
         equation.next_to(big_square, UP).to_edge(UP)
 
         # A^2 and B^2
@@ -2292,7 +2292,7 @@ class PythagoreanProofSketch(InteractiveScene):
         c_square.rotate(math.atan(B / A))
         c_square.move_to(big_square)
         c_square.set_fill(RED_D, 0.7)
-        c_square_label = MTex("c^2").move_to(c_square)
+        c_square_label = Tex("c^2").move_to(c_square)
 
         self.play(LaggedStart(
             FadeOut(a_square_label),
@@ -2345,8 +2345,8 @@ class LastSideBySide(InteractiveScene):
         self.add(squares)
 
         titles = VGroup(
-            TexText("Given examples\\\\like this..."),
-            TexText("What's needed to\\\\make this rigorous?"),
+            OldTexText("Given examples\\\\like this..."),
+            OldTexText("What's needed to\\\\make this rigorous?"),
         )
         for title, square in zip(titles, squares):
             title.next_to(square, UP, buff=MED_LARGE_BUFF)

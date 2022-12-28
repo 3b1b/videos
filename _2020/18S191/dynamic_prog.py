@@ -57,7 +57,7 @@ class GreedyAlgorithm(Scene):
             value = box.value
             box_highlight = get_box_highlight(box)
             sum_term = VGroup(
-                Tex("+"),
+                OldTex("+"),
                 value.copy()
             )
             if i == 0:
@@ -92,7 +92,7 @@ class GreedyAlgorithm(Scene):
                 to_fade = next_highlights
 
         final_sum = VGroup(
-            Tex("="),
+            OldTex("="),
             DecimalNumber(
                 sum([np.round(st[1].get_value(), 1) for st in sum_terms]),
                 height=sum_terms.get_height(),
@@ -123,9 +123,9 @@ class RecrusiveExhaustiveSearch(Scene):
             row = VGroup()
             for term in terms[:-1]:
                 row.add(term)
-                row.add(Tex("+"))
+                row.add(OldTex("+"))
             row.add(terms[-1])
-            row.add(Tex("="))
+            row.add(OldTex("="))
             sum_term = DecimalNumber(sum([t.get_value() for t in terms]), num_decimal_places=1)
             sum_term.match_height(terms[0])
             sum_term.set_color(YELLOW)
@@ -196,8 +196,8 @@ class DynamicProgrammingApproachSearch(Scene):
             box.value.set_fill(opacity=0)
         self.add(new_boxes)
 
-        left_title = TexText("Energy")
-        right_title = TexText("Minimal energy to bottom")
+        left_title = OldTexText("Energy")
+        right_title = OldTexText("Minimal energy to bottom")
         left_title.next_to(boxes, UP)
         right_title.next_to(new_boxes, UP)
 

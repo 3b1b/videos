@@ -80,7 +80,7 @@ class QuizResult(PiCreatureScene):
 
         grades_mob = VGroup()
         for (pi, quiz, grade) in zip(all_students, all_quizzes, grades):
-            grade_mob = Tex(str(grade) + "/3")
+            grade_mob = OldTex(str(grade) + "/3")
             grade_mob.move_to(quiz)
             grades_mob.add(grade_mob)
 
@@ -166,7 +166,7 @@ class QuizResult(PiCreatureScene):
             grade_label.move_to(i * RIGHT)
             grade_labels.add(grade_label)
         grade_labels.next_to(all_students, DOWN)
-        out_of_label = TexText("out of 3", color = highlight_color)
+        out_of_label = OldTexText("out of 3", color = highlight_color)
         out_of_label.next_to(grade_labels, RIGHT, buff = MED_LARGE_BUFF)
         grade_labels.add(out_of_label)
         self.wait()
@@ -190,7 +190,7 @@ class QuizResult(PiCreatureScene):
         )
 
 
-        nb_students_label = TexText("\# of students", color = highlight_color)
+        nb_students_label = OldTexText("\# of students", color = highlight_color)
         nb_students_label.move_to(5 * RIGHT + 1 * UP)
         arrows = VGroup(*[
             Arrow(nb_students_label.get_left(), grade_hist.bars[i].get_center(),
@@ -200,7 +200,7 @@ class QuizResult(PiCreatureScene):
         self.wait()
         self.play(Write(nb_students_label), LaggedStartMap(GrowArrow,arrows))
 
-        percentage_label = TexText("\% of students", color = highlight_color)
+        percentage_label = OldTexText("\% of students", color = highlight_color)
         percentage_label.move_to(nb_students_label)
         percentages = hist_y_values / (nb_students_x * nb_students_y) * 100
         anims = []
@@ -228,7 +228,7 @@ class QuizResult(PiCreatureScene):
         self.wait()
         self.play(FadeIn(all_students))
 
-        prob_label = TexText("probability", color = highlight_color)
+        prob_label = OldTexText("probability", color = highlight_color)
         prob_label.move_to(percentage_label)
         self.wait()
         self.play(

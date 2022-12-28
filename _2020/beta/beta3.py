@@ -41,9 +41,9 @@ class RemindOfWeightedCoin(Scene):
 
         # Label as h
         brace = Brace(q_box, DOWN, buff=SMALL_BUFF)
-        h_label = Tex("h")
+        h_label = OldTex("h")
         h_label.next_to(brace, DOWN)
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(h_label, RIGHT)
         h_decimal = DecimalNumber(0.5)
         h_decimal.next_to(eq, RIGHT)
@@ -123,14 +123,14 @@ class RemindOfWeightedCoin(Scene):
 
         graph = always_redraw(get_graph)
 
-        area_label = TexText("Area = 1")
+        area_label = OldTexText("Area = 1")
         area_label.set_height(0.5)
         area_label.move_to(axes.c2p(0.5, 1))
 
         # pdf label
-        pdf_label = TexText("probability ", "density ", "function")
+        pdf_label = OldTexText("probability ", "density ", "function")
         pdf_label.next_to(axes.input_to_graph_point(0.5, graph), UP)
-        pdf_target_template = TexText("p", "d", "f")
+        pdf_target_template = OldTexText("p", "d", "f")
         pdf_target_template.next_to(axes.input_to_graph_point(0.7, graph), UR)
         pdf_label.generate_target()
         for part, letter2 in zip(pdf_label.target, pdf_target_template):
@@ -178,17 +178,17 @@ class RemindOfWeightedCoin(Scene):
         region_area_label.add_updater(update_ra_label)
 
         range_label = VGroup(
-            Tex("0.6 \\le"),
+            OldTex("0.6 \\le"),
             p_label[:4].copy(),
-            Tex("\\le 0.8"),
+            OldTex("\\le 0.8"),
         )
         for mob in range_label:
             mob.set_height(0.4)
         range_label.arrange(RIGHT, buff=SMALL_BUFF)
         pp_label = VGroup(
-            Tex("P("),
+            OldTex("P("),
             range_label,
-            Tex(")"),
+            OldTex(")"),
         )
         for mob in pp_label[::2]:
             mob.set_height(0.7)
@@ -319,7 +319,7 @@ class LastTimeWrapper(Scene):
         fs_rect = FullScreenFadeRectangle(fill_opacity=1, fill_color=GREY_E)
         self.add(fs_rect)
 
-        title = TexText("Last Time")
+        title = OldTexText("Last Time")
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -342,8 +342,8 @@ class ComplainAboutSimplisticModel(ExternallyAnimatedScene):
 class BayesianFrequentistDivide(Scene):
     def construct(self):
         # Setup Bayesian vs. Frequentist divide
-        b_label = TexText("Bayesian")
-        f_label = TexText("Frequentist")
+        b_label = OldTexText("Bayesian")
+        f_label = OldTexText("Frequentist")
         labels = VGroup(b_label, f_label)
         for label, vect in zip(labels, [LEFT, RIGHT]):
             label.set_height(0.7)
@@ -381,11 +381,11 @@ class BayesianFrequentistDivide(Scene):
             "alignment": "",
         }
         freq_list = VGroup(
-            TexText("1. State a null hypothesis $H_0$", **kw),
-            TexText("2. Choose a test statistic,\\\\", "$\\qquad$ compute its value", **kw),
-            TexText("3. Calculate a $p$-value", **kw),
-            TexText("4. Choose a significance value $\\alpha$", **kw),
-            TexText("5. Reject $H_0$ if $p$-value\\\\", "$\\qquad$ is less than $\\alpha$", **kw),
+            OldTexText("1. State a null hypothesis $H_0$", **kw),
+            OldTexText("2. Choose a test statistic,\\\\", "$\\qquad$ compute its value", **kw),
+            OldTexText("3. Calculate a $p$-value", **kw),
+            OldTexText("4. Choose a significance value $\\alpha$", **kw),
+            OldTexText("5. Reject $H_0$ if $p$-value\\\\", "$\\qquad$ is less than $\\alpha$", **kw),
         )
 
         freq_list.set_width(0.5 * FRAME_WIDTH - 1)
@@ -487,7 +487,7 @@ class ShowBayesianUpdating(Scene):
             coin = coins[x]
             is_heads = bool_values[x]
 
-            new_data_label = TexText("New data")
+            new_data_label = OldTexText("New data")
             new_data_label.set_height(0.3)
             arrow = Vector(0.5 * UP)
             arrow.next_to(coin, DOWN, SMALL_BUFF)
@@ -496,12 +496,12 @@ class ShowBayesianUpdating(Scene):
 
             if is_heads:
                 line = axes.get_graph(lambda x: x)
-                label = Tex("\\text{Scale by } x")
+                label = OldTex("\\text{Scale by } x")
                 likelihood = head_likelihood
                 n_heads += 1
             else:
                 line = axes.get_graph(lambda x: 1 - x)
-                label = Tex("\\text{Scale by } (1 - x)")
+                label = OldTex("\\text{Scale by } (1 - x)")
                 likelihood = tail_likelihood
                 n_tails += 1
             label.next_to(graph, UP)
@@ -518,7 +518,7 @@ class ShowBayesianUpdating(Scene):
             )
             scaled_graph.set_color(GREEN)
 
-            renorm_label = TexText("Renormalize")
+            renorm_label = OldTexText("Renormalize")
             renorm_label.move_to(label)
 
             new_graph = get_beta_graph(axes, n_heads, n_tails)
@@ -625,7 +625,7 @@ class ShowBayesianUpdating(Scene):
         region.set_fill(GREY_BROWN, 0.85)
         region.set_stroke(YELLOW, 1)
 
-        label95 = Tex("95\\%")
+        label95 = OldTex("95\\%")
         fix_percent(label95.family_members_with_points()[-1])
         label95.move_to(region, DOWN)
         label95.shift(0.5 * UP)
@@ -712,7 +712,7 @@ class ShowBayesianUpdating(Scene):
 
     def get_probability_label(self):
         head = get_coin("H")
-        p_label = Tex(
+        p_label = OldTex(
             "P(00) = ",
             tex_to_color_map={"00": WHITE}
         )
@@ -732,7 +732,7 @@ class ShowBayesianUpdating(Scene):
         prob_box.set_fill(GREY_D, 1)
         prob_box.set_stroke(WHITE, 2)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.move_to(prob_box)
         prob_box.add(q_marks)
 
@@ -754,7 +754,7 @@ class ShowBayesRule(Scene):
     def construct(self):
         hyp = "\\text{Hypothesis}"
         data = "\\text{Data}"
-        bayes = Tex(
+        bayes = OldTex(
             f"P({hyp} \\,|\\, {data})", "=", "{",
             f"P({data} \\,|\\, {hyp})", f"P({hyp})",
             "\\over", f"P({data})",
@@ -764,7 +764,7 @@ class ShowBayesRule(Scene):
             }
         )
 
-        title = TexText("Bayes' rule")
+        title = OldTexText("Bayes' rule")
         title.scale(2)
         title.to_edge(UP)
 
@@ -805,7 +805,7 @@ class ShowBayesRule(Scene):
         self.wait()
 
         hyp_word = bayes.get_part_by_tex(hyp)
-        example_hyp = TexText(
+        example_hyp = OldTexText(
             "For example,\\\\",
             "$0.9 < s < 0.99$",
         )
@@ -813,7 +813,7 @@ class ShowBayesRule(Scene):
         example_hyp.next_to(hyp_word, DOWN, buff=1.5)
 
         data_word = bayes.get_part_by_tex(data)
-        example_data = Tex(
+        example_data = OldTex(
             "48\\,", CMARK_TEX,
             "\\,2\\,", XMARK_TEX,
         )
@@ -859,7 +859,7 @@ class VisualizeBayesRule(Scene):
             num_decimal_places=1,
         )
 
-        p_label = Tex(
+        p_label = OldTex(
             "P(s \\,|\\, \\text{data})",
             tex_to_color_map={
                 "s": YELLOW,
@@ -989,7 +989,7 @@ class VisualizeBayesRule(Scene):
         label = Integer(0)
         label.set_height(0.5)
         label.next_to(self.p_label[1], DOWN, LARGE_BUFF)
-        unit = Tex("\\%")
+        unit = OldTex("\\%")
         unit.match_height(label)
         fix_percent(unit.family_members_with_points()[0])
         always(unit.next_to, label, RIGHT, SMALL_BUFF)
@@ -1014,7 +1014,7 @@ class VisualizeBayesRule(Scene):
         # Show prior label
         p_label = self.p_label
         given_data = p_label[2:4]
-        prior_label = Tex("P(s)", tex_to_color_map={"s": YELLOW})
+        prior_label = OldTex("P(s)", tex_to_color_map={"s": YELLOW})
         prior_label.match_height(p_label)
         prior_label.move_to(p_label, DOWN, LARGE_BUFF)
 
@@ -1095,7 +1095,7 @@ class VisualizeBayesRule(Scene):
         self.remove(highlighted_bars)
 
         # Nmae as prior
-        prior_name = TexText("Prior", " distribution")
+        prior_name = OldTexText("Prior", " distribution")
         prior_name.set_height(0.6)
         prior_name.next_to(prior_label, DOWN, LARGE_BUFF)
 
@@ -1116,7 +1116,7 @@ class VisualizeBayesRule(Scene):
         self.play(Restore(bars))
         self.wait()
 
-        uniform_name = TexText("Uniform")
+        uniform_name = OldTexText("Uniform")
         uniform_name.match_height(prior_name)
         uniform_name.move_to(prior_name, DL)
         uniform_name.shift(RIGHT)
@@ -1141,14 +1141,14 @@ class VisualizeBayesRule(Scene):
             p_label[1].deepcopy(),
             p_label[4].deepcopy(),
         )
-        eq = Tex("=")
-        likelihood_label = Tex(
+        eq = OldTex("=")
+        likelihood_label = OldTex(
             "P(", "\\text{data}", "|", "s", ")",
         )
         likelihood_label.set_color_by_tex("data", GREEN)
         likelihood_label.set_color_by_tex("s", YELLOW)
         over = Line(LEFT, RIGHT)
-        p_data_label = TexText("P(", "\\text{data}", ")")
+        p_data_label = OldTexText("P(", "\\text{data}", ")")
         p_data_label.set_color_by_tex("data", GREEN)
 
         for mob in [eq, likelihood_label, over, p_data_label]:
@@ -1351,7 +1351,7 @@ class VisualizeBayesRule(Scene):
         bar95.target.next_to(bar95, UP, LARGE_BUFF)
         bar95.target.set_stroke(BLUE, 3)
 
-        ex_label = Tex("s", "=", "0.95")
+        ex_label = OldTex("s", "=", "0.95")
         ex_label.set_color(YELLOW)
         ex_label.next_to(bar95.target, DOWN, submobject_to_align=ex_label[-1])
 
@@ -1439,7 +1439,7 @@ class VisualizeBayesRule(Scene):
         self.wait()
 
         # Rescale
-        ex_p_label = Tex(
+        ex_p_label = OldTex(
             "P(s = 0.95 | 00000000) = ",
             tex_to_color_map={
                 "s = 0.95": YELLOW,
@@ -1540,8 +1540,8 @@ class UniverseOf50Percent(UniverseOf95Percent):
 class OpenAndCloseAsideOnPdfs(Scene):
     def construct(self):
         labels = VGroup(
-            TexText("$\\langle$", "Aside on", " pdfs", "$\\rangle$"),
-            TexText("$\\langle$/", "Aside on", " pdfs", "$\\rangle$"),
+            OldTexText("$\\langle$", "Aside on", " pdfs", "$\\rangle$"),
+            OldTexText("$\\langle$/", "Aside on", " pdfs", "$\\rangle$"),
         )
         labels.set_width(FRAME_WIDTH / 2)
         for label in labels:
@@ -1661,7 +1661,7 @@ class BayesRuleWithPdf(ShowLimitToPdf):
 
     def get_formula(self, lowercase=False):
         p_sym = "p" if lowercase else "P"
-        bayes = Tex(
+        bayes = OldTex(
             p_sym + "({s} \\,|\\, \\text{data})", "=",
             "{" + p_sym + "({s})",
             "P(\\text{data} \\,|\\, {s})",
@@ -1681,7 +1681,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
     def construct(self):
         # Setup
         axes = self.get_axes()
-        x_label = Tex("x")
+        x_label = OldTex("x")
         x_label.next_to(axes.x_axis.get_end(), UR, MED_SMALL_BUFF)
         axes.add(x_label)
 
@@ -1732,7 +1732,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
             region.get_corner(UL),
             region.get_corner(UR),
         )
-        func_label = Tex("f(x) =", "1")
+        func_label = OldTex("f(x) =", "1")
         func_label.next_to(graph, UP)
 
         self.play(
@@ -1747,7 +1747,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         coin = coins[0]
         arrow = Vector(0.5 * UP)
         arrow.next_to(coin, DOWN, SMALL_BUFF)
-        data_label = TexText("New data")
+        data_label = OldTexText("New data")
         data_label.set_height(0.25)
         data_label.next_to(arrow, DOWN)
         data_label.shift(0.5 * RIGHT)
@@ -1760,7 +1760,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         self.wait()
 
         # Show Bayes rule
-        bayes = Tex(
+        bayes = OldTex(
             "p({x} | \\text{data})", "=",
             "p({x})",
             "{P(\\text{data} | {x})",
@@ -1779,7 +1779,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         likelihood_rect.save_state()
         p_data_rect = SurroundingRectangle(p_data, buff=0.05)
 
-        likelihood_x_label = Tex("x")
+        likelihood_x_label = OldTex("x")
         likelihood_x_label.next_to(likelihood_rect, UP)
 
         self.play(FadeInFromDown(bayes))
@@ -1791,7 +1791,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         self.wait()
 
         # Scale by x
-        times_x = Tex("\\cdot \\, x")
+        times_x = OldTex("\\cdot \\, x")
         times_x.next_to(func_label, RIGHT, buff=0.2)
 
         new_graph = axes.get_graph(lambda x: x)
@@ -1830,7 +1830,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         self.wait()
 
         one = func_label[1]
-        two = Tex("2")
+        two = OldTex("2")
         two.move_to(one, LEFT)
 
         self.play(
@@ -1848,7 +1848,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         self.play(func_label.shift, 0.5 * UP)
         self.wait()
 
-        const = Tex("C")
+        const = OldTex("C")
         const.scale(0.9)
         const.move_to(two, DR)
         const.shift(0.07 * RIGHT)
@@ -1885,8 +1885,8 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
         self.play(FadeOut(to_prior_arrow))
 
         # Scale by (1 - x)
-        eq_1mx = Tex("(1 - x)")
-        dot = Tex("\\cdot")
+        eq_1mx = OldTex("(1 - x)")
+        dot = OldTex("\\cdot")
         rhs_part = VGroup(dot, eq_1mx)
         rhs_part.arrange(RIGHT, buff=0.2)
         rhs_part.move_to(func_label, RIGHT)
@@ -1995,7 +1995,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
             self.wait()
 
             if coin is coins[4]:
-                area_label = TexText("Area = 1")
+                area_label = OldTexText("Area = 1")
                 area_label.move_to(axes.c2p(0.6, 0.8))
                 self.play(GrowFromPoint(
                     area_label, const.get_center()
@@ -2004,7 +2004,7 @@ class TalkThroughCoinExample(ShowBayesianUpdating):
 
 class PDefectEqualsQmark(Scene):
     def construct(self):
-        label = Tex(
+        label = OldTex(
             "P(\\text{Defect}) = ???",
             tex_to_color_map={
                 "\\text{Defect}": RED,
@@ -2020,7 +2020,7 @@ class UpdateOnceWithBinomial(TalkThroughCoinExample):
         # time, refactor this properly
         # Setup
         axes = self.get_axes()
-        x_label = Tex("x")
+        x_label = OldTex("x")
         x_label.next_to(axes.x_axis.get_end(), UR, MED_SMALL_BUFF)
         axes.add(x_label)
 
@@ -2052,7 +2052,7 @@ class UpdateOnceWithBinomial(TalkThroughCoinExample):
         self.add(region, graph)
 
         # Show Bayes rule
-        bayes = Tex(
+        bayes = OldTex(
             "p({x} | \\text{data})", "=",
             "p({x})",
             "{P(\\text{data} | {x})",
@@ -2091,7 +2091,7 @@ class UpdateOnceWithBinomial(TalkThroughCoinExample):
             str(nh): BLUE,
             str(nt): RED,
         }
-        binom_formula = Tex(
+        binom_formula = OldTex(
             "{10 \\choose ", str(nh), "}",
             "x^{", str(nh), "}",
             "(1-x)^{" + str(nt) + "}",
@@ -2110,14 +2110,14 @@ class UpdateOnceWithBinomial(TalkThroughCoinExample):
         self.wait()
 
         # New plot
-        rhs = Tex(
+        rhs = OldTex(
             "C \\cdot",
             "x^{", str(nh), "}",
             "(1-x)^{", str(nt), "}",
             tex_to_color_map=t2c
         )
         rhs.next_to(bayes[:5], DOWN, LARGE_BUFF, aligned_edge=LEFT)
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.rotate(90 * DEGREES)
         eq.next_to(bayes[:5], DOWN, buff=0.35)
 

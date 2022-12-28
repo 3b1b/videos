@@ -5,7 +5,7 @@ class PrimePiEPttern(Scene):
     def construct(self):
         self.add(FullScreenFadeRectangle(fill_color=WHITE, fill_opacity=1))
 
-        tex0 = Tex(
+        tex0 = OldTex(
             "\\frac{1}{1^2}", "+"
             "\\frac{1}{2^2}", "+"
             "\\frac{1}{3^2}", "+"
@@ -25,7 +25,7 @@ class PrimePiEPttern(Scene):
         self.alter_tex(tex0)
         # self.add(tex0)
 
-        tex1 = Tex(
+        tex1 = OldTex(
             "\\underbrace{\\frac{1}{1^2}}_{\\text{kill}}", "+",
             "\\underbrace{\\frac{1}{2^2}}_{\\text{keep}}", "+",
             "\\underbrace{\\frac{1}{3^2}}_{\\text{keep}}", "+",
@@ -50,7 +50,7 @@ class PrimePiEPttern(Scene):
         self.add(tex1)
         return
 
-        # tex1 = Tex(
+        # tex1 = OldTex(
         #     "\\underbrace{\\frac{1}{1}}_{\\text{kill}}", "+",
         #     "\\underbrace{\\frac{-1}{3}}_{\\text{keep}}", "+",
         #     "\\underbrace{\\frac{1}{5}}_{\\text{keep}}", "+",
@@ -93,7 +93,7 @@ class PrimePiEPttern(Scene):
 
         # self.add(tex1)
 
-        # tex2 = Tex(
+        # tex2 = OldTex(
         #     "\\frac{-1}{3}", "+",
         #     "\\frac{1}{5}", "+",
         #     "\\frac{-1}{7}", "+",
@@ -127,7 +127,7 @@ class PrimePiEPttern(Scene):
         #     tex2[2 * 13],
         # ).set_color(BLUE_D)
 
-        tex2 = Tex(
+        tex2 = OldTex(
             "\\frac{1}{2^2}", "+",
             "\\frac{1}{3^2}", "+",
             "\\frac{1}{2}", "\\cdot", "\\frac{1}{4^2}", "+",
@@ -161,7 +161,7 @@ class PrimePiEPttern(Scene):
         ).set_color(BLUE_D)
         self.add(tex2)
 
-        exp = Tex(
+        exp = OldTex(
             "e^{\\left(",
             "0" * 30,
             "\\right)}",

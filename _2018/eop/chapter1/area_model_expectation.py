@@ -7,7 +7,7 @@ class IllustrateAreaModelExpectation(Scene):
 
     def construct(self):
 
-        formula = Tex("E[X] = \sum_{i=1}^N p_i x_i").move_to(3 * LEFT + UP)
+        formula = OldTex("E[X] = \sum_{i=1}^N p_i x_i").move_to(3 * LEFT + UP)
         self.play(Write(formula))
 
 
@@ -44,7 +44,7 @@ class IllustrateAreaModelExpectation(Scene):
         # add x labels (braces)
         for (p,string,bar) in zip(probabilities, prob_strings,hist.bars):
             brace = Brace(bar, DOWN, buff = 0.1)
-            p_label = Tex(string).next_to(brace, DOWN, buff = SMALL_BUFF).scale(0.7)
+            p_label = OldTex(string).next_to(brace, DOWN, buff = SMALL_BUFF).scale(0.7)
             group = VGroup(brace, p_label)
             braces.add(brace)
             p_labels.add(p_label)
@@ -74,12 +74,12 @@ class IllustrateAreaModelExpectation(Scene):
         self.wait()
 
         average_brace = Brace(averaged_hist, RIGHT, buff = 0.1)
-        average_label = Tex(str(y_average)).scale(0.7)
+        average_label = OldTex(str(y_average)).scale(0.7)
         average_label.next_to(average_brace, RIGHT, SMALL_BUFF)
         average_group = VGroup(average_brace, average_label)
 
         one_brace = Brace(averaged_hist, DOWN, buff = 0.1)
-        one_p_label = Tex(str(1)).next_to(one_brace, DOWN, buff = SMALL_BUFF).scale(0.7)
+        one_p_label = OldTex(str(1)).next_to(one_brace, DOWN, buff = SMALL_BUFF).scale(0.7)
         one_group = VGroup(one_brace, one_p_label)
 
         self.play(

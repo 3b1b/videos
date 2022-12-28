@@ -33,7 +33,7 @@ class ILearnedSomething(TeacherStudentsScene):
         # Test
         implication = VGroup(
             Text("Making\nvisuals"),
-            Tex(R"\Rightarrow", font_size=60),
+            OldTex(R"\Rightarrow", font_size=60),
             Text("Deeper\nunderstanding")
         )
         implication.arrange(RIGHT, buff=0.4)
@@ -57,9 +57,9 @@ class NormalFunctionPreview(InteractiveScene):
 
         curve = axes2d.get_graph(lambda x: math.exp(-x**2))
         curve.set_stroke(BLUE)
-        label = Tex("e^{-x^2}", font_size=60)
+        label = OldTex("e^{-x^2}", font_size=60)
         label.next_to(curve.get_top(), UR).shift(RIGHT)
-        label3d = Tex("e^{-x^2 - y^2}", font_size=60)
+        label3d = OldTex("e^{-x^2 - y^2}", font_size=60)
         label3d.move_to(label, DL)
 
         VGroup(axes2d, curve, label, label3d).rotate(PI / 2, RIGHT, about_point=axes3d.get_origin())
@@ -225,7 +225,7 @@ class MarioConvolutionLabel(BoxBlurMario):
         ka.clear_updaters()
         pa.set_stroke(width=0.1)
 
-        expr = VGroup(pa, Tex("*", font_size=72), ka)
+        expr = VGroup(pa, OldTex("*", font_size=72), ka)
         for arr in expr[::2]:
             arr.set_height(1.5)
 
@@ -345,11 +345,11 @@ class MentionONSquared(InteractiveScene):
         # Blah
         morty = Mortimer(height=2)
         kw = dict(tex_to_color_map={"{N}": YELLOW})
-        bigO = MTex(R"\mathcal{O}({N}^2)", **kw)
+        bigO = Tex(R"\mathcal{O}({N}^2)", **kw)
         explanation = VGroup(
             Text("# Operations"),
-            Tex("=").rotate(PI / 2),
-            Tex(
+            OldTex("=").rotate(PI / 2),
+            OldTex(
                 R"\text{const}",
                 R"\cdot {N}^2 +",
                 R"\left(\substack{\text{stuff asymptotically} \\ \text{smaller than $N^2$}}\right)",
@@ -404,7 +404,7 @@ class DumbIdea(TeacherStudentsScene):
 
         # Samples
         self.student_says(
-            TexText(R"Calculating the samples\\is already $\mathcal{O}(N^2)$"),
+            OldTexText(R"Calculating the samples\\is already $\mathcal{O}(N^2)$"),
             target_mode="concentrating",
             look_at=self.screen,
             added_anims=[stds[0].change("erm"), stds[1].change("hesitant")]
@@ -484,7 +484,7 @@ class GenericScreen(VideoWrapper):
 
 class EnthusiasticAboutRunTime(TeacherStudentsScene):
     def construct(self):
-        run_time = Tex(R"\mathcal{O}\big(N \log(N)\big)")
+        run_time = OldTex(R"\mathcal{O}\big(N \log(N)\big)")
         run_time.move_to(self.hold_up_spot, DOWN)
         self.play(
             self.teacher.change("raise_right_hand"),

@@ -39,7 +39,7 @@ def get_covid_clipboard(disease_name="SARS\\\\CoV-2", sign="+", report="Detected
     clipboard.set_fill(interpolate_color(GREY_BROWN, WHITE, 0.5), 1)
     clipboard.set_width(2.5)
 
-    result = TexText(
+    result = OldTexText(
         sign + "\\\\",
         disease_name + "\\\\",
         report,
@@ -78,7 +78,7 @@ class Thumbnail1(Scene):
             rect = SurroundingRectangle(icon, buff=0.01)
             rect.set_stroke(GREEN, 5)
             icon.set_opacity(1)
-            plus = Tex("+")
+            plus = OldTex("+")
             plus.set_color(GREEN)
             plus.set_width(rect.get_width() / 2)
             plus.move_to(rect.get_corner(UR))
@@ -89,7 +89,7 @@ class Thumbnail1(Scene):
             icon.set_stroke(background=True)
 
         for pop in pre_pop, post_pop:
-            colon = Tex(":", font_size=96)
+            colon = OldTex(":", font_size=96)
             colon.move_to(pop[:10])
             pop.add(colon)
 
@@ -114,7 +114,7 @@ class Thumbnail1(Scene):
         self.add(clipboard)
         #
 
-        new_bayes_rule = TexText(
+        new_bayes_rule = OldTexText(
             "Post = (Prior)(Bayes factor)",
             tex_to_color_map={
                 "(Prior)": YELLOW,
@@ -126,7 +126,7 @@ class Thumbnail1(Scene):
 
         self.add(new_bayes_rule)
 
-        new_rule_words = TexText("Bayes rule redesigned")
+        new_rule_words = OldTexText("Bayes rule redesigned")
         new_rule_words.scale(1.75)
         new_rule_words.next_to(new_bayes_rule, DOWN, MED_LARGE_BUFF)
         new_rule_words.set_fill(GREY_A)
@@ -136,11 +136,11 @@ class Thumbnail1(Scene):
         return
 
         # Old
-        title = TexText("Interpreting medical tests", font_size=90)
+        title = OldTexText("Interpreting medical tests", font_size=90)
         title.to_edge(UP)
         self.add(title)
 
-        factor = Tex(
+        factor = OldTex(
             "{P(+ \\,|\\, \\text{Virus}) \\over P(+ \\,|\\, \\text{No virus})}",
             tex_to_color_map={
                 "+": GREEN,
@@ -189,7 +189,7 @@ class Thumbnail2(Scene):
         title.set_stroke(BLACK, 25, background=True)
         self.add(title)
 
-        formula = Tex(
+        formula = OldTex(
             "O(H | E)", "=", "O(H)", "{P(E | H) \\over P(E | \\neg H)",
             tex_to_color_map={"H": YELLOW, "E": BLUE}
         )
@@ -254,12 +254,12 @@ class Thumbnail3(Scene):
         # Title
         words = VGroup(
             VGroup(
-                Tex("90\\%").scale(1.8).set_color(GREEN),
-                TexText("test accuracy", alignment="")
+                OldTex("90\\%").scale(1.8).set_color(GREEN),
+                OldTexText("test accuracy", alignment="")
             ).arrange(DOWN, aligned_edge=LEFT, buff=SMALL_BUFF),
             VGroup(
-                Tex("9\\%").scale(1.8).set_color(RED),
-                TexText("chance it's true", alignment="")
+                OldTex("9\\%").scale(1.8).set_color(RED),
+                OldTexText("chance it's true", alignment="")
             ).arrange(DOWN, aligned_edge=LEFT, buff=SMALL_BUFF),
             Text("...how?")
         )
@@ -281,7 +281,7 @@ class Thumbnail4(Scene):
         self.add(top_words)
 
         # is_not = Text("is NOT")
-        is_not = Tex("\\ne")
+        is_not = OldTex("\\ne")
         is_not.set_color(RED)
         is_not.set_height(2.5)
         is_not.set_stroke(RED, 8)
@@ -302,10 +302,10 @@ class Thumbnail4(Scene):
 class MathAsDesign(Scene):
     def construct(self):
         # Setup
-        design_word = TexText("Designed?", font_size=72)
+        design_word = OldTexText("Designed?", font_size=72)
         design_word.to_edge(UP)
 
-        e_formula = Tex(
+        e_formula = OldTex(
             "e", "^{\\pi", "i}", "=", "-1",
             font_size=96,
         )
@@ -313,7 +313,7 @@ class MathAsDesign(Scene):
         e_formula[2].set_color(YELLOW)
         e_formula[4].set_color(BLUE)
 
-        l_formula = Tex(
+        l_formula = OldTex(
             "\\sum_{n = 0}^{\\infty} \\frac{(-1)^n}{2n + 1} = \\frac{\\pi}{4}",
             font_size=72,
         )
@@ -333,11 +333,11 @@ class MathAsDesign(Scene):
 
         alt_l_formula = VGroup(
             VGroup(
-                Tex("\\pm").set_height(0.8),
-                Tex("k \\text{ odd}", font_size=36)
+                OldTex("\\pm").set_height(0.8),
+                OldTex("k \\text{ odd}", font_size=36)
             ).arrange(DOWN, SMALL_BUFF),
-            Tex("\\frac{1}{k}"),
-            Tex("="),
+            OldTex("\\frac{1}{k}"),
+            OldTex("="),
             VGroup(
                 Sector(
                     angle=PI / 2,
@@ -376,13 +376,13 @@ class MathAsDesign(Scene):
         )
 
         alt_e_formula = VGroup(
-            TexText("exp", font_size=96),
-            Tex("(", font_size=96),
+            OldTexText("exp", font_size=96),
+            OldTex("(", font_size=96),
             Arrow(0.5 * RIGHT, 0.5 * LEFT, path_arc=PI, buff=0, color=GREY_B),
             Dot(radius=0.05, color=WHITE),
             Vector(0.75 * UP, fill_color=YELLOW),
-            Tex(")", font_size=96),
-            Tex("=", font_size=96),
+            OldTex(")", font_size=96),
+            OldTex("=", font_size=96),
             Vector(LEFT, fill_color=BLUE),
         )
         alt_e_formula.arrange(RIGHT, buff=MED_SMALL_BUFF)
@@ -417,7 +417,7 @@ class MathAsDesign(Scene):
 class NewBayesRuleAndMedicalTests(Scene):
     def construct(self):
         # Mention paradox
-        paradox_name = TexText("Medical Test Paradox", font_size=60)
+        paradox_name = OldTexText("Medical Test Paradox", font_size=60)
         paradox_name.to_corner(UL)
         paradox_name.shift(MED_SMALL_BUFF * DOWN)
         paradox_line = Underline(paradox_name)
@@ -442,7 +442,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         self.wait()
 
         # Show Bayes rule
-        bayes_title = TexText("Bayes' rule", font_size=60)
+        bayes_title = OldTexText("Bayes' rule", font_size=60)
         bayes_title.move_to(paradox_name, UL)
         bayes_title.to_edge(RIGHT, buff=1.5)
         bayes_underline = Underline(bayes_title)
@@ -450,7 +450,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         bayes_underline.set_stroke(GREY_B, 2)
         bayes_underline.match_y(paradox_line)
 
-        formula = Tex(
+        formula = OldTex(
             "P(H|E) = {P(H)P(E|H) \\over P(E)}",
             tex_to_color_map={
                 "H": YELLOW,
@@ -467,7 +467,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         self.wait()
 
         # Show high accuracy
-        accuracy_words = TexText("High accuracy")
+        accuracy_words = OldTexText("High accuracy")
         accuracy_words.next_to(paradox_line, DOWN, MED_LARGE_BUFF)
         accuracy_words.set_color(GREEN)
 
@@ -521,7 +521,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         self.wait()
 
         # Show low predictive value
-        prob_expression = Tex(
+        prob_expression = OldTex(
             "P(\\text{Sick} \\text{ given } +) = ",
             tex_to_color_map={
                 "+": BLUE,
@@ -563,7 +563,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         )
 
         # Accurate does not imply predictive
-        implication = TexText(
+        implication = OldTexText(
             "Accurate ", "$\\Rightarrow$", " Predictive",
         )
         implication.set_color_by_tex("Accurate", GREEN)
@@ -599,7 +599,7 @@ class NewBayesRuleAndMedicalTests(Scene):
         self.wait()
 
         # Alternate framing
-        odds_formula = Tex(
+        odds_formula = OldTex(
             "O(H|E) = O(H){P(E|H) \\over P(E|\\neg H)}",
             tex_to_color_map={
                 "H": YELLOW,
@@ -613,7 +613,7 @@ class NewBayesRuleAndMedicalTests(Scene):
 
         bf_rect = SurroundingRectangle(odds_formula[7:], buff=0.025)
         bf_rect.set_stroke(TEAL, 2)
-        bf_name = TexText("Bayes\\\\factor", font_size=36)
+        bf_name = OldTexText("Bayes\\\\factor", font_size=36)
         bf_name.match_color(bf_rect)
         bf_name.next_to(bf_rect, DOWN, buff=0.2)
         odds_formula.add(bf_rect, bf_name)
@@ -691,7 +691,7 @@ class NewBayesRuleAndMedicalTests(Scene):
 
         # Unprocessed
         # Show rule
-        formula = Tex(
+        formula = OldTex(
             "P(H|E) = {P(H)P(E|H) \\over P(E)}",
             tex_to_color_map={
                 "H": YELLOW,
@@ -701,12 +701,12 @@ class NewBayesRuleAndMedicalTests(Scene):
         )
 
         h_part = formula.get_part_by_tex("H")
-        hyp_word = TexText("Hypothesis", color=YELLOW)
+        hyp_word = OldTexText("Hypothesis", color=YELLOW)
         hyp_word.next_to(h_part, UP, LARGE_BUFF)
         hyp_arrow = Arrow(hyp_word.get_bottom(), h_part.get_top(), buff=0.1)
 
         e_part = formula.get_part_by_tex("E")
-        ev_word = TexText("Evidence", color=BLUE)
+        ev_word = OldTexText("Evidence", color=BLUE)
         ev_word.next_to(e_part, DOWN, LARGE_BUFF)
         ev_arrow = Arrow(ev_word.get_top(), e_part.get_bottom(), buff=0.1)
 
@@ -819,7 +819,7 @@ class NewBayesRuleAndMedicalTests(Scene):
 class SamplePopulationBreastCancer(Scene):
     def construct(self):
         # Introduce population
-        title = TexText(
+        title = OldTexText(
             "Sample of ", "$1{,}000$", " women",
             font_size=72,
         )
@@ -873,11 +873,11 @@ class SamplePopulationBreastCancer(Scene):
         negative_cases.target.set_height(rects[1].get_height() * 0.8)
         negative_cases.target.move_to(rects[1])
 
-        positive_words = TexText(r"1\% ", "Have breast cancer", font_size=36)
+        positive_words = OldTexText(r"1\% ", "Have breast cancer", font_size=36)
         positive_words.set_color(YELLOW)
         positive_words.next_to(rects[0], UP, SMALL_BUFF)
 
-        negative_words = TexText(r"99\% ", "Do not have cancer", font_size=36)
+        negative_words = OldTexText(r"99\% ", "Do not have cancer", font_size=36)
         negative_words.set_color(GREY_B)
         negative_words.next_to(rects[1], UP, SMALL_BUFF)
 
@@ -911,10 +911,10 @@ class SamplePopulationBreastCancer(Scene):
         self.wait()
 
         # Test results on cancer population
-        tpr_words = TexText("9 True positives", font_size=36)
-        fnr_words = TexText("1 False negative", font_size=36)
-        tnr_words = TexText("901 True negatives", font_size=36)
-        fpr_words = TexText("89 False positives", font_size=36)
+        tpr_words = OldTexText("9 True positives", font_size=36)
+        fnr_words = OldTexText("1 False negative", font_size=36)
+        tnr_words = OldTexText("901 True negatives", font_size=36)
+        fpr_words = OldTexText("89 False positives", font_size=36)
 
         tpr_words.set_color(GREEN_B)
         fnr_words.set_color(RED_D)
@@ -929,14 +929,14 @@ class SamplePopulationBreastCancer(Scene):
 
         signs = VGroup()
         for woman in tp_cases:
-            sign = Tex("+")
+            sign = OldTex("+")
             sign.set_color(GREEN_B)
             sign.match_height(woman)
             sign.next_to(woman, RIGHT, SMALL_BUFF)
             woman.sign = sign
             signs.add(sign)
         for woman in fn_cases:
-            sign = Tex("-")
+            sign = OldTex("-")
             sign.set_color(RED)
             sign.match_width(signs[0])
             sign.next_to(woman, RIGHT, SMALL_BUFF)
@@ -1072,7 +1072,7 @@ class SamplePopulationBreastCancer(Scene):
         self.wait()
 
         # Final equation
-        equation = Tex(
+        equation = OldTex(
             "P(",
             "\\text{Have cancer }",
             "|",
@@ -1097,7 +1097,7 @@ class SamplePopulationBreastCancer(Scene):
         frame = self.camera.frame
         frame.save_state()
 
-        ppv_words = TexText(
+        ppv_words = OldTexText(
             "Positive\\\\",
             "Predictive\\\\",
             "Value\\\\",
@@ -1107,7 +1107,7 @@ class SamplePopulationBreastCancer(Scene):
         for word in ppv_words:
             word[0].set_color(BLUE)
 
-        ppv_rhs = Tex(
+        ppv_rhs = OldTex(
             "={\\text{TP} \\over \\text{TP} + \\text{FP}}",
             tex_to_color_map={
                 "\\text{TP}": GREEN_B,
@@ -1160,7 +1160,7 @@ class SamplePopulationBreastCancer(Scene):
         ))
 
         # Sensitivity
-        sens_eq = Tex(
+        sens_eq = OldTex(
             "\\text{Sensitivity}",
             "= {9 \\over 10}",
             "= 90\\%"
@@ -1168,12 +1168,12 @@ class SamplePopulationBreastCancer(Scene):
         sens_eq.next_to(rects[0], LEFT, MED_LARGE_BUFF, aligned_edge=UP)
         sens_eq.shift(DOWN)
 
-        fnr_eq = Tex(
+        fnr_eq = OldTex(
             "\\text{False Negative Rate}", "= 10\\%"
         )
         fnr_eq.set_color(RED)
         fnr_eq.scale(0.9)
-        equiv = Tex("\\Leftrightarrow")
+        equiv = OldTex("\\Leftrightarrow")
         equiv.scale(1.5)
         equiv.rotate(90 * DEGREES)
         equiv.next_to(sens_eq, DOWN, MED_LARGE_BUFF)
@@ -1208,7 +1208,7 @@ class SamplePopulationBreastCancer(Scene):
         )
 
         # Specificity
-        spec_eq = Tex(
+        spec_eq = OldTex(
             "\\text{Specificity}",
             "= {901 \\over 990}",
             "\\approx 91\\%"
@@ -1216,12 +1216,12 @@ class SamplePopulationBreastCancer(Scene):
         spec_eq.next_to(rects[1], RIGHT, MED_LARGE_BUFF, aligned_edge=DOWN)
         spec_eq.shift(UP)
 
-        fpr_eq = Tex(
+        fpr_eq = OldTex(
             "\\text{False Positive Rate}", "= 9\\%"
         )
         fpr_eq.set_color(GREEN)
         fpr_eq.scale(0.9)
-        equiv2 = Tex("\\Leftrightarrow")
+        equiv2 = OldTex("\\Leftrightarrow")
         equiv2.scale(1.5)
         equiv2.rotate(90 * DEGREES)
         equiv2.next_to(spec_eq, UP, MED_LARGE_BUFF)
@@ -1351,13 +1351,13 @@ class AskWhatTheParadoxIs(TeacherStudentsScene):
         # Test accuracy split
         lower_words = self.teacher.bubble.content[1].copy()
 
-        top_words = TexText("Test Accuracy", font_size=72)
+        top_words = OldTexText("Test Accuracy", font_size=72)
         top_words.to_corner(UR)
         top_words.shift(LEFT)
 
         sens_spec = VGroup(
-            TexText("Sensitivity", color=YELLOW),
-            TexText("Specificity", color=BLUE_D),
+            OldTexText("Sensitivity", color=YELLOW),
+            OldTexText("Specificity", color=BLUE_D),
         )
         sens_spec.scale(1)
         sens_spec.arrange(RIGHT, buff=1.0)
@@ -1398,9 +1398,9 @@ class MedicalTestsMatter(Scene):
         clipboard.set_y(0)
 
         clipboard_words = VGroup(
-            Tex("-", color=RED),
-            TexText("SARS\\\\CoV-2"),
-            TexText("Not Detected", color=RED),
+            OldTex("-", color=RED),
+            OldTexText("SARS\\\\CoV-2"),
+            OldTexText("Not Detected", color=RED),
         )
         for m1, m2 in zip(clipboard_words, clipboard[2]):
             m1.replace(m2, 0)
@@ -1418,7 +1418,7 @@ class MedicalTestsMatter(Scene):
         )
         self.play(Blink(randy))
 
-        question = TexText("What does\\\\really this mean?")
+        question = OldTexText("What does\\\\really this mean?")
         question.next_to(clipboard, RIGHT, buff=1.5)
         question.shift(1.5 * UP)
         q_arrow = Arrow(
@@ -1441,13 +1441,13 @@ class MedicalTestsMatter(Scene):
 class GigerenzerSession(Scene):
     def construct(self):
         # Gigerenzer intro
-        years = TexText("2006-2007", font_size=72)
+        years = OldTexText("2006-2007", font_size=72)
         years.to_edge(UP)
 
         image = ImageMobject("Gerd_Gigerenzer")
         image.set_height(4)
         image.flip()
-        name = TexText("Gerd Gigerenzer", font_size=72)
+        name = OldTexText("Gerd Gigerenzer", font_size=72)
         name.next_to(image, DOWN)
         image_group = Group(image, name)
 
@@ -1460,7 +1460,7 @@ class GigerenzerSession(Scene):
         self.wait()
 
         # Seminar words
-        title = TexText("Statistics Seminar", font_size=72)
+        title = OldTexText("Statistics Seminar", font_size=72)
         title.to_edge(UP)
 
         title_underline = Underline(title, buff=SMALL_BUFF)
@@ -1477,7 +1477,7 @@ class GigerenzerSession(Scene):
         # Docs
         doctors = ImageMobject("doctor_pair", height=2)
         doctors.to_corner(DL, buff=1)
-        doctors_label = TexText("Practicing Gynecologists")
+        doctors_label = OldTexText("Practicing Gynecologists")
         doctors_label.match_width(doctors)
         doctors_label.next_to(doctors, DOWN)
         doctors_label.set_fill(GREY_A)
@@ -1491,7 +1491,7 @@ class GigerenzerSession(Scene):
         self.wait()
 
         # Description of patient
-        prompt = TexText(
+        prompt = OldTexText(
             """
             A 50-year-old woman, no symptoms, participates\\\\
             in routine mammography screening.
@@ -1527,8 +1527,8 @@ class GigerenzerSession(Scene):
         clipboard.set_width(2.5)
 
         clipboard_contents = VGroup(
-            TexText("+", color=GREEN, font_size=96, stroke_width=3),
-            TexText("Cancer\\\\detected", color=GREY_A),
+            OldTexText("+", color=GREEN, font_size=96, stroke_width=3),
+            OldTexText("Cancer\\\\detected", color=GREY_A),
         )
         clipboard_contents.arrange(DOWN)
         clipboard_contents.set_width(0.7 * clipboard.get_width())
@@ -1578,9 +1578,9 @@ class GigerenzerSession(Scene):
 
         # Test statistics
         stats = VGroup(
-            TexText("Prevalence: ", "1\\%"),
-            TexText("Sensitivity: ", "90\\%"),
-            TexText("Specificity: ", "91\\%"),
+            OldTexText("Prevalence: ", "1\\%"),
+            OldTexText("Sensitivity: ", "90\\%"),
+            OldTexText("Specificity: ", "91\\%"),
         )
         stats.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
         stats.to_corner(UL, buff=LARGE_BUFF)
@@ -1646,7 +1646,7 @@ class GigerenzerSession(Scene):
         )))
 
         # Ask question
-        question = TexText(
+        question = OldTexText(
             "How many women who test positive\\\\actually have breast cancer?",
             font_size=36
         )
@@ -1656,10 +1656,10 @@ class GigerenzerSession(Scene):
         self.play(FadeIn(question, lag_ratio=0.1))
 
         choices = VGroup(
-            TexText("A) 9 in 10"),
-            TexText("B) 8 in 10"),
-            TexText("C) 1 in 10"),
-            TexText("D) 1 in 100"),
+            OldTexText("A) 9 in 10"),
+            OldTexText("B) 8 in 10"),
+            OldTexText("C) 1 in 10"),
+            OldTexText("D) 1 in 100"),
         )
         choices.arrange_in_grid(2, 2, h_buff=1.0, v_buff=0.5, aligned_edge=LEFT)
         choices.next_to(question, DOWN, buff=0.75)
@@ -1674,7 +1674,7 @@ class GigerenzerSession(Scene):
         # Comment on choices
         a_rect = SurroundingRectangle(choices[0])
         a_rect.set_color(BLUE)
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.match_height(a_rect)
         q_mark.next_to(a_rect, LEFT)
         q_mark.match_color(a_rect)
@@ -1746,7 +1746,7 @@ class OldGigerenzerMaterial(Scene):
         prompt.target.scale(0.65)
         prompt.target.next_to(clipboard, RIGHT, MED_LARGE_BUFF)
 
-        sensitivity_words = Tex("90", "\\%", "\\text{ Sensitivity}")
+        sensitivity_words = OldTex("90", "\\%", "\\text{ Sensitivity}")
         sensitivity_words.to_edge(UP)
 
         self.play(
@@ -1764,7 +1764,7 @@ class OldGigerenzerMaterial(Scene):
         women_rect = SurroundingRectangle(women, buff=0.15)
         women_rect.set_stroke(YELLOW, 2)
 
-        with_bc_label = TexText(
+        with_bc_label = OldTexText(
             "Women\\\\with\\\\breast\\\\cancer",
             font_size=36,
             color=women_rect.get_color()
@@ -1775,10 +1775,10 @@ class OldGigerenzerMaterial(Scene):
         signs = VGroup()
         for n, woman in enumerate(women.target):
             if n < 90:
-                sign = Tex("+", color=GREEN)
+                sign = OldTex("+", color=GREEN)
                 woman.set_color(GREEN)
             else:
-                sign = Tex("-", color=RED)
+                sign = OldTex("-", color=RED)
                 woman.set_color(RED)
             sign.match_width(woman)
             sign.move_to(woman.get_corner(UR), LEFT)
@@ -1805,13 +1805,13 @@ class OldGigerenzerMaterial(Scene):
         )
 
         # Specificity
-        specificity_words = Tex("91", "\\%", "\\text{ Specificity}")
+        specificity_words = OldTex("91", "\\%", "\\text{ Specificity}")
         specificity_words.move_to(sensitivity_words)
         spec_women = women.copy()
         spec_women.set_fill(GREY_C)
         spec_rect = women_rect.copy()
         spec_rect.set_color(interpolate_color(GREY_BROWN, WHITE, 0.5))
-        wo_bc_label = TexText(
+        wo_bc_label = OldTexText(
             "Women\\\\ \\emph{without} \\\\breast\\\\cancer",
             font_size=36,
         )
@@ -1838,10 +1838,10 @@ class OldGigerenzerMaterial(Scene):
         spec_signs = VGroup()
         for n, woman in enumerate(spec_women.target):
             if n < 9:
-                sign = Tex("+", color=GREEN)
+                sign = OldTex("+", color=GREEN)
                 woman.set_color(GREEN)
             else:
-                sign = Tex("-", color=RED)
+                sign = OldTex("-", color=RED)
                 woman.set_color(RED)
             sign.match_width(woman)
             sign.move_to(woman.get_corner(UR), LEFT)
@@ -1855,13 +1855,13 @@ class OldGigerenzerMaterial(Scene):
         spec_group.add(spec_signs)
 
         # False negatives/False positives
-        fnr = Tex(
+        fnr = OldTex(
             "\\leftarrow", "10", "\\%", " \\text{ false negative}",
             font_size=36,
         )
         fnr.next_to(women[-1], RIGHT, buff=0.3)
 
-        fpr = Tex(
+        fpr = OldTex(
             "9", "\\%", "\\text{ false positive}", "\\rightarrow",
             font_size=36,
         )
@@ -1875,9 +1875,9 @@ class AskIfItsAParadox(TeacherStudentsScene):
     def construct(self):
         # Add fact
         stats = VGroup(
-            TexText("Sensitivity: ", "90\\%"),
-            TexText("Specificity: ", "91\\%"),
-            TexText("Prevalence: ", "1\\%"),
+            OldTexText("Sensitivity: ", "90\\%"),
+            OldTexText("Specificity: ", "91\\%"),
+            OldTexText("Prevalence: ", "1\\%"),
         )
         stats.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
         for stat, color in zip(stats, [GREEN_B, GREY_B, YELLOW]):
@@ -1885,7 +1885,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
             stat[1].align_to(stats[0][1], LEFT)
 
         brace = Brace(stats, UP)
-        prob = Tex(
+        prob = OldTex(
             "P(\\text{Cancer} \\,|\\, +) \\approx \\frac{1}{11}",
             tex_to_color_map={
                 "\\text{Cancer}": YELLOW,
@@ -1938,7 +1938,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
         self.wait(3)
 
         # Veridical paradox
-        v_paradox = TexText("``Veridical paradox''", font_size=72)
+        v_paradox = OldTexText("``Veridical paradox''", font_size=72)
         v_paradox.move_to(self.hold_up_spot, DOWN)
         v_paradox.to_edge(UP)
         v_paradox.shift(0.5 * LEFT)
@@ -1953,7 +1953,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
         self.play(ShowCreation(vp_line))
         self.wait()
 
-        definition = TexText(
+        definition = OldTexText(
             "- Provably true\\\\",
             "- Seems false",
             alignment="",
@@ -1969,7 +1969,7 @@ class AskIfItsAParadox(TeacherStudentsScene):
 class GoalsOfEstimation(TeacherStudentsScene):
     def construct(self):
         # Goal
-        goal = TexText("Goal: Quick estimations")
+        goal = OldTexText("Goal: Quick estimations")
         goal.to_edge(UP)
         goal_line = Underline(goal)
 
@@ -1986,9 +1986,9 @@ class GoalsOfEstimation(TeacherStudentsScene):
         # Generators
         def generate_stats(prev, sens, spec, bottom=self.hold_up_spot):
             stats = VGroup(
-                TexText("Prevalence: ", f"{prev}\\%"),
-                TexText("Sensitivity: ", f"{sens}\\%"),
-                TexText("Specificity: ", f"{spec}\\%"),
+                OldTexText("Prevalence: ", f"{prev}\\%"),
+                OldTexText("Sensitivity: ", f"{sens}\\%"),
+                OldTexText("Specificity: ", f"{spec}\\%"),
             )
             stats.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
             for stat, color in zip(stats, [YELLOW, GREEN_B, GREY_B]):
@@ -2003,7 +2003,7 @@ class GoalsOfEstimation(TeacherStudentsScene):
             return stats
 
         def generate_answer(ans_tex):
-            return Tex(
+            return OldTex(
                 "P(\\text{Cancer} \\,|\\, {+})", ans_tex,
                 tex_to_color_map={
                     "\\text{Cancer}": YELLOW,
@@ -2120,8 +2120,8 @@ class GoalsOfEstimation(TeacherStudentsScene):
 class QuickEstimatesAndMisconceptions(Scene):
     def construct(self):
         titles = VGroup(
-            TexText("Quick\\\\estimations"),
-            TexText("Combating\\\\misconceptions"),
+            OldTexText("Quick\\\\estimations"),
+            OldTexText("Combating\\\\misconceptions"),
         )
         for title, u in zip(titles, [-1, 1]):
             title.set_x(u * FRAME_WIDTH / 4)
@@ -2151,7 +2151,7 @@ class QuickEstimatesAndMisconceptions(Scene):
         )
         self.wait()
 
-        arrow = Tex("\\leftrightarrow", font_size=72)
+        arrow = OldTex("\\leftrightarrow", font_size=72)
         arrow.move_to(circles)
         self.play(
             circles[0].next_to, arrow, LEFT,
@@ -2189,7 +2189,7 @@ class QuickEstimatesAndMisconceptions(Scene):
         )
         self.wait()
 
-        bayes_factor = TexText("Bayes\\\\factor", font_size=72)
+        bayes_factor = OldTexText("Bayes\\\\factor", font_size=72)
         bayes_factor.move_to(circles[0])
 
         self.play(Write(bayes_factor))
@@ -2205,7 +2205,7 @@ class QuickEstimatesAndMisconceptions(Scene):
 
 class WhatDoYouTellThem(Scene):
     def construct(self):
-        text = TexText("What do you tell them?", font_size=72)
+        text = OldTexText("What do you tell them?", font_size=72)
         text.set_color(BLUE)
         self.play(Write(text))
         self.wait(5)
@@ -2216,8 +2216,8 @@ class AccuracyImage(Scene):
         sens = 90
         spec = 91
         stats = VGroup(
-            TexText("Sensitivity: ", f"{sens}\\%"),
-            TexText("Specificity: ", f"{spec}\\%"),
+            OldTexText("Sensitivity: ", f"{sens}\\%"),
+            OldTexText("Specificity: ", f"{spec}\\%"),
         )
         stats.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
         for stat, color in zip(stats, [GREEN_B, GREY_B]):
@@ -2235,11 +2235,11 @@ class SamplePopulation10PercentPrevalence(Scene):
     def construct(self):
         # Setup test accuracy figures
         accuracy_figures = VGroup(
-            TexText(
+            OldTexText(
                 "90\\% Sensitivity,", " 10\\% False negative rate",
                 font_size=36
             ),
-            TexText(
+            OldTexText(
                 "91\\% Specificity,", " 9\\% False positive rate",
                 font_size=36
             ),
@@ -2268,9 +2268,9 @@ class SamplePopulation10PercentPrevalence(Scene):
         population.target[:10].next_to(accuracy_figures[0], DOWN, MED_LARGE_BUFF)
         population.target[10:].next_to(accuracy_figures[1], DOWN, MED_LARGE_BUFF)
 
-        pop_words = TexText("100", " patients")
-        wc_words = TexText("10", " with cancer")
-        wo_words = TexText("90", " without cancer")
+        pop_words = OldTexText("100", " patients")
+        wc_words = OldTexText("10", " with cancer")
+        wo_words = OldTexText("90", " without cancer")
 
         pop_words.next_to(population, DOWN)
         wc_words.next_to(population.target[:10], DOWN)
@@ -2281,7 +2281,7 @@ class SamplePopulation10PercentPrevalence(Scene):
             words[1].replace(pop_words[1], stretch=True)
             words.set_opacity(0)
 
-        title = TexText("Picture a concrete population", font_size=72)
+        title = OldTexText("Picture a concrete population", font_size=72)
         title.to_edge(UP)
         self.add(title)
 
@@ -2327,13 +2327,13 @@ class SamplePopulation10PercentPrevalence(Scene):
 
         for n, box in enumerate(c_boxes):
             tex = "+" if n < 9 else "-"
-            sign = Tex(tex, font_size=36)
+            sign = OldTex(tex, font_size=36)
             sign.next_to(box, RIGHT, SMALL_BUFF)
             sign.match_color(box)
             box.add(sign)
 
         for box in false_positive_boxes:
-            sign = Tex("+", font_size=36)
+            sign = OldTex("+", font_size=36)
             sign.next_to(box, UP, SMALL_BUFF)
             sign.match_color(box)
             box.add(sign)
@@ -2359,8 +2359,8 @@ class SamplePopulation10PercentPrevalence(Scene):
         self.add(population)
 
         # Filter down to positive cases
-        new_wc_words = TexText("9 ", "with cancer")
-        new_wo_words = TexText("8 ", "without cancer")
+        new_wc_words = OldTexText("9 ", "with cancer")
+        new_wo_words = OldTexText("8 ", "without cancer")
         for nw, w in (new_wc_words, wc_words), (new_wo_words, wo_words):
             nw[0].set_color(GREEN)
             nw.move_to(w)
@@ -2406,7 +2406,7 @@ class SamplePopulation10PercentPrevalence(Scene):
         self.wait()
 
         # Show final fraction
-        answer = Tex(
+        answer = OldTex(
             "{9 \\over 9 + 8} \\approx 0.53",
             font_size=72,
         )[0]
@@ -2428,7 +2428,7 @@ class SamplePopulation10PercentPrevalence(Scene):
 
 class NinePercentOfNinety(Scene):
     def construct(self):
-        mob = Tex("(0.09)(90) = 8.1", tex_to_color_map={"8.1": GREEN})
+        mob = OldTex("(0.09)(90) = 8.1", tex_to_color_map={"8.1": GREEN})
         mob.scale(2)
         self.add(mob)
 
@@ -2446,7 +2446,7 @@ class SamplePopulationOneInThousandPrevalence(Scene):
     def construct(self):
         # Add prevalence title
         titles = VGroup(*(
-            TexText(
+            OldTexText(
                 f"What if prevalence is {n} in {k}?",
                 tex_to_color_map={
                     n: YELLOW,
@@ -2535,12 +2535,12 @@ class SamplePopulationOneInThousandPrevalence(Scene):
             case for case in non_cancer_cases if case not in fp_cases
         ))
 
-        tp_label = TexText("$9$ True Positives")
+        tp_label = OldTexText("$9$ True Positives")
         tp_label.set_color(GREEN)
         tp_label.move_to(c_count)
         tp_label.shift_onto_screen()
 
-        fp_label = TexText("$\\sim 900$ False Positives")
+        fp_label = OldTexText("$\\sim 900$ False Positives")
         fp_label.set_color(GREEN_D)
         fp_label.move_to(nc_count)
 
@@ -2589,7 +2589,7 @@ class SamplePopulationOneInThousandPrevalence(Scene):
         self.wait()
 
         # Final fraction
-        final_frac = Tex(
+        final_frac = OldTex(
             "{{9} \\over {9} + {900}} \\approx 0.01",
             tex_to_color_map={
                 "{9}": GREEN,
@@ -2618,7 +2618,7 @@ class AltShowUpdatingPrior(Scene):
         population[0].set_fill(YELLOW)
         population.set_height(5)
 
-        prior_prob = TexText("1", " in ", N_str)
+        prior_prob = OldTexText("1", " in ", N_str)
         prior_prob.set_color_by_tex("1", YELLOW)
         prior_prob.set_color_by_tex(N_str, GREY_B)
         prior_prob.next_to(population, UP, MED_LARGE_BUFF)
@@ -2638,7 +2638,7 @@ class AltShowUpdatingPrior(Scene):
         self.add(prior_prob)
 
         # Before word
-        before_words = TexText(
+        before_words = OldTexText(
             "Probability of having the disease\\\\ ",
             "\\emph{before} taking a test"
         )
@@ -2668,9 +2668,9 @@ class AltShowUpdatingPrior(Scene):
         update_arrow.set_thickness(0.1)
         update_arrow.center()
         update_arrow.match_y(pop_count)
-        update_words = TexText("See positive test", tex_to_color_map={"positive": GREEN})
+        update_words = OldTexText("See positive test", tex_to_color_map={"positive": GREEN})
         update_words.next_to(update_arrow, UP, SMALL_BUFF)
-        low_update_words = TexText("Update probability", font_size=36)
+        low_update_words = OldTexText("Update probability", font_size=36)
         low_update_words.next_to(update_arrow, DOWN, MED_SMALL_BUFF)
 
         # Posterior
@@ -2687,7 +2687,7 @@ class AltShowUpdatingPrior(Scene):
 
         def give_pop_plusses(pop):
             for icon in pop:
-                plus = Tex("+")
+                plus = OldTex("+")
                 plus.set_color(GREEN)
                 plus.set_width(icon.get_width() / 2)
                 plus.move_to(icon.get_corner(UR))
@@ -2699,7 +2699,7 @@ class AltShowUpdatingPrior(Scene):
         post_prob[2].set_value(post_denom)
         post_prob.next_to(post_pop, UP, buff=MED_LARGE_BUFF)
 
-        roughly = TexText("(roughly)", font_size=24)
+        roughly = OldTexText("(roughly)", font_size=24)
         roughly.next_to(post_prob, RIGHT, buff=0.2)
 
         post_prob[2].set_value(0)
@@ -2828,9 +2828,9 @@ class NewContrastThreeContexts(Scene):
             dot_groups.add(dots)
 
         prevalence_labels = VGroup(
-            TexText("Prevalence: ", "0.1\\%"),
-            TexText("Prevalence: ", "1\\%"),
-            TexText("Prevalence: ", "10\\%"),
+            OldTexText("Prevalence: ", "0.1\\%"),
+            OldTexText("Prevalence: ", "1\\%"),
+            OldTexText("Prevalence: ", "10\\%"),
         )
         for label, dots in zip(prevalence_labels, dot_groups):
             label.scale(0.75)
@@ -2842,9 +2842,9 @@ class NewContrastThreeContexts(Scene):
 
         # Words
         words = VGroup(
-            TexText("Same", " test"),
-            TexText("Same", " accuracy"),
-            TexText("Same", " result"),
+            OldTexText("Same", " test"),
+            OldTexText("Same", " accuracy"),
+            OldTexText("Same", " result"),
         )
         words.scale(1.5)
         words.arrange(DOWN, aligned_edge=LEFT, buff=MED_LARGE_BUFF)
@@ -2865,7 +2865,7 @@ class NewContrastThreeContexts(Scene):
             )
             clipboard.set_width(1)
             clipboard.next_to(woman, LEFT)
-            content = TexText("+\\\\", "Cancer\\\\detected")
+            content = OldTexText("+\\\\", "Cancer\\\\detected")
             content[0].scale(2, about_edge=DOWN)
             content[0].set_color(GREEN)
             content[0].set_stroke(GREEN, 3)
@@ -2915,9 +2915,9 @@ class NewContrastThreeContexts(Scene):
         # Odds
         prior_probs = VGroup(*(pl[1] for pl in prevalence_labels))
         prior_odds = VGroup(
-            TexText("1:999"),
-            TexText("1:99"),
-            TexText("1:9"),
+            OldTexText("1:999"),
+            OldTexText("1:99"),
+            OldTexText("1:9"),
         )
         prior_odds.set_color(YELLOW)
         for po, pp in zip(prior_odds, prior_probs):
@@ -2926,9 +2926,9 @@ class NewContrastThreeContexts(Scene):
             po.move_to(pp, LEFT)
 
         post_odds = VGroup(
-            TexText("10:999"),
-            TexText("10:99"),
-            TexText("10:9"),
+            OldTexText("10:999"),
+            OldTexText("10:99"),
+            OldTexText("10:9"),
         )
         for po, prob in zip(post_odds, probs):
             po.match_color(prob)
@@ -2949,19 +2949,19 @@ class NewContrastThreeContexts(Scene):
 
         # What test accuracy does
         ta_words = VGroup(
-            TexText("Test", " accuracy"),
-            TexText("\\emph{alone} ", "does not"),
-            TexText("determine", "."),
-            TexText("\\,", "your chances"),
+            OldTexText("Test", " accuracy"),
+            OldTexText("\\emph{alone} ", "does not"),
+            OldTexText("determine", "."),
+            OldTexText("\\,", "your chances"),
         )
         ta_words[2][1].set_opacity(0)
         ta_words[1].set_color_by_tex("not", RED)
 
         up_words = VGroup(
-            TexText("Test", " accuracy"),
-            TexText("determine", "s"),
-            TexText("how", " your chances"),
-            TexText("are", " \\emph{updated}"),
+            OldTexText("Test", " accuracy"),
+            OldTexText("determine", "s"),
+            OldTexText("how", " your chances"),
+            OldTexText("are", " \\emph{updated}"),
         )
         up_words[3][1].set_color(BLUE)
         up_words[3].shift(SMALL_BUFF * UP)
@@ -3017,7 +3017,7 @@ class BayesFactor(Scene):
         bc_rect = SurroundingRectangle(bc_pop, buff=0.15)
         bc_rect.set_stroke(YELLOW, 2)
 
-        with_bc_label = TexText(
+        with_bc_label = OldTexText(
             "Patients with\\\\breast cancer",
             font_size=36,
             color=bc_rect.get_color()
@@ -3028,10 +3028,10 @@ class BayesFactor(Scene):
         bc_signs = VGroup()
         for n, icon in enumerate(bc_pop.target):
             if n < 90:
-                sign = Tex("+", color=GREEN)
+                sign = OldTex("+", color=GREEN)
                 icon.set_color(GREEN)
             else:
-                sign = Tex("-", color=RED)
+                sign = OldTex("-", color=RED)
                 icon.set_color(RED)
             sign.match_width(icon)
             sign.move_to(icon.get_corner(UR), LEFT)
@@ -3061,7 +3061,7 @@ class BayesFactor(Scene):
         nc_rect = SurroundingRectangle(nc_pop, buff=0.15)
         nc_rect.set_stroke(GREY_B, 2)
 
-        without_bc_label = TexText(
+        without_bc_label = OldTexText(
             "Patients without\\\\breast cancer",
             font_size=36,
             color=nc_rect.get_color()
@@ -3072,10 +3072,10 @@ class BayesFactor(Scene):
         nc_signs = VGroup()
         for n, icon in enumerate(nc_pop.target):
             if 0 < n < 10:
-                sign = Tex("+", color=GREEN)
+                sign = OldTex("+", color=GREEN)
                 icon.set_color(GREEN)
             else:
-                sign = Tex("-", color=RED)
+                sign = OldTex("-", color=RED)
                 icon.set_color(RED)
             sign.match_width(icon)
             sign.move_to(icon.get_corner(UR), LEFT)
@@ -3149,7 +3149,7 @@ class BayesFactor(Scene):
         self.play(FadeOut(fade_rects[0]))
 
         # None of these are your answer
-        title = Tex(
+        title = OldTex(
             "\\text{None of these tell you }",
             "P(\\text{Cancer} \\,|\\, +)",
             tex_to_color_map={
@@ -3170,7 +3170,7 @@ class BayesFactor(Scene):
         title.add(title_underline)
 
         # Ask about update strength
-        question = TexText("How strongly\\\\does it update?")
+        question = OldTexText("How strongly\\\\does it update?")
         question.set_height(1)
         question.to_corner(UL)
         question.save_state()
@@ -3188,14 +3188,14 @@ class BayesFactor(Scene):
         # Write Bayes factor
         frac = VGroup(
             sens_word.copy(),
-            Tex("\\qquad \\over \\qquad"),
+            OldTex("\\qquad \\over \\qquad"),
             fpr_word.copy(),
         )
         frac[1].match_width(frac[0], stretch=True)
         frac.arrange(DOWN, SMALL_BUFF)
         frac.next_to(question, RIGHT, LARGE_BUFF)
 
-        mid_rhs = Tex(
+        mid_rhs = OldTex(
             "= {P(+ \\,|\\, \\text{Cancer}) \\over P(+ \\,|\\, \\text{No cancer})}",
             tex_to_color_map={
                 "+": GREEN,
@@ -3205,7 +3205,7 @@ class BayesFactor(Scene):
         )
         mid_rhs.next_to(frac, RIGHT)
 
-        rhs = Tex("= 10", font_size=72)
+        rhs = OldTex("= 10", font_size=72)
         rhs.next_to(mid_rhs, RIGHT)
 
         for part in frac[0::2]:
@@ -3229,10 +3229,10 @@ class BayesFactor(Scene):
         self.wait()
 
         # Name the Bayes factor
-        bf_name = TexText("Bayes\\\\Factor ", font_size=72)
-        equals = Tex("=", font_size=72).next_to(frac, LEFT)
+        bf_name = OldTexText("Bayes\\\\Factor ", font_size=72)
+        equals = OldTex("=", font_size=72).next_to(frac, LEFT)
         bf_name.next_to(equals, LEFT)
-        lr_name = TexText("Likelihood\\\\ratio")
+        lr_name = OldTexText("Likelihood\\\\ratio")
         lr_name.next_to(equals, LEFT)
 
         self.play(
@@ -3267,7 +3267,7 @@ class RuleOfThumb(Scene):
             "1\\%}": TEAL,
             "{10}": GREEN,
         }
-        frac_part = Tex(
+        frac_part = OldTex(
             """
             {P(+ \\, | \\, \\text{Cancer}) \\over
             P(+ \\, | \\, \\text{No cancer})}
@@ -3277,7 +3277,7 @@ class RuleOfThumb(Scene):
         frac_part.add(SurroundingRectangle(
             frac_part, buff=0.1, stroke_width=1, stroke_color=GREY_B
         ))
-        ex_part = Tex(
+        ex_part = OldTex(
             "\\text{e.g. } {90\\% \\over 9\\%} = {10}",
             tex_to_color_map=t2c
         )
@@ -3294,7 +3294,7 @@ class RuleOfThumb(Scene):
 
         # Lightbulb
         bulb = Lightbulb()
-        condition = TexText("If Prior $\\ll$ 1 \\dots", tex_to_color_map={"Prior": YELLOW})
+        condition = OldTexText("If Prior $\\ll$ 1 \\dots", tex_to_color_map={"Prior": YELLOW})
         condition.next_to(bulb, RIGHT, buff=MED_LARGE_BUFF, aligned_edge=DOWN)
         bulb_group = VGroup(bulb, condition)
         bulb_group.center().to_edge(UP)
@@ -3304,7 +3304,7 @@ class RuleOfThumb(Scene):
         self.wait()
 
         # Equation
-        equation = TexText(
+        equation = OldTexText(
             "Posterior", " $\\approx$ ",
             "(", "Prior", ")", "(", "Bayes factor", ")",
             tex_to_color_map={
@@ -3331,7 +3331,7 @@ class RuleOfThumb(Scene):
         self.wait()
 
         # 1% example
-        ex_rhs = Tex(
+        ex_rhs = OldTex(
             "\\left({1 \\over 100}\\right)({10}) = {1 \\over 10}",
             tex_to_color_map={
                 "1 \\over 100": YELLOW,
@@ -3341,7 +3341,7 @@ class RuleOfThumb(Scene):
         ex_rhs.next_to(equation, DOWN, MED_LARGE_BUFF)
         ex_rhs.shift(RIGHT)
 
-        ex_lhs = Tex("{1 \\over 11} \\approx")
+        ex_lhs = OldTex("{1 \\over 11} \\approx")
         ex_lhs.next_to(ex_rhs, LEFT)
 
         self.play(FadeIn(ex_rhs, DOWN))
@@ -3361,7 +3361,7 @@ class RuleOfThumb(Scene):
         self.play(Blink(randy))
         self.wait()
 
-        ex2_rhs = Tex(
+        ex2_rhs = OldTex(
             "(10\\%)({10}) = 100\\%",
             tex_to_color_map={
                 "10\\%": YELLOW,
@@ -3382,7 +3382,7 @@ class RuleOfThumb(Scene):
         self.wait()
         self.play(Blink(randy))
 
-        ex2_lhs = Tex("53\\%", "\\approx")
+        ex2_lhs = OldTex("53\\%", "\\approx")
         ex2_lhs.next_to(ex2_rhs, LEFT)
         ex2_lhs.align_to(equation.get_part_by_tex("\\approx"), RIGHT)
         approx_part = ex2_lhs.get_part_by_tex("\\approx")
@@ -3425,7 +3425,7 @@ class RuleOfThumb(Scene):
         )
         self.play(Blink(morty))
 
-        eq = Tex("=")
+        eq = OldTex("=")
         approx = equation.get_part_by_tex("\\approx")
         eq.replace(approx)
 
@@ -3448,8 +3448,8 @@ class ProbabilityVsOdds(Scene):
     def construct(self):
         # Show titles and division
         titles = VGroup(
-            TexText("Probability"),
-            TexText("Odds"),
+            OldTexText("Probability"),
+            OldTexText("Odds"),
         )
         for title, u in zip(titles, [-1, 1]):
             title.scale(1.5)
@@ -3526,7 +3526,7 @@ class ProbabilityVsOdds(Scene):
         def get_prob_label(n_pos, n_all):
             result = VGroup(
                 Integer(n_pos, color=YELLOW),
-                Tex("/"),
+                OldTex("/"),
                 Integer(n_all),
             )
             result.scale(1.5)
@@ -3536,7 +3536,7 @@ class ProbabilityVsOdds(Scene):
         def get_odds_label(n_pos, n_neg):
             result = VGroup(
                 Integer(n_pos, color=YELLOW),
-                Tex(":"),
+                OldTex(":"),
                 Integer(n_neg, color=GREY_B),
             )
             result.scale(1.5)
@@ -3608,7 +3608,7 @@ class ProbabilityVsOdds(Scene):
         right_people.add(odds_count)
 
         def get_example(n_pos, n_all):
-            new_prob = Tex(
+            new_prob = OldTex(
                 f"{int(100 * n_pos / n_all)}\\%",
                 font_size=72
             )
@@ -3642,7 +3642,7 @@ class ProbabilityVsOdds(Scene):
             new_right_people = new_people.copy()
             new_right_people.set_x(FRAME_WIDTH / 4)
 
-            new_prob = Tex(
+            new_prob = OldTex(
                 f"{int(100 * n_pos / n_all)}\\%",
                 font_size=72
             )
@@ -3697,7 +3697,7 @@ class ProbabilityVsOdds(Scene):
         right_range = NumberLine((0, 5), width=5, include_tip=True)
         right_range.match_y(left_range)
         right_range.match_x(titles[1])
-        dots = Tex("\\dots")
+        dots = OldTex("\\dots")
         dots.next_to(right_range, RIGHT)
         right_range.add(dots)
         right_range.add(*(
@@ -3784,7 +3784,7 @@ class OddsComments(Scene):
 class NewSnazzyBayesRuleSteps(Scene):
     def construct(self):
         # Add title
-        title = TexText(
+        title = OldTexText(
             "Bayes' rule, the snazzy way",
             font_size=72
         )
@@ -3797,7 +3797,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         self.add(underline, title)
 
         # Completely accurate
-        accurate_words = TexText(
+        accurate_words = OldTexText(
             *"Completely accurate\\\\ Not even approximating things".split(" "),
             font_size=72,
             arg_separator=" "
@@ -3819,18 +3819,18 @@ class NewSnazzyBayesRuleSteps(Scene):
 
         # Step labels
         step_labels = VGroup(
-            TexText("Step 1)"),
-            TexText("Step 2)"),
-            TexText("Step 3)"),
+            OldTexText("Step 1)"),
+            OldTexText("Step 2)"),
+            OldTexText("Step 3)"),
         )
         step_labels.arrange(DOWN, buff=1.5, aligned_edge=LEFT)
         step_labels.next_to(title, DOWN, MED_LARGE_BUFF)
         step_labels.to_edge(LEFT)
 
         step1, step2, step3 = steps = VGroup(
-            TexText("Express the prior with odds"),
-            TexText("Compute Bayes' factor"),
-            TexText("Multiply"),
+            OldTexText("Express the prior with odds"),
+            OldTexText("Compute Bayes' factor"),
+            OldTexText("Multiply"),
         )
 
         colors = [YELLOW, GREEN, BLUE]
@@ -3857,7 +3857,7 @@ class NewSnazzyBayesRuleSteps(Scene):
             "1\\%}": TEAL,
             "10": WHITE,
         }
-        bf_computation = Tex(
+        bf_computation = OldTex(
             """
             {
             P(+ \\, | \\, \\text{Cancer}) \\over
@@ -3874,17 +3874,17 @@ class NewSnazzyBayesRuleSteps(Scene):
         bf_computation.scale(1.5)
         bf_computation.next_to(steps[1], RIGHT, LARGE_BUFF)
 
-        lr_words = TexText("``Likelihood ratio''", font_size=30)
+        lr_words = OldTexText("``Likelihood ratio''", font_size=30)
         lr_words.next_to(bf_computation[-1], RIGHT, MED_LARGE_BUFF, DOWN)
         lr_words.set_color(GREY_A)
 
         sens_part = bf_computation.get_part_by_tex("90\\%")
-        sens_word = TexText("Sensitivity")
+        sens_word = OldTexText("Sensitivity")
         sens_word.next_to(sens_part, UP, buff=1)
         sens_arrow = Arrow(sens_word.get_bottom(), sens_part.get_top(), buff=0.1)
 
         fpr_part = bf_computation.get_part_by_tex("9\\%")
-        fpr_word = TexText("FPR")
+        fpr_word = OldTexText("FPR")
         fpr_word.next_to(fpr_part, DOWN, buff=1)
         fpr_arrow = Arrow(fpr_word.get_top(), fpr_part.get_bottom(), buff=0.1)
 
@@ -3908,7 +3908,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         )
 
         # Step 1 details
-        step1_subtext = TexText("E.g.", " 1\\% ", " $\\rightarrow$ ", "1:99")
+        step1_subtext = OldTexText("E.g.", " 1\\% ", " $\\rightarrow$ ", "1:99")
         step1_subtext.set_color(GREY_A)
         step1_subtext.scale(0.9)
         step1_subtext.next_to(step1, DOWN, aligned_edge=LEFT)
@@ -3926,7 +3926,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         self.wait()
 
         # Step 3
-        multiplication = Tex(
+        multiplication = OldTex(
             "(", "1:99", ")", "\\times", "10",
             "=", "10:99",
             "\\rightarrow", "{10 \\over 109}",
@@ -3974,7 +3974,7 @@ class NewSnazzyBayesRuleSteps(Scene):
 
         # 10% prior example
         prior_odds = step1_subtext[1:]
-        alt_prior_odds = Tex(
+        alt_prior_odds = OldTex(
             "10\\%", "\\rightarrow", "\\text{1:9}"
         )
         alt_prior_odds.match_height(prior_odds)
@@ -4005,7 +4005,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         )
         self.wait()
 
-        new_multiplication = Tex(
+        new_multiplication = OldTex(
             "(1:9)", "\\times", "10",
             "=", "10:9",
             "\\rightarrow", "{10 \\over 19}",
@@ -4029,7 +4029,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         )
         self.wait()
 
-        alt_rhs = Tex("> 1:1", font_size=36)
+        alt_rhs = OldTex("> 1:1", font_size=36)
         alt_rhs.next_to(new_multiplication[4], RIGHT)
         self.play(
             FadeOut(rects[2]),
@@ -4060,7 +4060,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         self.wait()
 
         # Change test accuracy
-        new_bf_computation = Tex(
+        new_bf_computation = OldTex(
             """
             {
             P(+ \\, | \\, \\text{Cancer}) \\over
@@ -4091,7 +4091,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         self.wait()
 
         # New posterior (largely copy-pasted)
-        final_multiplication = Tex(
+        final_multiplication = OldTex(
             "(1:99)", "\\times", "90",
             "=", "90:99",
             "\\rightarrow", "{90 \\over 189}",
@@ -4115,7 +4115,7 @@ class NewSnazzyBayesRuleSteps(Scene):
         )
         self.wait()
 
-        alt_rhs = Tex("< 1:1", font_size=36)
+        alt_rhs = OldTex("< 1:1", font_size=36)
         alt_rhs.next_to(final_multiplication[4], RIGHT)
         self.play(
             FadeOut(rects[2]),
@@ -4150,8 +4150,8 @@ class WhyTheBayesFactorTrickWorks(Scene):
     def construct(self):
         # Setup before and after
         titles = VGroup(
-            TexText("Before test"),
-            TexText("After test"),
+            OldTexText("Before test"),
+            OldTexText("After test"),
         )
         titles.scale(1.25)
         for title, u in zip(titles, [-1, 1]):
@@ -4183,7 +4183,7 @@ class WhyTheBayesFactorTrickWorks(Scene):
             w_tex: YELLOW,
             wo_tex: GREY_B,
         }
-        odds = Tex(w_tex, ":", wo_tex, tex_to_color_map=t2c)
+        odds = OldTex(w_tex, ":", wo_tex, tex_to_color_map=t2c)
         odds.next_to(population, UP, buff=MED_LARGE_BUFF)
         odds.match_x(titles[0])
 
@@ -4213,7 +4213,7 @@ class WhyTheBayesFactorTrickWorks(Scene):
         self.wait()
 
         # Turn odds into fraction
-        frac = Tex(
+        frac = OldTex(
             w_tex, "\\over", wo_tex, tex_to_color_map=t2c,
             font_size=36
         )
@@ -4247,7 +4247,7 @@ class WhyTheBayesFactorTrickWorks(Scene):
         for case in it.chain(tp_cases, fp_cases):
             box = SurroundingRectangle(case, buff=0.025)
             box.set_stroke(GREEN, 0)
-            plus = Tex("+", font_size=24)
+            plus = OldTex("+", font_size=24)
             plus.move_to(box.get_corner(UR))
             plus.shift(DR * plus.get_height() / 4)
             plus.set_color(GREEN)
@@ -4268,7 +4268,7 @@ class WhyTheBayesFactorTrickWorks(Scene):
             "+": GREEN,
             "\\cdot": WHITE,
         })
-        final_frac = Tex(
+        final_frac = OldTex(
             w_tex, "\\cdot P(+ \\,|\\, \\text{Cancer})",
             "\\over",
             wo_tex, "\\cdot P(+ \\,|\\, \\text{No cancer})",
@@ -4327,7 +4327,7 @@ class WhyTheBayesFactorTrickWorks(Scene):
 class ReframeWhatTestsDo(TeacherStudentsScene):
     def construct(self):
         # Question
-        question = TexText("What do tests tell you?")
+        question = OldTexText("What do tests tell you?")
         self.teacher_holds_up(question)
         self.wait()
 
@@ -4346,9 +4346,9 @@ class ReframeWhatTestsDo(TeacherStudentsScene):
 
         # Possible answers
         answers = VGroup(
-            TexText("Tests", " determine", " if you have", " a disease."),
-            TexText("Tests", " determine", " your chances of having", " a disease."),
-            TexText("Tests", " update", " your chances of having", " a disease."),
+            OldTexText("Tests", " determine", " if you have", " a disease."),
+            OldTexText("Tests", " determine", " your chances of having", " a disease."),
+            OldTexText("Tests", " update", " your chances of having", " a disease."),
         )
         students = self.students
         answers.set_color(BLUE_C)
@@ -4428,7 +4428,7 @@ class ReframeWhatTestsDo(TeacherStudentsScene):
         self.wait()
 
         # The fundamental reframing
-        new_title = TexText(
+        new_title = OldTexText(
             "The Fundamental Reframing",
             font_size=72,
         )
@@ -4447,7 +4447,7 @@ class ReframeWhatTestsDo(TeacherStudentsScene):
 class PrevalenceVsPrior(Scene):
     def construct(self):
         # Prior and prevalence
-        eq = TexText(
+        eq = OldTexText(
             "Prevalence = Prior",
             tex_to_color_map={
                 "Prevalence": WHITE,
@@ -4460,15 +4460,15 @@ class PrevalenceVsPrior(Scene):
 
         strike = Line(eq.get_left(), eq.get_right())
         strike.set_stroke(RED, 4)
-        not_words = TexText("Not necessarily!")
+        not_words = OldTexText("Not necessarily!")
         not_words.set_color(RED)
         not_words.match_width(eq)
         not_words.next_to(eq, DOWN, MED_LARGE_BUFF)
 
         factors = VGroup(
-            TexText("Prevalence"),
-            TexText("Symptoms"),
-            TexText("Contacts\\\\", "(if contagious)"),
+            OldTexText("Prevalence"),
+            OldTexText("Symptoms"),
+            OldTexText("Contacts\\\\", "(if contagious)"),
         )
         factors.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         factors.shift(prev.get_center() - factors[0].get_center())
@@ -4593,12 +4593,12 @@ class WhatAboutANegativeResult(Scene):
             "91\\%": RED,
         }
         equations = VGroup(
-            Tex(
+            OldTex(
                 "={P(+ \\,|\\, \\text{Cancer}) \\over P(+ \\,|\\, \\text{No cancer})}",
                 "={90\\% \\over 9\\%} = 10",
                 tex_to_color_map=t2c,
             ),
-            Tex(
+            OldTex(
                 "={P(- \\,|\\, \\text{Cancer}) \\over P(- \\,|\\, \\text{No cancer})}",
                 "={10\\% \\over 91\\%} \\approx {1 \\over 9}",
                 tex_to_color_map=t2c,
@@ -4606,7 +4606,7 @@ class WhatAboutANegativeResult(Scene):
         )
 
         for equation, clipboard in zip(equations, clipboards):
-            bf = TexText("Bayes\\\\Factor")
+            bf = OldTexText("Bayes\\\\Factor")
             bf.next_to(equation, LEFT)
             equation.add_to_back(bf)
             equation.next_to(clipboard, RIGHT, MED_LARGE_BUFF)
@@ -4635,12 +4635,12 @@ class WhatAboutANegativeResult(Scene):
         self.wait()
 
         fnr = eq.get_part_by_tex("10\\%")
-        fnr_word = TexText("FNR", font_size=36)
+        fnr_word = OldTexText("FNR", font_size=36)
         fnr_word.next_to(fnr, UP, buff=0.8)
         fnr_arrow = Arrow(fnr_word.get_bottom(), fnr.get_top(), buff=0.1)
 
         spec = eq.get_part_by_tex("91\\%")
-        spec_word = TexText("Specificity", font_size=36)
+        spec_word = OldTexText("Specificity", font_size=36)
         spec_word.next_to(spec, DOWN, buff=0.8)
         spec_arrow = Arrow(spec_word.get_top(), spec.get_bottom(), buff=0.1)
 
@@ -4661,7 +4661,7 @@ class WhatAboutANegativeResult(Scene):
 class BayesTheorem(Scene):
     def construct(self):
         # Add title
-        title = TexText("The usual version of Bayes' rule", font_size=60)
+        title = OldTexText("The usual version of Bayes' rule", font_size=60)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         title_line = Underline(title)
         title_line.set_stroke(GREY, 2)
@@ -4735,19 +4735,19 @@ class BayesTheorem(Scene):
         )
         braces.set_fill(GREY_B)
         terms = VGroup(
-            TexText("Prior"),
-            TexText("Sens."),
-            TexText("FNR"),
-            TexText("FPR"),
-            TexText("Spec."),
+            OldTexText("Prior"),
+            OldTexText("Sens."),
+            OldTexText("FNR"),
+            OldTexText("FPR"),
+            OldTexText("Spec."),
         )
         terms[0].set_color(YELLOW)
         symbols = VGroup(
-            Tex("P(\\text{D})", **kw),
-            Tex("P({+} | \\text{D})", **kw),
-            Tex("P({-} | \\text{D})", **kw),
-            Tex("P({+} | \\text{$\\neg$D})", **kw),
-            Tex("P({-} | \\text{$\\neg$D})", **kw),
+            OldTex("P(\\text{D})", **kw),
+            OldTex("P({+} | \\text{D})", **kw),
+            OldTex("P({-} | \\text{D})", **kw),
+            OldTex("P({+} | \\text{$\\neg$D})", **kw),
+            OldTex("P({-} | \\text{$\\neg$D})", **kw),
         )
         for term, symbol, brace in zip(terms, symbols, braces):
             term.scale(0.75)
@@ -4760,10 +4760,10 @@ class BayesTheorem(Scene):
         pop_group.center().to_edge(DOWN)
 
         # Formula with jargon
-        lhs = Tex("P(\\text{Disease} \\text{ given } {+})", **kw)
+        lhs = OldTex("P(\\text{Disease} \\text{ given } {+})", **kw)
         lhs.scale(48 / 30)
 
-        term_formula = Tex(
+        term_formula = OldTex(
             """
             {(\\text{Prior})(\\text{Sensitivity})
             \\over
@@ -4774,10 +4774,10 @@ class BayesTheorem(Scene):
             **kw,
         )
 
-        tp_formula = Tex("{\\text{TP} \\over \\text{TP} + \\text{FP}}", **kw)
+        tp_formula = OldTex("{\\text{TP} \\over \\text{TP} + \\text{FP}}", **kw)
         tp_formula.scale(1.25)
 
-        prob_formula = Tex(
+        prob_formula = OldTex(
             """
             P(\\text{D}) P({+} \\,|\\, \\text{D})
             \\over
@@ -4789,13 +4789,13 @@ class BayesTheorem(Scene):
             """,
             **kw
         )
-        simple_prob_formula = Tex(
+        simple_prob_formula = OldTex(
             "P(\\text{D}) P({+} \\,|\\, \\text{D}) \\over P({+})",
             **kw
         )
         simple_prob_formula.scale(48 / 30)
 
-        equals = VGroup(*(Tex("=") for x in range(4)))
+        equals = VGroup(*(OldTex("=") for x in range(4)))
         equals[2:].scale(1.5).rotate(90 * DEGREES)
 
         formula = VGroup(lhs, equals[0], tp_formula, equals[1], term_formula)
@@ -4972,7 +4972,7 @@ class ContrastTwoFormulas(Scene):
         }
         kw = {"tex_to_color_map": t2c}
 
-        odds_formula = Tex(
+        odds_formula = OldTex(
             "O(\\text{D} | {+}) ="
             "O(\\text{D})"
             "{P({+} | \\text{D}) \\over P({+} | \\text{$\\neg$D})}",
@@ -4983,7 +4983,7 @@ class ContrastTwoFormulas(Scene):
         post_part = odds_formula[:6]
         prior_part = odds_formula[7:11]
 
-        post_words = TexText(
+        post_words = OldTexText(
             "Odds of having the disease\\\\ \\emph{given} a positive test result",
             tex_to_color_map={
                 "disease": YELLOW,
@@ -4993,14 +4993,14 @@ class ContrastTwoFormulas(Scene):
         post_words.next_to(post_part, UP, buff=1.5)
         post_words.shift(LEFT)
         post_arrow = Arrow(post_words.get_bottom(), post_part[:2].get_top(), buff=0.2)
-        prior_words = TexText("Prior odds")
+        prior_words = OldTexText("Prior odds")
         prior_words.next_to(prior_part, DOWN, buff=1.5)
         prior_words.shift(LEFT)
         prior_arrow = Arrow(prior_words.get_top(), prior_part[:2].get_bottom(), buff=0.2)
 
         bf_rect = SurroundingRectangle(bf_part, buff=0.1)
         bf_rect.set_stroke(TEAL, 2)
-        bf_words = TexText("Bayes factor")
+        bf_words = OldTexText("Bayes factor")
         bf_words.next_to(bf_rect, UP)
         bf_words.match_color(bf_rect)
 
@@ -5032,8 +5032,8 @@ class ContrastTwoFormulas(Scene):
         v_line.set_stroke(GREY_B, 2)
 
         titles = VGroup(
-            TexText("Using probability"),
-            TexText("Using odds"),
+            OldTexText("Using probability"),
+            OldTexText("Using odds"),
         )
         titles.scale(1.25)
         for title, u in zip(titles, [-1, 1]):
@@ -5051,7 +5051,7 @@ class ContrastTwoFormulas(Scene):
         self.wait()
 
         # Contrast with usual formula
-        prob_formula = Tex(
+        prob_formula = OldTex(
             """
             P(\\text{D} | {+}) =
             {P(\\text{D}) P({+} \\,|\\, \\text{D})
@@ -5071,7 +5071,7 @@ class ContrastTwoFormulas(Scene):
         self.wait()
 
         # Use term-based formulas
-        term_formula = Tex(
+        term_formula = OldTex(
             """
             {(\\text{Prior})(\\text{Sensitivity})
             \\over
@@ -5082,7 +5082,7 @@ class ContrastTwoFormulas(Scene):
             **kw
         )
         term_formula.replace(prob_rhs, 0)
-        bf_terms = Tex(
+        bf_terms = OldTex(
             "\\text{Sensitivity} \\over \\text{FPR}",
             **kw
         )
@@ -5106,8 +5106,8 @@ class ContrastTwoFormulas(Scene):
             }
         }
         pt_comments = VGroup(
-            TexText("Prior and test accuracy\\\\are intermingled", **kw2),
-            TexText("Prior and test accuracy\\\\are separate", **kw2),
+            OldTexText("Prior and test accuracy\\\\are intermingled", **kw2),
+            OldTexText("Prior and test accuracy\\\\are separate", **kw2),
         )
         for comment, formula in zip(pt_comments, [prob_formula, odds_formula]):
             comment.match_x(formula)
@@ -5146,7 +5146,7 @@ class ContrastTwoFormulas(Scene):
             "{E_1}": GREEN,
             "{E_2}": BLUE,
         })
-        mult_formula = Tex(
+        mult_formula = OldTex(
             "O(\\text{D} | {E_1}, {E_2}) =",
             "O(\\text{D})\\,\\,",
             "{P({E_1} | \\text{D}) \\over P({E_1} | \\text{$\\neg$D})}\\,\\,",
@@ -5165,8 +5165,8 @@ class ContrastTwoFormulas(Scene):
         new_bf_rects[1].set_stroke(BLUE, 2)
         new_bf_labels = VGroup()
         for n, rect in zip(it.count(1), new_bf_rects):
-            words = TexText(f"Bayes\\\\Factor {n}", font_size=28)
-            parens = Tex(*"()")
+            words = OldTexText(f"Bayes\\\\Factor {n}", font_size=28)
+            parens = OldTex(*"()")
             parens.set_height(1.2 * words.get_height(), stretch=True)
             parens[0].next_to(words, LEFT, buff=0)
             parens[1].next_to(words, RIGHT, buff=0)
@@ -5241,7 +5241,7 @@ class ContrastTwoFormulas(Scene):
             look_at=morty.eyes,
             run_time=1,
         ))
-        content = TexText("Bayes factor 100", tex_to_color_map={"$+$": GREEN})
+        content = OldTexText("Bayes factor 100", tex_to_color_map={"$+$": GREEN})
         self.play(PiCreatureSays(
             morty, content,
             target_mode="hooray",
@@ -5279,7 +5279,7 @@ class ConfusedByFPR(Scene):
         doctor.set_height(2.5)
         doctor.to_corner(DR, buff=LARGE_BUFF)
 
-        fpr_words = TexText(
+        fpr_words = OldTexText(
             "This test's\\\\false positive rate\\\\is 9\\%",
             tex_to_color_map={
                 "false positive rate": GREEN,
@@ -5304,7 +5304,7 @@ class ConfusedByFPR(Scene):
         self.wait()
 
         # Misinterpret
-        false_prob = Tex(
+        false_prob = OldTex(
             "P(\\text{Test is false}) = 9\\%",
             tex_to_color_map={"9\\%": WHITE}
         )
@@ -5337,7 +5337,7 @@ class ConfusedByFPR(Scene):
         )
 
         # Mention Bayes factor instead
-        bf_words = TexText(
+        bf_words = OldTexText(
             "This test's\\\\positive Bayes factor\\\\is 10",
             tex_to_color_map={
                 "positive Bayes factor": YELLOW,
@@ -5367,9 +5367,9 @@ class ShowContrastingMethods(Scene):
     def construct(self):
         # Prepare stats
         stats = VGroup(
-            TexText("Prior: ", "2\\%"),
-            TexText("Sensitivity: ", "90\\%"),
-            TexText("Specificity: ", "99\\%"),
+            OldTexText("Prior: ", "2\\%"),
+            OldTexText("Sensitivity: ", "90\\%"),
+            OldTexText("Specificity: ", "99\\%"),
         )
         stats.arrange(DOWN, aligned_edge=LEFT)
         colors = [YELLOW, GREEN, BLUE]
@@ -5389,8 +5389,8 @@ class ShowContrastingMethods(Scene):
         h_line.set_stroke(GREY, 2)
 
         titles = VGroup(
-            TexText("Using odds"),
-            TexText("Using probability"),
+            OldTexText("Using odds"),
+            OldTexText("Using probability"),
         )
         titles.set_fill(GREY_A)
         titles[0].to_edge(UP)
@@ -5417,10 +5417,10 @@ class ShowContrastingMethods(Scene):
         )
 
         # Bayes factor method
-        prior_odds = TexText("Prior odds = ", "2:99")
+        prior_odds = OldTexText("Prior odds = ", "2:99")
         bf_eq = VGroup(
-            TexText("Bayes\\\\Factor"),
-            Tex(
+            OldTexText("Bayes\\\\Factor"),
+            OldTex(
                 "= {90\\% \\over 1\\%} = 90",
                 tex_to_color_map={"90\\%": GREEN, "1\\%": BLUE}
             ),
@@ -5442,7 +5442,7 @@ class ShowContrastingMethods(Scene):
         ss_arrow = Arrow(ss_rect.get_right(), bf_eq.get_left(), buff=0.1)
         ss_arrow.match_color(ss_rect)
 
-        ans = Tex("\\text{180:99} \\approx 2:1 \\rightarrow {2 \\over 3}")
+        ans = OldTex("\\text{180:99} \\approx 2:1 \\rightarrow {2 \\over 3}")
         ans.scale(0.9)
         ans.next_to(steps, RIGHT, buff=1.0)
         globals()['ans'] = ans
@@ -5452,7 +5452,7 @@ class ShowContrastingMethods(Scene):
         ))
 
         # PPV formula
-        ppv_formula = Tex(
+        ppv_formula = OldTex(
             """
             \\text{PPV} = 
             {(0.02)(0.9) \\over (0.02)(0.9) + (1 - 0.02)(0.01)}
@@ -5519,7 +5519,7 @@ class MentionPart2(Scene):
         tweet.set_height(5)
         tweet.to_edge(LEFT)
 
-        words = TexText(
+        words = OldTexText(
             "Possible follow-up\\\\breaking this down",
             alignment="",
             font_size=60
@@ -5528,7 +5528,7 @@ class MentionPart2(Scene):
         words.align_to(tweet, UP)
         arrow = Arrow(words.get_bottom() + SMALL_BUFF * DOWN, tweet.get_right(), path_arc=-45 * DEGREES)
 
-        low_words = TexText("How would you answer?")
+        low_words = OldTexText("How would you answer?")
         low_words.match_x(words)
         low_words.align_to(tweet, DOWN)
         low_words.set_color(BLUE)
@@ -5568,8 +5568,8 @@ class OldBayesFactorCode(Scene):
             ])
             positive_percent = int(p_positive * 100)
             percentages = VGroup(
-                TexText(f"{positive_percent}\\% +", color=GREEN),
-                TexText(f"{100 - positive_percent}\\% $-$", color=RED),
+                OldTexText(f"{positive_percent}\\% +", color=GREEN),
+                OldTexText(f"{100 - positive_percent}\\% $-$", color=RED),
             )
             percentages.scale(0.7)
             for percentage, brace in zip(percentages, braces):
@@ -5589,8 +5589,8 @@ class OldBayesFactorCode(Scene):
         )
         boxes.set_height(3)
         labels = VGroup(
-            TexText("With cancer"),
-            TexText("Without cancer"),
+            OldTexText("With cancer"),
+            OldTexText("Without cancer"),
         )
         for box, label in zip(boxes, labels):
             label.next_to(box, UP)
@@ -5622,7 +5622,7 @@ class OldBayesFactorCode(Scene):
         # Pull out Bayes factor
         ratio = VGroup(
             sens_bars[2][0].copy(),
-            Tex("\\phantom{90\\%+} \\over \\phantom{9\\%+}"),
+            OldTex("\\phantom{90\\%+} \\over \\phantom{9\\%+}"),
             spec_bars[2][0].copy(),
             *Tex("=", "10"),
         )
@@ -5654,7 +5654,7 @@ class OldBayesFactorCode(Scene):
         self.remove(new_boxes)
         self.add(ratio)
 
-        bayes_factor_label = TexText("``Bayes factor''")
+        bayes_factor_label = OldTexText("``Bayes factor''")
         bayes_factor_label.next_to(ratio, UP, LARGE_BUFF)
         self.play(Write(bayes_factor_label))
         self.wait()
@@ -5679,7 +5679,7 @@ class OldBayesFactorCode(Scene):
 
 class AskAboutHowItsSoLow(TeacherStudentsScene):
     def construct(self):
-        question = TexText(
+        question = OldTexText(
             "How can it be 1 in 11\\\\"
             "if the test is accurate more\\\\"
             "than 90\\% of the time?",
@@ -5718,8 +5718,8 @@ class HowDoesUpdatingWork(TeacherStudentsScene):
         self.look_at(self.screen)
         self.wait(3)
 
-        sample_pop = TexText("Sample populations (most intuitive)")
-        bayes_factor = TexText("Bayes' factor (most fun)")
+        sample_pop = OldTexText("Sample populations (most intuitive)")
+        bayes_factor = OldTexText("Bayes' factor (most fun)")
         for words in sample_pop, bayes_factor:
             words.move_to(self.hold_up_spot, DOWN)
             words.shift_onto_screen()
@@ -5752,7 +5752,7 @@ class HighlightBayesFactorOverlay(Scene):
     def construct(self):
         rect = Rectangle(height=2, width=3)
         rect.set_stroke(BLUE, 3)
-        words = TexText("How to\\\\use this")
+        words = OldTexText("How to\\\\use this")
         words.next_to(rect, DOWN, buff=1.5)
         words.shift(2 * RIGHT)
         words.match_color(rect)
@@ -5775,7 +5775,7 @@ class HighlightBayesFactorOverlay(Scene):
 
 class CompressedBayesFactorSteps(Scene):
     def construct(self):
-        steps = TexText(
+        steps = OldTexText(
             "Step 1) ", "Express the prior with odds\\\\",
             "Step 2) ", "Compute the Bayes factor\\\\",
             "Step 3) ", "Multiply\\\\",
@@ -5835,7 +5835,7 @@ class LookOverTweet(Scene):
         population.set_fill(GREY_B)
         population[random.randint(0, 1000)].set_fill(YELLOW)
 
-        pop_title = TexText("1", " in ", "1,000")
+        pop_title = OldTexText("1", " in ", "1,000")
         pop_title[0].set_color(YELLOW)
         pop_title.next_to(population, UP)
 
@@ -5856,7 +5856,7 @@ class LookOverTweet(Scene):
         clipboard.move_to(population)
         clipboard.to_edge(UP)
 
-        result = TexText(
+        result = OldTexText(
             "+\\\\",
             "SARS\\\\CoV-2\\\\",
             "Detected"
@@ -5933,7 +5933,7 @@ class LookOverTweet(Scene):
 class DisambiguateFPR(Scene):
     def construct(self):
         # Add title
-        title = TexText(
+        title = OldTexText(
             "1\\% False Positive Rate",
             isolate=["F", "P", "R"],
             font_size=72
@@ -5965,10 +5965,10 @@ class DisambiguateFPR(Scene):
 
         # Draw out grid
         word_grid = VGroup(
-            TexText("True positives", color=GREEN),
-            TexText("False negatives", color=RED_E),
-            TexText("False positives", color=GREEN_D),
-            TexText("True negatives", color=RED),
+            OldTexText("True positives", color=GREEN),
+            OldTexText("False negatives", color=RED_E),
+            OldTexText("False positives", color=GREEN_D),
+            OldTexText("True negatives", color=RED),
         )
         word_box = SurroundingRectangle(word_grid)
         word_box.set_stroke(WHITE, 2)
@@ -5992,8 +5992,8 @@ class DisambiguateFPR(Scene):
             SurroundingRectangle(word_boxes[2:], color=GREY_B),
         )
         group_titles = VGroup(
-            TexText("Have COVID-19", font_size=36),
-            TexText("Don't have COVID-19", font_size=36),
+            OldTexText("Have COVID-19", font_size=36),
+            OldTexText("Don't have COVID-19", font_size=36),
         )
         for box, gt in zip(group_boxes, group_titles):
             gt.next_to(box, UP)
@@ -6043,9 +6043,9 @@ class DisambiguateFPR(Scene):
         def create_fraction(m1, m2, scale_factor=0.75):
             result = VGroup(
                 m1.copy(),
-                Tex("\\quad \\over \\quad"),
+                OldTex("\\quad \\over \\quad"),
                 m1.copy(),
-                Tex("+"),
+                OldTex("+"),
                 m2.copy()
             )
             result[0::2].scale(scale_factor)
@@ -6077,7 +6077,7 @@ class DisambiguateFPR(Scene):
         fracs.to_edge(UP, buff=1.5)
 
         title.add(underline)
-        fpr = TexText(
+        fpr = OldTexText(
             "1\\% ", "F", "", "P", "", "R", "",
             font_size=72
         )
@@ -6112,7 +6112,7 @@ class DisambiguateFPR(Scene):
         )
         self.wait()
 
-        comment = TexText("What we actually want")
+        comment = OldTexText("What we actually want")
         comment.next_to(frac1, UP, buff=0.75)
 
         self.play(FadeIn(comment, 0.5 * UP))
@@ -6124,7 +6124,7 @@ class DisambiguateFPR(Scene):
         fpr.generate_target()
         fpr.target.scale(48 / 72)
         fpr.target.next_to(right_brace, RIGHT)
-        fnr = TexText("10\\% FNR")
+        fnr = OldTexText("10\\% FNR")
         fnr.next_to(left_brace, LEFT)
         VGroup(left_brace, right_brace, fnr).set_color(GREY_A)
 
@@ -6139,16 +6139,16 @@ class DisambiguateFPR(Scene):
             tn.set_opacity, 1.0,
         )
 
-        prior_title = TexText("Prior: 1 in 1,000", font_size=72)
+        prior_title = OldTexText("Prior: 1 in 1,000", font_size=72)
         prior_title.to_edge(UP)
         self.play(FadeIn(prior_title, UP))
         self.wait()
 
         # Show population counts
         full_pop = VGroup(
-            TexText("Imagine"),
+            OldTexText("Imagine"),
             Integer(10000),
-            TexText("People")
+            OldTexText("People")
         )
         full_pop.arrange(RIGHT, aligned_edge=DOWN)
         full_pop.set_color(GREY_A)
@@ -6217,14 +6217,14 @@ class DisambiguateFPR(Scene):
         arrow = Vector(0.8 * RIGHT)
         arrow.next_to(prior_group.target[0], RIGHT)
 
-        post_word = TexText("Posterior:", font_size=72)
+        post_word = OldTexText("Posterior:", font_size=72)
         post_word.set_color(BLUE)
         post_word.next_to(arrow, RIGHT)
         post_word.align_to(prior_group.target[0][0][0], DOWN)
         post_frac = create_fraction(tp_count, fp_count, scale_factor=1)
         post_frac.next_to(post_word, RIGHT, MED_LARGE_BUFF)
 
-        rhs = Tex("\\approx", "8.3\\%")
+        rhs = OldTex("\\approx", "8.3\\%")
         rhs.next_to(post_frac, RIGHT)
 
         self.play(
@@ -6242,9 +6242,9 @@ class BayesFactorForCovidExample(Scene):
     def construct(self):
         # Titles
         titles = VGroup(
-            TexText("Prior odds", color=YELLOW),
-            TexText("Bayes factor", color=GREEN),
-            TexText("Posterior odds", color=BLUE),
+            OldTexText("Prior odds", color=YELLOW),
+            OldTexText("Bayes factor", color=GREEN),
+            OldTexText("Posterior odds", color=BLUE),
         )
         titles.scale(1.25)
         titles[0].shift(FRAME_WIDTH * LEFT / 3)
@@ -6260,7 +6260,7 @@ class BayesFactorForCovidExample(Scene):
         self.add(titles, v_lines)
 
         # Prior odds
-        prior_odds = TexText(
+        prior_odds = OldTexText(
             "1", "\\,:\\,", "999",
             tex_to_color_map={"1": YELLOW}
         )
@@ -6270,7 +6270,7 @@ class BayesFactorForCovidExample(Scene):
         population.set_width(FRAME_WIDTH / 5)
         population[0].set_color(YELLOW)
         population[0].next_to(population[1:], LEFT, MED_LARGE_BUFF)
-        colon = Tex(":")
+        colon = OldTex(":")
         colon.move_to(midpoint(population[0].get_right(), population[1:].get_left()))
         pop_ratio = VGroup(population[0], colon, population[1:])
         pop_ratio.next_to(prior_odds, DOWN, MED_LARGE_BUFF)
@@ -6282,7 +6282,7 @@ class BayesFactorForCovidExample(Scene):
         self.wait()
 
         # Bayes factor
-        bf_lhs = Tex(
+        bf_lhs = OldTex(
             """
             {
                 P(+ \\,|\\, \\text{COVID})
@@ -6297,7 +6297,7 @@ class BayesFactorForCovidExample(Scene):
             }
         )
         bf_lhs.next_to(titles[1], DOWN)
-        bf_rhs = Tex(
+        bf_rhs = OldTex(
             "= {90\\%", "\\over", "1\\%}",
             tex_to_color_map={
                 "90\\%": GREEN_D,
@@ -6309,7 +6309,7 @@ class BayesFactorForCovidExample(Scene):
         bf.set_width(0.9 * FRAME_WIDTH / 3)
         bf.next_to(titles[1], DOWN, MED_LARGE_BUFF)
 
-        eq_90 = Tex("=", "90")
+        eq_90 = OldTex("=", "90")
         eq_90.next_to(bf, DOWN, MED_LARGE_BUFF)
         eq_90[1].save_state()
         eq_90[1].replace(bf_rhs[1:], stretch=True)
@@ -6332,14 +6332,14 @@ class BayesFactorForCovidExample(Scene):
         self.wait()
 
         # Posterior
-        post_odds = Tex("90", ":", "999")
+        post_odds = OldTex("90", ":", "999")
         post_odds.match_x(titles[2])
         post_odds.match_y(prior_odds)
 
         arrow = Vector(DOWN)
         arrow.next_to(post_odds, DOWN)
 
-        fraction = Tex(
+        fraction = OldTex(
             "{90", "\\over", "90", "+", "999}",
             "\\approx", "8.3\\%"
         )
@@ -6357,9 +6357,9 @@ class BayesFactorForCovidExample(Scene):
         )
 
         # Approximate
-        approx1 = Tex("\\approx", "90", ":", "1,000")
-        approx2 = Tex("\\approx", "9", ":", "100")
-        approx3 = Tex("\\approx 9\\%")
+        approx1 = OldTex("\\approx", "90", ":", "1,000")
+        approx2 = OldTex("\\approx", "9", ":", "100")
+        approx3 = OldTex("\\approx 9\\%")
 
         approx1.next_to(arrow, DOWN)
         approx2.move_to(approx1)
@@ -6429,7 +6429,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
         self.wait()
 
         # Change prior
-        ineq = TexText("Prior > $\\frac{1}{1,000}$", font_size=72)
+        ineq = OldTexText("Prior > $\\frac{1}{1,000}$", font_size=72)
         ineq.next_to(tweet, LEFT, LARGE_BUFF)
 
         self.play(Write(ineq))
@@ -6458,7 +6458,7 @@ class WhyIsThisWrong(TeacherStudentsScene):
         )
         self.wait()
 
-        percent = Tex("8.3 \\%", font_size=72)
+        percent = OldTex("8.3 \\%", font_size=72)
         percent.next_to(clipboard, RIGHT, buff=0.6)
         percent_cross = Cross(percent, stroke_width=8)
 
@@ -6489,8 +6489,8 @@ class TotalPopulationVsSymptomatic(Scene):
         self.add(v_line)
 
         titles = VGroup(
-            TexText("Population"),
-            TexText("Population", " \\emph{with symptoms}"),
+            OldTexText("Population"),
+            OldTexText("Population", " \\emph{with symptoms}"),
         )
         titles[1][1].set_color(BLUE)
         for title, u in zip(titles, [-1, 1]):
@@ -6514,8 +6514,8 @@ class TotalPopulationVsSymptomatic(Scene):
         covid_pop.shift(DOWN)
 
         full_pop_words = VGroup(
-            TexText("10 ", "with COVID", color=YELLOW),
-            TexText("9990 ", "without COVID", color=GREY_B),
+            OldTexText("10 ", "with COVID", color=YELLOW),
+            OldTexText("9990 ", "without COVID", color=GREY_B),
         )
         full_pop_words.arrange(RIGHT, buff=LARGE_BUFF)
         full_pop_words.scale(0.7)
@@ -6542,7 +6542,7 @@ class TotalPopulationVsSymptomatic(Scene):
 
         arrow = Vector(DOWN).next_to(titles[1][1], DOWN)
         arrow.set_color(BLUE)
-        prop_ex = Tex("\\sim \\frac{1}{50}", "\\text{, say}")
+        prop_ex = OldTex("\\sim \\frac{1}{50}", "\\text{, say}")
         prop_ex[0].set_color(BLUE)
         prop_ex.next_to(arrow, DOWN)
 
@@ -6564,7 +6564,7 @@ class TotalPopulationVsSymptomatic(Scene):
         sym_pop.target.shift(DOWN)
         sym_pop.target.set_color(BLUE)
 
-        sym_pop_label = TexText("$\\sim 200$", " without COVID")
+        sym_pop_label = OldTexText("$\\sim 200$", " without COVID")
         sym_pop_label.set_color(GREY_B)
         sym_pop_label.scale(0.7)
         sym_pop_label.next_to(sym_pop.target, UP, buff=0.2)
@@ -6586,7 +6586,7 @@ class TotalPopulationVsSymptomatic(Scene):
         )
         sym_covid_pop.target.next_to(sym_pop, LEFT, aligned_edge=UP)
 
-        sym_covid_pop_label = TexText("5", " with COVID")
+        sym_covid_pop_label = OldTexText("5", " with COVID")
         sym_covid_pop_label.scale(0.7)
         sym_covid_pop_label.next_to(sym_covid_pop.target, UP, buff=0.2)
         sym_covid_pop_label.set_color(YELLOW)
@@ -6628,7 +6628,7 @@ class TotalPopulationVsSymptomatic(Scene):
         self.wait()
 
         # With test result
-        right_title = TexText(
+        right_title = OldTexText(
             "Population ", "\\emph{with symptoms}\\\\",
             "and a positive test result"
         )
@@ -6661,8 +6661,8 @@ class TotalPopulationVsSymptomatic(Scene):
         pc_pop.add(black_rect)
         pc_pop.set_opacity(0)
 
-        pc_pop_label = TexText("4.5 with COVID", color=YELLOW)
-        pn_pop_label = TexText("~2 without COVID", color=GREY_B)
+        pc_pop_label = OldTexText("4.5 with COVID", color=YELLOW)
+        pn_pop_label = OldTexText("~2 without COVID", color=GREY_B)
         labels = VGroup(pc_pop_label, pn_pop_label)
         labels.scale(0.7)
         labels.set_opacity(0)
@@ -6701,7 +6701,7 @@ class TotalPopulationVsSymptomatic(Scene):
         self.wait()
 
         # Final fraction
-        equation = Tex(
+        equation = OldTex(
             "{4.5 \\over 4.5 + {2}} \\approx 69.2\\%",
             tex_to_color_map={
                 "4.5": YELLOW,
@@ -6752,9 +6752,9 @@ class TotalPopulationVsSymptomatic(Scene):
         # Relevant odds labels
         def get_odds_label(n, k, n_color=YELLOW, k_color=GREY_B):
             result = VGroup(
-                TexText("Odds = "),
+                OldTexText("Odds = "),
                 Integer(n, color=n_color, edge_to_fix=UR),
-                TexText(":"),
+                OldTexText(":"),
                 Integer(k, color=k_color, edge_to_fix=UL),
             )
             result.scale(1.5)
@@ -6798,11 +6798,11 @@ class TotalPopulationVsSymptomatic(Scene):
 
         # Bayes factors
         bf_labels = VGroup(
-            TexText(
+            OldTexText(
                 "Bayes factor for symptoms",
                 tex_to_color_map={"for symptoms": BLUE}
             ),
-            TexText(
+            OldTexText(
                 "Bayes factor positive test",
                 tex_to_color_map={"positive test": GREEN}
             ),
@@ -6819,7 +6819,7 @@ class TotalPopulationVsSymptomatic(Scene):
             "=": WHITE,
         }
         bf_equations = VGroup(
-            Tex(
+            OldTex(
                 """
                 {P(\\text{Symp} \\,|\\, \\text{COVID})
                 \\over
@@ -6828,7 +6828,7 @@ class TotalPopulationVsSymptomatic(Scene):
                 """,
                 tex_to_color_map=t2c,
             ),
-            Tex(
+            OldTex(
                 """
                 {P(+ \\,|\\, \\text{COVID}) \\over P(+ \\,|\\, \\text{No COVID})}
                 = {90\\% \\over 1\\%} = 90
@@ -6842,7 +6842,7 @@ class TotalPopulationVsSymptomatic(Scene):
             eq.next_to(label, DOWN, buff=0.75)
 
         assumption_brace = Brace(bf_equations[0][-3:], DOWN)
-        assumption_word = TexText("Assumption")
+        assumption_word = OldTexText("Assumption")
         assumption_word.next_to(assumption_brace, DOWN)
 
         self.play(
@@ -6860,7 +6860,7 @@ class TotalPopulationVsSymptomatic(Scene):
         self.play(ShowCreationThenFadeOut(odds_underlines[0]))
         new_left_odds = get_odds_label(1, 1000)[1:]
         new_left_odds.move_to(odds_labels[0][1:], UL)
-        approx = Tex("\\approx", font_size=72)
+        approx = OldTex("\\approx", font_size=72)
         approx.rotate(90 * DEGREES)
         approx.next_to(odds_labels[0][1:], DOWN, buff=0.5)
         self.play(
@@ -6917,7 +6917,7 @@ class TotalPopulationVsSymptomatic(Scene):
         self.wait()
 
         # Posterior as a probability
-        final_frac = Tex(
+        final_frac = OldTex(
             "{{9} \\over {9} + {4}} \\approx 69.2\\%",
             tex_to_color_map={
                 "{9}": YELLOW,
@@ -6937,12 +6937,12 @@ class TotalPopulationVsSymptomatic(Scene):
 
         # Change symptom Bayes factor
         old_assumption = bf_equations[0][-3:]
-        new_assumption = Tex("2")
+        new_assumption = OldTex("2")
         new_assumption.replace(old_assumption, 1)
         new_assumption.scale(0.8)
         new_assumption.set_color(BLUE)
 
-        change_word = TexText("Change this", font_size=72)
+        change_word = OldTexText("Change this", font_size=72)
         change_word.next_to(assumption_word, DOWN, buff=1.5)
         change_word.shift(LEFT)
         change_word.set_color(RED)
@@ -7001,7 +7001,7 @@ class TotalPopulationVsSymptomatic(Scene):
         self.wait()
 
         # Prob calculation
-        new_final_frac = Tex(
+        new_final_frac = OldTex(
             "{{9} \\over {9} + {50}} \\approx 15.3\\%",
             tex_to_color_map={
                 "{9}": YELLOW,
@@ -7022,11 +7022,11 @@ class ContrastTextbookAndRealWorld(Scene):
 class TwoMissteps(Scene):
     def construct(self):
         words = VGroup(
-            TexText(
+            OldTexText(
                 "Misstep 1: ",
                 "Fail to consider the prevalence."
             ),
-            TexText(
+            OldTexText(
                 "Misstep 2: ",
                 "Assume prior = prevalence"
             ),

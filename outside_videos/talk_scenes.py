@@ -4,8 +4,8 @@ from manim_imports_ext import *
 class DoingMathVsHowMathIsPresented(Scene):
     def construct(self):
         titles = VGroup(
-            TexText("How math is presented"),
-            TexText("Actually doing math"),
+            OldTexText("How math is presented"),
+            OldTexText("Actually doing math"),
         )
         for title, vect in zip(titles, [LEFT, RIGHT]):
             title.scale(1.2)
@@ -36,9 +36,9 @@ class DoingMathVsHowMathIsPresented(Scene):
 
     def get_mark(self, prob):
         if random.random() < prob:
-            mark = Tex("\\checkmark").set_color(GREEN)
+            mark = OldTex("\\checkmark").set_color(GREEN)
         else:
-            mark = Tex("\\times").set_color(RED)
+            mark = OldTex("\\times").set_color(RED)
         mark.set_height(1)
         mark.set_width(1, stretch=True)
         return mark
@@ -47,12 +47,12 @@ class DoingMathVsHowMathIsPresented(Scene):
 class PiCharts(Scene):
     def construct(self):
         # Add top lines
-        equation = Tex(
+        equation = OldTex(
             "\\frac{1}{10}", "+", "\\frac{2}{5}", "=", "\\; ?"
         )
         equation.scale(2)
         equation.to_edge(UP)
-        vs = TexText("vs.")
+        vs = OldTexText("vs.")
         vs.scale(3)
         vs.next_to(equation, DOWN, LARGE_BUFF)
         self.add(equation, vs)
@@ -60,10 +60,10 @@ class PiCharts(Scene):
         # Add pi charts
         pi_equation = VGroup(
             self.get_pi_chart(10),
-            Tex("+").scale(2),
+            OldTex("+").scale(2),
             self.get_pi_chart(5),
-            Tex("=").scale(2),
-            Tex("?").scale(2),
+            OldTex("=").scale(2),
+            OldTex("?").scale(2),
         )
         pi_equation[0][0].set_fill(RED)
         pi_equation[2][:2].set_fill(RED)
@@ -75,7 +75,7 @@ class PiCharts(Scene):
 
         # Swap
         pi_equation.to_edge(UP)
-        arrow = Tex("\\downarrow").scale(3)
+        arrow = OldTex("\\downarrow").scale(3)
         arrow.next_to(pi_equation[1], DOWN, LARGE_BUFF)
         equation.next_to(arrow, DOWN)
         equation.shift(0.7 * RIGHT)
@@ -121,7 +121,7 @@ class AskAboutCircleProportion(Scene):
         arc.set_stroke(YELLOW, 4)
         arc.move_arc_center_to(circles[1].get_center())
 
-        question = TexText("What proportion of the circle?")
+        question = OldTexText("What proportion of the circle?")
         question.set_height(0.6)
         question.to_corner(UL)
         arrow = Arrow(
@@ -135,7 +135,7 @@ class AskAboutCircleProportion(Scene):
         self.add(question)
         self.add(arrow)
 
-        answer = Tex("1/3")
+        answer = OldTex("1/3")
         answer.set_height(0.9)
         answer.set_color(YELLOW)
         answer.next_to(question, RIGHT, LARGE_BUFF)
@@ -145,26 +145,26 @@ class AskAboutCircleProportion(Scene):
 class BorweinIntegrals(Scene):
     def construct(self):
         ints = VGroup(
-            Tex(
+            OldTex(
                 "\\int_0^\\infty",
                 "\\frac{\\sin(x)}{x}",
                 "dx = \\frac{\\pi}{2}"
             ),
-            Tex(
+            OldTex(
                 "\\int_0^\\infty",
                 "\\frac{\\sin(x)}{x}",
                 "\\frac{\\sin(x/3)}{x/3}",
                 "dx = \\frac{\\pi}{2}"
             ),
-            Tex(
+            OldTex(
                 "\\int_0^\\infty",
                 "\\frac{\\sin(x)}{x}",
                 "\\frac{\\sin(x/3)}{x/3}",
                 "\\frac{\\sin(x/5)}{x/5}",
                 "dx = \\frac{\\pi}{2}"
             ),
-            Tex("\\vdots"),
-            Tex(
+            OldTex("\\vdots"),
+            OldTex(
                 "\\int_0^\\infty",
                 "\\frac{\\sin(x)}{x}",
                 "\\frac{\\sin(x/3)}{x/3}",
@@ -173,7 +173,7 @@ class BorweinIntegrals(Scene):
                 "\\frac{\\sin(x/13)}{x/13}",
                 "dx = \\frac{\\pi}{2}"
             ),
-            Tex(
+            OldTex(
                 "\\int_0^\\infty",
                 "\\frac{\\sin(x)}{x}",
                 "\\frac{\\sin(x/3)}{x/3}",

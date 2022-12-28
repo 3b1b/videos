@@ -109,7 +109,7 @@ class MirrorScene(Scene):
     def get_theta_symbol(self, arc=None, buff=0.15):
         if arc is None:
             arc = self.arc
-        symbol = Tex("\\theta")
+        symbol = OldTex("\\theta")
 
         def update_symbol(symbol):
             midpoint = arc.point_from_proportion(0.5)
@@ -218,16 +218,16 @@ class MirrorScene(Scene):
 
     # Displays
     def get_theta_display(self):
-        lhs = Tex("\\theta = ")
+        lhs = OldTex("\\theta = ")
         radians = DecimalNumber()
         radians.add_updater(
             lambda m: m.set_value(self.get_theta())
         )
-        radians_word = TexText("radians")
+        radians_word = OldTexText("radians")
         radians_word.next_to(
             radians, RIGHT, aligned_edge=DOWN
         )
-        equals = Tex("=")
+        equals = OldTex("=")
         degrees = Integer(0, unit="^\\circ")
         degrees.add_updater(
             lambda m: m.set_value(
@@ -241,7 +241,7 @@ class MirrorScene(Scene):
         return group
 
     def get_count_display_word(self):
-        result = TexText("\\# Bounces: ")
+        result = OldTexText("\\# Bounces: ")
         result.to_corner(UL)
         result.shift(DOWN)
         result.set_color(YELLOW)
@@ -961,8 +961,8 @@ class MirrorAndWiresOverlay(MirrorScene):
             )
         dr_arc = always_redraw(get_dr_arc)
 
-        incidence = TexText("Incidence")
-        reflection = TexText("Reflection")
+        incidence = OldTexText("Incidence")
+        reflection = OldTexText("Reflection")
         words = VGroup(incidence, reflection)
         words.scale(0.75)
         incidence.add_updater(

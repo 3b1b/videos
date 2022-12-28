@@ -11,25 +11,25 @@ class Questions(Scene):
         }
         TexText.CONFIG.update(kw)
         questions = VGroup(
-            TexText(
+            OldTexText(
                 "Who is your favorite mathematician?"
             ),
-            TexText(
+            OldTexText(
                 "A teenage kid walks up to you and says they\\\\",
                 "hate maths. What do you tell/show them?"
             ),
-            TexText(
+            OldTexText(
                 "What advice would you want to give to give a\\\\",
                 "math enthusiast suffering from an anxiety\\\\",
                 "disorder, clinical depression and ADHD?",
             ),
-            TexText(
+            OldTexText(
                 "Is Ben, Ben and Blue still a thing?"
             ),
-            TexText(
+            OldTexText(
                 "Favorite podcasts?"
             ),
-            TexText(
+            OldTexText(
                 "Hey Grant, if you had, both, the responsibility and\\\\",
                 "opportunity to best introduce the world of mathematics\\\\",
                 "to curious and intelligent minds before they are shaped\\\\",
@@ -37,12 +37,12 @@ class Questions(Scene):
                 "education system of today, what would you do?  (Asking\\\\",
                 "because I will soon be a father).\\\\",
             ),
-            TexText(
+            OldTexText(
                 "What's something you think could've\\\\",
                 "been discovered long before it was\\\\",
                 "actually discovered?",
             ),
-            TexText(
+            OldTexText(
                 "Can we fix math on Wikipedia? Really serious\\\\",
                 "here. I constantly go there after your vids for\\\\",
                 "a bit of deeper dive and learn - nothing more, ever.\\\\",
@@ -65,7 +65,7 @@ class Questions(Scene):
 
 class MathematicianPlusX(Scene):
     def construct(self):
-        text = TexText(
+        text = OldTexText(
             "Side note:\\\\",
             "``The Mathematician + X''\\\\",
             "would make a great band name.",
@@ -92,8 +92,8 @@ class NoClearCutPath(Scene):
         paths.set_stroke(WHITE, 2)
 
         labels = VGroup(
-            TexText("Pure mathematicians"),
-            TexText("Applied mathematicians"),
+            OldTexText("Pure mathematicians"),
+            OldTexText("Applied mathematicians"),
         )
         for label, path in zip(labels, paths):
             label.next_to(path.get_end(), RIGHT)
@@ -173,8 +173,8 @@ class Cumulative(Scene):
         ])
         rects.arrange(UP, buff=0)
 
-        check = Tex("\\checkmark").set_color(GREEN)
-        cross = Tex("\\times").set_color(RED)
+        check = OldTex("\\checkmark").set_color(GREEN)
+        cross = OldTex("\\times").set_color(RED)
         checks, crosses = [
             VGroup(*[
                 mob.copy().next_to(rect, RIGHT, SMALL_BUFF)
@@ -221,7 +221,7 @@ class Cumulative(Scene):
 
 class HolidayStorePromotionTime(HappyHolidays):
     def construct(self):
-        title = TexText("Holiday store promotion time!")
+        title = OldTexText("Holiday store promotion time!")
         title.set_width(FRAME_WIDTH - 1)
         title.to_edge(UP)
         self.add(title)

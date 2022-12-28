@@ -35,7 +35,7 @@ class ThisVideo(TeacherStudentsScene):
         deriv_brace, this_brace, integral_brace = braces
 
         tex_mobs = [
-            Tex(*args)
+            OldTex(*args)
             for args in [
                 ("{df ", " \\over \\, ", " dx}"),
                 ("\\lim_{h \\to 0}",),
@@ -88,7 +88,7 @@ class LimitJustMeansApproach(PiCreatureScene):
         evaluated_expressions = self.get_evaluated_expressions()
         evaluated_expressions.next_to(limit_expression, DOWN, buff = LARGE_BUFF)
         brace = Brace(evaluated_expressions[0][-1], DOWN)
-        question = TexText("What does this ``approach''?")
+        question = OldTexText("What does this ``approach''?")
         question.next_to(brace, DOWN)
 
         point = VectorizedPoint(limit_expression.get_right())
@@ -121,7 +121,7 @@ class LimitJustMeansApproach(PiCreatureScene):
         return self.pi_creature
 
     def get_limit_expression(self):
-        lim = Tex("\\lim_", "{dx", " \\to 0}")
+        lim = OldTex("\\lim_", "{dx", " \\to 0}")
         lim.set_color_by_tex("dx", self.dx_color)
         ratio = self.get_expression("dx")
         ratio.next_to(lim, RIGHT)
@@ -135,14 +135,14 @@ class LimitJustMeansApproach(PiCreatureScene):
             expression = self.get_expression(dx_str)            
             dx = float(dx_str)
             ratio = ((2+dx)**3-2**3)/dx
-            ratio_mob = Tex("%.6f\\dots"%ratio)
-            group = VGroup(expression, Tex("="), ratio_mob)
+            ratio_mob = OldTex("%.6f\\dots"%ratio)
+            group = VGroup(expression, OldTex("="), ratio_mob)
             group.arrange(RIGHT)
             result.add(group)
         return result
 
     def get_expression(self, dx):
-        result = Tex(
+        result = OldTex(
             "{(2 + ", str(dx), ")^3 - 2^3 \\over", str(dx)
         )
         result.set_color_by_tex(dx, self.dx_color)
@@ -151,7 +151,7 @@ class LimitJustMeansApproach(PiCreatureScene):
 class Goals(Scene):
     def construct(self):
         goals = [
-            TexText("Goal %d:"%d, s)
+            OldTexText("Goal %d:"%d, s)
             for d, s in [
                 (1, "Formal definition of derivatives"),
                 (2, "$(\\epsilon, \\delta)$ definition of a limit"),
@@ -202,7 +202,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
             dx_line_color = self.dx_color,
             secant_line_color = self.secant_line_color,
         )
-        derivative = Tex(
+        derivative = OldTex(
             "{df", "\\over \\,", "dx}", "(", str(self.start_x), ")"
         )
         derivative.set_color_by_tex("df", self.df_color)
@@ -214,7 +214,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
         derivative.move_to(self.coords_to_point(7, 4))
         derivative.save_state()
         deriv_brace = Brace(derivative)
-        dx_to_0 = Tex("dx", "\\to 0")
+        dx_to_0 = OldTex("dx", "\\to 0")
         dx_to_0.set_color_by_tex("dx", self.dx_color)
         dx_to_0.next_to(deriv_brace, DOWN)
 
@@ -262,7 +262,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
         self.wait()
 
         #Write out fuller limit
-        new_deriv = Tex(
+        new_deriv = OldTex(
             "{f", "(", str(self.start_x), "+", "dx", ")", 
             "-", "f", "(", str(self.start_x), ")",
             "\\over \\,", "dx"
@@ -300,7 +300,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
         self.wait()
 
         #Introduce limit notation
-        lim = Tex("\\lim").scale(1.3)
+        lim = OldTex("\\lim").scale(1.3)
         dx_to_0.generate_target()
         dx_to_0.target.scale(0.7)
         dx_to_0.target.next_to(lim, DOWN, buff = SMALL_BUFF)
@@ -335,7 +335,7 @@ class RefreshOnDerivativeDefinition(GraphScene):
 class RantOpenAndClose(Scene):
     def construct(self):
         opening, closing = [
-            TexText(
+            OldTexText(
                 start, "Rant on infinitesimals", "$>$",
                 arg_separator = ""
             )
@@ -396,7 +396,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         self.wait()
         for tex in "\\Delta x", "h":
             dx_list_replacement = [
-                Tex(
+                OldTex(
                     tex
                 ).set_color(self.dx_color).move_to(dx, DOWN)
                 for dx in dx_list
@@ -422,7 +422,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
     def compare_rhs_and_lhs(self):
         self.derivative.restore()
         lhs = self.derivative
-        equals = Tex("=")
+        equals = OldTex("=")
         rhs = VGroup(self.lim, self.dx_to_0, self.new_deriv)
         rhs.generate_target()
         rhs.target.next_to(self.pi_creature, UP, MED_LARGE_BUFF)
@@ -437,7 +437,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
             ).scale(1.5).rotate(-np.pi/12)
             for tex in ("df", "dx")
         ])
-        d_words = TexText("""
+        d_words = OldTexText("""
             Limit idea is
             built in
         """)
@@ -453,7 +453,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         for rect in rects:
             rect.stretch_to_fit_width(rect.get_width()+2*MED_SMALL_BUFF)
             rect.stretch_to_fit_height(rect.get_height()+2*MED_SMALL_BUFF)
-        formal_definition_words = TexText("""
+        formal_definition_words = OldTexText("""
             Formal derivative definition 
         """)
         formal_definition_words.set_width(rhs_rect.get_width())
@@ -533,7 +533,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         self.wait()
 
 
-        words = TexText("No ``infinitely small''")
+        words = OldTexText("No ``infinitely small''")
         words.next_to(
             self.definition_group, DOWN,
             buff = LARGE_BUFF, 
@@ -549,7 +549,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         moving_h.original_center = moving_h.get_center()
         dx_group = VGroup()
         for h in h_group:
-            dx = Tex("dx")
+            dx = OldTex("dx")
             dx.set_color(h.get_color())
             dx.replace(h, dim_to_match = 1)
             dx_group.add(dx)
@@ -593,7 +593,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
         self.wait()
         dx = self.ss_group.dx_label
         dx.save_state()
-        h = Tex("h")
+        h = OldTex("h")
         h.set_color(dx.get_color())
         h.replace(dx, dim_to_match = 1)
         self.play(Transform(dx, h, path_arc = np.pi))
@@ -615,7 +615,7 @@ class DiscussLowercaseDs(RefreshOnDerivativeDefinition, PiCreatureScene, ZoomedS
 
 class OtherViewsOfDx(TeacherStudentsScene):
     def construct(self):
-        definition = Tex(
+        definition = OldTex(
             "{df", "\\over \\,", "dx}", "(", "2", ")", "=",
             "\\lim", "_{h", "\\to", "0}", 
             "{f", "(", "2", "+", "h", ")", "-", "f", "(", "2", ")",
@@ -637,7 +637,7 @@ class OtherViewsOfDx(TeacherStudentsScene):
         self.add(definition)
 
         statements = [
-            TexText(*args)
+            OldTexText(*args)
             for args in [
                 ("Why the new \\\\ variable", "$h$", "?"),
                 ("$dx$", "is more $\\dots$ contentious."),
@@ -731,7 +731,7 @@ class OtherViewsOfDx(TeacherStudentsScene):
 class GoalsListed(Scene):
     def construct(self):
         goals = VGroup(*[
-            TexText("Goal %d: %s"%(d, s))
+            OldTexText("Goal %d: %s"%(d, s))
             for d, s in zip(it.count(1), [
                 "Formal definition of a derivative",
                 "$(\\epsilon, \\delta)$ definition of limits",
@@ -782,14 +782,14 @@ class GraphLimitExpression(GraphScene):
         self.show_epsilon_delta_intuition()
 
     def introduce_function(self):
-        expression = Tex(
+        expression = OldTex(
             "{(", "2", "+", "h", ")", "^3",
             "-", "(", "2", ")", "^3",
             "\\over \\,", "h}",
             arg_separator = "",
         )
-        limit = Tex("\\lim", "_{h", "\\to 0}")
-        derivative = Tex(
+        limit = OldTex("\\lim", "_{h", "\\to 0}")
+        derivative = OldTex(
             "{d(x^3)", "\\over \\,", "dx}", "(", "2", ")"
         )
         tex_to_color = {
@@ -860,7 +860,7 @@ class GraphLimitExpression(GraphScene):
         expression = self.expression
         
         dot = Dot(self.graph_origin, color = GREEN)
-        h_equals_0 = Tex("h", "=", "0", "?")
+        h_equals_0 = OldTex("h", "=", "0", "?")
         h_equals_0.next_to(self.graph_origin, UP+RIGHT, LARGE_BUFF)
         for tex in "h", "0":
             h_equals_0.set_color_by_tex(tex, GREEN)
@@ -871,18 +871,18 @@ class GraphLimitExpression(GraphScene):
         new_expression = expression.deepcopy()
         h_group = VGroup(*new_expression.get_parts_by_tex("h"))
         for h in h_group:
-            zero = Tex("0")
+            zero = OldTex("0")
             zero.set_color(h.get_color())
             zero.replace(h, dim_to_match = 1)
             Transform(h, zero).update(1)
-        rhs = Tex("=", "{\\, 0\\,", "\\over \\,", "0\\,}")
+        rhs = OldTex("=", "{\\, 0\\,", "\\over \\,", "0\\,}")
         rhs.set_color_by_tex("0", GREEN)
         rhs.next_to(new_expression, RIGHT)
         equation = VGroup(new_expression, rhs)
         equation.next_to(expression, DOWN, buff = LARGE_BUFF)
 
         ud_brace = Brace(VGroup(*rhs[1:]), DOWN)
-        undefined = TexText("Undefined")
+        undefined = OldTexText("Undefined")
         undefined.next_to(ud_brace, DOWN)
         undefined.to_edge(RIGHT)
 
@@ -1003,7 +1003,7 @@ class GraphLimitExpression(GraphScene):
         #Write limit
         limit = self.limit
         limit.next_to(self.expression, LEFT)
-        equals, twelve = rhs = Tex("=", "12")
+        equals, twelve = rhs = OldTex("=", "12")
         rhs.next_to(self.expression, RIGHT)
         twelve_copy = twelve.copy()
         limit_group = VGroup(limit, rhs)
@@ -1293,13 +1293,13 @@ class LimitCounterExample(GraphLimitExpression):
         self.ed_group = ed_group
 
     def write_limit_not_defined(self):
-        limit = Tex(
+        limit = OldTex(
             "\\lim", "_{h", "\\to 0}", "f(", "h", ")"
         )
         limit.set_color_by_tex("h", GREEN)
         limit.move_to(self.coords_to_point(2, 1.5))
 
-        words = TexText("is not defined")
+        words = OldTexText("is not defined")
         words.set_color(RED)
         words.next_to(limit, RIGHT, align_using_submobjects = True)
 
@@ -1386,7 +1386,7 @@ class LimitCounterExample(GraphLimitExpression):
 
 class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
     def construct(self):
-        title = Tex("(\\epsilon, \\delta) \\text{ definition}")
+        title = OldTex("(\\epsilon, \\delta) \\text{ definition}")
         title.next_to(self.get_teacher().get_corner(UP+LEFT), UP)
         title.save_state()
         title.shift(DOWN)
@@ -1416,7 +1416,7 @@ class PrefaceToEpsilonDeltaDefinition(TeacherStudentsScene):
             added_anims = [self.get_teacher().look_at, UP+LEFT]
         )
         self.wait(3)
-        words = TexText(
+        words = OldTexText(
             "It's a glimpse of\\\\",
             "real analysis"
         )
@@ -1466,7 +1466,7 @@ class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
         twelve_copy = twelve.copy()
         twelve_copy.next_to(twelve_line)
 
-        distance = TexText("Distance")
+        distance = OldTexText("Distance")
         distance.next_to(epsilon_group.labels, DOWN, LARGE_BUFF)
         distance.to_edge(RIGHT)
         arrows = VGroup(*[
@@ -1621,7 +1621,7 @@ class EpsilonDeltaExample(GraphLimitExpression, ZoomedScene):
         ])
         result.braces.shift(self.holes[0].get_height()*DOWN)
         result.labels = VGroup(*[
-            Tex("\\delta").scale(
+            OldTex("\\delta").scale(
                 1./self.zoom_factor
             )
             for brace in result.braces
@@ -1647,7 +1647,7 @@ class EpsilonDeltaCounterExample(LimitCounterExample, EpsilonDeltaExample):
 
     def introduce_epsilon(self):
         epsilon_group = self.get_epsilon_group(0.4, 1.5)
-        rhs = Tex("=0.4")
+        rhs = OldTex("=0.4")
         label = epsilon_group.labels[1]
         rhs.next_to(label, RIGHT)
         epsilon_group.add(rhs)
@@ -1713,11 +1713,11 @@ class EpsilonDeltaCounterExample(LimitCounterExample, EpsilonDeltaExample):
 
 class TheoryHeavy(TeacherStudentsScene):
     def construct(self):
-        lhs = Tex(
+        lhs = OldTex(
             "{df", "\\over \\,", "dx}", "(", "x", ")"
         )
-        equals = Tex("=")
-        rhs = Tex(
+        equals = OldTex("=")
+        rhs = OldTex(
             "\\lim", "_{h", "\\to 0}", 
             "{f", "(", "x", "+", "h", ")", "-", "f", "(", "x", ")",
             "\\over \\,", "h}"
@@ -1732,7 +1732,7 @@ class TheoryHeavy(TeacherStudentsScene):
         derivative.next_to(self.get_pi_creatures(), UP, buff = MED_LARGE_BUFF)
 
         lim = rhs.get_part_by_tex("lim")
-        epsilon_delta = Tex("(\\epsilon, \\delta)")
+        epsilon_delta = OldTex("(\\epsilon, \\delta)")
         epsilon_delta.next_to(lim, UP, buff = 1.5*LARGE_BUFF)
         arrow = Arrow(epsilon_delta, lim, color = WHITE)
 
@@ -1882,7 +1882,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
     def show_non_definedness_at_one(self):
         morty = self.get_primary_pi_creature()
-        words = Tex("\\text{Try }", "x", "=1")
+        words = OldTex("\\text{Try }", "x", "=1")
         words.set_color_by_tex("x", self.x_color, substring = False)
 
         v_line, alt_v_line = [
@@ -1903,17 +1903,17 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
         func_1 = self.get_func_label("1")
         func_1.next_to(self.func_label, DOWN, buff = MED_LARGE_BUFF)
-        rhs = Tex("\\Rightarrow \\frac{0}{0}")
+        rhs = OldTex("\\Rightarrow \\frac{0}{0}")
         rhs.next_to(func_1, RIGHT)
         func_1_group = VGroup(func_1, *rhs)
         func_1_group.add_to_back(BackgroundRectangle(func_1_group))
 
-        lim = Tex("\\lim", "_{x", "\\to 1}")
+        lim = OldTex("\\lim", "_{x", "\\to 1}")
         lim.set_color_by_tex("x", self.x_color)
         lim.move_to(self.func_label, LEFT)
         self.func_label.generate_target()
         self.func_label.target.next_to(lim, RIGHT)
-        equals_q = Tex("=", "???")
+        equals_q = OldTex("=", "???")
         equals_q.next_to(self.func_label.target, RIGHT)
 
         self.play(FadeIn(morty))
@@ -1988,7 +1988,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         result = self.func(num)
         label = self.get_func_label(num)
         label.add_background_rectangle()
-        rhs = Tex("= %.4f\\dots"%result)
+        rhs = OldTex("= %.4f\\dots"%result)
         rhs.next_to(label, RIGHT)
         approx_group = VGroup(label, rhs)
         approx_group.set_width(FRAME_X_RADIUS-2*MED_LARGE_BUFF)
@@ -2129,7 +2129,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
             tip_length = arrow_tip_length,
             color = WHITE,
         )
-        dx_label = Tex("dx")
+        dx_label = OldTex("dx")
         dx_label.scale(zoom_tex_scale_factor)
         dx_label.next_to(dx_arrow, UP, buff = SMALL_BUFF/self.zoom_factor)
 
@@ -2153,7 +2153,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         ]
         d_labels = []
         for tex_args, arrow in tex_arrow_pairs:
-            label = Tex(*tex_args)
+            label = OldTex(*tex_args)
             label.set_color_by_tex("x", self.x_color)
             label.set_color_by_tex("dx", self.dx_color)
             label.scale(zoom_tex_scale_factor)
@@ -2215,7 +2215,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         brace = Brace(Line(LEFT, RIGHT), UP)
         brace.set_width(cos_pi.get_width())
         brace.move_to(cos_pi.get_top(), DOWN)
-        brace_text = TexText(
+        brace_text = OldTexText(
             """
                 \\begin{flushleft} 
                 Proportionality
@@ -2226,7 +2226,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         brace_text.scale(0.9*zoom_tex_scale_factor)
         brace_text.add_background_rectangle()
         brace_text.next_to(brace, UP, SMALL_BUFF/self.zoom_factor, LEFT)
-        neg_one = Tex("-", "1")
+        neg_one = OldTex("-", "1")
         neg_one.add_background_rectangle()
         neg_one.scale(zoom_tex_scale_factor)
 
@@ -2291,7 +2291,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
     def substitute_x_equals_1(self, tex_mob, zoom_tex_scale_factor):
         x = tex_mob.get_part_by_tex("x")
-        equation = Tex("x", "=", "1")
+        equation = OldTex("x", "=", "1")
         eq_x, equals, one = equation
         equation.scale(zoom_tex_scale_factor)
         equation.next_to(
@@ -2301,7 +2301,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         )
         equation.set_color_by_tex("x", self.x_color)
         equation.set_color_by_tex("1", self.x_color)
-        dot_one = Tex("\\cdot", "1")
+        dot_one = OldTex("\\cdot", "1")
         dot_one.scale(zoom_tex_scale_factor)
         dot_one.set_color(self.x_color)
         dot_one.move_to(x, DOWN+LEFT)
@@ -2325,13 +2325,13 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
         self.add(*self.lim_group)
         numerator = VGroup(*ratio[1][:3])
         denominator = VGroup(*ratio[1][-2:])
-        rhs = Tex(
+        rhs = OldTex(
             "\\approx", 
             "{-\\pi", "\\, dx", "\\over \\,", "2", "\\, dx}"
         )
         rhs.add_background_rectangle()
         rhs.move_to(equals_q, LEFT)
-        equals = Tex("=")
+        equals = OldTex("=")
         approx = rhs.get_part_by_tex("approx")
         equals.move_to(approx)
 
@@ -2399,7 +2399,7 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 
     def get_func_label(self, argument = "x"):
         in_tex = "{%s}"%str(argument)
-        result = Tex(
+        result = OldTex(
             "{\\sin(\\pi ", in_tex, ")", " \\over \\,",
             in_tex, "^2 - 1}"
         )
@@ -2427,10 +2427,10 @@ class LHopitalExample(LimitCounterExample, PiCreatureScene, ZoomedScene, Reconfi
 class DerivativeLimitReciprocity(Scene):
     def construct(self):
         arrow = Arrow(LEFT, RIGHT, color = WHITE)
-        lim = Tex("\\lim", "_{h", "\\to 0}")
+        lim = OldTex("\\lim", "_{h", "\\to 0}")
         lim.set_color_by_tex("h", GREEN)
         lim.next_to(arrow, LEFT)
-        deriv = Tex("{df", "\\over\\,", "dx}")
+        deriv = OldTex("{df", "\\over\\,", "dx}")
         deriv.set_color_by_tex("dx", GREEN)
         deriv.set_color_by_tex("df", YELLOW)
         deriv.next_to(arrow, RIGHT)
@@ -2480,7 +2480,7 @@ class GeneralLHoptial(LHopitalExample):
         )
 
         a_dot = Dot(self.coords_to_point(self.a_value, 0))
-        a_label = Tex("x = a")
+        a_label = OldTex("x = a")
         a_label.next_to(a_dot, UP, LARGE_BUFF)
         a_arrow = Arrow(a_label.get_bottom(), a_dot, buff = SMALL_BUFF)
         VGroup(a_dot, a_label, a_arrow).set_color(self.x_color)
@@ -2521,12 +2521,12 @@ class GeneralLHoptial(LHopitalExample):
     def show_limit_in_symbols(self):
         frac_a = self.get_frac("a", self.x_color)
         frac_x = self.get_frac("x")
-        lim = Tex("\\lim", "_{x", "\\to", "a}")
+        lim = OldTex("\\lim", "_{x", "\\to", "a}")
         lim.set_color_by_tex("a", self.x_color)
-        equals_zero_over_zero = Tex(
+        equals_zero_over_zero = OldTex(
             "=", "{\\, 0 \\,", "\\over \\,", "0 \\,}"
         )
-        equals_q = Tex(*"=???")
+        equals_q = OldTex(*"=???")
         frac_x.next_to(lim, RIGHT, SMALL_BUFF)
         VGroup(lim, frac_x).to_corner(UP+LEFT)
         frac_a.move_to(frac_x)
@@ -2585,7 +2585,7 @@ class GeneralLHoptial(LHopitalExample):
             tip_length = arrow_tip_length,
             color = WHITE,
         )
-        dx_label = Tex("dx")
+        dx_label = OldTex("dx")
         dx_label.scale(zoom_tex_scale_factor)
         dx_label.next_to(dx_arrow, UP, buff = z_small_buff)
         dx_label.shift(z_small_buff*RIGHT)
@@ -2604,7 +2604,7 @@ class GeneralLHoptial(LHopitalExample):
         ]
         v_labels = []
         for char, arrow in ("f", df_arrow), ("g", dg_arrow):
-            label = Tex(
+            label = OldTex(
                 "\\frac{d%s}{dx}"%char, "(", "a", ")", "\\,dx"
             )
             label.scale(zoom_tex_scale_factor)
@@ -2630,7 +2630,7 @@ class GeneralLHoptial(LHopitalExample):
     def show_derivative_ratio(self):
         q_marks = VGroup(*self.equals_q[1:])
 
-        deriv_ratio = Tex(
+        deriv_ratio = OldTex(
             "{ \\frac{df}{dx}", "(", "a", ")", "\\,dx",
             "\\over \\,",
             "\\frac{dg}{dx}", "(", "a", ")", "\\,dx}",
@@ -2662,11 +2662,11 @@ class GeneralLHoptial(LHopitalExample):
         self.wait()
 
     def show_example(self):
-        lhs = Tex(
+        lhs = OldTex(
             "\\lim", "_{x \\to", "0}",
             "{\\sin(", "x", ")", "\\over \\,", "x}",
         )
-        rhs = Tex(
+        rhs = OldTex(
             "=", 
             "{\\cos(", "0", ")", "\\over \\,", "1}",
             "=", "1"
@@ -2680,7 +2680,7 @@ class GeneralLHoptial(LHopitalExample):
         brace_text = brace.get_text("Looks like 0/0")
         brace_text.add_background_rectangle()
 
-        name = TexText(
+        name = OldTexText(
             "``", "L'Hôpital's", " rule", "''",
             arg_separator = ""
         )
@@ -2726,7 +2726,7 @@ class GeneralLHoptial(LHopitalExample):
             lhopital_name.get_right(),
             color = RED
         )
-        bernoulli_name = TexText("Bernoulli's")
+        bernoulli_name = OldTexText("Bernoulli's")
         bernoulli_name.next_to(lhopital_name, DOWN)
 
         bernoulli_image = ImageMobject("Johann_Bernoulli2")
@@ -2777,7 +2777,7 @@ class GeneralLHoptial(LHopitalExample):
         return np.log(x-self.a_value+1)
 
     def get_frac(self, input_tex, color = WHITE):
-        result = Tex(
+        result = OldTex(
             "{f", "(", input_tex, ")", "\\over \\,",
             "g", "(", input_tex, ")}"
         )
@@ -2793,7 +2793,7 @@ class GeneralLHoptial(LHopitalExample):
 
 class CannotUseLHopital(TeacherStudentsScene):
     def construct(self):
-        deriv = Tex(
+        deriv = OldTex(
             "{d(e^x)", "\\over \\,", "dx}", "(", "x", ")", "=",
             "\\lim", "_{h", "\\to 0}",
             "{e^{", "x", "+", "h}", 
@@ -2819,7 +2819,7 @@ class CannotUseLHopital(TeacherStudentsScene):
             target_mode = "hooray"
         )
         self.wait()
-        answer = Tex(
+        answer = OldTex(
             "\\text{That requires knowing }",
             "{d(e^x)", "\\over \\,", "dx}"
         )
@@ -2840,8 +2840,8 @@ class NextVideo(TeacherStudentsScene):
         next_video = series[7]
         brace = Brace(next_video, DOWN)
 
-        integral = Tex("\\int", "f(x)", "dx")
-        ftc = Tex(
+        integral = OldTex("\\int", "f(x)", "dx")
+        ftc = OldTex(
             "F(b)", "-", "F(a)", "=", "\\int_a^b", 
             "{dF", "\\over \\,", "dx}", "(x)", "dx"
         )
@@ -2922,7 +2922,7 @@ class Chapter7PatreonThanks(PatreonThanks):
 
 class Thumbnail(Scene):
     def construct(self):
-        lim = Tex("\\lim", "_{h", "\\to 0}")
+        lim = OldTex("\\lim", "_{h", "\\to 0}")
         lim.set_color_by_tex("h", GREEN)
         lim.set_height(5)
         self.add(lim)

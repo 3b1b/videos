@@ -137,7 +137,7 @@ class SimpleVelocityGraph(GraphScene):
 
     def add_label_to_last_dot(self, label, color = WHITE):
         dot = self.dots[-1]
-        label = TexText(label)
+        label = OldTexText(label)
         label.scale(0.75)
         label.next_to(dot, UP, buff = MED_SMALL_BUFF)
         label.set_color(color)
@@ -567,8 +567,8 @@ class ContrastTwoGraphs(SimpleVelocityGraph):
         lower_left = self.axes.get_corner(DOWN+LEFT)
         self.remove(self.axes)
 
-        felt = TexText("Felt")
-        hardwood = TexText("Hardwood")
+        felt = OldTexText("Felt")
+        hardwood = OldTexText("Hardwood")
         hardwood.set_color(RED)
         words = VGroup(felt, hardwood)
 
@@ -604,8 +604,8 @@ class ContrastTwoGraphs(SimpleVelocityGraph):
                 run_time = 3,
                 lag_ratio = 0.2,
             ))
-        twists = TexText("Twists?")
-        variable_distances = TexText("Variable distances")
+        twists = OldTexText("Twists?")
+        variable_distances = OldTexText("Variable distances")
         for word in twists, variable_distances:
             word.to_corner(UP+RIGHT)
         self.play(Write(twists))
@@ -783,7 +783,7 @@ class ShowAllSteadyStateVelocities(SimpleVelocityGraph):
             data_file = "data%s.txt"%index_str
             self.init_data(data_file)
             color = WHITE if self.friction == "low" else BLUE
-            label = TexText(
+            label = OldTexText(
                 index_str,
                 color = color
             )

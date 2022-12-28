@@ -5,7 +5,7 @@ from _2016.eola.chapter8 import *
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "From [Grothendieck], I have also learned not",
             "to take glory in the ", 
             "difficulty of a proof:", 
@@ -19,7 +19,7 @@ class OpeningQuote(Scene):
         words.set_color_by_tex("paint a landscape", GREEN)
         words.set_width(FRAME_WIDTH - 2)
         words.to_edge(UP)
-        author = TexText("-Pierre Deligne")
+        author = OldTexText("-Pierre Deligne")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -31,7 +31,7 @@ class OpeningQuote(Scene):
 class CrossProductSymbols(Scene):
     def construct(self):
         v_tex, w_tex, p_tex = get_vect_tex(*"vwp")
-        equation = Tex(
+        equation = OldTex(
             v_tex, "\\times", w_tex, "=", p_tex
         )
         equation.set_color_by_tex(v_tex, V_COLOR)
@@ -59,7 +59,7 @@ class BruteForceVerification(Scene):
         def get_term(e1, e2, e3, e4):
             group = VGroup(
                 e1.copy(), e2.copy(), 
-                Tex("-"),
+                OldTex("-"),
                 e3.copy(), e4.copy(),
             )
             group.arrange()
@@ -70,14 +70,14 @@ class BruteForceVerification(Scene):
             (v2, w3, v3, w2),
         ])))
         cross_product = VGroup(
-            v.copy(), Tex("\\times"), w.copy(),
-            Tex("="), cross.copy()
+            v.copy(), OldTex("\\times"), w.copy(),
+            OldTex("="), cross.copy()
         )
         cross_product.arrange()
         cross_product.scale(0.75)
 
-        formula_word = TexText("Numerical formula")
-        computation_words = TexText("""
+        formula_word = OldTexText("Numerical formula")
+        computation_words = OldTexText("""
             Facts you could (painfully)
             verify computationally
         """)
@@ -101,20 +101,20 @@ class BruteForceVerification(Scene):
 
         v_tex, w_tex = get_vect_tex(*"vw")
         v_dot, w_dot = [
-            Tex(
+            OldTex(
                 tex, "\\cdot", 
                 "(", v_tex, "\\times", w_tex, ")",
                 "= 0"
             )
             for tex in (v_tex, w_tex)
         ]
-        theta_def = Tex(
+        theta_def = OldTex(
             "\\theta", 
             "= \\cos^{-1} \\big(", v_tex, "\\cdot", w_tex, "/",
             "(||", v_tex, "||", "\\cdot", "||", w_tex, "||)", "\\big)"
         )
 
-        length_check = Tex(
+        length_check = OldTex(
             "||", "(", v_tex, "\\times", w_tex, ")", "|| = ",
             "(||", v_tex, "||)",
             "(||", w_tex, "||)",
@@ -141,7 +141,7 @@ class ButWeCanDoBetter(TeacherStudentsScene):
 
 class Prerequisites(Scene):
     def construct(self):
-        title = TexText("Prerequisites")
+        title = OldTexText("Prerequisites")
         title.to_edge(UP)
         title.set_color(YELLOW)
 
@@ -151,12 +151,12 @@ class Prerequisites(Scene):
             rect.copy().shift(DOWN/2).to_edge(edge)
             for edge in (LEFT, RIGHT)
         ]
-        chapter5 = TexText("""
+        chapter5 = OldTexText("""
             \\centering 
             Chapter 5 
             Determinants
         """)
-        chapter7 = TexText("""
+        chapter7 = OldTexText("""
             \\centering
             Chapter 7: 
             Dot products and duality
@@ -179,7 +179,7 @@ class Prerequisites(Scene):
 
 class DualityReview(TeacherStudentsScene):
     def construct(self):
-        words = TexText("Quick", "duality", "review")
+        words = OldTexText("Quick", "duality", "review")
         words[1].set_color_by_gradient(BLUE, YELLOW)
         self.teacher_says(words, target_mode = "surprised")
         self.play_student_changes("pondering")
@@ -190,7 +190,7 @@ class DotProductToTransformSymbol(Scene):
         "vect_coords" : [2, 1]
     }
     def construct(self):
-        v_mob = Tex(get_vect_tex("v"))
+        v_mob = OldTex(get_vect_tex("v"))
         v_mob.set_color(V_COLOR)
 
         matrix = Matrix([self.vect_coords])
@@ -242,7 +242,7 @@ class DotProductToTransformSymbol(Scene):
 
 class MathematicalWild(Scene):
     def construct(self):
-        title = TexText("In the mathematical wild")
+        title = OldTexText("In the mathematical wild")
         title.to_edge(UP)
         self.add(title)
 
@@ -262,7 +262,7 @@ class MathematicalWild(Scene):
         bubble.next_to(randy.get_corner(UP+RIGHT), RIGHT)
         vector = Vector([1, 2])
         vector.move_to(randy.get_corner(UP+LEFT), aligned_edge = DOWN+LEFT)
-        dual_words = TexText("Dual vector")
+        dual_words = OldTexText("Dual vector")
         dual_words.set_color_by_gradient(BLUE, YELLOW)
         dual_words.next_to(vector, LEFT)
 
@@ -284,7 +284,7 @@ class MathematicalWild(Scene):
 
 class ThreeStepPlan(Scene):
     def construct(self):
-        title = TexText("The plan")
+        title = OldTexText("The plan")
         title.set_color(YELLOW)
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
@@ -296,14 +296,14 @@ class ThreeStepPlan(Scene):
             for s in (v_tex, w_tex, v_tex + "\\times" + w_tex)
         ]
         steps = [
-            TexText(
+            OldTexText(
                 "1. Define a 3d-to-1d", "linear \\\\", "transformation",
                 "in terms of", v_text, "and", w_text
             ),
-            TexText(
+            OldTexText(
                 "2. Find its", "dual vector"
             ),
-            TexText(
+            OldTexText(
                 "3. Show that this dual is", cross_text
             )
         ]
@@ -322,12 +322,12 @@ class ThreeStepPlan(Scene):
             self.play(Write(step, run_time = 2))
             self.wait()
 
-        linear_transformation = TexText("Linear", "transformation")
+        linear_transformation = OldTexText("Linear", "transformation")
         linear_transformation.next_to(h_line, DOWN, MED_SMALL_BUFF)
         det = self.get_det()
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(3.5)
-        left_right_arrow = Tex("\\Leftrightarrow")
+        left_right_arrow = OldTex("\\Leftrightarrow")
         left_right_arrow.shift(DOWN)
         det.next_to(left_right_arrow, LEFT)
         rect.next_to(left_right_arrow, RIGHT)
@@ -371,8 +371,8 @@ class DefineDualTransform(Scene):
         self.ask_question()
 
     def add_title(self):
-        title = TexText("What a student might think")
-        title.not_real = TexText("Not the real cross product")
+        title = OldTexText("What a student might think")
+        title.not_real = OldTexText("Not the real cross product")
         for mob in title, title.not_real:
             mob.set_width(FRAME_X_RADIUS - 1)
             mob.set_color(RED)
@@ -393,7 +393,7 @@ class DefineDualTransform(Scene):
         for array, tex_mob, color in zip(arrays, tex_mobs, colors):
             array.set_column_colors(color)
             tex_mob.set_color(color)
-            equals = Tex("=")
+            equals = OldTex("=")
             definition = VGroup(tex_mob, equals, array)
             definition.arrange(RIGHT)
             definitions.add(definition)
@@ -412,7 +412,7 @@ class DefineDualTransform(Scene):
         ]).T)
         det_text = get_det_text(matrix, background_rect = False)
         syms = times1, times2, equals = [
-            Tex(sym) 
+            OldTex(sym) 
             for sym in ("\\times", "\\times", "=",)
         ]
         triple_cross = VGroup(
@@ -497,7 +497,7 @@ class DefineDualTransform(Scene):
             new_tex = tex.copy()
             vect_brace.put_at_tip(new_tex)
             vect_brace.tex = new_tex
-        func_tex = Tex(
+        func_tex = OldTex(
             "f\\left(%s\\right)"%matrix_to_tex_string(list("xyz"))
         )
         func_tex.scale(0.7)
@@ -544,7 +544,7 @@ class DefineDualTransform(Scene):
         q_marks.scale(2)
         q_marks.set_color_by_gradient(*colors)
 
-        title = VGroup(TexText("This function is linear"))
+        title = VGroup(OldTexText("This function is linear"))
         title.set_color(GREEN)
         title.to_edge(UP)
         matrix = Matrix([list(q_marks.copy())])
@@ -556,9 +556,9 @@ class DefineDualTransform(Scene):
         dual_vector.scale(1.25)
         dual_dot = VGroup(
             dual_vector,
-            Tex("\\cdot").next_to(dual_vector)
+            OldTex("\\cdot").next_to(dual_vector)
         )
-        matrix_words = TexText("""
+        matrix_words = OldTexText("""
             $1 \\times 3$ matrix encoding the 
             3d-to-1d linear transformation
         """)
@@ -611,7 +611,7 @@ class DefineDualTransform(Scene):
         p_array.set_height(dual_vector.get_height())
         p_array.move_to(dual_vector, aligned_edge = RIGHT)
         p_brace = Brace(p_array, UP)
-        p_tex = Tex(get_vect_tex("p"))
+        p_tex = OldTex(get_vect_tex("p"))
         p_tex.set_color(P_COLOR)
         p_brace.put_at_tip(p_tex)
 
@@ -645,10 +645,10 @@ class DefineDualTransform(Scene):
         dot_components = VGroup()
         for p, x, i in zip(p_entries, input_entries, it.count()):
             if i == 2:
-                x.sym  = Tex("=")
+                x.sym  = OldTex("=")
             else:
-                x.sym  = Tex("+")
-            p.sym = Tex("\\cdot")
+                x.sym  = OldTex("+")
+            p.sym = OldTex("\\cdot")
             p.target = p.copy().scale(2)
             x.target = x.copy().scale(2)
             component = VGroup(p.target, p.sym, x.target, x.sym)
@@ -726,7 +726,7 @@ class DefineDualTransform(Scene):
             *list(map(FadeOut, to_fade))
         )
         self.play(*[
-            Write(Tex("=").next_to(p, buff = 2*SMALL_BUFF))
+            Write(OldTex("=").next_to(p, buff = 2*SMALL_BUFF))
             for p in new_ps
         ])
         equals = self.get_mobjects_from_last_animation()
@@ -743,7 +743,7 @@ class DefineDualTransform(Scene):
     def ask_question(self):
         everything = VGroup(*self.get_mobjects())
         p_tex = "$%s$"%get_vect_tex("p")
-        question = TexText(
+        question = OldTexText(
             "What vector", 
             p_tex, 
             "has \\\\ the property that"
@@ -804,19 +804,19 @@ class ThreeDDotProductProjection(Scene):
 class DotProductWords(Scene):
     def construct(self):
         p_tex = "$%s$"%get_vect_tex("p")
-        p_mob = TexText(p_tex)
+        p_mob = OldTexText(p_tex)
         p_mob.scale(1.5)
         p_mob.set_color(P_COLOR)
         input_array = Matrix(list("xyz"))
         dot_product = VGroup(p_mob, Dot(radius = 0.07), input_array)
         dot_product.arrange(buff = MED_SMALL_BUFF/2)
-        equals = Tex("=")
+        equals = OldTex("=")
         dot_product.next_to(equals, LEFT)
         words = VGroup(*it.starmap(TexText, [
             ("(Length of projection)",),
             ("(Length of ", p_tex, ")",)
         ]))
-        times = Tex("\\times")
+        times = OldTex("\\times")
         words[1].set_color_by_tex(p_tex, P_COLOR)
         words[0].next_to(equals, RIGHT)
         words[1].next_to(words[0], DOWN, aligned_edge = LEFT)
@@ -845,8 +845,8 @@ class GeometricVolumeWords(Scene):
         ]
 
         words = VGroup(
-            TexText("(Area of", "parallelogram", ")$\\times$"),
-            TexText(
+            OldTexText("(Area of", "parallelogram", ")$\\times$"),
+            OldTexText(
                 "(Component of $%s$"%matrix_to_tex_string(list("xyz")),
                 "perpendicular to", v_tex, "and", w_tex, ")"
             )
@@ -873,8 +873,8 @@ class CrossVectorEmphasisWords(Scene):
     def construct(self):
         v_tex, w_tex = ["$%s$"%s for s in get_vect_tex(*"vw")]
         words = [
-            TexText("Perpendicular to", v_tex, "and", w_tex),
-            TexText("Length = (Area of ", "parallelogram", ")")
+            OldTexText("Perpendicular to", v_tex, "and", w_tex),
+            OldTexText("Length = (Area of ", "parallelogram", ")")
         ]
         for word in words:
             word.set_color_by_tex(v_tex, ORANGE)
@@ -886,7 +886,7 @@ class CrossVectorEmphasisWords(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TexText("""
+        title = OldTexText("""
             Next video: Change of basis
         """)
         title.to_edge(UP, buff = MED_SMALL_BUFF/2)

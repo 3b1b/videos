@@ -67,7 +67,7 @@ class SquareWave(Scene):
             wave.set_stroke(width=3)
         # waves.to_edge(UP)
 
-        tex_mob = Tex("""
+        tex_mob = OldTex("""
             {4 \\over \\pi}
             \\sum_{n=0}^\\infty {\\sin\\big((2n + 1)\\pi x\\big) \\over (2n + 1)}
         """)

@@ -72,13 +72,13 @@ NUM_INTERVAL_TICKS = 16
 
 
 def divergent_sum():
-    return Tex(DIVERGENT_SUM_TEXT, size = "\\large").scale(2)
+    return OldTex(DIVERGENT_SUM_TEXT, size = "\\large").scale(2)
 
 def convergent_sum():
-    return Tex(CONVERGENT_SUM_TEXT, size = "\\large").scale(2)
+    return OldTex(CONVERGENT_SUM_TEXT, size = "\\large").scale(2)
 
 def Underbrace(left, right):
-    result = Tex("\\Underbrace{%s}"%(14*"\\quad"))
+    result = OldTex("\\Underbrace{%s}"%(14*"\\quad"))
     result.stretch_to_fit_width(right[0]-left[0])
     result.shift(left - result.get_points()[0])
     return result
@@ -90,8 +90,8 @@ def zero_to_one_interval():
     )
     interval.elongate_tick_at(-INTERVAL_RADIUS, 4)
     interval.elongate_tick_at(INTERVAL_RADIUS, 4)
-    zero = Tex("0").shift(INTERVAL_RADIUS*LEFT+DOWN)
-    one = Tex("1").shift(INTERVAL_RADIUS*RIGHT+DOWN)
+    zero = OldTex("0").shift(INTERVAL_RADIUS*LEFT+DOWN)
+    one = OldTex("1").shift(INTERVAL_RADIUS*RIGHT+DOWN)
     return Mobject(interval, zero, one)
 
 def draw_you(with_bubble = False):
@@ -128,7 +128,7 @@ class FlipThroughNumbers(Animation):
         self.start_center = start_center
         self.end_center = end_center
         self.current_number = function(start)
-        mobject = Tex(str(self.current_number)).shift(start_center)
+        mobject = OldTex(str(self.current_number)).shift(start_center)
         Animation.__init__(self, mobject, **kwargs)
 
     def interpolate_mobject(self, alpha):
@@ -137,7 +137,7 @@ class FlipThroughNumbers(Animation):
         )
         if new_number != self.current_number:
             self.current_number = new_number
-            self.mobject = Tex(str(new_number)).shift(self.start_center)
+            self.mobject = OldTex(str(new_number)).shift(self.start_center)
         if not all(self.start_center == self.end_center):
             self.mobject.center().shift(
                 (1-alpha)*self.start_center + alpha*self.end_center
@@ -166,7 +166,7 @@ class IntroduceDivergentSum(Scene):
             brace.to_edge(LEFT, buff = FRAME_X_RADIUS+min_x_coord)
             if sum_value:
                 self.remove(sum_value)
-            sum_value = Tex(str(2**(x+1) - 1))
+            sum_value = OldTex(str(2**(x+1) - 1))
             sum_value.shift(brace.get_center() + 0.5*DOWN)
             self.add(brace, sum_value)
             self.wait(0.75)
@@ -199,9 +199,9 @@ class ClearlyNonsense(Scene):
     def construct(self):
         number_line = NumberLine().add_numbers()
         div_sum = divergent_sum()
-        this_way = TexText("Sum goes this way...")
+        this_way = OldTexText("Sum goes this way...")
         this_way.to_edge(LEFT).shift(RIGHT*(FRAME_X_RADIUS+1) + DOWN)
-        how_here = TexText("How does it end up here?")
+        how_here = OldTexText("How does it end up here?")
         how_here.shift(1.5*UP+LEFT)
         neg_1_arrow = Arrow(
             (-1, 0.3, 0), 
@@ -250,7 +250,7 @@ class OutlineOfVideo(Scene):
         for mob in div_sum, u_brace:
             mob.shift(DOWN)
         texts = [
-            TexText(words).set_color("yellow")
+            OldTexText(words).set_color("yellow")
             for words in [
                 "1. Discover this",
                 "2. Clarify what this means",
@@ -284,7 +284,7 @@ class OutlineOfVideo(Scene):
 
 # # class ReasonsForMakingVideo(Scene):
 # #     def construct(self):
-# #         text = TexText([
+# #         text = OldTexText([
 # #             """
 # #             \\begin{itemize}
 # #             \\item Understand what ``$
@@ -316,9 +316,9 @@ class OutlineOfVideo(Scene):
 
 # class DiscoverAndDefine(Scene):
 #     def construct(self):
-#         sum_mob = Tex("\\sum_{n = 1}^\\infty a_n")
-#         discover = TexText("What does it feel like to discover these?")
-#         define = TexText([
+#         sum_mob = OldTex("\\sum_{n = 1}^\\infty a_n")
+#         discover = OldTexText("What does it feel like to discover these?")
+#         define = OldTexText([
 #             "What does it feel like to", 
 #             "\\emph{define} ",
 #             "them?"
@@ -337,7 +337,7 @@ class OutlineOfVideo(Scene):
 class YouAsMathematician(Scene):
     def construct(self):
         you, bubble = draw_you(with_bubble = True)
-        explanation = TexText(
+        explanation = OldTexText(
             "You as a (questionably accurate portrayal of a) mathematician.",
             size = "\\small"
         ).shift([2, you.get_center()[1], 0])
@@ -469,7 +469,7 @@ class DanceDotOnInterval(Scene):
             for x in (LEFT, RIGHT)
         ]
         color_range = Color("green").range_to("yellow", num_written_terms)
-        conv_sum = Tex(sum_terms, size = "\\large").split()
+        conv_sum = OldTex(sum_terms, size = "\\large").split()
 
         self.add(interval)
         self.play(*[
@@ -506,7 +506,7 @@ class DanceDotOnInterval(Scene):
         self.wait()
 
     def write_partial_sums(self):
-        partial_sums = Tex(PARTIAL_CONVERGENT_SUMS_TEXT, size = "\\small")
+        partial_sums = OldTex(PARTIAL_CONVERGENT_SUMS_TEXT, size = "\\small")
         partial_sums.scale(1.5).to_edge(UP)
         partial_sum_parts = partial_sums.split()
         partial_sum_parts[0].set_color("yellow")
@@ -521,7 +521,7 @@ class DanceDotOnInterval(Scene):
 
 class OrganizePartialSums(Scene):
     def construct(self):
-        partial_sums = Tex(PARTIAL_CONVERGENT_SUMS_TEXT, size = "\\small")
+        partial_sums = OldTex(PARTIAL_CONVERGENT_SUMS_TEXT, size = "\\small")
         partial_sums.scale(1.5).to_edge(UP)
         partial_sum_parts = partial_sums.split()
         for x in [0] + list(range(2, len(partial_sum_parts), 4)):
@@ -545,11 +545,11 @@ class OrganizePartialSums(Scene):
             for mob in partial_sum_parts
             if mob not in pure_sums
         ])
-        down_arrow = Tex("\\downarrow")
+        down_arrow = OldTex("\\downarrow")
         down_arrow.to_edge(LEFT).shift(2*RIGHT+2*DOWN)
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.shift(down_arrow.get_center()+down_arrow.get_height()*UP)
-        infinite_sum = Tex("".join(CONVERGENT_SUM_TEXT[:-1]), size = "\\samll")
+        infinite_sum = OldTex("".join(CONVERGENT_SUM_TEXT[:-1]), size = "\\samll")
         infinite_sum.scale(1.5/1.25)
         infinite_sum.to_corner(DOWN+LEFT).shift(2*RIGHT)
 
@@ -585,7 +585,7 @@ class SeeNumbersApproachOne(Scene):
 
 class OneAndInfiniteSumAreTheSameThing(Scene):
     def construct(self):
-        one, equals, inf_sum = Tex([
+        one, equals, inf_sum = OldTex([
             "1", "=", "\\sum_{n=1}^\\infty \\frac{1}{2^n}"
         ]).split()
         point = Point(equals.get_center()).set_color("black")
@@ -605,12 +605,12 @@ class OneAndInfiniteSumAreTheSameThing(Scene):
 class HowDoYouDefineInfiniteSums(Scene):
     def construct(self):
         you = draw_you().center().rewire_part_attributes()
-        text = TexText(
+        text = OldTexText(
             ["How", " do", " you,\\\\", "\\emph{define}"],
             size = "\\Huge"
         ).shift(UP).split()
         text[-1].shift(3*DOWN).set_color("skyblue")
-        sum_mob = Tex("\\sum_{n=0}^\\infty{a_n}")
+        sum_mob = OldTex("\\sum_{n=0}^\\infty{a_n}")
         text[-1].shift(LEFT)
         sum_mob.shift(text[-1].get_center()+2*RIGHT)
 
@@ -629,18 +629,18 @@ class HowDoYouDefineInfiniteSums(Scene):
 
 class LessAboutNewThoughts(Scene):
     def construct(self):
-        words = generating, new, thoughts, to, definitions = TexText([
+        words = generating, new, thoughts, to, definitions = OldTexText([
             "Generating", " new", " thoughts", "$\\rightarrow$",
             "useful definitions"
         ], size = "\\large").split()
-        gen_cross = Tex("\\hline").set_color("red")
+        gen_cross = OldTex("\\hline").set_color("red")
         new_cross = deepcopy(gen_cross)
         for cross, mob in [(gen_cross, generating), (new_cross, new)]:
             cross.replace(mob)
             cross.stretch_to_fit_height(0.03)
-        disecting = TexText("Disecting").set_color("green")
+        disecting = OldTexText("Disecting").set_color("green")
         disecting.shift(generating.get_center() + 0.6*UP)
-        old = TexText("old").set_color("green")
+        old = OldTexText("old").set_color("green")
         old.shift(new.get_center()+0.6*UP)
 
         kwargs = {"run_time" : 0.25}
@@ -656,7 +656,7 @@ class LessAboutNewThoughts(Scene):
 
 class ListOfPartialSums(Scene):
     def construct(self):
-        all_terms = np.array(Tex(
+        all_terms = np.array(OldTex(
             ALT_PARTIAL_SUM_TEXT,
             size = "\\large"
         ).split())
@@ -735,7 +735,7 @@ class CircleZoomInOnOne(Scene):
             for n in range(10)
         ])
         circle = Circle().shift(2*RIGHT)
-        text = TexText(
+        text = OldTexText(
             "All but finitely many dots fall inside even the tiniest circle."
         )
         numbers = [Tex("\\frac{1}{%s}"%s) for s in ["100", "1,000,000", "g_{g_{64}}"]]
@@ -777,7 +777,7 @@ class ZoomInOnOne(Scene):
         nl_with_nums = deepcopy(number_line).add_numbers()
         self.play(ApplyMethod(nl_with_nums.shift, 2*LEFT))
         zero, one, two = [
-            Tex(str(n)).scale(0.5).shift(0.4*DOWN+2*(-1+n)*RIGHT)
+            OldTex(str(n)).scale(0.5).shift(0.4*DOWN+2*(-1+n)*RIGHT)
             for n in (0, 1, 2)
         ]
         self.play(
@@ -834,7 +834,7 @@ class DefineInfiniteSum(Scene):
 
     def put_expression_in_corner(self):
         buff = 0.24
-        define, infinite_sum = Tex([
+        define, infinite_sum = OldTex([
             "\\text{\\emph{Define} }",
             "\\sum_{n = 0}^\\infty a_n = X"
         ]).split()
@@ -869,10 +869,10 @@ class DefineInfiniteSum(Scene):
             ]
             for n in range(num_terms)
         ])
-        terms = Tex(term_strings, size = "\\large").split()
+        terms = OldTex(term_strings, size = "\\large").split()
         number_line = NumberLine()
         ex_point = 2*RIGHT
-        ex = Tex("X").shift(ex_point + LEFT + UP)
+        ex = OldTex("X").shift(ex_point + LEFT + UP)
         arrow = Arrow(ex_point, tail = ex.get_points()[-1]).nudge()
 
         for term, count in zip(terms, it.count()):
@@ -918,7 +918,7 @@ class DefineInfiniteSum(Scene):
 
 class YouJustInventedSomeMath(Scene):
     def construct(self):
-        text = TexText([
+        text = OldTexText([
             "You ", "just ", "invented\\\\", "some ", "math"
         ]).split()
         for mob in text[:3]:
@@ -949,7 +949,7 @@ class SeekMoreGeneralTruths(Scene):
             "\\frac{(-1)^n}{(2n)!}",
             "\\frac{2\sqrt{2}}{99^2}\\frac{(4n)!}{(n!)^4} \\cdot \\frac{26390n + 1103}{396^{4k}}",            
         ]
-        sums = Tex([
+        sums = OldTex([
             "&\\sum_{n = 0}^\\infty" + summand + "= ? \\\\"
             for summand in summands
         ], size = "")
@@ -974,7 +974,7 @@ class ChopIntervalInProportions(Scene):
             num_terms = 2
             left_terms, right_terms = [
                 [
-                    Tex("\\frac{%d}{%d}"%(k, (10**(count+1))))
+                    OldTex("\\frac{%d}{%d}"%(k, (10**(count+1))))
                     for count in range(num_terms)
                 ]
                 for k in (9, 1)
@@ -993,8 +993,8 @@ class ChopIntervalInProportions(Scene):
         interval = zero_to_one_interval()
         left = INTERVAL_RADIUS*LEFT
         right = INTERVAL_RADIUS*RIGHT
-        left_paren = Tex("(")
-        right_paren = Tex(")").shift(right + 1.1*UP)
+        left_paren = OldTex("(")
+        right_paren = OldTex(")").shift(right + 1.1*UP)
         curr = left.astype("float")
         brace_to_replace = None
         term_to_replace = None
@@ -1088,7 +1088,7 @@ class ChopIntervalInProportions(Scene):
             brace_to_replace = braces[1]
             term_to_replace = rt
         if mode == "9":
-            split_100 = Tex("\\frac{9}{1000}+\\frac{1}{1000}")
+            split_100 = OldTex("\\frac{9}{1000}+\\frac{1}{1000}")
             split_100.scale(0.5)
             split_100.shift(right_terms[-1].get_center())
             split_100.to_edge(RIGHT)
@@ -1156,7 +1156,7 @@ class PointNineRepeating(RearrangeEquation):
             4 : 4,
             6 : 5,
         }
-        for term in Tex(start_terms).split():
+        for term in OldTex(start_terms).split():
             self.add(term)
             self.wait(0.5)
         self.clear()
@@ -1172,11 +1172,11 @@ class PointNineRepeating(RearrangeEquation):
 class PlugNumbersIntoRightside(Scene):
     def construct(self):
         scale_factor = 1.5
-        lhs, rhs = Tex(
+        lhs, rhs = OldTex(
             ["1 + p + p^2 + p^3 + \\cdots = ", "\\frac{1}{1-p}"],
             size = "\\large"
         ).scale(scale_factor).split()
-        rhs = Tex(
+        rhs = OldTex(
             ["1 \\over 1 - ", "p"], 
             size = "\\large"
         ).replace(rhs).split()
@@ -1185,7 +1185,7 @@ class PlugNumbersIntoRightside(Scene):
             "0.2", "27", "i"
         ] 
         nums = [
-            Tex(num_string, size="\\large")
+            OldTex(num_string, size="\\large")
             for num_string in num_strings
         ]
         for num, num_string in zip(nums, num_strings):
@@ -1195,10 +1195,10 @@ class PlugNumbersIntoRightside(Scene):
             num.set_color("green")
             if num_string == "(-1)":
                 num.shift(0.3*RIGHT)
-        right_words = TexText(
+        right_words = OldTexText(
             "This side makes sense for almost any value of $p$,"
         ).shift(2*UP)
-        left_words = TexText(
+        left_words = OldTexText(
             "even if it seems like this side will not."
         ).shift(2*DOWN)
         right_words.add(Arrow(
@@ -1308,11 +1308,11 @@ class ListPartialDivergentSums(Scene):
             "\\\\"
             for n in range(num_lines)
         ]
-        terms = Tex(
+        terms = OldTex(
             list(it.chain.from_iterable(list(zip(rhss, lhss)))) + ["\\vdots&", ""],
             size = "\\large"
         ).shift(RIGHT).split()
-        words = TexText("These numbers don't \\\\ approach anything")
+        words = OldTexText("These numbers don't \\\\ approach anything")
         words.to_edge(LEFT)
         arrow = Arrow(3*DOWN+2*LEFT, direction = DOWN, length = 6)
 
@@ -1329,8 +1329,8 @@ class ListPartialDivergentSums(Scene):
 class NotARobot(Scene):
     def construct(self):
         you = draw_you().center()
-        top_words = TexText("You are a mathematician,")
-        low_words = TexText("not a robot.")
+        top_words = OldTexText("You are a mathematician,")
+        low_words = OldTexText("not a robot.")
         top_words.shift(1.5*UP)
         low_words.shift(1.5*DOWN)
         
@@ -1355,18 +1355,18 @@ class SumPowersOfTwoAnimation(Scene):
         bottombrace = Underbrace(bottom_brace_left, right)
         colors = Color("yellow").range_to("purple", iterations)
         curr_dots.set_color(next(colors))
-        equation = Tex(
+        equation = OldTex(
             "1+2+4+\\cdots+2^n=2^{n+1} - 1",
             size = "\\Huge"
         ).shift(3*UP)
-        full_top_sum = Tex(["1", "+2", "+4", "+8", "+16"]).split()
+        full_top_sum = OldTex(["1", "+2", "+4", "+8", "+16"]).split()
 
         self.add(equation)
         self.wait()
         self.add(circle, curr_dots, topbrace, bottombrace)
         for n in range(1,iterations):
-            bottom_num = Tex(str(2**n))
-            new_bottom_num = Tex(str(2**(n+1)))            
+            bottom_num = OldTex(str(2**n))
+            new_bottom_num = OldTex(str(2**(n+1)))            
             bottom_num.shift(bottombrace.get_center()+0.5*DOWN)
 
             top_sum = Mobject(*full_top_sum[:n]).center()
@@ -1436,7 +1436,7 @@ class PretendTheyDoApproachNegativeOne(RearrangeEquation):
         num_lines = 6
         da = "\\downarrow"
         columns = [
-            Tex("\\\\".join([
+            OldTex("\\\\".join([
                 n_func(n)
                 for n in range(num_lines)
             ]+last_bits), size = "\\Large").to_corner(UP+LEFT)
@@ -1467,15 +1467,15 @@ class DistanceBetweenRationalNumbers(Scene):
     def construct(self):
         locii = [2*LEFT, 2*RIGHT]
         nums = [
-            Tex(s).shift(1.3*d)
+            OldTex(s).shift(1.3*d)
             for s, d in zip(["\\frac{1}{2}", "3"], locii)
         ]            
         arrows = [
             Arrow(direction, tail = ORIGIN)
             for direction in locii
         ]
-        dist = Tex("\\frac{5}{2}").scale(0.5).shift(0.5*UP)
-        text = TexText("How we define distance between rational numbers")
+        dist = OldTex("\\frac{5}{2}").scale(0.5).shift(0.5*UP)
+        text = OldTexText("How we define distance between rational numbers")
         text.to_edge(UP)
         self.add(text, *nums)
         self.play(*[ShowCreation(arrow) for arrow in arrows])
@@ -1487,7 +1487,7 @@ class NotTheOnlyWayToOrganize(Scene):
         self.play(ShowCreation(NumberLine().add_numbers()))
         self.wait()
         words = "Is there any other reasonable way to organize numbers?"
-        self.play(FadeIn(TexText(words).shift(2*UP)))
+        self.play(FadeIn(OldTexText(words).shift(2*UP)))
         self.wait()
 
 class DistanceIsAFunction(Scene):
@@ -1507,7 +1507,7 @@ class DistanceIsAFunction(Scene):
             dist_text = "random\\_dist"
         elif mode == "2adic":
             dist_text = "2\\_adic\\_dist"
-        dist, r_paren, arg0, comma, arg1, l_paren, equals, result = TexText([
+        dist, r_paren, arg0, comma, arg1, l_paren, equals, result = OldTexText([
             dist_text, "(", "000", ",", "000", ")", "=", "000"
         ]).split()
         point_origin = comma.get_center()+0.2*UP
@@ -1541,9 +1541,9 @@ class DistanceIsAFunction(Scene):
             self.wait()
         example_mobs = [
             (
-                Tex(tup[0]).shift(arg0.get_center()),
-                Tex(tup[1]).shift(arg1.get_center()),
-                Tex(tup[2]).shift(result.get_center())
+                OldTex(tup[0]).shift(arg0.get_center()),
+                OldTex(tup[1]).shift(arg1.get_center()),
+                OldTex(tup[2]).shift(result.get_center())
             )
             for tup in examples
         ]
@@ -1569,12 +1569,12 @@ class ShiftInvarianceNumberLine(Scene):
     def construct(self):
         number_line = NumberLine().add_numbers()
         topbrace = Underbrace(ORIGIN, 2*RIGHT).rotate(np.pi, RIGHT)
-        dist0 = TexText(["dist(", "$0$", ",", "$2$",")"])
-        dist1 = TexText(["dist(", "$2$", ",", "$4$",")"])
+        dist0 = OldTexText(["dist(", "$0$", ",", "$2$",")"])
+        dist1 = OldTexText(["dist(", "$2$", ",", "$4$",")"])
         for dist in dist0, dist1:
             dist.shift(topbrace.get_center()+0.3*UP)
         dist1.shift(2*RIGHT)
-        footnote = TexText("""
+        footnote = OldTexText("""
             \\begin{flushleft}
             *yeah yeah, I know I'm still drawing them on a line,
             but until a few minutes from now I have no other way
@@ -1596,7 +1596,7 @@ class ShiftInvarianceNumberLine(Scene):
 
 class NameShiftInvarianceProperty(Scene):
     def construct(self):
-        prop = TexText([
+        prop = OldTexText([
             "dist($A$, $B$) = dist(",
             "$A+x$, $B+x$",
             ") \\quad for all $x$"
@@ -1606,9 +1606,9 @@ class NameShiftInvarianceProperty(Scene):
             mid_part.get_boundary_point(DOWN+LEFT),
             mid_part.get_boundary_point(DOWN+RIGHT)
         ).shift(0.3*DOWN)
-        label = TexText("Shifted values")
+        label = OldTexText("Shifted values")
         label.shift(u_brace.get_center()+0.5*DOWN)
-        name = TexText("``Shift Invariance''")
+        name = OldTexText("``Shift Invariance''")
         name.set_color("green").to_edge(UP)
         for mob in u_brace, label:
             mob.set_color("yellow")
@@ -1624,7 +1624,7 @@ class TriangleInequality(Scene):
     def construct(self):
         symbols = ["A", "B", "C"]
         locations = [2*(DOWN+LEFT), UP, 4*RIGHT]
-        ab, plus, bc, greater_than, ac = TexText([
+        ab, plus, bc, greater_than, ac = OldTexText([
             "dist($A$, $B$)",
             "$+$",
             "dist($B$, $C$)",
@@ -1646,7 +1646,7 @@ class TriangleInequality(Scene):
             for dist, line in zip(all_dists, all_lines)
         ]
         for symbol, loc in zip(symbols, locations):
-            self.add(Tex(symbol).shift(loc))
+            self.add(OldTex(symbol).shift(loc))
         self.play(ShowCreation(ac_line), FadeIn(ac_copy))
         self.wait()
         self.play(*[
@@ -1669,12 +1669,12 @@ class TriangleInequality(Scene):
 class StruggleToFindFrameOfMind(Scene):
     def construct(self):
         you, bubble = draw_you(with_bubble = True)
-        questions = TexText("???", size = "\\Huge").scale(1.5)
+        questions = OldTexText("???", size = "\\Huge").scale(1.5)
         contents = [
-            Tex("2, 4, 8, 16, 32, \\dots \\rightarrow 0"),
-            TexText("dist(0, 2) $<$ dist(0, 64)"),
+            OldTex("2, 4, 8, 16, 32, \\dots \\rightarrow 0"),
+            OldTexText("dist(0, 2) $<$ dist(0, 64)"),
             NumberLine().sort_points(lambda p : -p[1]).add(
-                TexText("Not on a line?").shift(UP)
+                OldTexText("Not on a line?").shift(UP)
             ),
         ]
         kwargs = {"run_time" : 0.5}
@@ -1749,11 +1749,11 @@ class RoomsAndSubroomsWithNumbers(Scene):
 
     def draw_numbers(self, zero_local, zero_one_width):
         num_numbers = 5
-        zero = Tex("0").shift(zero_local)
+        zero = OldTex("0").shift(zero_local)
         self.add(zero)
         nums = []
         for n in range(num_numbers):
-            num = Tex(str(2**n))
+            num = OldTex(str(2**n))
             num.scale(1.0/(n+1))
             num.shift(
                 zero_local+\
@@ -1807,7 +1807,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
         for mob, count in zip(new_power_mobs, it.count(1)):
             self.center_in_closest_rect(mob, small_rects)
         new_power_mobs[-1].shift(DOWN)
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.scale(0.5).shift(new_zero.get_center()+0.5*DOWN)
         self.play(
             Transform(zero, new_zero),
@@ -1846,7 +1846,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
                     ApplyMethod(mob.shift, shift_val)
                     for mob in (zero_copy, power_mob_copy)
                 ])
-                num_mobs[n] = Tex(str(n))
+                num_mobs[n] = OldTex(str(n))
                 num_mobs[n].scale(1.0/(power_of_divisor(n, 2)+1))
                 width_ratio = max_width / num_mobs[n].get_width()
                 if width_ratio < 1: 
@@ -1869,7 +1869,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
         mobject.shift(diffs[np.argmin(list(map(get_norm, diffs)))])
 
     def add_negative_one(self, num_mobs):
-        neg_one = Tex("-1").scale(0.5)
+        neg_one = OldTex("-1").scale(0.5)
         shift_val = num_mobs[15].get_center()-neg_one.get_center()
         neg_one.shift(UP)
         self.play(ApplyMethod(neg_one.shift, shift_val))
@@ -1884,7 +1884,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
                 dist_string = "1"
             else:
                 dist_string = "$\\frac{1}{%d}$"%(2**count)
-            text = TexText(
+            text = OldTexText(
                 "Any of these pairs are considered to be a distance " +\
                 dist_string +\
                 " away from each other"
@@ -1919,7 +1919,7 @@ class RoomsAndSubroomsWithNumbers(Scene):
 
 class DeduceWhereNegativeOneFalls(Scene):
     def construct(self):
-        part0, arg0, part1, part2, arg1, part3 = TexText([
+        part0, arg0, part1, part2, arg1, part3 = OldTexText([
             "dist(-1, ", "0000", ") = ", "dist(0, ", "0000", ")"
         ]).scale(1.5).split()
         u_brace = Underbrace(
@@ -1946,7 +1946,7 @@ class DeduceWhereNegativeOneFalls(Scene):
         for n in range(1, 15):
             rest_time = 0.3 + 1.0/(n+1)
             new_args = [
-                TexText("$%d$"%k).scale(1.5)
+                OldTexText("$%d$"%k).scale(1.5)
                 for k in (2**n-1, 2**n)
             ]
             for new_arg, old_arg in zip(new_args, last_args):
@@ -1971,7 +1971,7 @@ class DeduceWhereNegativeOneFalls(Scene):
 class OtherRationalNumbers(Scene):
     def construct(self):
         import random
-        self.add(TexText("Where do other \\\\ rational numbers fall?"))
+        self.add(OldTexText("Where do other \\\\ rational numbers fall?"))
         pairs = [
             (1, 2),
             (1, 3),
@@ -1987,17 +1987,17 @@ class OtherRationalNumbers(Scene):
             3*DOWN,
         ]
         for pair, locus in zip(pairs, locii):
-            fraction = Tex("\\frac{%d}{%d}"%pair).shift(locus)
+            fraction = OldTex("\\frac{%d}{%d}"%pair).shift(locus)
             self.play(ShimmerIn(fraction))
         self.wait()
 
 class PAdicMetric(Scene):
     def construct(self):
-        p_str, text = TexText(["$p$", "-adic metric"]).shift(2*UP).split()
+        p_str, text = OldTexText(["$p$", "-adic metric"]).shift(2*UP).split()
         primes = [Tex(str(p)) for p in [2, 3, 5, 7, 11, 13, 17, 19, 23]]
         p_str.set_color("yellow")
         colors = Color("green").range_to("skyblue", len(primes))
-        new_numbers = TexText("Completely new types of numbers!")
+        new_numbers = OldTexText("Completely new types of numbers!")
         new_numbers.set_color("skyblue").shift(2.3*DOWN)
         arrow = Arrow(2*DOWN, tail = 1.7*UP)
 
@@ -2033,19 +2033,19 @@ class PAdicMetric(Scene):
 
 class FuzzyDiscoveryToNewMath(Scene):
     def construct(self):
-        fuzzy = TexText("Fuzzy Discovery")
+        fuzzy = OldTexText("Fuzzy Discovery")
         fuzzy.to_edge(UP).shift(FRAME_X_RADIUS*LEFT/2)
-        new_math = TexText("New Math")
+        new_math = OldTexText("New Math")
         new_math.to_edge(UP).shift(FRAME_X_RADIUS*RIGHT/2)
         lines = Mobject(
             Line(DOWN*FRAME_Y_RADIUS, UP*FRAME_Y_RADIUS),
             Line(3*UP+LEFT*FRAME_X_RADIUS, 3*UP+RIGHT*FRAME_X_RADIUS)
         )
         fuzzy_discoveries = [
-            Tex("a^2 + b^2 = c^2"),
-            Tex("".join(CONVERGENT_SUM_TEXT)),            
-            Tex("".join(DIVERGENT_SUM_TEXT)),
-            Tex("e^{\pi i} = -1"),
+            OldTex("a^2 + b^2 = c^2"),
+            OldTex("".join(CONVERGENT_SUM_TEXT)),            
+            OldTex("".join(DIVERGENT_SUM_TEXT)),
+            OldTex("e^{\pi i} = -1"),
         ]
         triangle_lines = [
             Line(ORIGIN, LEFT),
@@ -2054,21 +2054,21 @@ class FuzzyDiscoveryToNewMath(Scene):
         ]
         for line, char in zip(triangle_lines, ["a", "c", "b"]):
             line.set_color("blue")
-            char_mob = Tex(char).scale(0.25)
+            char_mob = OldTex(char).scale(0.25)
             line.add(char_mob.shift(line.get_center()))
         triangle = Mobject(*triangle_lines)
         triangle.center().shift(1.5*fuzzy_discoveries[0].get_right())
-        how_length = TexText("But how is length defined?").scale(0.5)
+        how_length = OldTexText("But how is length defined?").scale(0.5)
         how_length.shift(0.75*DOWN)
         fuzzy_discoveries[0].add(triangle, how_length)
         new_maths = [
-            TexText("""
+            OldTexText("""
                 Define distance between points $(x_0, y_0)$ and
                 $(x_1, y_1)$ as $\\sqrt{(x_1-x_0)^2 + (y_1-y_0)^2}$
             """),
-            TexText("Define ``approach'' and infinite sums"),
-            TexText("Discover $2$-adic numbers"),
-            TexText(
+            OldTexText("Define ``approach'' and infinite sums"),
+            OldTexText("Discover $2$-adic numbers"),
+            OldTexText(
                 "Realize exponentiation is doing something much \
                 different from repeated multiplication"
             )
@@ -2097,13 +2097,13 @@ class FuzzyDiscoveryToNewMath(Scene):
 
 class DiscoveryAndInvention(Scene):
     def construct(self):
-        invention, vs, discovery = TexText([
+        invention, vs, discovery = OldTexText([
             "Invention ", "vs. ", "Discovery"
         ]).split()
-        nrd = TexText(
+        nrd = OldTexText(
             "Non-rigorous truths"
         ).shift(2*UP)
-        rt = TexText(
+        rt = OldTexText(
             "Rigorous terms"
         ).shift(2*DOWN)
         

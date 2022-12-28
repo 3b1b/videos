@@ -42,7 +42,7 @@ def rationals():
 
 def fraction_mobject(fraction):
     n, d = fraction.numerator, fraction.denominator
-    return Tex("\\frac{%d}{%d}"%(n, d))
+    return OldTex("\\frac{%d}{%d}"%(n, d))
 
 def continued_fraction(int_list):
     if len(int_list) == 1:
@@ -56,13 +56,13 @@ def zero_to_one_interval():
     )
     interval.elongate_tick_at(-INTERVAL_RADIUS, TICK_STRETCH_FACTOR)
     interval.elongate_tick_at(INTERVAL_RADIUS, TICK_STRETCH_FACTOR)
-    interval.add(Tex("0").shift(INTERVAL_RADIUS*LEFT+DOWN))
-    interval.add(Tex("1").shift(INTERVAL_RADIUS*RIGHT+DOWN))
+    interval.add(OldTex("0").shift(INTERVAL_RADIUS*LEFT+DOWN))
+    interval.add(OldTex("1").shift(INTERVAL_RADIUS*RIGHT+DOWN))
     return interval
 
 class LeftParen(Mobject):
     def init_points(self):
-        self.add(Tex("("))
+        self.add(OldTex("("))
         self.center()    
 
     def get_center(self):
@@ -70,7 +70,7 @@ class LeftParen(Mobject):
 
 class RightParen(Mobject):
     def init_points(self):
-        self.add(Tex(")"))
+        self.add(OldTex(")"))
         self.center()
 
     def get_center(self):
@@ -254,17 +254,17 @@ class IntervalScene(NumberLineScene):
 
 class TwoChallenges(Scene):
     def construct(self):
-        two_challenges = TexText("Two Challenges", size = "\\Huge").to_edge(UP)
+        two_challenges = OldTexText("Two Challenges", size = "\\Huge").to_edge(UP)
         one, two = list(map(TexText, ["1.", "2."]))
         one.shift(UP).to_edge(LEFT)
         two.shift(DOWN).to_edge(LEFT)
         notes = ImageMobject("musical_notes").scale(0.3)
         notes.next_to(one)
         notes.set_color("blue")
-        measure = TexText("Measure Theory").next_to(two)
-        probability = TexText("Probability")
+        measure = OldTexText("Measure Theory").next_to(two)
+        probability = OldTexText("Probability")
         probability.next_to(measure).shift(DOWN+RIGHT)
-        integration = Tex("\\int")
+        integration = OldTex("\\int")
         integration.next_to(measure).shift(UP+RIGHT)
         arrow_to_prob = Arrow(measure, probability)
         arrow_to_int = Arrow(measure, integration)
@@ -305,7 +305,7 @@ class MeasureTheoryToHarmony(IntervalScene):
 
 class ChallengeOne(Scene):
     def construct(self):
-        title = TexText("Challenge #1").to_edge(UP)
+        title = OldTexText("Challenge #1").to_edge(UP)
         start_color = Color("blue")
         colors = start_color.range_to("white", 6)
         self.bottom_vibration = Vibrate(
@@ -319,14 +319,14 @@ class ChallengeOne(Scene):
             )
             for freq in [1, 2, 5.0/3, 4.0/3, 2]
         ]
-        freq_220 = TexText("220 Hz")
-        freq_r220 = TexText("$r\\times$220 Hz")
-        freq_330 = TexText("1.5$\\times$220 Hz")
-        freq_sqrt2 = TexText("$\\sqrt{2}\\times$220 Hz")
+        freq_220 = OldTexText("220 Hz")
+        freq_r220 = OldTexText("$r\\times$220 Hz")
+        freq_330 = OldTexText("1.5$\\times$220 Hz")
+        freq_sqrt2 = OldTexText("$\\sqrt{2}\\times$220 Hz")
         freq_220.shift(1.5*DOWN)
         for freq in freq_r220, freq_330, freq_sqrt2:
             freq.shift(1.5*UP)
-        r_constraint = Tex("(1<r<2)", size = "\\large")
+        r_constraint = OldTex("(1<r<2)", size = "\\large")
 
         self.add(title)
         self.wait()
@@ -358,8 +358,8 @@ class ChallengeOne(Scene):
         one, two = 2*number_line.interval_size*RIGHT, 4*number_line.interval_size*RIGHT
         arrow1 = Arrow(one+UP, one)
         arrow2 = Arrow(two+UP, two)
-        r1 = Tex("r").next_to(arrow1, UP)
-        r2 = Tex("r").next_to(arrow2, UP)
+        r1 = OldTex("r").next_to(arrow1, UP)
+        r2 = OldTex("r").next_to(arrow2, UP)
         kwargs = {
             "run_time" : 5.0,
             "rate_func" : there_and_back
@@ -391,10 +391,10 @@ class JustByAnalyzingTheNumber(Scene):
             1.2020569031595942,
         ]
         last = None
-        r_equals = Tex("r=").shift(2*LEFT)
+        r_equals = OldTex("r=").shift(2*LEFT)
         self.add(r_equals)
         for num in nums:
-            mob = Tex(str(num)).next_to(r_equals)
+            mob = OldTex(str(num)).next_to(r_equals)
             mob.set_color()
             mob.sort_points()
             if last:
@@ -408,23 +408,23 @@ class JustByAnalyzingTheNumber(Scene):
 
 class QuestionAndAnswer(Scene):
     def construct(self):
-        Q = TexText("Q:").shift(UP).to_edge(LEFT)
-        A = TexText("A:").shift(DOWN).to_edge(LEFT)
+        Q = OldTexText("Q:").shift(UP).to_edge(LEFT)
+        A = OldTexText("A:").shift(DOWN).to_edge(LEFT)
         string1 = Vibrate(center = 3*UP, color = "blue")
         string2 = Vibrate(num_periods = 2, center = 3.5*UP, color = "green")
-        twotwenty = Tex("220").scale(0.25).next_to(string1.mobject, LEFT)
-        r220 = Tex("r\\times220").scale(0.25).next_to(string2.mobject, LEFT)
-        question = TexText(
+        twotwenty = OldTex("220").scale(0.25).next_to(string1.mobject, LEFT)
+        r220 = OldTex("r\\times220").scale(0.25).next_to(string2.mobject, LEFT)
+        question = OldTexText(
             "For what values of $r$ will the frequencies 220~Hz and \
             $r\\times$220~Hz sound nice together?"
         ).next_to(Q)
-        answer = TexText([
+        answer = OldTexText([
             "When $r$ is", 
             "sufficiently close to",
             "a rational number"
         ], size = "\\small").scale(1.5)
         answer.next_to(A)
-        correction1 = TexText(
+        correction1 = OldTexText(
             "with sufficiently low denominator",
             size = "\\small"
         ).scale(1.5)
@@ -472,7 +472,7 @@ class PlaySimpleRatio(Scene):
         if isinstance(fraction, Fraction):
             mob = fraction_mobject(fraction).shift(0.5*UP)
         else:
-            mob = Tex("\\frac{e^\\pi - \\pi}{15} \\approx \\frac{4}{3}")
+            mob = OldTex("\\frac{e^\\pi - \\pi}{15} \\approx \\frac{4}{3}")
             mob.shift(0.5*UP)
         self.add(mob)
         self.play(string1, string2)
@@ -492,7 +492,7 @@ class DecomposeMusicalNote(Scene):
             "run_time" : 4.0,
             "rate_func" : None
         }
-        words = TexText("Imagine 220 per second...")
+        words = OldTexText("Imagine 220 per second...")
         words.shift(2*UP)
 
         self.add(line)
@@ -524,7 +524,7 @@ class DecomposeTwoFrequencies(Scene):
 
 class MostRationalsSoundBad(Scene):
     def construct(self):
-        self.add(TexText("Most rational numbers sound bad!"))
+        self.add(OldTexText("Most rational numbers sound bad!"))
 
 class FlashOnXProximity(Animation):
     def __init__(self, mobject, x_val, *close_mobjects, **kwargs):
@@ -575,7 +575,7 @@ class PatternInFrequencies(Scene):
         }
 
         self.add(big_line)
-        self.add(Tex("%d:%d"%(num1, num2)))
+        self.add(OldTex("%d:%d"%(num1, num2)))
         fracs = (
             1.0/(num_top_lines-1), 
             1.0/(num_bot_lines-1)
@@ -595,18 +595,18 @@ class CompareFractionComplexity(Scene):
     def construct(self):
         fractions = []
         for num, den in [(4, 3), (1093,826)]:
-            top = Tex("%d \\over"%num)
-            bottom = Tex(str(den)).next_to(top, DOWN, buff = 0.3)
+            top = OldTex("%d \\over"%num)
+            bottom = OldTex(str(den)).next_to(top, DOWN, buff = 0.3)
             fractions.append(Mobject(top, bottom))
         frac0 = fractions[0].shift(3*LEFT).split()
         frac1 = fractions[1].shift(3*RIGHT).split()
         arrow1 = Arrow(UP, ORIGIN).next_to(frac0[0], UP)
         arrow2 = Arrow(UP, ORIGIN).next_to(frac1[0], UP)
-        simple = TexText("Simple").next_to(arrow1, UP)
+        simple = OldTexText("Simple").next_to(arrow1, UP)
         simple.set_color("green")
-        complicated = TexText("Complicated").next_to(arrow2, UP)
+        complicated = OldTexText("Complicated").next_to(arrow2, UP)
         complicated.set_color("red")
-        indicates = TexText("Indicates complexity").shift(2*DOWN)
+        indicates = OldTexText("Indicates complexity").shift(2*DOWN)
         arrow3 = Arrow(indicates.get_top(), frac0[1])
         arrow4 = Arrow(indicates.get_top(), frac1[1])
 
@@ -634,9 +634,9 @@ class IrrationalGang(Scene):
         randy = Randolph()
         randy.mouth.set_color(randy.DEFAULT_COLOR)
         randy.sync_parts()
-        sqrt13 = Tex("\\sqrt{13}").shift(2*LEFT)
+        sqrt13 = OldTex("\\sqrt{13}").shift(2*LEFT)
         sqrt13.set_color("green")
-        zeta3 = Tex("\\zeta(3)").shift(2*RIGHT)
+        zeta3 = OldTex("\\zeta(3)").shift(2*RIGHT)
         zeta3.set_color("grey")
         eyes = Mobject(*randy.eyes)
         eyes.scale(0.5)
@@ -687,7 +687,7 @@ class PianoTuning(Scene):
         semicircles.shift(0.05*RIGHT)
         semicircles.sort_points(lambda p : p[0])
         first_jump = semicircles.split()[0]
-        twelfth_root = Tex("2^{\\left(\\frac{1}{12}\\right)}")
+        twelfth_root = OldTex("2^{\\left(\\frac{1}{12}\\right)}")
         twelfth_root.scale(0.75).next_to(first_jump, UP, buff = 1.5)
         line = Line(twelfth_root, first_jump).set_color("grey")
         self.keys = piano.split()
@@ -718,21 +718,21 @@ class PianoTuning(Scene):
         high = self.keys[whole_notes_to_base + interval - 1]
         u_brace = Underbrace(low.get_bottom(), high.get_bottom())
         u_brace.set_color("yellow")
-        ratio = Tex("2^{\\left(\\frac{%d}{12}\\right)}"%half_steps)
+        ratio = OldTex("2^{\\left(\\frac{%d}{12}\\right)}"%half_steps)
         ratio.next_to(u_brace, DOWN, buff = 0.2)
         semicircles = self.semicircles[half_notes_to_base:half_notes_to_base+half_steps]
-        product = Tex(
+        product = OldTex(
             ["\\left(2^{\\left(\\frac{1}{12}\\right)}\\right)"]*half_steps,
             size = "\\small"
         ).next_to(self.piano, UP, buff = 1.0)
-        approximate_form = Tex("\\approx"+str(2**(float(half_steps)/12)))
+        approximate_form = OldTex("\\approx"+str(2**(float(half_steps)/12)))
         approximate_form.scale(0.75)
         approximate_form.next_to(ratio)
         if interval == 5:
             num_den = (3, 2)
         elif interval == 4:
             num_den = (4, 3)
-        should_be = TexText("Should be $\\frac{%d}{%d}$"%num_den)
+        should_be = OldTexText("Should be $\\frac{%d}{%d}$"%num_den)
         should_be.next_to(u_brace, DOWN)
 
         self.play(ApplyMethod(low.set_color, colors[0]))
@@ -772,28 +772,28 @@ class PowersOfTwelfthRoot(Scene):
             9 : Fraction(5, 3),
             10 : Fraction(16, 9),
         }
-        approx = Tex("\\approx").scale(0.5)
+        approx = OldTex("\\approx").scale(0.5)
         curr_height = max_height*UP
         spacing = UP*(max_height-min_height)/(len(fraction_map)-1.0)
         for i in range(1, num_terms+1):
             if i not in fraction_map:
                 continue
-            term = Tex("2^{\\left(\\frac{%d}{12}\\right)}"%i)
+            term = OldTex("2^{\\left(\\frac{%d}{12}\\right)}"%i)
             term.shift(curr_height)
             curr_height -= spacing
             term.shift(4*LEFT)
             value = 2**(i/12.0)
-            approx_form = Tex(str(value)[:10])
+            approx_form = OldTex(str(value)[:10])
             approx_copy = deepcopy(approx).next_to(term)
             approx_form.scale(0.5).next_to(approx_copy)
-            words = TexText("is close to")
+            words = OldTexText("is close to")
             words.scale(approx_form.get_height()/words.get_height())
             words.next_to(approx_form)
             frac = fraction_map[i]
-            frac_mob = Tex("%d/%d"%(frac.numerator, frac.denominator))
+            frac_mob = OldTex("%d/%d"%(frac.numerator, frac.denominator))
             frac_mob.scale(0.5).next_to(words)
             percent_error = abs(100*((value - frac) / frac))
-            error_string = TexText([
+            error_string = OldTexText([
                 "with", str(percent_error)[:4] + "\\%", "error"
             ])
             error_string = error_string.split()
@@ -809,7 +809,7 @@ class PowersOfTwelfthRoot(Scene):
 
 class InterestingQuestion(Scene):
     def construct(self):
-        words = TexText("Interesting Question:", size = "\\Huge")
+        words = OldTexText("Interesting Question:", size = "\\Huge")
         words.scale(2.0)
         self.add(words)
 
@@ -820,7 +820,7 @@ class SupposeThereIsASavant(Scene):
                 "who finds pleasure in all pairs of " + \
                 "notes whose frequencies have a rational ratio"
         words = words.split(" ")
-        word_mobs = TexText(words).split()
+        word_mobs = OldTexText(words).split()
         word_mobs[4].set_color()
         word_mobs[5].set_color()
         for word, word_mob in zip(words, word_mobs):
@@ -838,8 +838,8 @@ class AllValuesBetween1And2(NumberLineScene):
         ))
         top_arrow = Arrow(one+UP, one)
         bot_arrow = Arrow(irr+2*DOWN, irr)
-        r = Tex("r").next_to(top_arrow, UP)
-        irr_mob = Tex(str(irrational)+"\\dots").next_to(bot_arrow, DOWN)
+        r = OldTex("r").next_to(top_arrow, UP)
+        irr_mob = OldTex(str(irrational)+"\\dots").next_to(bot_arrow, DOWN)
 
         approximations = [
             continued_fraction(cont_frac[:k])
@@ -889,7 +889,7 @@ class AllValuesBetween1And2(NumberLineScene):
 
 class ChallengeTwo(Scene):
     def construct(self):
-        self.add(TexText("Challenge #2"))
+        self.add(OldTexText("Challenge #2"))
 
 class CoveringSetsWithOpenIntervals(IntervalScene):
     def construct(self):
@@ -899,7 +899,7 @@ class CoveringSetsWithOpenIntervals(IntervalScene):
             for num in set([0.2, 0.25, 0.45, 0.6, 0.65])
         ])
         theorems = [
-            TexText(words).shift(UP)
+            OldTexText(words).shift(UP)
             for words in [
                 "Heine-Borel Theorem",
                 "Lebesgue's Number Lemma",
@@ -927,7 +927,7 @@ class DefineOpenInterval(IntervalScene):
         open_interval, line = self.add_open_interval(0.5, 0.75, run_time = 1.0)
         left, right = open_interval.get_left(), open_interval.get_right()
         a, less_than1, x, less_than2, b = \
-            Tex(["a", "<", "x", "<", "b"]).shift(UP).split()
+            OldTex(["a", "<", "x", "<", "b"]).shift(UP).split()
         left_arrow = Arrow(a.get_corner(DOWN+LEFT), left)
         right_arrow = Arrow(b.get_corner(DOWN+RIGHT), right)
 
@@ -1006,15 +1006,15 @@ class SumOfIntervalsMustBeLessThan1(IntervalScene):
             self.remove(line)
             int_copy = deepcopy(open_interval)
             int_copy.scale(0.6).next_to(last_plus, buff = 0.1)
-            last_plus = Tex("+").scale(0.3)
+            last_plus = OldTex("+").scale(0.3)
             last_plus.next_to(int_copy, buff = 0.1)
             anims.append(Transform(open_interval, int_copy))
             if num < 1.0:
                 anims.append(FadeIn(last_plus))
-        less_than1 = Tex("<1").scale(0.5)
+        less_than1 = OldTex("<1").scale(0.5)
         less_than1.next_to(int_copy)
-        dots = Tex("\\dots").replace(int_copy)
-        words = TexText("Use infinitely many intervals")
+        dots = OldTex("\\dots").replace(int_copy)
+        words = OldTexText("Use infinitely many intervals")
         words.shift(UP)
 
         self.wait()
@@ -1028,7 +1028,7 @@ class SumOfIntervalsMustBeLessThan1(IntervalScene):
 class RationalsAreDense(IntervalScene):
     def construct(self):
         IntervalScene.construct(self)
-        words = TexText(["Rationals are", "\\emph{dense}", "in the reals"])
+        words = OldTexText(["Rationals are", "\\emph{dense}", "in the reals"])
         words.shift(2*UP)
         words = words.split()
         words[1].set_color()
@@ -1053,12 +1053,12 @@ class RationalsAreDense(IntervalScene):
 
 class SurelyItsImpossible(Scene):
     def construct(self):
-        self.add(TexText("Surely it's impossible!"))
+        self.add(OldTexText("Surely it's impossible!"))
 
 class HowCanYouNotCoverEntireInterval(IntervalScene):
     def construct(self):
         IntervalScene.construct(self)
-        small_words = TexText("""
+        small_words = OldTexText("""
             In case you are wondering, it is indeed true 
             that if you cover all real numbers between 0 
             and 1 with a set of open intervals, the sum 
@@ -1068,7 +1068,7 @@ class HowCanYouNotCoverEntireInterval(IntervalScene):
             it for yourself!
         """)
         small_words.scale(0.5).to_corner(UP+RIGHT)        
-        big_words = TexText("""
+        big_words = OldTexText("""
             Covering all numbers from 0 to 1 \\emph{will}
             force the sum of the lengths of your intervals
             to be at least 1.
@@ -1101,8 +1101,8 @@ class HowCanYouNotCoverEntireInterval(IntervalScene):
 
 class PauseNow(Scene):
     def construct(self):
-        top_words = TexText("Try for yourself!").scale(2).shift(3*UP)
-        bot_words = TexText("""
+        top_words = OldTexText("Try for yourself!").scale(2).shift(3*UP)
+        bot_words = OldTexText("""
             If you've never seen this before, you will get 
             the most out of the solution and the intuitions
             I illustrate only after pulling out a pencil and
@@ -1155,7 +1155,7 @@ class StepsToSolution(IntervalScene):
             mob_copy = deepcopy(mob).center()
             mob_copy.shift((2.4-mob_copy.get_bottom()[1])*UP)
             mob_copy.shift((-FRAME_X_RADIUS+self.spacing*count)*RIGHT)
-            comma = TexText(",").next_to(mob_copy, buff = 0.1, aligned_edge = DOWN)
+            comma = OldTexText(",").next_to(mob_copy, buff = 0.1, aligned_edge = DOWN)
             anims.append(Transform(mob, mob_copy))
             commas.add(comma)
         anims.append(ShimmerIn(commas))
@@ -1211,24 +1211,24 @@ class StepsToSolution(IntervalScene):
         scale_factor = 0.6
         plus = None
         for count in range(1, 10):
-            frac_bottom = Tex("\\over %d"%(2**count))
+            frac_bottom = OldTex("\\over %d"%(2**count))
             frac_bottom.scale(scale_factor)
-            one = Tex("1").scale(scale_factor)
+            one = OldTex("1").scale(scale_factor)
             one.next_to(frac_bottom, UP, buff = 0.1)
             compound = Mobject(frac_bottom, one)
             if plus:
                 compound.next_to(plus)
             else:
                 compound.to_edge(LEFT)
-            plus = Tex("+").scale(scale_factor)
+            plus = OldTex("+").scale(scale_factor)
             plus.next_to(compound)
             frac_bottom, one = compound.split()
             self.ones.append(one)
             self.add(frac_bottom, one, plus)
             self.wait(0.2)
-        dots = Tex("\\dots").scale(scale_factor).next_to(plus)
+        dots = OldTex("\\dots").scale(scale_factor).next_to(plus)
         arrow = Arrow(ORIGIN, RIGHT).next_to(dots)
-        one = Tex("1").next_to(arrow)
+        one = OldTex("1").next_to(arrow)
         self.ones.append(one)
         self.play(*[ShowCreation(mob) for mob in (dots, arrow, one)])
         self.wait()
@@ -1237,7 +1237,7 @@ class StepsToSolution(IntervalScene):
         self.play(*[
             CounterclockwiseTransform(
                 one,
-                Tex("\\epsilon").replace(one)
+                OldTex("\\epsilon").replace(one)
             )
             for one in self.ones
         ])
@@ -1255,8 +1255,8 @@ class StepsToSolution(IntervalScene):
 class OurSumCanBeArbitrarilySmall(Scene):
     def construct(self):
         step_size = 0.01
-        epsilon = Tex("\\epsilon")
-        equals = Tex("=").next_to(epsilon)
+        epsilon = OldTex("\\epsilon")
+        equals = OldTex("=").next_to(epsilon)
         self.add(epsilon, equals)
         for num in np.arange(1, 0, -step_size):
             parts = list(map(Tex, str(num)))
@@ -1268,7 +1268,7 @@ class OurSumCanBeArbitrarilySmall(Scene):
             self.remove(*parts)
         self.wait()
         self.clear()
-        words = TexText([
+        words = OldTexText([
             "Not only can the sum be $< 1$,\\\\",
             "it can be \\emph{arbitrarily small} !"
         ]).split()
@@ -1279,7 +1279,7 @@ class OurSumCanBeArbitrarilySmall(Scene):
 
 class ProofDoesNotEqualIntuition(Scene):
     def construct(self):
-        self.add(TexText("Proof $\\ne$ Intuition"))
+        self.add(OldTexText("Proof $\\ne$ Intuition"))
 
 class StillFeelsCounterintuitive(IntervalScene):
     def construct(self):
@@ -1299,11 +1299,11 @@ class StillFeelsCounterintuitive(IntervalScene):
 
 class VisualIntuition(Scene):
     def construct(self):
-        self.add(TexText("Visual Intuition:"))
+        self.add(OldTexText("Visual Intuition:"))
 
 class SideNote(Scene):
     def construct(self):
-        self.add(TexText("(Brief Sidenote)"))
+        self.add(OldTexText("(Brief Sidenote)"))
 
 class TroubleDrawingSmallInterval(IntervalScene):
     def construct(self):
@@ -1315,7 +1315,7 @@ class TroubleDrawingSmallInterval(IntervalScene):
         shrunk = deepcopy(big).scale(0.01/0.5)
         self.clear()
         IntervalScene.construct(self)
-        words = TexText("This tiny stretch")
+        words = OldTexText("This tiny stretch")
         words.shift(2*UP+2*LEFT)
         arrow = Arrow(words, line)
 
@@ -1340,7 +1340,7 @@ class TroubleDrawingSmallInterval(IntervalScene):
 
 class WhatDoesItLookLikeToBeOutside(Scene):
     def construct(self):
-        self.add(TexText(
+        self.add(OldTexText(
             "What does it look like for a number to be outside a dense set of intervals?"
         ))
 
@@ -1353,7 +1353,7 @@ class ZoomInOnSqrt2Over2(IntervalScene):
         self.add(Mobject(epsilon, equals, num).center().shift(2*UP))
         intervals, lines = self.cover_fractions()
         self.remove(*lines)
-        irr = Tex("\\frac{\\sqrt{2}}{2}")
+        irr = OldTex("\\frac{\\sqrt{2}}{2}")
         point = self.number_line.number_to_point(np.sqrt(2)/2)
         arrow = Arrow(point+UP, point)
         irr.next_to(arrow, UP)
@@ -1368,9 +1368,9 @@ class ZoomInOnSqrt2Over2(IntervalScene):
 
 class NotCoveredMeansCacophonous(Scene):
     def construct(self):
-        statement1 = TexText("$\\frac{\\sqrt{2}}{2}$ is not covered")
-        implies = Tex("\\Rightarrow")
-        statement2 = TexText("Rationals which are close to $\\frac{\\sqrt{2}}{2}$ must have large denominators")
+        statement1 = OldTexText("$\\frac{\\sqrt{2}}{2}$ is not covered")
+        implies = OldTex("\\Rightarrow")
+        statement2 = OldTexText("Rationals which are close to $\\frac{\\sqrt{2}}{2}$ must have large denominators")
         statement1.to_edge(LEFT)
         implies.next_to(statement1)
         statement2.next_to(implies)
@@ -1397,7 +1397,7 @@ class ShiftSetupByOne(IntervalScene):
         self.add(new_interval)
         self.number_line.add_numbers(0)
         self.remove(*self.number_mobs)
-        epsilon_mob = Tex("\\epsilon = 0.01").to_edge(UP)
+        epsilon_mob = OldTex("\\epsilon = 0.01").to_edge(UP)
         self.add(epsilon_mob)
         fraction_ticks = self.add_fraction_ticks()
         self.remove(fraction_ticks)
@@ -1434,7 +1434,7 @@ class ShiftSetupByOne(IntervalScene):
             ])
         self.number_line = new_interval
         self.wait()
-        words = TexText(
+        words = OldTexText(
             "Almost all the covered numbers are harmonious!",
             size = "\\small"
         ).shift(2*UP)
@@ -1443,20 +1443,20 @@ class ShiftSetupByOne(IntervalScene):
         for num in [7, 5]:
             point = self.number_line.number_to_point(2**(num/12.))
             arrow = Arrow(point+DOWN, point)
-            mob = Tex(
+            mob = OldTex(
                 "2^{\\left(\\frac{%d}{12}\\right)}"%num
             ).next_to(arrow, DOWN)
             self.play(ShimmerIn(mob), ShowCreation(arrow))
             self.wait()
             self.remove(mob, arrow)
         self.remove(words)
-        words = TexText(
+        words = OldTexText(
             "Cacophonous covered numbers:",
             size = "\\small"
         )
         words.shift(2*UP)
-        answer1 = TexText("Complicated rationals,", size = "\\small")
-        answer2 = TexText(
+        answer1 = OldTexText("Complicated rationals,", size = "\\small")
+        answer2 = OldTexText(
             "real numbers \\emph{very very very} close to them",
             size = "\\small"
         )
@@ -1472,7 +1472,7 @@ class ShiftSetupByOne(IntervalScene):
         self.add(answer2)
         self.wait()
         self.remove(words, answer1, answer2)
-        words = TexText([
+        words = OldTexText([
             "To a", "savant,", "harmonious numbers could be ",
             "\\emph{precisely}", "those 1\\% covered by the intervals"
         ]).shift(2*UP)
@@ -1499,9 +1499,9 @@ class FinalEquivalence(IntervalScene):
             interval.scale(2.0/frac.denominator)
         self.remove(*intervals+lines)
         intervals = Mobject(*intervals)
-        arrow = Tex("\\Leftrightarrow")
-        top_words = TexText("Harmonious numbers are rare,")
-        bot_words = TexText("even for the savant")
+        arrow = OldTex("\\Leftrightarrow")
+        top_words = OldTexText("Harmonious numbers are rare,")
+        bot_words = OldTexText("even for the savant")
         bot_words.set_color().next_to(top_words, DOWN)
         words = Mobject(top_words, bot_words)
         words.next_to(arrow)

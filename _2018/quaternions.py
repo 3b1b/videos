@@ -432,10 +432,10 @@ class ManyNumberSystems(Scene):
         ]
         systems = VGroup()
         for name, location, color, ex in name_location_color_example_tuples:
-            system = TexText(name)
+            system = OldTexText(name)
             system.set_color(color)
             system.move_to(location)
-            example = Tex(ex)
+            example = OldTex(ex)
             example.next_to(system, DOWN)
             system.add(example)
             systems.add(system)
@@ -543,13 +543,13 @@ class IntroduceHamilton(Scene):
         shamrock.set_fill(opacity=0.25)
         shamrock.next_to(hamilton.get_corner(UL), DR)
         shamrock.align_to(hamilton, UP)
-        hamilton_name = TexText(
+        hamilton_name = OldTexText(
             "William Rowan Hamilton"
         )
         hamilton_name.match_width(hamilton)
         hamilton_name.next_to(hamilton, DOWN)
 
-        quote = TexText(
+        quote = OldTexText(
             """\\huge ...Every morning in the early part of the above-cited
             month, on my coming down to breakfast, your (then)
             little brother William Edwin, and yourself, used to
@@ -567,7 +567,7 @@ class IntroduceHamilton(Scene):
         quote_rect = SurroundingRectangle(quote, buff=MED_SMALL_BUFF)
         quote_rect.set_stroke(WHITE, 2)
         quote_rect.stretch(1.1, 1)
-        quote_label = TexText(
+        quote_label = OldTexText(
             "August 5, 1865 Letter\\\\from Hamilton to his son"
         )
         quote_label.next_to(quote_rect, UP)
@@ -578,7 +578,7 @@ class IntroduceHamilton(Scene):
         plaque.set_width(FRAME_WIDTH / 2)
         plaque.to_edge(LEFT)
         plaque.shift(UP)
-        equation = Tex(
+        equation = OldTex(
             "i^2 = j^2 = k^2 = ijk = -1",
             tex_to_color_map={"i": GREEN, "j": RED, "k": BLUE}
         )
@@ -658,7 +658,7 @@ class QuaternionHistory(Scene):
         self.mad_hatter()
 
     def show_dot_product_and_cross_product(self):
-        date = Tex("1843")
+        date = OldTex("1843")
         date.scale(2)
         date.to_edge(UP)
 
@@ -672,7 +672,7 @@ class QuaternionHistory(Scene):
         }
 
         def get_colored_tex_mobject(tex):
-            return Tex(tex, tex_to_color_map=t2c)
+            return OldTex(tex, tex_to_color_map=t2c)
 
         v1, v2 = [
             Matrix([
@@ -691,13 +691,13 @@ class QuaternionHistory(Scene):
         ], element_to_mobject=get_colored_tex_mobject)
 
         dot_product = VGroup(
-            v1.copy(), Tex("\\cdot").scale(2),
-            v2.copy(), Tex("="),
+            v1.copy(), OldTex("\\cdot").scale(2),
+            v2.copy(), OldTex("="),
             dot_rhs
         )
         cross_product = VGroup(
-            v1.copy(), Tex("\\times"),
-            v2.copy(), Tex("="),
+            v1.copy(), OldTex("\\times"),
+            v2.copy(), OldTex("="),
             cross_rhs
         )
         for product in dot_product, cross_product:
@@ -743,7 +743,7 @@ class QuaternionHistory(Scene):
         students.set_width(FRAME_WIDTH - hamilton.get_width() - 1)
         students.to_corner(DL)
 
-        equation = Tex("""
+        equation = OldTex("""
             (x_1 i + y_1 j + z_1 k)
             (x_2 i + y_2 j + z_2 k)
             =
@@ -762,7 +762,7 @@ class QuaternionHistory(Scene):
         for name in names:
             image = ImageMobject(name)
             image.set_height(3)
-            label = TexText(name)
+            label = OldTexText(name)
             label.scale(0.5)
             label.next_to(image, DOWN)
             image.label = label
@@ -772,7 +772,7 @@ class QuaternionHistory(Scene):
         images_with_labels.arrange(RIGHT)
         images_with_labels.next_to(hamilton, LEFT, LARGE_BUFF)
         images_with_labels.shift(MED_LARGE_BUFF * DOWN)
-        society_title = TexText("Quaternion society")
+        society_title = OldTexText("Quaternion society")
         society_title.next_to(images, UP, MED_LARGE_BUFF, UP)
 
         def blink_wait(n_loops):
@@ -841,17 +841,17 @@ class QuaternionHistory(Scene):
         self.play(FadeOut(images_with_quotes))
 
     def mad_hatter(self):
-        title = TexText(
+        title = OldTexText(
             "Lewis Carroll's", "``Alice in wonderland''"
         )
         title.to_edge(UP, buff=LARGE_BUFF)
         author_brace = Brace(title[0], DOWN)
-        aka = TexText("a.k.a. Mathematician Charles Dodgson")
+        aka = OldTexText("a.k.a. Mathematician Charles Dodgson")
         aka.scale(0.8)
         aka.set_color(BLUE)
         aka.next_to(author_brace, DOWN)
 
-        quote = TexText(
+        quote = OldTexText(
             """
                 ``Why, you might just as well say that\\\\
                 ‘I see what I eat’ is the same thing as\\\\
@@ -945,10 +945,10 @@ class QuaternionHistory(Scene):
         for name, quote_text in names_and_quotes:
             image = Group(ImageMobject(name))
             image.set_height(4)
-            label = TexText(name)
+            label = OldTexText(name)
             label.next_to(image, DOWN)
             names.add(label)
-            quote = TexText(
+            quote = OldTexText(
                 quote_text,
                 tex_to_color_map={
                     "positive evil": RED,
@@ -970,7 +970,7 @@ class QuaternionHistory(Scene):
 class QuaternionRotationOverlay(Scene):
     def construct(self):
         equations = VGroup(
-            Tex(
+            OldTex(
                 "p", "\\rightarrow",
                 "{}",
                 "{}",
@@ -980,7 +980,7 @@ class QuaternionRotationOverlay(Scene):
                 "{}",
                 "{}",
             ),
-            Tex(
+            OldTex(
                 "p", "\\rightarrow",
                 "{}",
                 "\\left(q_2",
@@ -990,7 +990,7 @@ class QuaternionRotationOverlay(Scene):
                 "q_2^{-1}\\right)",
                 "{}",
             ),
-            Tex(
+            OldTex(
                 "p", "\\rightarrow",
                 "\\left(q_3",
                 "\\left(q_2",
@@ -1116,11 +1116,11 @@ class QuantumSpin(Scene):
 class HereWeTackle4d(TeacherStudentsScene):
     def construct(self):
         titles = VGroup(
-            TexText(
+            OldTexText(
                 "This video:\\\\",
                 "Quaternions in 4d"
             ),
-            TexText(
+            OldTexText(
                 "Next video:\\\\",
                 "Quaternions acting on 3d"
             )
@@ -1165,13 +1165,13 @@ class HereWeTackle4d(TeacherStudentsScene):
 class TableOfContents(Scene):
     def construct(self):
         chapters = VGroup(
-            TexText(
+            OldTexText(
                 "\\underline{Chapter 1}\\\\", "Linus the Linelander"
             ),
-            TexText(
+            OldTexText(
                 "\\underline{Chapter 2}\\\\", "Felix the Flatlander"
             ),
-            TexText(
+            OldTexText(
                 "\\underline{Chapter 3}\\\\", " You, the 3d-lander"
             ),
         )
@@ -1208,7 +1208,7 @@ class IntroduceLinusTheLinelander(Scene):
     def introduce_linus(self):
         linus = Linus()
         linus.move_to(3 * LEFT)
-        name = TexText("Linus the Linelander")
+        name = OldTexText("Linus the Linelander")
         name.next_to(linus, DR, buff=MED_LARGE_BUFF)
         arrow = Arrow(name.get_top(), linus.get_right())
 
@@ -1235,9 +1235,9 @@ class IntroduceLinusTheLinelander(Scene):
         number_line.to_edge(UP)
 
         algebra = VGroup(
-            Tex("3 \\cdot 4 = 12"),
-            Tex("3 + 4 = 7"),
-            Tex("(-2) \\cdot 3 = -6"),
+            OldTex("3 \\cdot 4 = 12"),
+            OldTex("3 + 4 = 7"),
+            OldTex("(-2) \\cdot 3 = -6"),
         )
         algebra.arrange(DOWN)
         algebra.next_to(number_line, DOWN, LARGE_BUFF)
@@ -1273,7 +1273,7 @@ class IntroduceLinusTheLinelander(Scene):
         frame.to_corner(DR)
 
         q_marks = VGroup(*[
-            Tex("?").shift(
+            OldTex("?").shift(
                 random.random() * RIGHT,
                 random.random() * UP,
             )
@@ -1350,7 +1350,7 @@ class ShowComplexMultiplicationExamples(Scene):
         self.add(plane)
 
         if include_title:
-            title = TexText("Complex plane")
+            title = OldTexText("Complex plane")
             title.scale(1.5)
             title.to_corner(UL, buff=MED_LARGE_BUFF)
             title.shift(SMALL_BUFF * UR)
@@ -1362,7 +1362,7 @@ class ShowComplexMultiplicationExamples(Scene):
         plane = self.plane
         new_plane = plane.deepcopy()
         real_tex, imag_tex = z_tex.split("+")
-        label = Tex(
+        label = OldTex(
             "\\text{Multiply by}\\\\",
             real_tex, "+", imag_tex,
             alignment="",
@@ -1450,7 +1450,7 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
     def show_example_number(self):
         linus = self.linus
 
-        number = Tex("2.35", "+", "3.14", "i")
+        number = OldTex("2.35", "+", "3.14", "i")
         number.next_to(self.title, DOWN, buff=1.5)
         number.shift(3 * RIGHT)
         real, imag = number[0], number[2]
@@ -1462,14 +1462,14 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
         VGroup(imag, imag_label).set_color(RED)
 
         i = number[-1]
-        i_def = Tex("i", "^2", "=", "-1")
+        i_def = OldTex("i", "^2", "=", "-1")
         i_def.next_to(
             self.title, DOWN,
             buff=MED_LARGE_BUFF,
             aligned_edge=LEFT,
         )
         i_def_rect = SurroundingRectangle(i_def, color=YELLOW, buff=MED_SMALL_BUFF)
-        definition_label = TexText("Definition")
+        definition_label = OldTexText("Definition")
         definition_label.next_to(i_def_rect, DOWN)
         definition_label.match_color(i_def_rect)
 
@@ -1511,11 +1511,11 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
         to_fade = self.to_fade
         z1 = self.number
 
-        z2 = Tex("4", "+", "5", "i")
+        z2 = OldTex("4", "+", "5", "i")
         z2.match_style(z1)
 
         for z in z1, z2:
-            lp, rp = z.parens = Tex("()")
+            lp, rp = z.parens = OldTex("()")
             lp.next_to(z, LEFT, SMALL_BUFF)
             rp.next_to(z, RIGHT, SMALL_BUFF)
             z.real = z[0]
@@ -1544,16 +1544,16 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
         foil.move_to(product).to_edge(DOWN, LARGE_BUFF)
 
         def get_cdot():
-            return Tex("\\cdot")
+            return OldTex("\\cdot")
 
         def get_lp():
-            return Tex("(")
+            return OldTex("(")
 
         def get_rp():
-            return Tex(")")
+            return OldTex(")")
 
         def get_plus():
-            return Tex("+")
+            return OldTex("+")
 
         expansion = VGroup(
             z1.real.targets[0], get_cdot(), z2.real.targets[0], get_plus(),
@@ -1576,14 +1576,14 @@ class DefineComplexNumbersPurelyAlgebraically(Scene):
         final_prouct = VGroup(
             get_lp(),
             z1[0].copy(), get_cdot(), z2[0].copy(),
-            Tex("-"),
+            OldTex("-"),
             z1[2].copy(), get_cdot(), z2[2].copy(),
             get_rp(), get_plus(),
             get_lp(),
             z1[0].copy(), get_cdot(), z2[2].copy(),
             get_plus(),
             z1[2].copy(), get_cdot(), z2[0].copy(),
-            get_rp(), Tex("i")
+            get_rp(), OldTex("i")
         )
         final_prouct.arrange(RIGHT, buff=0.15)
         final_prouct.next_to(expansion, DOWN, buff=2)
@@ -1693,7 +1693,7 @@ class TextbookQuaternionDefinition(TeacherStudentsScene):
     }
 
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             """
             (w_1 + x_1 i + y_1 j + z_1 k)
             (w_2 + x_2 i + y_2 j + z_2 k) =
@@ -1717,7 +1717,7 @@ class TextbookQuaternionDefinition(TeacherStudentsScene):
         equation.to_edge(UP)
 
         defining_products = VGroup(*[
-            Tex(
+            OldTex(
                 tex,
                 tex_to_color_map={
                     "i": GREEN,
@@ -1766,7 +1766,7 @@ class TextbookQuaternionDefinition(TeacherStudentsScene):
 class ProblemsWhereComplexNumbersArise(Scene):
     def construct(self):
         text = "Problems where complex numbers are surprisingly useful"
-        title = TexText(*text.split(" "))
+        title = OldTexText(*text.split(" "))
         title.to_edge(UP)
         title.set_color(BLUE)
         underline = Line(LEFT, RIGHT)
@@ -1774,17 +1774,17 @@ class ProblemsWhereComplexNumbersArise(Scene):
         underline.next_to(title, DOWN)
 
         problems = VGroup(
-            TexText(
+            OldTexText(
                 "Integer solutions to\\\\ $a^2 + b^2 = c^2$",
                 alignment=""
             ),
-            TexText(
+            OldTexText(
                 "Understanding\\\\",
                 "$1 - \\frac{1}{3} + \\frac{1}{5} - \\frac{1}{7} + \\cdots" +
                 "=\\frac{\\pi}{4}$",
                 alignment="",
             ),
-            TexText("Frequency analysis")
+            OldTexText("Frequency analysis")
         )
         problems.arrange(
             DOWN, buff=LARGE_BUFF, aligned_edge=LEFT
@@ -1793,7 +1793,7 @@ class ProblemsWhereComplexNumbersArise(Scene):
             problems.add(Dot().next_to(problem[0], LEFT))
         problems.next_to(underline, DOWN, buff=MED_LARGE_BUFF)
         problems.to_edge(LEFT)
-        v_dots = Tex("\\vdots")
+        v_dots = OldTex("\\vdots")
         v_dots.scale(2)
         v_dots.next_to(problems, DOWN, aligned_edge=LEFT)
 
@@ -1830,7 +1830,7 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
         z_dot = Dot(z_point)
         z_line = Line(origin, z_point)
         z_label = VGroup(
-            Tex("z="),
+            OldTex("z="),
             DecimalNumber(self.z, num_decimal_places=0)
         )
         z_label.arrange(
@@ -1845,7 +1845,7 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
         w_dot = Dot(w_point)
         w_line = Line(origin, w_point)
         w_label = VGroup(
-            Tex("w="),
+            OldTex("w="),
             DecimalNumber(self.w, num_decimal_places=0)
         )
         w_label.arrange(RIGHT, buff=SMALL_BUFF)
@@ -1858,7 +1858,7 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
             z_label[1], w_label[1]
         ).shift(0.25 * SMALL_BUFF * DOWN)
 
-        product = Tex("z", "\\cdot", "w")
+        product = OldTex("z", "\\cdot", "w")
         z_sym, w_sym = product[0], product[2]
         z_sym.set_color(self.z_color)
         w_sym.set_color(self.w_color)
@@ -1912,7 +1912,7 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
 
         rect = SurroundingRectangle(VGroup(z_sym, cdot))
         rect.set_fill(BLACK, opacity=1)
-        func_words = TexText("Function on the plane")
+        func_words = OldTexText("Function on the plane")
         func_words.next_to(
             rect, DOWN,
             buff=MED_SMALL_BUFF,
@@ -1944,8 +1944,8 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
         hand = Hand()
         hand.move_to(plane.number_to_point(1), LEFT)
 
-        zero_eq = Tex("z \\cdot 0 = 0")
-        one_eq = Tex("z \\cdot 1 = z")
+        zero_eq = OldTex("z \\cdot 0 = 0")
+        one_eq = OldTex("z \\cdot 1 = z")
         equations = VGroup(zero_eq, one_eq)
         equations.arrange(DOWN)
         equations.scale(1.5)
@@ -1955,7 +1955,7 @@ class WalkThroughComplexMultiplication(ShowComplexMultiplicationExamples):
         equations.to_edge(LEFT)
 
         product_label = VGroup(
-            Tex("z \\cdot w ="),
+            OldTex("z \\cdot w ="),
             DecimalNumber(product, num_decimal_places=0)
         )
         product_label.arrange(RIGHT)
@@ -2062,7 +2062,7 @@ class ShowUnitCircleActions(ShowComplexMultiplicationExamples):
         self.add(pin, one_dot)
         self.add_foreground_mobjects(hand)
 
-        title = TexText(
+        title = OldTexText(
             "Numbers on the unit circle",
             "$\\rightarrow$", "pure rotation."
         )
@@ -2201,7 +2201,7 @@ class LinusThinksAboutStretching(Scene):
             lower_line.numbers.save_state()
             self.add(lower_line, *lower_line.numbers)
 
-            words = TexText("Multiply by {}".format(scalar))
+            words = OldTexText("Multiply by {}".format(scalar))
             words.next_to(lower_line.numbers, DOWN)
 
             self.play(
@@ -2281,7 +2281,7 @@ class OneDegreeOfFreedomForRotation(Scene):
 
 class StereographicProjectionTitle(Scene):
     def construct(self):
-        title = TexText("Stereographic projection")
+        title = OldTexText("Stereographic projection")
         final_title = title.copy()
         final_title.set_width(10)
         final_title.to_edge(UP)
@@ -2688,7 +2688,7 @@ class IntroduceStereographicProjectionLinusView(IntroduceStereographicProjection
         circle = self.circle
         linus = self.linus
 
-        label = TexText(
+        label = OldTexText(
             "$-1$ is \\\\ at $\\pm \\infty$"
         )
         label.scale(1.5)
@@ -2952,7 +2952,7 @@ class ShowRotationUnderStereographicProjection(IntroduceStereographicProjection)
 
 class WriteITimesW(Scene):
     def construct(self):
-        mob = Tex("i", "\\cdot", "w")
+        mob = OldTex("i", "\\cdot", "w")
         mob[0].set_color(GREEN)
         mob.scale(3)
         self.play(Write(mob))
@@ -2975,7 +2975,7 @@ class IntroduceFelix(PiCreatureScene, SpecialThreeDScene):
         arrow = Vector(DL, color=WHITE)
         arrow.next_to(felix, UR)
 
-        label = TexText("Felix the Flatlander")
+        label = OldTexText("Felix the Flatlander")
         label.next_to(arrow.get_start(), UP)
 
         self.add(felix)
@@ -3078,7 +3078,7 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
             secondary_line_ratio=1,
         )
         plane.add_coordinates()
-        title = TexText("Complex Plane")
+        title = OldTexText("Complex Plane")
         title.scale(1.8)
         title.add_background_rectangle()
         title.to_corner(UL, buff=MED_SMALL_BUFF)
@@ -3130,10 +3130,10 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
         )
 
         j_labels = VGroup(
-            Tex("-2j"),
-            Tex("-j"),
-            Tex("j"),
-            Tex("2j"),
+            OldTex("-2j"),
+            OldTex("-j"),
+            OldTex("j"),
+            OldTex("2j"),
         )
         for label, num in zip(j_labels, [-2, -1, 1, 2]):
             label.next_to(z_axis.number_to_point(num), RIGHT, MED_SMALL_BUFF)
@@ -3155,7 +3155,7 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
         for i1, i2 in [(0, 2), (1, 0), (2, 1)]:
             coord_lines[i1].target = coord_lines[i2].copy()
 
-        new_title = TexText("Imaginary plane")
+        new_title = OldTexText("Imaginary plane")
         new_title.replace(self.title)
         new_title.move_to(self.title)
 
@@ -3224,7 +3224,7 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
         z_line.set_stroke(YELLOW, 5)
         lines = VGroup(z_line, x_line, y_line)
 
-        number_label = Tex(
+        number_label = OldTex(
             str(z / 2), "+", str(x / 2), "i", "+", str(y / 2), "j",
             tex_to_color_map={
                 str(z / 2): YELLOW,
@@ -3261,15 +3261,15 @@ class IntroduceThreeDNumbers(SpecialThreeDScene):
 class MentionImpossibilityOf3dNumbers(TeacherStudentsScene):
     def construct(self):
         equations = VGroup(
-            Tex("ij = ?"),
-            Tex("ji = ?"),
+            OldTex("ij = ?"),
+            OldTex("ji = ?"),
         )
         equations.arrange(RIGHT, buff=LARGE_BUFF)
         equations.scale(1.5)
         equations.to_edge(UP)
         self.add(equations)
 
-        why = TexText("Why not?")
+        why = OldTexText("Why not?")
         why.next_to(self.students[1], UP)
 
         self.teacher_says(
@@ -3307,9 +3307,9 @@ class SphereExamplePointsDecimal(Scene):
             for color in [YELLOW, GREEN, RED]
         ])
         number_label = VGroup(
-            decimals[0], Tex("+"),
-            decimals[1], Tex("i"), Tex("+"),
-            decimals[2], Tex("j"),
+            decimals[0], OldTex("+"),
+            decimals[1], OldTex("i"), OldTex("+"),
+            decimals[2], OldTex("j"),
         )
         number_label.arrange(RIGHT, buff=SMALL_BUFF)
         number_label.to_corner(UL)
@@ -3334,7 +3334,7 @@ class SphereExamplePointsDecimal(Scene):
             brace.add(label)
             decimal_braces.add(brace)
 
-        equation = Tex(
+        equation = OldTex(
             "w^2 + x^2 + y^2 = 1",
             tex_to_color_map={
                 "w": YELLOW,
@@ -3387,14 +3387,14 @@ class TwoDStereographicProjection(IntroduceFelix):
 
         c2p = axes.coords_to_point
         labels = self.labels = VGroup(
-            Tex("i").next_to(c2p(1, 0, 0), DR, SMALL_BUFF),
-            Tex("-i").next_to(c2p(-1, 0, 0), DL, SMALL_BUFF),
-            Tex("j").next_to(c2p(0, 1, 0), UL, SMALL_BUFF),
-            Tex("-j").next_to(c2p(0, -1, 0), DL, SMALL_BUFF),
-            Tex("1").rotate(
+            OldTex("i").next_to(c2p(1, 0, 0), DR, SMALL_BUFF),
+            OldTex("-i").next_to(c2p(-1, 0, 0), DL, SMALL_BUFF),
+            OldTex("j").next_to(c2p(0, 1, 0), UL, SMALL_BUFF),
+            OldTex("-j").next_to(c2p(0, -1, 0), DL, SMALL_BUFF),
+            OldTex("1").rotate(
                 90 * DEGREES, RIGHT,
             ).next_to(c2p(0, 0, 1), RIGHT + OUT, SMALL_BUFF),
-            Tex("-1").rotate(
+            OldTex("-1").rotate(
                 90 * DEGREES, RIGHT,
             ).next_to(c2p(0, 0, -1), RIGHT + IN, SMALL_BUFF),
         )
@@ -3676,7 +3676,7 @@ class TwoDStereographicProjection(IntroduceFelix):
         arrows.set_fill(RED)
         arrows.set_stroke(RED, 5)
         neg_ones = VGroup(*[
-            Tex("-1").next_to(arrow.get_start(), -p)
+            OldTex("-1").next_to(arrow.get_start(), -p)
             for p, arrow in zip(points, arrows)
         ])
         neg_ones.set_stroke(width=0, background=True)
@@ -3818,11 +3818,11 @@ class FelixViewOfProjection(TwoDStereographicProjection):
             }
         )
         labels = VGroup(
-            Tex("i"),
-            Tex("-i"),
-            Tex("j"),
-            Tex("-j"),
-            Tex("1"),
+            OldTex("i"),
+            OldTex("-i"),
+            OldTex("j"),
+            OldTex("-j"),
+            OldTex("1"),
         )
         coords = [(1, 0), (-1, 0), (0, 1), (0, -1), (0, 0)]
         vects = [DOWN, DOWN, RIGHT, RIGHT, 0.25 * DR]
@@ -4128,7 +4128,7 @@ class ReferernceSpheresFelixView(ShowRotationsJustWithReferenceCircles):
 
     def add_parts(self, **kwargs):
         ShowRotationsJustWithReferenceCircles.add_parts(self, **kwargs)
-        one = Tex("1")
+        one = OldTex("1")
         one.next_to(ORIGIN, DR, SMALL_BUFF)
         self.add(one)
 
@@ -4164,9 +4164,9 @@ class IntroduceQuaternions(Scene):
     def compare_three_number_systems(self):
         numbers = self.get_example_numbers()
         labels = VGroup(
-            TexText("Complex number"),
-            TexText("Not-actually-a-number-system 3d number"),
-            TexText("Quaternion"),
+            OldTexText("Complex number"),
+            OldTexText("Not-actually-a-number-system 3d number"),
+            OldTexText("Quaternion"),
         )
 
         for number, label in zip(numbers, labels):
@@ -4229,10 +4229,10 @@ class IntroduceQuaternions(Scene):
         imag_part = quat[2:]
         real_brace = Brace(real_part, DOWN)
         imag_brace = Brace(imag_part, DOWN)
-        real_word = TexText("Real \\\\ part")
-        imag_word = TexText("Imaginary \\\\ part")
-        scalar_word = TexText("Scalar \\\\ part")
-        vector_word = TexText("``Vector'' \\\\ part")
+        real_word = OldTexText("Real \\\\ part")
+        imag_word = OldTexText("Imaginary \\\\ part")
+        scalar_word = OldTexText("Scalar \\\\ part")
+        vector_word = OldTexText("``Vector'' \\\\ part")
         for word in real_word, scalar_word:
             word.next_to(real_brace, DOWN, SMALL_BUFF)
         for word in imag_word, vector_word:
@@ -4265,30 +4265,30 @@ class IntroduceQuaternions(Scene):
     def get_example_numbers(self):
         number_2d = VGroup(
             DecimalNumber(3.14),
-            Tex("+"),
+            OldTex("+"),
             DecimalNumber(1.59),
-            Tex("i")
+            OldTex("i")
         )
         number_3d = VGroup(
             DecimalNumber(2.65),
-            Tex("+"),
+            OldTex("+"),
             DecimalNumber(3.58),
-            Tex("i"),
-            Tex("+"),
+            OldTex("i"),
+            OldTex("+"),
             DecimalNumber(9.79),
-            Tex("j"),
+            OldTex("j"),
         )
         number_4d = VGroup(
             DecimalNumber(3.23),
-            Tex("+"),
+            OldTex("+"),
             DecimalNumber(8.46),
-            Tex("i"),
-            Tex("+"),
+            OldTex("i"),
+            OldTex("+"),
             DecimalNumber(2.64),
-            Tex("j"),
-            Tex("+"),
+            OldTex("j"),
+            OldTex("+"),
             DecimalNumber(3.38),
-            Tex("k"),
+            OldTex("k"),
         )
         numbers = VGroup(number_2d, number_3d, number_4d)
         for number in numbers:
@@ -4322,10 +4322,10 @@ class IntroduceQuaternions(Scene):
             y_max=2.5,
         )
         axes.set_height(2.5)
-        label_mob = Tex(label)
+        label_mob = OldTex(label)
         label_mob.set_color(color)
         label_mob.next_to(axes.coords_to_point(0, 1.5), RIGHT, SMALL_BUFF)
-        reals_label_mob = TexText("Reals")
+        reals_label_mob = OldTexText("Reals")
         reals_label_mob.next_to(
             axes.coords_to_point(1, 0), DR, SMALL_BUFF
         )
@@ -4346,7 +4346,7 @@ class SimpleImaginaryQuaternionAxes(SpecialThreeDScene):
         })
         axes = self.get_axes()
         labels = VGroup(*[
-            Tex(tex).set_color(color)
+            OldTex(tex).set_color(color)
             for tex, color in zip(
                 ["i", "j", "k"],
                 [GREEN, RED, BLUE]
@@ -4369,7 +4369,7 @@ class SimpleImaginaryQuaternionAxes(SpecialThreeDScene):
 class ShowDotProductCrossProductFromOfQMult(Scene):
     def construct(self):
         v_tex = "\\vec{\\textbf{v}}"
-        product = Tex(
+        product = OldTex(
             "(", "w_1", "+",
             "x_1", "i", "+", "y_1", "j", "+", "z_1", "k", ")"
             "(", "w_2", "+",
@@ -4400,7 +4400,7 @@ class ShowDotProductCrossProductFromOfQMult(Scene):
             for mob, color in zip(vector.get_entries(), colors):
                 mob.set_color(color)
             group = VGroup(
-                Tex("{}_{} = ".format(v_tex, i)),
+                OldTex("{}_{} = ".format(v_tex, i)),
                 vector,
             )
             group.arrange(RIGHT, SMALL_BUFF)
@@ -4409,7 +4409,7 @@ class ShowDotProductCrossProductFromOfQMult(Scene):
             braces.add(brace)
             vector_defs.add(group)
 
-        result = Tex(
+        result = OldTex(
             "\\left(", "w_1", "w_2",
             "-", v_tex + "_1", "\\cdot", v_tex, "_2", ",\\,",
             "w_1", v_tex + "_2", "+", "w_2", v_tex + "_1",
@@ -4449,13 +4449,13 @@ class ShowComplexMagnitude(ShowComplexMultiplicationExamples):
         z_dot.set_color(PINK)
         z_line = Line(plane.number_to_point(0), z_point)
         z_line.set_stroke(WHITE, 2)
-        z_label = Tex(
+        z_label = OldTex(
             "z", "=", "a", "+", "b", "i",
             tex_to_color_map=tex_to_color_map
         )
         z_label.add_background_rectangle()
         z_label.next_to(z_dot, UR, buff=SMALL_BUFF)
-        z_norm_label = Tex("||z||")
+        z_norm_label = OldTex("||z||")
         z_norm_label.add_background_rectangle()
         z_norm_label.next_to(ORIGIN, UP, SMALL_BUFF)
         z_norm_label.rotate(z_line.get_angle(), about_point=ORIGIN)
@@ -4474,7 +4474,7 @@ class ShowComplexMagnitude(ShowComplexMultiplicationExamples):
             stroke_width=5,
         )
 
-        z_norm_equation = Tex(
+        z_norm_equation = OldTex(
             "||z||", "=", "\\sqrt", "{a^2", "+", "b^2", "}",
             tex_to_color_map=tex_to_color_map
         )
@@ -4502,7 +4502,7 @@ class BreakUpQuaternionMultiplicationInParts(Scene):
         q1_color = MAROON_B
         q2_color = YELLOW
 
-        product = Tex(
+        product = OldTex(
             "q_1", "\\cdot", "q_2", "=",
             "\\left(", "{q_1", "\\over", "||", "q_1", "||}", "\\right)",
             "||", "q_1", "||", "\\cdot", "q_2",
@@ -4514,17 +4514,17 @@ class BreakUpQuaternionMultiplicationInParts(Scene):
         rotate_part = product[4:-5]
         lhs_rect = SurroundingRectangle(lhs)
         lhs_rect.set_color(YELLOW)
-        lhs_words = TexText("Quaternion \\\\ multiplication")
+        lhs_words = OldTexText("Quaternion \\\\ multiplication")
         lhs_words.next_to(lhs_rect, UP, LARGE_BUFF)
         scale_brace = Brace(scale_part, UP)
         rotate_brace = Brace(rotate_part, DOWN)
-        scale_words = TexText("Scale", "$q_2$")
+        scale_words = OldTexText("Scale", "$q_2$")
         scale_words.set_color_by_tex("q_2", q2_color)
         scale_words.next_to(scale_brace, UP)
-        rotate_words = TexText("Apply special \\\\ 4d rotation")
+        rotate_words = OldTexText("Apply special \\\\ 4d rotation")
         rotate_words.next_to(rotate_brace, DOWN)
 
-        norm_equation = Tex(
+        norm_equation = OldTex(
             "||", "q_1", "||", "=",
             "||", "w_1", "+",
             "x_1", "i", "+",
@@ -4549,12 +4549,12 @@ class BreakUpQuaternionMultiplicationInParts(Scene):
         line1 = Line(ORIGIN, 0.5 * LEFT + 3 * UP)
         line2 = Line(ORIGIN, UR)
         zero_dot = Dot()
-        zero_label = Tex("0")
+        zero_label = OldTex("0")
         zero_label.next_to(zero_dot, DOWN, SMALL_BUFF)
         q1_dot = Dot(line1.get_end())
         q2_dot = Dot(line2.get_end())
-        q1_label = Tex("q_1").next_to(q1_dot, UP, SMALL_BUFF)
-        q2_label = Tex("q_2").next_to(q2_dot, UR, SMALL_BUFF)
+        q1_label = OldTex("q_1").next_to(q1_dot, UP, SMALL_BUFF)
+        q2_label = OldTex("q_2").next_to(q2_dot, UR, SMALL_BUFF)
         VGroup(q1_dot, q1_label).set_color(q1_color)
         VGroup(q2_dot, q2_label).set_color(q2_color)
         dot_group = VGroup(
@@ -4616,7 +4616,7 @@ class BreakUpQuaternionMultiplicationInParts(Scene):
         randy.flip()
         randy.next_to(rotate_words, RIGHT)
         randy.to_edge(DOWN)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         random.shuffle(q_marks.submobjects)
         q_marks.next_to(randy, UP)
         self.play(
@@ -4647,23 +4647,23 @@ class SphereProjectionsWrapper(Scene):
         rect_rows.set_width(FRAME_WIDTH - 1)
 
         sphere_labels = VGroup(
-            TexText("Circle in 2d"),
-            TexText("Sphere in 3d"),
-            TexText("Hypersphere in 4d"),
+            OldTexText("Circle in 2d"),
+            OldTexText("Sphere in 3d"),
+            OldTexText("Hypersphere in 4d"),
         )
         for label, rect in zip(sphere_labels, rect_rows[0]):
             label.next_to(rect, UP)
 
         projected_labels = VGroup(
-            TexText("Sterographically projected \\\\ circle in 1d"),
-            TexText("Sterographically projected \\\\ sphere in 2d"),
-            TexText("Sterographically projected \\\\ hypersphere in 3d"),
+            OldTexText("Sterographically projected \\\\ circle in 1d"),
+            OldTexText("Sterographically projected \\\\ sphere in 2d"),
+            OldTexText("Sterographically projected \\\\ hypersphere in 3d"),
         )
         for label, rect in zip(projected_labels, rect_rows[1]):
             label.match_width(rect)
             label.next_to(rect, UP)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.scale(2)
         q_marks.move_to(rect_rows[0][2])
 
@@ -4720,9 +4720,9 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
         ]
         label = VGroup(
             coords[0], VectorizedPoint(),
-            coords[1], Tex("i"),
-            coords[2], Tex("j"),
-            coords[3], Tex("k"),
+            coords[1], OldTex("i"),
+            coords[2], OldTex("j"),
+            coords[3], OldTex("k"),
         )
         label.arrange(RIGHT, buff=SMALL_BUFF)
         label.to_corner(UR)
@@ -4783,7 +4783,7 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
     def show_one(self):
         q_tracker = self.q_tracker
 
-        one_label = Tex("1")
+        one_label = OldTex("1")
         one_label.rotate(TAU / 4, RIGHT)
         one_label.next_to(ORIGIN, IN + RIGHT, SMALL_BUFF)
         one_label.set_shade_in_3d(True)
@@ -4810,7 +4810,7 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
 
         real_part = self.q_label[0]
         brace = Brace(real_part, DOWN)
-        words = TexText("Real part zero")
+        words = OldTexText("Real part zero")
         words.next_to(brace, DOWN, SMALL_BUFF, LEFT)
 
         self.play(Write(sphere))
@@ -4880,7 +4880,7 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
         brace = self.real_part_brace
 
         brace.target = Brace(q_label, DOWN, buff=SMALL_BUFF)
-        words = TexText(
+        words = OldTexText(
             "Only those where \\\\",
             "$w^2 + x^2 + y^2 + z^2 = 1$"
         )
@@ -4916,16 +4916,16 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
         sphere_1ij = self.get_projected_sphere(null_axis=3)
         circle = StereoProjectedCircleFromHypersphere(axes=[0, 1])
 
-        circle_words = TexText(
+        circle_words = OldTexText(
             "Circle through\\\\", "$1, i, -1, -i$"
         )
-        sphere_1ij_words = TexText(
+        sphere_1ij_words = OldTexText(
             "Sphere through\\\\", "$1, i, j, -1, -i, -j$"
         )
-        sphere_1jk_words = TexText(
+        sphere_1jk_words = OldTexText(
             "Sphere through\\\\", "$1, j, k, -1, -j, -k$"
         )
-        sphere_1ik_words = TexText(
+        sphere_1ik_words = OldTexText(
             "Sphere through\\\\", "$1, i, k, -1, -i, -k$"
         )
         for words in [circle_words, sphere_1ij_words, sphere_1jk_words, sphere_1ik_words]:
@@ -5026,7 +5026,7 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
         ]
         labels = VGroup()
         for tex, coords, vect in tex_coords_vects:
-            label = Tex(tex)
+            label = OldTex(tex)
             label.scale(self.unit_labels_scale_factor)
             label.rotate(90 * DEGREES, RIGHT)
             label.next_to(c2p(*coords), vect, SMALL_BUFF)
@@ -5114,10 +5114,10 @@ class HypersphereStereographicProjection(SpecialThreeDScene):
 class MissingLabels(Scene):
     def construct(self):
         labels = VGroup(
-            Tex("i").move_to(UR),
-            Tex("1").move_to(0.3 * DOWN),
-            Tex("-i").move_to(DOWN + 1.2 * LEFT),
-            Tex("-j").move_to(1.7 * RIGHT + 0.8 * DOWN),
+            OldTex("i").move_to(UR),
+            OldTex("1").move_to(0.3 * DOWN),
+            OldTex("-i").move_to(DOWN + 1.2 * LEFT),
+            OldTex("-j").move_to(1.7 * RIGHT + 0.8 * DOWN),
         )
         labels.set_background_stroke(width=0)
         self.add(labels)
@@ -5125,7 +5125,7 @@ class MissingLabels(Scene):
 
 class RuleOfQuaternionMultiplicationOverlay(Scene):
     def construct(self):
-        q_mob, times_mob, p_mob = q_times_p = Tex(
+        q_mob, times_mob, p_mob = q_times_p = OldTex(
             "q", "\\cdot", "p"
         )
         q_times_p.scale(2)
@@ -5136,12 +5136,12 @@ class RuleOfQuaternionMultiplicationOverlay(Scene):
         p_arrow = Vector(UP, color=WHITE)
         p_arrow.next_to(p_mob, DOWN)
 
-        q_words = TexText("Think of as\\\\ an action")
+        q_words = OldTexText("Think of as\\\\ an action")
         q_words.next_to(q_arrow, UP)
-        p_words = TexText("Think of as\\\\ a point")
+        p_words = OldTexText("Think of as\\\\ a point")
         p_words.next_to(p_arrow, DOWN)
 
-        i_mob = Tex("i")[0]
+        i_mob = OldTex("i")[0]
         i_mob.scale(2)
         i_mob.move_to(q_mob, RIGHT)
         i_mob.set_color(GREEN)
@@ -5180,10 +5180,10 @@ class RuleOfQuaternionMultiplicationOverlay(Scene):
             }
         }
         i_products = VGroup(
-            Tex("i", "\\cdot", "1", "=", "i", **kwargs),
-            Tex("i", "\\cdot", "i", "=", "-1", **kwargs),
-            Tex("i", "\\cdot", "j", "=", "k", **kwargs),
-            Tex("i", "\\cdot", "k", "=", "-j", **kwargs),
+            OldTex("i", "\\cdot", "1", "=", "i", **kwargs),
+            OldTex("i", "\\cdot", "i", "=", "-1", **kwargs),
+            OldTex("i", "\\cdot", "j", "=", "k", **kwargs),
+            OldTex("i", "\\cdot", "k", "=", "-j", **kwargs),
         )
         i_products.scale(2)
         i_products.arrange(
@@ -5246,7 +5246,7 @@ class RuleOfQuaternionMultiplication(HypersphereStereographicProjection):
 
     def add_unit_labels(self):
         labels = self.unit_labels = self.get_unit_labels()
-        one_label = Tex("1")
+        one_label = OldTex("1")
         one_label.scale(self.unit_labels_scale_factor)
         one_label.set_shade_in_3d(True)
         one_label.rotate(90 * DEGREES, RIGHT)
@@ -5436,14 +5436,14 @@ class ShowDistributionOfI(TeacherStudentsScene):
             "y": RED,
             "z": BLUE,
         }
-        top_product = Tex(
+        top_product = OldTex(
             "q", "\\cdot", "\\left(",
             "w", "1", "+", "x", "i", "+", "y", "j", "+", "z", "k",
             "\\right)"
         )
         top_product.to_edge(UP)
         self.add(top_product)
-        bottom_product = Tex(
+        bottom_product = OldTex(
             "w", "q", "\\cdot", "1",
             "+", "x", "q", "\\cdot", "i",
             "+", "y", "q", "\\cdot", "j",
@@ -5507,7 +5507,7 @@ class ComplexPlane135(Scene):
         arrow = Vector(DR)
         arrow.next_to(dot, UL, SMALL_BUFF)
         arrow.match_color(dot)
-        label = Tex("-\\frac{\\sqrt{2}}{2} + \\frac{\\sqrt{2}}{2} i")
+        label = OldTex("-\\frac{\\sqrt{2}}{2} + \\frac{\\sqrt{2}}{2} i")
         label.next_to(arrow.get_start(), UP, SMALL_BUFF)
         label.set_background_stroke(width=0)
 
@@ -5581,7 +5581,7 @@ class ShowMultiplicationBy135Example(RuleOfQuaternionMultiplication):
         arrow = Vector(DR)
         arrow.next_to(point, UL, MED_SMALL_BUFF)
         arrow.set_color(PINK)
-        label = Tex(
+        label = OldTex(
             "-{\\sqrt{2} \\over 2}", "+",
             "{\\sqrt{2} \\over 2}", "i",
         )
@@ -5637,7 +5637,7 @@ class ShowMultiplicationBy135Example(RuleOfQuaternionMultiplication):
 class JMultiplicationChart(Scene):
     def construct(self):
         # Largely copy-pasted....what are you gonna do about it?
-        product = Tex("j", "\\cdot", "p")
+        product = OldTex("j", "\\cdot", "p")
         product[0].set_color(RED)
         product.scale(2)
         product.to_edge(UP)
@@ -5654,10 +5654,10 @@ class JMultiplicationChart(Scene):
             }
         }
         j_products = VGroup(
-            Tex("j", "\\cdot", "1", "=", "j", **kwargs),
-            Tex("j", "\\cdot", "j", "=", "-1", **kwargs),
-            Tex("j", "\\cdot", "i", "=", "-k", **kwargs),
-            Tex("j", "\\cdot", "k", "=", "i", **kwargs),
+            OldTex("j", "\\cdot", "1", "=", "j", **kwargs),
+            OldTex("j", "\\cdot", "j", "=", "-1", **kwargs),
+            OldTex("j", "\\cdot", "i", "=", "-k", **kwargs),
+            OldTex("j", "\\cdot", "k", "=", "i", **kwargs),
         )
         j_products.scale(2)
         j_products.arrange(
@@ -5815,7 +5815,7 @@ class ShowArbitraryMultiplication(ShowMultiplicationBy135Example):
 
         special_q = self.special_quaternion
         pq_point = self.project_quaternion(special_q)
-        label = TexText("Some unit quaternion")
+        label = OldTexText("Some unit quaternion")
         label.set_color(PINK)
         label.rotate(90 * DEGREES, RIGHT)
         label.next_to(pq_point, IN + RIGHT, SMALL_BUFF)
@@ -5875,19 +5875,19 @@ class MentionCommutativity(TeacherStudentsScene):
                 "k": BLUE,
             }
         }
-        general_eq = Tex("q \\cdot p \\ne p \\cdot q", **kwargs)
+        general_eq = OldTex("q \\cdot p \\ne p \\cdot q", **kwargs)
         general_eq.get_part_by_tex("\\ne").submobjects.reverse()
-        ij_eq = Tex("i \\cdot j = k", **kwargs)
-        ji_eq = Tex("j \\cdot i = -k", **kwargs)
+        ij_eq = OldTex("i \\cdot j = k", **kwargs)
+        ji_eq = OldTex("j \\cdot i = -k", **kwargs)
 
         for mob in [general_eq, ij_eq, ji_eq]:
             mob.move_to(self.hold_up_spot, DOWN)
 
-        words = TexText("Multiplication doesn't \\\\ commute")
+        words = OldTexText("Multiplication doesn't \\\\ commute")
         words.next_to(general_eq, UP, MED_LARGE_BUFF)
         words.shift_onto_screen()
 
-        joke = TexText("Quaternions work from home")
+        joke = OldTexText("Quaternions work from home")
         joke.scale(0.75)
         joke.to_corner(UL, MED_SMALL_BUFF)
 
@@ -5960,11 +5960,11 @@ class RotationsOfCube(SpecialThreeDScene):
         axes = self.get_axes()
         axes.scale(0.75)
 
-        label1 = TexText(
+        label1 = OldTexText(
             "z-axis\\\\",
             "then x-axis"
         )
-        label2 = TexText(
+        label2 = OldTexText(
             "x-axis\\\\",
             "then z-axis"
         )
@@ -6009,7 +6009,7 @@ class OneFinalPoint(TeacherStudentsScene):
 
 class MultiplicationFromTheRight(Scene):
     def construct(self):
-        i, dot, j = product = Tex("i", "\\cdot", "j")
+        i, dot, j = product = OldTex("i", "\\cdot", "j")
         product.set_height(1.5)
         product.to_edge(UP, buff=LARGE_BUFF)
         i.set_color(GREEN)
@@ -6018,8 +6018,8 @@ class MultiplicationFromTheRight(Scene):
         j_rect = SurroundingRectangle(j)
         i_rect.match_height(j_rect, about_edge=UP, stretch=True)
         VGroup(i_rect, j_rect).set_color(WHITE)
-        action_words = TexText("Think of as \\\\ an action")
-        point_words = TexText("Think of as \\\\ a point")
+        action_words = OldTexText("Think of as \\\\ an action")
+        point_words = OldTexText("Think of as \\\\ a point")
         action_words.next_to(i_rect, LEFT)
         point_words.next_to(j_rect, RIGHT)
 
@@ -6095,13 +6095,13 @@ class MultiplicationByJFromRight(ShowJMultiplication):
 
 class HowQuaternionsRotate3dPoints(Scene):
     def construct(self):
-        title = TexText(
+        title = OldTexText(
             "Coming up:\\\\",
             "How quaternions act on 3d points"
         )
         title.to_edge(UP)
 
-        expression = Tex(
+        expression = OldTex(
             "q", "\\cdot", "p", "\\cdot", "q^{-1}"
         )
         expression.scale(2)
@@ -6133,7 +6133,7 @@ class HoldUpQuanta(TeacherStudentsScene):
         logo.next_to(self.teacher, UR)
         logo.to_edge(RIGHT, buff=2)
 
-        words = TexText("Associated quaternion post")
+        words = OldTexText("Associated quaternion post")
         words.to_edge(UP, buff=LARGE_BUFF)
         arrow = Arrow(logo.get_top(), words.get_bottom())
 
@@ -6191,7 +6191,7 @@ class ShareWithFriends(PiCreatureScene):
         )
         self.wait()
 
-        time_words = TexText("Oh man...\\\\30 minutes")
+        time_words = OldTexText("Oh man...\\\\30 minutes")
         time_words.move_to(bubble.content)
         self.play(
             Animation(VectorizedPoint().next_to(pi1, UL, LARGE_BUFF)),
@@ -6399,7 +6399,7 @@ class ThumbnailP2(ThumbnailP1):
 
 class ThumbnailOverlay(Scene):
     def construct(self):
-        title = TexText("Quaternions \\\\", "visualized")
+        title = OldTexText("Quaternions \\\\", "visualized")
         title.set_width(7)
         # title[1].scale(0.7, about_edge=UP)
         title.to_edge(UP, buff=MED_SMALL_BUFF)

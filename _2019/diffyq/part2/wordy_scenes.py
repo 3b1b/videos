@@ -17,7 +17,7 @@ class WriteHeatEquationTemplate(Scene):
     }
 
     def get_d1_equation(self):
-        return Tex(
+        return OldTex(
             "{\\partial {T} \\over \\partial {t}}({x}, {t})", "=",
             "\\alpha \\cdot",
             "{\\partial^2 {T} \\over \\partial {x}^2} ({x}, {t})",
@@ -25,7 +25,7 @@ class WriteHeatEquationTemplate(Scene):
         )
 
     def get_d1_equation_without_inputs(self):
-        return Tex(
+        return OldTex(
             "{\\partial {T} \\over \\partial {t}}", "=",
             "\\alpha \\cdot",
             "{\\partial^2 {T} \\over \\partial {x}^2}",
@@ -33,7 +33,7 @@ class WriteHeatEquationTemplate(Scene):
         )
 
     def get_d3_equation(self):
-        return Tex(
+        return OldTex(
             "{\\partial {T} \\over \\partial {t}}", "=",
             "\\alpha \\left(",
             "{\\partial^2 {T} \\over \\partial {x}^2} + ",
@@ -44,14 +44,14 @@ class WriteHeatEquationTemplate(Scene):
         )
 
     def get_general_equation(self):
-        return Tex(
+        return OldTex(
             "{\\partial {T} \\over \\partial {t}}", "=",
             "\\alpha", "\\nabla^2 {T}",
             **self.tex_mobject_config,
         )
 
     def get_d3_equation_with_inputs(self):
-        return Tex(
+        return OldTex(
             "{\\partial {T} \\over \\partial {t}}",
             "({x}, {y}, {z}, {t})", "=",
             "\\alpha \\left(",
@@ -66,10 +66,10 @@ class WriteHeatEquationTemplate(Scene):
         )
 
     def get_d1_words(self):
-        return TexText("Heat equation\\\\", "(1 dimension)")
+        return OldTexText("Heat equation\\\\", "(1 dimension)")
 
     def get_d3_words(self):
-        return TexText("Heat equation\\\\", "(3 dimensions)")
+        return OldTexText("Heat equation\\\\", "(3 dimensions)")
 
     def get_d1_group(self):
         group = VGroup(
@@ -91,7 +91,7 @@ class WriteHeatEquationTemplate(Scene):
 class HeatEquationIntroTitle(WriteHeatEquationTemplate):
     def construct(self):
         scale_factor = 1.25
-        title = TexText("The Heat Equation")
+        title = OldTexText("The Heat Equation")
         title.scale(scale_factor)
         title.to_edge(UP)
 
@@ -111,7 +111,7 @@ class BringTogether(Scene):
     def construct(self):
         arrows = VGroup(Vector(2 * RIGHT), Vector(2 * LEFT))
         arrows.arrange(RIGHT, buff=2)
-        words = TexText("Bring together")[0]
+        words = OldTexText("Bring together")[0]
         words.next_to(arrows, DOWN)
         words.save_state()
         words.space_out_submobjects(1.2)
@@ -129,19 +129,19 @@ class FourierSeriesIntro(WriteHeatEquationTemplate):
     def construct(self):
         title_scale_value = 1.5
 
-        title = TexText(
+        title = OldTexText(
             "Fourier ", "Series",
         )
         title.scale(title_scale_value)
         title.to_edge(UP)
         title.generate_target()
 
-        details_coming = TexText("Details coming...")
+        details_coming = OldTexText("Details coming...")
         details_coming.next_to(title.get_corner(DR), DOWN)
         details_coming.set_color(GREY_B)
 
-        # physics = TexText("Physics")
-        heat = TexText("Heat")
+        # physics = OldTexText("Physics")
+        heat = OldTexText("Heat")
         heat.scale(title_scale_value)
         physics = self.get_general_equation()
         physics.set_color_by_tex("{T}", RED)
@@ -174,7 +174,7 @@ class FourierSeriesIntro(WriteHeatEquationTemplate):
         image.set_height(5)
         image.next_to(title, DOWN, LARGE_BUFF)
         image.to_edge(LEFT)
-        name = TexText("Joseph", "Fourier")
+        name = OldTexText("Joseph", "Fourier")
         name.next_to(image, DOWN)
 
         bubble = ThoughtBubble(
@@ -229,11 +229,11 @@ class TodaysTargetWrapper(Scene):
 
 class TwoGraphTypeTitles(Scene):
     def construct(self):
-        left_title = TexText(
+        left_title = OldTexText(
             "Represent time\\\\with actual time"
         )
         left_title.shift(FRAME_WIDTH * LEFT / 4)
-        right_title = TexText(
+        right_title = OldTexText(
             "Represent time\\\\with an axis"
         )
         right_title.shift(FRAME_WIDTH * RIGHT / 4)
@@ -257,7 +257,7 @@ class ShowPartialDerivativeSymbols(Scene):
         }
         d_derivs, del_derivs = VGroup(*[
             VGroup(*[
-                Tex(
+                OldTex(
                     "{" + sym, "T", "\\over", sym, var + "}",
                     "(", "{x}", ",", "{t}", ")",
                 ).set_color_by_tex_to_color_map(t2c)
@@ -290,7 +290,7 @@ class ShowPartialDerivativeSymbols(Scene):
         for m1, m2 in zip(d_derivs, del_derivs):
             m2.move_to(m1)
 
-        pd_words = TexText("Partial derivatives")
+        pd_words = OldTexText("Partial derivatives")
         pd_words.next_to(del_derivs, DOWN, MED_LARGE_BUFF)
 
         self.play(
@@ -316,7 +316,7 @@ class ShowPartialDerivativeSymbols(Scene):
         self.wait()
 
         num_words = VGroup(*[
-            TexText(
+            OldTexText(
                 "Change in $T$\\\\caused by {}",
                 "$\\partial$", "${}$".format(var),
                 arg_separator="",
@@ -351,7 +351,7 @@ class ShowPartialDerivativeSymbols(Scene):
 
 class WriteHeatEquation(WriteHeatEquationTemplate):
     def construct(self):
-        title = TexText("The Heat Equation")
+        title = OldTexText("The Heat Equation")
         title.to_edge(UP)
 
         equation = self.get_d1_equation()
@@ -369,14 +369,14 @@ class WriteHeatEquation(WriteHeatEquationTemplate):
         two_outlines.set_stroke(YELLOW, 2)
         two_outlines.set_fill(opacity=0)
 
-        to_be_explained = TexText(
+        to_be_explained = OldTexText(
             "To be explained shortly..."
         )
         to_be_explained.scale(0.7)
         to_be_explained.next_to(equation, RIGHT, MED_LARGE_BUFF)
         to_be_explained.fade(1)
 
-        pde = TexText("Partial Differential Equation")
+        pde = OldTexText("Partial Differential Equation")
         pde.move_to(title)
 
         del_outlines = equation.get_parts_by_tex("\\partial").copy()
@@ -447,10 +447,10 @@ class Show1DAnd3DEquations(WriteHeatEquationTemplate):
 
         d3_rhs = d3_equation[9:-2]
         d3_brace = Brace(d3_rhs, DOWN)
-        nabla_words = TexText("Sometimes written as")
+        nabla_words = OldTexText("Sometimes written as")
         nabla_words.match_width(d3_brace)
         nabla_words.next_to(d3_brace, DOWN)
-        nabla_exp = Tex(
+        nabla_exp = OldTex(
             "\\nabla^2 {T}",
             **self.tex_mobject_config,
         )
@@ -494,7 +494,7 @@ class D1EquationNoInputs(WriteHeatEquationTemplate):
 
 class AltHeatRHS(Scene):
     def construct(self):
-        formula = Tex(
+        formula = OldTex(
             "{\\alpha \\over 2}", "\\Big(",
             "T({x} - 1, {t}) + T({x} + 1, {t})"
             "\\Big)",
@@ -509,7 +509,7 @@ class AltHeatRHS(Scene):
 class CompareInputsOfGeneralCaseTo1D(WriteHeatEquation):
     def construct(self):
         three_d_expr, one_d_expr = [
-            Tex(
+            OldTex(
                 "{T}(" + inputs + ", {t})",
                 **self.tex_mobject_config,
             )
@@ -587,9 +587,9 @@ class ShowLaplacian(WriteHeatEquation):
 
         # Show laplacian
         brace = Brace(parts, DOWN)
-        laplacian = Tex("\\nabla^2", "T")
+        laplacian = OldTex("\\nabla^2", "T")
         laplacian.next_to(brace, DOWN)
-        laplacian_name = TexText(
+        laplacian_name = OldTexText(
             "``Laplacian''"
         )
         laplacian_name.next_to(laplacian, DOWN)
@@ -616,11 +616,11 @@ class AskAboutActuallySolving(WriteHeatEquationTemplate):
         equation = self.get_d1_equation()
         equation.center()
 
-        q1 = TexText("Solve for T?")
+        q1 = OldTexText("Solve for T?")
         q1.next_to(equation, UP, LARGE_BUFF)
-        q2 = TexText("What does it \\emph{mean} to solve this?")
+        q2 = OldTexText("What does it \\emph{mean} to solve this?")
         q2.next_to(equation, UP, LARGE_BUFF)
-        formula = Tex(
+        formula = OldTex(
             "T({x}, {t}) = \\sin\\big(a{x}\\big) e^{-\\alpha \\cdot a^2 {t}}",
             tex_to_color_map={
                 "{x}": GREEN,
@@ -628,7 +628,7 @@ class AskAboutActuallySolving(WriteHeatEquationTemplate):
             }
         )
         formula.next_to(equation, DOWN, LARGE_BUFF)
-        q3 = TexText("Is this it?")
+        q3 = OldTexText("Is this it?")
         arrow = Vector(LEFT, color=WHITE)
         arrow.next_to(formula, RIGHT)
         q3.next_to(arrow, RIGHT)

@@ -88,8 +88,8 @@ def get_sound_wave():
 def get_sender_and_receiver(height=2):
     sender = Randolph(height=height)
     receiver = Mortimer(height=height)
-    sender.name = TexText("Sender")
-    receiver.name = TexText("Receiver")
+    sender.name = OldTexText("Sender")
+    receiver.name = OldTexText("Receiver")
 
     pis = VGroup(sender, receiver)
     names = VGroup(sender.name, receiver.name)
@@ -301,9 +301,9 @@ def get_xor(height=0.35, color=BLUE_B, stroke_width=4):
 class Thumbnail(Scene):
     def construct(self):
         phrases = VGroup(
-            TexText("One Bit is Wrong"),
-            TexText("(according to an extended Hamming Code)"),
-            TexText("Can you tell which?"),
+            OldTexText("One Bit is Wrong"),
+            OldTexText("(according to an extended Hamming Code)"),
+            OldTexText("Can you tell which?"),
         )
         for phrase in phrases:
             phrase.set_width(12)
@@ -386,7 +386,7 @@ class AltThumbnail(Scene):
 
 
         #
-        words = TexText("Parity bits", font_size=72)
+        words = OldTexText("Parity bits", font_size=72)
         words.next_to(boxes, LEFT, LARGE_BUFF)
         words.to_edge(UP)
 
@@ -486,11 +486,11 @@ class DiskOfBits(Scene):
         in_image = ImageMobject("Mona_Lisa")
         in_image.to_edge(LEFT)
         in_image.shift(UP)
-        in_words = TexText("What was\\\\encoded")
+        in_words = OldTexText("What was\\\\encoded")
         in_words.next_to(in_image, DOWN)
         out_image = in_image.copy()
         out_image.to_edge(RIGHT)
-        out_words = TexText("What is\\\\decoded")
+        out_words = OldTexText("What is\\\\decoded")
         out_words.next_to(out_image, DOWN)
 
         in_arrow = Arrow(
@@ -593,7 +593,7 @@ class TripleRedundancy(Scene):
         video = ImageMobject("ZoeyInGrass")
         video.set_opacity(0)
         sound = get_sound_wave()
-        text = TexText(
+        text = OldTexText(
             """
             Fourscore and seven years ago\\\\
             our fathers brought forth, on this\\\\
@@ -611,7 +611,7 @@ class TripleRedundancy(Scene):
             file.move_to(image, UP)
 
         brace = Brace(image, UP)
-        file_word = TexText("Original File")
+        file_word = OldTexText("Original File")
         file_word.set_height(0.5)
         file_word.next_to(brace, UP)
 
@@ -638,7 +638,7 @@ class TripleRedundancy(Scene):
         bits.target.to_edge(LEFT)
         bits.target.shift(UP)
         last_shown_bit_index = 31
-        dots = TexText("\\dots")
+        dots = OldTexText("\\dots")
         dots.next_to(bits.target[last_shown_bit_index], RIGHT, aligned_edge=DOWN, buff=SMALL_BUFF)
         new_brace = Brace(VGroup(bits.target[0], dots), UP)
         file_rect = SurroundingRectangle(VGroup(bits.target[0], dots))
@@ -674,7 +674,7 @@ class TripleRedundancy(Scene):
         copies.set_color(BLUE)
         copies_rect = SurroundingRectangle(copies, buff=SMALL_BUFF)
         copies_rect.set_stroke(BLUE_E, 4)
-        copies_word = TexText("Redundant copies")
+        copies_word = OldTexText("Redundant copies")
         copies_word.scale(file_word[0][0].get_height() / copies_word[0][0].get_height())
         copies_word.match_color(copies)
         copies_word.next_to(copies_rect, DOWN)
@@ -714,7 +714,7 @@ class TripleRedundancy(Scene):
             )
             self.wait(0.25)
 
-        bangs = TexText("!!!")[0]
+        bangs = OldTexText("!!!")[0]
         bangs.scale(1.5)
         bangs.set_color(RED)
         bangs.next_to(scan_rect, UP)
@@ -772,7 +772,7 @@ class TripleRedundancy(Scene):
         for rect, label in zip(rects.target, frac_labels):
             label.move_to(rect)
 
-        redundancy_word = TexText("Redundancy")
+        redundancy_word = OldTexText("Redundancy")
         redundancy_word.match_height(copies_word)
         redundancy_word.match_color(copies_word)
         redundancy_word.next_to(braces[1], UP, SMALL_BUFF)
@@ -850,9 +850,9 @@ class TripleRedundancy(Scene):
         ecc_rect.set_stroke(BLUE_E, 2)
         ecc_rect.set_fill(BLUE_E, 0.5)
 
-        block_label = TexText("256 bit block")
-        ecc_label = TexText("9 redundancy bits")
-        message_label = TexText("247 message bits")
+        block_label = OldTexText("256 bit block")
+        ecc_label = OldTexText("9 redundancy bits")
+        message_label = OldTexText("247 message bits")
 
         block_label.next_to(bits, RIGHT, LARGE_BUFF)
         block_label.shift(UP)
@@ -917,7 +917,7 @@ class TripleRedundancy(Scene):
         self.play(flipper.set_color, WHITE)
 
         # Show two errors
-        two_error_label = TexText("Two errors")
+        two_error_label = OldTexText("Two errors")
         two_error_label.next_to(bits, LEFT, buff=MED_LARGE_BUFF, aligned_edge=UP)
         two_error_label.set_color(RED)
 
@@ -932,10 +932,10 @@ class TripleRedundancy(Scene):
         self.wait()
 
         scanim = scan_anim(point, bits, final_stroke_width=0.2)
-        bangs = TexText("!!!")[0]
+        bangs = OldTexText("!!!")[0]
         bangs.set_color(RED)
         bangs.next_to(point, UL, SMALL_BUFF)
-        q_marks = TexText("???")[0]
+        q_marks = OldTexText("???")[0]
         q_marks.replace(bangs, dim_to_match=1)
         q_marks.match_style(bangs)
 
@@ -976,7 +976,7 @@ class TimeLine(Scene):
             arrow.shift(timeline.n2p(date) - arrow.get_end())
             arrow.shift(SMALL_BUFF * direction)
 
-            label = TexText(words)
+            label = OldTexText(words)
             label.scale(0.7)
             label.next_to(arrow.get_start(), np.sign(direction[1]) * UP, SMALL_BUFF)
             label.set_color(GREY_A)
@@ -995,7 +995,7 @@ class TimeLine(Scene):
         )
 
         # Title
-        title = TexText("Error correction codes")
+        title = OldTexText("Error correction codes")
         title.set_color(YELLOW)
         title.set_height(0.5)
         title.to_edge(UP)
@@ -1042,7 +1042,7 @@ class TimeLine(Scene):
             FadeOut(VGroup(title, title_underline))
         )
 
-        invent_words = TexText("How to invent")
+        invent_words = OldTexText("How to invent")
         invent_words.match_height(hamming_word[0][0])
         invent_words.next_to(events[0], UP, buff=0.3)
         invent_words.set_color(BLUE)
@@ -1070,7 +1070,7 @@ class TimeLine(Scene):
 class WhatCDsActuallyUse(Scene):
     def construct(self):
         arrow = Vector(2 * RIGHT + UP)
-        words = TexText("What CDs/DVDs\\\\actually use")
+        words = OldTexText("What CDs/DVDs\\\\actually use")
         words.next_to(arrow.get_end(), RIGHT)
         arrow.set_color(YELLOW)
         words.set_color(YELLOW)
@@ -1085,14 +1085,14 @@ class WhatCDsActuallyUse(Scene):
 class ListOfRelevantMathTopics(Scene):
     def construct(self):
         topics = VGroup(
-            TexText("$L^1$ norm"),
-            TexText("Sphere packing"),
-            TexText("Finite sporadic groups (see Golay codes)"),
-            TexText("Finite fields"),
-            TexText("Galois extensions"),
-            TexText("Lagrange interpolation (see Reed-Solomon)"),
-            TexText("Discrete Fourier Transform"),
-            Tex("\\dots")
+            OldTexText("$L^1$ norm"),
+            OldTexText("Sphere packing"),
+            OldTexText("Finite sporadic groups (see Golay codes)"),
+            OldTexText("Finite fields"),
+            OldTexText("Galois extensions"),
+            OldTexText("Lagrange interpolation (see Reed-Solomon)"),
+            OldTexText("Discrete Fourier Transform"),
+            OldTex("\\dots")
         )
         topics.arrange(RIGHT, buff=LARGE_BUFF)
         brown = interpolate_color(GREY_BROWN, WHITE, 0.25)
@@ -1129,7 +1129,7 @@ class EaterWrapper(Scene):
         bg_rect.set_stroke(BLACK, 0)
         self.add(bg_rect)
 
-        title = TexText("Ben Eater implementing Hamming codes")
+        title = OldTexText("Ben Eater implementing Hamming codes")
         title.set_width(FRAME_WIDTH - 2)
         title.to_edge(UP)
         self.add(title)
@@ -1255,7 +1255,7 @@ class AmbientErrorCorrection(Scene):
             self.play(scanim, run_time=1)
             if syndrome:
                 flipper = block[syndrome]
-                bangs = Tex("!!!")
+                bangs = OldTex("!!!")
                 bangs.scale(2)
                 bangs.next_to(point, UL)
                 bangs.set_color(RED)
@@ -1294,9 +1294,9 @@ class AmbientErrorCorrection4(AmbientErrorCorrection):
 class ImpossibleToReasonable(Scene):
     def construct(self):
         group = VGroup(
-            TexText("Impossible"),
+            OldTexText("Impossible"),
             Vector(RIGHT, color=GREY_B),
-            TexText("Utterly reasonable"),
+            OldTexText("Utterly reasonable"),
         )
         group.arrange(RIGHT)
         group.scale(1.5)
@@ -1321,7 +1321,7 @@ class HammingAtBell(Scene):
     def construct(self):
         # Setup
         hamming_image = ImageMobject("Richard_Hamming")
-        hamming_name = TexText("Richard Hamming")
+        hamming_name = OldTexText("Richard Hamming")
         hamming_name.match_width(hamming_image)
         hamming_name.next_to(hamming_image, DOWN, MED_SMALL_BUFF)
         hamming = Group(hamming_image, hamming_name)
@@ -1345,7 +1345,7 @@ class HammingAtBell(Scene):
         punchcard.next_to(bell_logo, DOWN, LARGE_BUFF)
         punchcard.remove(*punchcard[23:])
 
-        years = TexText("1940s")
+        years = OldTexText("1940s")
         years.scale(2)
         years.to_edge(UP)
 
@@ -1383,7 +1383,7 @@ class HammingAtBell(Scene):
         self.wait()
 
         # Frustration
-        curse = TexText("\\$*@\\#*!!?!")[0]
+        curse = OldTexText("\\$*@\\#*!!?!")[0]
         curse.set_color(RED)
         curse.next_to(hamming, UP)
 
@@ -1406,9 +1406,9 @@ class MultiplePerspectives(Scene):
 
         # Names
         names = VGroup(
-            TexText("Parity checks"),
-            TexText("Xor of indices"),
-            TexText("Matrix"),
+            OldTexText("Parity checks"),
+            OldTexText("Xor of indices"),
+            OldTexText("Matrix"),
         )
 
         names.set_height(0.6)
@@ -1495,7 +1495,7 @@ class MultiplePerspectives(Scene):
 class SetupSixteenBitExample(Scene):
     def construct(self):
         # Title
-        title = TexText("Reinventing Hamming Codes")
+        title = OldTexText("Reinventing Hamming Codes")
         title.scale(1.5)
         title.to_edge(UP)
         title.set_color(BLUE)
@@ -1508,7 +1508,7 @@ class SetupSixteenBitExample(Scene):
         top_row.save_state()
         top_row.center()
 
-        simple_words = TexText("Simple\\\\", "but not too\\\\simple")
+        simple_words = OldTexText("Simple\\\\", "but not too\\\\simple")
         simple_words.scale(1.5)
         simple_words.next_to(block[4:12], LEFT, buff=LARGE_BUFF)
         top_simp = simple_words[0]
@@ -1529,7 +1529,7 @@ class SetupSixteenBitExample(Scene):
         self.add(simple_words)
 
         boxes = get_bit_grid_boxes(block, color=GREEN)
-        bits_word = TexText("bits")
+        bits_word = OldTexText("bits")
         bits_word.set_height(0.7)
         bits_word.next_to(boxes, LEFT, buff=LARGE_BUFF)
         counter = Integer(0, edge_to_fix=RIGHT)
@@ -1585,7 +1585,7 @@ class SetupSixteenBitExample(Scene):
         r_bits = VGroup(*[block[2**n] for n in range(4)])
         d_bits = VGroup(*[b for b in block if b not in r_bits])
 
-        d_label = TexText("12 bits\\\\of data")
+        d_label = OldTexText("12 bits\\\\of data")
         d_label.set_height(1.5)
         d_label.next_to(boxes, RIGHT, aligned_edge=UP, buff=LARGE_BUFF)
         d_label.set_color(BLUE)
@@ -1609,7 +1609,7 @@ class SetupSixteenBitExample(Scene):
         self.wait()
 
         # Redundancy bits
-        r_label = TexText("4 bits for\\\\", "redundancy")
+        r_label = OldTexText("4 bits for\\\\", "redundancy")
         r_label.match_height(d_label)
         r_label.next_to(boxes, LEFT, aligned_edge=UP, buff=MED_LARGE_BUFF)
         r_label.set_color(GREEN)
@@ -1698,11 +1698,11 @@ class SetupSixteenBitExample(Scene):
 
         # Correct to 11 bits
         cross = Cross(d_label[0][:2])
-        c_label = TexText("Er...11 bits")
+        c_label = OldTexText("Er...11 bits")
         c_label.match_width(d_label)
         c_label.next_to(d_label, DOWN, buff=MED_LARGE_BUFF)
         c_label.set_color(RED)
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.replace(block[0])
         q_mark.set_color(RED)
 
@@ -1728,7 +1728,7 @@ class SetupSixteenBitExample(Scene):
 
     def old_functions(self):
         # Show redundancy and message
-        redundancy_words = TexText("Separate some for\\\\redundancy")
+        redundancy_words = OldTexText("Separate some for\\\\redundancy")
         redundancy_words.next_to(block[-4:], LEFT, buff=LARGE_BUFF, aligned_edge=UP)
         redundancy_words.set_color(BLUE)
 
@@ -1741,7 +1741,7 @@ class SetupSixteenBitExample(Scene):
         )
         self.wait()
 
-        message_words = TexText("Leave the rest\\\\for a message")
+        message_words = OldTexText("Leave the rest\\\\for a message")
         message_words.next_to(block[:-4], LEFT)
         message_words.match_x(redundancy_words)
         message_words.set_color(YELLOW)
@@ -1786,8 +1786,8 @@ class SetupSixteenBitExample(Scene):
 class SenderReceiverDynamic(PiCreatureScene):
     def construct(self):
         # Sender and receiver
-        sender_word = TexText("Sender")
-        receiver_word = TexText("Receiver")
+        sender_word = OldTexText("Sender")
+        receiver_word = OldTexText("Receiver")
         words = VGroup(sender_word, receiver_word)
         words.scale(1.5)
         words.set_y(-2)
@@ -1896,14 +1896,14 @@ class SenderReceiverDynamic(PiCreatureScene):
             SurroundingRectangle(block),
         )
         wire.set_stroke(GREY, 2)
-        noise_word = TexText("Potential noise")
+        noise_word = OldTexText("Potential noise")
         noise_word.scale(0.75)
         noise_word.set_color(RED)
         noise_word.next_to(wire[1], UP, SMALL_BUFF)
 
         small_words = VGroup(
-            TexText("sent"),
-            TexText("received"),
+            OldTexText("sent"),
+            OldTexText("received"),
         )
         for word, mob in zip(small_words, [sent_block, block]):
             word.next_to(mob, UP, buff=0.35)
@@ -1933,8 +1933,8 @@ class SenderReceiverDynamic(PiCreatureScene):
             for word in words
         ])
         time_words = VGroup(
-            TexText("Past"),
-            TexText("Future"),
+            OldTexText("Past"),
+            OldTexText("Future"),
         )
         time_words.set_color(BLUE)
         for w1, w2 in zip(words, time_words):
@@ -1963,9 +1963,9 @@ class ParityChecks(Scene):
         point = block.get_corner(DR) + 2 * RIGHT + UP
         scanim = scan_anim(point, block, final_stroke_width=0.5, run_time=2, lag_factor=2)
         lines, robot = scanim.mobject
-        detection_words = TexText("Error detected!")
+        detection_words = OldTexText("Error detected!")
         detection_words.set_color(RED)
-        detection_subwords = TexText("But I have no idea where!")
+        detection_subwords = OldTexText("But I have no idea where!")
         detection_words.next_to(robot.get_top(), UR, SMALL_BUFF)
         detection_subwords.move_to(detection_words, DL)
 
@@ -1981,7 +1981,7 @@ class ParityChecks(Scene):
         )
         self.wait()
 
-        title = TexText("Parity Check")[0]
+        title = OldTexText("Parity Check")[0]
         title.set_color(YELLOW)
         title.set_stroke(BLACK, 3, background=True)
         title.add(Underline(title).shift(0.05 * UP))
@@ -2013,10 +2013,10 @@ class ParityChecks(Scene):
         )
         ms_blob.set_stroke(BLUE, 3)
 
-        pb_words = TexText("Reserve one special bit")
+        pb_words = OldTexText("Reserve one special bit")
         pb_words.next_to(pb_rect, LEFT)
         pb_words.match_color(pb_rect)
-        ms_words = TexText("The rest carry\\\\a message", alignment="")
+        ms_words = OldTexText("The rest carry\\\\a message", alignment="")
         ms_words.next_to(ms_blob, RIGHT, aligned_edge=UP)
         ms_words.align_to(pb_words, UP)
         ms_words.match_color(ms_blob)
@@ -2041,7 +2041,7 @@ class ParityChecks(Scene):
             self.wait(0.05)
 
         # Count 1's
-        number_ones_label = TexText("\\# ", "of 1's: ")
+        number_ones_label = OldTexText("\\# ", "of 1's: ")
         number_ones_label.set_height(0.7)
         number_ones_label.to_edge(UP)
         number_ones_label.shift(LEFT)
@@ -2058,7 +2058,7 @@ class ParityChecks(Scene):
         self.wait()
 
         # Show need to flip
-        want_even_label = TexText("Want this\\\\to be even")
+        want_even_label = OldTexText("Want this\\\\to be even")
         want_even_label.next_to(one_counter, RIGHT, buff=1.5)
         want_even_arrow = Arrow(
             want_even_label.get_left(), one_counter.get_right()
@@ -2134,7 +2134,7 @@ class ParityChecks(Scene):
             Arrow(block.target.get_right(), n_block.get_left()),
             Arrow(n_block.get_right(), r_block.get_left()),
         )
-        noise_word = TexText("Noise")
+        noise_word = OldTexText("Noise")
         noise_arrow = Vector(0.7 * DOWN)
         noise_arrow.next_to(n_block, UP)
         noise_word.next_to(noise_arrow, UP)
@@ -2169,7 +2169,7 @@ class ParityChecks(Scene):
         blocks = (block, r_block)
         one_rects_pair = VGroup(*[get_one_rects(b, buff=0.05) for b in blocks])
         label_pair = VGroup(*[
-            TexText("\\#", " 1's:").next_to(b, UP, buff=MED_LARGE_BUFF)
+            OldTexText("\\#", " 1's:").next_to(b, UP, buff=MED_LARGE_BUFF)
             for b in blocks
         ])
         one_counter_pair = VGroup(*[
@@ -2184,7 +2184,7 @@ class ParityChecks(Scene):
         ])
         self.wait()
 
-        bangs = Tex("!!!")
+        bangs = OldTex("!!!")
         bangs.set_color(RED)
         bangs.next_to(receiver, UP)
         self.play(
@@ -2203,7 +2203,7 @@ class ParityChecks(Scene):
         parity_rects[1].set_stroke(RED, 2)
 
         parity_labels = VGroup(*[
-            TexText(
+            OldTexText(
                 "Parity: ", word,
                 tex_to_color_map={word: color}
             ).next_to(rect, UP)
@@ -2243,7 +2243,7 @@ class ParityChecks(Scene):
 
         pb_rect = SurroundingRectangle(block[0], buff=0.05)
         pb_rect.set_stroke(GREEN, 3)
-        pb_label = TexText("Parity bit")
+        pb_label = OldTexText("Parity bit")
         pb_label.move_to(pb_rect)
         pb_label.to_edge(LEFT, buff=MED_SMALL_BUFF)
         pb_label.shift(UP)
@@ -2355,9 +2355,9 @@ class ChangeAnywhereToOneBit(Scene):
 
     def construct(self):
         title = VGroup(
-            TexText("Change anywhere"),
+            OldTexText("Change anywhere"),
             Vector(RIGHT),
-            TexText("One bit of information"),
+            OldTexText("One bit of information"),
         )
         title.arrange(RIGHT)
         title.set_width(FRAME_WIDTH - 1)
@@ -2374,8 +2374,8 @@ class ChangeAnywhereToOneBit(Scene):
         self.add(one_rects)
 
         parity_words = VGroup(
-            TexText("Even \\# of 1s", color=BLUE_B),
-            TexText("Odd \\# of 1s", color=TEAL_D),
+            OldTexText("Even \\# of 1s", color=BLUE_B),
+            OldTexText("Odd \\# of 1s", color=TEAL_D),
         )
         parity_words.scale(1.5)
         parity_words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=RIGHT)
@@ -2460,7 +2460,7 @@ class ComplainAboutParityCheckWeakness(TeacherStudentsScene):
 class ArrayOfValidMessages(Scene):
     def construct(self):
         # Messages
-        title = TexText("All possible messages")
+        title = OldTexText("All possible messages")
         title.to_edge(UP)
         nr = 22
         nc = 46
@@ -2478,10 +2478,10 @@ class ArrayOfValidMessages(Scene):
         self.wait()
 
         # Valid messages
-        subset = Tex("\\subset")
+        subset = OldTex("\\subset")
         subset.set_height(0.4)
         subset.to_edge(UP)
-        valid_label = TexText("Valid messages")
+        valid_label = OldTexText("Valid messages")
         valid_label.set_color(YELLOW)
         valid_label.next_to(subset, LEFT)
 
@@ -2504,8 +2504,8 @@ class ArrayOfValidMessages(Scene):
 
         # Words analogy
         example_words = VGroup(
-            TexText("Hello world", color=YELLOW),
-            TexText("Helho world", color=GREY_B),
+            OldTexText("Hello world", color=YELLOW),
+            OldTexText("Helho world", color=GREY_B),
         )
         example_words.scale(1.25)
         index = 12 * nc + 21
@@ -2571,7 +2571,7 @@ class ArrayOfValidMessages(Scene):
 
 class RobustForLessThanNErrors(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Robust for ", "$\\le N$", " errors",
         )
         words.to_edge(UP)
@@ -2618,7 +2618,7 @@ class TwentyQuestions(Scene):
         self.wait()
 
         # Preview parity checks
-        parity_word = TexText("Parity check")
+        parity_word = OldTexText("Parity check")
         parity_word.set_height(0.7)
         parity_word.set_color(BLUE)
         parity_word.move_to(block, UP)
@@ -2686,7 +2686,7 @@ class TwentyQuestions(Scene):
 
         # Set up questions
         q_labels = VGroup(*[
-            TexText(f"Q{n}:")
+            OldTexText(f"Q{n}:")
             for n in range(1, 5)
         ])
         q_labels.set_height(0.5)
@@ -2701,7 +2701,7 @@ class TwentyQuestions(Scene):
             colors = [GREY_BROWN, BLUE]
             for k, m_grid in enumerate(m_grids):
                 get_bit_n_subgroup(m_grid, n, k).set_fill(colors[k], 0.75)
-            vs = TexText("or")
+            vs = OldTexText("or")
             question = VGroup(m_grids[0], vs, m_grids[1])
             question.arrange(RIGHT)
             question.next_to(q_label, RIGHT, buff=MED_SMALL_BUFF)
@@ -2735,7 +2735,7 @@ class TwentyQuestions(Scene):
             for n in range(4)
         ])
 
-        pc_words = TexText("Parity check\\\\these 8 bits")
+        pc_words = OldTexText("Parity check\\\\these 8 bits")
         pc_words.next_to(boxes, RIGHT, aligned_edge=UP)
         pc_words.shift(DOWN)
         pc_words.set_color(BLUE)
@@ -2762,7 +2762,7 @@ class TwentyQuestions(Scene):
 
         scanim = get_sub_scanim(0)
         robot = scanim.mobject[-1]
-        bangs = Tex("!!!")
+        bangs = OldTex("!!!")
         bangs.set_color(RED)
         bangs.next_to(robot, UR, buff=SMALL_BUFF)
         check = Checkmark()
@@ -2808,7 +2808,7 @@ class TwentyQuestions(Scene):
             h_group[0]
             for h_group in h_groups
         ])
-        pb_label = TexText("Parity bit")
+        pb_label = OldTexText("Parity bit")
         pb_label.next_to(ecc_rects[0], UP, MED_LARGE_BUFF)
         pb_arrow = Arrow(
             pb_label.get_bottom() + MED_SMALL_BUFF * LEFT,
@@ -2999,7 +2999,7 @@ class TwentyQuestions(Scene):
         morty = Mortimer(height=2)
         morty.flip()
         morty.next_to(boxes, RIGHT, buff=0.5, aligned_edge=DOWN)
-        words = TexText("Or no error\\\\at all!")
+        words = OldTexText("Or no error\\\\at all!")
         words.next_to(morty, UP)
 
         self.play(
@@ -3196,10 +3196,10 @@ class TwentyQuestions(Scene):
 
         randy = Randolph(height=2)
         randy.next_to(boxes, RIGHT, buff=MED_LARGE_BUFF, aligned_edge=DOWN)
-        ne_word = TexText("No error?")
+        ne_word = OldTexText("No error?")
         ne_word.next_to(randy, UP, buff=MED_LARGE_BUFF)
         ne_word.shift(0.2 * RIGHT)
-        ez_word = TexText("or error\\\\at bit 0?")
+        ez_word = OldTexText("or error\\\\at bit 0?")
         ez_word.set_color(RED)
         ez_word.move_to(ne_word, DOWN)
 
@@ -3237,7 +3237,7 @@ class TwentyQuestions(Scene):
         # Highlight no error
         ne_rect = SurroundingRectangle(ne_word)
         ne_rect.set_stroke(GREY_B, 2)
-        ne_comment = TexText("17th outcome")
+        ne_comment = OldTexText("17th outcome")
         ne_comment.set_color(GREY_B)
         ne_comment.next_to(ne_rect, UP)
 
@@ -3279,9 +3279,9 @@ class TwentyQuestions(Scene):
 
         # (15, 11) setup
         stat_words = VGroup(
-            TexText("15", "-bit block"),
-            TexText("11", " bits of\\\\message", alignment=""),
-            TexText("4 bits of\\\\redundancy", alignment=""),
+            OldTexText("15", "-bit block"),
+            OldTexText("11", " bits of\\\\message", alignment=""),
+            OldTexText("4 bits of\\\\redundancy", alignment=""),
         )
         stat_words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         stat_words[0].set_color(YELLOW)
@@ -3320,7 +3320,7 @@ class TwentyQuestions(Scene):
         )
         self.play(Blink(randy))
 
-        code_name = TexText("(", "15", ", ", "11", ")", " Hamming code")
+        code_name = OldTexText("(", "15", ", ", "11", ")", " Hamming code")
         code_name.set_height(0.8)
         code_name.to_edge(UP)
         code_name.shift(UP)
@@ -3351,7 +3351,7 @@ class TwentyQuestions(Scene):
         zero_rect.set_fill(YELLOW, 0.5)
         zero_rect.save_state()
         zero_rect.stretch(0, 1, about_edge=UP)
-        zero_words = TexText("Can we put this bit to work?")
+        zero_words = OldTexText("Can we put this bit to work?")
         zero_words.set_height(0.7)
         zero_words.next_to(zero_rect, UP, MED_LARGE_BUFF)
         zero_words.match_x(block)
@@ -3367,7 +3367,7 @@ class TwentyQuestions(Scene):
         self.wait()
 
         # Parity check the whole block
-        pc_words = TexText("Parity check\\\\ \\emph{the whole block}")
+        pc_words = OldTexText("Parity check\\\\ \\emph{the whole block}")
         pc_words.set_height(1.2)
         pc_words.next_to(boxes, LEFT, buff=MED_LARGE_BUFF)
 
@@ -3425,7 +3425,7 @@ class TwentyQuestions(Scene):
         robot = scanim.mobject[-1]
         robot.set_color(GREY_B)
         robot.scale(2, about_edge=UP)
-        ded_words = TexText("At least\\\\2 errors!")
+        ded_words = OldTexText("At least\\\\2 errors!")
         ded_words.set_color(RED)
         ded_words.next_to(robot, UR, buff=SMALL_BUFF)
 
@@ -3434,7 +3434,7 @@ class TwentyQuestions(Scene):
         self.wait()
 
         # Extended name
-        new_title = TexText("Extended Hamming Code")
+        new_title = OldTexText("Extended Hamming Code")
         new_title.replace(zero_words, dim_to_match=1)
         self.play(
             FadeIn(new_title, DOWN),
@@ -3470,7 +3470,7 @@ class ErrorAtECCBit(Scene):
         pos_labels = get_grid_position_labels(boxes)
         ecc_boxes = VGroup(*[boxes[2**n] for n in range(4)])
         ecc_boxes.set_fill(GREEN, 0.5)
-        bangs = TexText("!!!")
+        bangs = OldTexText("!!!")
         bangs.set_color(RED)
         bangs.next_to(boxes[2], UP, SMALL_BUFF)
 
@@ -3566,7 +3566,7 @@ class BlockSize256(Scene):
         self.add(block)
 
         # Add title
-        title = TexText("$256 = 2^8$ bits")
+        title = OldTexText("$256 = 2^8$ bits")
         title.set_height(0.7)
         title.next_to(boxes, UP, MED_LARGE_BUFF)
         title.set_x(0)
@@ -3617,9 +3617,9 @@ class BlockSize256(Scene):
         for k, bit, group in zip(it.count(), bits, parity_groups):
             bit_value = int(bit)
             if bit_value:
-                word = TexText("Yes", color=GREEN)
+                word = OldTexText("Yes", color=GREEN)
             else:
-                word = TexText("No", color=RED)
+                word = OldTexText("No", color=RED)
             word.next_to(group, DOWN)
             yes_no_group.add(word)
 
@@ -3643,7 +3643,7 @@ class BlockSize256(Scene):
             self.wait()
 
         # Highlight parity bits
-        parity_bits_label = TexText("8 parity bits")
+        parity_bits_label = OldTexText("8 parity bits")
         parity_bits_label.next_to(boxes, UP, aligned_edge=LEFT)
         parity_bits_label.set_color(GREEN)
 
@@ -3680,7 +3680,7 @@ class BlockSize256(Scene):
         self.wait()
 
         # Write redundant
-        redundant_label = TexText("``Redundant''")
+        redundant_label = OldTexText("``Redundant''")
         redundant_label.set_color(GREEN)
         redundant_label.next_to(parity_bits_label[-1][-1], RIGHT, MED_LARGE_BUFF, DOWN)
 
@@ -3770,9 +3770,9 @@ class ChecksSpellOutPositionInBinary(Scene):
         possible_positions = list(range(2**N))
         for n, bit, group in zip(it.count(), bits, parity_groups):
             if bit:
-                word = TexText("Yes", color=GREEN)
+                word = OldTexText("Yes", color=GREEN)
             else:
-                word = TexText("No", color=RED)
+                word = OldTexText("No", color=RED)
             word.next_to(group, RIGHT)
             yes_no_words.add(word)
 
@@ -3810,7 +3810,7 @@ class ChecksSpellOutPositionInBinary(Scene):
 
         equation = VGroup(
             Integer(7, color=BLUE),
-            Tex("\\rightarrow"),
+            OldTex("\\rightarrow"),
             binary_pos_label.target,
         )
         equation.arrange(RIGHT)
@@ -3818,7 +3818,7 @@ class ChecksSpellOutPositionInBinary(Scene):
 
         arrow = Arrow(equation.get_left(), equation.get_right(), buff=0)
         arrow.next_to(equation, DOWN, SMALL_BUFF)
-        trans_words = TexText("Decimal to binary")
+        trans_words = OldTexText("Decimal to binary")
         trans_words.match_width(arrow)
         trans_words.next_to(arrow, DOWN, SMALL_BUFF)
 
@@ -3837,7 +3837,7 @@ class ChecksSpellOutPositionInBinary(Scene):
         bin_group = VGroup(*equation[:-1], binary_pos_label, arrow, trans_words)
 
         # Spell out binary
-        bin_equation = Tex(
+        bin_equation = OldTex(
             "{7} = {0} \\cdot 8 + {1} \\cdot 4 + {1} \\cdot 2 + {1} \\cdot 1",
             tex_to_color_map={
                 "{0}": RED,
@@ -3925,7 +3925,7 @@ class ChecksSpellOutPositionInBinary(Scene):
             new_bits = int_to_bit_string(n, 4)
             new_bit_mobs = VGroup()
             for b1, b2, b3, value in zip(reversed(bit_parts), binary_pos_label, binary_answers, reversed(new_bits)):
-                new_mob = Tex(value)
+                new_mob = OldTex(value)
                 new_mob.set_color(GREEN if int(value) else RED)
                 for b in (b1, b2, b3):
                     nmc = new_mob.copy()
@@ -3962,7 +3962,7 @@ class ChecksSpellOutPositionInBinary(Scene):
 
         for n, label in enumerate(pos_labels_movers):
             label.scale(2)
-            arrow = Tex("\\rightarrow")
+            arrow = OldTex("\\rightarrow")
             bits_word = "{0:b}".format(n)
             bits_word = (N - len(bits_word)) * '0' + bits_word
             bin_label = VGroup(*[Tex(b) for b in bits_word])
@@ -4076,7 +4076,7 @@ class ChecksSpellOutPositionInBinary(Scene):
         for n in range(N):
             chars = ["\\underline{\\phantom{0}}" for x in range(4)]
             chars[-(n + 1)] = "\\underline{1}"
-            question = TexText(
+            question = OldTexText(
                 f"""
                 If there's an error, does\\\\
                 its position look like\\\\
@@ -4263,7 +4263,7 @@ class FullExampleWithNewEnd(Scene):
             bit.target = bt
             bit.fade(0.9)
 
-        words = TexText("11-bit\\\\chunks")
+        words = OldTexText("11-bit\\\\chunks")
         words.scale(1.5)
         words.to_edge(RIGHT)
         lines = VGroup()
@@ -4468,7 +4468,7 @@ class FullExampleWithNewEnd(Scene):
             Dot().move_to(line.get_end(), LEFT),
         )
         line.set_stroke(GREY, 2)
-        line_label = TexText("Noisy channel")
+        line_label = OldTexText("Noisy channel")
         line_label.next_to(line, DOWN, SMALL_BUFF)
         line_label.set_color(RED)
 
@@ -4495,9 +4495,9 @@ class FullExampleWithNewEnd(Scene):
         black_box.set_fill(GREY_D, 1)
         black_box.set_stroke(WHITE, 2)
         change_words = VGroup(
-            TexText("Maybe flip 0 bits"),
-            TexText("Maybe flip 1 bit"),
-            TexText("Maybe flip 2 bits"),
+            OldTexText("Maybe flip 0 bits"),
+            OldTexText("Maybe flip 1 bit"),
+            OldTexText("Maybe flip 2 bits"),
         )
         colors = [WHITE, RED_B, RED]
         for word, color in zip(change_words, colors):
@@ -4560,7 +4560,7 @@ class FullExampleWithNewEnd(Scene):
         self.wait()
 
         # Try it!
-        try_it_words = TexText("Try it\\\\yourself!")
+        try_it_words = OldTexText("Try it\\\\yourself!")
         try_it_words.scale(2)
         try_it_words.next_to(boxes, LEFT, buff=2)
         self.play(FadeIn(try_it_words, RIGHT))
@@ -4570,7 +4570,7 @@ class FullExampleWithNewEnd(Scene):
         # Do parity checks
         working_grid = boxes.copy()
         working_grid.to_edge(LEFT)
-        working_grid_words = TexText("Possibilities")
+        working_grid_words = OldTexText("Possibilities")
         working_grid_words.set_color(BLUE)
         working_grid_words.next_to(working_grid, UP)
         working_grid.set_fill(BLUE, 0.7)
@@ -4710,7 +4710,7 @@ class FullExampleWithNewEnd(Scene):
 
         one_rects = get_one_rects(bits)
         counter.set_value(len(one_rects))
-        words = TexText("Likely one error")
+        words = OldTexText("Likely one error")
         words.next_to(counter, DOWN, LARGE_BUFF, aligned_edge=RIGHT)
         self.play(
             boxes.set_fill, BLACK, 0,
@@ -4730,7 +4730,7 @@ class FullExampleWithNewEnd(Scene):
 
         equation = VGroup(
             final_result,
-            Tex("\\rightarrow"),
+            OldTex("\\rightarrow"),
             Integer(10)
         )
         equation.arrange(RIGHT)
@@ -4771,9 +4771,9 @@ class ByHandVsSoftwareVsHardware(Scene):
         self.add(rects)
 
         labels = VGroup(
-            TexText("By hand"),
-            TexText("In software"),
-            TexText("In hardware"),
+            OldTexText("By hand"),
+            OldTexText("In software"),
+            OldTexText("In hardware"),
         )
         for label, rect in zip(labels, rects):
             label.next_to(rect, DOWN)
@@ -4817,8 +4817,8 @@ class EndScreen(Scene):
         self.add(rects)
 
         labels = VGroup(
-            TexText("Part 2\\\\", "the elegance of it all"),
-            TexText("Ben Eater\\\\", "doing this on breadboards"),
+            OldTexText("Part 2\\\\", "the elegance of it all"),
+            OldTexText("Ben Eater\\\\", "doing this on breadboards"),
         )
 
         for label, rect in zip(labels, rects):
@@ -4850,7 +4850,7 @@ class Thumbnail2(AltThumbnail):
         code.to_edge(DOWN, buff=LARGE_BUFF)
         self.add(code)
 
-        words = TexText("Hamming codes, part 2", "\\\\the elegance")
+        words = OldTexText("Hamming codes, part 2", "\\\\the elegance")
         words[1].set_color(BLUE)
         words.set_height(2.0)
         words.to_edge(UP)
@@ -4867,7 +4867,7 @@ class Part1Wrapper(Scene):
         rect.set_stroke(GREY_B, 2)
         rect.set_height(6)
         rect.to_edge(DOWN)
-        title = TexText("Part 1")
+        title = OldTexText("Part 1")
         title.set_height(0.7)
         title.to_edge(UP)
 
@@ -4939,7 +4939,7 @@ class ScaleUp(Scene):
                 square.add(bit)
 
             redun = "{:.3}".format((N + 1) / (2**N))
-            words = Tex(
+            words = OldTex(
                 f"""
                 {{ {{{N + 1}}} \\text{{ parity bits}}
                 \\over
@@ -4980,7 +4980,7 @@ class MillionRatio(Scene):
     def construct(self):
         # Largely copied from above
         N = 20
-        words = Tex(
+        words = OldTex(
             """
             {21 \\text{ parity bits}
             \\over
@@ -5009,10 +5009,10 @@ class MillionRatio(Scene):
 
         k = 17
         positions = VGroup(*[
-            Tex(int_to_bit_string(n, n_bits=20))
+            OldTex(int_to_bit_string(n, n_bits=20))
             for n in [*range(k), *range(2**N - k // 2, 2**N)]
         ])
-        positions.replace_submobject(-k // 2, Tex("\\vdots"))
+        positions.replace_submobject(-k // 2, OldTex("\\vdots"))
         positions.arrange(DOWN)
         positions.set_height(7)
         positions.to_edge(RIGHT)
@@ -5020,7 +5020,7 @@ class MillionRatio(Scene):
             positions[n].set_color(GREEN_B)
 
         brace = Brace(positions, LEFT, buff=SMALL_BUFF)
-        p_label = TexText("$2^{20}$\\\\positions")
+        p_label = OldTexText("$2^{20}$\\\\positions")
         p_label.next_to(brace, LEFT, SMALL_BUFF)
 
         self.play(
@@ -5051,7 +5051,7 @@ class BurstErrors(Scene):
 
         colors = [BLUE, YELLOW, MAROON_B, TEAL]
         block_words = VGroup(*[
-            TexText(f"Block {n}", fill_color=color)
+            OldTexText(f"Block {n}", fill_color=color)
             for n, color in zip(range(nb), colors)
         ])
         block_words.set_height(0.5)
@@ -5083,10 +5083,10 @@ class BurstErrors(Scene):
 
         # Show burst error
         error_bits = bits[9:13]
-        error_words = TexText("Burst of errors")
+        error_words = OldTexText("Burst of errors")
         error_words.next_to(error_bits, DOWN)
         error_words.set_color(RED)
-        ruined_words = TexText("Ruined")
+        ruined_words = OldTexText("Ruined")
         ruined_words.set_color(RED)
         ruined_words.next_to(block_words[1], UP)
         strike = Line(LEFT, RIGHT)
@@ -5212,7 +5212,7 @@ class ReviewOfXOR(Scene):
                 Integer(bits[0]),
                 xor.copy(),
                 Integer(bits[1]),
-                Tex("="),
+                OldTex("="),
                 Integer(op.xor(*bits)),
             )
             equation.set_height(0.6)
@@ -5229,8 +5229,8 @@ class ReviewOfXOR(Scene):
 
         arrow = Vector(0.7 * DOWN)
         arrow.next_to(equation[1], UP, SMALL_BUFF)
-        xor_word = TexText("xor")
-        xor_word_long = TexText("``exclusive or''")
+        xor_word = OldTexText("xor")
+        xor_word_long = OldTexText("``exclusive or''")
         xor_words = VGroup(xor_word, xor_word_long)
         xor_words.scale(1.5)
         xor_words.match_color(xor)
@@ -5262,7 +5262,7 @@ class ReviewOfXOR(Scene):
         self.wait()
 
         # Parity of two bits
-        parity_words = TexText("Parity of\\\\two bits")
+        parity_words = OldTexText("Parity of\\\\two bits")
         parity_words.set_color(YELLOW)
         parity_words.scale(1.5)
         parity_words.to_edge(RIGHT, buff=MED_LARGE_BUFF)
@@ -5284,7 +5284,7 @@ class ReviewOfXOR(Scene):
         self.wait()
 
         # Addition mod 2
-        mod2_words = TexText("Addition\\\\mod 2")
+        mod2_words = OldTexText("Addition\\\\mod 2")
         mod2_words.scale(1.5)
         mod2_words.move_to(parity_words, RIGHT)
         mod2_words.set_color(BLUE)
@@ -5368,7 +5368,7 @@ class ReviewOfXOR(Scene):
         )
 
         # Compute parities
-        parity_words = TexText("Computes\\\\parity\\\\of each\\\\column", alignment="")
+        parity_words = OldTexText("Computes\\\\parity\\\\of each\\\\column", alignment="")
         parity_words.set_color(YELLOW)
         parity_words.to_corner(UL)
         self.add(parity_words)
@@ -5430,10 +5430,10 @@ class ButWhy(TeacherStudentsScene):
 
 class WhyPointToError(Scene):
     def construct(self):
-        rect = SurroundingRectangle(TexText("0000").scale(2))
+        rect = SurroundingRectangle(OldTexText("0000").scale(2))
         rect.to_edge(RIGHT)
         rect.set_stroke(RED, 3)
-        words = TexText("Why do these\\\\point to an error?")
+        words = OldTexText("Why do these\\\\point to an error?")
         arrow = Vector(0.7 * RIGHT)
         arrow.next_to(rect, LEFT)
         words.next_to(arrow, LEFT)
@@ -5642,7 +5642,7 @@ class HammingCodesWithXOR(Scene):
         parity_highlights.set_fill(BLACK, 0)
         self.play(ShowCreation(parity_highlights))
 
-        words = TexText("Try to make\\\\this 0000")
+        words = OldTexText("Try to make\\\\this 0000")
         words.set_color(GREEN)
         words.next_to(boxes, RIGHT, MED_LARGE_BUFF)
         words.to_edge(DOWN, buff=1)
@@ -5849,7 +5849,7 @@ class CompareXorToParityChecks(Scene):
         bg_rect.set_stroke(width=0)
         self.add(bg_rect)
 
-        title = TexText("One algorithm, multiple perspectives")
+        title = OldTexText("One algorithm, multiple perspectives")
         title.scale(1.5)
         title.to_edge(UP)
         title.add_to_back(Underline(title))
@@ -5864,9 +5864,9 @@ class CompareXorToParityChecks(Scene):
         rects.shift(-rects[:2].get_center())
 
         labels = VGroup(
-            TexText("Multiple parity checks"),
-            TexText("One big xor"),
-            TexText("Matrix product"),
+            OldTexText("Multiple parity checks"),
+            OldTexText("One big xor"),
+            OldTexText("Matrix product"),
         )
         for label, rect in zip(labels, rects):
             label.next_to(rect, DOWN)
@@ -5879,8 +5879,8 @@ class CompareXorToParityChecks(Scene):
         self.wait(2)
 
         # Hardware/software labels
-        hw_label = TexText("(nicer for hardware)")
-        sw_label = TexText("(nicer for software)")
+        hw_label = OldTexText("(nicer for hardware)")
+        sw_label = OldTexText("(nicer for software)")
 
         for l1, l2 in zip(labels, [hw_label, sw_label]):
             l2.next_to(l1, DOWN)
@@ -5918,7 +5918,7 @@ class CompareXorToParityChecks(Scene):
 
 class LogTitle(Scene):
     def construct(self):
-        title = TexText("$\\text{log}_2(256) = 8$ parity checks")
+        title = OldTexText("$\\text{log}_2(256) = 8$ parity checks")
         title.set_height(0.7)
         title.to_edge(UP)
         underline = Underline(title[0][:4])
@@ -5931,7 +5931,7 @@ class LogTitle(Scene):
 
 class MatrixProduct(Scene):
     def construct(self):
-        title = TexText("(7, 4) Hamming code")
+        title = OldTexText("(7, 4) Hamming code")
         title.set_height(0.7)
         title.to_edge(UP)
         title.set_color(GREY_A)
@@ -5954,13 +5954,13 @@ class MatrixProduct(Scene):
             for matrix in [encoder_matrix, message_matrix, result_matrix]
         ]
         equation = VGroup(
-            encoder, message, Tex("="), result
+            encoder, message, OldTex("="), result
         )
         equation.arrange(RIGHT, buff=MED_LARGE_BUFF)
         equation.to_edge(LEFT, buff=2)
 
         # Labels
-        message_label = TexText("Content")
+        message_label = OldTexText("Content")
         message_label.move_to(message)
         message_label.to_edge(DOWN)
         message_arrow = Arrow(
@@ -6001,7 +6001,7 @@ class MatrixProduct(Scene):
 
 class TooManyErrorsTripUpHamming(Scene):
     def construct(self):
-        title = TexText(
+        title = OldTexText(
             "$>2$ Errors"," $\\Rightarrow$ ", "Invalid decoding"
         )
         title.set_height(0.7)
@@ -6036,7 +6036,7 @@ class TooManyErrorsTripUpHamming(Scene):
 
 class LouisPasteurQuote(Scene):
     def construct(self):
-        quote = TexText("``Luck favors a\\\\prepared mind''")
+        quote = OldTexText("``Luck favors a\\\\prepared mind''")
         quote.scale(2)
         quote.set_stroke(BLACK, 8, background=True)
         self.play(Write(quote))
@@ -6046,7 +6046,7 @@ class LouisPasteurQuote(Scene):
 class ReedSolomonPreview(Scene):
     def construct(self):
         # Setup
-        title = TexText("Reed-Solomon basic idea")
+        title = OldTexText("Reed-Solomon basic idea")
         title.set_height(0.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
 
@@ -6075,9 +6075,9 @@ class ReedSolomonPreview(Scene):
         dots[4:].set_color(BLUE)
 
         # Input words
-        input_words = TexText("Input data")
-        poly_words = TexText("Polynomial\\\\fit")
-        redundant_words = TexText("Redundancy")
+        input_words = OldTexText("Input data")
+        poly_words = OldTexText("Polynomial\\\\fit")
+        redundant_words = OldTexText("Redundancy")
 
         input_words.next_to(dots[:4], UP, buff=2)
         input_words.set_color(YELLOW)
@@ -6259,7 +6259,7 @@ class RandomWalks(Scene):
 
 class ThinkingInTermsOfBits(Scene):
     def construct(self):
-        word = TexText("Information")
+        word = OldTexText("Information")
         word.scale(2)
         word.next_to(ORIGIN, LEFT, buff=0.7)
         bits = get_bit_grid(11, 8, bits=string_to_bits("Information"))

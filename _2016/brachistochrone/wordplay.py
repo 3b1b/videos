@@ -8,12 +8,12 @@ from from_3b1b.old.brachistochrone.drawing_images import sort_by_color
 class Intro(Scene):
     def construct(self):
         logo = ImageMobject("LogoGeneration", invert = False)
-        name_mob = TexText("3Blue1Brown").center()
+        name_mob = OldTexText("3Blue1Brown").center()
         name_mob.set_color("grey")
         name_mob.shift(2*DOWN)
         self.add(name_mob, logo)
 
-        new_text = TexText(["with ", "Steven Strogatz"])
+        new_text = OldTexText(["with ", "Steven Strogatz"])
         new_text.next_to(name_mob, DOWN)
         self.play(*[
             ShimmerIn(part)
@@ -35,11 +35,11 @@ class Intro(Scene):
 
 class IntroduceSteve(Scene):
     def construct(self):
-        name = TexText("Steven Strogatz")
+        name = OldTexText("Steven Strogatz")
         name.to_edge(UP)
-        contributions = TexText("Frequent Contributions")
+        contributions = OldTexText("Frequent Contributions")
         contributions.scale(0.5).to_edge(RIGHT).shift(2*UP)
-        books_word = TexText("Books")
+        books_word = OldTexText("Books")
         books_word.scale(0.5).to_edge(LEFT).shift(2*UP)
         radio_lab, sci_fri, cornell, book2, book3, book4 = [
             ImageMobject(filename, invert = False, filter_color = WHITE)
@@ -108,7 +108,7 @@ class ShowTweets(Scene):
 
 class LetsBeHonest(Scene):
     def construct(self):
-        self.play(ShimmerIn(TexText("""
+        self.play(ShimmerIn(OldTexText("""
             Let's be honest about who benefits 
             from this collaboration...
         """)))
@@ -117,7 +117,7 @@ class LetsBeHonest(Scene):
 
 class WhatIsTheBrachistochrone(Scene):
     def construct(self):
-        self.play(ShimmerIn(TexText("""
+        self.play(ShimmerIn(OldTexText("""
             So \\dots what is the Brachistochrone?
         """)))
         self.wait()
@@ -125,13 +125,13 @@ class WhatIsTheBrachistochrone(Scene):
 
 class DisectBrachistochroneWord(Scene):
     def construct(self):
-        word = TexText(["Bra", "chis", "to", "chrone"])
+        word = OldTexText(["Bra", "chis", "to", "chrone"])
         original_word = word.copy()
         dots = []
         for part in word.split():
             if dots:
                 part.next_to(dots[-1], buff = 0.06)
-            dot = Tex("\\cdot")
+            dot = OldTex("\\cdot")
             dot.next_to(part, buff = 0.06)
             dots.append(dot)
         dots = Mobject(*dots[:-1])
@@ -139,13 +139,13 @@ class DisectBrachistochroneWord(Scene):
         Mobject(word, dots).center()
         overbrace1 = Brace(Mobject(*word.split()[:-1]), UP)
         overbrace2 = Brace(word.split()[-1], UP)
-        shortest = TexText("Shortest")
+        shortest = OldTexText("Shortest")
         shortest.next_to(overbrace1, UP)
         shortest.set_color(YELLOW)
-        time = TexText("Time")
+        time = OldTexText("Time")
         time.next_to(overbrace2, UP)
         time.set_color(YELLOW)
-        chrono_example = TexText("""
+        chrono_example = OldTexText("""
             As in ``Chronological'' \\\\
             or ``Synchronize''
         """)
@@ -158,7 +158,7 @@ class DisectBrachistochroneWord(Scene):
             chrono_example.get_bottom(), 
             color = BLUE_D
         )
-        brachy_example = TexText("As in . . . brachydactyly?")
+        brachy_example = OldTexText("As in . . . brachydactyly?")
         brachy_example.scale(0.5)
         brachy_example.to_edge(LEFT)
         brachy_example.shift(2*DOWN)
@@ -169,17 +169,17 @@ class DisectBrachistochroneWord(Scene):
             color = GREEN
         )
 
-        pronunciation = TexText(["/br", "e", "kist","e","kr$\\bar{o}$n/"])
+        pronunciation = OldTexText(["/br", "e", "kist","e","kr$\\bar{o}$n/"])
         pronunciation.split()[1].rotate(np.pi)
         pronunciation.split()[3].rotate(np.pi) 
         pronunciation.scale(0.7)
         pronunciation.shift(DOWN)
 
-        latin = TexText(list("Latin"))
-        greek = TexText(list("Greek"))
+        latin = OldTexText(list("Latin"))
+        greek = OldTexText(list("Greek"))
         for mob in latin, greek:
             mob.to_edge(LEFT)
-        question_mark = TexText("?").next_to(greek, buff = 0.1)
+        question_mark = OldTexText("?").next_to(greek, buff = 0.1)
         stars = Stars().set_color(BLACK)
         stars.scale(0.5).shift(question_mark.get_center())
 
@@ -212,8 +212,8 @@ class DisectBrachistochroneWord(Scene):
 
 class OneSolutionTwoInsights(Scene):
     def construct(self):
-        one_solution = TexText(["One ", "solution"])
-        two_insights = TexText(["Two ", " insights"])
+        one_solution = OldTexText(["One ", "solution"])
+        two_insights = OldTexText(["Two ", " insights"])
         two, insights = two_insights.split()        
         johann = ImageMobject("Johann_Bernoulli2", invert = False)
         mark = ImageMobject("Mark_Levi", invert = False)
@@ -221,7 +221,7 @@ class OneSolutionTwoInsights(Scene):
             mob.scale(0.4)
         johann.next_to(insights, LEFT)
         mark.next_to(johann, RIGHT)
-        name = TexText("Mark Levi").to_edge(UP)
+        name = OldTexText("Mark Levi").to_edge(UP)
 
         self.play(*list(map(ShimmerIn, one_solution.split())))
         self.wait()
@@ -251,7 +251,7 @@ class CircleOfIdeas(Scene):
         words[2].set_color(GREY)
         words[3].set_color(GREEN)
         words[4].set_color(MAROON)
-        brachistochrone = TexText("Brachistochrone")
+        brachistochrone = OldTexText("Brachistochrone")
         displayed_words = []
         for word in words:
             anims = self.get_spinning_anims(displayed_words)
@@ -292,7 +292,7 @@ class CircleOfIdeas(Scene):
 
 class FermatsPrincipleStatement(Scene):
     def construct(self):
-        words = TexText([
+        words = OldTexText([
             "Fermat's principle:",
             """
             If a beam of light travels
@@ -331,7 +331,7 @@ class VideoProgression(Scene):
     def construct(self):
         spacing = 2*UP
         brachy, optics, light_in_two, snells, multi = words = [
-            TexText(text)
+            OldTexText(text)
             for text in [
                 "Brachistochrone", 
                 "Optics",
@@ -395,7 +395,7 @@ class BalanceCompetingFactors(Scene):
         
     def construct(self, *words):
         factor1, factor2 = [
-            TexText("Factor %d"%x).set_color(c)
+            OldTexText("Factor %d"%x).set_color(c)
             for x, c in [
                 (1, RED_D),
                 (2, BLUE_D)
@@ -453,7 +453,7 @@ class BalanceCompetingFactors(Scene):
 
 class Challenge(Scene):
     def construct(self):
-        self.add(TexText("""
+        self.add(OldTexText("""
             Can you find a new solution to the 
             Brachistochrone problem by finding 
             an intuitive reason that time-minimizing
@@ -466,12 +466,12 @@ class Challenge(Scene):
 
 class Section1(Scene):
     def construct(self):
-        self.add(TexText("Section 1: Johann Bernoulli's insight"))
+        self.add(OldTexText("Section 1: Johann Bernoulli's insight"))
         self.wait()
 
 class Section2(Scene):
     def construct(self):
-        self.add(TexText(
+        self.add(OldTexText(
             "Section 2: Mark Levi's insight, and a challenge",
             size = "\\large"
         ))
@@ -481,8 +481,8 @@ class Section2(Scene):
 
 class NarratorInterjection(Scene):
     def construct(self):
-        words1 = Tex("<\\text{Narrator interjection}>")
-        words2 = Tex("<\\!/\\text{Narrator interjection}>")
+        words1 = OldTex("<\\text{Narrator interjection}>")
+        words2 = OldTex("<\\!/\\text{Narrator interjection}>")
         self.add(words1)
         self.wait()
         self.clear()
@@ -492,7 +492,7 @@ class NarratorInterjection(Scene):
 
 class ThisCouldBeTheEnd(Scene):
     def construct(self):
-        words = TexText([
+        words = OldTexText([
             "This could be the end\\dots",
             "but\\dots"
         ])
@@ -503,37 +503,37 @@ class ThisCouldBeTheEnd(Scene):
 
 class MyOwnChallenge(Scene):
     def construct(self):
-        self.add(TexText("My own challenge:"))
+        self.add(OldTexText("My own challenge:"))
         self.wait()
 
 
 class WarmupChallenge(Scene):
     def construct(self):
-        self.add(TexText("\\large Warm-up challenge: Confirm this for yourself"))
+        self.add(OldTexText("\\large Warm-up challenge: Confirm this for yourself"))
         self.wait()
 
 class FindAnotherSolution(Scene):
     def construct(self):
-        self.add(TexText("Find another brachistochrone solution\\dots"))
+        self.add(OldTexText("Find another brachistochrone solution\\dots"))
         self.wait()
 
 
 class ProofOfSnellsLaw(Scene):
     def construct(self):
-        self.add(TexText("Proof of Snell's law:"))
+        self.add(OldTexText("Proof of Snell's law:"))
         self.wait()
 
 
 class CondensedVersion(Scene):
     def construct(self):
-        snells = TexText("Snell's")
+        snells = OldTexText("Snell's")
         snells.shift(-snells.get_left())
         snells.to_edge(UP)
         for vect in [RIGHT, RIGHT, LEFT, DOWN, DOWN, DOWN]:
             snells.add(snells.copy().next_to(snells, vect))
         snells.ingest_submobjects()
         snells.show()
-        condensed = TexText("condensed")
+        condensed = OldTexText("condensed")
 
         self.add(snells)
         self.wait()

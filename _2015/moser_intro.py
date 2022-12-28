@@ -57,7 +57,7 @@ def count_sections(*radians):
 
         last_num = None
         for reg, count in zip(regions, it.count(1)):
-            number = Tex(str(count)).shift((RADIUS, 3, 0))
+            number = OldTex(str(count)).shift((RADIUS, 3, 0))
             sc.set_color_region(reg)
             rt = 1.0 / (x**0.8)
             sc.add(number)
@@ -85,7 +85,7 @@ def summarize_pattern(*radians):
         new_lines = Mobject(*[
             Line(points[x], points[y]) for y in range(x)
         ])
-        num = Tex(str(moser_function(x + 1))).center()
+        num = OldTex(str(moser_function(x + 1))).center()
         sc.animate(
             Transform(last_num, num) if last_num else ShowCreation(num),
             FadeIn(new_lines),
@@ -270,13 +270,13 @@ if __name__ == '__main__':
     # summarize_pattern(*different_radians).write_to_movie("moser/PatternWithDifferentPoints")
 
     #Images
-    # Tex(r"""
+    # OldTex(r"""
     #     \Underbrace{1, 2, 4, 8, 16, 31, \dots}_\text{What?}
     # """).save_image("moser/NumberList31")
-    # Tex("""
+    # OldTex("""
     #     1, 2, 4, 8, 16, 32, 63, \dots
     # """).save_image("moser/NumberList63")
-    # Tex("""
+    # OldTex("""
     #     1, 2, 4, 8, 15, \dots
     # """).save_image("moser/NumberList15")
     

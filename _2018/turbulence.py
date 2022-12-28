@@ -370,7 +370,7 @@ class EddyReference(Scene):
             line.set_stroke(
                 width=(3 + 3 * random.random())
             )
-        label = TexText(self.label)
+        label = OldTexText(self.label)
         label.next_to(new_eddy, UP)
 
         self.play(
@@ -392,9 +392,9 @@ class EddyReferenceWithLabel(EddyReference):
 class EddyLabels(Scene):
     def construct(self):
         labels = VGroup(
-            TexText("Large eddy"),
-            TexText("Medium eddy"),
-            TexText("Small eddy"),
+            OldTexText("Large eddy"),
+            OldTexText("Medium eddy"),
+            OldTexText("Small eddy"),
         )
         for label in labels:
             self.play(FadeIn(
@@ -433,7 +433,7 @@ class SomeTurbulenceEquations(PiCreatureScene):
         navier_stokes.replace(line, dim_to_match=0)
         navier_stokes.scale(1.2)
 
-        distribution = Tex(
+        distribution = OldTex(
             "E(k) \\propto k^{-5/3}",
             tex_to_color_map={
                 "k": GREEN,
@@ -479,16 +479,16 @@ class SomeTurbulenceEquations(PiCreatureScene):
 class JokeRingEquation(Scene):
     def construct(self):
         items = VGroup(
-            TexText("Container with a lip"),
-            TexText("Fill with smoke (or fog)"),
-            TexText("Hold awkwardly"),
+            OldTexText("Container with a lip"),
+            OldTexText("Fill with smoke (or fog)"),
+            OldTexText("Hold awkwardly"),
         )
         line = Line(LEFT, RIGHT).set_width(items.get_width() + 1)
         items.add(line)
-        items.add(TexText("Vortex ring"))
+        items.add(OldTexText("Vortex ring"))
         items.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         line.shift(LEFT)
-        plus = Tex("+")
+        plus = OldTex("+")
         plus.next_to(line.get_left(), UR, SMALL_BUFF)
         line.add(plus)
         items.to_edge(RIGHT)
@@ -520,7 +520,7 @@ class JokeRingEquation(Scene):
 class VideoOnPhysicsGirlWrapper(Scene):
     def construct(self):
         rect = ScreenRectangle(height=6)
-        title = TexText("Video on Physics Girl")
+        title = OldTexText("Video on Physics Girl")
         title.scale(1.5)
         title.to_edge(UP)
         rect.next_to(title, DOWN)
@@ -532,7 +532,7 @@ class VideoOnPhysicsGirlWrapper(Scene):
 
 class LightBouncingOffFogParticle(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Light bouncing\\\\",
             "off fog particles"
         )
@@ -547,7 +547,7 @@ class LightBouncingOffFogParticle(Scene):
 
 class NightHawkInLightWrapper(Scene):
     def construct(self):
-        title = TexText("NightHawkInLight")
+        title = OldTexText("NightHawkInLight")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
@@ -639,7 +639,7 @@ class SetAsideTurbulence(PiCreatureScene):
 
 class WavingRodLabel(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "(Waving a small flag \\\\ through the air)"
         )
         self.play(Write(words))
@@ -648,7 +648,7 @@ class WavingRodLabel(Scene):
 
 class SeekOrderWords(Scene):
     def construct(self):
-        words = TexText("Seek order amidst chaos")
+        words = OldTexText("Seek order amidst chaos")
         words.scale(1.5)
         self.play(Write(words))
         self.wait()
@@ -684,8 +684,8 @@ class AskAboutTurbulence(TeacherStudentsScene):
         randy = self.students[1]
         morty.change("surprised")
 
-        words = TexText("Wait,", "what", "exactly \\\\", "is turbulence?")
-        question = TexText("What", "is turbulence?")
+        words = OldTexText("Wait,", "what", "exactly \\\\", "is turbulence?")
+        question = OldTexText("What", "is turbulence?")
         question.to_edge(UP, buff=MED_SMALL_BUFF)
         h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH - 1)
         h_line.next_to(question, DOWN, buff=MED_LARGE_BUFF)
@@ -728,8 +728,8 @@ class AskAboutTurbulence(TeacherStudentsScene):
             FRAME_HEIGHT * DOWN / 2,
         )
         words = VGroup(
-            TexText("Features", color=YELLOW),
-            TexText("Rigorous definition", color=BLUE),
+            OldTexText("Features", color=YELLOW),
+            OldTexText("Rigorous definition", color=BLUE),
         )
         words.next_to(self.h_line, DOWN)
         words[0].shift(FRAME_WIDTH * LEFT / 4)
@@ -744,9 +744,9 @@ class AskAboutTurbulence(TeacherStudentsScene):
 
     def three_qualitative_descriptors(self):
         words = VGroup(
-            TexText("- Eddies"),
-            TexText("- Chaos"),
-            TexText("- Diffusion"),
+            OldTexText("- Eddies"),
+            OldTexText("- Chaos"),
+            OldTexText("- Diffusion"),
         )
         words.arrange(
             DOWN, buff=1.25,
@@ -817,10 +817,10 @@ class PureAirfoilFlowCopy(PureAirfoilFlow):
 
 class LaminarFlowLabel(Scene):
     def construct(self):
-        words = TexText("Laminar flow")
+        words = OldTexText("Laminar flow")
         words.scale(1.5)
         words.to_edge(UP)
-        subwords = TexText(
+        subwords = OldTexText(
             "`Lamina', in Latin, means \\\\"
             "``a thin sheet of material''",
             tex_to_color_map={"Lamina": YELLOW},
@@ -883,12 +883,12 @@ class HighCurlFieldBreakingLayersLines(HighCurlFieldBreakingLayers):
 class VorticitySynonyms(Scene):
     def construct(self):
         words = VGroup(
-            TexText("High", "vorticity"),
-            Tex(
+            OldTexText("High", "vorticity"),
+            OldTex(
                 "\\text{a.k.a} \\,",
                 "|\\nabla \\times \\vec{\\textbf{v}}| > 0"
             ),
-            TexText("a.k.a", "high", "swirly-swirly", "factor"),
+            OldTexText("a.k.a", "high", "swirly-swirly", "factor"),
         )
         words[0].set_color_by_tex("vorticity", BLUE)
         words[1].set_color_by_tex("nabla", BLUE)
@@ -907,10 +907,10 @@ class VorticitySynonyms(Scene):
 
 class VorticityDoesNotImplyTurbulence(TeacherStudentsScene):
     def construct(self):
-        t_to_v = TexText(
+        t_to_v = OldTexText(
             "Turbulence", "$\\Rightarrow$", "Vorticity",
         )
-        v_to_t = TexText(
+        v_to_t = OldTexText(
             "Vorticity", "$\\Rightarrow$", "Turbulence",
         )
         for words in t_to_v, v_to_t:
@@ -953,9 +953,9 @@ class SurroundingRectangleSnippet(Scene):
 class FeynmanOnTurbulence(Scene):
     def construct(self):
         feynman = ImageMobject("Feynman_Woods", height=4)
-        name = TexText("Richard Feynman")
+        name = OldTexText("Richard Feynman")
         name.next_to(feynman, DOWN)
-        quote = TexText(
+        quote = OldTexText(
             "``", "Turbulence", "is the most\\\\"
             "important", "unsolved problem\\\\",
             "of classical physics.''",
@@ -985,17 +985,17 @@ class ShowNavierStokesEquations(Scene):
         self.show_money()
 
     def introduce_equations(self):
-        name = TexText("Navier-Stokes equations (incompressible)")
+        name = OldTexText("Navier-Stokes equations (incompressible)")
         equations = NavierStokesEquations()
         name.to_edge(UP)
         equations.next_to(name, DOWN, MED_LARGE_BUFF)
         labels = equations.get_labels()
         parts = equations.get_parts()
-        newtons_second = TexText(
+        newtons_second = OldTexText(
             "Newton's 2nd law \\\\ $ma = F$"
         )
         newtons_second.next_to(parts, DOWN)
-        variables = Tex(
+        variables = OldTex(
             "&\\textbf{v}", "\\text{ is velocity}\\\\",
             "&\\rho", "\\text{ is density}\\\\",
             "&p{}", "\\text{ is pressure}\\\\",
@@ -1028,7 +1028,7 @@ class ShowNavierStokesEquations(Scene):
         self.equations = equations
 
     def ask_about_evolution(self):
-        words = TexText(
+        words = OldTexText(
             "Given a start state...",
             "...how does it evolve?"
         )
@@ -1043,7 +1043,7 @@ class ShowNavierStokesEquations(Scene):
         self.play(FadeOut(words))
 
     def ask_about_reasonable(self):
-        question = TexText(
+        question = OldTexText(
             "Do ``reasonable'' \\\\"
             "solutions always\\\\"
             "exist?"
@@ -1055,7 +1055,7 @@ class ShowNavierStokesEquations(Scene):
 
     def ask_about_blowup(self):
         axes, graph = self.get_axes_and_graph()
-        question = TexText("Is this possible?")
+        question = OldTexText("Is this possible?")
         question.set_color(YELLOW)
         question.move_to(axes.get_corner(UR), LEFT)
         question.align_to(axes, UP)
@@ -1100,10 +1100,10 @@ class ShowNavierStokesEquations(Scene):
 
     def show_money(self):
         # Million dollar problem
-        problem = TexText(
+        problem = OldTexText(
             "Navier-Stokes existence \\\\ and smoothness problems"
         )
-        money = TexText("\\$1{,}000{,}000")
+        money = OldTexText("\\$1{,}000{,}000")
         money.set_color(GREEN)
         money.next_to(problem, DOWN)
         pi1 = Randolph()
@@ -1114,7 +1114,7 @@ class ShowNavierStokesEquations(Scene):
             pi.change("pondering")
             pi.money_eyes = VGroup()
             for eye in pi.eyes:
-                cash = Tex("\\$")
+                cash = OldTex("\\$")
                 cash.set_color(GREEN)
                 cash.replace(eye, dim_to_match=1)
                 pi.money_eyes.add(cash)
@@ -1148,9 +1148,9 @@ class ShowNavierStokesEquations(Scene):
             y_min=-1,
             y_max=5,
         )
-        time = TexText("Time")
+        time = OldTexText("Time")
         time.next_to(axes.x_axis, RIGHT)
-        ke = TexText("Kinetic energy")
+        ke = OldTexText("Kinetic energy")
         ke.next_to(axes.y_axis, UP)
         axes.add(time, ke)
         axes.set_height(4)
@@ -1178,7 +1178,7 @@ class NewtonsSecond(Scene):
             fill_opacity=0.5,
             side_length=1
         )
-        label = Tex("m")
+        label = OldTex("m")
         label.scale(1.5)
         label.move_to(square)
         square.add(label)
@@ -1209,7 +1209,7 @@ class NewtonsSecond(Scene):
 
 class CandleLabel(Scene):
     def construct(self):
-        word = TexText("Candle")
+        word = OldTexText("Candle")
         arrow = Vector(DR, color=WHITE)
         arrow.move_to(word.get_bottom() + SMALL_BUFF * DOWN, UL)
         self.play(
@@ -1236,7 +1236,7 @@ class FiguresOfFluidDynamics(Scene):
         images.arrange(RIGHT, buff=MED_SMALL_BUFF)
         image_groups = Group()
         for image, name in zip(images, names):
-            name_mob = TexText(name)
+            name_mob = OldTexText(name)
             name_mob.scale(0.6)
             name_mob.next_to(image, DOWN)
             image_groups.add(Group(image, name_mob))
@@ -1264,22 +1264,22 @@ class FiguresOfFluidDynamics(Scene):
 
 class KineticEnergyBreakdown(Scene):
     def construct(self):
-        title = TexText("Kinetic energy breakdown")
+        title = OldTexText("Kinetic energy breakdown")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
         h_line.next_to(title, DOWN)
         v_line = Line(h_line.get_center(), FRAME_HEIGHT * DOWN / 2)
-        lc_title = TexText("Simpler physics")
+        lc_title = OldTexText("Simpler physics")
         lc_title.set_color(YELLOW)
-        rc_title = TexText("Turbulence physics")
+        rc_title = OldTexText("Turbulence physics")
         rc_title.set_color(GREEN)
         for word, vect in (lc_title, LEFT), (rc_title, RIGHT):
             word.next_to(h_line, DOWN)
             word.shift(FRAME_WIDTH * vect / 4)
 
         left_items = VGroup(
-            TexText("- Big moving things"),
-            TexText("- Heat"),
+            OldTexText("- Big moving things"),
+            OldTexText("- Heat"),
         )
         left_items.arrange(DOWN, aligned_edge=LEFT)
         left_items.next_to(lc_title, DOWN, MED_LARGE_BUFF)
@@ -1364,7 +1364,7 @@ class Poem(Scene):
         picture.set_height(4)
         picture.center().to_edge(LEFT, buff=LARGE_BUFF)
 
-        title = TexText("Poem by Lewis F. Richardson")
+        title = OldTexText("Poem by Lewis F. Richardson")
         title.to_edge(UP)
 
         poem_text = """
@@ -1374,7 +1374,7 @@ class Poem(Scene):
             And so on to viscosity.\\\\
         """
         poem_words = [s for s in poem_text.split(" ") if s]
-        poem = TexText(*poem_words, alignment="")
+        poem = OldTexText(*poem_words, alignment="")
         poem.next_to(picture, RIGHT, LARGE_BUFF)
 
         self.add(picture)
@@ -1406,7 +1406,7 @@ class SwirlDiameterD(Scene):
             f * LEFT, f * RIGHT,
             color=YELLOW,
         )
-        D_label = Tex("D")
+        D_label = OldTex("D")
         D_label.scale(2)
         D_label.next_to(h_line, UP, SMALL_BUFF)
         D_label.match_color(h_line)
@@ -1432,9 +1432,9 @@ class KolmogorovGraph(Scene):
             }
         )
         axes.center().shift(1.5 * RIGHT)
-        x_label = Tex("\\log(D)")
+        x_label = OldTex("\\log(D)")
         x_label.next_to(axes.x_axis.get_right(), UP)
-        y_label = Tex("\\log(\\text{K.E. at length scale D})")
+        y_label = OldTex("\\log(\\text{K.E. at length scale D})")
         y_label.scale(0.8)
         y_label.next_to(axes.y_axis.get_top(), LEFT)
         y_label.shift_onto_screen()
@@ -1449,7 +1449,7 @@ class KolmogorovGraph(Scene):
             )
             for x in [0.5, 5]
         ])
-        inertial_subrange = TexText("``Inertial subrange''")
+        inertial_subrange = OldTexText("``Inertial subrange''")
         inertial_subrange.scale(0.7)
         inertial_subrange.next_to(v_lines.get_bottom(), UP)
 
@@ -1463,7 +1463,7 @@ class KolmogorovGraph(Scene):
 
         graph = axes.get_graph(func, x_min=0.3, x_max=7)
 
-        prop_label = Tex("\\text{K.E.} \\propto D^{5/3}")
+        prop_label = OldTex("\\text{K.E.} \\propto D^{5/3}")
         prop_label.next_to(
             graph.point_from_proportion(0.5), UL,
             buff=0
@@ -1480,12 +1480,12 @@ class KolmogorovGraph(Scene):
 
 class TechnicalNote(Scene):
     def construct(self):
-        title = TexText("Technical note:")
+        title = OldTexText("Technical note:")
         title.to_edge(UP)
         title.set_color(RED)
         self.add(title)
 
-        words = TexText("""
+        words = OldTexText("""
             This idea of quantifying the energy held at different
             length scales is typically defined
             in terms of an ``energy spectrum'' involving the Fourier
@@ -1512,7 +1512,7 @@ class TechnicalNote(Scene):
 
 class FiveThirds(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "5/3", "is a sort of fundamental\\\\ constant of turbulence"
         )
         self.teacher_says(words)
@@ -1530,10 +1530,10 @@ class FiveThirds(TeacherStudentsScene):
 
 class TurbulenceGifLabel(Scene):
     def construct(self):
-        title = TexText("Turbulence in 2d")
+        title = OldTexText("Turbulence in 2d")
         title.to_edge(UP)
 
-        attribution = TexText(
+        attribution = OldTexText(
             "Animation by Gabe Weymouth (@gabrielweymouth)"
         )
         attribution.scale(0.5)
@@ -1546,7 +1546,7 @@ class TurbulenceGifLabel(Scene):
 
 class VortexStretchingLabel(Scene):
     def construct(self):
-        title = TexText("Vortex stretching")
+        title = OldTexText("Vortex stretching")
         self.play(Write(title))
         self.wait()
 
@@ -1768,12 +1768,12 @@ class TurbulenceEndScreen(PatreonEndScreen):
 
 class LaserWord(Scene):
     def construct(self):
-        self.add(TexText("Laser").scale(2))
+        self.add(OldTexText("Laser").scale(2))
 
 
 class TurbulenceWord(Scene):
     def construct(self):
-        self.add(TexText("Turbulence").scale(2))
+        self.add(OldTexText("Turbulence").scale(2))
 
 
 class ArrowScene(Scene):

@@ -19,7 +19,7 @@ def get_quiz(*questions):
         aligned_edge = LEFT, 
     )
     content = VGroup(
-        TexText("Quiz").scale(1.5),
+        OldTexText("Quiz").scale(1.5),
         Line(q_mobs.get_left(), q_mobs.get_right()),
         q_mobs
     )
@@ -50,7 +50,7 @@ def get_slot_group(
     lines.arrange(RIGHT, buff = buff)
     if include_qs:
         labels = VGroup(*[
-            TexText("Q%d"%d) for d in range(1, n+1)
+            OldTexText("Q%d"%d) for d in range(1, n+1)
         ])
     else:
         labels = VGroup(*[VectorizedPoint() for d in range(n)])
@@ -72,11 +72,11 @@ def get_slot_group(
         if i >= len(bool_list) or bool_list[i] is None:
             mob = VectorizedPoint()
         elif bool_list[i]:
-            mob = Tex("\\checkmark")
+            mob = OldTex("\\checkmark")
             mob.set_color(GREEN)
             slot_group.shift(total_height*DOWN / (base**(i+1)))
         else:
-            mob = Tex("\\times")
+            mob = OldTex("\\times")
             mob.set_color(RED)
             slot_group.shift(total_height*UP / (base**(i+1)))
         mob.next_to(line, UP, SMALL_BUFF)
@@ -86,9 +86,9 @@ def get_slot_group(
 def get_probability_of_slot_group(bool_list, conditioned_list = None):
     filler_tex = "Fi"*max(len(bool_list), 3)
     if conditioned_list is None:
-        result = Tex("P(", filler_tex, ")")
+        result = OldTex("P(", filler_tex, ")")
     else:
-        result = Tex("P(", filler_tex, "|", filler_tex, ")")
+        result = OldTex("P(", filler_tex, "|", filler_tex, ")")
     fillers = result.get_parts_by_tex(filler_tex)
     for filler, bl in zip(fillers, [bool_list, conditioned_list]):
         slot_group = get_slot_group(
@@ -124,7 +124,7 @@ class IndependenceOpeningQuote(OpeningQuote):
 class DangerInProbability(Scene):
     def construct(self):
         warning = self.get_warning_sign()
-        probability = TexText("Probability")
+        probability = OldTexText("Probability")
         probability.scale(2)
 
         self.play(Write(warning, run_time = 1))
@@ -141,7 +141,7 @@ class DangerInProbability(Scene):
         triangle = RegularPolygon(n = 3, start_angle = np.pi/2)
         triangle.set_stroke(RED, 12)
         triangle.set_height(2)
-        bang = TexText("!")
+        bang = OldTexText("!")
         bang.set_height(0.6*triangle.get_height())
         bang.move_to(interpolate(
             triangle.get_bottom(),
@@ -209,7 +209,7 @@ class MeaningOfIndependence(SampleSpaceScene):
             for vect in (UP, DOWN)
         ])
         line.set_stroke(RED, 8)
-        word = TexText("Independence")
+        word = OldTexText("Independence")
         word.scale(1.5)
         word.next_to(self.sample_space, RIGHT, buff = LARGE_BUFF)
         word.set_color(RED)
@@ -232,7 +232,7 @@ class MeaningOfIndependence(SampleSpaceScene):
         ignored_braces, new_top_labels = self.sample_space[0].get_top_braces_and_labels(
             ["P(B)", "P(\\overline B)"]
         )
-        equation = Tex(
+        equation = OldTex(
             "P(B | A) = P(B)"
         )
         equation.scale(1.5)
@@ -307,12 +307,12 @@ class IntroduceBinomial(Scene):
 
 
     def add_title(self):
-        title = TexText("Binomial distribution")
+        title = OldTexText("Binomial distribution")
         title.scale(1.3)
         title.to_edge(RIGHT)
         title.shift(2*UP)
 
-        formula = Tex(
+        formula = OldTex(
             "P(X=", "k", ")=", 
             "{n \\choose k}", 
             "p", "^k",
@@ -361,7 +361,7 @@ class IntroduceBinomial(Scene):
         )
         triangle.set_height(0.25)
         triangle.move_to(interval.number_to_point(self.p), DOWN)
-        label = Tex("p")
+        label = OldTex("p")
         label.next_to(triangle, UP, SMALL_BUFF)
         label.set_color(triangle.get_color())
 
@@ -374,7 +374,7 @@ class IntroduceBinomial(Scene):
             self.wait()
 
     def write_independence_assumption(self):
-        assumption = TexText("Independence assumption")
+        assumption = OldTexText("Independence assumption")
         assumption.scale(1.2)
         assumption.next_to(self.formula, DOWN, MED_LARGE_BUFF, LEFT)
         assumption.set_color(GREEN_C)
@@ -464,7 +464,7 @@ class IntroduceQuiz(PiCreatureScene):
     def ask_about_probabilities(self):
         probabilities, abbreviated_probabilities = [
             VGroup(*[
-                Tex(
+                OldTex(
                     "P(", s_tex, "=", str(score), ")", rhs
                 ).set_color_by_tex_to_color_map({
                     str(score) : YELLOW,
@@ -533,7 +533,7 @@ class IntroduceQuiz(PiCreatureScene):
         self.bar_chart = chart
 
     def show_single_question_probability(self):
-        prob = Tex(
+        prob = OldTex(
             "P(", "\\text{Can answer a given question}", ")",
             "= 0.8"
         )
@@ -617,7 +617,7 @@ class BreakDownQuestionPatterns(IntroduceQuiz):
 
     def count_patterns(self):
         brace = Brace(self.slot_groups, LEFT)
-        count = Tex("2^3 = 8")
+        count = OldTex("2^3 = 8")
         count.next_to(brace, LEFT)
 
         self.play(
@@ -656,7 +656,7 @@ class AssociatePatternsWithScores(BreakDownQuestionPatterns):
         for slot_group in self.slot_groups:
             score_groups[sum(slot_group.bool_list)].add(slot_group)
         for i, score_group in enumerate(score_groups):
-            score = TexText("Score", "=", str(i))
+            score = OldTexText("Score", "=", str(i))
             score.set_color_by_tex("Score", GREEN)
             scores.add(score)
             score_group.organized = score_group.deepcopy()
@@ -750,14 +750,14 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
         self.write_simple_product()
 
     def add_title(self):
-        title = TexText("Tempting$\\dots$")
+        title = OldTexText("Tempting$\\dots$")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
         self.title = title
 
     def write_simple_product(self):
-        lhs = Tex("P\\big(", "Filler Blah", "\\big)", "= ")
+        lhs = OldTex("P\\big(", "Filler Blah", "\\big)", "= ")
         lhs.next_to(ORIGIN, UP+LEFT)
         p_of = lhs.get_part_by_tex("P\\big(")
         filler = lhs.get_part_by_tex("Filler")
@@ -767,7 +767,7 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
         lhs.submobjects.remove(filler)
 
         rhs = VGroup(*[
-            Tex("P(", "\\checkmark" if b else "\\times", ")")
+            OldTex("P(", "\\checkmark" if b else "\\times", ")")
             for b in slot_group.bool_list
         ])
         rhs.arrange(RIGHT, SMALL_BUFF)
@@ -779,15 +779,15 @@ class TemptingButWrongCalculation(BreakDownQuestionPatterns):
             })
             brace = Brace(part, UP)
             if b:
-                value = Tex("(0.8)")
+                value = OldTex("(0.8)")
             else:
-                value = Tex("(0.2)")
+                value = OldTex("(0.2)")
             value.set_color(part[1].get_color())
             value.next_to(brace, UP)
             part.brace = brace
             part.value = value
 
-        question = TexText("What about correlations?")
+        question = OldTexText("What about correlations?")
         question.next_to(rhs, DOWN, LARGE_BUFF)
 
         self.play(
@@ -843,7 +843,7 @@ class ThousandPossibleQuizzes(Scene):
 
     def draw_all_quizzes(self):
         quizzes = self.get_thousand_quizzes()
-        title = TexText("$1{,}000$ possible quizzes")
+        title = OldTexText("$1{,}000$ possible quizzes")
         title.scale(1.5)
         title.next_to(quizzes, UP)
         full_quizzes = VGroup(
@@ -899,7 +899,7 @@ class ThousandPossibleQuizzes(Scene):
         labels = VGroup()
         for num, b, split in (800, True, top_split), (200, False, bottom_split):
             label = VGroup(
-                Tex(str(num)),
+                OldTex(str(num)),
                 get_slot_group([b], buff = SMALL_BUFF, include_qs = False)
             )
             label.arrange(DOWN)
@@ -929,8 +929,8 @@ class ThousandPossibleQuizzes(Scene):
             for b in (True, False)
         ])
         question = VGroup(
-            TexText("Where are"), sg1,
-            TexText("and"), sg2, TexText("?"),
+            OldTexText("Where are"), sg1,
+            OldTexText("and"), sg2, OldTexText("?"),
         )
         question.arrange(RIGHT, aligned_edge = DOWN)
         question[-1].next_to(question[-2], RIGHT, SMALL_BUFF)
@@ -968,7 +968,7 @@ class ThousandPossibleQuizzes(Scene):
         left_split.target.shift(LEFT)
 
         left_label = VGroup(
-            Tex("(0.8)", "800 =", "640"),
+            OldTex("(0.8)", "800 =", "640"),
             get_slot_group([True, True], buff = SMALL_BUFF, include_qs = False)
         )
         left_label.arrange(RIGHT, buff = MED_LARGE_BUFF)
@@ -1001,7 +1001,7 @@ class ThousandPossibleQuizzes(Scene):
             quiz[1].set_color(left_split[0][1].get_color())
         movers.target.shift(LEFT)
 
-        new_equation = Tex("(0.925)", "800 =", "740")
+        new_equation = OldTex("(0.925)", "800 =", "740")
         for i in 0, 2:
             new_equation[i].set_color(YELLOW)
         new_equation.move_to(left_label_equation)
@@ -1045,12 +1045,12 @@ class ThousandPossibleQuizzes(Scene):
         for quiz in movers.target:
             quiz[1].set_color(right_split.target[0][1].get_color())
 
-        equation = Tex("(0.8)", "200 = ", "160")
+        equation = OldTex("(0.8)", "200 = ", "160")
         slot_group = get_slot_group([False, True], buff = SMALL_BUFF, include_qs = False)
         label = VGroup(equation, slot_group)
         label.arrange(DOWN, buff = SMALL_BUFF)
         label.next_to(left_split.target, UP, SMALL_BUFF, LEFT)
-        alt_equation = Tex("(0.3)", "200 = ", "60")
+        alt_equation = OldTex("(0.3)", "200 = ", "60")
         for i in 0, 2:
             alt_equation[i].set_color(YELLOW)
         alt_equation.move_to(equation)
@@ -1095,7 +1095,7 @@ class ThousandPossibleQuizzes(Scene):
         num1 = self.top_equation[-1].copy()
         num2 = self.bottom_equation[-1].copy()
 
-        equation = Tex("740", "+", "60", "=", "800")
+        equation = OldTex("740", "+", "60", "=", "800")
         for tex in "740", "60":
             equation.set_color_by_tex(tex, YELLOW)
         slot_group = get_slot_group([True, True])
@@ -1223,7 +1223,7 @@ class ExampleConditional(Scene):
         prob = get_probability_of_slot_group(
             [True, True], [True]
         )
-        rhs = Tex("=", "0.925", ">", "0.8")
+        rhs = OldTex("=", "0.925", ">", "0.8")
         rhs.set_color_by_tex("0.925", YELLOW)
         rhs.next_to(prob, RIGHT)
         expression = VGroup(prob, rhs)
@@ -1264,7 +1264,7 @@ class HarderQuizzes(Scene):
 class WritePSecond(Scene):
     def construct(self):
         prob = get_probability_of_slot_group([None, True, None])
-        rhs = Tex("= 0.8")
+        rhs = OldTex("= 0.8")
         rhs.next_to(prob, RIGHT)
         prob.add(rhs)
         prob.set_width(FRAME_WIDTH - 1)
@@ -1281,7 +1281,7 @@ class SubmitToTemptation(TemptingButWrongCalculation):
         question = self.question
         title.generate_target()
         title.target.scale(1./1.5)
-        new_words = TexText("and", "okay", "assuming independence.")
+        new_words = OldTexText("and", "okay", "assuming independence.")
         new_words.set_color_by_tex("okay", GREEN)
         new_words.next_to(title.target, RIGHT)
         VGroup(title.target, new_words).center().to_edge(UP)
@@ -1311,10 +1311,10 @@ class AccurateProductRule(SampleSpaceScene, ThreeDScene):
 
     def setup_terms(self):
         filler_tex = "Filler"
-        lhs = Tex("P(", filler_tex, ")", "=")
-        p1 = Tex("P(", filler_tex, ")")
-        p2 = Tex("P(", filler_tex, "|", filler_tex, ")")
-        p3 = Tex("P(", filler_tex, "|", filler_tex, ")")
+        lhs = OldTex("P(", filler_tex, ")", "=")
+        p1 = OldTex("P(", filler_tex, ")")
+        p2 = OldTex("P(", filler_tex, "|", filler_tex, ")")
+        p3 = OldTex("P(", filler_tex, "|", filler_tex, ")")
         terms = VGroup(lhs, p1, p2, p3)
         terms.arrange(RIGHT, buff = SMALL_BUFF)
         terms.to_edge(UP, buff = LARGE_BUFF)
@@ -1342,7 +1342,7 @@ class AccurateProductRule(SampleSpaceScene, ThreeDScene):
 
         value_texs = ["0.8", ">0.8", "<0.2"]
         for term, tex in zip(terms[1:], value_texs):
-            term.value = Tex(tex)
+            term.value = OldTex(tex)
             term.value.next_to(term, UP)
 
         self.terms = terms
@@ -1478,7 +1478,7 @@ class ShowAllEightConditionals(Scene):
         equations = VGroup()
         filler_tex = "Filler"
         for bool_list in it.product(*[[True, False]]*3):
-            equation = Tex(
+            equation = OldTex(
                 "P(", filler_tex, ")", "=",
                 "P(", filler_tex, ")",
                 "P(", filler_tex, "|", filler_tex, ")",
@@ -1536,10 +1536,10 @@ class ShowAllEightConditionals(Scene):
 class ShowIndependenceSymbolically(Scene):
     def construct(self):
         filler_tex = "Filler"
-        rhs = Tex("=", "0.8")
+        rhs = OldTex("=", "0.8")
         rhs.set_color_by_tex("0.8", YELLOW)
         rhs.next_to(ORIGIN, RIGHT, LARGE_BUFF)
-        lhs = Tex("P(", filler_tex, "|", filler_tex, ")")
+        lhs = OldTex("P(", filler_tex, "|", filler_tex, ")")
         lhs.next_to(rhs, LEFT)
         VGroup(lhs, rhs).scale(1.5)
         for part in lhs.get_parts_by_tex(filler_tex):
@@ -1559,7 +1559,7 @@ class ShowIndependenceSymbolically(Scene):
         arrow = Arrow(UP, DOWN)
         arrow.next_to(condition, UP)
         arrow.set_color(RED)
-        words = TexText("Doesn't matter")
+        words = OldTexText("Doesn't matter")
         words.set_color(RED)
         words.next_to(arrow, UP)
 
@@ -1596,7 +1596,7 @@ class ComputeProbabilityOfOneWrong(Scene):
             probs = ["(%s)"%self.default_p]*3
             probs[i] = "(%s)"%self.default_q
             lhs = get_probability_of_slot_group(bool_list)
-            rhs = Tex("=", *probs)
+            rhs = OldTex("=", *probs)
             rhs.set_color_by_tex("0.8", GREEN)
             rhs.set_color_by_tex("0.2", RED)
             point_8s.add(*rhs.get_parts_by_tex("0.8"))
@@ -1623,7 +1623,7 @@ class ComputeProbabilityOfOneWrong(Scene):
             self.wait()
 
     def show_final_result(self):
-        result = Tex(
+        result = OldTex(
             "P(", "\\text{Score} = %s"%self.score, ")", "=",
             *self.final_result_rhs_tex
         )
@@ -1661,22 +1661,22 @@ class ShowFullDistribution(Scene):
 
     def add_scores_one_and_two(self):
         scores = VGroup(
-            Tex(
+            OldTex(
                 "P(", "\\text{Score} = 0", ")",
                 "=", "(0.2)", "^3",
                 "=", "0.008",
             ),
-            Tex(
+            OldTex(
                 "P(", "\\text{Score} = 1", ")",
                 "=", "3", "(0.8)", "(0.2)", "^2", 
                 "=", "0.096",
             ),
-            Tex(
+            OldTex(
                 "P(", "\\text{Score} = 2", ")",
                 "=", "3", "(0.8)", "^2", "(0.2)",
                 "=", "0.384",
             ),
-            Tex(
+            OldTex(
                 "P(", "\\text{Score} = 3", ")",
                 "=", "(0.8)", "^3",
                 "=", "0.512",
@@ -1738,7 +1738,7 @@ class ShowFullDistribution(Scene):
         chart.shift(DOWN)
 
         new_p_terms = VGroup(*[
-            Tex("P(", "S=%d"%k, ")")
+            OldTex("P(", "S=%d"%k, ")")
             for k in range(4)
         ])
         for term, bar in zip(new_p_terms, chart.bars):
@@ -1800,7 +1800,7 @@ class ShowFullDistribution(Scene):
         self.alt_bars_labels = nums
 
     def show_alternate_values_of_p(self):
-        new_prob = Tex(
+        new_prob = OldTex(
             "P(", "\\text{Correct}", ")", "=", "0.8"
         )
         new_prob.set_color_by_tex("Correct", GREEN)
@@ -1811,7 +1811,7 @@ class ShowFullDistribution(Scene):
         alt_rhss = VGroup()
         alt_charts = VGroup()
         for p in alt_ps:
-            rhs = Tex(str(p))
+            rhs = OldTex(str(p))
             rhs.set_color(YELLOW)
             rhs.move_to(new_prob[-1])
             alt_rhss.add(rhs)
@@ -1845,7 +1845,7 @@ class ShowFullDistribution(Scene):
                 bool_list = np.array([False]*3)
                 bool_list[list(indices)] = True
                 prob = get_probability_of_slot_group(bool_list)
-                rhs = Tex("= (0.5)^3")
+                rhs = OldTex("= (0.5)^3")
                 rhs.next_to(prob, RIGHT)
                 prob.add(rhs)
                 prob.scale(0.9)
@@ -1884,7 +1884,7 @@ class ShowTrueDistribution(PiCreatureScene):
         self.get_angry()
 
     def add_title(self):
-        title = Tex("P(", "\\text{Correct}", ")", "=", "0.65")
+        title = OldTex("P(", "\\text{Correct}", ")", "=", "0.65")
         title.to_edge(UP)
         title.set_color_by_tex("Correct", GREEN)
 
@@ -1978,10 +1978,10 @@ class TeacherAssessingLiklihoodOfZero(TeacherStudentsScene):
         self.teacher_reacts()
 
     def add_title(self):
-        title = Tex("P(", "\\text{Correct}", ")", "=", "0.65")
+        title = OldTex("P(", "\\text{Correct}", ")", "=", "0.65")
         title.to_edge(UP)
         title.set_color_by_tex("Correct", GREEN)
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.next_to(title[-2], UP, SMALL_BUFF)
         title.add(q_mark)
 
@@ -1995,12 +1995,12 @@ class TeacherAssessingLiklihoodOfZero(TeacherStudentsScene):
 
     def show_independence_probability(self):
         prob = get_probability_of_slot_group(3*[False])
-        rhs = Tex("=", "(0.35)", "^3", "\\approx 4.3\\%")
+        rhs = OldTex("=", "(0.35)", "^3", "\\approx 4.3\\%")
         rhs.set_color_by_tex("0.35", RED)
         rhs.next_to(prob, RIGHT)
         prob.add(rhs)
         prob.next_to(self.teacher, UP+LEFT)
-        words = TexText("Assuming independence")
+        words = OldTexText("Assuming independence")
         words.next_to(prob, UP)
 
         self.play(
@@ -2052,7 +2052,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
     def add_top_calculation(self):
         equation = VGroup(
             get_probability_of_slot_group(3*[False]),
-            Tex("="),
+            OldTex("="),
             get_probability_of_slot_group([False]),
             get_probability_of_slot_group(2*[False], [False]),
             get_probability_of_slot_group(3*[False], 2*[False]),
@@ -2075,7 +2075,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[0].set_color(color)
         top_part.target.shift(UP)
         brace = Brace(bottom_part, LEFT)
-        prop = Tex("0.35")
+        prop = OldTex("0.35")
         prop.next_to(brace, LEFT)
 
         term = self.equation[2]
@@ -2110,7 +2110,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[1].set_color(color)
         left_part.target.shift(LEFT)
         brace = Brace(right_part, UP)
-        prop = Tex(">0.35")
+        prop = OldTex(">0.35")
         prop.next_to(brace, UP)
 
         term = self.equation[3]
@@ -2143,7 +2143,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
                 quiz[2].set_color(color)
         top_part.target.shift(0.5*UP)
         brace = Brace(bottom_part, LEFT)
-        prop = Tex("\\gg 0.35")
+        prop = OldTex("\\gg 0.35")
         prop.next_to(brace, LEFT)
 
         term = self.equation[4]
@@ -2166,7 +2166,7 @@ class CorrelationsWith35Percent(ThousandPossibleQuizzes):
 
     def comment_on_final_size(self):
         rect = SurroundingRectangle(self.quizzes)
-        words = TexText(
+        words = OldTexText(
             "Much more than ", "$(0.35)^3 \\approx 4.3\\%$"
         )
         words.next_to(rect, LEFT)
@@ -2181,18 +2181,18 @@ class WeighingIndependenceAssumption(PiCreatureScene):
     def construct(self):
         randy = self.randy
 
-        title = TexText("Independence")
+        title = OldTexText("Independence")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
-        formula = Tex(
+        formula = OldTex(
             "P(", "A", "B", ")", "="
             "P(", "A", ")", "P(", "B", ")"
         )
         formula.set_color_by_tex("A", BLUE)
         formula.set_color_by_tex("B", GREEN)
 
-        clean = TexText("Clean")
+        clean = OldTexText("Clean")
         clean.next_to(formula, UP)
         VGroup(clean, formula).next_to(randy, UP+LEFT)
         clean.save_state()
@@ -2240,16 +2240,16 @@ class NameBinomial(Scene):
             chart.to_edge(LEFT)
             charts.add(chart)
 
-        probability = Tex(
+        probability = OldTex(
             "P(", "\\checkmark", ")", "=", str(p)
         )
         probability.set_color_by_tex("checkmark", GREEN)
         probability.move_to(charts, UP)
 
-        title = TexText("``Binomial distribution''")
+        title = OldTexText("``Binomial distribution''")
         title.next_to(charts, UP)
         title.to_edge(UP)
-        formula = Tex(
+        formula = OldTex(
             "P(X=", "k", ")=", 
             "{n \\choose k}", 
             "p", "^k",
@@ -2283,14 +2283,14 @@ class NameBinomial(Scene):
     def add_quiz_questions(self):
         n = 10
         checkmarks = VGroup(*[
-            Tex("\\checkmark").set_color(GREEN)
+            OldTex("\\checkmark").set_color(GREEN)
             for x in range(n)
         ])
         checkmarks.arrange(DOWN, buff = 0.3)
         crosses = VGroup()
         arrows = VGroup()
         for checkmark in checkmarks:
-            cross = Tex("\\times")
+            cross = OldTex("\\times")
             cross.set_color(RED)
             cross.next_to(checkmark, RIGHT, LARGE_BUFF)
             crosses.add(cross)
@@ -2379,7 +2379,7 @@ class NameBinomial(Scene):
 
         female = self.get_female()
         female.move_to(checkmark)
-        new_p_mob = Tex("0.49")
+        new_p_mob = OldTex("0.49")
         new_p_mob.move_to(p_mob, LEFT)
 
         dist = get_binomial_distribution(10, 0.49)
@@ -2413,7 +2413,7 @@ class NameBinomial(Scene):
             buff = SMALL_BUFF
         )
 
-        prob = Tex(
+        prob = OldTex(
             "P(", "\\# \\text{Girls}", "=", "6", ")"
         )
         prob.set_color_by_tex("Girls", MAROON_B)
@@ -2481,10 +2481,10 @@ class NameBinomial(Scene):
     ##
 
     def get_male(self):
-        return Tex("\\male").scale(1.3).set_color(BLUE)
+        return OldTex("\\male").scale(1.3).set_color(BLUE)
 
     def get_female(self):
-        return Tex("\\female").scale(1.3).set_color(MAROON_B)
+        return OldTex("\\female").scale(1.3).set_color(MAROON_B)
 
 class CycleThroughPatterns(NameBinomial):
     CONFIG = {
@@ -2496,7 +2496,7 @@ class CycleThroughPatterns(NameBinomial):
     def construct(self):
         n = self.n
         k = self.k
-        question = TexText(
+        question = OldTexText(
             "How many patterns have \\\\ %d "%k, 
             "$\\female$",
             " and %d "%(n-k),
@@ -2566,17 +2566,17 @@ class Compute6of10GirlsProbability(CycleThroughPatterns):
     def write_n_choose_k(self):
         brace = Brace(self.pattern_rect, DOWN)
         ten_choose_six = brace.get_tex("{10 \\choose 6}")
-        see_chapter_one = TexText("(See chapter 1)")
+        see_chapter_one = OldTexText("(See chapter 1)")
         see_chapter_one.next_to(ten_choose_six, DOWN)
         see_chapter_one.set_color(GREEN)
-        computation = Tex(
+        computation = OldTex(
             "=\\frac{%s}{%s}"%(
                  "\\cdot ".join(map(str, list(range(10, 4, -1)))),
                  "\\cdot ".join(map(str, list(range(1, 7)))),
             )
         )
         computation.move_to(ten_choose_six, UP)
-        rhs = Tex("=", "210")
+        rhs = OldTex("=", "210")
         rhs.next_to(computation, RIGHT)
 
         self.play(
@@ -2601,7 +2601,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         self.write_total_probability()
 
     def write_total_count(self):
-        count = TexText(
+        count = OldTexText(
             "${10 \\choose 6}$", " $= 210$",
             "total patterns."
         )
@@ -2611,19 +2611,19 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         self.count = count
 
     def write_example_probability(self):
-        prob = Tex("P\\big(", "O "*15, "\\big)", "=")
+        prob = OldTex("P\\big(", "O "*15, "\\big)", "=")
         indices = [1, 2, 4, 6, 8, 9]
         pattern = self.get_pattern(indices)
         pattern.replace(prob[1], dim_to_match = 0)
         prob.submobjects[1] = pattern
         prob.next_to(self.count, DOWN, LARGE_BUFF)
 
-        gp = Tex("P(\\female)")
+        gp = OldTex("P(\\female)")
         gp[2].set_color(MAROON_B)
-        bp = Tex("P(\\male)")
+        bp = OldTex("P(\\male)")
         bp[2].set_color(BLUE)
-        gp_num = Tex("(0.49)").set_color(MAROON_B)
-        bp_num = Tex("(0.51)").set_color(BLUE)
+        gp_num = OldTex("(0.49)").set_color(MAROON_B)
+        bp_num = OldTex("(0.51)").set_color(BLUE)
         gp_nums = VGroup()
         bp_nums = VGroup()
         factored = VGroup()
@@ -2645,7 +2645,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         gp_nums.save_state()
         bp_nums.save_state()
 
-        final_probability = Tex(
+        final_probability = OldTex(
             "(0.49)^6", "(0.51)^4"
         )
         final_probability.set_color_by_tex("0.49", MAROON_B)
@@ -2684,7 +2684,7 @@ class ProbabilityOfAGivenBoyGirlPattern(CycleThroughPatterns):
         ten_choose_six = self.count[0].copy()
         ten_choose_six.generate_target()
         ten_choose_six.target.move_to(self.final_probability)
-        p_tex = Tex("P(", "\\text{6 Girls}", ")", "=")
+        p_tex = OldTex("P(", "\\text{6 Girls}", ")", "=")
         p_tex.set_color_by_tex("Girls", MAROON_B)
         p_tex.next_to(ten_choose_six.target, LEFT)
 
@@ -2788,7 +2788,7 @@ class GeneralBinomialDistributionValues(Scene):
         ])
         ten_choose_ks = VGroup()
         for k, mob in enumerate(last_row):
-            ten_choose_k = Tex("10 \\choose %s"%k)
+            ten_choose_k = OldTex("10 \\choose %s"%k)
             ten_choose_k.scale(0.5)
             ten_choose_k.stretch(0.8, 0)
             ten_choose_k.next_to(mob, DOWN)
@@ -2886,7 +2886,7 @@ class GeneralBinomialDistributionValues(Scene):
         )
         triangle.set_height(0.25)
         triangle.move_to(interval.number_to_point(p), DOWN)
-        p_mob = Tex("p")
+        p_mob = OldTex("p")
         p_mob.set_color(MAROON_B)
         p_mob.next_to(triangle, UP, SMALL_BUFF)
         triangle.add(p_mob)
@@ -2922,7 +2922,7 @@ class GeneralBinomialDistributionValues(Scene):
             p, "^%s"%k,
             q, "^{%s"%n, "-", "%s}"%k,
         ]
-        result = Tex(*args, arg_separator = "")
+        result = OldTex(*args, arg_separator = "")
         color_map = {
             "Girls" : MAROON_B,
             n : WHITE,
@@ -3141,7 +3141,7 @@ class AssumeOrderDoesntMatter(Scene):
         self.coming_soon()
 
     def add_title(self):
-        title = TexText(
+        title = OldTexText(
             "Softer simplifying assumption: " +\
             "Order doesn't matter"
         )
@@ -3161,7 +3161,7 @@ class AssumeOrderDoesntMatter(Scene):
         ])
         for prob_group in prob_groups:
             for prob in prob_group[:-1]:
-                equals = Tex("=")
+                equals = OldTex("=")
                 equals.next_to(prob, RIGHT)
                 prob.add(equals)
             prob_group.arrange(RIGHT)
@@ -3188,7 +3188,7 @@ class AssumeOrderDoesntMatter(Scene):
 
     def mention_correlation(self):
         assumption_group = VGroup(*self.get_top_level_mobjects())
-        question = TexText(
+        question = OldTexText(
             "But what is ", "``correlation''", "?",
             arg_separator = ""
         )
@@ -3291,7 +3291,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
     def show_binomial(self):
         binomial = self.get_binomial()
         binomial.next_to(self.teacher.get_corner(UP+LEFT), UP)
-        title = TexText("Probable scores")
+        title = OldTexText("Probable scores")
         title.scale(0.85)
         title.next_to(binomial.bars, UP, 1.5*LARGE_BUFF)
 
@@ -3411,7 +3411,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
             bar_colors = [RED, YELLOW]
         )
         chart.set_height(self.chart_height)
-        title = TexText(
+        title = OldTexText(
             "Poisson distribution \\\\",
             "$e^{-\\lambda}\\frac{\\lambda^k}{k!}$"
         )
@@ -3435,7 +3435,7 @@ class SkepticalOfDistributions(TeacherStudentsScene):
         graph.set_width(axes.get_width())
         graph.move_to(axes[0], DOWN)
 
-        title = TexText(
+        title = OldTexText(
             "Gaussian distribution \\\\ ",
             "$\\frac{1}{\\sqrt{2\\pi \\sigma^2}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}$"
         )
@@ -3531,7 +3531,7 @@ class Thumbnail(DangerInProbability):
         self.add(warning)
 
 
-        words = TexText("Independence")
+        words = OldTexText("Independence")
         words.scale(2.5)
         words.next_to(warning, DOWN)
         self.add(words)

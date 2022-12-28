@@ -138,14 +138,14 @@ class BaselThumbnail(Scene):
         self.add(lights)
 
         # Equation
-        equation = Tex(
+        equation = OldTex(
             "1", "+", "{1 \\over 4}", "+",
             "{1 \\over 9}", "+", "{1 \\over 16}", "+",
             "{1 \\over 25}", "+", "\\cdots"
         )
         equation.scale(1.8)
         equation.move_to(2 * UP)
-        answer = Tex("= \\frac{\\pi^2}{6}", color=YELLOW)
+        answer = OldTex("= \\frac{\\pi^2}{6}", color=YELLOW)
         answer.scale(3)
         answer.move_to(1.25 * DOWN)
         equation.add(answer)
@@ -183,7 +183,7 @@ class Eola1Thumbnail(Scene):
         coords.match_y(vect)
         self.add(coords)
 
-        symbol = Tex("\\vec{\\textbf{v} } \\in V")
+        symbol = OldTex("\\vec{\\textbf{v} } \\in V")
         symbol.set_color(BLUE)
         symbol.set_width(FRAME_WIDTH / 3 - 1)
         symbol.set_x(FRAME_WIDTH / 3)

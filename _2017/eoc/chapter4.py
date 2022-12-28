@@ -24,7 +24,7 @@ class TransitionFromLastVideo(TeacherStudentsScene):
         ])))
 
         combination_rules = VGroup(*[
-            Tex("\\frac{d}{dx}\\left(%s\\right)"%tex)
+            OldTex("\\frac{d}{dx}\\left(%s\\right)"%tex)
             for tex in [
                 "\\sin(x) + x^2",
                 "\\sin(x)(x^2)",
@@ -96,15 +96,15 @@ class TransitionFromLastVideo(TeacherStudentsScene):
         self.wait()
 
         #Address subtraction and division
-        subtraction = Tex("\\sin(x)", "-", "x^2")
-        decomposed_subtraction = Tex("\\sin(x)", "+(-1)\\cdot", "x^2")
-        pre_division = Tex("\\frac{\\sin(x)}{x^2}")
+        subtraction = OldTex("\\sin(x)", "-", "x^2")
+        decomposed_subtraction = OldTex("\\sin(x)", "+(-1)\\cdot", "x^2")
+        pre_division = OldTex("\\frac{\\sin(x)}{x^2}")
         division = VGroup(
             VGroup(*pre_division[:6]),
             VGroup(*pre_division[6:7]),
             VGroup(*pre_division[7:]),
         )
-        pre_decomposed_division = Tex("\\sin(x)\\cdot\\frac{1}{x^2}")
+        pre_decomposed_division = OldTex("\\sin(x)\\cdot\\frac{1}{x^2}")
         decomposed_division = VGroup(
             VGroup(*pre_decomposed_division[:6]),
             VGroup(*pre_decomposed_division[6:9]),
@@ -144,7 +144,7 @@ class TransitionFromLastVideo(TeacherStudentsScene):
             self.play(FadeOut(question))
 
         #Monstrous expression
-        monster = Tex(
+        monster = OldTex(
             "\\Big(",
             "e^{\\sin(x)} \\cdot",
             "\\cos\\Big(",
@@ -227,7 +227,7 @@ class DampenedSpring(Scene):
                 0.5*(np.exp(-4*a)*np.cos(40*a)+1)
             )
 
-        equation = Tex(
+        equation = OldTex(
             "\\text{Length} = 2 + e^{-4t}\\cos(20t)"
         )
         equation.to_edge(UP)
@@ -245,7 +245,7 @@ class ComingUp(Scene):
         rect = Rectangle(height = 9, width = 16)
         rect.set_stroke(WHITE)
         rect.set_height(FRAME_HEIGHT-2)
-        title = TexText("Coming up...")
+        title = OldTexText("Coming up...")
         title.to_edge(UP)
         rect.next_to(title, DOWN)
 
@@ -255,15 +255,15 @@ class ComingUp(Scene):
 
 class PreSumRuleDiscussion(Scene):
     def construct(self):
-        title = TexText("Sum rule")
+        title = OldTexText("Sum rule")
         title.to_edge(UP)
         self.add(title)
 
-        specific = Tex(
+        specific = OldTex(
             "\\frac{d}{dx}(", "\\sin(x)", "+", "x^2", ")",
             "=", "\\cos(x)", "+", "2x"
         )
-        general = Tex(
+        general = OldTex(
             "\\frac{d}{dx}(", "g(x)", "+", "h(x)", ")",
             "=", "\\frac{dg}{dx}", "+", "\\frac{dh}{dx}"
         )
@@ -328,7 +328,7 @@ class SumRule(GraphScene):
         self.expand_derivative()
 
     def write_function(self):
-        func_mob = Tex("f(x)", "=", "\\sin(x)", "+", "x^2")
+        func_mob = OldTex("f(x)", "=", "\\sin(x)", "+", "x^2")
         func_mob.scale(self.tex_scale_factor)
         func_mob.set_color_by_tex("f(x)", SUM_COLOR)
         func_mob.set_color_by_tex("\\sin(x)", SINE_COLOR)
@@ -446,7 +446,7 @@ class SumRule(GraphScene):
         label_groups = []
         for line, tex, vect in zip(sine_lines, ["", "+dx"], [LEFT, RIGHT]):
             dot = Dot(line.get_bottom(), radius = 0.03, color = YELLOW)
-            label = Tex(
+            label = OldTex(
                 "x=" + str(self.example_input) + tex
             )
             label.next_to(dot, DOWN+vect, buff = MED_LARGE_BUFF)
@@ -537,7 +537,7 @@ class SumRule(GraphScene):
         sine_lines = self.sine_lines
         parabola_lines = self.parabola_lines
 
-        df, equals, d_sine, plus, d_x_squared = deriv_mob = Tex(
+        df, equals, d_sine, plus, d_x_squared = deriv_mob = OldTex(
             "df", "=", "d(\\sin(x))", "+", "d(x^2)"
         )
         df.set_color(SUM_COLOR)
@@ -591,7 +591,7 @@ class SumRule(GraphScene):
         return VGroup(h_lines, brace, brace_text)
 
     def expand_derivative(self):
-        expanded_deriv = Tex(
+        expanded_deriv = OldTex(
             "df", "=", "\\cos(x)", "\\,dx", "+", "2x", "\\,dx"
         )
         expanded_deriv.set_color_by_tex("df", SUM_COLOR)
@@ -605,7 +605,7 @@ class SumRule(GraphScene):
         )
         background_rect = BackgroundRectangle(expanded_deriv)
 
-        rearranged_deriv = Tex(
+        rearranged_deriv = OldTex(
             "{df \\over", "dx}", "=", "\\cos(x)", "+", "2x"
         )
         rearranged_deriv[0].set_color(SUM_COLOR)
@@ -636,7 +636,7 @@ class SumRule(GraphScene):
             )
         for tex, group in tex_group_pairs:
             old_label = group[-1]
-            new_label = Tex(tex)
+            new_label = OldTex(tex)
             pre_dx = VGroup(*new_label[:-2])
             dx = VGroup(*new_label[-2:])
             new_label.add_background_rectangle()
@@ -666,7 +666,7 @@ class SumRule(GraphScene):
 
 class DiscussProducts(TeacherStudentsScene):
     def construct(self):
-        wrong_product_rule = Tex(
+        wrong_product_rule = OldTex(
             "\\frac{d(\\sin(x)x^2)}{dx}", 
             "\\ne",
             "\\left(\\frac{d(\\sin(x))}{dx}\\right)",
@@ -750,7 +750,7 @@ class NotGraphsForProducts(GraphScene):
         self.wait()
 
         everything = VGroup(*[m for m in self.get_mobjects() if not m.is_subpath])
-        words = TexText("Not the best visualization")
+        words = OldTexText("Not the best visualization")
         words.scale(1.5)
         words.shift(FRAME_Y_RADIUS*UP/2)
         words.add_background_rectangle()
@@ -838,7 +838,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         graph.scale(scale_factor)
         graph.move_to(x_axis.number_to_point(0), DOWN+LEFT)
 
-        label = Tex("\\sin(x)")
+        label = OldTex("\\sin(x)")
         label.set_color(SINE_COLOR)
         label.next_to(graph, UP)
 
@@ -879,7 +879,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         self.wait()
 
     def define_f_of_x(self):
-        f_def = Tex(
+        f_def = OldTex(
             "f(x)", "=",
             self.top_func_label,
             self.side_func_label,
@@ -947,7 +947,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         brace.stretch_to_fit_height(0.2)
         brace.next_to(dx_line, UP, buff = SMALL_BUFF)
         brace.set_stroke(width = 1)
-        dx = Tex("dx")
+        dx = OldTex("dx")
         dx.scale(0.7)
         dx.next_to(brace, UP, buff = SMALL_BUFF)
         dx.set_color(dx_line.get_color())
@@ -981,7 +981,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         ]
         for box, vect, label_tex, aligned_edge in quads:
             brace = Brace(box, vect)
-            label = Tex(label_tex)
+            label = OldTex(label_tex)
             label.next_to(
                 brace, vect,
                 aligned_edge = aligned_edge,
@@ -992,7 +992,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         return result
 
     def write_df(self):
-        deriv = Tex(
+        deriv = OldTex(
             "df", "=", 
             self.top_func_label, 
             self.side_func_nudge_label,
@@ -1010,7 +1010,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         right_box_area = VGroup(*deriv[5:7])
 
         bottom_box, corner_box, right_box = self.df_boxes
-        plus = Tex("+").set_fill(opacity = 0)
+        plus = OldTex("+").set_fill(opacity = 0)
         df_boxes_copy = VGroup(
             bottom_box.copy(),
             plus,
@@ -1118,7 +1118,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         corner = self.df_boxes[1]
         corner.save_state()
         corner_copy = VGroup(*self.df_boxes_copy[-2:])
-        words = TexText("Ignore")
+        words = OldTexText("Ignore")
         words.set_color(RED)
         words.next_to(corner_copy, LEFT, buff = LARGE_BUFF)
         words.shift(MED_SMALL_BUFF*DOWN)
@@ -1145,7 +1145,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         # )
         # self.wait()
 
-        expanded_deriv = Tex(
+        expanded_deriv = OldTex(
             "df", "=", 
             self.top_func_label, 
             self.side_func_derivative,
@@ -1155,7 +1155,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
             self.top_func_derivative, 
             "\\,dx"
         )
-        final_deriv = Tex(
+        final_deriv = OldTex(
             "{df \\over ", "dx}", "=", 
             self.top_func_label, 
             self.side_func_derivative,
@@ -1248,7 +1248,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         morty.scale(0.7)
         morty.to_edge(DOWN)
         morty.shift(2*LEFT)
-        words = TexText(
+        words = OldTexText(
             "``Left ", "d(Right) ", "+", " Right ", "d(Left)", "''",
             arg_separator = ""
         )
@@ -1327,7 +1327,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
         triangle.set_height(self.x_slider_handle_height)
         triangle.move_to(line.number_to_point(x), UP)
 
-        x_mob = Tex("x")
+        x_mob = OldTex("x")
         x_mob.next_to(triangle, DOWN, buff = SMALL_BUFF)
 
         result = VGroup(line, triangle, x_mob)
@@ -1352,30 +1352,30 @@ class IntroduceProductAsArea(ReconfigurableScene):
         result = VGroup()
         for label_tex, vect in (self.top_func_label, UP), (self.side_func_label, RIGHT):
             brace = Brace(box, vect, min_num_quads = 5)
-            label = Tex(label_tex)
+            label = OldTex(label_tex)
             label.next_to(brace, vect, buff = SMALL_BUFF)
             result.add(VGroup(brace, label))
         return result
 
 class WriteDXSquared(Scene):
     def construct(self):
-        term = Tex("(...)(dx)^2")
+        term = OldTex("(...)(dx)^2")
         term.set_color(RED)
         self.play(Write(term))
         self.wait()
 
 class MneumonicExample(TeacherStudentsScene):
     def construct(self):
-        d, left, right, rp = deriv_q = Tex(
+        d, left, right, rp = deriv_q = OldTex(
             "\\frac{d}{dx}(", "\\sin(x)", "x^2", ")"
         )
         deriv_q.to_edge(UP)
 
-        words = TexText(
+        words = OldTexText(
             "Left ", "d(Right) ", "+", " Right ", "d(Left)",
             arg_separator = ""
         )
-        deriv = Tex("\\sin(x)", "2x", "+", "x^2", "\\cos(x)")
+        deriv = OldTex("\\sin(x)", "2x", "+", "x^2", "\\cos(x)")
         for mob in words, deriv:
             VGroup(mob[1], mob[4]).set_color(GREEN)
             mob.next_to(deriv_q, DOWN, buff = MED_LARGE_BUFF)
@@ -1425,8 +1425,8 @@ class MneumonicExample(TeacherStudentsScene):
 
 class ConstantMultiplication(TeacherStudentsScene):
     def construct(self):
-        question = TexText("What about $\\dfrac{d}{dx}(2\\sin(x))$?")
-        answer = TexText("2\\cos(x)")
+        question = OldTexText("What about $\\dfrac{d}{dx}(2\\sin(x))$?")
+        answer = OldTexText("2\\cos(x)")
         self.teacher_says(question)
         self.wait()
         self.student_says(
@@ -1458,17 +1458,17 @@ class ConstantMultiplicationFigure(IntroduceProductAsArea):
 
 class ShoveXSquaredInSine(Scene):
     def construct(self):
-        title = TexText("Function composition")
+        title = OldTexText("Function composition")
         title.to_edge(UP)
 
-        sine = Tex("g(", "x", ")", "=", "\\sin(", "x", ")")
+        sine = OldTex("g(", "x", ")", "=", "\\sin(", "x", ")")
         sine.set_color(SINE_COLOR)
-        x_squared = Tex("h(x)", "=", "x^2")
+        x_squared = OldTex("h(x)", "=", "x^2")
         x_squared.set_color(X_SQUARED_COLOR)
         group = VGroup(sine, x_squared)
         group.arrange(buff = LARGE_BUFF)
         group.shift(UP)
-        composition = Tex(
+        composition = OldTex(
             "g(", "h(x)", ")", "=", "\\sin(", "x^2", ")"
         )
         for i in 0, 2, 4, 6:
@@ -1580,8 +1580,8 @@ class ThreeLinesChainRule(ReconfigurableScene):
     def draw_function_arrows(self):
         lines, line_labels = self.line_group
         labels = VGroup(*[
-            Tex("(\\dots)^2").set_color(X_SQUARED_COLOR), 
-            Tex("\\sin(\\dots)").set_color(SINE_COLOR)
+            OldTex("(\\dots)^2").set_color(X_SQUARED_COLOR), 
+            OldTex("\\sin(\\dots)").set_color(SINE_COLOR)
         ])
         arrows = VGroup()
         for lines_subset, label in zip([lines[:2], lines[1:]], labels):
@@ -1613,7 +1613,7 @@ class ThreeLinesChainRule(ReconfigurableScene):
             self.play(ShowCreation(oval))
             self.wait()
             self.play(FadeOut(oval))
-        sine_text = Tex("\\sin(9) \\approx 0.412")
+        sine_text = OldTex("\\sin(9) \\approx 0.412")
         sine_text.move_to(labels[-1][-1])
         sine_text.to_edge(DOWN)
         sine_arrow = Arrow(
@@ -1667,21 +1667,21 @@ class ThreeLinesChainRule(ReconfigurableScene):
         dx_brace, dx_squared_brace, dsine_brace = braces
 
         x_value = str(self.example_x)
-        x_value_label = Tex("=%s"%x_value)
+        x_value_label = OldTex("=%s"%x_value)
         x_value_label.next_to(labels[0][1], RIGHT)
-        dx_squared_value = Tex(
+        dx_squared_value = OldTex(
             "= 2x\\,dx ", "\\\\ = 2(%s)dx"%x_value
         )
         dx_squared_value.shift(
             dx_squared_brace.text.get_right()+MED_SMALL_BUFF*RIGHT - \
             dx_squared_value[0].get_left()
         )
-        dsine_value = TexText(
+        dsine_value = OldTexText(
             "$=\\cos(%s)$"%self.line_configs[1]["func_label"],
             dx_squared_brace.text.get_tex()
         )
         dsine_value.next_to(dsine_brace.text)
-        less_than_zero = Tex("<0")
+        less_than_zero = OldTex("<0")
         less_than_zero.next_to(dsine_brace.text)
 
         all_x_squared_relevant_labels = VGroup(
@@ -1775,8 +1775,8 @@ class ThreeLinesChainRule(ReconfigurableScene):
         )
 
     def give_example_of_meaning(self):
-        words = TexText("For example,")
-        expression = Tex("\\cos(1.5^2)\\cdot 2(1.5)\\,dx")
+        words = OldTexText("For example,")
+        expression = OldTex("\\cos(1.5^2)\\cdot 2(1.5)\\,dx")
         group = VGroup(words, expression)
         group.arrange(DOWN, aligned_edge = LEFT)
         group.scale(0.8)
@@ -1857,18 +1857,18 @@ class ThreeLinesChainRule(ReconfigurableScene):
             number_line.number_to_point(func(x)), DOWN
         )
 
-        label_mob = Tex(func_label)
+        label_mob = OldTex(func_label)
         label_mob.next_to(triangle, UP, buff = SMALL_BUFF, aligned_edge = LEFT)
 
         return VGroup(triangle, label_mob)
 
 class GeneralizeChainRule(Scene):
     def construct(self):
-        example = Tex(
+        example = OldTex(
             "\\frac{d}{dx}", "\\sin(", "x^2", ")", "=",
             "\\cos(", "x^2", ")", "\\,2x",
         )
-        general = Tex(
+        general = OldTex(
             "\\frac{d}{dx}", "g(", "h(x)", ")", "=",
             "{dg \\over ", " dh}", "(", "h(x)", ")", "{dh \\over", " dx}", "(x)"
         )
@@ -1974,7 +1974,7 @@ class GeneralizeChainRule(Scene):
         self.wait(2)
 
         #Name chain rule
-        name = TexText("``Chain rule''")
+        name = OldTexText("``Chain rule''")
         name.scale(1.2)
         name.set_color(YELLOW)
         name.to_corner(UP+LEFT)
@@ -2049,7 +2049,7 @@ class GeneralizeChainRule(Scene):
 
         strikes = VGroup()
         for dh in dg_dh[1], dh_dx[0]:
-            strike = Tex("/")
+            strike = OldTex("/")
             strike.stretch(2, dim = 0)
             strike.rotate(-np.pi/12)
             strike.move_to(dh)
@@ -2057,7 +2057,7 @@ class GeneralizeChainRule(Scene):
             strikes.add(strike)
         self.play(Write(strikes))
         self.play(morty.change_mode, "hooray")
-        equals_dg_dx = Tex("= \\frac{dg}{dx}")
+        equals_dg_dx = OldTex("= \\frac{dg}{dx}")
         equals_dg_dx.next_to(dh_dx)
         self.play(Write(equals_dg_dx))
         self.play(Blink(morty))
@@ -2091,7 +2091,7 @@ class WatchingVideo(PiCreatureScene):
 
 
         formulas = VGroup(*[
-            Tex("\\frac{d}{dx}\\left( %s \\right)"%s)
+            OldTex("\\frac{d}{dx}\\left( %s \\right)"%s)
             for s in [
                 "e^x \\sin(x)",
                 "\\sin(x) \\cdot  \\frac{1}{\\cos(x)}",
@@ -2131,10 +2131,10 @@ class NextVideo(TeacherStudentsScene):
         series.to_edge(UP)
         next_video = series[4]
 
-        pre_expression = Tex(
+        pre_expression = OldTex(
             "x", "^2", "+", "y", "^2", "=", "1"
         )
-        d_expression = Tex(
+        d_expression = OldTex(
             "2", "x", "\\,dx", "+", "2", "y", "\\,dy", "=", "0"
         )
         expression_to_d_expression_indices = [
@@ -2144,7 +2144,7 @@ class NextVideo(TeacherStudentsScene):
         for i, j in enumerate(expression_to_d_expression_indices):
             submob = pre_expression[j].copy()
             if d_expression.expression_parts[i] == "2":
-                two = Tex("2")
+                two = OldTex("2")
                 two.replace(submob)
                 expression.add(two)
             else:

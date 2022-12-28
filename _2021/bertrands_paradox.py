@@ -54,7 +54,7 @@ class RandomChordScene(Scene):
         self.wait()
 
     def get_fraction(self, data):
-        tex = Tex(
+        tex = OldTex(
             "{100", "\\over ", "100", "+", "100}", "= ", "0.500"
         )
         nl1 = Integer(100, edge_to_fix=ORIGIN)  # Number of long chords
@@ -297,7 +297,7 @@ class PortionOfRadialLineInTriangle(Scene):
         half_line = radial_line.copy()
         half_line.pointwise_become_partial(radial_line, 0, 0.5)
         half_line.set_stroke(RED, 2)
-        half_label = Tex("\\frac{1}{2}", font_size=30)
+        half_label = OldTex("\\frac{1}{2}", font_size=30)
         half_label.next_to(half_line.get_center(), DR, SMALL_BUFF)
         half_label.set_color(RED)
 
@@ -348,9 +348,9 @@ class RandomPointsFromVariousSpaces(Scene):
         # Interval
         interval = UnitInterval()
         interval.add_numbers()
-        top_words = TexText("Choose a random$^{*}$ ", "number between 0 and 1")
+        top_words = OldTexText("Choose a random$^{*}$ ", "number between 0 and 1")
         top_words.to_edge(UP)
-        subwords = TexText(
+        subwords = OldTexText(
             "($^{*}$Implicitly: According to a \\emph{uniform} distribution)",
             color=GREY_A,
             tex_to_color_map={"\\emph{uniform}": YELLOW},
@@ -498,7 +498,7 @@ class CoinFlips(Scene):
         coins.set_width(FRAME_WIDTH - 0.5)
         coins.to_edge(DOWN)
 
-        eq = Tex(
+        eq = OldTex(
             "{\\# \\text{Heads} \\over \\# \\text{Flips}} = ",
             "{Num \\over Den}", "=", "0.500",
             isolate={"Num", "Den", "\\# \\text{Heads}"}
@@ -529,7 +529,7 @@ class CoinFlips(Scene):
         for sm in eq:
             sm.add_updater(lambda m: m)
 
-        words = TexText("What does\\\\this approach?", font_size=36)
+        words = OldTexText("What does\\\\this approach?", font_size=36)
         words.to_corner(UR)
         arrow = Arrow(words, dec)
         VGroup(words, arrow).set_color(YELLOW)
@@ -549,7 +549,7 @@ class CoinFlips(Scene):
         circle = Dot(radius=radius)
         circle.set_fill(RED_E if heads else BLUE_E)
         circle.set_stroke(WHITE, 0.5, 0.5)
-        symbol = Tex("H" if heads else "T")
+        symbol = OldTex("H" if heads else "T")
         symbol.set_height(radius)
         symbol.move_to(circle)
         return VGroup(circle, symbol)
@@ -599,7 +599,7 @@ class ChordsInSpaceWithCircle(RandomChordScene):
         self.wait()
 
         # Show colors
-        key = TexText(
+        key = OldTexText(
             "Blue $\\Rightarrow$ Chord > \\text{Triangle side}\\\\"
             "Red $\\Rightarrow$ Chord < \\text{Triangle side}\\\\",
             tex_to_color_map={
@@ -752,7 +752,7 @@ class NonTransitive(Scene):
         circle = Circle(radius=3)
         circle.set_stroke(GREY_B, 2)
 
-        words = TexText(
+        words = OldTexText(
             "Rotational symmetries do \\emph{not} act\\\\"
             "transitively on the space of all chords",
             tex_to_color_map={"\\emph{not}": RED},
@@ -861,11 +861,11 @@ class RandomSpherePoint(Scene):
         self.add(*sphere)
 
         # Random point
-        words = TexText("Choose a random$^{*}$\\\\point on a sphere")
+        words = OldTexText("Choose a random$^{*}$\\\\point on a sphere")
         words.fix_in_frame()
         words.to_corner(UL)
 
-        technicality = TexText(
+        technicality = OldTexText(
             "$^{*}$From a distribution that's\\\\",
             "invariant under rotational symmetries.",
             font_size=30
@@ -953,7 +953,7 @@ class RandomSpherePoint(Scene):
 class CorrectionInsert(Scene):
     def construct(self):
         # Words
-        title = TexText("Looking for an unambiguous ``uniform'' distribution?")
+        title = OldTexText("Looking for an unambiguous ``uniform'' distribution?")
         title.to_edge(UP, buff=0.25)
         kw = dict(
             # font_size=36,

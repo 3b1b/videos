@@ -42,7 +42,7 @@ class ExpPlay(Scene):
         )
         path.set_color(WHITE)
 
-        formula = Tex(
+        formula = OldTex(
             "e^{it} \\approx",
             *[
                 "{(ti)^{%d} \\over %d!} +" % (k, k)
@@ -86,7 +86,7 @@ class ExpPlay(Scene):
             )
         )
         t_eq = VGroup(
-            Tex("t="),
+            OldTex("t="),
             DecimalNumber(0),
         )
         t_eq.add_updater(lambda m: m.arrange(RIGHT, buff=SMALL_BUFF))
@@ -204,7 +204,7 @@ class ZetaSpiral(Scene):
             dot.move_to(piece.get_start())
             # piece.add(dot)
 
-        label = Tex(
+        label = OldTex(
             "\\zeta\\left(0.5 + i{t}\\right)",
             tex_to_color_map={"{t}": YELLOW},
             background_stroke_width=0,

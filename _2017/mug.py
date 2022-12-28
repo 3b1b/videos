@@ -182,7 +182,7 @@ class UtilitiesPuzzleScene(Scene):
     def get_no_crossing_words(self):
         arrow = Vector(DOWN)
         arrow.next_to(self.bounding_box.get_top(), UP, SMALL_BUFF)
-        words = TexText("No crossing!")
+        words = OldTexText("No crossing!")
         words.next_to(arrow, UP, buff = SMALL_BUFF)
         result = VGroup(words, arrow)
         result.set_color("RED")
@@ -263,7 +263,7 @@ class AboutToyPuzzles(UtilitiesPuzzleScene, TeacherStudentsScene, ThreeDScene):
             (FRAME_Y_RADIUS*DOWN + FRAME_X_RADIUS*LEFT)/2
         )
 
-        eulers = Tex(*"V-E+F=2")
+        eulers = OldTex(*"V-E+F=2")
         eulers.set_color_by_tex_to_color_map({
             "V" : RED,
             "E" : GREEN,
@@ -277,7 +277,7 @@ class AboutToyPuzzles(UtilitiesPuzzleScene, TeacherStudentsScene, ThreeDScene):
         cube.pose_at_angle()
         cube.next_to(eulers, UP)
 
-        tda = TexText("Topological \\\\ Data Analysis")
+        tda = OldTexText("Topological \\\\ Data Analysis")
         tda.move_to(DOWN + 4*RIGHT)
 
         arrow_from_eulers = Arrow(
@@ -348,7 +348,7 @@ class ThisPuzzleIsHard(UtilitiesPuzzleScene, PiCreatureScene):
     def introduce_components(self):
         randy = self.pi_creature
 
-        try_it = TexText("Try it yourself!")
+        try_it = OldTexText("Try it yourself!")
         try_it.to_edge(UP)
 
         self.setup_configuration()
@@ -356,7 +356,7 @@ class ThisPuzzleIsHard(UtilitiesPuzzleScene, PiCreatureScene):
         self.remove(self.objects)
         house = houses[0]
 
-        puzzle_words = TexText("""
+        puzzle_words = OldTexText("""
             Puzzle: Connect each house to \\\\
             each utility without crossing lines.
         """)
@@ -474,7 +474,7 @@ class ThisPuzzleIsHard(UtilitiesPuzzleScene, PiCreatureScene):
         group.target.shift(DOWN)
         group[-1].set_stroke(width = 0)
 
-        meta_puzzle_words = TexText("""
+        meta_puzzle_words = OldTexText("""
             Meta-puzzle: Prove that this\\\\
             is impossible.
         """)
@@ -519,12 +519,12 @@ class IntroduceGraph(PiCreatureScene):
             for pi1, pi2 in it.combinations(pi_creatures, 2)
         ])
 
-        graph_word = TexText("``", "", "Graph", "''", arg_separator = "")
+        graph_word = OldTexText("``", "", "Graph", "''", arg_separator = "")
         graph_word.to_edge(UP)
-        planar_graph_word = TexText("``", "Planar", " graph", "''", arg_separator = "")
+        planar_graph_word = OldTexText("``", "Planar", " graph", "''", arg_separator = "")
         planar_graph_word.move_to(graph_word)
 
-        vertices_word = TexText("Vertices")
+        vertices_word = OldTexText("Vertices")
         vertices_word.to_edge(RIGHT, buff = LARGE_BUFF)
         vertices_word.set_color(YELLOW)
 
@@ -533,7 +533,7 @@ class IntroduceGraph(PiCreatureScene):
             for dot in dots[-2:]
         ])
 
-        edge_word = TexText("Edge")
+        edge_word = OldTexText("Edge")
         edge_word.next_to(lines, LEFT, LARGE_BUFF)
         edge_arrow = Arrow(
             edge_word, lines, buff = SMALL_BUFF,
@@ -606,7 +606,7 @@ class IsK33Planar(UtilitiesPuzzleScene):
         straight_lines = self.get_straight_lines()
         almost_solution_lines = self.get_almost_solution_lines()
 
-        question = TexText("Is", "this graph", "planar?")
+        question = OldTexText("Is", "this graph", "planar?")
         question.set_color_by_tex("this graph", YELLOW)
         question.to_edge(UP)
         brace = Brace(question.get_part_by_tex("graph"), DOWN, buff = SMALL_BUFF)
@@ -642,7 +642,7 @@ class TwoKindsOfViewers(PiCreatureScene, UtilitiesPuzzleScene):
         self.remove(objects)
 
         pi1, pi2 = self.pi_creatures
-        words = TexText(
+        words = OldTexText(
             "$(V-E+F)$", "kinds of viewers"
         )
         words.to_edge(UP)
@@ -657,10 +657,10 @@ class TwoKindsOfViewers(PiCreatureScene, UtilitiesPuzzleScene):
             pi2.shift, 2*RIGHT,
         )
 
-        know_eulers = TexText("Know about \\\\ Euler's formula")
+        know_eulers = OldTexText("Know about \\\\ Euler's formula")
         know_eulers.next_to(pi1, DOWN)
         know_eulers.set_color(GREEN)
-        dont = TexText("Don't")
+        dont = OldTexText("Don't")
         dont.next_to(pi2, DOWN)
         dont.set_color(RED)
 
@@ -836,7 +836,7 @@ class IntroduceRegions(UtilitiesPuzzleScene):
 
 class FromLastVideo(Scene):
     def construct(self):
-        title = TexText("From last video")
+        title = OldTexText("From last video")
         title.to_edge(UP)
         rect = ScreenRectangle(height = 6)
         rect.next_to(title, DOWN)
@@ -893,7 +893,7 @@ class AskAboutRegions(IntroduceRegions):
             ))
 
         #Count regions
-        count = Tex("1")
+        count = OldTex("1")
         count.scale(1.5)
         count.to_edge(UP)
         self.play(
@@ -903,7 +903,7 @@ class AskAboutRegions(IntroduceRegions):
         )
         last_region = None
         for n, region in zip(it.count(2), front_regions):
-            new_count = Tex(str(n))
+            new_count = OldTex(str(n))
             new_count.replace(count, dim_to_match = 1)
             self.remove(count)
             self.add(new_count)
@@ -990,7 +990,7 @@ class NewRegionClosedOnlyForNodesWithEdges(UtilitiesPuzzleScene):
 
         arrow = Vector(DOWN+LEFT, color = WHITE)
         arrow.next_to(houses[2], UP+RIGHT, buff = SMALL_BUFF)
-        words = TexText("Already has \\\\ an edge")
+        words = OldTexText("Already has \\\\ an edge")
         words.next_to(arrow.get_start(), UP, SMALL_BUFF)
 
         for line in lines[:-1]:
@@ -1048,9 +1048,9 @@ class LightUpNodes(IntroduceRegions):
 
     def setup_counters(self):
         titles = [
-            TexText("\\# %s"%self.vertices_word),
-            TexText("\\# Edges"),
-            TexText("\\# Regions"),
+            OldTexText("\\# %s"%self.vertices_word),
+            OldTexText("\\# Edges"),
+            OldTexText("\\# Regions"),
         ]
         for title, vect in zip(titles, [LEFT, ORIGIN, RIGHT]):
             title.shift(FRAME_X_RADIUS*vect/2)
@@ -1081,9 +1081,9 @@ class LightUpNodes(IntroduceRegions):
         lit_arrow = lit_vertex.arrow
         lit_arrow.rotate(np.pi/2, about_point = lit_vertex.get_center())
         dim_arrows.remove(lit_arrow)
-        lit_word = TexText("Lit up")
+        lit_word = OldTexText("Lit up")
         lit_word.next_to(lit_arrow.get_start(), UP, SMALL_BUFF)
-        dim_word = TexText("Dim")
+        dim_word = OldTexText("Dim")
         dim_word.next_to(dim_arrows[1].get_start(), UP, MED_LARGE_BUFF)
 
         dot = Dot().move_to(self.v_count)
@@ -1190,7 +1190,7 @@ class LightUpNodes(IntroduceRegions):
         return anims
 
     def get_plus_one_anim(self, count):
-        plus_one = Tex("+1")
+        plus_one = OldTex("+1")
         plus_one.set_color(YELLOW)
         plus_one.move_to(count)
         plus_one.next_to(count, DOWN)
@@ -1241,10 +1241,10 @@ class LightUpNodes(IntroduceRegions):
 
 class ShowRule(TeacherStudentsScene):
     def construct(self):
-        new_edge = TexText("New edge")
-        new_vertex = TexText("New (lit) vertex")
+        new_edge = OldTexText("New edge")
+        new_vertex = OldTexText("New (lit) vertex")
         new_vertex.next_to(new_edge, UP+RIGHT, MED_LARGE_BUFF)
-        new_region = TexText("New region")
+        new_region = OldTexText("New region")
         new_region.next_to(new_edge, DOWN+RIGHT, MED_LARGE_BUFF)
         VGroup(new_vertex, new_region).shift(RIGHT)
         arrows = VGroup(*[
@@ -1256,7 +1256,7 @@ class ShowRule(TeacherStudentsScene):
             for mob in (new_vertex, new_region)
         ])
         for word, arrow in zip(["Either", "or"], arrows):
-            word_mob = TexText(word)
+            word_mob = OldTexText(word)
             word_mob.scale(0.65)
             word_mob.next_to(ORIGIN, UP, SMALL_BUFF)
             word_mob.rotate(arrow.get_angle())
@@ -1269,7 +1269,7 @@ class ShowRule(TeacherStudentsScene):
         rule = VGroup(new_edge, arrows, new_vertex, new_region)
         rule.center().to_edge(UP)
 
-        nine_total = TexText("(9 total)")
+        nine_total = OldTexText("(9 total)")
         nine_total.next_to(new_edge, DOWN)
 
         self.play(
@@ -1404,7 +1404,7 @@ class ConcludeFiveRegions(LightUpNodes):
         self.wait()
 
         #Conclude
-        words = TexText("Last line must \\\\ introduce 5th region")
+        words = OldTexText("Last line must \\\\ introduce 5th region")
         words.scale(0.8)
         words.set_color(BLUE)
         rect = SurroundingRectangle(self.f_count)
@@ -1461,7 +1461,7 @@ class CyclesHaveAtLeastFour(UtilitiesPuzzleScene):
         words = VGroup()
         for word_string, arrow in zip(word_strings, arrows):
             vect = arrow.get_vector()[1]*UP
-            word = TexText(word_string)
+            word = OldTexText(word_string)
             word.next_to(arrow.get_start(), -vect)
             words.add(word)
 
@@ -1510,8 +1510,8 @@ class FiveRegionsFourEdgesEachGraph(Scene):
 
     def draw_squares(self):
         words = VGroup(
-            TexText("5", "regions"),
-            TexText("4", "edges each"),
+            OldTexText("5", "regions"),
+            OldTexText("4", "edges each"),
         )
         words.arrange(DOWN)
         words.to_edge(UP)
@@ -1828,12 +1828,12 @@ class EulersFormulaForGeneralPlanarGraph(LightUpNodes, ThreeDScene):
             mob[-1].fade(1)
         count_titles.symbols.shift(0.5*SMALL_BUFF*UP)
         twos = VGroup(*[
-            Tex("2").next_to(group.symbols, RIGHT)
+            OldTex("2").next_to(group.symbols, RIGHT)
             for group in groups
         ])
         twos.shift(0.5*SMALL_BUFF*UP)
 
-        words = TexText("``Euler's characteristic formula''")
+        words = OldTexText("``Euler's characteristic formula''")
         words.next_to(counts.target, DOWN)
         words.shift(MED_LARGE_BUFF*RIGHT)
         words.set_color(YELLOW)
@@ -1878,7 +1878,7 @@ class EulersFormulaForGeneralPlanarGraph(LightUpNodes, ThreeDScene):
         regions.set_stroke(WHITE, 3)
         cube.set_stroke(WHITE, 3)
 
-        new_formula = Tex("V - E + F = 2")
+        new_formula = OldTex("V - E + F = 2")
         new_formula.to_edge(UP, buff = MED_SMALL_BUFF)
         new_formula.align_to(self.bottom_formula, RIGHT)
 
@@ -1938,7 +1938,7 @@ class FunnyStory(TeacherStudentsScene):
 
 class QuestionWrapper(Scene):
     def construct(self):
-        question = TexText(
+        question = OldTexText(
             "Where", "\\emph{specifically}", "does\\\\", 
             "this proof break down?",
         )
@@ -1973,7 +1973,7 @@ class Homework(TeacherStudentsScene):
 
 class WantToLearnMore(Scene):
     def construct(self):
-        text = TexText("Want to learn more?")
+        text = OldTexText("Want to learn more?")
         self.play(Write(text))
         self.wait()
 
@@ -2059,7 +2059,7 @@ class PatreonThanks(PatreonEndScreen):
 
 class NewMugThumbnail(Scene):
     def construct(self):
-        title = Tex(
+        title = OldTex(
             "V - E + F = 0",
             tex_to_color_map={"0": YELLOW},
         )
@@ -2082,7 +2082,7 @@ class Thumbnail3(UtilitiesPuzzleScene):
 
         self.add(*group)
 
-        words = TexText("No crossing\\\\allowed!", font_size=72)
+        words = OldTexText("No crossing\\\\allowed!", font_size=72)
         words.to_corner(UL)
         # words.shift(3 * RIGHT)
         arrow = Arrow(

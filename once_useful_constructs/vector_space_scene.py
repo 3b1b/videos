@@ -132,7 +132,7 @@ class VectorScene(Scene):
         if not isinstance(label, Tex):
             if len(label) == 1:
                 label = "\\vec{\\textbf{%s}}" % label
-            label = Tex(label)
+            label = OldTex(label)
             if color is None:
                 color = vector.get_color()
             label.set_color(color)
@@ -418,7 +418,7 @@ class LinearTransformationScene(VectorScene):
 
     def add_title(self, title, scale_factor=1.5, animate=False):
         if not isinstance(title, Mobject):
-            title = TexText(title).scale(scale_factor)
+            title = OldTexText(title).scale(scale_factor)
         title.to_edge(UP)
         title.add_background_rectangle()
         if animate:

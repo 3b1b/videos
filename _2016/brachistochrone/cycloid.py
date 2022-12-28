@@ -93,17 +93,17 @@ class IntroduceCycloid(CycloidScene):
     def construct(self):
         CycloidScene.construct(self)
 
-        equation = Tex([
+        equation = OldTex([
             "\\dfrac{\\sin(\\theta)}{\\sqrt{y}}",
             "= \\text{constant}"
         ])
         sin_sqrt, const = equation.split()
         new_eq = equation.copy()
         new_eq.to_edge(UP, buff = 1.3)
-        cycloid_word = TexText("Cycloid")
+        cycloid_word = OldTexText("Cycloid")
         arrow = Arrow(2*UP, cycloid_word)
         arrow.reverse_points()
-        q_mark = TexText("?")
+        q_mark = OldTexText("?")
 
         self.play(*list(map(ShimmerIn, equation.split())))
         self.wait()
@@ -144,7 +144,7 @@ class IntroduceCycloid(CycloidScene):
                 color = BLUE_E
             )
 
-            q_marks.add(TexText("?").shift(q_point))
+            q_marks.add(OldTexText("?").shift(q_point))
             arrows.add(arrow)
         for mob in result:
             mob.ingest_submobjects()
@@ -180,11 +180,11 @@ class LeviSolution(CycloidScene):
         index = int(self.cycloid_fraction*self.cycloid.get_num_points())
         p_point = self.cycloid.get_points()[index]
         p_dot = Dot(p_point)
-        p_label = Tex("P")
+        p_label = OldTex("P")
         p_label.next_to(p_dot, DOWN+LEFT)
         c_point = self.point_a + self.cycloid_fraction*self.radius*2*np.pi*RIGHT
         c_dot = Dot(c_point)
-        c_label = Tex("C")
+        c_label = OldTex("C")
         c_label.next_to(c_dot, UP)
 
         digest_locals(self)
@@ -208,7 +208,7 @@ class LeviSolution(CycloidScene):
         self.play(ShimmerIn(self.c_label))
 
     def show_pendulum(self, arc_angle = np.pi, arc_color = GREEN):
-        words = TexText(": Instantaneous center of rotation")
+        words = OldTexText(": Instantaneous center of rotation")
         words.next_to(self.c_label)
         line = Line(self.p_point, self.c_point)
         line_angle = line.get_angle()+np.pi
@@ -281,8 +281,8 @@ class LeviSolution(CycloidScene):
         bottom_point += 2*self.radius*DOWN
         diameter = Line(bottom_point, self.c_point)
         brace = Brace(diameter, RIGHT)
-        diameter_word = TexText("Diameter")
-        d_mob = Tex("D")
+        diameter_word = OldTexText("Diameter")
+        d_mob = OldTex("D")
         diameter_word.next_to(brace)
         d_mob.next_to(diameter)
 
@@ -313,7 +313,7 @@ class LeviSolution(CycloidScene):
             start_angle = np.pi/2
         )
 
-        theta = Tex("\\theta")
+        theta = OldTex("\\theta")
         theta.shift(1.5*arc.get_center())
         Mobject(arc, theta).shift(self.bottom_point)
 
@@ -376,7 +376,7 @@ class LeviSolution(CycloidScene):
             (self.y_line, "D\\sin^2(\\theta)", 0.7),
         ]
         for line, tex, scale in triplets:
-            trig_mob = Tex(tex)
+            trig_mob = OldTex(tex)
             trig_mob.set_width(
                 scale*line.get_length()
             )
@@ -395,9 +395,9 @@ class LeviSolution(CycloidScene):
 
 
     def show_y(self):
-        y_equals = Tex(["y", "="])
+        y_equals = OldTex(["y", "="])
         y_equals.shift(2*UP)
-        y_expression = Tex([
+        y_expression = OldTex([
             "D ", "\\sin", "^2", "(\\theta)"
         ])
         y_expression.next_to(y_equals)
@@ -405,7 +405,7 @@ class LeviSolution(CycloidScene):
         temp_expr = self.d_sin_squared_theta.copy()
         temp_expr.rotate(-np.pi/2)
         temp_expr.replace(y_expression)
-        y_mob = Tex("y")
+        y_mob = OldTex("y")
         y_mob.next_to(self.y_line, RIGHT)
         y_mob.shift(0.2*UP)
 
@@ -424,7 +424,7 @@ class LeviSolution(CycloidScene):
         sqrt_nudge = 0.2*LEFT        
         y, equals = self.y_equals.split()
         d, sin, squared, theta = self.y_expression.split()
-        y_sqrt = Tex("\\sqrt{\\phantom{y}}")
+        y_sqrt = OldTex("\\sqrt{\\phantom{y}}")
         d_sqrt = y_sqrt.copy()
         y_sqrt.shift(y.get_center()+sqrt_nudge)
         d_sqrt.shift(d.get_center()+sqrt_nudge)
@@ -440,11 +440,11 @@ class LeviSolution(CycloidScene):
         d_sqrt.add(d)
         sin.add(theta)
 
-        sin_over = Tex("\\dfrac{\\phantom{\\sin(\\theta)}}{\\quad}")
+        sin_over = OldTex("\\dfrac{\\phantom{\\sin(\\theta)}}{\\quad}")
         sin_over.next_to(sin, DOWN, 0.15)
         new_eq = equals.copy()
         new_eq.next_to(sin_over, LEFT)
-        one_over = Tex("\\dfrac{1}{\\quad}")
+        one_over = OldTex("\\dfrac{1}{\\quad}")
         one_over.next_to(new_eq, LEFT)
         one_over.shift(
             (sin_over.get_bottom()[1]-one_over.get_bottom()[1])*UP
@@ -467,7 +467,7 @@ class LeviSolution(CycloidScene):
         self.wait()
 
         brace = Brace(d_sqrt, DOWN)
-        constant = TexText("Constant")
+        constant = OldTexText("Constant")
         constant.next_to(brace, DOWN)
 
         self.play(
@@ -481,7 +481,7 @@ class LeviSolution(CycloidScene):
 class EquationsForCycloid(CycloidScene):
     def construct(self):
         CycloidScene.construct(self)
-        equations = Tex([
+        equations = OldTex([
             "x(t) = Rt - R\\sin(t)",
             "y(t) = -R + R\\cos(t)"
         ])
@@ -523,9 +523,9 @@ class SlidingObject(CycloidScene, PathSlidingScene):
         )
 
         if with_words:
-            words1 = TexText("Trajectory due to gravity")
-            arrow = Tex("\\leftrightarrow")
-            words2 = TexText("Trajectory due \\emph{constantly} rotating wheel")
+            words1 = OldTexText("Trajectory due to gravity")
+            arrow = OldTex("\\leftrightarrow")
+            words2 = OldTexText("Trajectory due \\emph{constantly} rotating wheel")
             words1.next_to(arrow, LEFT)
             words2.next_to(arrow, RIGHT)
             words = Mobject(words1, arrow, words2)

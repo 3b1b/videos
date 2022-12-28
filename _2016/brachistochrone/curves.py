@@ -45,7 +45,7 @@ class SlideWordDownCycloid(Animation):
     }
     def __init__(self, word, **kwargs):
         self.path = Cycloid(end_theta = np.pi)        
-        word_mob = TexText(list(word))
+        word_mob = OldTexText(list(word))
         end_word = word_mob.copy()
         end_word.shift(-end_word.get_bottom())
         end_word.shift(self.path.get_corner(DOWN+RIGHT))
@@ -130,7 +130,7 @@ class PathSlidingScene(Scene):
         last_index = 0
         curr_index = 1
         if self.show_time:
-            self.t_equals = Tex("t = ")
+            self.t_equals = OldTex("t = ")
             self.t_equals.shift(3.5*UP+4*RIGHT)
             self.add(self.t_equals)
         while curr_index < len(points):
@@ -208,8 +208,8 @@ class PathSlidingScene(Scene):
         cycloid = Cycloid()
         point_a = Dot(cycloid.get_points()[0])
         point_b = Dot(cycloid.get_points()[-1])
-        A = Tex("A").next_to(point_a, LEFT)
-        B = Tex("B").next_to(point_b, RIGHT)
+        A = OldTex("A").next_to(point_a, LEFT)
+        B = OldTex("B").next_to(point_b, RIGHT)
         self.add(point_a, point_b, A, B)
         digest_locals(self)
 
@@ -223,8 +223,8 @@ class TryManyPaths(PathSlidingScene):
         paths = self.get_paths()
         point_a = Dot(paths[0].get_points()[0])
         point_b = Dot(paths[0].get_points()[-1])
-        A = Tex("A").next_to(point_a, LEFT)
-        B = Tex("B").next_to(point_b, RIGHT)
+        A = OldTex("A").next_to(point_a, LEFT)
+        B = OldTex("B").next_to(point_b, RIGHT)
         for point, tex in [(point_a, A), (point_b, B)]:
             self.play(ShowCreation(point))
             self.play(ShimmerIn(tex))
@@ -256,7 +256,7 @@ class TryManyPaths(PathSlidingScene):
             ))
 
     def get_text(self):
-        return TexText("Which path is fastest?")
+        return OldTexText("Which path is fastest?")
 
     def get_paths(self):
         sharp_corner = Mobject(
@@ -317,7 +317,7 @@ class NotTheCircle(PathSlidingScene):
         randy.scale(RANDY_SCALE_FACTOR)
         randy.shift(-randy.get_bottom())
         randy_copy = randy.copy()
-        words = TexText("Circular paths are good, \\\\ but still not the best")
+        words = OldTexText("Circular paths are good, \\\\ but still not the best")
         words.shift(UP)
 
         self.play(
@@ -390,7 +390,7 @@ class MinimalPotentialEnergy(Scene):
         graph.stretch_to_fit_width(2*horiz_radius)
         graph.set_color(YELLOW)
         min_point = Dot(graph.get_bottom())
-        nature_finds = TexText("Nature finds this point")
+        nature_finds = OldTexText("Nature finds this point")
         nature_finds.scale(0.5)
         nature_finds.set_color(GREEN)
         nature_finds.shift(2*RIGHT+3*UP)
@@ -399,7 +399,7 @@ class MinimalPotentialEnergy(Scene):
             color = GREEN
         )
 
-        side_words_start = TexText("Parameter describing")
+        side_words_start = OldTexText("Parameter describing")
         top_words, last_side_words = [
             list(map(TexText, pair))
             for pair in [
@@ -459,7 +459,7 @@ class WhatGovernsSpeed(PathSlidingScene):
             points[k*n/self.num_pieces:(k+1)*n/self.num_pieces]
             for k in range(self.num_pieces)
         ]
-        words = TexText("""
+        words = OldTexText("""
             What determines the speed\\\\
             at each point?
         """)
@@ -503,9 +503,9 @@ class WhatGovernsSpeed(PathSlidingScene):
         vect_brace.center().shift(vector.get_center())
         nudge = 0.2*(DOWN+LEFT)
         vect_brace.shift(nudge)
-        y_mob = Tex("y")
+        y_mob = OldTex("y")
         y_mob.next_to(vert_brace)
-        sqrt_y = Tex("k\\sqrt{y}")
+        sqrt_y = OldTex("k\\sqrt{y}")
         sqrt_y.scale(0.5)
         sqrt_y.shift(vect_brace.get_center())
         sqrt_y.shift(3*nudge)
@@ -523,11 +523,11 @@ class WhatGovernsSpeed(PathSlidingScene):
         self.solve_energy()
 
     def solve_energy(self):
-        loss_in_potential = TexText("Loss in potential: ")
+        loss_in_potential = OldTexText("Loss in potential: ")
         loss_in_potential.shift(2*UP)
-        potential = Tex("m g y".split())
+        potential = OldTex("m g y".split())
         potential.next_to(loss_in_potential)
-        kinetic = Tex([
+        kinetic = OldTex([
             "\\dfrac{1}{2}","m","v","^2","="
         ])
         kinetic.next_to(potential, LEFT)
@@ -535,10 +535,10 @@ class WhatGovernsSpeed(PathSlidingScene):
         kinetic.shift(nudge)
         loss_in_potential.shift(nudge)
         ms = Mobject(kinetic.split()[1], potential.split()[0])
-        two = Tex("2")
+        two = OldTex("2")
         two.shift(ms.split()[1].get_center())
         half = kinetic.split()[0]
-        sqrt = Tex("\\sqrt{\\phantom{2mg}}")
+        sqrt = OldTex("\\sqrt{\\phantom{2mg}}")
         sqrt.shift(potential.get_center())
         nudge = 0.2*LEFT
         sqrt.shift(nudge)
@@ -588,14 +588,14 @@ class ThetaTInsteadOfXY(Scene):
         vect *= 3
         vect_mob = Vector(point, vect)
         dot = Dot(point)
-        xy = Tex("\\big( x(t), y(t) \\big)")
+        xy = OldTex("\\big( x(t), y(t) \\big)")
         xy.next_to(dot, UP+RIGHT, buff = 0.1)
         vert_line = Line(2*DOWN, 2*UP)
         vert_line.shift(point)
         angle = vect_mob.get_angle() + np.pi/2
         arc = Arc(angle, radius = 1, start_angle = -np.pi/2)
         arc.shift(point)
-        theta = Tex("\\theta(t)")
+        theta = OldTex("\\theta(t)")
         theta.next_to(arc, DOWN, buff = 0.1, aligned_edge = LEFT)
         theta.shift(0.2*RIGHT)
 
@@ -624,7 +624,7 @@ class DefineCurveWithKnob(PathSlidingScene):
         self.last_angle = np.pi/2
         arrow = Vector(ORIGIN, RIGHT)
         arrow.next_to(self.knob, LEFT)
-        words = TexText("Turn this knob over time to define the curve")
+        words = OldTexText("Turn this knob over time to define the curve")
         words.next_to(arrow, LEFT)
         self.path = self.get_path()
         self.path.shift(1.5*DOWN)

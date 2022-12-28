@@ -3,11 +3,11 @@ from manim_imports_ext import *
 
 class WhyPi(Scene):
     def construct(self):
-        title = TexText("Why $\\pi$?")
+        title = OldTexText("Why $\\pi$?")
         title.scale(3)
         title.to_edge(UP)
 
-        formula1 = Tex(
+        formula1 = OldTex(
             "1 +"
             "\\frac{1}{4} +"
             "\\frac{1}{9} +"
@@ -19,7 +19,7 @@ class WhyPi(Scene):
         formula1.set_width(FRAME_WIDTH - 2)
         formula1.next_to(title, DOWN, MED_LARGE_BUFF)
 
-        formula2 = Tex(
+        formula2 = OldTex(
             "1 -"
             "\\frac{1}{3} +"
             "\\frac{1}{5} -"
@@ -38,7 +38,7 @@ class WhyPi(Scene):
 
 class GeneralExpositionIcon(Scene):
     def construct(self):
-        title = TexText("What is \\underline{\\qquad \\qquad}?")
+        title = OldTexText("What is \\underline{\\qquad \\qquad}?")
         title.scale(3)
         title.to_edge(UP)
         randy = Randolph()
@@ -56,7 +56,7 @@ class GeometryIcon(Scene):
         im = ImageMobject("geometry_icon_base.jpg")
         im.set_height(FRAME_HEIGHT)
         im.scale(0.9, about_edge=DOWN)
-        word = TexText("Geometry")
+        word = OldTexText("Geometry")
         word.scale(3)
         word.to_edge(UP)
         self.add(im, word)
@@ -67,7 +67,7 @@ class PhysicsIcon(Scene):
         im = ImageMobject("physics_icon_base.png")
         im.set_height(FRAME_HEIGHT)
         im.shift(UP)
-        title = TexText("Physics")
+        title = OldTexText("Physics")
         title.scale(3)
         title.to_edge(UP)
 
@@ -184,7 +184,7 @@ class RantPage(Scene):
         for eye, pupil in zip(morty.eyes, morty.pupils):
             pupil.move_to(eye)
         morty.shift(MED_SMALL_BUFF * UL)
-        words = TexText(
+        words = OldTexText(
             "What were you\\\\expecting to be here?"
         )
         bubble = SpeechBubble(direction=RIGHT)
@@ -200,7 +200,7 @@ class RantPage(Scene):
         # Group 2
         morty = Mortimer(mode="surprised")
         morty.shift(MED_SMALL_BUFF * UL)
-        words = TexText(
+        words = OldTexText(
             "Go on!\\\\Give the rant!"
         )
         bubble = SpeechBubble(direction=RIGHT)

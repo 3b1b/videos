@@ -24,7 +24,7 @@ class PhysicalIntuition(Scene):
             arrows.copy().scale(0.3/(x)).shift(x*RIGHT)
             for x in range(1, n_terms+2)
         ])
-        terms = Tex([
+        terms = OldTex([
             "\\dfrac{1}{%d^2} + "%(x+1)
             for x in range(n_terms)
         ]+["\\cdots"])
@@ -93,9 +93,9 @@ class TimeLine(Scene):
             picture = ImageMobject(event["picture"], invert = False)
             picture.set_width(2)
             picture.to_corner(UP+RIGHT)
-            event_mob = TexText(event["text"])
+            event_mob = OldTexText(event["text"])
             event_mob.shift(2*LEFT+2*UP)
-            date_mob = Tex(str(event["date"]))
+            date_mob = OldTex(str(event["date"]))
             date_mob.scale(0.5)
             date_mob.shift(0.6*UP)
             line = Line(event_mob.get_bottom(), 0.2*UP)
@@ -135,7 +135,7 @@ class StayedUpAllNight(Scene):
         solution.to_corner(UP+RIGHT)
         newton = ImageMobject("Old_Newton", invert = False)
         newton.scale(0.8)
-        phil_trans = TexText("Philosophical Transactions")
+        phil_trans = OldTexText("Philosophical Transactions")
         rect = Rectangle(height = 6, width = 4.5, color = WHITE)
         rect.to_corner(UP+RIGHT)
         rect.shift(DOWN)
@@ -144,12 +144,12 @@ class StayedUpAllNight(Scene):
         new_solution = solution.copy()
         new_solution.set_width(phil_trans.get_width())
         new_solution.next_to(phil_trans, DOWN, buff = 1)
-        not_newton = TexText("-Totally not by Newton")
+        not_newton = OldTexText("-Totally not by Newton")
         not_newton.set_width(2.5)
         not_newton.next_to(new_solution, DOWN, aligned_edge = RIGHT)
         phil_trans.add(rect)
 
-        newton_complaint = TexText([
+        newton_complaint = OldTexText([
             "``I do not love to be",
             " \\emph{dunned} ",
             "and teased by foreigners''"
@@ -157,7 +157,7 @@ class StayedUpAllNight(Scene):
         newton_complaint.to_edge(UP, buff = 0.2)
         dunned = newton_complaint.split()[1]
         dunned.set_color()
-        dunned_def = TexText("(old timey term for making \\\\ demands on someone)")
+        dunned_def = OldTexText("(old timey term for making \\\\ demands on someone)")
         dunned_def.scale(0.7)
         dunned_def.next_to(phil_trans, LEFT)
         dunned_def.shift(2*UP)
@@ -167,7 +167,7 @@ class StayedUpAllNight(Scene):
         johann.scale(0.4)
         johann.to_edge(LEFT)
         johann.shift(DOWN)
-        johann_quote = TexText("``I recognize the lion by his claw''")
+        johann_quote = OldTexText("``I recognize the lion by his claw''")
         johann_quote.next_to(johann, UP, aligned_edge = LEFT)
 
         self.play(ApplyMethod(newton.to_edge, LEFT))
@@ -221,8 +221,8 @@ class ThetaTGraph(Scene):
     def construct(self):
         t_axis = NumberLine()
         theta_axis = NumberLine().rotate(np.pi/2)
-        theta_mob = Tex("\\theta(t)")
-        t_mob = Tex("t")
+        theta_mob = OldTex("\\theta(t)")
+        t_mob = OldTex("t")
         theta_mob.next_to(theta_axis, RIGHT)
         theta_mob.to_edge(UP)
         t_mob.next_to(t_axis, UP)
@@ -231,7 +231,7 @@ class ThetaTGraph(Scene):
             lambda t : 4*t*RIGHT + 2*smooth(t)*UP
         )
         line = Line(graph.get_points()[0], graph.get_points()[-1], color = WHITE)
-        q_mark = TexText("?")
+        q_mark = OldTexText("?")
         q_mark.next_to(Point(graph.get_center()), LEFT)
         stars = Stars(color = BLACK)
         stars.scale(0.1).shift(q_mark.get_center())
@@ -282,19 +282,19 @@ class SolutionsToTheBrachistochrone(Scene):
         x_axis = nl.copy().shift(3*UP)
         y_axis = nl.copy().rotate(np.pi/2).shift(6*LEFT)
         t_axis = nl.copy().shift(2*DOWN)
-        x_label = Tex("x")
+        x_label = OldTex("x")
         x_label.next_to(x_axis, DOWN)
         x_label.to_edge(RIGHT)
-        y_label = Tex("y")
+        y_label = OldTex("y")
         y_label.next_to(y_axis, RIGHT)
         y_label.shift(2*DOWN)
-        t_label = Tex("t")
+        t_label = OldTex("t")
         t_label.next_to(t_axis, UP)
         t_label.to_edge(RIGHT)
-        theta_label = Tex("\\theta")
+        theta_label = OldTex("\\theta")
         theta_label.next_to(y_axis, RIGHT)
         theta_label.to_edge(UP)
-        words = TexText("Boundary conditions?")
+        words = OldTexText("Boundary conditions?")
         words.next_to(lines, RIGHT)
         words.shift(2*UP)
 
@@ -317,7 +317,7 @@ class SolutionsToTheBrachistochrone(Scene):
 class VideoLayout(Scene):
     def construct(self):
         left, right = 5*LEFT, 5*RIGHT
-        top_words = TexText("The next 15 minutes of your life:")
+        top_words = OldTexText("The next 15 minutes of your life:")
         top_words.to_edge(UP)
         line = Line(left, right, color = BLUE_D)
         for a in np.arange(0, 4./3, 1./3):
@@ -373,7 +373,7 @@ class ShortestPathProblem(Scene):
         dots = []
         for point, char in [(point_a, "A"), (point_b, "B")]:
             dot = Dot(point)
-            letter = Tex(char)
+            letter = OldTex(char)
             letter.next_to(dot, UP+LEFT)
             dot.add(letter)
             dots.append(dot)
@@ -387,7 +387,7 @@ class ShortestPathProblem(Scene):
         path.shift(point_a - path.get_points()[0])
         path.set_color(RED)
         line = Line(point_a, point_b)
-        words = TexText("Shortest path from $A$ to $B$")
+        words = OldTexText("Shortest path from $A$ to $B$")
         words.to_edge(UP)
 
         self.play(
@@ -423,7 +423,7 @@ class MathBetterThanTalking(Scene):
 class DetailsOfProofBox(Scene):
     def construct(self):
         rect = Rectangle(height = 4, width = 6, color = WHITE)
-        words = TexText("Details of proof")
+        words = OldTexText("Details of proof")
         words.to_edge(UP)
 
         self.play(
@@ -468,7 +468,7 @@ class TalkedAboutSnellsLaw(Scene):
 
 class YetAnotherMarkLevi(Scene):
     def construct(self):
-        words = TexText("Yet another bit of Mark Levi cleverness")
+        words = OldTexText("Yet another bit of Mark Levi cleverness")
         words.to_edge(UP)
         levi = ImageMobject("Mark_Levi", invert = False)
         levi.set_width(6)

@@ -342,9 +342,9 @@ class WordleSceneWithAnalysis(WordleScene):
             Text("E[Info.]", color=self.entropy_color),
         )
         if self.look_two_ahead:
-            titles.add(TexText("E[Info$_2$]", color=self.entropy_color)[0])
+            titles.add(OldTexText("E[Info$_2$]", color=self.entropy_color)[0])
         if self.show_prior:
-            titles.add(Tex("p(\\text{word})", color=self.prior_color))
+            titles.add(OldTex("p(\\text{word})", color=self.prior_color))
 
         titles.scale(0.7)
         titles.arrange(RIGHT, buff=MED_LARGE_BUFF)
@@ -743,7 +743,7 @@ class WordleDistributions(WordleScene):
             }
         )
         axes.next_to(self.grid, RIGHT, LARGE_BUFF, aligned_edge=DOWN)
-        # y_label = Tex("p(\\text{Pattern})", font_size=24)
+        # y_label = OldTex("p(\\text{Pattern})", font_size=24)
         # y_label.next_to(axes.y_axis.get_top(), UR, buff=SMALL_BUFF)
         # axes.y_axis.add(y_label)
         axes.y_axis.add_numbers(num_decimal_places=2)
@@ -917,7 +917,7 @@ class WordleDistributions(WordleScene):
         else:
             entropy = 0
 
-        lhs = Tex(
+        lhs = OldTex(
             "E[I] = \\sum_x ",
             "p(x) \\cdot \\log_2(1 / p(x))", "=",
             tex_to_color_map={"I": BLUE},
@@ -1183,7 +1183,7 @@ class IntroduceGame(WordleScene):
         frame = self.camera.frame
         answer_rect = SurroundingRectangle(VGroup(titles[1], word_columns[1]))
         answer_rect.set_stroke(TEAL, 3)
-        avoid = TexText("Let's try to avoid\\\\using this")
+        avoid = OldTexText("Let's try to avoid\\\\using this")
         avoid.next_to(answer_rect, RIGHT)
         morty = Mortimer(height=2)
         morty.next_to(avoid, DOWN, MED_LARGE_BUFF)
@@ -1529,7 +1529,7 @@ class IntroduceDistribution(WordleDistributions):
 
         # Describe aim for expected information
         want = Text("What we want:")
-        standin = Tex(
+        standin = OldTex(
             "E[\\text{Information}] = \\sum_{x} p(x) \\cdot (\\text{Something})",
             tex_to_color_map={
                 "\\text{Something}": GREY_B,
@@ -1555,7 +1555,7 @@ class IntroduceDistribution(WordleDistributions):
         # Define entropy
         entropy_definition = self.get_entropy_label()
         brace = Brace(entropy_definition, DOWN, buff=SMALL_BUFF)
-        ent_label = TexText("Entropy, $H$")
+        ent_label = OldTexText("Entropy, $H$")
         ent_label.set_color(BLUE)
         ent_label.next_to(brace, DOWN, SMALL_BUFF)
 
@@ -1609,9 +1609,9 @@ class IntroduceDistribution(WordleDistributions):
         self.get_curr_row().set_fill(BLACK, 0)
 
         eqs = VGroup(
-            Tex("E[I] = \\log_2\\left({1 \\over 1 / 3^5}\\right) = \\log_2(3^5) \\approx 7.92"),
-            Tex("E[I] = \\log_2\\left({1 \\over 1 / 16}\\right) = \\log_2(16) = 4.00"),
-            Tex("E[I] = \\log_2\\left({1 \\over 1 / 64}\\right) = \\log_2(64) = 6.00"),
+            OldTex("E[I] = \\log_2\\left({1 \\over 1 / 3^5}\\right) = \\log_2(3^5) \\approx 7.92"),
+            OldTex("E[I] = \\log_2\\left({1 \\over 1 / 16}\\right) = \\log_2(16) = 4.00"),
+            OldTex("E[I] = \\log_2\\left({1 \\over 1 / 64}\\right) = \\log_2(64) = 6.00"),
         )
         eqs.scale(0.7)
         for eq in eqs:
@@ -1775,7 +1775,7 @@ class ButTheyreNotEquallyLikely(Scene):
 
         self.play(
             PiCreatureSays(
-                randy, TexText("But they're \\emph{not}\\\\equally likely!"),
+                randy, OldTexText("But they're \\emph{not}\\\\equally likely!"),
                 target_mode="angry",
             ),
             morty.change("guilty", randy.eyes),
@@ -1784,7 +1784,7 @@ class ButTheyreNotEquallyLikely(Scene):
         self.wait()
         self.play(
             PiCreatureSays(
-                morty, TexText("To warm up, let's\\\\assume they are."),
+                morty, OldTexText("To warm up, let's\\\\assume they are."),
                 target_mode="speaking",
             ),
             RemovePiCreatureBubble(randy),
@@ -1799,7 +1799,7 @@ class KeyIdea(Scene):
         title.to_edge(UP, LARGE_BUFF)
         title.add(Underline(title, buff=-SMALL_BUFF, stroke_width=0.5).scale(1.5))
         title.set_color(YELLOW)
-        idea = TexText("Informative", " $\\Leftrightarrow$", " Unlikely", font_size=72)
+        idea = OldTexText("Informative", " $\\Leftrightarrow$", " Unlikely", font_size=72)
         self.add(title)
         idea[0].save_state()
         idea[0].center()
@@ -1816,7 +1816,7 @@ class KeyIdea(Scene):
 
 class ExpectedMatchesInsert(Scene):
     def construct(self):
-        tex = Tex(
+        tex = OldTex(
             "\\sum_{x} p(x) \\big(\\text{\\# Matches}\\big)",
             tex_to_color_map={"\\text{\\# Matches}": GREEN}
         )
@@ -1834,7 +1834,7 @@ class InformationTheoryTitleCard(TitleCardScene):
 
 class DescribeBit(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Standard unit of\\\\information: The bit",
             tex_to_color_map={"The bit": YELLOW}
         )
@@ -1851,7 +1851,7 @@ class DescribeBit(TeacherStudentsScene):
         )
         self.wait(4)
 
-        formula = Tex("I = -\\log_2(p)", tex_to_color_map={"I": YELLOW})
+        formula = OldTex("I = -\\log_2(p)", tex_to_color_map={"I": YELLOW})
         formula.next_to(self.teacher.get_corner(UL), UP)
 
         self.play(
@@ -1923,7 +1923,7 @@ class DefineInformation(Scene):
             if 's' not in word.text:
                 word.set_opacity(0.1)
 
-        has_s = TexText("Has an `s'", font_size=24)
+        has_s = OldTexText("Has an `s'", font_size=24)
         has_s.next_to(arrow, DOWN)
         self.play(
             MoveToTarget(word_grid),
@@ -1937,7 +1937,7 @@ class DefineInformation(Scene):
         mini_group1.target.to_edge(UP, buff=0.25)
         post_space2 = self.get_post_space(pre_space, 2).move_to(post_space)
         post_labels2 = self.get_post_space_labels(post_space2, **kw)
-        has_t = TexText("Has a `t'", font_size=24)
+        has_t = OldTexText("Has a `t'", font_size=24)
         has_t.next_to(arrow, DOWN, SMALL_BUFF)
 
         self.play(
@@ -1994,10 +1994,10 @@ class DefineInformation(Scene):
 
         kw = dict(tex_to_color_map={"I": YELLOW})
         formulas = VGroup(
-            Tex("\\left( \\frac{1}{2} \\right)^I = p", **kw),
-            Tex("2^I = \\frac{1}{p}", **kw),
-            Tex("I = \\log_2\\left(\\frac{1}{p}\\right)", **kw),
-            Tex("I = -\\log_2(p)", **kw)
+            OldTex("\\left( \\frac{1}{2} \\right)^I = p", **kw),
+            OldTex("2^I = \\frac{1}{p}", **kw),
+            OldTex("I = \\log_2\\left(\\frac{1}{p}\\right)", **kw),
+            OldTex("I = -\\log_2(p)", **kw)
         )
         formulas[:3].arrange(RIGHT, buff=LARGE_BUFF)
         formulas[:3].to_edge(UP)
@@ -2037,7 +2037,7 @@ class DefineInformation(Scene):
         self.wait()
 
         # Readibility
-        expr = Tex(
+        expr = OldTex(
             "20 \\text{ bits} \\Leftrightarrow p \\approx 0.00000095",
             tex_to_color_map={"\\text{bits}": YELLOW}
         )
@@ -2107,12 +2107,12 @@ class DefineInformation(Scene):
 
     def get_post_space_labels(self, post_space, **kw):
         n_bits = int(math.log2(len(post_space)))
-        top_label = TexText("Information = ", f"${n_bits}$ bits", **kw)
+        top_label = OldTexText("Information = ", f"${n_bits}$ bits", **kw)
         if n_bits == 1:
             top_label[-1][-1].set_opacity(0)
         top_label.next_to(post_space, UP, buff=0.15)
         top_label.set_color(YELLOW)
-        bottom_label = TexText(f"$p = {{1 \\over {2**n_bits}}}$", **kw)
+        bottom_label = OldTexText(f"$p = {{1 \\over {2**n_bits}}}$", **kw)
         bottom_label.next_to(post_space, DOWN, SMALL_BUFF)
         return VGroup(top_label, bottom_label)
 
@@ -2131,7 +2131,7 @@ class DefineInformation(Scene):
 
 class AskForFormulaForI(Scene):
     def construct(self):
-        tex = Tex(
+        tex = OldTex(
             "I = ???",
             tex_to_color_map={"I": YELLOW},
             font_size=72,
@@ -2143,7 +2143,7 @@ class AskForFormulaForI(Scene):
 
 class MinusLogExpression(Scene):
     def construct(self):
-        tex = Tex(
+        tex = OldTex(
             "I = -\\log_2(p)",
             tex_to_color_map={"I": YELLOW},
             font_size=60,
@@ -2175,7 +2175,7 @@ class ShowPatternInformationExamples(WordleDistributions):
         randy.to_corner(DR)
 
         self.play(PiCreatureSays(
-            randy, TexText("I thought this\\\\was a word game"),
+            randy, OldTexText("I thought this\\\\was a word game"),
             bubble_config={"width": 4, "height": 3},
             target_mode="pleading"
         ))
@@ -2192,7 +2192,7 @@ class ShowPatternInformationExamples(WordleDistributions):
 
 class TwentyBitOverlay(Scene):
     def construct(self):
-        eq = Tex("20 \\text{ bits} \\Leftrightarrow 0.00000095")
+        eq = OldTex("20 \\text{ bits} \\Leftrightarrow 0.00000095")
         eq.scale(1.5)
         self.play(Write(eq))
         self.wait()
@@ -2235,8 +2235,8 @@ class AddingBitsObservationOverlay(Scene):
         arrows.next_to(mystery, RIGHT, buff=MED_LARGE_BUFF)
 
         obss = VGroup(
-            TexText("Has a `t'"),
-            TexText("Starts with `s'"),
+            OldTexText("Has a `t'"),
+            OldTexText("Starts with `s'"),
         )
         obss.scale(0.85)
         bits_labels = VGroup(
@@ -2275,7 +2275,7 @@ class AddingBitsObservationOverlay(Scene):
 
 class ExpectedInformationLabel(Scene):
     def construct(self):
-        eq = Tex(
+        eq = OldTex(
             "E[\\text{Information}] = ",
             "\\sum_x p(x) \\cdot \\text{Information}(x)",
             tex_to_color_map={
@@ -2299,7 +2299,7 @@ class AskAboutPhysicsRelation(TeacherStudentsScene):
         physics.to_edge(UP)
 
         self.student_says(
-            TexText("What does this have\\\\to do with thermodynamics?"),
+            OldTexText("What does this have\\\\to do with thermodynamics?"),
             target_mode="raise_right_hand",
             index=2,
             bubble_config=dict(width=5, height=3, direction=LEFT),
@@ -2359,7 +2359,7 @@ class ContrastWearyAndSlate(WordleScene):
         grids.to_edge(DOWN)
 
         # Entropy
-        EI_label = Tex(
+        EI_label = OldTex(
             "E[I]", "= ", "\\sum_{x} p(x) \\log_2\\big(1 / p(x) \\big)",
             tex_to_color_map={"I": BLUE},
             font_size=36,
@@ -2407,7 +2407,7 @@ class VonNeumannPhrase2(VonNeumannPhrase):
 
 class MaximumInsert(Scene):
     def construct(self):
-        text = TexText("Maximum possible\\\\", "expected information")
+        text = OldTexText("Maximum possible\\\\", "expected information")
         arrow = Arrow(text.get_top(), text.get_top() + UR)
         arrow.shift(RIGHT)
         VGroup(text, arrow).set_color(YELLOW)
@@ -2433,14 +2433,14 @@ class ShowEntropyCalculations(IntroduceDistribution):
         axes = self.get_axes(y_max=0.2, **kw)
         axes.to_edge(RIGHT, buff=0.1)
         axes.to_edge(UP, buff=0.5)
-        y_label = Tex("p", font_size=24)
+        y_label = OldTex("p", font_size=24)
         y_label.next_to(axes.y_axis.n2p(0.2), RIGHT)
         axes.y_axis.add(y_label)
         self.add(axes)
 
         # old_axes = self.get_axes(y_max=0.4, **kw)
         # old_axes.next_to(axes, DOWN, buff=0.8)
-        # y_label = Tex("p \\cdot \\log_2(1/p)", font_size=24)
+        # y_label = OldTex("p \\cdot \\log_2(1/p)", font_size=24)
         # y_label.next_to(old_axes.y_axis.n2p(0.4), RIGHT, MED_SMALL_BUFF)
         # old_axes.y_axis.add(y_label)
         # self.add(old_axes)
@@ -2477,7 +2477,7 @@ class ShowEntropyCalculations(IntroduceDistribution):
             self.remove(match_label)
 
             # Highlight answer
-            arrow = Tex("\\rightarrow")
+            arrow = OldTex("\\rightarrow")
             pw = grid.pending_word.copy()
             pw.generate_target()
             pw.arrange(RIGHT, buff=0.05)
@@ -2541,7 +2541,7 @@ class UniformPriorExample(WordleSceneWithAnalysis):
 class MentionUsingWordFrequencies(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("Next step: Integrate\\\\word frequency data"),
+            OldTexText("Next step: Integrate\\\\word frequency data"),
             added_anims=[self.change_students("hooray", "happy", "tease")]
         )
         self.wait()
@@ -2732,7 +2732,7 @@ class HowThePriorWorks(Scene):
 
         graph = axes.get_graph(sigmoid)
         graph.set_stroke(BLUE, 3)
-        graph_label = Tex("\\sigma(x) = {1 \\over 1 + e^{-x} }")
+        graph_label = OldTex("\\sigma(x) = {1 \\over 1 + e^{-x} }")
         graph_label.next_to(graph.get_end(), UL)
 
         self.play(ShowCreation(graph))
@@ -2821,7 +2821,7 @@ class ShowWordLikelihoods(Scene):
         word_mobs.to_edge(DOWN)
         self.add(word_mobs)
 
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.to_edge(UP)
         self.add(title)
 
@@ -3001,7 +3001,7 @@ class EntropyOfWordDistributionExample(WordleScene):
         question = Text("What is the\nentropy?", font_size=36)
         question.next_to(brace, RIGHT)
 
-        formula = Tex(
+        formula = OldTex(
             "H &=",
             "\\sum_x p(x) \\cdot", "\\log_2\\big(1 / p(x) \\big)\\\\",
             font_size=36,
@@ -3013,7 +3013,7 @@ class EntropyOfWordDistributionExample(WordleScene):
         info_label = Text("Information", font_size=36)
         info_label.next_to(info_box, UP)
         info_label.match_color(info_box)
-        info_value = Tex("\\log_2(4)", "=", "2", font_size=36)
+        info_value = OldTex("\\log_2(4)", "=", "2", font_size=36)
         info_value[1].rotate(PI / 2)
         info_value.arrange(DOWN, SMALL_BUFF)
         info_value.next_to(info_box, DOWN)
@@ -3121,10 +3121,10 @@ class EntropyOfWordDistributionExample(WordleScene):
             self.remove(rect)
 
         # Proposed answer
-        rhs1 = Tex("= \\log_2(16) = 4?", font_size=36)
+        rhs1 = OldTex("= \\log_2(16) = 4?", font_size=36)
         rhs1.next_to(formula[1], DOWN, aligned_edge=LEFT)
         cross = Cross(rhs1).set_stroke(RED, 6)
-        rhs2 = Tex(
+        rhs2 = OldTex(
             "= &4 \\big(0.247 \\cdot \\log_2(1/0.247)\\big) \\\\",
             "+ &12 \\big(0.001 \\cdot \\log_2(1/0.001)\\big)\\\\ ",
             "= &2.11",
@@ -3183,7 +3183,7 @@ class EntropyOfWordDistributionExample(WordleScene):
 class WhatMakesWordleNice(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("This is what makes wordle\\\\such a nice example"),
+            OldTexText("This is what makes wordle\\\\such a nice example"),
             added_anims=[self.change_students(
                 "pondering", "thinking", "erm",
                 look_at=ORIGIN,
@@ -3292,7 +3292,7 @@ class HowToCombineEntropyAndProbability(FreqPriorExample):
         self.wait()
 
         # Expected score
-        es_eq = Tex(
+        es_eq = OldTex(
             "E[\\text{Score}] = 0.58 \\cdot {4} +",
             "(1 - 0.58)", " \\cdot \\big({4} + f(1.44 - 1.27)\\big)",
             tex_to_color_map={
@@ -3311,7 +3311,7 @@ class HowToCombineEntropyAndProbability(FreqPriorExample):
         left_part.save_state()
         left_part.align_to(self.grid, LEFT)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(es_eq.get_part_by_tex("="), RIGHT)
 
         if not self.presenter_mode or self.skip_animations:
@@ -3364,8 +3364,8 @@ class FirstThoughtsOnCombination(Scene):
         example.shift(DOWN)
 
         example_titles = VGroup(
-            Tex("E[\\text{Info.}]", color=TEAL),
-            Tex("p(\\text{word})", color=BLUE),
+            OldTex("E[\\text{Info.}]", color=TEAL),
+            OldTex("p(\\text{word})", color=BLUE),
         )
         for title, ex in zip(example_titles, example[1:]):
             title.next_to(ex, UP, MED_LARGE_BUFF)
@@ -3377,7 +3377,7 @@ class FirstThoughtsOnCombination(Scene):
 
         self.play(PiCreatureBubbleIntroduction(
             morty,
-            TexText("How should I measure\\\\guess quality?", font_size=36),
+            OldTexText("How should I measure\\\\guess quality?", font_size=36),
             look_at=example,
             target_mode="pondering",
             bubble_type=ThoughtBubble,
@@ -3388,8 +3388,8 @@ class FirstThoughtsOnCombination(Scene):
 
         attempt = example.copy()
         attempt.generate_target()
-        arrow = Tex("\\rightarrow")
-        plus = Tex("+")
+        arrow = OldTex("\\rightarrow")
+        plus = OldTex("+")
         group = VGroup(
             attempt.target[0],
             arrow,
@@ -3410,7 +3410,7 @@ class FirstThoughtsOnCombination(Scene):
 
         cross = Cross(group)
         cross.insert_n_curves(100)
-        better_words = TexText("We can do\\\\better!")
+        better_words = OldTexText("We can do\\\\better!")
         better_words.next_to(cross, DOWN)
         better_words.set_color(RED)
 
@@ -3580,7 +3580,7 @@ class HowLookTwoAheadWorks(Scene):
         self.wait()
 
         # Reminder on entropy
-        H_eq = Tex(
+        H_eq = OldTex(
             "E[I] = \\sum_{x} p(x) \\cdot \\log_2\\big((1 / p(x)\\big)",
             font_size=36
         )
@@ -3670,7 +3670,7 @@ class HowLookTwoAheadWorks(Scene):
             d0 = DecimalNumber(bar.prob, num_decimal_places=3)
             d1 = h_label[1].copy()
             d0.match_height(d1)
-            group = VGroup(d0, Tex("\\cdot", font_size=24), d1)
+            group = VGroup(d0, OldTex("\\cdot", font_size=24), d1)
             group.generate_target()
             group.target.arrange(RIGHT, buff=SMALL_BUFF)
             group.target.next_to(brace, RIGHT)
@@ -3702,7 +3702,7 @@ class HowLookTwoAheadWorks(Scene):
         patterns = patterns[:n_shown]  # Only show non-zero possibilities
 
         top_parts = VGroup(*(self.get_pattern_mob(p) for p in patterns[:n_shown]))
-        dot_parts = Tex("\\vdots\\\\", "\\le 3^5 \\text{ patterns}\\\\", "\\vdots")
+        dot_parts = OldTex("\\vdots\\\\", "\\le 3^5 \\text{ patterns}\\\\", "\\vdots")
 
         for prob, row in zip(dist[indices][:n_shown], top_parts):
             row.prob = prob
@@ -3775,7 +3775,7 @@ class HowLookTwoAheadWorks(Scene):
     def get_entropy_label(self, word_mob, distribution):
         ent2 = entropy_of_distributions(distribution)
         kw = dict(font_size=24)
-        h_label = VGroup(Tex(f"E[I] = ", **kw), DecimalNumber(ent2, **kw))
+        h_label = VGroup(OldTex(f"E[I] = ", **kw), DecimalNumber(ent2, **kw))
         h_label.set_color(self.entropy_color)
         h_label.arrange(RIGHT, buff=SMALL_BUFF, aligned_edge=UP)
         h_label.move_to(word_mob)
@@ -3786,9 +3786,9 @@ class HowLookTwoAheadWorks(Scene):
     def get_info_label(self, bar):
         result = VGroup(
             # DecimalNumber(bar.prob, num_decimal_places=3),
-            Tex("\\log_2\\big( 1 / "),
+            OldTex("\\log_2\\big( 1 / "),
             DecimalNumber(bar.prob, num_decimal_places=3),
-            Tex("\\big) = "),
+            OldTex("\\big) = "),
             # DecimalNumber(-bar.prob * math.log2(bar.prob), num_decimal_places=3)
             DecimalNumber(-math.log2(bar.prob), num_decimal_places=3)
         )
@@ -3851,9 +3851,9 @@ class TripleComparisonFrame(Scene):
         self.add(squares)
 
         titles = VGroup(
-            TexText("V1: Just maximize\\\\entropy"),
-            TexText("V2: Incorporate word\\\\frequency data"),
-            TexText("V3: Use true wordle list\\\\(plus 1 or 2 other tricks)"),
+            OldTexText("V1: Just maximize\\\\entropy"),
+            OldTexText("V2: Incorporate word\\\\frequency data"),
+            OldTexText("V3: Use true wordle list\\\\(plus 1 or 2 other tricks)"),
         )
         titles.scale(0.75)
         for title, square in zip(titles, squares):
@@ -3889,7 +3889,7 @@ class InformationLimit(WordleScene):
         word_mobs.next_to(left_title, DOWN, aligned_edge=LEFT)
         brace = Brace(word_mobs, RIGHT)
         brace_label = VGroup(
-            Tex("\\log_2(2{,}315)", "=", "11.17 \\text{ bits}", **kw),
+            OldTex("\\log_2(2{,}315)", "=", "11.17 \\text{ bits}", **kw),
             Text("of uncertainty", **kw)
         )
         brace_label[0][1].rotate(PI / 2)
@@ -3928,7 +3928,7 @@ class InformationLimit(WordleScene):
         self.add_word("slane", wait_time_per_letter=0)
 
         # Two step entropy
-        s_title = TexText(
+        s_title = OldTexText(
             "Maximum expected information\\\\",
             "after first two guesses:",
             **kw
@@ -3951,8 +3951,8 @@ class InformationLimit(WordleScene):
         arrows.space_out_submobjects(1.2)
 
         EI_labels = VGroup(
-            Tex("E[I_1] = 5.77", **kw),
-            Tex("E[I_2] = 4.24", **kw),
+            OldTex("E[I_1] = 5.77", **kw),
+            OldTex("E[I_2] = 4.24", **kw),
         )
         EI_labels.set_color(BLUE)
         for label, arrow in zip(EI_labels, arrows):
@@ -3962,7 +3962,7 @@ class InformationLimit(WordleScene):
         EI2_arrow.next_to(EI_labels[1].get_bottom(), DR, buff=SMALL_BUFF)
 
         total_brace = Brace(EI_labels, RIGHT)
-        total_label = TexText("10.01 bits", **kw)
+        total_label = OldTexText("10.01 bits", **kw)
         total_label.set_color(BLUE)
         total_label.next_to(total_brace, RIGHT)
 

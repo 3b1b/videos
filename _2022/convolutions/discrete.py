@@ -194,11 +194,11 @@ class WaysToCombine(InteractiveScene):
         conv_graph.set_stroke(TEAL, 2)
 
         kw = dict(font_size=30, tex_to_color_map={"f": BLUE, "g": YELLOW})
-        f_label = MTex("f(x)", **kw).move_to(axes1.get_corner(UL), UL)
-        g_label = MTex("g(x)", **kw).move_to(axes2.get_corner(UL), UL)
-        sum_label = MTex("[f + g](x)", **kw).move_to(axes3.get_corner(UL), UL)
-        prod_label = MTex(R"[f \cdot g](x)", **kw).move_to(axes3.get_corner(UL), UL)
-        conv_label = MTex(R"[f * g](x)", **kw).move_to(axes3.get_corner(UL), UL)
+        f_label = Tex("f(x)", **kw).move_to(axes1.get_corner(UL), UL)
+        g_label = Tex("g(x)", **kw).move_to(axes2.get_corner(UL), UL)
+        sum_label = Tex("[f + g](x)", **kw).move_to(axes3.get_corner(UL), UL)
+        prod_label = Tex(R"[f \cdot g](x)", **kw).move_to(axes3.get_corner(UL), UL)
+        conv_label = Tex(R"[f * g](x)", **kw).move_to(axes3.get_corner(UL), UL)
         graph_labels = VGroup(f_label, g_label, sum_label, prod_label, conv_label)
 
         # Sequences
@@ -210,11 +210,11 @@ class WaysToCombine(InteractiveScene):
             isolate=[",", "[", "]"]
         )
         seq1_tex, seq2_tex, sum_seq, prod_seq, conv_seq = seqs = VGroup(
-            Tex(f"a = {list(seq1)}", **kw),
-            Tex(f"b = {list(seq2)}", **kw),
-            Tex(f"a + b = {list(seq1 + seq2)}", **kw),
-            Tex(Rf"a \cdot b = {list(seq1 * seq2)}", **kw),
-            Tex(Rf"a * b = {list(np.convolve(seq1, seq2))}", **kw),
+            OldTex(f"a = {list(seq1)}", **kw),
+            OldTex(f"b = {list(seq2)}", **kw),
+            OldTex(f"a + b = {list(seq1 + seq2)}", **kw),
+            OldTex(Rf"a \cdot b = {list(seq1 * seq2)}", **kw),
+            OldTex(Rf"a * b = {list(np.convolve(seq1, seq2))}", **kw),
         )
         seqs.move_to(midpoint(ORIGIN, LEFT_SIDE))
         seq1_tex.match_y(axes1)
@@ -440,7 +440,7 @@ class DiceExample(InteractiveScene):
             mini_dice.add(blue, red)
 
         combinations_label = VGroup(
-            Tex("6^2 = "), Integer(36), Text("Combinations")
+            OldTex("6^2 = "), Integer(36), Text("Combinations")
         )
         combinations_label.arrange(RIGHT, aligned_edge=DOWN)
         combinations_label.to_edge(RIGHT)
@@ -537,7 +537,7 @@ class DiceExample(InteractiveScene):
         # Show implicit probabilities, and alternates
         all_dice = VGroup(*blue_dice, *red_dice)
         sixths = VGroup(*(
-            Tex("1 / 6", font_size=36).next_to(die, UP, SMALL_BUFF)
+            OldTex("1 / 6", font_size=36).next_to(die, UP, SMALL_BUFF)
             for die in all_dice
         ))
         sixths.set_stroke(WHITE, 0)
@@ -604,8 +604,8 @@ class DiceExample(InteractiveScene):
 
             if n == 4 and isinstance(blue_dice[0].prob_label, DecimalNumber):
                 # Make more general
-                blue_labels = VGroup(*(Tex(f"a_{{{i}}}", font_size=42) for i in range(1, 7)))
-                red_labels = VGroup(*(Tex(f"b_{{{i}}}", font_size=42) for i in range(1, 7)))
+                blue_labels = VGroup(*(OldTex(f"a_{{{i}}}", font_size=42) for i in range(1, 7)))
+                red_labels = VGroup(*(OldTex(f"b_{{{i}}}", font_size=42) for i in range(1, 7)))
                 blue_labels.set_color(BLUE)
                 red_labels.set_color(RED)
                 old_prob_labels = VGroup()
@@ -663,11 +663,11 @@ class DiceExample(InteractiveScene):
         rhs_rects = VGroup(*(SurroundingRectangle(rhs) for rhs in rhss))
         VGroup(a_rect, b_rect, *rhs_rects).set_stroke(YELLOW, 2)
 
-        conv_name = TexText(
+        conv_name = OldTexText(
             R"Convolution of ", "$(a_i)$", " and ", "$(b_i)$",
             tex_to_color_map={"$(a_i)$": BLUE, "$(b_i)$": RED}
         )
-        conv_eq = MTex(
+        conv_eq = Tex(
             R"(a * b)_n = \sum_{\substack{i, j \\ i + j = n}} a_i \cdot b_j",
             isolate=["a_i", "*", "b_j", "(a * b)_n"]
         )
@@ -781,7 +781,7 @@ class DiceExample(InteractiveScene):
         self.wait()
 
         # Alternate formula notation
-        alt_rhs = Tex(R"\sum_{i = 1}^6 a_i \cdot b_{n - i}")
+        alt_rhs = OldTex(R"\sum_{i = 1}^6 a_i \cdot b_{n - i}")
         alt_rhs.scale(0.9)
         alt_rhs.move_to(conv_eq[7], LEFT)
 
@@ -793,7 +793,7 @@ class DiceExample(InteractiveScene):
         self.wait()
 
     def get_p_sum_expr(self, n, rhs=" "):
-        raw_expr = MTex(
+        raw_expr = Tex(
             fR"P\big(O + O = {n}\big) = \, {rhs}",
             isolate=("O", str(n), "=", rhs)
         )
@@ -817,9 +817,9 @@ class DiceExample(InteractiveScene):
         rhs = VGroup()
         for (blue, red) in pairs:
             rhs.add(blue.prob_label.copy().set_color(BLUE))
-            rhs.add(Tex(R"\cdot"))
+            rhs.add(OldTex(R"\cdot"))
             rhs.add(red.prob_label.copy().set_color(RED))
-            rhs.add(Tex("+"))
+            rhs.add(OldTex("+"))
         rhs.remove(rhs[-1])
         rhs.arrange(RIGHT, buff=SMALL_BUFF)
         rhs.next_to(prob_label, RIGHT, buff=0.2)
@@ -830,7 +830,7 @@ class SimpleExample(InteractiveScene):
     def construct(self):
         # Question
         question = Text("What is")
-        conv = MTex("(1, 2, 3) * (4, 5, 6)")
+        conv = Tex("(1, 2, 3) * (4, 5, 6)")
         group = VGroup(question, conv)
         group.arrange(DOWN)
         group.to_edge(UP)
@@ -880,7 +880,7 @@ class SimpleExample(InteractiveScene):
             rhs_args.append(str(k))
             rhs_args.append(",")
         rhs_args[-1] = R"\big)"
-        rhs = Tex(*rhs_args)
+        rhs = OldTex(*rhs_args)
         rhs[1:].set_color(YELLOW)
         conv.generate_target()
         group = VGroup(conv.target, rhs)
@@ -912,15 +912,15 @@ class SimpleExample(InteractiveScene):
             for label_pair in new_label_pairs:
                 label_pair.arrange(RIGHT, buff=MED_SMALL_BUFF)
                 label_pair.next_to(expr, RIGHT, SMALL_BUFF)
-                dot = Tex(R"\dot")
+                dot = OldTex(R"\dot")
                 dot.move_to(label_pair)
-                plus = Tex("+")
+                plus = OldTex("+")
                 plus.next_to(label_pair, RIGHT, SMALL_BUFF)
                 expr.add(*label_pair, dot, plus)
                 symbols.add(dot, plus)
             symbols[-1].scale(0, about_point=symbols[-2].get_right())
             expr.next_to(label_pairs, UP, LARGE_BUFF)
-            c_label = Tex(f"c_{n}", font_size=30, color=YELLOW).next_to(rhs[2 * n + 2], UP)
+            c_label = OldTex(f"c_{n}", font_size=30, color=YELLOW).next_to(rhs[2 * n + 2], UP)
 
             rects = VGroup(*(
                 SurroundingRectangle(lp, buff=0.2).set_stroke(YELLOW, 1).round_corners()
@@ -1040,7 +1040,7 @@ class SimpleExample(InteractiveScene):
         grid_group = VGroup(grid, values1, values2, products, ovals)
 
         # Show polynomial
-        polynomial_eq = MTex(
+        polynomial_eq = Tex(
             R"\left(1 + 2x + 3x^2\right)\left(4 + 5x + 6x^2\right)"
             R"={4} + {13}x + {28}x^2 + {27}x^3 + {18}x^4",
             tex_to_color_map=dict(
@@ -1061,7 +1061,7 @@ class SimpleExample(InteractiveScene):
 
         for i, value in zip((*range(3), *range(3)), (*values1, *values2)):
             tex = ["", "x", "x^2"][i]
-            value.target = MTex(f"{value.get_value()}{tex}")
+            value.target = Tex(f"{value.get_value()}{tex}")
             value.target.scale(value.get_height() / value.target[0].get_height())
             value.target.move_to(value, DOWN)
         values2[1].target.align_to(values2[0].target, RIGHT)
@@ -1069,7 +1069,7 @@ class SimpleExample(InteractiveScene):
         for n, diag_group in enumerate(diag_groups):
             tex = ["", "x", "x^2", "x^3", "x^4"][n]
             for product in diag_group:
-                product.target = MTex(f"{product.get_value()}{tex}")
+                product.target = Tex(f"{product.get_value()}{tex}")
                 product.target.match_style(product)
                 product.target.scale(0.9)
                 product.target.move_to(product)
@@ -1124,7 +1124,7 @@ class SimpleExample(InteractiveScene):
     def add_block_labels(self, blocks, letter, color=BLUE, font_size=30):
         labels = VGroup()
         for n, square in enumerate(blocks):
-            label = Tex(f"{letter}_{{{n}}}", font_size=font_size)
+            label = OldTex(f"{letter}_{{{n}}}", font_size=font_size)
             label.set_color(color)
             label.next_to(square, UP, SMALL_BUFF)
             square.label = label
@@ -1168,7 +1168,7 @@ class MovingAverageExample(InteractiveScene):
 
         lb_rect = SurroundingRectangle(low_bars)
         lb_rect.round_corners().set_stroke(YELLOW, 2)
-        sum_label = MTex(R"\sum_i y_i = 1")
+        sum_label = Tex(R"\sum_i y_i = 1")
         sum_label.set_color(YELLOW)
         sum_label.next_to(lb_rect)
         self.play(ShowCreation(lb_rect))
@@ -1435,7 +1435,7 @@ class ImageConvolution(InteractiveScene):
                 square.set_fill(BLACK, 0)
                 square.set_stroke(self.kernel_color, 2, opacity=1)
                 if tex:
-                    value = Tex(tex)
+                    value = OldTex(tex)
                 else:
                     value = DecimalNumber(x, num_decimal_places=self.kernel_decimal_places)
                 value.set_width(square.get_width() * 0.7)
@@ -1528,11 +1528,11 @@ class ImageConvolution(InteractiveScene):
             lil_pixels.add(lil_pixel)
 
             if tex:
-                lil_coef = Tex(tex, font_size=36)
+                lil_coef = OldTex(tex, font_size=36)
             else:
                 lil_coef = square[0].copy()
                 lil_coef.set_height(lil_height * 0.5)
-            expr.add(lil_coef, lil_pixel, Tex("+", font_size=48))
+            expr.add(lil_coef, lil_pixel, OldTex("+", font_size=48))
 
         expr[-1].scale(0, about_edge=LEFT)  # Stray plus
         rows = VGroup(*(
@@ -1880,7 +1880,7 @@ class ContrastConvolutionToMultiplication(InteractiveScene):
 
     def get_array_mobject(self, array, color=WHITE, font_size=48):
         kw = dict(font_size=font_size)
-        result = VGroup(Tex("[", **kw))
+        result = VGroup(OldTex("[", **kw))
         commas = VGroup()
         elements = VGroup()
         for index, elem in enumerate(array):
@@ -1888,12 +1888,12 @@ class ContrastConvolutionToMultiplication(InteractiveScene):
             int_mob.index = index
             elements.add(int_mob)
             result.add(int_mob)
-            comma = Tex(",", **kw)
+            comma = OldTex(",", **kw)
             commas.add(comma)
             result.add(comma)
         result.remove(commas[-1])
         commas.remove(commas[-1])
-        result.add(Tex("]", **kw))
+        result.add(OldTex("]", **kw))
         result.arrange(RIGHT, buff=0.1)
         commas.set_y(result[1].get_y(DOWN))
 
@@ -1917,18 +1917,18 @@ class BigPolynomials(InteractiveScene):
             if i == N - 2:
                 for j, square in enumerate(row):
                     if j == N - 2:
-                        self.replace_square(square, Tex(R"\ddots"))
+                        self.replace_square(square, OldTex(R"\ddots"))
                     else:
-                        self.replace_square(square, Tex(R"\vdots"))
+                        self.replace_square(square, OldTex(R"\vdots"))
             else:
-                self.replace_square(row[N - 2], Tex(R"\cdots"))
+                self.replace_square(row[N - 2], OldTex(R"\cdots"))
 
         self.add(grid)
 
         # Polynomial terms
         a_terms, b_terms = all_terms = [
             VGroup(*(
-                MTex(RF"{letter}_{{{n}}} x^{{{n}}}", font_size=24)
+                Tex(RF"{letter}_{{{n}}} x^{{{n}}}", font_size=24)
                 for n in (*range(N - 1), 99)
             ))
             for letter in ["a", "b"]
@@ -1941,8 +1941,8 @@ class BigPolynomials(InteractiveScene):
             for term, square in zip(terms, group):
                 term.next_to(square, vect, SMALL_BUFF)
 
-        a_terms[-2].become(Tex(R"\cdots", font_size=24).move_to(a_terms[-2]).shift(0.02 * DOWN))
-        b_terms[-2].become(Tex(R"\vdots", font_size=24).move_to(b_terms[-2]))
+        a_terms[-2].become(OldTex(R"\cdots", font_size=24).move_to(a_terms[-2]).shift(0.02 * DOWN))
+        b_terms[-2].become(OldTex(R"\vdots", font_size=24).move_to(b_terms[-2]))
 
         a_terms.set_color(BLUE_C)
         b_terms.set_color(TEAL_C)
@@ -1954,7 +1954,7 @@ class BigPolynomials(InteractiveScene):
         for terms, vect in (a_terms, RIGHT), (b_terms, DOWN):
             terms.plusses = VGroup()
             for t1, t2 in zip(terms, terms[1:]):
-                plus = Tex("+", font_size=24).match_color(terms)
+                plus = OldTex("+", font_size=24).match_color(terms)
                 plus.move_to(midpoint(t1.get_corner(vect), t2.get_corner(-vect)))
                 terms.plusses.add(plus)
             self.add(terms.plusses)
@@ -1975,7 +1975,7 @@ class BigPolynomials(InteractiveScene):
                     continue
                 if j == N - 1:
                     j = 99
-                term = Tex(f"a_{{{j}}}", f"b_{{{i}}}", f"x^{{{i + j}}}", font_size=20)
+                term = OldTex(f"a_{{{j}}}", f"b_{{{i}}}", f"x^{{{i + j}}}", font_size=20)
                 if i + j == 0:
                     term[2].remove(*term[2][:-2])
                 elif i + j == 1:
@@ -1996,7 +1996,7 @@ class BigPolynomials(InteractiveScene):
         a_label.next_to(a_terms, UP)
         b_label = Text("100 terms", font_size=30)
         b_label.next_to(b_terms, UP, MED_LARGE_BUFF, aligned_edge=RIGHT)
-        product_count = TexText(R"$100 \times 100 = 10{,}000$ \\ products", font_size=60)
+        product_count = OldTexText(R"$100 \times 100 = 10{,}000$ \\ products", font_size=60)
         product_count.move_to(midpoint(grid.get_right(), RIGHT_SIDE))
 
         self.play(
@@ -2069,20 +2069,20 @@ class FunctionToCoefficientCommutativeDiagram(InteractiveScene):
 
         kw = dict(font_size=30)
         graph_labels = VGroup(*(
-            MTex(tex, **kw).next_to(axes.get_top(), RIGHT, aligned_edge=UP)
+            Tex(tex, **kw).next_to(axes.get_top(), RIGHT, aligned_edge=UP)
             for tex, axes in zip(["f(x)", "g(x)", R"f(x) \cdot g(x)"], all_axes)
         ))
 
         # Coefficients
         a_labels, b_labels, conv_label = coef_labels = VGroup(
-            MTex(R"(a_0, a_1, \dots, a_n)", **kw),
-            MTex(R"(b_0, b_1, \dots, b_m)", **kw),
+            Tex(R"(a_0, a_1, \dots, a_n)", **kw),
+            Tex(R"(b_0, b_1, \dots, b_m)", **kw),
             VGroup(
-                MTex("c_0 = a_0 b_0", **kw),
-                MTex("c_1 = a_0 b_1 + a_1 b_0", **kw),
-                MTex("c_2 = a_0 b_2 + a_1 b_1 + a_2 b_0", **kw),
-                MTex("c_3 = a_0 b_3 + a_1 b_2 + a_2 b_1 + a_3 b_0", **kw),
-                MTex(R"\vdots", **kw),
+                Tex("c_0 = a_0 b_0", **kw),
+                Tex("c_1 = a_0 b_1 + a_1 b_0", **kw),
+                Tex("c_2 = a_0 b_2 + a_1 b_1 + a_2 b_0", **kw),
+                Tex("c_3 = a_0 b_3 + a_1 b_2 + a_2 b_1 + a_3 b_0", **kw),
+                Tex(R"\vdots", **kw),
             ).arrange(DOWN, aligned_edge=LEFT).scale(0.85)
         )
         v_arrows = VGroup()
@@ -2180,8 +2180,8 @@ class DataPointsToPolynomial(InteractiveScene):
         # Axes
         axes = Axes((-1, 10), (-3, 3), width=FRAME_WIDTH - 2, height=4)
         kw = dict(font_size=30)
-        axes.add(Tex("x", **kw).next_to(axes.x_axis.get_end(), DR, buff=0.2))
-        axes.add(Tex("y", **kw).next_to(axes.y_axis.get_end(), LEFT, MED_SMALL_BUFF))
+        axes.add(OldTex("x", **kw).next_to(axes.x_axis.get_end(), DR, buff=0.2))
+        axes.add(OldTex("y", **kw).next_to(axes.y_axis.get_end(), LEFT, MED_SMALL_BUFF))
 
         self.add(axes)
 
@@ -2205,7 +2205,7 @@ class DataPointsToPolynomial(InteractiveScene):
         graphs.set_stroke(BLUE, 2)
 
         # Increasing polynomials
-        poly_tex = Tex(
+        poly_tex = OldTex(
             "a_0", "+", "a_1 x", "+", *it.chain(*(
                 (f"a_{n} x^{n}", "+")
                 for n in range(2, len(data) - 1)
@@ -2216,7 +2216,7 @@ class DataPointsToPolynomial(InteractiveScene):
         graph = graphs[1].copy()
         self.play(
             LaggedStartMap(FadeIn, dots[:2], lag_ratio=0.7, run_time=1),
-            LaggedStartMap(ShowCreationThenFadeOut, circles[:2], scale=0.25, lag_ratio=0.2, run_time=1),
+            LaggedStartMap(ShowCreationThenFadeOut, circles[:2], lag_ratio=0.2, run_time=1),
         )
         self.play(
             ShowCreation(graph),
@@ -2241,18 +2241,18 @@ class PolynomialSystem(InteractiveScene):
         # Setup polynomials
         frame = self.camera.frame
         N = self.N
-        coefs = VGroup(*(MTex(Rf"c_{{{n}}}") for n in range(N)))
+        coefs = VGroup(*(Tex(Rf"c_{{{n}}}") for n in range(N)))
         coefs.set_submobject_colors_by_gradient(BLUE, TEAL)
-        x_powers = VGroup(*(MTex(Rf"x^{{{n}}}") for n in range(N)))
+        x_powers = VGroup(*(Tex(Rf"x^{{{n}}}") for n in range(N)))
         poly_x = self.get_polynomial(coefs, x_powers)
 
-        top_lhs = MTex("h(x) = ")
+        top_lhs = Tex("h(x) = ")
         top_lhs.next_to(poly_x[0][0], LEFT, buff=0.1)
         top_eq = VGroup(top_lhs, poly_x)
         top_eq.center()
 
-        fg = MTex(R"f(x) \cdot g(x)")
-        eq = MTex("=")
+        fg = Tex(R"f(x) \cdot g(x)")
+        eq = Tex("=")
         eq.rotate(PI / 2)
         eq.next_to(top_lhs[:4], UP)
         fg.next_to(eq, UP).shift_onto_screen()
@@ -2303,12 +2303,12 @@ class PolynomialSystem(InteractiveScene):
         )
 
         # Set up the large system
-        lhss = VGroup(*(MTex(f"h({n})=") for n in range(N)))
+        lhss = VGroup(*(Tex(f"h({n})=") for n in range(N)))
         rhss = VGroup(*(
             self.get_polynomial(
                 coefs.copy(),
                 # VGroup(*(Integer(x**n) for n in range(N)))
-                VGroup(*(MTex(f"{x}^{{{n}}}") for n in range(N)))
+                VGroup(*(Tex(f"{x}^{{{n}}}") for n in range(N)))
             )
             for x in range(N)
         ))
@@ -2361,7 +2361,7 @@ class PolynomialSystem(InteractiveScene):
 
         # Add roots of unity
         kw = dict(tex_to_color_map={R"\omega": YELLOW})
-        omega_def = Tex(
+        omega_def = OldTex(
             Rf"""
             \text{{Let }} \omega = e^{{2\pi i / {N}}} \qquad
             \text{{Notice }} \omega^{{{N}}} = 1
@@ -2373,7 +2373,7 @@ class PolynomialSystem(InteractiveScene):
 
         all_omega_powers = [
             VGroup(*(
-                MTex(Rf"\omega^{{{(k * n) % N}}}", **kw)
+                Tex(Rf"\omega^{{{(k * n) % N}}}", **kw)
                 for n in range(N)
             ))
             for k in range(0, N)
@@ -2384,7 +2384,7 @@ class PolynomialSystem(InteractiveScene):
         ))
 
         new_lhss = VGroup(
-            *(MTex(Rf"h(\omega^{n}) = ") for n in range(N))
+            *(Tex(Rf"h(\omega^{n}) = ") for n in range(N))
         )
 
         self.play(
@@ -2405,10 +2405,10 @@ class PolynomialSystem(InteractiveScene):
         # Label as DFT
         brace = Brace(new_lhss, LEFT)
         kw = dict(font_size=60)
-        label = TexText(R"Discrete\\Fourier\\Transform", alignment=R"\raggedright", isolate=list("DFT"), **kw)
+        label = OldTexText(R"Discrete\\Fourier\\Transform", alignment=R"\raggedright", isolate=list("DFT"), **kw)
         label.next_to(brace, LEFT)
 
-        sub_label = TexText("of $(c_i)$", **kw)[0]
+        sub_label = OldTexText("of $(c_i)$", **kw)[0]
         sub_label[2:].set_color(BLUE)
         sub_label.next_to(label, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
 
@@ -2447,7 +2447,7 @@ class PolynomialSystem(InteractiveScene):
         c_rect.shift(5 * LEFT)
         c_list.move_to(c_rect)
 
-        short_label = TexText("DFT", isolate=list("DFT"))
+        short_label = OldTexText("DFT", isolate=list("DFT"))
         short_label.next_to(h_rect, UP, buff=0.5).shift(sub_label.get_width() * LEFT / 2)
 
         self.play(
@@ -2468,7 +2468,7 @@ class PolynomialSystem(InteractiveScene):
         for arrow in (top_arrow, low_arrow):
             fft_label = Text("FFT")
             fft_label.next_to(arrow, UP)
-            run_time = Tex(R"\mathcal{O}\big(N\log(N)\big)")
+            run_time = OldTex(R"\mathcal{O}\big(N\log(N)\big)")
             run_time.next_to(arrow, DOWN)
             arrow.fft_label = fft_label
             arrow.run_time = run_time
@@ -2487,10 +2487,10 @@ class PolynomialSystem(InteractiveScene):
         for coef, power in zip(coefs, powers):
             if power is powers[0]:
                 power.scale(0, about_edge=LEFT)
-            plus = Tex("+")  # Font size?
+            plus = OldTex("+")  # Font size?
             result.add(coef)
             if isinstance(power, Integer):
-                dot = Tex(R"\cdot")
+                dot = OldTex(R"\cdot")
             else:
                 dot = VGroup(VectorizedPoint())
             result.dots.add(dot)
@@ -2541,7 +2541,7 @@ class RootsOfUnity(InteractiveScene):
         kw = dict(tex_to_color_map={R"\omega": YELLOW}, font_size=36)
         max_power = 3 * N
         powers = VGroup(*(
-            Tex(Rf"\omega^{{{k}}}", **kw)
+            OldTex(Rf"\omega^{{{k}}}", **kw)
             for k in range(max_power)
         ))
         powers.set_backstroke(BLACK, 3)
@@ -2559,12 +2559,12 @@ class RootsOfUnity(InteractiveScene):
             if k > N - 1:
                 shown_powers.target[(k + 1) % N].set_opacity(0)
 
+            kw = dict(path_arc=TAU / N)
             self.play(
-                Transform(moving_power, powers[k + 1]),
-                Transform(root_lines[k % N].copy(), root_lines[(k + 1) % N], remover=True),
-                Transform(root_dots[k % N].copy(), root_dots[(k + 1) % N], remover=True),
-                MoveToTarget(shown_powers),
-                path_arc=TAU / N
+                Transform(moving_power, powers[k + 1], **kw),
+                Transform(root_lines[k % N].copy(), root_lines[(k + 1) % N], remover=True, **kw),
+                Transform(root_dots[k % N].copy(), root_dots[(k + 1) % N], remover=True, **kw),
+                MoveToTarget(shown_powers, **kw),
             )
             self.add(root_lines[:k + 2], root_dots[:k + 2])
             if k < N - 1:
@@ -2598,9 +2598,9 @@ class AlgorithmOutline(InteractiveScene):
         })
         tex_kw = dict(tex_to_color_map=t2c, font_size=36)
         lists = VGroup(
-            MTex(R"\textbf{a} = [a_0, a_1, a_2, \dots, a_{n - 1}]", **tex_kw),
-            MTex(R"\textbf{b} = [b_0, b_1, b_2, \dots, b_{m - 1}]", **tex_kw),
-            MTex(R"""\textbf{a} * \textbf{b} = \left[\begin{array}{l}
+            Tex(R"\textbf{a} = [a_0, a_1, a_2, \dots, a_{n - 1}]", **tex_kw),
+            Tex(R"\textbf{b} = [b_0, b_1, b_2, \dots, b_{m - 1}]", **tex_kw),
+            Tex(R"""\textbf{a} * \textbf{b} = \left[\begin{array}{l}
                     a_0 b_0, \\
                     a_0 b_1 + a_1 b_0, \\
                     a_0 b_2 + a_1 b_1  + a_2 b_0, \\
@@ -2630,8 +2630,8 @@ class AlgorithmOutline(InteractiveScene):
 
         # Show polynomials
         polys = VGroup(
-            MTex(R"f(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_{n - 1}x^{n - 1}", **tex_kw),
-            MTex(R"g(x) = b_0 + b_1 x + b_2 x^2 + \cdots + b_{m - 1}x^{m - 1}", **tex_kw),
+            Tex(R"f(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_{n - 1}x^{n - 1}", **tex_kw),
+            Tex(R"g(x) = b_0 + b_1 x + b_2 x^2 + \cdots + b_{m - 1}x^{m - 1}", **tex_kw),
         )
         for poly, listy in zip(polys, lists):
             poly.next_to(listy, DOWN, aligned_edge=LEFT)
@@ -2660,9 +2660,9 @@ class AlgorithmOutline(InteractiveScene):
 
         label_kw = dict(font_size=24)
         graph_labels = VGroup(
-            MTex("f(x)", **label_kw).move_to(axes[0], UL),
-            MTex("g(x)", **label_kw).move_to(axes[1], UL),
-            MTex(R"f(x) \cdot g(x)", **label_kw).move_to(axes[2], UL),
+            Tex("f(x)", **label_kw).move_to(axes[0], UL),
+            Tex("g(x)", **label_kw).move_to(axes[1], UL),
+            Tex(R"f(x) \cdot g(x)", **label_kw).move_to(axes[2], UL),
         )
 
         self.play(
@@ -2746,9 +2746,9 @@ class AlgorithmOutline(InteractiveScene):
         })
         fft_kw = dict(tex_to_color_map=t2c, font_size=36, isolate=["="])
         fft_lists = VGroup(
-            MTex(R"\hat{\textbf{a}} = [\hat{a}_0, \hat{a}_1, \hat{a}_2, \dots, \hat{a}_{m + n - 1}]", **fft_kw),
-            MTex(R"\hat{\textbf{b}} = [\hat{b}_0, \hat{b}_1, \hat{b}_2, \dots, \hat{b}_{m + n - 1}]", **fft_kw),
-            MTex(R"""\hat{\textbf{a}} \cdot \hat{\textbf{b}} = [
+            Tex(R"\hat{\textbf{a}} = [\hat{a}_0, \hat{a}_1, \hat{a}_2, \dots, \hat{a}_{m + n - 1}]", **fft_kw),
+            Tex(R"\hat{\textbf{b}} = [\hat{b}_0, \hat{b}_1, \hat{b}_2, \dots, \hat{b}_{m + n - 1}]", **fft_kw),
+            Tex(R"""\hat{\textbf{a}} \cdot \hat{\textbf{b}} = [
                     \hat{a}_0 \hat{b}_0,
                     \hat{a}_1 \hat{b}_1,
                     \hat{a}_2 \hat{b}_2,
@@ -2828,10 +2828,10 @@ class FourierCoefficients(InteractiveScene):
             exp: TEAL,
         })
         equations = VGroup(
-            MTex(R"f(x) = c_0 + c_1 {x} + c_2 {x}^2 + c_3 {x}^3 + \dots", **kw),
-            MTex(Rf"f(t) = c_0 + c_1 {exp} + c_2 {exp}^2 + c_3 {exp}^3 + \dots", **kw),
-            MTex(Rf"f(t) = \cdots + c_{{-1}} {exp}^{{-1}} + c_0 + c_1 {exp} + c_2 {exp}^2 + \dots", **kw),
-            # MTex(R"f(t) = \cdots + \hat f(-1) e^{-2\pi i t} + \hat f(0) + \hat f(1) e^{2\pi i t} + \hat f(2) e^{2\pi i \cdot 2t} + \dots"),
+            Tex(R"f(x) = c_0 + c_1 {x} + c_2 {x}^2 + c_3 {x}^3 + \dots", **kw),
+            Tex(Rf"f(t) = c_0 + c_1 {exp} + c_2 {exp}^2 + c_3 {exp}^3 + \dots", **kw),
+            Tex(Rf"f(t) = \cdots + c_{{-1}} {exp}^{{-1}} + c_0 + c_1 {exp} + c_2 {exp}^2 + \dots", **kw),
+            # Tex(R"f(t) = \cdots + \hat f(-1) e^{-2\pi i t} + \hat f(0) + \hat f(1) e^{2\pi i t} + \hat f(2) e^{2\pi i \cdot 2t} + \dots"),
         )
 
         equations = VGroup

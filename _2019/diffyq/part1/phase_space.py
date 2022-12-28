@@ -141,7 +141,7 @@ class VisualizeStates(Scene):
                 tex = label_tex
                 if u < 0:
                     tex = "-" + tex
-                label = Tex(tex)
+                label = OldTex(tex)
                 label.scale(0.5)
                 if label.get_height() > 0.4:
                     label.set_height(0.4)
@@ -165,7 +165,7 @@ class VisualizeStates(Scene):
         self.initialize_grid_of_states()  # Again
         state_grid = self.state_grid
 
-        title = TexText("All states")
+        title = OldTexText("All states")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.all_states_title = title
 
@@ -380,11 +380,11 @@ class VisualizeStates(Scene):
         self.wait()
 
         # Abstract vs. physical
-        abstract = TexText("Abstract")
+        abstract = OldTexText("Abstract")
         abstract.add_background_rectangle()
         abstract.scale(2)
         abstract.to_corner(UR)
-        physical = TexText("Physical")
+        physical = OldTexText("Physical")
         physical.next_to(state.get_top(), DOWN)
 
         self.play(
@@ -556,7 +556,7 @@ class IntroduceVectorField(VisualizeStates):
         thetas = ode.get_parts_by_tex("\\theta")
         thetas[0].set_color(RED)
         thetas[1].set_color(YELLOW)
-        ode_word = TexText("Differential equation")
+        ode_word = OldTexText("Differential equation")
         ode_word.match_width(ode)
         ode_word.next_to(ode, DOWN)
 
@@ -616,11 +616,11 @@ class IntroduceVectorField(VisualizeStates):
         ])
 
         # Derivative
-        ddt = Tex("d \\over dt")
+        ddt = OldTex("d \\over dt")
         ddt.set_height(0.9 * vect_sym.get_height())
         ddt.next_to(vect_sym, LEFT)
         ddt.set_stroke(BLACK, 5, background=True)
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.add_background_rectangle()
         equals.next_to(vect_sym, RIGHT, SMALL_BUFF)
         d_vect_sym.next_to(equals, RIGHT, SMALL_BUFF)
@@ -766,7 +766,7 @@ class IntroduceVectorField(VisualizeStates):
         )
         expanded_derivative.move_to(d_vect_sym)
         expanded_derivative.to_edge(RIGHT, MED_SMALL_BUFF)
-        equals2 = Tex("=")
+        equals2 = OldTex("=")
         equals2.next_to(expanded_derivative, LEFT, SMALL_BUFF)
 
         equation.save_state()
@@ -867,7 +867,7 @@ class IntroduceVectorField(VisualizeStates):
         d_vect = Vector(0.75 * RIGHT, color=WHITE)
         d_vect.shift(dot.get_center())
         q_mark = always_redraw(
-            lambda: Tex("?").move_to(
+            lambda: OldTex("?").move_to(
                 d_vect.get_end() + 0.4 * rotate_vector(
                     d_vect.get_vector(), 90 * DEGREES,
                 ),
@@ -1090,7 +1090,7 @@ class TweakMuInFormula(Scene):
         ))
 
         equation = VGroup(
-            Tex("\\mu = "),
+            OldTex("\\mu = "),
             DecimalNumber(),
         )
         equation.add_updater(
@@ -1212,7 +1212,7 @@ class SpectrumOfStartingStates(ShowHighVelocityCase):
             for sp in start_points
         ])
         dots.set_color_by_gradient(PINK, BLUE, YELLOW)
-        words = TexText(
+        words = OldTexText(
             "Spectrum of\\\\", "initial conditions"
         )
         words.set_stroke(BLACK, 5, background=True)
@@ -1306,7 +1306,7 @@ class AskAboutStability(ShowHighVelocityCase):
     def label_fixed_points(self):
         dots = VGroup(self.dot1, self.dot2)
 
-        label = TexText("Fixed points")
+        label = OldTexText("Fixed points")
         label.scale(1.5)
         label.set_stroke(BLACK, 5, background=True)
         label.next_to(dots, UP, buff=2)
@@ -1330,7 +1330,7 @@ class AskAboutStability(ShowHighVelocityCase):
         self.to_fade = VGroup(label, arrows)
 
     def ask_about_stability(self):
-        question = TexText("Stable?")
+        question = OldTexText("Stable?")
         question.scale(2)
         question.shift(FRAME_WIDTH * RIGHT / 4)
         question.to_edge(UP)
@@ -1493,7 +1493,7 @@ class LovePhaseSpace(ShowHighVelocityCase):
         dots = VGroup(*[Dot(sp) for sp in start_points])
         dots.set_color_by_gradient(BLUE, WHITE)
 
-        words = TexText("Possible initial\\\\", "conditions")
+        words = OldTexText("Possible initial\\\\", "conditions")
         words.scale(1.5)
         words.add_background_rectangle_to_submobjects()
         words.set_stroke(BLACK, 5, background=True)
@@ -1540,7 +1540,7 @@ class LovePhaseSpace(ShowHighVelocityCase):
 
     def add_resistance_term(self):
         added_term = VGroup(
-            Tex("-\\mu"),
+            OldTex("-\\mu"),
             get_heart_var(2).scale(0.5),
         )
         added_term.arrange(RIGHT, buff=SMALL_BUFF)
@@ -1669,7 +1669,7 @@ class TakeManyTinySteps(IntroduceVectorField):
         labels, init_labels = self.get_labels(get_t, get_delta_t)
         t_label, dt_label = labels
 
-        theta_t_label = Tex("\\theta(t)...\\text{ish}")
+        theta_t_label = OldTex("\\theta(t)...\\text{ish}")
         theta_t_label.scale(0.75)
         theta_t_label.add_updater(lambda m: m.next_to(
             vectors[-1].get_end(),
@@ -1709,7 +1709,7 @@ class TakeManyTinySteps(IntroduceVectorField):
         count.add_updater(lambda c: c.set_value(
             count_tracker.get_value()
         ))
-        count_label = TexText("steps")
+        count_label = OldTexText("steps")
         count_label.scale(1.5)
         count_label.add_updater(
             lambda m: m.next_to(
@@ -1756,7 +1756,7 @@ class TakeManyTinySteps(IntroduceVectorField):
     def get_labels(self, get_t, get_delta_t):
         t_label, dt_label = labels = VGroup(*[
             VGroup(
-                Tex("{} = ".format(s)),
+                OldTex("{} = ".format(s)),
                 DecimalNumber(0)
             ).arrange(RIGHT, aligned_edge=DOWN)
             for s in ("t", "{\\Delta t}")
@@ -1772,11 +1772,11 @@ class TakeManyTinySteps(IntroduceVectorField):
         )
 
         init_labels = VGroup(
-            Tex(
+            OldTex(
                 "\\theta_0", "=", self.initial_theta_tex,
                 tex_to_color_map={"\\theta": BLUE},
             ),
-            Tex(
+            OldTex(
                 "{\\dot\\theta}_0 =", self.initial_theta_dot_tex,
                 tex_to_color_map={"{\\dot\\theta}": YELLOW},
             ),
@@ -1877,7 +1877,7 @@ class SetupToTakingManyTinySteps(TakeManyTinySteps):
             about_point=scaled_vector.get_start()
         )
 
-        v_label = Tex("\\vec{\\textbf{v}}")
+        v_label = OldTex("\\vec{\\textbf{v}}")
         v_label.set_stroke(BLACK, 5, background=True)
         v_label.next_to(vector, LEFT, SMALL_BUFF)
 
@@ -2039,14 +2039,14 @@ class Thumbnail(IntroduceVectorField):
             vector.tip.scale(1.5, about_point=vector.get_last_point())
             vector.set_opacity(1)
 
-        title = TexText("Differential\\\\", "equations")
+        title = OldTexText("Differential\\\\", "equations")
         title.space_out_submobjects(0.8)
         # title.scale(3)
         title.set_width(FRAME_WIDTH - 3)
         # title.to_edge(UP)
         # title[1].to_edge(DOWN)
 
-        subtitle = TexText("Studying the unsolvable")
+        subtitle = OldTexText("Studying the unsolvable")
         subtitle.set_width(FRAME_WIDTH - 1)
         subtitle.set_color(WHITE)
         subtitle.to_edge(DOWN, buff=1)

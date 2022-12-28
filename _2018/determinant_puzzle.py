@@ -14,7 +14,7 @@ class WorkOutNumerically(Scene):
         self.compute_lhs()
 
     def add_question(self):
-        equation = self.original_equation = Tex(
+        equation = self.original_equation = OldTex(
             "\\det(", "M_1", "M_2", ")", "=",
             "\\det(", "M_1", ")",
             "\\det(", "M_2", ")",
@@ -23,7 +23,7 @@ class WorkOutNumerically(Scene):
             "M_1": self.M1_COLOR,
             "M_2": self.M2_COLOR,
         })
-        challenge = TexText("Explain in one sentence")
+        challenge = OldTexText("Explain in one sentence")
         challenge.set_color(YELLOW)
         group = VGroup(challenge, equation)
         group.arrange(DOWN)
@@ -40,7 +40,7 @@ class WorkOutNumerically(Scene):
         M2 = self.M2 = Matrix([[-1, 4], [1, 1]])
         M2.set_color(self.M2_COLOR)
         self.M2_copy = M2.copy()
-        eq_parts = Tex(
+        eq_parts = OldTex(
             "\\det", "\\big(", "\\big)", "=",
             "\\det", "\\big(", "\\big)",
             "\\det", "\\big(", "\\big)",
@@ -69,11 +69,11 @@ class WorkOutNumerically(Scene):
         M1, M2 = self.M1_copy, self.M2_copy
 
         line1 = VGroup(
-            Tex(
+            OldTex(
                 "\\big(", "2", "\\cdot", "2", "-",
                 "(-1)", "\\cdot", "1", "\\big)"
             ),
-            Tex(
+            OldTex(
                 "\\big(", "-1", "\\cdot", "1", "-",
                 "4", "\\cdot", "1", "\\big)"
             ),
@@ -83,9 +83,9 @@ class WorkOutNumerically(Scene):
         line1[1].set_color(self.M2_COLOR)
         indices = [1, 3, 5, 7]
 
-        line2 = Tex("(3)", "(-5)")
+        line2 = OldTex("(3)", "(-5)")
         line2.match_style(line1)
-        line3 = Tex("-15")
+        line3 = OldTex("-15")
         arrows = [Tex("\\downarrow") for x in range(2)]
         lines = VGroup(line1, arrows[0], line2, arrows[1], line3)
         lines.arrange(DOWN, buff=MED_SMALL_BUFF)
@@ -115,7 +115,7 @@ class WorkOutNumerically(Scene):
         matrix = Matrix([[-3, 7], [0, 5]])
         matrix.set_color(BLUE)
         matrix.scale(0.8)
-        empty_det_tex = Tex("\\det", "\\big(", "\\big)")
+        empty_det_tex = OldTex("\\det", "\\big(", "\\big)")
         empty_det_tex[1:].scale(1.5)
         empty_det_tex[1:].match_height(matrix, stretch=True)
         det_tex = VGroup(empty_det_tex[:2], matrix, *empty_det_tex[2:])
@@ -123,10 +123,10 @@ class WorkOutNumerically(Scene):
 
         group = VGroup(
             det_tex,
-            Tex("\\downarrow"),
-            Tex("(-3)(5) - (7)(0)").scale(0.8),
-            Tex("\\downarrow"),
-            Tex("-15"),
+            OldTex("\\downarrow"),
+            OldTex("(-3)(5) - (7)(0)").scale(0.8),
+            OldTex("\\downarrow"),
+            OldTex("-15"),
         )
         group.arrange(DOWN, buff=2 * SMALL_BUFF)
         # group.set_height(0.4*FRAME_HEIGHT)
@@ -182,9 +182,9 @@ class SuccessiveLinearTransformations(LinearTransformationScene):
         t2 = "$%s \\, \\cdot $" % tex2
         t3 = "Area"
         areas = VGroup(
-            TexText("", "", t3),
-            TexText("", t2, t3),
-            TexText(t1, t2, t3),
+            OldTexText("", "", t3),
+            OldTexText("", t2, t3),
+            OldTexText(t1, t2, t3),
         )
         areas.scale(0.8)
         areas.move_to(self.square)
@@ -224,7 +224,7 @@ class SuccessiveLinearTransformations(LinearTransformationScene):
         self.wait()
 
     def apply_transformations_successively(self):
-        M1, M2, all_space = expression = Tex(
+        M1, M2, all_space = expression = OldTex(
             "M_1", "M_2", "\\text{(All 2d space)}"
         )
         expression.set_color_by_tex_to_color_map({
@@ -254,7 +254,7 @@ class SuccessiveLinearTransformations(LinearTransformationScene):
         self.wait()
 
         # Show full composition
-        rp, lp = parens = Tex("()")
+        rp, lp = parens = OldTex("()")
         matrices = VGroup(M1, M2)
         matrices.generate_target()
         parens.match_height(matrices)

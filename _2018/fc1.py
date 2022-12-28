@@ -40,7 +40,7 @@ class CrossingOneMillion(TeacherStudentsScene):
     def comment_on_real_milestone(self):
         number = self.number
         remainder = Integer(2**20 - 10**6)
-        words = TexText(
+        words = OldTexText(
             "Just",
             "{:,}".format(remainder.number),
             "to go \\\\ before the real milestone",
@@ -83,7 +83,7 @@ class CrossingOneMillion(TeacherStudentsScene):
             width=7,
         )
         bubble.pin_to(self.teacher)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.scale(2)
         q_marks.set_color_by_gradient(BLUE_D, BLUE_B)
         q_marks.next_to(bubble[-1].get_top(), DOWN)
@@ -208,7 +208,7 @@ class GeneralWrapper(Scene):
     }
 
     def construct(self):
-        title = TexText(self.title_text)
+        title = OldTexText(self.title_text)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6.5)
         rect.next_to(title, DOWN)
@@ -238,7 +238,7 @@ class EndScreen(PiCreatureScene):
     }
 
     def construct(self):
-        words = TexText("Clicky stuffs")
+        words = OldTexText("Clicky stuffs")
         words.scale(1.5)
         words.next_to(self.pi_creature, UP)
         words.to_edge(UP)

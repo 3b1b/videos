@@ -366,7 +366,7 @@ class FourierOfPiSymbol(FourierCirclesScene):
         return circles
 
     def get_path(self):
-        tex_mob = Tex(self.tex)
+        tex_mob = OldTex(self.tex)
         tex_mob.set_height(6)
         path = tex_mob.family_members_with_points()[0]
         path.set_fill(opacity=0)
@@ -394,7 +394,7 @@ class FourierOfTexPaths(FourierOfPiSymbol):
     }
 
     def construct(self):
-        name = TexText(self.animated_name)
+        name = OldTexText(self.animated_name)
 
         if self.conjoined:
             new_name = VMobject()
@@ -538,7 +538,7 @@ class FourierOfN(FourierOfTrebleClef):
     }
 
     def get_shape(self):
-        return Tex("N")
+        return OldTex("N")
 
 
 class FourierNailAndGear(FourierOfTrebleClef):
@@ -610,7 +610,7 @@ class FourierNDQ(FourierOfTrebleClef):
 
     def get_shape(self):
         path = VMobject()
-        shape = Tex("NDQ")
+        shape = OldTex("NDQ")
         for sp in shape.family_members_with_points():
             path.append_points(sp.get_points())
         return path
@@ -723,7 +723,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
             ct.circle.number = number
 
         ld, rd = [
-            Tex("\\dots")
+            OldTex("\\dots")
             for x in range(2)
         ]
         ld.next_to(freq_numbers, LEFT, MED_LARGE_BUFF)
@@ -731,7 +731,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
         freq_numbers.add_to_back(ld)
         freq_numbers.add(rd)
 
-        freq_word = TexText("Frequencies")
+        freq_word = OldTexText("Frequencies")
         freq_word.scale(1.5)
         freq_word.set_color(YELLOW)
         freq_word.next_to(freq_numbers, DOWN, MED_LARGE_BUFF)
@@ -943,7 +943,7 @@ class ExplainCircleAnimations(FourierCirclesScene):
         return path
 
     def get_path(self):
-        tex = Tex("f")
+        tex = OldTex("f")
         path = tex.family_members_with_points()[0]
         self.configure_path(path)
         return path

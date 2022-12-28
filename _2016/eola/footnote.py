@@ -3,7 +3,7 @@ from functools import reduce
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText([
+        words = OldTexText([
             "Lisa:",
             "Well, where's my dad?\\\\ \\\\",
             "Frink:",
@@ -55,19 +55,19 @@ class SymbolicThreeDTransform(Scene):
         out_vect = Matrix(self.output_coords)
         in_vect.set_color(BLUE)
         out_vect.set_color(GREEN)
-        func = Tex("L(\\vec{\\textbf{v}})")
+        func = OldTex("L(\\vec{\\textbf{v}})")
         point = VectorizedPoint(func.get_center())
         in_vect.next_to(func, LEFT, buff = 1)
         out_vect.next_to(func, RIGHT, buff = 1)
-        in_words = TexText("Input")
+        in_words = OldTexText("Input")
         in_words.next_to(in_vect, DOWN)
         in_words.set_color(BLUE_C)
-        out_words = TexText("Output")
+        out_words = OldTexText("Output")
         out_words.next_to(out_vect, DOWN)
         out_words.set_color(GREEN_C)
 
 
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.to_edge(UP)
         self.add(title)
 
@@ -88,10 +88,10 @@ class SingleVectorToOutput(Scene):
 
 class InputWordOutputWord(Scene):
     def construct(self):
-        self.add(TexText("Input").scale(2))
+        self.add(OldTexText("Input").scale(2))
         self.wait()
         self.clear()
-        self.add(TexText("Output").scale(2))
+        self.add(OldTexText("Output").scale(2))
         self.wait()
 
 class TransformOnlyBasisVectors(Scene):
@@ -100,7 +100,7 @@ class TransformOnlyBasisVectors(Scene):
 class IHatJHatKHatWritten(Scene):
     def construct(self):
         for char, color in zip(["\\imath", "\\jmath", "k"], [X_COLOR, Y_COLOR, Z_COLOR]):
-            sym = Tex("{\\hat{%s}}"%char)
+            sym = OldTex("{\\hat{%s}}"%char)
             sym.scale(3)
             sym.set_color(color)
             self.play(Write(sym))
@@ -114,16 +114,16 @@ class PutTogether3x3Matrix(Scene):
         "col3" : [1, 0, 1],
     }
     def construct(self):
-        i_to = Tex("\\hat{\\imath} \\to").set_color(X_COLOR)
-        j_to = Tex("\\hat{\\jmath} \\to").set_color(Y_COLOR)
-        k_to = Tex("\\hat{k} \\to").set_color(Z_COLOR)
+        i_to = OldTex("\\hat{\\imath} \\to").set_color(X_COLOR)
+        j_to = OldTex("\\hat{\\jmath} \\to").set_color(Y_COLOR)
+        k_to = OldTex("\\hat{k} \\to").set_color(Z_COLOR)
         i_array = Matrix(self.col1)
         j_array = Matrix(self.col2)
         k_array = Matrix(self.col3)
         everything = VMobject(
-            i_to, i_array, Tex("=").set_color(BLACK),
-            j_to, j_array, Tex("=").set_color(BLACK),
-            k_to, k_array, Tex("=").set_color(BLACK),
+            i_to, i_array, OldTex("=").set_color(BLACK),
+            j_to, j_array, OldTex("=").set_color(BLACK),
+            k_to, k_array, OldTex("=").set_color(BLACK),
         )
         everything.arrange(RIGHT, buff = 0.1)
         everything.set_width(FRAME_WIDTH-1)
@@ -181,9 +181,9 @@ class ShowVCoordinateMeaning(Scene):
         "post_transform" : False,
     }
     def construct(self):
-        v = Tex(self.v_str)
+        v = OldTex(self.v_str)
         v.set_color(YELLOW)
-        eq = Tex("=")
+        eq = OldTex("=")
         coords = Matrix(["x", "y", "z"])
         eq2 = eq.copy()
         if self.post_transform:
@@ -275,7 +275,7 @@ class ShowMatrixVectorMultiplication(Scene):
         braces = []
         for mob, direction, text in trips:
             brace = Brace(mob, direction)
-            words = TexText(text)
+            words = OldTexText(text)
             words.next_to(brace, direction)
             brace.add(words)
             braces.append(brace)
@@ -332,7 +332,7 @@ class ShowMatrixMultiplication(Scene):
         braces = []
         for mob, direction, text in trips:
             brace = Brace(mob, direction)
-            words = TexText(text)
+            words = OldTexText(text)
             words.next_to(brace, direction)
             brace.add(words)
             braces.append(brace)
@@ -351,8 +351,8 @@ class ApplyTwoSuccessiveTransforms(Scene):
 class ComputerGraphicsAndRobotics(Scene):
     def construct(self):
         mob = VMobject(
-            TexText("Computer graphics"),
-            TexText("Robotics")
+            OldTexText("Computer graphics"),
+            OldTexText("Robotics")
         )
         mob.arrange(DOWN, buff = 1)
         self.play(Write(mob, run_time = 1))
@@ -380,7 +380,7 @@ class SymbolicThreeDToTwoDTransform(SymbolicThreeDTransform):
 
 class QuestionsToPonder(Scene):
     def construct(self):
-        title = TexText("Questions to ponder")
+        title = OldTexText("Questions to ponder")
         title.set_color(YELLOW).to_edge(UP)
         self.add(title)
         questions = VMobject(*list(map(TexText, [
@@ -397,7 +397,7 @@ class QuestionsToPonder(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TexText("""
+        title = OldTexText("""
             Next video: The determinant
         """)
         title.set_width(FRAME_WIDTH - 2)

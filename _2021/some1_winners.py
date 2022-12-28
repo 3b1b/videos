@@ -203,7 +203,7 @@ class Introduction(TeacherStudentsScene):
                 self.wait()
 
         # Discuss winner
-        winner_word = TexText("``Winners''", font_size=72)[0]
+        winner_word = OldTexText("``Winners''", font_size=72)[0]
         winner_word.move_to(self.hold_up_spot, DOWN)
         pre_winner_word = points[1].get_part_by_text("winner").copy()
 
@@ -254,7 +254,7 @@ class Introduction(TeacherStudentsScene):
         bubble = ThoughtBubble(height=3, width=3)
         bubble.pin_to(self.students[0])
         bubble.shift(SMALL_BUFF * UR)
-        bubble.add_content(Tex(
+        bubble.add_content(OldTex(
             r"|fg|_1 \leq |f|_p |g|_q",
             tex_to_color_map={
                 "f": GREEN,
@@ -364,9 +364,9 @@ class ProsConsOfContext(Scene):
 
 class FiltrationProcess(Scene):
     def construct(self):
-        total = TexText("$>1{,}200(!)$ submissions")
+        total = OldTexText("$>1{,}200(!)$ submissions")
 
-        hundred = TexText("$\\sim 100$")
+        hundred = OldTexText("$\\sim 100$")
         hundred.next_to(total, RIGHT, buff=4)
         arrow = Arrow(total, hundred, stroke_width=5)
         VGroup(total, arrow, hundred).center().to_edge(UP)
@@ -374,7 +374,7 @@ class FiltrationProcess(Scene):
         peer_words = Text("Peer review process", font_size=36)
         peer_words.set_color(BLUE)
         peer_words.next_to(arrow, DOWN, buff=SMALL_BUFF)
-        peer_subwords = TexText(
+        peer_subwords = OldTexText(
             "(actually quite interesting\\\\see the blog post)",
             font_size=24,
             fill_color=GREY_B,
@@ -488,7 +488,7 @@ class RevealingTiles(Scene):
 
     def five_winners(self):
         # title = Text("SoME1 Winners", font_size=72)
-        title = TexText("Summer of Math Exposition\\\\", "Winners", font_size=72)
+        title = OldTexText("Summer of Math Exposition\\\\", "Winners", font_size=72)
         title[1].scale(2, about_edge=UP)
         title[1].set_color(YELLOW)
         title.to_edge(UP, buff=0.2)
@@ -545,7 +545,7 @@ class RevealingTiles(Scene):
     def honorable_mentions(self):
         tiles = self.tiles
 
-        new_title = TexText("Others you'll enjoy", font_size=72)
+        new_title = OldTexText("Others you'll enjoy", font_size=72)
         new_title.to_edge(UP, buff=MED_SMALL_BUFF)
 
         tiles.generate_target()
@@ -653,7 +653,7 @@ class RevealingTiles(Scene):
         rect = ScreenRectangle(height=1)
         rect.set_stroke(BLUE_D, 1)
         rect.set_fill(GREY_D, 1)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.flip().flip()
         q_marks.set_fill(GREY_A)
         q_marks.move_to(rect)
@@ -665,7 +665,7 @@ class AlmostTooGood(TeacherStudentsScene):
     def construct(self):
         self.pi_creatures.flip().flip()
         self.teacher_says(
-            TexText("Almost \\emph{too} good"),
+            OldTexText("Almost \\emph{too} good"),
             look_at=self.students[2].eyes,
             added_anims=[self.change_students("happy", "tease", "hesitant")],
         )
@@ -777,7 +777,7 @@ class Traction(Scene):
             rect.set_stroke(BLUE, 2)
             image = ImageMobject(yt_slug_to_image_file(slug))
             image.replace(rect, 1)
-            text = TexText(f"{count} views")
+            text = OldTexText(f"{count} views")
             text.next_to(image, DOWN, MED_SMALL_BUFF)
             groups.add(Group(image, rect, text))
 

@@ -3,7 +3,7 @@ from manim_imports_ext import *
 
 class ComplexAnalysisOverlay(Scene):
     def construct(self):
-        words = TexText("Complex analysis")
+        words = OldTexText("Complex analysis")
         words.scale(1.25)
         words.to_edge(UP)
         words.add_background_rectangle()
@@ -34,7 +34,7 @@ class AnalyzeZSquared(ComplexTransformationScene, ZoomedScene):
         self.write_derivative()
 
     def add_title(self):
-        title = Tex("z \\rightarrow z^2")
+        title = OldTex("z \\rightarrow z^2")
         title.add_background_rectangle()
         title.scale(1.5)
         title.to_corner(UL, buff=MED_SMALL_BUFF)
@@ -141,7 +141,7 @@ class AnalyzeZSquared(ComplexTransformationScene, ZoomedScene):
 
         plane = self.get_plane()
 
-        words = TexText("What does this look like")
+        words = OldTexText("What does this look like")
         words.add_background_rectangle()
         words.next_to(self.zoomed_display, LEFT, aligned_edge=UP)
         arrow = Arrow(words.get_bottom(), self.zoomed_display.get_left())

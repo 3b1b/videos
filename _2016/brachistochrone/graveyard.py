@@ -127,7 +127,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
         center_paths = []
         braces = []
         for (top1, top2), x in zip(layer_top_pairs, it.count(1)):
-            eq_mob = Tex(
+            eq_mob = OldTex(
                 ["v_%d"%x, "=", "\sqrt{\phantom{y_1}}"],
                 size = "\\Large"
             )
@@ -144,7 +144,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
             )
             brace = Brace(brace_endpoints, RIGHT)
 
-            start_y = Tex("y_%d"%x, size = "\\Large")
+            start_y = OldTex("y_%d"%x, size = "\\Large")
             end_y = start_y.copy()            
             start_y.next_to(brace, RIGHT)
             end_y.shift(v_eq[-1].get_center())
@@ -205,7 +205,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
                 angle_arcs.append(arc)
             thetas = []
             for i in [index+1, index+2]:
-                theta = Tex("\\theta_%d"%i)
+                theta = OldTex("\\theta_%d"%i)
                 theta.scale(0.5/self.zoom_factor)
                 vert = UP if i == index+1 else DOWN
                 horiz = rotate_vector(vert, np.pi/2)
@@ -241,14 +241,14 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
             "\\dfrac{\\sin(\\theta_%d)}{\\phantom{\\sqrt{y_1}}}"%x
             for x in (index, index+1)
         ]
-        left, equals, right = Tex(
+        left, equals, right = OldTex(
             [left_text, "=", right_text]
         ).split()
         vs = []
         sqrt_ys = []
         for x, numerator in [(index, left), (index+1, right)]:
             v, sqrt_y = [
-                Tex(
+                OldTex(
                     text, size = "\\Large"
                 ).next_to(numerator, DOWN)
                 for text in ("v_%d"%x, "\\sqrt{y_%d}"%x)
@@ -272,7 +272,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
         self.remove(start, end)
 
     def show_main_equation(self):
-        self.equation = Tex("""
+        self.equation = OldTex("""
             \\dfrac{\\sin(\\theta)}{\\sqrt{y}} = 
             \\text{constant}
         """)
@@ -289,7 +289,7 @@ class MultilayeredGlass(PhotonScene, ZoomedScene):
             UP, DOWN,
             density = self.zoom_factor*DEFAULT_POINT_DENSITY_1D
         )
-        theta = Tex("\\theta")
+        theta = OldTex("\\theta")
         theta.scale(0.5/self.zoom_factor)
 
         self.play(

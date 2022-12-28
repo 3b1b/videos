@@ -14,7 +14,7 @@ class CountingScene(Scene):
     def setup(self):
         self.dots = VGroup()
         self.number = 0        
-        self.number_mob = VGroup(Tex(str(self.number)))
+        self.number_mob = VGroup(OldTex(str(self.number)))
         self.number_mob.scale(self.num_scale_factor)
         self.number_mob.shift(self.num_start_location)
         self.digit_width = self.number_mob.get_width()
@@ -169,7 +169,7 @@ class CountingScene(Scene):
         result = VGroup()
         place = 0
         while num > 0:
-            digit = Tex(str(num % self.base))
+            digit = OldTex(str(num % self.base))
             if place >= len(self.power_colors):
                 self.power_colors += self.power_colors
             digit.set_color(self.power_colors[place])
@@ -272,7 +272,7 @@ class TowersOfHanoiScene(Scene):
         self.add(self.pegs)
         if self.include_peg_labels:
             self.peg_labels = VGroup(*[
-                Tex(char).next_to(peg, DOWN)
+                OldTex(char).next_to(peg, DOWN)
                 for char, peg in zip("ABC", self.pegs)
             ])
             self.add(self.peg_labels)
@@ -299,7 +299,7 @@ class TowersOfHanoiScene(Scene):
             )
         ])
         for number, disk in enumerate(self.disks):
-            label = Tex(str(number))
+            label = OldTex(str(number))
             label.set_color(BLACK)
             label.set_height(self.disk_height/2)
             label.move_to(disk)
@@ -466,7 +466,7 @@ class Keith(PiCreature):
         
 def get_binary_tex_mobs(num_list):
     result = VGroup()
-    zero_width = Tex("0").get_width()
+    zero_width = OldTex("0").get_width()
     nudge = zero_width + SMALL_BUFF
     for num in num_list:
         bin_string = bin(num)[2:]#Strip off the "0b" prefix
@@ -480,13 +480,13 @@ def get_binary_tex_mobs(num_list):
 def get_base_b_tex_mob(number, base, n_digits):
     assert(number < base**n_digits)
     curr_digit = n_digits - 1
-    zero = Tex("0")
+    zero = OldTex("0")
     zero_width = zero.get_width()
     zero_height = zero.get_height()
     result = VGroup()
     for place in range(n_digits):
         remainder = number%base
-        digit_mob = Tex(str(remainder))
+        digit_mob = OldTex(str(remainder))
         digit_mob.set_height(zero_height)
         digit_mob.shift(place*(zero_width+SMALL_BUFF)*LEFT)
         result.add(digit_mob)
@@ -533,7 +533,7 @@ class IntroduceKeith(Scene):
         randy.bubble = randy.get_bubble(SpeechBubble, height = 3)
         randy.bubble.write("Wait, what's \\\\ Towers of Hanoi?")
 
-        title = TexText("Keith Schwarz (Computer scientist)")
+        title = OldTexText("Keith Schwarz (Computer scientist)")
         title.to_edge(UP)
 
         self.add(keith_image, morty)
@@ -608,7 +608,7 @@ class IntroduceTowersOfHanoi(TowersOfHanoiScene):
         self.cannot_move_disk_onto_smaller_disk()
 
     def add_title(self):
-        title = TexText("Towers of Hanoi")
+        title = OldTexText("Towers of Hanoi")
         title.to_edge(UP)
         self.add(title)
         self.title = title
@@ -719,10 +719,10 @@ class IntroduceTowersOfHanoi(TowersOfHanoiScene):
         self.wait()
 
     def cannot_move_disk_onto_smaller_disk(self):
-        also_not_allowed = TexText("Not allowed")
+        also_not_allowed = OldTexText("Not allowed")
         also_not_allowed.to_edge(UP)
         also_not_allowed.set_color(RED)
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.set_fill(RED, opacity = 0.5)
 
         disk = self.disks[2]
@@ -743,7 +743,7 @@ class IntroduceTowersOfHanoi(TowersOfHanoiScene):
 class ExampleFirstMoves(TowersOfHanoiScene):
     def construct(self):
         ruler_sequence = get_ruler_sequence(4)
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.set_fill(RED, 0.7)
 
         self.wait()
@@ -836,7 +836,7 @@ class KeithShowingBinary(Scene):
 
 class FocusOnRhythm(Scene):
     def construct(self):
-        title = TexText("Focus on rhythm")
+        title = OldTexText("Focus on rhythm")
         title.scale(1.5)
         letters = list(reversed(title[-6:]))
         self.play(Write(title, run_time = 1))
@@ -855,14 +855,14 @@ class IntroduceBase10(Scene):
         self.list_digits()
 
     def expand_example_number(self):
-        title = TexText("``Base 10''")
+        title = OldTexText("``Base 10''")
         title.to_edge(UP)
-        number = Tex("137")
+        number = OldTex("137")
         number.next_to(title, DOWN)
         number.shift(2*LEFT)
 
         colors = [RED, MAROON_B, YELLOW]
-        expansion = Tex(
+        expansion = OldTex(
             "1(100) + ",
             "3(10) + ",
             "7"
@@ -893,7 +893,7 @@ class IntroduceBase10(Scene):
         self.title = title
 
     def list_digits(self):
-        digits = TexText("""
+        digits = OldTexText("""
             0, 1, 2, 3, 4,
             5, 6, 7, 8, 9
         """)
@@ -971,7 +971,7 @@ class DecimalCountingAtHundredsScale(CountingScene):
         "num_start_location" : DOWN + 3*RIGHT
     }
     def construct(self):
-        added_zeros = Tex("00")
+        added_zeros = OldTex("00")
         added_zeros.scale(self.num_scale_factor)
         added_zeros.next_to(self.number_mob, RIGHT, SMALL_BUFF, aligned_edge = DOWN)
         added_zeros.set_color_by_gradient(MAROON_B, YELLOW)
@@ -1002,15 +1002,15 @@ class IntroduceBinaryCounting(BinaryCountingScene):
         self.show_self_similarity()
 
     def introduce_name(self):
-        title = TexText("Binary (base 2):", "0, 1")
+        title = OldTexText("Binary (base 2):", "0, 1")
         title.to_edge(UP)
         self.add(title)
         self.number_mob.set_fill(opacity = 0)
 
         brace = Brace(title[1], buff = SMALL_BUFF)
-        bits = TexText("bi", "ts", arg_separator = "")
+        bits = OldTexText("bi", "ts", arg_separator = "")
         bits.submobjects.insert(1, VectorizedPoint(bits.get_center()))
-        binary_digits = TexText("bi", "nary digi", "ts", arg_separator = "")
+        binary_digits = OldTexText("bi", "nary digi", "ts", arg_separator = "")
         for mob in bits, binary_digits:
             mob.next_to(brace, DOWN, buff = SMALL_BUFF)
         VGroup(brace, bits, binary_digits).set_color(BLUE)
@@ -1071,7 +1071,7 @@ class IntroduceBinaryCounting(BinaryCountingScene):
         #Up to 11
         zero = bubble.content[-1]
         zero.set_color(self.power_colors[0])
-        one = Tex("1").replace(zero, dim_to_match = 1)
+        one = OldTex("1").replace(zero, dim_to_match = 1)
         one.set_color(zero.get_color())
         self.play(Blink(randy))
         self.increment(added_anims = [Transform(zero, one)])
@@ -1137,7 +1137,7 @@ class BinaryCountingAtEveryScale(Scene):
         "show_title" : False,
     }
     def construct(self):
-        title = TexText("Count to %d (which is %s in binary)"%(
+        title = OldTexText("Count to %d (which is %s in binary)"%(
             2**self.num_bits-1, bin(2**self.num_bits-1)[2:]
         ))
         title.to_edge(UP)
@@ -1156,7 +1156,7 @@ class BinaryCountingAtEveryScale(Scene):
         upper_brace = Brace(curr_bits, UP)
         roll_over = upper_brace.get_text("Roll over")
         VGroup(upper_brace, roll_over).set_color(MAROON_B)
-        again = TexText("again")
+        again = OldTexText("again")
         again.next_to(do_a_thing, RIGHT, 2*SMALL_BUFF)
         again.set_color(YELLOW)
 
@@ -1270,7 +1270,7 @@ class IntroduceSolveByCounting(TowersOfHanoiScene):
         self.move_disk(1, run_time = 2)
         self.wait()
         self.move_disk_to_peg(1, 1, stay_on_peg = False)
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.replace(disk)
         cross.set_fill(RED, opacity = 0.5)
         self.play(FadeIn(cross))
@@ -1437,15 +1437,15 @@ class RecursiveSolution(TowersOfHanoiScene):
         # VGroup(*self.get_mobjects()).shift(1.5*DOWN)
         big_disk = self.disks[-1]
         self.eyes = Eyes(big_disk)
-        title = TexText("Move 4-tower")
-        sub_steps = TexText(
+        title = OldTexText("Move 4-tower")
+        sub_steps = OldTexText(
             "Move 3-tower,",
             "Move disk 3,",
             "Move 3-tower",
         )
         sub_steps[1].set_color(GREEN)
         sub_step_brace = Brace(sub_steps, UP)
-        sub_sub_steps = TexText(
+        sub_sub_steps = OldTexText(
             "Move 2-tower,",
             "Move disk 2,",
             "Move 2-tower",
@@ -1542,7 +1542,7 @@ class RecursiveSolution(TowersOfHanoiScene):
             VGroup(*self.pegs[1:]).get_width()*0.8
         )
         arc.next_to(self.disks[0], UP+RIGHT, buff = SMALL_BUFF)
-        q_mark = TexText("?")
+        q_mark = OldTexText("?")
         q_mark.next_to(arc, UP)
         self.play(
             ShowCreation(arc),
@@ -1896,7 +1896,7 @@ class MentionLastVideo(Scene):
         keith.make_eye_contact(morty)
         point = 2*UP
 
-        name = TexText("""
+        name = OldTexText("""
             Keith Schwarz
             (Computer Scientist)
         """)
@@ -1931,7 +1931,7 @@ class IntroduceConstrainedTowersOfHanoi(ConstrainedTowersOfHanoiScene):
         "middle_peg_bottom" : 2*DOWN,
     }
     def construct(self):
-        title = TexText("Constrained", "Towers of Hanoi")
+        title = OldTexText("Constrained", "Towers of Hanoi")
         title.set_color_by_tex("Constrained", YELLOW)
         title.to_edge(UP)
 
@@ -1949,7 +1949,7 @@ class IntroduceConstrainedTowersOfHanoi(ConstrainedTowersOfHanoiScene):
         self.move_disk_to_peg(0, 1)
         self.move_disk_to_peg(1, 2)
         self.play(ShowCreation(self.big_curved_arrow))
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.scale(2)
         cross.set_fill(RED)
         cross.move_to(self.big_curved_arrow.get_top())
@@ -2020,9 +2020,9 @@ class RecursiveSolutionToConstrained(RecursiveSolution):
         self.eyes = Eyes(big_disk)
 
         #Define steps breakdown text
-        title = TexText("Move 4-tower")
+        title = OldTexText("Move 4-tower")
         subdivisions = [
-            TexText(
+            OldTexText(
                 "\\tiny Move %d-tower,"%d,
                 "Move disk %d,"%d,
                 "\\, Move %d-tower, \\,"%d,
@@ -2035,7 +2035,7 @@ class RecursiveSolutionToConstrained(RecursiveSolution):
         for steps in subdivisions:
             steps.set_width(FRAME_WIDTH-1)
         subdivisions.append(
-            TexText("\\tiny Move disk 0, Move disk 0").set_color(BLUE)
+            OldTexText("\\tiny Move disk 0, Move disk 0").set_color(BLUE)
         )
         braces = [
             Brace(steps, UP)
@@ -2076,7 +2076,7 @@ class RecursiveSolutionToConstrained(RecursiveSolution):
 
         #Talk about tower blocking
         tower = VGroup(*self.disks[:self.num_disks-1])
-        blocking = TexText("Still\\\\", "Blocking")
+        blocking = OldTexText("Still\\\\", "Blocking")
         blocking.set_color(RED)
         blocking.to_edge(LEFT)
         blocking.shift(2*UP)
@@ -2278,23 +2278,23 @@ class SolveConstrainedByCounting(ConstrainedTowersOfHanoiScene):
 
 class CompareNumberSystems(Scene):
     def construct(self):
-        base_ten = TexText("Base ten")
+        base_ten = OldTexText("Base ten")
         base_ten.to_corner(UP+LEFT).shift(RIGHT)
-        binary = TexText("Binary")
+        binary = OldTexText("Binary")
         binary.to_corner(UP+RIGHT).shift(LEFT)
-        ternary = TexText("Ternary")
+        ternary = OldTexText("Ternary")
         ternary.to_edge(UP)
         ternary.set_color(YELLOW)
         titles = [base_ten, binary, ternary]
 
-        zero_to_nine = TexText("""
+        zero_to_nine = OldTexText("""
             0, 1, 2, 3, 4,
             5, 6, 7, 8, 9
         """)
         zero_to_nine.next_to(base_ten, DOWN, buff = LARGE_BUFF)
-        zero_one = TexText("0, 1")
+        zero_one = OldTexText("0, 1")
         zero_one.next_to(binary, DOWN, buff = LARGE_BUFF)
-        zero_one_two = TexText("0, 1, 2")
+        zero_one_two = OldTexText("0, 1, 2")
         zero_one_two.next_to(ternary, DOWN, buff = LARGE_BUFF)
         zero_one_two.set_color_by_gradient(BLUE, GREEN)
 
@@ -2304,7 +2304,7 @@ class CompareNumberSystems(Scene):
             mob.brace = Brace(mob)
             mob.name = mob.brace.get_text(text)
         zero_one_two.name.set_color_by_gradient(BLUE, GREEN)
-        dots = Tex("\\dots")
+        dots = OldTex("\\dots")
         dots.next_to(zero_one.name, RIGHT, aligned_edge = DOWN, buff = SMALL_BUFF)
 
         keith = Keith()
@@ -2401,7 +2401,7 @@ class TernaryCountingSelfSimilarPattern(Scene):
     def construct(self):
         colors = self.colors
 
-        title = TexText("Count to " + "2"*self.num_trits)
+        title = OldTexText("Count to " + "2"*self.num_trits)
         for i, color in enumerate(colors):
             title[-i-1].set_color(color)
         steps = VGroup(*list(map(TexText, [
@@ -2601,7 +2601,7 @@ class DescribeSolutionByCountingToConstrained(SolveConstrainedWithTernaryCountin
 
 class Describe2222(Scene):
     def construct(self):
-        ternary_mob = Tex("2222").scale(1.5)
+        ternary_mob = OldTex("2222").scale(1.5)
         brace = Brace(ternary_mob)
         description = brace.get_text("$3^4 - 1 = 80$")
         VGroup(ternary_mob, brace, description).scale(1.5)
@@ -2633,7 +2633,7 @@ class KeithAsksAboutConfigurations(Scene):
 
 class AskAboutConfigurations(SolveConstrainedWithTernaryCounting):
     def construct(self):
-        question = TexText("How many configurations?")
+        question = OldTexText("How many configurations?")
         question.scale(1.5)
         question.to_edge(UP)
         self.add(question)
@@ -2651,7 +2651,7 @@ class AnswerConfigurationsCount(TowersOfHanoiScene):
         "peg_height" : 1.5,
     }
     def construct(self):
-        answer = TexText("$3^4 = 81$ configurations")
+        answer = OldTexText("$3^4 = 81$ configurations")
         answer.to_edge(UP)
         self.add(answer)
 
@@ -2682,7 +2682,7 @@ class AnswerConfigurationsCount(TowersOfHanoiScene):
 
     def get_parentheticals(self, top_mob):
         parentheticals = VGroup(*reversed([
-            Tex("""
+            OldTex("""
                 \\left(
                     \\begin{array}{c}
                         \\text{Choices for} \\\\
@@ -2730,7 +2730,7 @@ class AnswerConfigurationsCount(TowersOfHanoiScene):
 
 class ThisIsMostEfficientText(Scene):
     def construct(self):
-        text = TexText("This is the most efficient solution")
+        text = OldTexText("This is the most efficient solution")
         text.set_width(FRAME_WIDTH - 1)
         text.to_edge(DOWN)
         self.play(Write(text))
@@ -2744,7 +2744,7 @@ class RepeatingConfiguraiton(Scene):
         arrows.scale(0.5)
         group = VGroup(*it.chain(*list(zip(dots, arrows))))
         group.arrange()
-        title = TexText("Same state twice")
+        title = OldTexText("Same state twice")
         title.shift(3*UP)
         special_dots = VGroup(dots[2], dots[6])
         special_arrows = VGroup(*[
@@ -2753,7 +2753,7 @@ class RepeatingConfiguraiton(Scene):
         ])
         mid_mobs = VGroup(*group[5:14])
         mid_arrow = Arrow(dots[2], dots[7], tip_length = 0.125)
-        more_efficient = TexText("More efficient")
+        more_efficient = OldTexText("More efficient")
         more_efficient.next_to(mid_arrow, UP)
 
         self.play(ShowCreation(group, run_time = 2))
@@ -2775,7 +2775,7 @@ class RepeatingConfiguraiton(Scene):
 
 class ShowSomeGraph(Scene):
     def construct(self):
-        title = TexText("Graphs")
+        title = OldTexText("Graphs")
         title.scale(2)
         title.to_edge(UP)
 
@@ -3109,7 +3109,7 @@ class DescribeTriforcePattern(SierpinskiGraphScene):
 
 class TriforcePatternWord(Scene):
     def construct(self):
-        word = TexText("Triforce \\\\ pattern")
+        word = OldTexText("Triforce \\\\ pattern")
         word.scale(2)
         word.to_corner(DOWN+RIGHT)
         self.play(Write(word))
@@ -3199,7 +3199,7 @@ class PatreonThanks(Scene):
         morty.next_to(ORIGIN, DOWN)
 
         n_patrons = len(self.specific_patrons)
-        special_thanks = TexText("Special thanks to:")
+        special_thanks = OldTexText("Special thanks to:")
         special_thanks.set_color(YELLOW)
         special_thanks.shift(3*UP)
 
@@ -3234,7 +3234,7 @@ class MortyLookingAtRectangle(Scene):
     def construct(self):
         morty = Mortimer()
         morty.to_corner(DOWN+RIGHT)
-        url = TexText("www.desmos.com/careers")
+        url = OldTexText("www.desmos.com/careers")
         url.to_corner(UP+LEFT)
         rect = Rectangle(height = 9, width = 16)
         rect.set_height(5)
@@ -3347,7 +3347,7 @@ class Part1Thumbnail(Scene):
         sierpinski.to_corner(DOWN+RIGHT)
         self.add(sierpinski)
 
-        binary = Tex("01011")
+        binary = OldTex("01011")
         binary.set_color_by_tex("0", GREEN)
         binary.set_color_by_tex("1", BLUE)
         binary.set_color_by_gradient(GREEN, RED)
@@ -3358,7 +3358,7 @@ class Part1Thumbnail(Scene):
         binary.to_corner(UP+LEFT)
         self.add(binary)
 
-        part = TexText("Part %d"%self.part_number)
+        part = OldTexText("Part %d"%self.part_number)
         part.scale(4)
         part.to_corner(UP+RIGHT)
         part.add_background_rectangle()

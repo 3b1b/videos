@@ -15,7 +15,7 @@ class Spotlight(Scene):
     title_font_size = 60
 
     def construct(self):
-        title = TexText(self.title, font_size=self.title_font_size)
+        title = OldTexText(self.title, font_size=self.title_font_size)
         title.to_edge(UP)
 
         self.add(title)
@@ -58,7 +58,7 @@ class VideoWrapper(Scene):
         self.add(screen)
 
         if self.title:
-            title_text = self.title_text = TexText(
+            title_text = self.title_text = OldTexText(
                 self.title,
                 **self.title_config,
             )

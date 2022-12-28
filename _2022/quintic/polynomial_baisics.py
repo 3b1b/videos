@@ -27,7 +27,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
         # Add challenge
         challenge = VGroup(
             Text("Can you construct a cubic polynomial"),
-            Tex(
+            OldTex(
                 "P(x) = x^3 + c_2 x^2 + c_1 x + c_0",
                 tex_to_color_map={
                     "c_2": RED_B,
@@ -35,7 +35,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
                     "c_0": RED_B,
                 }
             ),
-            TexText(
+            OldTexText(
                 "with roots at $x = 1$, $x = 2$, and $x = 4$?",
                 tex_to_color_map={
                     "$x = 1$": self.root_color,
@@ -91,7 +91,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
             for dot in root_dots
         ))
         zeros_eqs = VGroup(*(
-            Tex(
+            OldTex(
                 f"P({r}) = 0",
                 font_size=24
             ).next_to(rect, UP, SMALL_BUFF)
@@ -119,7 +119,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
             for m1, m2 in zip(factored[3::5], factored[4::5])
         ))
 
-        expanded = Tex(
+        expanded = OldTex(
             "&x^3 ",
             "-1x^2", "-2x^2", "-4x^2 \\\\",
             "&+(-1)(-2)x", "+(-1)(-4)x", "+(-2)(-4)x\\\\",
@@ -199,7 +199,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
         self.wait()
 
         # Evaluate
-        answer = Tex(
+        answer = OldTex(
             "= x^3 -7x^2 + 14x -8",
             tex_to_color_map={
                 "-7": RED_B,
@@ -266,7 +266,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
         )
 
         # Reverse question
-        top_lhs = Tex("P(x)").match_height(factored)
+        top_lhs = OldTex("P(x)").match_height(factored)
         top_lhs.next_to(answer, LEFT).align_to(factored, LEFT)
         top_lhs.set_opacity(0)
         coef_poly = VGroup(top_lhs, answer)
@@ -575,7 +575,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
         )
         self.wait()
 
-        eq_zero = Tex("= 0")
+        eq_zero = OldTex("= 0")
         eq_zero.scale(0.7)
         eq_zero.next_to(top_const_dec, RIGHT, SMALL_BUFF)
         eq_zero.shift(0.2 * LEFT)
@@ -604,7 +604,7 @@ class ConstructPolynomialWithGivenRoots(Scene):
         )
         self.wait()
         root_eqs = VGroup(*(
-            VGroup(Tex(f"r_{i} ", "="), DecimalNumber(root, num_decimal_places=3)).arrange(RIGHT)
+            VGroup(OldTex(f"r_{i} ", "="), DecimalNumber(root, num_decimal_places=3)).arrange(RIGHT)
             for i, root in enumerate(get_roots())
         ))
         root_eqs.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
@@ -750,7 +750,7 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
 
         # Impossibility result
         words = Text("Cannot be built from ")
-        symbols = Tex(
+        symbols = OldTex(
             "+,\\,", "-,\\,", "\\times,\\,", "/,\\,", "\\text{exp}\\\\",
             "\\sin,\\,", "\\cos,\\,", "| \\cdot |,\\,", "\\dots",
         )
@@ -761,7 +761,7 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
         impossible_rect = SurroundingRectangle(impossibility)
         impossible_rect.set_stroke(RED, 2)
 
-        arrow = Tex("\\Downarrow", font_size=36)
+        arrow = OldTex("\\Downarrow", font_size=36)
         arrow.next_to(impossible_rect, UP, SMALL_BUFF)
         restriction.generate_target()
         restriction.target.scale(1.0).next_to(arrow, UP, SMALL_BUFF)
@@ -811,7 +811,7 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
             ]
         ])
         t2c[f_name] = GREY_A
-        mvf = Tex(
+        mvf = OldTex(
             f"{f_name}(c_0, c_1, c_2)\\\\", "=\\\\", "\\left\\{r_0, r_1, r_2\\right\\}",
             tex_to_color_map=t2c
         )
@@ -837,7 +837,7 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
 
     def add_constant_decimals(self):
         dummy = "+10.00"
-        polynomial = Tex(
+        polynomial = OldTex(
             f"x^3 {dummy}x^2 {dummy}x {dummy}",
             isolate=[dummy],
             font_size=40,
@@ -942,7 +942,7 @@ class FactsAboutRootsToCoefficients(RootCoefScene):
         ))
         kw = dict(tex_to_color_map=t2c)
         lines = VGroup(*(
-            Tex(f"r_{i} = {func_name}_{i}(c_0, c_1, c_2)", **kw)
+            OldTex(f"r_{i} = {func_name}_{i}(c_0, c_1, c_2)", **kw)
             for i in range(3)
         ))
         lines.scale(0.8)
@@ -1022,7 +1022,7 @@ class SolvabilityChart(Scene):
         frame.shift(LEFT)
         VGroup(marks[1], s_words[1]).next_to(col_lines[1], RIGHT, MED_LARGE_BUFF)
 
-        solvable_word = TexText("Can you solve\\\\for $x$?")
+        solvable_word = OldTexText("Can you solve\\\\for $x$?")
         solvable_word.move_to(s_words[1], DOWN)
 
         # Cover rects
@@ -1060,7 +1060,7 @@ class SolvabilityChart(Scene):
 
         # Linear equation
         tex_kw = dict(tex_to_color_map=self.get_tex_to_color_map())
-        lin_solution = Tex("x = {-{b} \\over {a}}", **tex_kw)
+        lin_solution = OldTex("x = {-{b} \\over {a}}", **tex_kw)
         lin_solution.scale(1.2)
         lin_solution.next_to(equations[0], DOWN, buff=2.0)
 
@@ -1095,7 +1095,7 @@ class SolvabilityChart(Scene):
 
         # Cubic
         key_to_color = dict([
-            (TransformMatchingShapes.get_mobject_key(Tex(c)[0][0]), color)
+            (TransformMatchingShapes.get_mobject_key(OldTex(c)[0][0]), color)
             for c, color in self.get_tex_to_color_map().items()
         ])
         full_cubic = get_full_cubic_formula(lhs="x = ")
@@ -1130,7 +1130,7 @@ class SolvabilityChart(Scene):
             "Quintic",
             "Sextic",
         )))
-        words.add(Tex("\\vdots"))
+        words.add(OldTex("\\vdots"))
         words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         words.next_to(frame.get_corner(DL), UR, buff=1.0)
         words.shift(0.5 * LEFT)
@@ -1140,13 +1140,13 @@ class SolvabilityChart(Scene):
     def get_equations(self, words):
         kw = dict(tex_to_color_map=self.get_tex_to_color_map())
         equations = VGroup(
-            Tex("{a}x + {b} = 0", **kw),
-            Tex("{a}x^2 + {b}x + {c} = 0", **kw),
-            Tex("{a}x^3 + {b}x^2 + {c}x + {d} = 0", **kw),
-            Tex("{a}x^4 + \\cdots + {d}x + {e} = 0", **kw),
-            Tex("{a}x^5 + \\cdots + {e}x + {f} = 0", **kw),
-            Tex("{a}x^6 + \\cdots + {f}x + {g} = 0", **kw),
-            Tex("\\vdots", **kw),
+            OldTex("{a}x + {b} = 0", **kw),
+            OldTex("{a}x^2 + {b}x + {c} = 0", **kw),
+            OldTex("{a}x^3 + {b}x^2 + {c}x + {d} = 0", **kw),
+            OldTex("{a}x^4 + \\cdots + {d}x + {e} = 0", **kw),
+            OldTex("{a}x^5 + \\cdots + {e}x + {f} = 0", **kw),
+            OldTex("{a}x^6 + \\cdots + {f}x + {g} = 0", **kw),
+            OldTex("\\vdots", **kw),
         )
         equations.arrange(DOWN, aligned_edge=LEFT)
         equations.next_to(words, RIGHT, LARGE_BUFF)
@@ -1164,9 +1164,9 @@ class SolvabilityChart(Scene):
             for s in (slice(None, -1), slice(None))
         )
         s_words = VGroup(
-            TexText("Solvable", " using\\\\", arith),
-            TexText("Solvable", " using\\\\", radicals),
-            TexText("Solvable\\\\", "numerically"),
+            OldTexText("Solvable", " using\\\\", arith),
+            OldTexText("Solvable", " using\\\\", radicals),
+            OldTexText("Solvable\\\\", "numerically"),
         )
         s_words.arrange(RIGHT, buff=LARGE_BUFF, aligned_edge=UP)
         s_words.next_to(equations, UR, buff=MED_LARGE_BUFF)
@@ -1214,8 +1214,8 @@ class SolvabilityChart(Scene):
         axes = Axes((-5, 5), (-5, 5), height=10, width=10)
         axes.set_width(4)
         axes.next_to(frame.get_corner(DR), UL)
-        axes.add(Tex("x", font_size=24).next_to(axes.x_axis.get_right(), DOWN, SMALL_BUFF))
-        axes.add(Tex("y", font_size=24).next_to(axes.y_axis.get_top(), LEFT, SMALL_BUFF))
+        axes.add(OldTex("x", font_size=24).next_to(axes.x_axis.get_right(), DOWN, SMALL_BUFF))
+        axes.add(OldTex("y", font_size=24).next_to(axes.y_axis.get_top(), LEFT, SMALL_BUFF))
         return axes
 
     def get_tex_to_color_map(self):
@@ -1235,8 +1235,8 @@ class StudySqrt(RadicalScene):
         # Show simple equation
         kw = dict(tex_to_color_map={"c": self.coef_color})
         equations = VGroup(
-            Tex("x^2 - c = 0", **kw),
-            Tex("x =", "\\sqrt{c}", **kw),
+            OldTex("x^2 - c = 0", **kw),
+            OldTex("x =", "\\sqrt{c}", **kw),
         )
         equations.arrange(DOWN, buff=MED_LARGE_BUFF)
         equations.to_edge(UP)
@@ -1257,7 +1257,7 @@ class StudySqrt(RadicalScene):
 
         # Add decimal labels, show square roots of real c
         c_label = VGroup(
-            Tex("c = ", tex_to_color_map={"c": self.coef_color}),
+            OldTex("c = ", tex_to_color_map={"c": self.coef_color}),
             DecimalNumber(self.c),
         )
         c_label.arrange(RIGHT, aligned_edge=DOWN)
@@ -1270,7 +1270,7 @@ class StudySqrt(RadicalScene):
             root_dec.set_value((-1)**root_dec.index * math.sqrt(abs(c_real)))
 
         r_labels = VGroup(*(
-            VGroup(Tex(f"r_{i}", "="), DecimalNumber(self.c, include_sign=True))
+            VGroup(OldTex(f"r_{i}", "="), DecimalNumber(self.c, include_sign=True))
             for i in range(2)
         ))
         for i, r_label in enumerate(r_labels):
@@ -1321,8 +1321,8 @@ class StudySqrt(RadicalScene):
 
         # Discontinuous square root
         option = VGroup(
-            TexText("One option:", color=BLUE),
-            TexText("\\\\Make", " $\\sqrt{\\quad}$", " single-valued, but discontinuous", font_size=36),
+            OldTexText("One option:", color=BLUE),
+            OldTexText("\\\\Make", " $\\sqrt{\\quad}$", " single-valued, but discontinuous", font_size=36),
         )
         option.arrange(DOWN, buff=0.5)
         option[1][1].align_to(option[1][0], DOWN)
@@ -1353,7 +1353,7 @@ class StudySqrt(RadicalScene):
         self.wait(note="Show discontinuity")
 
         # Taylor series
-        taylor_series = Tex(
+        taylor_series = OldTex(
             "\\sqrt{x} \\approx",
             "1",
             "+ \\frac{1}{2}(x - 1)",
@@ -1382,7 +1382,7 @@ class StudySqrt(RadicalScene):
         f_dot = Dot(**self.dot_style)
         f_dot.set_color(GREEN)
         f_dot.add_updater(lambda d: d.move_to(self.root_plane.n2p(f(self.get_c(), 4))))
-        f_label = Tex("f_4(x)", font_size=24, color=GREEN)
+        f_label = OldTex("f_4(x)", font_size=24, color=GREEN)
         f_label.add_updater(lambda m: m.next_to(f_dot, DL, buff=SMALL_BUFF))
 
         self.play(
@@ -1406,7 +1406,7 @@ class StudySqrt(RadicalScene):
             brace.animate.become(Brace(taylor_series[1:], DOWN, buff=SMALL_BUFF))
         ]
         for label in (upper_f_label, f_label):
-            new_label = Tex("f_{50}(x)")
+            new_label = OldTex("f_{50}(x)")
             new_label.replace(label, 1)
             new_label.match_style(label)
             anims.append(Transform(label, new_label, suspend_updating=False))
@@ -1461,7 +1461,7 @@ class StudySqrt(RadicalScene):
             ]
         )
 
-        below_arrow_tex = MTex(
+        below_arrow_tex = Tex(
             "e^{x} \\rightarrow e^{x /" + str(self.n) + "}",
             font_size=36,
             tex_to_color_map={"\\theta": angle_color},
@@ -1506,7 +1506,7 @@ class StudySqrt(RadicalScene):
         self.lock_coef_norm = False
 
     def get_exp_label(self, get_theta, color=GREEN):
-        result = Tex("e^{", "2\\pi i \\cdot", "0.00}")
+        result = OldTex("e^{", "2\\pi i \\cdot", "0.00}")
         decimal = DecimalNumber()
         decimal.replace(result[2], dim_to_match=1)
         result.replace_submobject(2, decimal)
@@ -1524,8 +1524,8 @@ class CubeRootBehavior(StudySqrt):
         arrows, labels = self.get_radical_labels()
         self.add(arrows, labels)
 
-        c_label = Tex("c = ", "1.00", tex_to_color_map={"c": self.coef_color})
-        r_label = Tex("r_0 = ", "1.00", tex_to_color_map={"r_0": self.root_color})
+        c_label = OldTex("c = ", "1.00", tex_to_color_map={"c": self.coef_color})
+        r_label = OldTex("r_0 = ", "1.00", tex_to_color_map={"r_0": self.root_color})
         c_label.match_x(self.coef_plane)
         c_label.to_edge(UP, buff=1.0)
         r_label.match_x(self.root_plane)

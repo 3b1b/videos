@@ -107,7 +107,7 @@ class Banner(Scene):
         )
 
     def get_supporter_note(self):
-        return TexText(
+        return OldTexText(
             "(Available to supporters for review now)",
             color="#F96854",
         )

@@ -89,9 +89,9 @@ class CircleScene(PiCreatureScene):
             tip_length = 0.2,
         )
         if numerical_dr:
-            nudge_label = Tex("%.01f"%self.dR)
+            nudge_label = OldTex("%.01f"%self.dR)
         else:
-            nudge_label = Tex("dr")
+            nudge_label = OldTex("dr")
         nudge_label.set_color(self.dR_color)
         nudge_label.scale(0.75)
         nudge_label.next_to(nudge_arrow.get_start(), DOWN)
@@ -183,7 +183,7 @@ class PatronsOnly(Scene):
     def construct(self):
         morty = Mortimer()
         morty.shift(2*DOWN)
-        title = TexText("""
+        title = OldTexText("""
             This is a draft
             for patrons only
         """)
@@ -222,7 +222,7 @@ class Introduction(TeacherStudentsScene):
         this_video.set_height(FRAME_HEIGHT)
         self.this_video = this_video
 
-        words = TexText(
+        words = OldTexText(
             "Welcome to \\\\",
             "Essence of calculus"
         )
@@ -294,11 +294,11 @@ class Introduction(TeacherStudentsScene):
         bubble = pi1.get_bubble(width = 5)
         bubble.set_fill(BLACK, opacity = 1)
         remembered_symbols = VGroup(
-            Tex("\\int_0^1 \\frac{1}{1-x^2}\\,dx").shift(UP+LEFT),
-            Tex("\\frac{d}{dx} e^x = e^x").shift(DOWN+RIGHT),
+            OldTex("\\int_0^1 \\frac{1}{1-x^2}\\,dx").shift(UP+LEFT),
+            OldTex("\\frac{d}{dx} e^x = e^x").shift(DOWN+RIGHT),
         )
-        cant_wait = TexText("I literally \\\\ can't wait")
-        big_derivative = Tex("""
+        cant_wait = OldTexText("I literally \\\\ can't wait")
+        big_derivative = OldTex("""
             \\frac{d}{dx} \\left( \\sin(x^2)2^{\\sqrt{x}} \\right)
         """)
 
@@ -362,7 +362,7 @@ class IntroduceCircle(Scene):
         circle.to_edge(LEFT)
         radius = Line(circle.get_center(), circle.get_right())
         radius.set_color(MAROON_B)
-        R = Tex("R").next_to(radius, UP)
+        R = OldTex("R").next_to(radius, UP)
 
         area, circumference = words = VGroup(*list(map(TexText, [
             "Area =", "Circumference ="
@@ -373,21 +373,21 @@ class IntroduceCircle(Scene):
         words.arrange(DOWN, aligned_edge = LEFT)
         words.next_to(circle, RIGHT)
         words.to_edge(UP)
-        pi_R, pre_squared = Tex("\\pi R", "{}^2")
-        squared = Tex("2").replace(pre_squared)
+        pi_R, pre_squared = OldTex("\\pi R", "{}^2")
+        squared = OldTex("2").replace(pre_squared)
         area_form = VGroup(pi_R, squared)
         area_form.next_to(area, RIGHT)
-        two, pi_R = Tex("2", "\\pi R")
+        two, pi_R = OldTex("2", "\\pi R")
         circum_form = VGroup(pi_R, two)
         circum_form.next_to(circumference, RIGHT)
 
-        derivative = Tex(
+        derivative = OldTex(
             "\\frac{d}{dR}", "\\pi R^2", "=", "2\\pi R"
         )
-        integral = Tex(
+        integral = OldTex(
             "\\int_0^R", "2\\pi r", "\\, dR = ", "\\pi R^2"
         )
-        up_down_arrow = Tex("\\Updownarrow")
+        up_down_arrow = OldTex("\\Updownarrow")
         calc_stuffs = VGroup(derivative, up_down_arrow, integral)
         calc_stuffs.arrange(DOWN)
         calc_stuffs.next_to(words, DOWN, buff = LARGE_BUFF, aligned_edge = LEFT)
@@ -483,8 +483,8 @@ class PragmatismToArt(Scene):
         morty = Mortimer()
         morty.to_corner(DOWN+RIGHT)
         morty.shift(LEFT)
-        pragmatism = TexText("Pragmatism")
-        art = TexText("Art")
+        pragmatism = OldTexText("Pragmatism")
+        art = OldTexText("Art")
         pragmatism.move_to(morty.get_corner(UP+LEFT), aligned_edge = DOWN)
         art.move_to(morty.get_corner(UP+RIGHT), aligned_edge = DOWN)
         art.shift(0.2*(LEFT+UP))
@@ -505,7 +505,7 @@ class PragmatismToArt(Scene):
         circle_group.to_corner(UP+LEFT)
         circle2.save_state()
         circle2.move_to(circle1)
-        q_marks = TexText("???").next_to(arrow, UP)
+        q_marks = OldTexText("???").next_to(arrow, UP)
 
 
         self.play(
@@ -543,7 +543,7 @@ class IntroduceTinyChangeInArea(CircleScene):
         "include_pi_creature" : True,
     }
     def construct(self):
-        new_area_form, minus, area_form = expression = Tex(
+        new_area_form, minus, area_form = expression = OldTex(
             "\\pi (R + 0.1)^2", "-", "\\pi R^2"
         )
         VGroup(*new_area_form[4:7]).set_color(self.dR_color)
@@ -600,7 +600,7 @@ class IntroduceTinyChangeInArea(CircleScene):
         self.play(group.restore)
         self.work_out_expression(group)
         self.second_unwrapping(outer_ring)
-        insignificant = TexText("Insignificant")
+        insignificant = OldTexText("Insignificant")
         insignificant.set_color(self.dR_color)
         insignificant.move_to(self.error_words)
         self.play(Transform(self.error_words, insignificant))
@@ -628,17 +628,17 @@ class IntroduceTinyChangeInArea(CircleScene):
         )
 
         circum_brace = Brace(almost_rect, UP).scale(0.95)
-        dR_brace = Tex("\\}")
+        dR_brace = OldTex("\\}")
         dR_brace.stretch(0.5, 1)
         dR_brace.next_to(almost_rect, RIGHT)
         two_pi_R = circum_brace.get_text("$2\\pi R$")
-        dR = Tex("$0.1$").scale(0.7).next_to(dR_brace, RIGHT)
+        dR = OldTex("$0.1$").scale(0.7).next_to(dR_brace, RIGHT)
         dR.set_color(self.dR_color)
 
         two_pi_R.generate_target()
         dR.generate_target()
-        lp, rp = Tex("()")
-        change_in_area = TexText(
+        lp, rp = OldTex("()")
+        change_in_area = OldTexText(
             "Change in area $\\approx$"
         )
         final_area = VGroup(
@@ -685,7 +685,7 @@ class IntroduceTinyChangeInArea(CircleScene):
         exp, exp_brace, title, area_brace, area_word, new_area_brace, new_area_word = expression_group
         new_area_form, minus, area_form = exp
 
-        expanded = Tex(
+        expanded = OldTex(
             "\\pi R^2", "+", "2\\pi R (0.1)", 
             "+", "\\pi (0.1)^2", "-", "\\pi R^2",
         )
@@ -803,9 +803,9 @@ class BuildToDADR(CircleScene):
         return morty
 
     def write_initial_terms(self):
-        change = TexText("Change in area")
+        change = OldTexText("Change in area")
         change.set_color(GREEN_B)
-        equals, two_pi_R, dR, plus, pi, dR2, squared = rhs = Tex(
+        equals, two_pi_R, dR, plus, pi, dR2, squared = rhs = OldTex(
             "=", "2 \\pi R", "(0.1)", "+", "\\pi", "(0.1)", "^2"
         )
         VGroup(dR, dR2).set_color(self.dR_color)
@@ -844,10 +844,10 @@ class BuildToDADR(CircleScene):
     def show_fractions(self):
         terms = [self.change, self.circum_term, self.error_term]
         for term in terms:
-            term.frac_line = Tex("\\frac{\\quad}{\\quad}")
+            term.frac_line = OldTex("\\frac{\\quad}{\\quad}")
             term.frac_line.stretch_to_fit_width(term.get_width())
             term.frac_line.next_to(term, DOWN, buff = SMALL_BUFF)
-            term.denom = Tex("(0.1)")
+            term.denom = OldTex("(0.1)")
             term.denom.next_to(term.frac_line, DOWN, buff = SMALL_BUFF)
             term.denom.set_color(self.dR_color)
             term.denom.save_state()
@@ -914,7 +914,7 @@ class BuildToDADR(CircleScene):
         error_brace, error_text = self.error_term.label
         for s, width in ("(0.01)", 0.05), ("(0.001)", 0.03), ("dR", 0.03):
             new_dRs = VGroup(*[
-                Tex(s).move_to(mob, LEFT)
+                OldTex(s).move_to(mob, LEFT)
                 for mob in dRs
             ])
             new_dRs.set_color(self.dR_color)
@@ -950,7 +950,7 @@ class BuildToDADR(CircleScene):
                 ])))
                 self.wait()
 
-        difference_text = TexText(
+        difference_text = OldTexText(
             "``Tiny " , "d", "ifference in ", "$R$", "''",
             arg_separator = ""
 
@@ -965,7 +965,7 @@ class BuildToDADR(CircleScene):
         )
         self.wait()
 
-        dA = Tex("dA")
+        dA = OldTex("dA")
         dA.set_color(self.change.get_color())
         frac_line = self.change.frac_line
         frac_line.generate_target()
@@ -974,7 +974,7 @@ class BuildToDADR(CircleScene):
         dA.next_to(frac_line.target, UP, 2*SMALL_BUFF)
         self.change.denom.generate_target()
         self.change.denom.target.next_to(frac_line.target, DOWN, 2*SMALL_BUFF)
-        A = Tex("A").replace(difference_text[3])
+        A = OldTex("A").replace(difference_text[3])
         difference_arrow.target = Arrow(difference_text, dA.get_left())
         self.play(
             Transform(self.change, dA),
@@ -1004,10 +1004,10 @@ class BuildToDADR(CircleScene):
         self.play(FadeOut(arc))
         self.wait()
 
-        d = TexText("``$d$''")
-        arrow = Tex("\\Rightarrow")
+        d = OldTexText("``$d$''")
+        arrow = OldTex("\\Rightarrow")
         arrow.next_to(d)
-        ignore_error = TexText("Ignore error")
+        ignore_error = OldTexText("Ignore error")
         d_group = VGroup(d, arrow, ignore_error)
         d_group.arrange()
         d_group.next_to(
@@ -1035,7 +1035,7 @@ class BuildToDADR(CircleScene):
         self.wait(2)
         self.play(*list(map(FadeOut, [equality_brace, equal_word])))
 
-        less_wrong_philosophy = TexText("``Less wrong'' philosophy")
+        less_wrong_philosophy = OldTexText("``Less wrong'' philosophy")
         less_wrong_philosophy.move_to(ignore_error, LEFT)
         self.play(Transform(ignore_error, less_wrong_philosophy))
         self.wait()
@@ -1094,7 +1094,7 @@ class BuildToDADR(CircleScene):
         to_infs = [self.change, self.change.denom, self.nudge_label]
         for mob in to_infs:
             mob.save_state()
-            mob.inf = Tex("1/\\infty")
+            mob.inf = OldTex("1/\\infty")
             mob.inf.set_color(mob.get_color())
             mob.inf.move_to(mob)
         self.play(*[
@@ -1111,7 +1111,7 @@ class BuildToDADR(CircleScene):
             [self.pi_creature.change_mode, "happy"],
         ))
         for n in range(7):
-            target = Tex("0.%s1"%("0"*n))
+            target = OldTex("0.%s1"%("0"*n))
             target.set_color(self.nudge_label.get_color())
             target.move_to(self.nudge_label, LEFT)
             self.outer_ring.target = self.get_ring(self.radius, 0.1/(n+1))
@@ -1164,7 +1164,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         self.emphasize_equality()
 
     def change_nudge_label(self):
-        new_label = Tex("dR")
+        new_label = OldTex("dR")
         new_label.move_to(self.nudge_label)
         new_label.to_edge(UP)        
         new_label.set_color(self.nudge_label.get_color())
@@ -1177,7 +1177,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         self.wait()
 
     def name_derivative_for_cricle(self):
-        dA_dR, equals, d_formula_dR, equals2, two_pi_R = dArea_fom = Tex(
+        dA_dR, equals, d_formula_dR, equals2, two_pi_R = dArea_fom = OldTex(
             "\\frac{dA}{dR}", 
             "=", "\\frac{d(\\pi R^2)}{dR}",
             "=", "2\\pi R"
@@ -1194,7 +1194,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         dA_dR_circle.scale(1.5)
         dA_dR_circle.set_color(BLUE)
 
-        words = TexText(
+        words = OldTexText(
             "``Derivative'' of $A$\\\\",
             "with respect to $R$"
         )
@@ -1224,7 +1224,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         self.two_pi_R = two_pi_R
 
     def interpret_geometrically(self):
-        target_formula = Tex(
+        target_formula = OldTex(
             "\\frac{d \\quad}{dR} = "
         )
         VGroup(*target_formula[2:4]).set_color(self.dR_color)
@@ -1286,12 +1286,12 @@ class NameDerivative(IntroduceTinyChangeInArea):
         sample_dRs = [0.3, 0.1, 0.01]
         for dR in sample_dRs:
             dA = 2*np.pi*dR + np.pi*(dR**2)
-            frac = Tex("\\frac{%.3f}{%.2f}"%(dA, dR))
+            frac = OldTex("\\frac{%.3f}{%.2f}"%(dA, dR))
             VGroup(*frac[:5]).set_color(self.outer_ring.get_color())
             VGroup(*frac[6:]).set_color(self.dR_color)
             fracs.add(frac)
-        fracs.add(Tex("\\cdots \\rightarrow"))
-        fracs.add(Tex("???"))
+        fracs.add(OldTex("\\cdots \\rightarrow"))
+        fracs.add(OldTex("???"))
         fracs[-1].set_color_by_gradient(self.dR_color, self.outer_ring.get_color())
         fracs.arrange(RIGHT, buff = MED_LARGE_BUFF)
         fracs.to_corner(DOWN+LEFT)
@@ -1301,12 +1301,12 @@ class NameDerivative(IntroduceTinyChangeInArea):
             arrow = Arrow(self.words.get_bottom(), frac.get_top())
             arrow.set_color(WHITE)
             if frac is fracs[-1]:
-                check = Tex("\\checkmark")
+                check = OldTex("\\checkmark")
                 check.set_color(GREEN)
                 check.next_to(arrow.get_center(), UP+RIGHT, SMALL_BUFF)
                 arrow.add(check)
             else:
-                cross = Tex("\\times")
+                cross = OldTex("\\times")
                 cross.set_color(RED)
                 cross.move_to(arrow.get_center())
                 cross.set_stroke(RED, width = 5)
@@ -1363,7 +1363,7 @@ class NameDerivative(IntroduceTinyChangeInArea):
         )
         self.wait()
 
-        new_words = TexText(
+        new_words = OldTexText(
             "Systematically\\\\",
             "ignore error"
         )
@@ -1399,7 +1399,7 @@ class DerivativeAsTangentLine(ZoomedScene):
         x_axis.shift(2.5*DOWN)
         x_axis.shift(4*LEFT)
         x_axis.add_numbers(1, 2, 3, 4)
-        x_label = Tex("R")
+        x_label = OldTex("R")
         x_label.next_to(x_axis, RIGHT+UP, buff = SMALL_BUFF)
         self.x_axis_label = x_label
 
@@ -1417,7 +1417,7 @@ class DerivativeAsTangentLine(ZoomedScene):
         y_axis.rotate(np.pi/2, about_point = y_axis.number_to_point(0))
         y_axis.add_numbers(5, 10, 15, 20)
         y_axis.numbers.shift(0.4*UP+0.5*LEFT)
-        y_label = Tex("A")
+        y_label = OldTex("A")
         y_label.next_to(y_axis.get_top(), RIGHT, buff = MED_LARGE_BUFF)
 
         def func(alpha):
@@ -1428,7 +1428,7 @@ class DerivativeAsTangentLine(ZoomedScene):
             return x*RIGHT + y*UP
 
         graph = ParametricCurve(func, color = BLUE)
-        graph_label = Tex("A(R) = \\pi R^2")
+        graph_label = OldTex("A(R) = \\pi R^2")
         graph_label.set_color(BLUE)
         graph_label.next_to(
             graph.point_from_proportion(2), LEFT
@@ -1486,7 +1486,7 @@ class DerivativeAsTangentLine(ZoomedScene):
             line.brace.stretch_to_fit_width(line.get_length())
             line.brace.rotate(line.get_angle())
             line.brace.next_to(line, vect, buff = tiny_buff)
-            line.text = Tex("d%s"%char)
+            line.text = OldTex("d%s"%char)
             line.text.scale(1./self.zoom_factor)
             line.text.set_color(line.get_color())
             line.text.next_to(line.brace, vect, buff = tiny_buff)
@@ -1494,7 +1494,7 @@ class DerivativeAsTangentLine(ZoomedScene):
             self.play(Write(VGroup(line.brace, line.text)))
             self.wait()
 
-        deriv_is_slope = Tex(
+        deriv_is_slope = OldTex(
             "\\frac{dA}{dR} =", "\\text{Slope}"
         )
         self.slope_word = deriv_is_slope[1]
@@ -1537,7 +1537,7 @@ class DerivativeAsTangentLine(ZoomedScene):
         line.rotate(self.angle_of_tangent(R))
         line.move_to(self.graph_point(R))
         x_axis_y = self.x_axis.number_to_point(0)[1]
-        two_pi_R = Tex("= 2\\pi R")
+        two_pi_R = OldTex("= 2\\pi R")
         two_pi_R.next_to(self.slope_word, DOWN, aligned_edge = RIGHT)
         two_pi_R.shift(0.5*LEFT)
 
@@ -1619,7 +1619,7 @@ class DerivativeAsTangentLine(ZoomedScene):
         )
         self.play(Blink(morty))
         self.wait()
-        new_words = TexText("Which is...fine...")
+        new_words = OldTexText("Which is...fine...")
         new_words.move_to(bubble.content, RIGHT)
         self.play(
             bubble.stretch_to_fit_width, 5,
@@ -1691,7 +1691,7 @@ class IntroduceConcentricRings(CircleScene):
             rings[-1].get_top(),
             color = YELLOW
         )
-        dr_text = Tex("dr")
+        dr_text = OldTex("dr")
         dr_text.move_to(self.circle.get_corner(UP+RIGHT))
         dr_text.shift(LEFT)
         dr_text.set_color(YELLOW)
@@ -1735,7 +1735,7 @@ class IntroduceConcentricRings(CircleScene):
             [ring for ring in moving_rings.target],
             plusses
         ))))
-        dots_equals_area = Tex("\\dots", "=", "\\pi R^2")
+        dots_equals_area = OldTex("\\dots", "=", "\\pi R^2")
         area_sum.add(*dots_equals_area)
         area_sum.arrange()
         area_sum.to_edge(RIGHT)
@@ -1770,7 +1770,7 @@ class IntroduceConcentricRings(CircleScene):
         radial_line.rotate(np.pi/4)
         radial_line.shift(self.circle.get_center())
         radial_line.set_color(YELLOW)
-        r_label = Tex("r")
+        r_label = OldTex("r")
         r_label.next_to(radial_line.get_center(), UP+LEFT, buff = SMALL_BUFF)
 
         rings.generate_target()
@@ -1791,10 +1791,10 @@ class IntroduceConcentricRings(CircleScene):
         brace = Brace(special_ring, UP)
         brace.stretch_in_place(0.9, 0)
         two_pi_r = brace.get_text("$2\\pi r$")
-        left_brace = Tex("\\{")
+        left_brace = OldTex("\\{")
         left_brace.stretch_to_fit_height(1.5*self.dR)
         left_brace.next_to(special_ring, LEFT, buff = SMALL_BUFF)
-        dr = Tex("dr")
+        dr = OldTex("dr")
         dr.next_to(left_brace, LEFT, buff = SMALL_BUFF)
         self.play(
             GrowFromCenter(brace),
@@ -1803,7 +1803,7 @@ class IntroduceConcentricRings(CircleScene):
         self.play(GrowFromCenter(left_brace), Write(dr))
         self.wait()
 
-        think_concrete = TexText("Think $dr = 0.1$")
+        think_concrete = OldTexText("Think $dr = 0.1$")
         think_concrete.next_to(dr, DOWN+LEFT, buff = LARGE_BUFF)
         arrow = Arrow(think_concrete.get_top(), dr)
         self.play(
@@ -1813,7 +1813,7 @@ class IntroduceConcentricRings(CircleScene):
         )
         self.wait()
 
-        less_wrong = TexText("""
+        less_wrong = OldTexText("""
             Approximations get
             less wrong
         """)
@@ -1834,10 +1834,10 @@ class IntroduceConcentricRings(CircleScene):
     def write_integral(self):
         brace = Brace(self.area_sum)
         formula_q = brace.get_text("Nice formula?")
-        int_sym, R, zero = def_int = Tex("\\int", "_0", "^R")
+        int_sym, R, zero = def_int = OldTex("\\int", "_0", "^R")
         self.two_pi_r.generate_target()
         self.dr.generate_target()
-        equals_pi_R_squared = Tex("= \\pi R^2")
+        equals_pi_R_squared = OldTex("= \\pi R^2")
         integral_expression = VGroup(
             def_int, self.two_pi_r.target,
             self.dr.target, equals_pi_R_squared
@@ -1921,7 +1921,7 @@ class IntroduceConcentricRings(CircleScene):
         )
         self.r_label.generate_target()
         self.r_label.save_state()
-        equals_0 = Tex("=0")
+        equals_0 = OldTex("=0")
         r_equals_0 = VGroup(self.r_label.target, equals_0)
         r_equals_0.arrange(buff = SMALL_BUFF)
         r_equals_0.next_to(self.radial_line.target, UP+LEFT, buff = SMALL_BUFF)
@@ -1937,7 +1937,7 @@ class IntroduceConcentricRings(CircleScene):
         self.radial_line.target.scale(
             self.radius/self.radial_line.get_length()
         )
-        equals_0.target = Tex("=R")
+        equals_0.target = OldTex("=R")
         equals_0.target.next_to(
             self.radial_line.target.get_center_of_mass(),
             UP+LEFT, buff = SMALL_BUFF
@@ -1960,15 +1960,15 @@ class IntroduceConcentricRings(CircleScene):
         self.int_lower_bound, self.int_upper_bound = zero_target, R_target
 
     def ask_about_approx(self):
-        approx = Tex("\\approx").replace(self.equals)
+        approx = OldTex("\\approx").replace(self.equals)
         self.equals.save_state()
-        question = TexText(
+        question = OldTexText(
             "Should this be\\\\",
             "an approximation?"
         )
         question.next_to(approx, DOWN, buff = 1.3*LARGE_BUFF)
         arrow = Arrow(question, approx, buff = MED_SMALL_BUFF)
-        approach_words = TexText("Consider\\\\", "$dr \\to 0$")
+        approach_words = OldTexText("Consider\\\\", "$dr \\to 0$")
         approach_words.move_to(question, RIGHT)
         int_brace = Brace(self.integral_expression)
         integral_word = int_brace.get_text("``Integral''")
@@ -2041,7 +2041,7 @@ class GraphIntegral(GraphScene):
     }
     def construct(self):
         self.func = lambda r : 2*np.pi*r
-        integral = Tex("\\int_0^R 2\\pi r \\, dr")
+        integral = OldTex("\\int_0^R 2\\pi r \\, dr")
         integral.to_edge(UP).shift(LEFT)
         self.little_r = integral[5]
 
@@ -2079,10 +2079,10 @@ class GraphIntegral(GraphScene):
         ])
         ticks.stretch_to_fit_height(tick_height)
         ticks.set_color(YELLOW)
-        R_label = Tex("R")
+        R_label = OldTex("R")
         R_label.next_to(self.coords_to_point(self.R, 0), DOWN)
 
-        values_words = TexText("Values of $r$")
+        values_words = OldTexText("Values of $r$")
         values_words.shift(UP)
         arrows = VGroup(*[
             Arrow(
@@ -2170,7 +2170,7 @@ class GraphIntegral(GraphScene):
         self.wait()
 
     def ask_about_area(self):
-        question = TexText("What's this \\\\ area")
+        question = OldTexText("What's this \\\\ area")
         question.to_edge(RIGHT).shift(2*UP)
         arrow = Arrow(
             question.get_bottom(), 
@@ -2246,14 +2246,14 @@ class FundamentalTheorem(CircleScene):
         self.emphasize_oposites()
 
     def add_derivative_terms(self):
-        symbolic = Tex(
+        symbolic = OldTex(
             "\\frac{d(\\pi R^2)}{dR} =", "2\\pi R"
         )
         VGroup(*symbolic[0][2:5]).set_color(self.area_color)
         VGroup(*symbolic[0][7:9]).set_color(self.dR_color)
         symbolic[1].set_color(self.circum_color)
 
-        geometric = Tex("\\frac{d \\quad}{dR}=")
+        geometric = OldTex("\\frac{d \\quad}{dR}=")
         VGroup(*geometric[2:4]).set_color(self.dR_color)
         radius = geometric[0].get_height()
         area_circle = Circle(
@@ -2282,7 +2282,7 @@ class FundamentalTheorem(CircleScene):
         self.wait()
 
     def add_integral_terms(self):
-        symbolic = Tex(
+        symbolic = OldTex(
             "\\int_0^R", "2\\pi r", "\\cdot", "dr", "=", "\\pi R^2"
         )
         symbolic.set_color_by_tex("2\\pi r", self.circum_color)
@@ -2382,7 +2382,7 @@ class FundamentalTheorem(CircleScene):
             self.derivative_terms[1],
             self.integral_terms[1],
         )
-        opposites = TexText("Opposites")
+        opposites = OldTexText("Opposites")
         opposites.next_to(arrow, DOWN)
 
         self.play(
@@ -2393,7 +2393,7 @@ class FundamentalTheorem(CircleScene):
 
 class NameTheFundamentalTheorem(TeacherStudentsScene):
     def construct(self):
-        symbols = Tex(
+        symbols = OldTex(
             "\\frac{d}{dx} \\int_0^x f(t)dt = f(x)",
         )
         symbols.to_corner(UP+LEFT)
@@ -2434,7 +2434,7 @@ class CalculusInANutshell(CircleScene):
         self.show_remainder_of_series()
 
     def morph_word(self):
-        calculus = TexText("Calculus")
+        calculus = OldTexText("Calculus")
         calculus.scale(1.5)
         calculus.to_edge(UP)
         dR = self.radius/float(len(calculus.split()))
@@ -2499,7 +2499,7 @@ class Thumbnail(CircleScene):
     }
     def construct(self):
         self.clear()
-        title = TexText("Essence of \\\\ calculus")
+        title = OldTexText("Essence of \\\\ calculus")
         title.scale(2)
         title.to_edge(UP)
 
@@ -2512,8 +2512,8 @@ class Thumbnail(CircleScene):
             color = YELLOW
         )
 
-        deriv_eq = Tex("\\frac{d \\quad}{dR} = ")
-        int_eq = Tex("\\int_0^R \\quad = ") 
+        deriv_eq = OldTex("\\frac{d \\quad}{dR} = ")
+        int_eq = OldTex("\\int_0^R \\quad = ") 
         target_height = deriv_eq[0].get_height()*2
         area_circle.set_height(target_height)
         circum_circle.set_height(target_height)
@@ -2529,7 +2529,7 @@ class Thumbnail(CircleScene):
         for mob in deriv_eq, int_eq:
             mob.scale(1.5)
 
-        arrow = Tex("\\Leftrightarrow").scale(2)
+        arrow = OldTex("\\Leftrightarrow").scale(2)
         arrow.shift(DOWN)
         deriv_eq.next_to(arrow, LEFT)
         int_eq.next_to(arrow, RIGHT)

@@ -69,12 +69,12 @@ MOVIE_PREFIX = "tau_poem/"
 class Welcome(LogoGeneration):
     def construct(self):
         text = "Happy $\\tau$ Day, from 3Blue1Brown!"
-        self.add(TexText(text).to_edge(UP))
+        self.add(OldTexText(text).to_edge(UP))
         LogoGeneration.construct(self)
 
 class HappyTauDayWords(Scene):
     def construct(self):
-        words = TexText("Happy Tau Day Everybody!").scale(2)
+        words = OldTexText("Happy Tau Day Everybody!").scale(2)
         tau = TauCreature().move_to(2*LEFT + UP)
         pi = PiCreature().move_to(2*RIGHT + 3*DOWN)
         pi.set_color("red")
@@ -124,7 +124,7 @@ class TauPoem(Scene):
         self.first_word_to_last_digit()
 
     def add_line_and_number(self):
-        self.first_digits, new_digit, last_digits = Tex([
+        self.first_digits, new_digit, last_digits = OldTex([
             "".join(DIGITS[:self.line_num]),
             DIGITS[self.line_num],
             "".join(DIGITS[(self.line_num+1):]),
@@ -136,11 +136,11 @@ class TauPoem(Scene):
             index = line_str.index("ders")
         else:
             index = line_str.index(" ")
-        first_word, rest_of_line = TexText(
+        first_word, rest_of_line = OldTexText(
             [line_str[:index], line_str[index:]]
         ).to_edge(UP).shift(BUFF*DOWN).split()
         first_word.shift(0.15*RIGHT) #Stupid
-        number_word = TexText(DIGIT_TO_WORD[DIGITS[self.line_num][-1]])
+        number_word = OldTexText(DIGIT_TO_WORD[DIGITS[self.line_num][-1]])
         number_word.shift(first_word.get_center())
         number_word.shift(BUFF * UP / 2)
 
@@ -174,7 +174,7 @@ class TauPoem(Scene):
         )
 
     def line0(self):
-        two, pi = Tex(["2", "\\pi"]).scale(2).split()
+        two, pi = OldTex(["2", "\\pi"]).scale(2).split()
         self.add(two, pi)
         two_copy = deepcopy(two).rotate(np.pi/10).set_color("yellow")
         self.play(Transform(
@@ -187,7 +187,7 @@ class TauPoem(Scene):
         ))
 
     def line1(self):
-        two_pi = Tex(["2", "\\pi"]).scale(2)
+        two_pi = OldTex(["2", "\\pi"]).scale(2)
         tau = TauCreature()
         tau.to_symbol()
         sphere = Mobject()
@@ -272,7 +272,7 @@ class TauPoem(Scene):
         """)
         self.add(pi, bubble)
 
-        formulae = Tex(FORMULAE, size = "\\small")
+        formulae = OldTex(FORMULAE, size = "\\small")
         formulae.scale(1.25)
         formulae.to_corner([1, -1, 0])
         self.play(FadeIn(formulae))
@@ -344,12 +344,12 @@ class TauPoem(Scene):
         self.play(WaveArm(tau),Transform(pi, new_pi))
 
     def line10(self):
-        formulae = Tex(FORMULAE, "\\small")
+        formulae = OldTex(FORMULAE, "\\small")
         formulae.scale(1.5).to_edge(DOWN)
         self.add(formulae)
 
     def line11(self):
-        formulae = Tex(FORMULAE, "\\small")
+        formulae = OldTex(FORMULAE, "\\small")
         formulae.scale(1.5).to_edge(DOWN)
         formulae = formulae.split()
         f_copy = deepcopy(formulae)
@@ -386,14 +386,14 @@ class TauPoem(Scene):
         )
         grid = Grid(radius = radius).shift(grid_center)
         circle = Circle().scale(interval_size).shift(grid_center)
-        grid.add(Tex("e^{ix}").shift(grid_center+UP+RIGHT))
+        grid.add(OldTex("e^{ix}").shift(grid_center+UP+RIGHT))
         circle.set_color("white")
         tau_line = Line(
             *[np.pi*interval_size*vect for vect in (LEFT, RIGHT)],
             density = 5*DEFAULT_POINT_DENSITY_1D
         )
         tau_line.set_color("red")
-        tau = Tex("\\tau")
+        tau = OldTex("\\tau")
         tau.shift(tau_line.get_center() + 0.5*UP)
 
         self.add(axes, grid)
@@ -418,7 +418,7 @@ class TauPoem(Scene):
 
 
     def line13(self):
-        formula = form_start, two_pi, form_end = Tex([
+        formula = form_start, two_pi, form_end = OldTex([
             "\\hat{f^{(n)}}(\\xi) = (",
             "2\\pi",
             "i\\xi)^n \\hat{f}(\\xi)"
@@ -448,7 +448,7 @@ class TauPoem(Scene):
         pi, bubble = self.pi_speaking(
             "sticks oddly \\\\ to one half when \\\\ tau's preferred."
         )
-        formula = form_start, half, form_end = Tex([
+        formula = form_start, half, form_end = OldTex([
             "A = ",
             "\\frac{1}{2}",
             "\\tau r^2"
@@ -459,7 +459,7 @@ class TauPoem(Scene):
         self.play(ApplyMethod(half.set_color, "yellow"))
 
     def line16(self):
-        self.add(Tex(
+        self.add(OldTex(
             "\\frac{1}{2}\\tau r^2"
         ).scale(2).shift(DOWN))
 
@@ -485,8 +485,8 @@ class TauPoem(Scene):
                 -norm,
                 0
             )
-        tau_r = Tex("\\tau r").shift(1.3*DOWN)
-        r = Tex("r").shift(0.2*RIGHT + 0.7*DOWN)
+        tau_r = OldTex("\\tau r").shift(1.3*DOWN)
+        r = OldTex("r").shift(0.2*RIGHT + 0.7*DOWN)
         lines = [
             Line(DOWN+np.pi*LEFT, DOWN+np.pi*RIGHT),
             Line(ORIGIN, DOWN)

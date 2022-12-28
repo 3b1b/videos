@@ -67,7 +67,7 @@ def get_mod_mat(matrix, h_buff=1.3, v_buff=0.8, t2c={}):
 
 
 def get_det_mod_mat(mod_mat):
-    parens = Tex("(", ")")
+    parens = OldTex("(", ")")
     parens.stretch(2, 1)
     parens.match_height(mod_mat)
     parens[0].next_to(mod_mat, LEFT, SMALL_BUFF)
@@ -122,7 +122,7 @@ class Thumbnail(Scene):
 
         self.add(dashed_rects)
 
-        answer = Tex(
+        answer = OldTex(
             "\\lambda_1, \\lambda_2 = {3} \\pm \\sqrt{\\,{3}^2 - {5}} = 5, 1",
             tex_to_color_map={"{3}": MEAN_COLOR, "{p}": PROD_COLOR}
         )
@@ -150,7 +150,7 @@ class Thumbnail(Scene):
         det.to_corner(UR, buff=buff)
         self.add(get_shadow(det), det)
 
-        not_this = TexText("Not\\\\this")
+        not_this = OldTexText("Not\\\\this")
         not_this.match_height(det)
         not_this.to_corner(UL, buff=buff)
         not_this.set_color(RED)
@@ -164,8 +164,8 @@ class Thumbnail(Scene):
             }
         }
         facts = VGroup(
-            Tex("\\text{det}(M) = \\,\\, \\lambda_1 \\cdot \\lambda_2", **kw),
-            Tex("\\text{tr}(M) = \\lambda_1 + \\lambda_2", **kw),
+            OldTex("\\text{det}(M) = \\,\\, \\lambda_1 \\cdot \\lambda_2", **kw),
+            OldTex("\\text{tr}(M) = \\lambda_1 + \\lambda_2", **kw),
         )
         facts.arrange(DOWN, buff=MED_SMALL_BUFF, index_of_submobject_to_align=2)
         facts.match_height(det)
@@ -173,7 +173,7 @@ class Thumbnail(Scene):
         facts.set_y(-det.get_y())
         self.add(get_shadow(facts), facts)
 
-        use_these = TexText("Use\\\\these")
+        use_these = OldTexText("Use\\\\these")
         use_these.match_height(not_this)
         use_these.to_corner(DL, buff=buff)
         use_these.set_color(BLUE)
@@ -186,7 +186,7 @@ class Thumbnail(Scene):
         self.add(get_shadow(use_arrow), use_arrow)
 
         ## DELETE
-        # mp = Tex(
+        # mp = OldTex(
         #     "{m} \\pm \\sqrt{\\,{m}^2 - {p}}",
         #     tex_to_color_map={
         #         "{m}": MEAN_COLOR,
@@ -218,7 +218,7 @@ class Thumbnail(Scene):
 class Assumptions(TeacherStudentsScene):
     def construct(self):
         self.play(
-            PiCreatureSays(self.teacher, TexText("I'm assuming you know\\\\ what eigenvalues are.")),
+            PiCreatureSays(self.teacher, OldTexText("I'm assuming you know\\\\ what eigenvalues are.")),
             self.change_students(
                 "erm", "happy", "tease",
                 look_at=ORIGIN,
@@ -228,7 +228,7 @@ class Assumptions(TeacherStudentsScene):
         self.play(self.students[0].change("guilty").look(LEFT))
         self.wait()
 
-        eigen_expression = Tex("""
+        eigen_expression = OldTex("""
             \\text{det}\\left( \\left[ \\begin{array}{cc}
                 3 - \\lambda & 1 \\\\
                 4 & 1 - \\lambda
@@ -267,7 +267,7 @@ class Assumptions(TeacherStudentsScene):
 
 class ExamplesStart(Scene):
     def construct(self):
-        words = TexText("Examples start\\\\at", " 4:53")
+        words = OldTexText("Examples start\\\\at", " 4:53")
         words.set_width(8)
         words[-1].set_color(YELLOW)
         self.play(Write(words, run_time=1))
@@ -304,7 +304,7 @@ class PreviousVideoWrapper(Scene):
 class GoalOfRediscovery(TeacherStudentsScene):
     def construct(self):
         self.play(
-            PiCreatureSays(self.teacher, TexText("The goal is\\\\rediscovery")),
+            PiCreatureSays(self.teacher, OldTexText("The goal is\\\\rediscovery")),
             self.change_students(
                 "happy", "tease", "hooray",
                 run_time=1.5,
@@ -347,7 +347,7 @@ class VisualizeEigenvector(Scene):
         array.generate_target()
         array.next_to(vector.get_end(), LEFT)
         array.target.next_to(2 * vector.get_end(), LEFT)
-        two_times = Tex("2 \\cdot")
+        two_times = OldTex("2 \\cdot")
         two_times.set_stroke(BLACK, 8, background=True)
         two_times.next_to(array.target, LEFT)
         span_line = Line(-4 * vector.get_end(), 4 * vector.get_end())
@@ -405,11 +405,11 @@ class EigenvalueEquationRearranging(Scene):
             }
         }
         lines = VGroup(
-            Tex("A", v_tex, "=", "\\lambda ", v_tex, **kw),
-            Tex("A", v_tex, "=", "\\lambda ", " I ", v_tex, **kw),
-            Tex("A", v_tex, "-", "\\lambda ", " I ", v_tex, "=", zero_tex, **kw),
-            Tex("(A", "-", "\\lambda ", "I)", v_tex, "=", zero_tex, **kw),
-            Tex("\\text{det}", "(A", "-", "\\lambda ", "I)", "=", "0", **kw),
+            OldTex("A", v_tex, "=", "\\lambda ", v_tex, **kw),
+            OldTex("A", v_tex, "=", "\\lambda ", " I ", v_tex, **kw),
+            OldTex("A", v_tex, "-", "\\lambda ", " I ", v_tex, "=", zero_tex, **kw),
+            OldTex("(A", "-", "\\lambda ", "I)", v_tex, "=", zero_tex, **kw),
+            OldTex("\\text{det}", "(A", "-", "\\lambda ", "I)", "=", "0", **kw),
         )
         for line in lines:
             line.shift(-line.get_part_by_tex("=").get_center())
@@ -495,7 +495,7 @@ class TypicalComputation(Scene):
         self.add(task)
 
         # Top line of the computation
-        det_expression = Tex("""
+        det_expression = OldTex("""
             \\text{det}\\left( \\left[ \\begin{array}{cc}
                 3 - \\lambda & 1 \\\\
                 4 & 1 - \\lambda
@@ -511,7 +511,7 @@ class TypicalComputation(Scene):
         ).copy()
         p_height = terms[0].get_height() * 1.5
         for term in terms:
-            parens = Tex("(", ")")
+            parens = OldTex("(", ")")
             parens.set_height(p_height)
             parens[0].next_to(term, LEFT, 0.5 * SMALL_BUFF)
             parens[1].next_to(term, RIGHT, 0.5 * SMALL_BUFF)
@@ -519,10 +519,10 @@ class TypicalComputation(Scene):
             term.parens.set_opacity(0)
             term.add(term.parens)
 
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(det_expression, RIGHT)
         rhs = VGroup(
-            t0.copy(), t3.copy(), Tex("-"), t1.copy(), t2.copy()
+            t0.copy(), t3.copy(), OldTex("-"), t1.copy(), t2.copy()
         )
         rhs.arrange(RIGHT)
         rhs.next_to(eq, RIGHT)
@@ -564,7 +564,7 @@ class TypicalComputation(Scene):
         eq2 = eq.copy()
         eq2.shift(DOWN)
         self.add(eq2)
-        rhs2 = Tex("\\left( 3 - 4\\lambda + \\lambda^2 \\right) - 4")[0]
+        rhs2 = OldTex("\\left( 3 - 4\\lambda + \\lambda^2 \\right) - 4")[0]
         rhs2.next_to(eq2, RIGHT)
         VGroup(rhs2[4], rhs2[6]).set_color(TEAL)
 
@@ -572,7 +572,7 @@ class TypicalComputation(Scene):
             VGroup(rhs[0][0], rhs[0][2]),
             VGroup(rhs[1][0], rhs[1][2]),
         )
-        alt_mid = Tex("-3\\lambda", tex_to_color_map={"\\lambda": TEAL})
+        alt_mid = OldTex("-3\\lambda", tex_to_color_map={"\\lambda": TEAL})
         alt_mid.move_to(rhs2[2:5], DL)
         bottom_terms = VGroup(rhs2[1], alt_mid, rhs2[2:5], rhs2[5:8])
         for pair, bt in zip(it.product(*top_terms), bottom_terms):
@@ -591,7 +591,7 @@ class TypicalComputation(Scene):
 
         # Line 3
         eq3 = eq2.copy().shift(DOWN)
-        rhs3 = Tex("\\lambda^2 - 4 \\lambda - 1")[0]
+        rhs3 = OldTex("\\lambda^2 - 4 \\lambda - 1")[0]
         rhs3.next_to(eq3, RIGHT)
         VGroup(rhs3[0], rhs3[4]).set_color(TEAL)
 
@@ -623,9 +623,9 @@ class TypicalComputation(Scene):
         self.wait()
 
         # Roots
-        equals_zero = Tex("= 0")
+        equals_zero = OldTex("= 0")
         equals_zero.next_to(rhs3, RIGHT)
-        root_words = Tex(
+        root_words = OldTex(
             "\\lambda_1, \\lambda_2 \\,=\\, \\text{roots}",
             tex_to_color_map={
                 "\\lambda_1": TEAL_C,
@@ -645,9 +645,9 @@ class TypicalComputation(Scene):
         self.wait()
 
         # Quadratic formula
-        formula = Tex("\\frac{4 \\pm \\sqrt{4^2 - 4(1)(-1)}}{2}")
-        formula2 = Tex("=\\frac{4 \\pm \\sqrt{20}}{2}")
-        formula3 = Tex("= 2 \\pm \\sqrt{5}")
+        formula = OldTex("\\frac{4 \\pm \\sqrt{4^2 - 4(1)(-1)}}{2}")
+        formula2 = OldTex("=\\frac{4 \\pm \\sqrt{20}}{2}")
+        formula3 = OldTex("= 2 \\pm \\sqrt{5}")
         formula.move_to(root_words[-1], LEFT)
         formula.shift(0.5 * DL)
 
@@ -697,7 +697,7 @@ class OutlineThreeFacts(Scene):
         mat = Matrix([["a", "b"], ["c", "d"]], v_buff=0.8, h_buff=0.8)
         mat.set_column_colors(COL_COLORS[0], COL_COLORS[1])
 
-        lambdas = Tex("\\lambda_1", "\\,,\\,", "\\lambda_2")
+        lambdas = OldTex("\\lambda_1", "\\,,\\,", "\\lambda_2")
         lambdas[0].set_color(EIGEN_COLORS[0])
         lambdas[2].set_color(EIGEN_COLORS[1])
         arrow = Vector(1.5 * RIGHT)
@@ -744,7 +744,7 @@ class OutlineThreeFacts(Scene):
 
         # Trace
         tr_mat = mat.deepcopy()
-        tr = Tex("\\text{tr}", "\\Big(", "\\Big)", font_size=60)
+        tr = OldTex("\\text{tr}", "\\Big(", "\\Big)", font_size=60)
         tr[1:].match_height(tr_mat, stretch=True)
         tr.set_submobjects([*tr[:-1], tr_mat, tr[-1]])
         tr.arrange(RIGHT, buff=SMALL_BUFF)
@@ -769,7 +769,7 @@ class OutlineThreeFacts(Scene):
                 "\\lambda_2": EIGEN_COLORS[1],
             }
         }
-        tr_rhs = Tex("= a + d = \\lambda_1 + \\lambda_2", **tex_kw)
+        tr_rhs = OldTex("= a + d = \\lambda_1 + \\lambda_2", **tex_kw)
         tr_rhs.next_to(tr, RIGHT)
 
         for term, rect in zip(tr_rhs[1:4:2], moving_tr_rects.target):
@@ -795,11 +795,11 @@ class OutlineThreeFacts(Scene):
         self.wait()
 
         # Mean of eigenvalues
-        half = Tex("1 \\over 2")
+        half = OldTex("1 \\over 2")
         half.move_to(tr, LEFT)
         tr.generate_target()
         tr.target.next_to(half, RIGHT, SMALL_BUFF)
-        new_tr_rhs = Tex("= {a + d \\over 2} = {\\lambda_1 + \\lambda_2 \\over 2}", **tex_kw)
+        new_tr_rhs = OldTex("= {a + d \\over 2} = {\\lambda_1 + \\lambda_2 \\over 2}", **tex_kw)
         new_tr_rhs.next_to(tr.target, RIGHT)
 
         self.play(
@@ -811,13 +811,13 @@ class OutlineThreeFacts(Scene):
 
         # Determinant
         det_mat = mat.deepcopy()
-        det = Tex("\\text{det}", "\\Big(", "\\Big)", font_size=60)
+        det = OldTex("\\text{det}", "\\Big(", "\\Big)", font_size=60)
         det[1:].match_height(det_mat, stretch=True)
         det.set_submobjects([*det[:-1], det_mat, det[-1]])
         det.arrange(RIGHT, buff=SMALL_BUFF)
         det.next_to(indices[1], RIGHT, MED_LARGE_BUFF)
 
-        det_rhs = Tex("= ad - bc = \\lambda_1 \\lambda_2", **tex_kw)
+        det_rhs = OldTex("= ad - bc = \\lambda_1 \\lambda_2", **tex_kw)
         det_rhs.next_to(det, RIGHT)
         self.play(
             TransformFromCopy(mat, det_mat),
@@ -840,15 +840,15 @@ class OutlineThreeFacts(Scene):
         self.wait()
 
         # Mean and product
-        eq_m = TexText("=", " $m$", "\\quad (mean)")
+        eq_m = OldTexText("=", " $m$", "\\quad (mean)")
         eq_m[1].set_color(MEAN_COLOR)
         eq_m.next_to(new_tr_rhs, RIGHT)
-        eq_p = TexText("=", " $p$", "\\quad (product)")
+        eq_p = OldTexText("=", " $p$", "\\quad (product)")
         eq_p[1].set_color(PROD_COLOR)
         eq_p.next_to(det_rhs, RIGHT)
 
         form_lhs = lambdas.copy()
-        form_rhs = Tex("= {m} \\pm \\sqrt{\\,{m}^2 - {p}}", tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR})
+        form_rhs = OldTex("= {m} \\pm \\sqrt{\\,{m}^2 - {p}}", tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR})
         form_lhs.next_to(indices[2], RIGHT)
         form_rhs.next_to(form_lhs, RIGHT)
 
@@ -889,9 +889,9 @@ class OutlineThreeFacts(Scene):
         ex_mat.next_to(randy, RIGHT, aligned_edge=UP)
 
         kw = {"tex_to_color_map": {"m": MEAN_COLOR, "p": PROD_COLOR, "=": WHITE, "-": WHITE}}
-        m_eq = Tex("m = 7", **kw)
-        p_eq1 = Tex("p = 48 - 8", **kw)
-        p_eq2 = Tex("p = 40", **kw)
+        m_eq = OldTex("m = 7", **kw)
+        p_eq1 = OldTex("p = 48 - 8", **kw)
+        p_eq2 = OldTex("p = 40", **kw)
 
         for mob in (m_eq, p_eq1, p_eq2):
             mob.next_to(ex_mat, RIGHT, buff=MED_LARGE_BUFF)
@@ -1022,11 +1022,11 @@ class MeansMatch(Scene):
             "\\lambda_2": EIGEN_COLORS[1],
             "=": WHITE,
         }
-        equation = Tex(
+        equation = OldTex(
             "{{a} + {d} \\over 2} = {\\lambda_1 + \\lambda_2 \\over 2}",
             tex_to_color_map=t2c
         )
-        mean_eq = Tex(
+        mean_eq = OldTex(
             "\\text{mean}({a}, {d}) = \\text{mean}(\\lambda_1, \\lambda_2)",
             tex_to_color_map=t2c
         )
@@ -1097,7 +1097,7 @@ class ShowSquishingAndStretching(Scene):
 
         # Labels
         labels = VGroup(*(
-            Tex("\\text{Stretch by }", f"\\lambda_{i}", color=color, font_size=30)
+            OldTex("\\text{Stretch by }", f"\\lambda_{i}", color=color, font_size=30)
             for i, color in zip((1, 2), EIGEN_COLORS)
         ))
         for label, vect in zip(labels, eigenvect_mobs):
@@ -1125,9 +1125,9 @@ class MeanProductExample(Scene):
         mean = 7
         m_dot = Dot(nl.n2p(mean))
         m_dot.set_color(MEAN_COLOR)
-        m_label = Tex("m", color=MEAN_COLOR)
+        m_label = OldTex("m", color=MEAN_COLOR)
         m_label.next_to(m_dot, UP, buff=MED_SMALL_BUFF)
-        label7 = Tex("7", color=MEAN_COLOR)
+        label7 = OldTex("7", color=MEAN_COLOR)
 
         # Distance tracking
         d_tracker = ValueTracker(4)
@@ -1139,8 +1139,8 @@ class MeanProductExample(Scene):
             return nl.n2p(mean + d_tracker.get_value())
 
         l1_dot, l2_dot = (Dot(color=TEAL) for x in range(2))
-        l1_label = Tex("\\lambda_1", color=EIGEN_COLORS[0])
-        l2_label = Tex("\\lambda_2", color=EIGEN_COLORS[1])
+        l1_label = OldTex("\\lambda_1", color=EIGEN_COLORS[0])
+        l2_label = OldTex("\\lambda_2", color=EIGEN_COLORS[1])
         l1_arrow, l2_arrow = (Arrow(color=WHITE) for x in range(2))
 
         l1_dot.add_updater(lambda m: m.move_to(get_l1_point()))
@@ -1155,12 +1155,12 @@ class MeanProductExample(Scene):
             m_label.get_right() + SMALL_BUFF * RIGHT, l2_label.get_left() + SMALL_BUFF * LEFT,
         ))
 
-        minus_d = Tex("-d")
-        plus_d = Tex("+d")
+        minus_d = OldTex("-d")
+        plus_d = OldTex("+d")
         always(minus_d.next_to, l1_arrow, UP, SMALL_BUFF)
         always(plus_d.next_to, l2_arrow, UP, SMALL_BUFF)
-        plus_qm = Tex("+??")
-        minus_qm = Tex("-??")
+        plus_qm = OldTex("+??")
+        minus_qm = OldTex("-??")
         always(plus_qm.move_to, plus_d)
         always(minus_qm.move_to, minus_d)
 
@@ -1201,7 +1201,7 @@ class MeanProductExample(Scene):
 
         # Write the product
         kw = {"tex_to_color_map": {"\\,7": MEAN_COLOR, "d": GREY_A, "=": WHITE, "-": WHITE}}
-        texs = VGroup(*(Tex(tex, **kw) for tex in [
+        texs = VGroup(*(OldTex(tex, **kw) for tex in [
             "(\\,7 + d\\,)(\\,7 - d\\,)",
             "\\,7^2 - d^2 = ",
             "40 =",
@@ -1243,8 +1243,8 @@ class MeanProductExample(Scene):
         minus_d.clear_updaters()
         plus_d.clear_updaters()
 
-        plus_3 = Tex("+3").move_to(plus_d)
-        minus_3 = Tex("-3").move_to(minus_d)
+        plus_3 = OldTex("+3").move_to(plus_d)
+        minus_3 = OldTex("-3").move_to(minus_d)
         self.play(
             LaggedStart(
                 FadeOut(minus_d, 0.25 * UP),
@@ -1276,10 +1276,10 @@ class MeanProductExample(Scene):
         for tex in texs[:-2]:
             for fourty in tex.get_parts_by_tex("40"):
                 fourties.add(fourty)
-                ps.add(Tex("p").set_color(PROD_COLOR).move_to(fourty).shift(0.1 * DOWN))
+                ps.add(OldTex("p").set_color(PROD_COLOR).move_to(fourty).shift(0.1 * DOWN))
             for seven in tex.get_parts_by_tex("7"):
                 sevens.add(seven)
-                m = Tex("m").set_color(MEAN_COLOR)
+                m = OldTex("m").set_color(MEAN_COLOR)
                 m.scale(0.95)
                 m.move_to(seven, DR)
                 m.shift(0.04 * RIGHT)
@@ -1299,7 +1299,7 @@ class MeanProductExample(Scene):
         self.wait()
 
         plus_form, minus_form = [
-            Tex(
+            OldTex(
                 c + "\\sqrt{\\,m^2 - p}",
                 tex_to_color_map={"m": MEAN_COLOR, "p": PROD_COLOR},
                 font_size=24,
@@ -1345,7 +1345,7 @@ class OutstandingChannel(Scene):
         morty = Mortimer()
         morty.to_corner(DR)
         self.play(PiCreatureSays(
-            morty, TexText("Outstanding\\\\channel"), target_mode="hooray",
+            morty, OldTexText("Outstanding\\\\channel"), target_mode="hooray",
             bubble_config={"height": 3, "width": 4}
         ))
         self.play(Blink(morty))
@@ -1354,7 +1354,7 @@ class OutstandingChannel(Scene):
 
 class JingleAnimation(Scene):
     def construct(self):
-        form = Tex("m \\pm \\sqrt{m^2 - p}")[0]
+        form = OldTex("m \\pm \\sqrt{m^2 - p}")[0]
         form.set_height(2)
         m, old_pm, sqrt, root, m2, squared, minus, p = form
         VGroup(m, m2).set_color(MEAN_COLOR)
@@ -1362,7 +1362,7 @@ class JingleAnimation(Scene):
         m.refresh_bounding_box()  # Why?
         p.refresh_bounding_box()  # Why?
 
-        pm = VGroup(Tex("+"), Tex("-"))
+        pm = VGroup(OldTex("+"), OldTex("-"))
         pm.arrange(DOWN, buff=0)
         pm.replace(old_pm)
         pm.save_state()
@@ -1451,7 +1451,7 @@ class Example1(TeacherStudentsScene):
         shift_vect = 5 * LEFT
         arrow = Vector(0.75 * RIGHT)
         arrow.next_to(mat, RIGHT)
-        formula = Tex(
+        formula = OldTex(
             "\\lambda_1, \\, \\lambda_2 = {2} \\pm \\sqrt{\\,{2}^2 - (-1)}",
             tex_to_color_map={
                 "\\lambda_1": EIGEN_COLORS[0],
@@ -1487,7 +1487,7 @@ class Example1(TeacherStudentsScene):
         self.wait()
 
         # Show mean
-        m_eq = Tex("m", "=", "2", tex_to_color_map={"m": MEAN_COLOR, "2": MEAN_COLOR})
+        m_eq = OldTex("m", "=", "2", tex_to_color_map={"m": MEAN_COLOR, "2": MEAN_COLOR})
         m_eq.next_to(mat, UP, LARGE_BUFF)
         t2c = {
             "\\lambda_1": EIGEN_COLORS[0],
@@ -1530,7 +1530,7 @@ class Example1(TeacherStudentsScene):
         self.wait()
 
         # Show product
-        prod_eq = Tex(
+        prod_eq = OldTex(
             # "\\lambda_1 \\lambda_2 =",
             "{p} = {3} - {4} = -1",
             tex_to_color_map={
@@ -1583,7 +1583,7 @@ class Example1(TeacherStudentsScene):
         self.wait(2)
 
         # Final answer
-        rhs = Tex("2\\pm\\sqrt{5}")
+        rhs = OldTex("2\\pm\\sqrt{5}")
         rhs.move_to(formula[4], LEFT)
 
         self.play(
@@ -1628,7 +1628,7 @@ class GeneralExample(Scene):
         self.add(mat)
         self.wait()
 
-        mean_eq = Tex(f"m = {mean_str}", tex_to_color_map={"m": MEAN_COLOR, mean_str: MEAN_COLOR})
+        mean_eq = OldTex(f"m = {mean_str}", tex_to_color_map={"m": MEAN_COLOR, mean_str: MEAN_COLOR})
         mean_eq.next_to(mat, UP, LARGE_BUFF)
         diag_rects = get_diag_rects(mat)
 
@@ -1643,7 +1643,7 @@ class GeneralExample(Scene):
         self.play(FadeOut(diag_rects))
 
         last_part = "(" + prod_str + ")}" if prod < 0 else prod_str + "}"
-        formula = Tex(
+        formula = OldTex(
             mean_str, "\\pm \\sqrt{\\,", mean_str, "^2 - ", last_part,
             font_size=60,
             tex_to_color_map={mean_str: MEAN_COLOR, prod_str: PROD_COLOR},
@@ -1659,7 +1659,7 @@ class GeneralExample(Scene):
         self.wait()
 
         # Product
-        prod_eq = Tex(
+        prod_eq = OldTex(
             f"p = {a * d} - {b * c} = {prod}",
             tex_to_color_map={
                 str(prod): PROD_COLOR,
@@ -1688,7 +1688,7 @@ class GeneralExample(Scene):
         self.wait()
 
         # Simplify
-        line2 = Tex(mean_str, "\\pm", "\\sqrt{\\,", str(mean**2 - prod), "}", font_size=60)
+        line2 = OldTex(mean_str, "\\pm", "\\sqrt{\\,", str(mean**2 - prod), "}", font_size=60)
         if mean == 0:
             line2[0].scale(0, about_point=line2[1].get_left())
         line2[0].set_color(MEAN_COLOR)
@@ -1716,7 +1716,7 @@ class Example2(GeneralExample):
     matrix = [[2, 7], [1, 8]]
 
     def get_final_simplification(self):
-        return Tex("5 \\pm 4", "=", "9,\\,1", font_size=60)
+        return OldTex("5 \\pm 4", "=", "9,\\,1", font_size=60)
 
 
 class Example3(GeneralExample):
@@ -1759,7 +1759,7 @@ class PauliMatrices(Scene):
         axes.rotate(70 * DEGREES, LEFT)
         axes.set_height(1.7)
         axes.labels = VGroup(*(
-            Tex(ch, font_size=24).next_to(axis.get_end(), vect, buff=SMALL_BUFF)
+            OldTex(ch, font_size=24).next_to(axis.get_end(), vect, buff=SMALL_BUFF)
             for ch, axis, vect in zip("xyz", axes.get_axes(), [RIGHT, UP, UP])
         ))
         axes.add(axes.labels)
@@ -1776,7 +1776,7 @@ class PauliMatrices(Scene):
                 for n in (2, -2)
             )
             for vector, tex, v in [(vp1, "+1", v1), (vm1, "-1", v2)]:
-                vector.add(Tex(tex, font_size=24).next_to(vector, v, buff=0.05))
+                vector.add(OldTex(tex, font_size=24).next_to(vector, v, buff=0.05))
             ac.add(vp1, vm1)
             ac.next_to(matrix, RIGHT, buff=LARGE_BUFF)
             axes_copies.add(ac)
@@ -1800,7 +1800,7 @@ class PauliMatrices(Scene):
             for matrix in matrices
         ))
         mean_eqs = VGroup(*(
-            Tex("m = 0", tex_to_color_map={"m": MEAN_COLOR, "0": WHITE}).next_to(matrix, RIGHT, buff=MED_LARGE_BUFF)
+            OldTex("m = 0", tex_to_color_map={"m": MEAN_COLOR, "0": WHITE}).next_to(matrix, RIGHT, buff=MED_LARGE_BUFF)
             for matrix in matrices
         ))
 
@@ -1811,11 +1811,11 @@ class PauliMatrices(Scene):
             }
         }
         forms = VGroup(*(
-            Tex("0 \\pm \\sqrt{\\,0^2 - {p}}", **kw).next_to(matrix, RIGHT).to_edge(RIGHT)
+            OldTex("0 \\pm \\sqrt{\\,0^2 - {p}}", **kw).next_to(matrix, RIGHT).to_edge(RIGHT)
             for matrix in matrices
         ))
         simple_forms = VGroup(*(
-            Tex("\\pm \\sqrt{-{p}}", **kw).move_to(form, LEFT)
+            OldTex("\\pm \\sqrt{-{p}}", **kw).move_to(form, LEFT)
             for form in forms
         ))
 
@@ -1847,7 +1847,7 @@ class PauliMatrices(Scene):
 
         # Products
         prod_eqs = VGroup(*(
-            Tex("p = -1", tex_to_color_map={"p": PROD_COLOR, "-1": WHITE}).next_to(
+            OldTex("p = -1", tex_to_color_map={"p": PROD_COLOR, "-1": WHITE}).next_to(
                 matrix, RIGHT, buff=MED_LARGE_BUFF
             ).shift(0.5 * DOWN)
             for matrix in matrices
@@ -1870,7 +1870,7 @@ class PauliMatrices(Scene):
             self.wait()
 
         final_forms = VGroup(*(
-            Tex("= \\pm 1").move_to(sf.get_center(), LEFT)
+            OldTex("= \\pm 1").move_to(sf.get_center(), LEFT)
             for sf in simple_forms
         ))
 
@@ -1897,7 +1897,7 @@ class PauliMatrices(Scene):
         self.wait()
 
     def get_lhss_and_matrices(self, colors):
-        lhss = VGroup(*(Tex(f"\\sigma_{c} = ") for c in "xyz"))
+        lhss = VGroup(*(OldTex(f"\\sigma_{c} = ") for c in "xyz"))
         kw = {"h_buff": 0.7, "v_buff": 0.7}
         matrices = VGroup(
             Matrix([["0", "1"], ["1", "0"]], **kw),
@@ -1948,8 +1948,8 @@ class SpinMeasurements(ThreeDScene):
         for sm in axes.get_family():
             sm.flat_stroke = False
             sm.insert_n_curves(10)
-        axes.add(Tex("+z").next_to(axes.c2p(0, 2), RIGHT))
-        axes.add(Tex("-z").next_to(axes.c2p(0, -2), RIGHT))
+        axes.add(OldTex("+z").next_to(axes.c2p(0, 2), RIGHT))
+        axes.add(OldTex("-z").next_to(axes.c2p(0, -2), RIGHT))
         axes.shift(0.1 * OUT)
         screen.set_height(5)
         screen.set_fill(GREY_D, 1)
@@ -1994,7 +1994,7 @@ class SpinMeasurements(ThreeDScene):
             circ.set_stroke(BLUE, 0)
             circ.rotate(90 * DEGREES, RIGHT)
             circ.move_to(5 * UP + spin * OUT)
-            tex = Tex("+1" if spin == 1 else "-1")
+            tex = OldTex("+1" if spin == 1 else "-1")
             tex.shift(20 * OUT)
             self.add(tex)
             self.update_frame()
@@ -2036,7 +2036,7 @@ class HeresTheThing(TeacherStudentsScene):
         )
         self.wait(3)
         self.teacher_says(
-            TexText("Here's the thing..."),
+            OldTexText("Here's the thing..."),
             added_anims=[self.change_students("sassy", "plain", "hesitant")],
             target_mode="hesitant",
         )
@@ -2048,7 +2048,7 @@ class HeresTheThing(TeacherStudentsScene):
         self.look_at(self.screen)
         self.play_student_changes("tease", "thinking", "happy", look_at=self.screen)
         self.wait(3)
-        words = TexText("Somewhat\\\\self-defeating")
+        words = OldTexText("Somewhat\\\\self-defeating")
         words.next_to(self.screen, RIGHT)
         words.shift(RIGHT)
         self.play(
@@ -2062,7 +2062,7 @@ class HeresTheThing(TeacherStudentsScene):
 class NotAllHopeIsLost(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("There's still a\\\\good example here"),
+            OldTexText("There's still a\\\\good example here"),
             target_mode="speaking",
             bubble_config={"height": 3, "width": 4},
             added_anims=[self.change_students("erm", "sassy", "hesitant")],
@@ -2098,7 +2098,7 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
             new_mat.replace(mat, dim_to_match=1)
             new_mat.shift(3.75 * RIGHT)
 
-            parens = Tex("()", font_size=60)[0]
+            parens = OldTex("()", font_size=60)[0]
             parens.match_height(new_mat, stretch=True)
             parens[0].next_to(new_mat, LEFT, buff=0.1)
             parens[1].next_to(new_mat, RIGHT, buff=0.1)
@@ -2125,9 +2125,9 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
             "=": WHITE,
         }}
         rhss = VGroup(
-            Tex("= \\lambda^2 - 1 = 0", **kw),
-            Tex("= \\lambda^2 - 1 = 0", **kw),
-            Tex("= (1 - \\lambda)(-1 - \\lambda) = 0", **kw),
+            OldTex("= \\lambda^2 - 1 = 0", **kw),
+            OldTex("= \\lambda^2 - 1 = 0", **kw),
+            OldTex("= (1 - \\lambda)(-1 - \\lambda) = 0", **kw),
         )
 
         lpm1s = VGroup()
@@ -2143,7 +2143,7 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
 
             self.play(FlashUnder(rhs))
             self.wait()
-            lpm1 = Tex("\\lambda = \\pm 1", **kw)
+            lpm1 = OldTex("\\lambda = \\pm 1", **kw)
             lpm1.next_to(rhs, DOWN, buff=0.75)
             lpm1s.add(lpm1)
             self.play(TransformMatchingShapes(rhs[1:4].copy(), lpm1))
@@ -2172,9 +2172,9 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
 
         def get_combo(triplet):
             group = VGroup(
-                Tex("a"), triplet[0].copy(), Tex("+"),
-                Tex("b"), triplet[1].copy(), Tex("+"),
-                Tex("c"), triplet[2].copy()
+                OldTex("a"), triplet[0].copy(), OldTex("+"),
+                OldTex("b"), triplet[1].copy(), OldTex("+"),
+                OldTex("c"), triplet[2].copy()
             )
             group.arrange(RIGHT, buff=0.15)
             group[3].align_to(group[0], DOWN)
@@ -2197,7 +2197,7 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
             "c": colors[2],
             "\\lambda": EIGEN_COLORS[1],
         }}
-        normalized_eq = Tex("\\left(a^2 + b^2 + c^2 = 1\\right)", **kw)
+        normalized_eq = OldTex("\\left(a^2 + b^2 + c^2 = 1\\right)", **kw)
         normalized_eq.next_to(row2, DOWN, LARGE_BUFF)
         normalized_eq.to_edge(DOWN)
 
@@ -2230,12 +2230,12 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
         diag_rects = get_diag_rects(full_mat)
         bubble = ThoughtBubble(height=2, width=2)
         bubble.pin_to(randy)
-        m_eq = Tex("m = 0", tex_to_color_map={"m": MEAN_COLOR})
-        p_eq = Tex("p = ??", tex_to_color_map={"p": PROD_COLOR})
+        m_eq = OldTex("m = 0", tex_to_color_map={"m": MEAN_COLOR})
+        p_eq = OldTex("p = ??", tex_to_color_map={"p": PROD_COLOR})
         bubble.position_mobject_inside(m_eq)
         bubble.position_mobject_inside(p_eq)
 
-        p_eq2 = Tex("p = -1", tex_to_color_map={"p": PROD_COLOR})
+        p_eq2 = OldTex("p = -1", tex_to_color_map={"p": PROD_COLOR})
         p_eq2.next_to(full_mat, RIGHT, aligned_edge=DOWN)
 
         self.play(
@@ -2277,7 +2277,7 @@ class PauliMatricesWithCharacteristicPolynomial(PauliMatrices):
             element_to_mobject_config=kw,
             h_buff=2.0
         )
-        parens = Tex("(", ")")
+        parens = OldTex("(", ")")
         parens.stretch(2, 1)
         parens.match_height(mod_mat)
         parens[0].next_to(mod_mat, LEFT, SMALL_BUFF)
@@ -2395,7 +2395,7 @@ class TwoValuesEvenlySpaceAroundZero(Scene):
         d_tracker = ValueTracker(2)
         get_d = d_tracker.get_value
         dots = VGroup(*(Dot() for x in range(2)))
-        labels = VGroup(Tex("\\lambda_1"), Tex("\\lambda_2"))
+        labels = VGroup(OldTex("\\lambda_1"), OldTex("\\lambda_2"))
         for group in dots, labels:
             group.set_submobject_colors_by_gradient(*EIGEN_COLORS)
 
@@ -2413,7 +2413,7 @@ class TwoValuesEvenlySpaceAroundZero(Scene):
 
         prod_label = VGroup(
             labels.copy().clear_updaters().arrange(RIGHT, buff=SMALL_BUFF),
-            Tex("="),
+            OldTex("="),
             DecimalNumber(-4),
         )
         prod_label[-1].match_height(prod_label[0])
@@ -2431,13 +2431,13 @@ class TwoValuesEvenlySpaceAroundZero(Scene):
 
 class MPIsSolvingCharPoly(TeacherStudentsScene):
     def construct(self):
-        formula = Tex(
+        formula = OldTex(
             "{m} \\pm \\sqrt{\\,{m}^2 - {p}}",
             tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR},
             font_size=72
         )
         char_poly = get_det_mod_mat(get_mod_mat([["a", "b"], ["c", "d"]]))
-        eq0 = Tex("=0")
+        eq0 = OldTex("=0")
         eq0.next_to(char_poly, RIGHT, SMALL_BUFF)
         char_poly.add(eq0)
         char_poly.move_to(self.hold_up_spot, DOWN)
@@ -2474,11 +2474,11 @@ class QuadraticPolynomials(Scene):
             }
         }
         equation = VGroup(
-            Tex("x^2 - 10x + 9", **kw)[0],
-            Tex("=").rotate(PI / 2),
-            Tex("x^2 - (\\lambda_1 + \\lambda_2)x + \\lambda_1 \\lambda_2", **kw),
-            Tex("=").rotate(PI / 2),
-            Tex("(x - \\lambda_1)(x - \\lambda_2)", **kw),
+            OldTex("x^2 - 10x + 9", **kw)[0],
+            OldTex("=").rotate(PI / 2),
+            OldTex("x^2 - (\\lambda_1 + \\lambda_2)x + \\lambda_1 \\lambda_2", **kw),
+            OldTex("=").rotate(PI / 2),
+            OldTex("(x - \\lambda_1)(x - \\lambda_2)", **kw),
         )
         equation.arrange(DOWN)
         equation.to_edge(LEFT)
@@ -2509,7 +2509,7 @@ class QuadraticPolynomials(Scene):
         root_labels = VGroup()
         for i, n, vect in zip((0, 1), (1, 9), (RIGHT, LEFT)):
             dot = Dot(axes.c2p(n, 0), color=EIGEN_COLORS[i])
-            label = Tex(f"\\lambda_{i + 1}")
+            label = OldTex(f"\\lambda_{i + 1}")
             label.match_color(dot)
             label.next_to(dot, UP + vect, buff=0.05)
             root_dots.add(dot)
@@ -2581,9 +2581,9 @@ class QuadraticPolynomials(Scene):
 
         mean_arrow = Vector(UP)
         mean_arrow.next_to(lin_terms[0], UP, MED_SMALL_BUFF)
-        times_half = Tex("\\times -\\frac{1}{2}", font_size=24)
+        times_half = OldTex("\\times -\\frac{1}{2}", font_size=24)
         times_half.next_to(mean_arrow, RIGHT, buff=0)
-        m_eq = Tex(
+        m_eq = OldTex(
             "{\\lambda_1 + \\lambda_2 \\over 2}", "=", "5",
             tex_to_color_map={"\\lambda_1": EIGEN_COLORS[0], "\\lambda_2": EIGEN_COLORS[1]}
         )
@@ -2624,7 +2624,7 @@ class QuadraticPolynomials(Scene):
 
         # Show final roots
         d_terms = VGroup(*(
-            Tex(u, "\\sqrt{25 - 9}", font_size=24)
+            OldTex(u, "\\sqrt{25 - 9}", font_size=24)
             for u in ["+", "-"]
         ))
         my = m_label.get_y()
@@ -2651,13 +2651,13 @@ class QuadraticPolynomials(Scene):
 class SimplerQuadraticFormula(Scene):
     def construct(self):
         # Show comparison
-        form1 = Tex(
+        form1 = OldTex(
             "{m} \\pm \\sqrt{\\,{m}^2 - {p}}",
             tex_to_color_map={"{m}": MEAN_COLOR, "{p}": PROD_COLOR},
             font_size=72
         )
-        words = TexText("takes less to\\\\remember than")
-        form2 = Tex(
+        words = OldTexText("takes less to\\\\remember than")
+        form2 = OldTex(
             "{-b \\pm \\sqrt{\\,b^2 - 4ac} \\over 2a}",
             tex_to_color_map={
                 "a": MAROON_A,
@@ -2679,11 +2679,11 @@ class SkipTheMiddleStep(Scene):
     def construct(self):
         matrix = IntegerMatrix([[3, 1], [4, 1]])
         matrix.set_column_colors(*COL_COLORS)
-        char_poly = Tex(
+        char_poly = OldTex(
             "\\lambda^2 - 4\\lambda - 1",
             tex_to_color_map={"\\lambda": EIGEN_COLORS[0]}
         )
-        mp_formula = Tex(
+        mp_formula = OldTex(
             "{2} \\pm \\sqrt{\\,{2}^2 - (-1)}",
             tex_to_color_map={
                 "{2}": MEAN_COLOR,
@@ -2695,9 +2695,9 @@ class SkipTheMiddleStep(Scene):
         group.arrange(RIGHT, buff=2)
 
         mat_label, char_poly_label, eigen_label = labels = VGroup(
-            TexText("Matrix"),
-            TexText("Characteristic\\\\polynomial"),
-            TexText("Eigenvalues"),
+            OldTexText("Matrix"),
+            OldTexText("Characteristic\\\\polynomial"),
+            OldTexText("Eigenvalues"),
         )
         for label, mob, color in zip(labels, group, [COL_COLORS[0], EIGEN_COLORS[0], MEAN_COLOR]):
             label.set_color(color)
@@ -2748,7 +2748,7 @@ class SkipTheMiddleStep(Scene):
 
         #
         frame = self.camera.frame
-        quad_form = Tex(
+        quad_form = OldTex(
             "{-b \\pm \\sqrt{\\,b^2 - 4ac} \\over 2a}",
             tex_to_color_map={
                 "a": BLUE_B,
@@ -2756,7 +2756,7 @@ class SkipTheMiddleStep(Scene):
                 "c": BLUE_D,
             }
         )
-        words = TexText("Never could\\\\have worked!")
+        words = OldTexText("Never could\\\\have worked!")
         group = VGroup(quad_form, words)
         group.arrange(RIGHT, buff=LARGE_BUFF)
         group.next_to(arrows, UP, LARGE_BUFF)
@@ -2788,8 +2788,8 @@ class GeneralCharPoly(Scene):
             "=": WHITE,
         }
         det = get_det_mod_mat(get_mod_mat([["a", "b"], ["c", "d"]], t2c=t2c))
-        rhs1 = Tex("= (a - \\lambda)(d - \\lambda) - bc", tex_to_color_map=t2c)
-        rhs2 = Tex("= \\lambda^2 - (a + d)\\lambda + (ad - bc)", tex_to_color_map=t2c)
+        rhs1 = OldTex("= (a - \\lambda)(d - \\lambda) - bc", tex_to_color_map=t2c)
+        rhs2 = OldTex("= \\lambda^2 - (a + d)\\lambda + (ad - bc)", tex_to_color_map=t2c)
 
         rhs1.next_to(det, RIGHT)
         rhs2.next_to(rhs1, DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)

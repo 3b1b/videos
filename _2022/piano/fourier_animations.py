@@ -388,7 +388,7 @@ class DecomposeAudioSegment(Scene):
         frame.target.set_euler_angles(1.22, 1.54)
         frame.target.move_to([1.92, 7.29, 1.05])
 
-        fft_label = TexText("|Fourier Transform|", font_size=60)
+        fft_label = OldTexText("|Fourier Transform|", font_size=60)
         fft_label.rotate(PI / 2, RIGHT).rotate(PI / 2, OUT)
         fft_label.next_to(f_axes.i2gp(freqs[5], fft_graph), OUT)
         fft_label.set_color(GREEN)
@@ -680,7 +680,7 @@ class SignalsAsVectors(DecomposeAudioSegment):
             VGroup(axes.deepcopy(), cg)
             for cg in component_graphs[2:2 + n_parts_shown]
         ))
-        comp_groups.add(Tex("\\vdots").set_height(comp_groups.get_height() / 2))
+        comp_groups.add(OldTex("\\vdots").set_height(comp_groups.get_height() / 2))
         comp_groups.arrange(DOWN, buff=0.75 * comp_groups.get_height())
         comp_groups.set_height(7.5)
         comp_groups.move_to(frame).to_edge(RIGHT, buff=MED_SMALL_BUFF)
@@ -717,9 +717,9 @@ class SignalsAsVectors(DecomposeAudioSegment):
             c_vector.set_color(c_graph.get_color())
             c_vectors.add(c_vector)
 
-        syms = VGroup(Tex("="), *(Tex("+") for v in c_vectors[1:]))
-        coef_syms = VGroup(*(Tex(f"c_{i}") for i in range(1, 4)))
-        coef_syms.add(Tex("\\cdots"))
+        syms = VGroup(OldTex("="), *(OldTex("+") for v in c_vectors[1:]))
+        coef_syms = VGroup(*(OldTex(f"c_{i}") for i in range(1, 4)))
+        coef_syms.add(OldTex("\\cdots"))
         last_vect = vector
         buff = 0.15
         for sym, coef_sym, c_vect in zip(syms, coef_syms, c_vectors):
@@ -778,9 +778,9 @@ class SignalsAsVectors(DecomposeAudioSegment):
 class SampleRateOverlay(Scene):
     def construct(self):
         text = VGroup(
-            TexText("48,000 samples / sec"),
-            Tex("\\Downarrow"),
-            TexText("20 ms window", " = 960-dimensional vector")
+            OldTexText("48,000 samples / sec"),
+            OldTex("\\Downarrow"),
+            OldTexText("20 ms window", " = 960-dimensional vector")
         )
         text.arrange(DOWN)
         text.to_edge(UP)
@@ -903,15 +903,15 @@ class ThreeDChangeOfBasisExample(Scene):
 
     def get_coef_label(self, vect_mob, basis_mobs, lhs_tex="\\vec{\\textbf{s}}"):
         label = VGroup()
-        lhs = Tex(lhs_tex + "=")
+        lhs = OldTex(lhs_tex + "=")
         label.numbers = VGroup(*(
             DecimalNumber(include_sign=True)
             for b in basis_mobs
         ))
         label.basis_labels = VGroup(*(
-            Tex("\\vec{\\textbf{v}}_1", color=RED),
-            Tex("\\vec{\\textbf{v}}_2", color=GREEN),
-            Tex("\\vec{\\textbf{v}}_3", color=BLUE),
+            OldTex("\\vec{\\textbf{v}}_1", color=RED),
+            OldTex("\\vec{\\textbf{v}}_2", color=GREEN),
+            OldTex("\\vec{\\textbf{v}}_3", color=BLUE),
         ))
 
         label.add(lhs)

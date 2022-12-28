@@ -11,26 +11,26 @@ from hilbert.section1 import get_mathy_and_bubble
 
 class SectionThree(Scene):
     def construct(self):
-        self.add(TexText("A few words on the usefulness of infinite math"))
+        self.add(OldTexText("A few words on the usefulness of infinite math"))
         self.wait()
 
 
 class InfiniteResultsFiniteWorld(Scene):
     def construct(self):
-        left_words = TexText("Infinite result")
-        right_words = TexText("Finite world")
+        left_words = OldTexText("Infinite result")
+        right_words = OldTexText("Finite world")
         for words in left_words, right_words:
             words.scale(0.8)
-        left_formula = Tex(
+        left_formula = OldTex(
             "\\sum_{n = 0}^{\\infty} 2^n = -1"
         )
-        right_formula = Tex("111\\cdots111")
+        right_formula = OldTex("111\\cdots111")
         for formula in left_formula, right_formula:
             formula.add(
                 Brace(formula, UP),
             )
             formula.ingest_submobjects()
-        right_overwords = TexText(
+        right_overwords = OldTexText(
             "\\substack{\
                 \\text{How computers} \\\\ \
                 \\text{represent $-1$}\
@@ -72,13 +72,13 @@ class InfiniteResultsFiniteWorld(Scene):
     def finite_analog(self, left_mob, arrow, right_mob):
         self.clear()
         self.add(left_mob, arrow, right_mob)
-        ex = TexText("\\times")
+        ex = OldTexText("\\times")
         ex.set_color(RED)
         # ex.shift(arrow.get_center())
-        middle = Tex(
+        middle = OldTex(
             "\\sum_{n=0}^N 2^n \\equiv -1 \\mod 2^{N+1}"
         )
-        finite_analog = TexText("Finite analog")
+        finite_analog = OldTexText("Finite analog")
         finite_analog.scale(0.8)
         brace = Brace(middle, UP)
         finite_analog.next_to(brace, UP)
@@ -121,7 +121,7 @@ class InfiniteResultsFiniteWorld(Scene):
     def equivalence(self, left_mob, arrow, right_mob):
         self.clear()
         self.add(left_mob, arrow, right_mob)
-        words = TexText("is equivalent to")
+        words = OldTexText("is equivalent to")
         words.shift(0.25*LEFT)
         words.set_color(BLUE)
         new_left = left_mob.copy().shift(RIGHT)
@@ -150,7 +150,7 @@ class HilbertCurvesStayStable(Scene):
         curve = HilbertCurve(order = 2)
         for mob in grid, curve:
             mob.scale(scale_factor)
-        words = TexText("""
+        words = OldTexText("""
             Sequence of curves is stable 
             $\\leftrightarrow$ existence of limit curve
         """, size = "\\normal")
@@ -195,7 +195,7 @@ class InfiniteObjectsEncapsulateFiniteObjects(Scene):
 
     def construct(self):
         words =[
-            TexText(text, size = "\\large")
+            OldTexText(text, size = "\\large")
             for text in [
                 "Truths about infinite objects", 
                 " encapsulate ", 
@@ -208,22 +208,22 @@ class InfiniteObjectsEncapsulateFiniteObjects(Scene):
         words[2].set_color(GREEN).next_to(words[1])
         Mobject(*words).center().to_edge(UP)
         infinite_objects = [
-            Tex(
+            OldTex(
                 "\\sum_{n=0}^\\infty", 
                 size = "\\normal"
             ).set_color(RED_E),
             Sierpinski(order = 8).scale(0.3),
-            TexText(
+            OldTexText(
                 "$\\exists$ something infinite $\\dots$"
             ).set_color(RED_B)
         ]
         finite_objects = [
-            Tex(
+            OldTex(
                 "\\sum_{n=0}^N",
                 size = "\\normal"
             ).set_color(GREEN_E),
             self.get_triangles(),
-            TexText(
+            OldTexText(
                 "$\\forall$ finite somethings $\\dots$"
             ).set_color(GREEN_B)
         ]

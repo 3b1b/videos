@@ -25,7 +25,7 @@ class Introduction(TeacherStudentsScene):
         self.this_video = this_video
 
 
-        words = TexText(
+        words = OldTexText(
             "Welcome to \\\\",
             "Essence of Probability"
         )

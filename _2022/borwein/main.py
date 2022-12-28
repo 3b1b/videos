@@ -28,7 +28,7 @@ def get_sinc_tex(k=1):
 
 
 def get_multi_sinc_integral(ks=[1], dots_at=None, rhs="", insertion=""):
-    result = Tex(
+    result = OldTex(
         R"\int_{-\infty}^\infty",
         insertion,
         *(
@@ -68,7 +68,7 @@ class ShowIntegrals(InteractiveScene):
         left_sinc = VMobject().set_points_smoothly(points[:len(points) // 2]).reverse_points()
         VGroup(left_sinc, right_sinc).match_style(graph).make_jagged()
 
-        func_label = MTex(R"{\sin(x) \over x}")
+        func_label = Tex(R"{\sin(x) \over x}")
         func_label.move_to(axes, UP).to_edge(LEFT)
 
         self.add(axes)
@@ -81,13 +81,13 @@ class ShowIntegrals(InteractiveScene):
         self.wait()
 
         # Discuss sinc function?
-        sinc_label = Tex(R"\text{sinc}(x)")
+        sinc_label = OldTex(R"\text{sinc}(x)")
         sinc_label.next_to(func_label, UR, buff=LARGE_BUFF)
         arrow = Arrow(func_label, sinc_label)
 
         one_over_x_graph = axes.get_graph(lambda x: 1 / x, x_range=(0.1, 8 * PI))
         one_over_x_graph.set_stroke(YELLOW, 2)
-        one_over_x_label = Tex("1 / x")
+        one_over_x_label = OldTex("1 / x")
         one_over_x_label.next_to(axes.i2gp(1, one_over_x_graph), RIGHT)
         sine_wave = axes.get_graph(np.sin, x_range=(0, 8 * PI)).set_stroke(TEAL, 3)
         half_sinc = axes.get_graph(sinc, x_range=(0, 8 * PI)).set_stroke(BLUE, 3)
@@ -122,9 +122,9 @@ class ShowIntegrals(InteractiveScene):
         hole.set_fill(BLACK, 1)
         hole.move_to(axes.c2p(0, 1))
 
-        zero_eq = Tex(R"{\sin(0) \over 0} = ???")
+        zero_eq = OldTex(R"{\sin(0) \over 0} = ???")
         zero_eq.next_to(hole, UR)
-        lim = Tex(R"\lim_{x \to 0} {\sin(x) \over x} = 1")
+        lim = OldTex(R"\lim_{x \to 0} {\sin(x) \over x} = 1")
         lim.move_to(zero_eq, LEFT)
         x_tracker = ValueTracker(1.5 * PI)
         get_x = x_tracker.get_value
@@ -149,7 +149,7 @@ class ShowIntegrals(InteractiveScene):
         # Area under curve
         area = self.get_area(axes, graph)
         int1 = self.get_integral(1)
-        rhs = Tex(R"=\pi")
+        rhs = OldTex(R"=\pi")
         rhs.next_to(int1, RIGHT)
 
         origin = axes.get_origin()
@@ -188,7 +188,7 @@ class ShowIntegrals(InteractiveScene):
         low_sinc.set_stroke(BLUE, 2)
         low_graph = low_axes.get_graph(lambda x: sinc(x / 3))
         low_graph.set_stroke(WHITE, 2)
-        low_label = Tex(R"{\sin(x / 3) \over x / 3}")
+        low_label = OldTex(R"{\sin(x / 3) \over x / 3}")
         low_label.match_x(int1[1]).shift(1.75 * LEFT).match_y(low_axes.get_top())
 
         self.play(
@@ -217,9 +217,9 @@ class ShowIntegrals(InteractiveScene):
                 new_int.scale(0.7)
             new_int.move_to(curr_int, LEFT)
             if n < 8:  # TODO
-                new_rhs = MTex(R"=\pi")
+                new_rhs = Tex(R"=\pi")
             else:
-                new_rhs = MTex(R"\approx \pi - 4.62 \times 10^{-11}")
+                new_rhs = Tex(R"\approx \pi - 4.62 \times 10^{-11}")
             new_rhs.next_to(new_int, RIGHT)
 
             new_graph = axes.get_graph(lambda x, n=n: multi_sinc(x, n))
@@ -244,7 +244,7 @@ class ShowIntegrals(InteractiveScene):
             if n < 8:
                 new_low_graph = low_axes.get_graph(lambda x, n=n: sinc(x / (2 * n + 1)))
                 new_low_graph.match_style(low_graph)
-                new_low_label = Tex(fR"{{\sin(x / {2 * n + 1}) \over x / {2 * n + 1}}}")
+                new_low_label = OldTex(fR"{{\sin(x / {2 * n + 1}) \over x / {2 * n + 1}}}")
                 new_low_label.move_to(low_label)
                 if n == 4:
                     new_low_label.shift(0.5 * UP)
@@ -264,7 +264,7 @@ class ShowIntegrals(InteractiveScene):
             low_label = new_low_label
 
         # More accurate rhs
-        new_rhs = Tex(Rf"= {get_fifteenth_frac_tex()} \pi")
+        new_rhs = OldTex(Rf"= {get_fifteenth_frac_tex()} \pi")
         new_rhs.next_to(curr_int, DOWN, buff=LARGE_BUFF)
 
         self.play(
@@ -305,7 +305,7 @@ class ShowIntegrals(InteractiveScene):
         return rects
 
     def get_integral(self, n):
-        return Tex(
+        return OldTex(
             R"\int_{-\infty}^\infty",
             R"{\sin(x) \over x}",
             *(
@@ -359,12 +359,12 @@ class SineLimit(InteractiveScene):
             normalize(rotate_vector(radial_line.get_vector(), PI / 2)),
             buff=SMALL_BUFF,
         ))
-        sine_label = Tex(R"\sin(x)", font_size=24)
+        sine_label = OldTex(R"\sin(x)", font_size=24)
         sine_label.set_backstroke()
         sine_label.add_updater(lambda m: m.set_max_height(0.2 * h_line.get_height()))
         sine_label.add_updater(lambda m: m.next_to(h_line, LEFT, buff=0.25 * m.get_width()))
 
-        x_label = Tex("x", font_size=24)
+        x_label = OldTex("x", font_size=24)
         x_label.add_updater(lambda m: m.match_width(sine_label[0][4]))
         x_label.add_updater(lambda m: m.next_to(arc.pfp(0.5), RIGHT, buff=m.get_height()))
 
@@ -374,7 +374,7 @@ class SineLimit(InteractiveScene):
         self.add(x_label)
 
         value_label = VGroup(
-            Tex(R"\frac{\sin(x)}{x} = "),
+            OldTex(R"\frac{\sin(x)}{x} = "),
             DecimalNumber(1, num_decimal_places=4)
         )
         value_label.arrange(RIGHT, buff=SMALL_BUFF)
@@ -417,9 +417,9 @@ class WriteFullIntegrals(InteractiveScene):
         for inter in ints:
             inter[-1].scale(1.5, about_edge=LEFT)
 
-        q_marks = Tex("???", color=RED).scale(2)
+        q_marks = OldTex("???", color=RED).scale(2)
         q_marks.next_to(ints[-1], RIGHT, buff=MED_LARGE_BUFF)
-        correction = Tex("- 0.0000000000462...").scale(1.25)
+        correction = OldTex("- 0.0000000000462...").scale(1.25)
         correction.next_to(ints[-1], RIGHT, SMALL_BUFF)
 
         # Show all
@@ -521,7 +521,7 @@ class WriteOutIntegrals(InteractiveScene):
             get_multi_sinc_integral([1], rhs=R"= \pi"),
             get_multi_sinc_integral([1, 3], rhs=R"= \pi"),
             get_multi_sinc_integral([1, 3, 5], rhs=R"= \pi"),
-            Tex(R"\vdots"),
+            OldTex(R"\vdots"),
             get_multi_sinc_integral([1, 3, 5, 7, 13], dots_at=7, rhs=R"= \pi"),
             get_multi_sinc_integral([1, 3, 5, 7, 13, 15], dots_at=7, rhs=Rf"= ({SUB_ONE_FACTOR}\dots)\pi"),
         )
@@ -540,26 +540,26 @@ class WriteOutIntegralsWithPi(WriteOutIntegrals):
             "x/15": RED_B,
         }
         result = VGroup(
-            Tex(
+            OldTex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"dx = ", "1.0"
             ),
-            Tex(
+            OldTex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
                 R"dx = ", "1.0"
             ),
-            Tex(
+            OldTex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
                 R"\frac{\sin(\pi x/5)}{\pi x/5}",
                 R"dx = ", "1.0"
             ),
-            Tex(R"\vdots"),
-            Tex(
+            OldTex(R"\vdots"),
+            OldTex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
@@ -568,7 +568,7 @@ class WriteOutIntegralsWithPi(WriteOutIntegrals):
                 R"\frac{\sin(\pi x/13)}{\pi x/13}",
                 R"dx = ", "1.0"
             ),
-            Tex(
+            OldTex(
                 R"\int_{-\infty}^\infty",
                 R"\frac{\sin(\pi x)}{\pi x}",
                 R"\frac{\sin(\pi x/3)}{\pi x/3}",
@@ -655,7 +655,7 @@ class WriteTwoCosPattern(InteractiveScene):
                 get_multi_sinc_integral(range(1, n, 2), insertion=R"2\cos(x)", rhs=R"= \pi")
                 for n in range(1, 7, 2)
             ),
-            Tex(R"\vdots"),
+            OldTex(R"\vdots"),
             get_multi_sinc_integral([1, 3, 5, 111], dots_at=5, insertion=R"2\cos(x)", rhs=R"= \pi"),
             get_multi_sinc_integral([1, 3, 5, 111, 113], dots_at=5, insertion=R"2\cos(x)", rhs=R"= \pi"),
         )
@@ -682,11 +682,11 @@ class WriteTwoCosPattern(InteractiveScene):
         # RHS
         text = Text("A tiny-but-definitely-positive number\nthat my computer couldn't evaluate\nin a reasonable amount of time")
         text.scale(0.5)
-        parens = Tex("()")[0]
+        parens = OldTex("()")[0]
         parens.match_height(text)
         parens[0].next_to(text, LEFT, SMALL_BUFF)
         parens[1].next_to(text, RIGHT, SMALL_BUFF)
-        minus = Tex("-").next_to(parens, LEFT)
+        minus = OldTex("-").next_to(parens, LEFT)
         rhs = VGroup(minus, parens, text)
 
         rhs.next_to(integrals[-1], RIGHT, buff=SMALL_BUFF)
@@ -728,7 +728,7 @@ class MovingAverages(InteractiveScene):
         self.wait()
 
         # Add f1 label
-        f1_label = Tex("f_1(x) = ")
+        f1_label = OldTex("f_1(x) = ")
         f1_label.next_to(rect_def, LEFT, buff=0.2)
 
         self.play(Write(f1_label, stroke_color=WHITE))
@@ -767,9 +767,9 @@ class MovingAverages(InteractiveScene):
             window_group = self.show_moving_average(axes, low_axes, graphs[n], k_range[n - 1])
 
             # Label low graph
-            fn_label = Tex(f"f_{{{n + 1}}}(x)", font_size=36)
+            fn_label = OldTex(f"f_{{{n + 1}}}(x)", font_size=36)
             fn_label.move_to(low_axes.c2p(0.5 * rs, 1), UL)
-            fn0_label = Tex(f"f_{{{n + 1}}}(0) = " + ("1.0" if n < self.n_iterations - 1 else "0.9999999999852937..."), font_size=36)
+            fn0_label = OldTex(f"f_{{{n + 1}}}(0) = " + ("1.0" if n < self.n_iterations - 1 else "0.9999999999852937..."), font_size=36)
             fn0_label.next_to(fn_label, DOWN, aligned_edge=LEFT)
 
             self.play(Write(fn_label, stroke_color=WHITE), run_time=anim_time)
@@ -897,7 +897,7 @@ class MovingAverages(InteractiveScene):
         arrows[0].shift(0.5 * arrow_buff * RIGHT)
         arrows[1].shift(0.5 * arrow_buff * LEFT)
         arrows.next_to(window.get_bottom(), UP, buff=0.5)
-        width_label = Tex(f"1 / {k}", font_size=24)
+        width_label = OldTex(f"1 / {k}", font_size=24)
         width_label.set_backstroke(width=4)
         width_label.set_max_width(min(arrows.get_width(), 0.5))
         width_label.next_to(arrows, UP)
@@ -939,7 +939,7 @@ class MovingAverages(InteractiveScene):
         return result
 
     def get_rect_func_def(self):
-        return MTex(
+        return Tex(
             R"""\text{rect}(x) :=
             \begin{cases}
                 1 & \text{if } \text{-}\frac{1}{2} < x < \frac{1}{2} \\
@@ -965,7 +965,7 @@ class LongerTimescaleMovingAverages(MovingAverages):
     quick_transitions = True
 
     def get_rect_func_def(self):
-        return MTex(
+        return Tex(
             R"""\text{long\_rect}(x) :=
             \begin{cases}
                 1 & \text{if } \text{-}1 < x < 1 \\
@@ -1026,7 +1026,7 @@ class ShowReciprocalSums(InteractiveScene):
             tally += 1 / (2 * k + 1)
         tex_parts[-1] = "="
         tex_parts.append(R"{:.06f}\dots".format(tally))
-        return Tex(*tex_parts)
+        return OldTex(*tex_parts)
 
 
 class LongerReciprocalSums(ShowReciprocalSums):
@@ -1038,7 +1038,7 @@ class LongerReciprocalSums(ShowReciprocalSums):
             self.get_sum(n)
             for n in [1, 2, 3, 4, 54, 55, 56]
         ))
-        dots = Tex(R"\vdots")
+        dots = OldTex(R"\vdots")
         group = VGroup(*equations[:4], dots, *equations[4:])
         group.arrange(DOWN, buff=0.35, aligned_edge=RIGHT)
         dots.shift(2 * LEFT)
@@ -1110,7 +1110,7 @@ class MoreGeneralFact(InteractiveScene):
         brace = Brace(rect)
         brace_text = brace.get_text("Nothing special", font_size=36)
 
-        general_group = Tex(
+        general_group = OldTex(
             R"\frac{\sin(a_1 x)}{a_1 x}",
             R"\cdots",
             R"\frac{\sin(a_n x)}{a_n x}",
@@ -1137,7 +1137,7 @@ class MoreGeneralFact(InteractiveScene):
 
         # Sum condition
         sum_tex = brace.get_tex(R"a_1 + \cdots + a_n < 1")[0]
-        lt = Tex("<")
+        lt = OldTex("<")
         eq = inters[-1][-1][0]
         lt.move_to(eq)
 
@@ -1173,8 +1173,8 @@ class WaysToCombineFunctions(InteractiveScene):
         f_graph = axes1.get_graph(f, color=BLUE)
         g_graph = axes2.get_graph(g, color=YELLOW)
 
-        f_label = Tex(R"f(x) = \sin(x) + 1", color=BLUE)[0]
-        g_label = Tex(R"g(x) = e^{-x^2}", color=YELLOW)[0]
+        f_label = OldTex(R"f(x) = \sin(x) + 1", color=BLUE)[0]
+        g_label = OldTex(R"g(x) = e^{-x^2}", color=YELLOW)[0]
         f_label.move_to(axes1.c2p(-1.5, 1.5))
         g_label.move_to(axes2.c2p(-1.5, 1.5))
 
@@ -1194,9 +1194,9 @@ class WaysToCombineFunctions(InteractiveScene):
         conv_graph.match_style(prod_graph)
         graphs = (sum_graph, prod_graph, conv_graph)
 
-        sum_label = Tex("[f + g](x)")
-        prod_label = Tex(R"[f \cdot g](x)")
-        conv_label = Tex(R"[f * g](x)")
+        sum_label = OldTex("[f + g](x)")
+        prod_label = OldTex(R"[f \cdot g](x)")
+        conv_label = OldTex(R"[f * g](x)")
         labels = (sum_label, prod_label, conv_label)
         for label in labels:
             label.move_to(axes3.c2p(-1.5, 1.5))
@@ -1242,10 +1242,10 @@ class ReplaceXWithPiX(InteractiveScene):
         self.add(partial_area, axes, sinc_graph)
 
         # Setup labels
-        sinc_label = MTex(R"\int_{-\infty}^\infty \frac{\sin(x)}{x} dx = \pi")
+        sinc_label = Tex(R"\int_{-\infty}^\infty \frac{\sin(x)}{x} dx = \pi")
         sinc_label.next_to(axes, UP).to_edge(LEFT)
         kw = dict(tex_to_color_map={R"\pi": TEAL})
-        sinc_pi_label = MTex(
+        sinc_pi_label = Tex(
             R"\int_{-\infty}^\infty \frac{\sin(\pi x)}{\pi x} dx = 1.0",
             **kw
         )
@@ -1276,7 +1276,7 @@ class ReplaceXWithPiX(InteractiveScene):
         self.wait()
 
         # Squish
-        x_to_pix = MTex(R"x \rightarrow \pi x", **kw)
+        x_to_pix = Tex(R"x \rightarrow \pi x", **kw)
         x_to_pix.match_y(instead_of)
 
         squish_arrows = VGroup(Vector(RIGHT), Vector(LEFT))
@@ -1346,12 +1346,12 @@ class WhatWeNeedToShow(InteractiveScene):
         }
         kw = dict(tex_to_color_map=t2c, font_size=36)
         expressions = VGroup(
-            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t})}{\pi {t}} \right]({\omega}) = \text{rect}({\omega})", **kw),
-            MTex(R"\mathcal{F}\left[\frac{\sin(\pi {t} / {k})}{\pi {t} / {k}} \right]({\omega}) = {k} \cdot \text{rect}({k}{\omega})", **kw),
-            MTex(R"\int_{-\infty}^\infty f({t}) dt = \mathcal{F}\left[ f({t}) \right](0)", **kw),
-            MTex(R"\int_{-\infty}^\infty \frac{\sin(\pi {t})}{\pi {t}} dt = \text{rect}(0) = 1", **kw),
-            MTex(R"\mathcal{F}\left[ f({t}) \cdot g({t}) \right] = \mathcal{F}[f({t})] * \mathcal{F}[g({t})]", **kw),
-            MTex(
+            Tex(R"\mathcal{F}\left[\frac{\sin(\pi {t})}{\pi {t}} \right]({\omega}) = \text{rect}({\omega})", **kw),
+            Tex(R"\mathcal{F}\left[\frac{\sin(\pi {t} / {k})}{\pi {t} / {k}} \right]({\omega}) = {k} \cdot \text{rect}({k}{\omega})", **kw),
+            Tex(R"\int_{-\infty}^\infty f({t}) dt = \mathcal{F}\left[ f({t}) \right](0)", **kw),
+            Tex(R"\int_{-\infty}^\infty \frac{\sin(\pi {t})}{\pi {t}} dt = \text{rect}(0) = 1", **kw),
+            Tex(R"\mathcal{F}\left[ f({t}) \cdot g({t}) \right] = \mathcal{F}[f({t})] * \mathcal{F}[g({t})]", **kw),
+            Tex(
                 R"""\mathcal{F}\left[ \frac{\sin(\pi {t})}{\pi {t}} \cdot \frac{\sin(\pi {t} / 3)}{\pi {t} / 3} \right]
                 = \big[ \text{rect} * \text{rect}_3 \big]""",
                 **kw
@@ -1379,8 +1379,8 @@ class WhatWeNeedToShow(InteractiveScene):
         axes2.shift(axes1.get_origin() - axes2.get_origin())
         axes2.to_edge(RIGHT)
 
-        axes1.add(Tex("t", color=BLUE, font_size=24).next_to(axes1.x_axis.get_right(), UP, 0.2))
-        axes2.add(Tex(R"\omega", color=YELLOW, font_size=24).next_to(axes2.x_axis.get_right(), UP, 0.2))
+        axes1.add(OldTex("t", color=BLUE, font_size=24).next_to(axes1.x_axis.get_right(), UP, 0.2))
+        axes2.add(OldTex(R"\omega", color=YELLOW, font_size=24).next_to(axes2.x_axis.get_right(), UP, 0.2))
         axes1.add_coordinate_labels(font_size=20)
         axes2.add_coordinate_labels(x_values=np.arange(-1, 1.5, 0.5), font_size=20, num_decimal_places=1)
 
@@ -1407,8 +1407,8 @@ class WhatWeNeedToShow(InteractiveScene):
 
         graph2.add_updater(update_graph2)
 
-        graph1_label = MTex(R"{\sin(\pi {t}) \over \pi {t} }", **kw)
-        graph2_label = MTex(R"\text{rect}({\omega})", **kw)
+        graph1_label = Tex(R"{\sin(\pi {t}) \over \pi {t} }", **kw)
+        graph2_label = Tex(R"\text{rect}({\omega})", **kw)
         graph1_label.move_to(axes1.c2p(-2, 1))
         graph2_label.move_to(axes2.c2p(0.5, 2))
 
@@ -1416,7 +1416,7 @@ class WhatWeNeedToShow(InteractiveScene):
         arrow.set_color(TEAL)
         arrow_copy = arrow.copy()
         arrow_copy.rotate(PI, about_point=midpoint(axes1.c2p(4, 0), axes2.c2p(-1, 0)))
-        arrow_label = MTex(R"\mathcal{F}", color=TEAL)
+        arrow_label = Tex(R"\mathcal{F}", color=TEAL)
         arrow_label.next_to(arrow, UP, SMALL_BUFF)
         arrow_label_copy = arrow_label.copy()
         arrow_label_copy.next_to(arrow_copy.pfp(0.5), UP)
@@ -1457,8 +1457,8 @@ class WhatWeNeedToShow(InteractiveScene):
         self.wait()
 
         # Generalize
-        graph1_gen_label = MTex(R"{\sin(\pi {t} / {k}) \over \pi {t} / {k} }", **kw)
-        graph2_gen_label = MTex(R"{k} \cdot \text{rect}({k} {\omega})", **kw)
+        graph1_gen_label = Tex(R"{\sin(\pi {t} / {k}) \over \pi {t} / {k} }", **kw)
+        graph2_gen_label = Tex(R"{k} \cdot \text{rect}({k} {\omega})", **kw)
         graph1_gen_label.move_to(graph1_label)
         graph2_gen_label.move_to(graph2_label)
         ft_sinck.move_to(ft_sinc)
@@ -1543,7 +1543,7 @@ class WhatWeNeedToShow(InteractiveScene):
         conv_theorem.set_height(0.45)
         conv_theorem.next_to(underline, DOWN, MED_LARGE_BUFF)
         conv_theorem_ex.next_to(underline, DOWN, MED_LARGE_BUFF)
-        conv_theorem_name = TexText("``Convolution theorem''", font_size=60)
+        conv_theorem_name = OldTexText("``Convolution theorem''", font_size=60)
         conv_theorem_name.next_to(conv_theorem, DOWN, buff=MED_LARGE_BUFF)
         conv_theorem_name.set_color(YELLOW)
 
@@ -1636,12 +1636,12 @@ class ConvolutionTheoremDiagram(InteractiveScene):
 
         # Labels
         left_labels = VGroup(
-            Tex(R"\frac{\sin(\pi x)}{\pi x}")[0],
-            Tex(R"\frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
-            Tex(R"\frac{\sin(\pi x)}{\pi x} \cdot \frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
+            OldTex(R"\frac{\sin(\pi x)}{\pi x}")[0],
+            OldTex(R"\frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
+            OldTex(R"\frac{\sin(\pi x)}{\pi x} \cdot \frac{\sin(\pi x / 2)}{\pi x / 2}")[0],
         )
         right_labels = VGroup(*(
-            Tex(
+            OldTex(
                 Rf"\mathcal{{F}}\left[{ll.get_tex()}\right]",
                 tex_to_color_map={R"\mathcal{F}": TEAL}
             )
@@ -1693,9 +1693,9 @@ class ConvolutionTheoremDiagram(InteractiveScene):
         right_labels[2].generate_target()
         equation = VGroup(
             right_labels[2].target,
-            Tex("=").scale(0.75),
+            OldTex("=").scale(0.75),
             right_labels[0].copy(),
-            Tex("*").scale(0.75),
+            OldTex("*").scale(0.75),
             right_labels[1].copy(),
         )
         equation.arrange(RIGHT, buff=SMALL_BUFF)
@@ -1766,15 +1766,15 @@ class MultiplyBigNumbers(InteractiveScene):
     def construct(self):
         # Numbers
         numbers = VGroup(
-            MTex("3{,}141{,}592{,}653{,}589{,}793{,}238"),
-            MTex("2{,}718{,}281{,}828{,}459{,}045{,}235"),
+            Tex("3{,}141{,}592{,}653{,}589{,}793{,}238"),
+            Tex("2{,}718{,}281{,}828{,}459{,}045{,}235"),
         )
         numbers.arrange(DOWN, aligned_edge=RIGHT)
         numbers.scale(1.5)
         numbers.move_to(1.0 * DOWN)
         underline = Underline(numbers).set_stroke(WHITE, 2)
         underline.stretch(1.2, 0, about_edge=RIGHT)
-        times = Tex(R"\times")
+        times = OldTex(R"\times")
         times.scale(1.5)
         times.next_to(underline.get_left(), UR)
 
@@ -1782,10 +1782,10 @@ class MultiplyBigNumbers(InteractiveScene):
         self.add(underline, times)
 
         # Prep run time
-        d_label = TexText("Two $N$-digit numbers", tex_to_color_map={"$N$": YELLOW})
+        d_label = OldTexText("Two $N$-digit numbers", tex_to_color_map={"$N$": YELLOW})
         d_label.next_to(numbers, UP, buff=LARGE_BUFF)
-        d2_label = Tex(R"\mathcal{O}(N^2)", font_size=60, tex_to_color_map={"N": YELLOW})
-        dlogd_label = Tex(R"\mathcal{O}({N} \cdot \text{log}({N}))", font_size=60, tex_to_color_map={"{N}": YELLOW})
+        d2_label = OldTex(R"\mathcal{O}(N^2)", font_size=60, tex_to_color_map={"N": YELLOW})
+        dlogd_label = OldTex(R"\mathcal{O}({N} \cdot \text{log}({N}))", font_size=60, tex_to_color_map={"{N}": YELLOW})
         os = VGroup(d2_label, dlogd_label)
         os.arrange(RIGHT, buff=2.5)
         os.next_to(d_label, UP, buff=LARGE_BUFF)
@@ -1793,7 +1793,7 @@ class MultiplyBigNumbers(InteractiveScene):
         cross = Cross(d2_label)
         cross.insert_n_curves(50).set_stroke(RED, (0, 8, 8, 8, 8, 0))
         check = Checkmark().scale(2).next_to(dlogd_label, RIGHT)
-        q_marks = Tex("?", font_size=72)
+        q_marks = OldTex("?", font_size=72)
         q_marks.next_to(d2_label, RIGHT)
 
         # Square run time

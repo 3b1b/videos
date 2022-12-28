@@ -25,7 +25,7 @@ HIGHT_QUALITY_AMBIENT_LIGHT_CONFIG = {
 
 
 def get_chord_f_label(chord, arg="f", direction=DOWN):
-    chord_f = TexText("Chord(", "$%s$" % arg, ")", arg_separator="")
+    chord_f = OldTexText("Chord(", "$%s$" % arg, ")", arg_separator="")
     chord_f.set_color_by_tex("$%s$" % arg, YELLOW)
     chord_f.add_background_rectangle()
     chord_f.next_to(chord.get_center(), direction, SMALL_BUFF)
@@ -68,7 +68,7 @@ def get_wallis_product(n_terms=6, show_result=True):
     if show_result:
         tex_mob_args += ["=", "{\\pi", "\\over", "2}"]
 
-    result = Tex(*tex_mob_args)
+    result = OldTex(*tex_mob_args)
     return result
 
 
@@ -135,7 +135,7 @@ class Introduction(Scene):
         pi_halves_arrow.next_to(
             number_line.number_to_point(np.pi / 2), DOWN, SMALL_BUFF
         )
-        pi_halves_term = Tex("\\pi / 2")
+        pi_halves_term = OldTex("\\pi / 2")
         pi_halves_term.next_to(pi_halves_arrow, DOWN)
 
         self.add(product_mob, number_line, rect, arrow, decimal)
@@ -169,11 +169,11 @@ class Introduction(Scene):
 class TableOfContents(Scene):
     def construct(self):
         topics = VGroup(
-            TexText("The setup"),
-            TexText("Circle geometry with complex polynomials"),
-            TexText("Proof of the Wallis product"),
-            TexText("Formalities not discussed"),
-            TexText(
+            OldTexText("The setup"),
+            OldTexText("Circle geometry with complex polynomials"),
+            OldTexText("Proof of the Wallis product"),
+            OldTexText("Formalities not discussed"),
+            OldTexText(
                 "Generalizing this proof to get \\\\ the product formula for sine"),
         )
         for topic in topics:
@@ -210,7 +210,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
         self.wait(2)
 
     def break_down_value_of_math_presentations(self):
-        title = TexText("The value of a", "math", "presentation")
+        title = OldTexText("The value of a", "math", "presentation")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         value_of, math, presentation = title
 
@@ -236,21 +236,21 @@ class SourcesOfOriginality(TeacherStudentsScene):
         left_rect.next_to(big_rect.get_left(), RIGHT, SMALL_BUFF)
         right_rect.next_to(big_rect.get_right(), LEFT, SMALL_BUFF)
 
-        underlying_math = TexText("Underlying", "math")
+        underlying_math = OldTexText("Underlying", "math")
         underlying_math.set_color(MATH_COLOR)
-        communication = TexText("Communication")
+        communication = OldTexText("Communication")
         communication.set_color(COMMUNICATION_COLOR)
         VGroup(underlying_math, communication).scale(0.75)
         underlying_math.next_to(left_rect.get_top(), DOWN, SMALL_BUFF)
         communication.next_to(right_rect.get_top(), DOWN, SMALL_BUFF)
 
-        formula = Tex(
+        formula = OldTex(
             "\\sum_{n = 1}^\\infty \\frac{1}{n^2} = \\frac{\\pi^2}{2}",
         )
         formula.scale(0.75)
         formula.next_to(underlying_math, DOWN)
 
-        based_on_wastlund = TexText(
+        based_on_wastlund = OldTexText(
             "Previous video based on\\\\",
             "a paper by Johan W\\\"{a}stlund"
         )
@@ -258,7 +258,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             left_rect.get_width() - MED_SMALL_BUFF)
         based_on_wastlund.next_to(formula, DOWN, MED_LARGE_BUFF)
 
-        communication_parts = TexText("Visuals, narrative, etc.")
+        communication_parts = OldTexText("Visuals, narrative, etc.")
         communication_parts.scale(0.75)
         communication_parts.next_to(communication, DOWN, MED_LARGE_BUFF)
         lighthouse = Lighthouse(height=0.5)
@@ -346,7 +346,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
             blob.set_stroke(width=0)
             blob.set_fill(BLUE, opacity=0.5)
 
-        our_contribution = TexText("Our target \\\\ contribution")
+        our_contribution = OldTexText("Our target \\\\ contribution")
         our_contribution.scale(0.75)
         our_contribution.to_corner(UR)
         arrow = Arrow(
@@ -359,11 +359,11 @@ class SourcesOfOriginality(TeacherStudentsScene):
         wallis_product.set_width(
             left_rect.get_width() - 2 * MED_LARGE_BUFF)
         wallis_product.move_to(self.math_content, UP)
-        wallis_product_name = TexText("``Wallis product''")
+        wallis_product_name = OldTexText("``Wallis product''")
         wallis_product_name.scale(0.75)
         wallis_product_name.next_to(wallis_product, DOWN, MED_SMALL_BUFF)
 
-        new_proof = TexText("New proof")
+        new_proof = OldTexText("New proof")
         new_proof.next_to(wallis_product_name, DOWN, MED_LARGE_BUFF)
 
         self.play(
@@ -389,7 +389,7 @@ class SourcesOfOriginality(TeacherStudentsScene):
 
 class Six(Scene):
     def construct(self):
-        six = Tex("6")
+        six = OldTex("6")
         six.add_background_rectangle(opacity = 1)
         six.background_rectangle.stretch(1.5, 0)
         six.set_height(7)
@@ -415,7 +415,7 @@ class SridharWatchingScene(PiCreatureScene):
         bubble.flip()
         bubble.pin_to(sridhar)
 
-        basel = Tex(
+        basel = OldTex(
             "{1", "\\over", "1^2}", "+"
             "{1", "\\over", "2^2}", "+"
             "{1", "\\over", "3^2}", "+", "\\cdots",
@@ -426,7 +426,7 @@ class SridharWatchingScene(PiCreatureScene):
         basel.move_to(bubble.get_bubble_center())
         basel.to_edge(UP, buff=MED_SMALL_BUFF)
         wallis.next_to(basel, DOWN, buff=0.75)
-        arrow = Tex("\\updownarrow")
+        arrow = OldTex("\\updownarrow")
         arrow.move_to(VGroup(basel, wallis))
         basel.set_color(YELLOW)
         wallis.set_color(BLUE)
@@ -473,7 +473,7 @@ class ShowProduct(Scene):
 
         larger_parts = self.larger_parts = wallis_product_parts[::2]
         larger_parts.set_color(YELLOW)
-        dots = Tex("\\cdots")
+        dots = OldTex("\\cdots")
         dots.move_to(larger_parts[-1][-1], LEFT)
         larger_parts[-1][-1].submobjects = dots.submobjects
 
@@ -640,7 +640,7 @@ class ShowProduct(Scene):
         ))
         for i, tex, vect in (0, "\\cdot", LEFT), (-1, "\\cdots", RIGHT):
             part = smaller_parts.prefix.target[i]
-            dot = Tex(tex)
+            dot = OldTex(tex)
             dot.match_color(part)
             dot.next_to(part, vect, buff=2 * SMALL_BUFF)
             part.add(dot)
@@ -719,7 +719,7 @@ class ShowProduct(Scene):
         decimal = self.partial_product_decimal
         axes = self.axes
 
-        pi_halves = Tex("{\\pi", "\\over", "2}")
+        pi_halves = OldTex("{\\pi", "\\over", "2}")
         pi_halves.scale(1.5)
         pi_halves.move_to(decimal, UP)
 
@@ -888,7 +888,7 @@ class DistanceProductScene(MovingCameraScene):
             self.get_distance_lines()
         self.d_labels = VGroup()
         for i, line in enumerate(self.distance_lines):
-            d_label = Tex("d_%d" % i)
+            d_label = OldTex("d_%d" % i)
             d_label.set_height(self.d_label_height)
             vect = rotate_vector(line.get_vector(), 90 * DEGREES)
             vect *= 2.5 * SMALL_BUFF / get_norm(vect)
@@ -940,7 +940,7 @@ class DistanceProductScene(MovingCameraScene):
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(1.5 * stacked_labels.get_width())
         h_line.next_to(stacked_labels, DOWN, aligned_edge=RIGHT)
-        times = Tex("\\times")
+        times = OldTex("\\times")
         times.next_to(h_line, UP, SMALL_BUFF, aligned_edge=LEFT)
 
         product_decimal = DecimalNumber(
@@ -1065,7 +1065,7 @@ class IntroduceDistanceProduct(DistanceProductScene):
             ], buff=0)
             for dot in lh_dots
         ])
-        evenly_space_dots_label = TexText("Evenly-spaced \\\\ dots")
+        evenly_space_dots_label = OldTexText("Evenly-spaced \\\\ dots")
         evenly_space_dots_label.set_width(0.5 * circle.get_width())
         evenly_space_dots_label.move_to(circle)
 
@@ -1073,7 +1073,7 @@ class IntroduceDistanceProduct(DistanceProductScene):
         special_dot_arrow = Vector(DL)
         special_dot_arrow.next_to(special_dot, UR, SMALL_BUFF)
         special_dot_arrow.match_color(special_dot)
-        special_dot_label = TexText("Special dot")
+        special_dot_label = OldTexText("Special dot")
         special_dot_label.next_to(
             special_dot_arrow.get_start(), UP, SMALL_BUFF)
         special_dot_label.match_color(special_dot)
@@ -1121,7 +1121,7 @@ class IntroduceDistanceProduct(DistanceProductScene):
         lines = self.get_distance_lines()
         labels = self.get_symbolic_distance_labels()
 
-        sum_of_inverse_squares = Tex(*it.chain(*[
+        sum_of_inverse_squares = OldTex(*it.chain(*[
             ["{1", "\\over", "(", "d_%d" % i, ")", "^2}", "+"]
             for i in range(len(lines))
         ]))
@@ -1137,7 +1137,7 @@ class IntroduceDistanceProduct(DistanceProductScene):
         brace_text = brace.get_text("Total intensity of light")
 
         arrow = Vector(DOWN, color=WHITE).next_to(brace, DOWN)
-        basel_sum = Tex(
+        basel_sum = OldTex(
             "{1 \\over 1^2} + ",
             "{1 \\over 2^2} + ",
             "{1 \\over 3^2} + ",
@@ -1146,10 +1146,10 @@ class IntroduceDistanceProduct(DistanceProductScene):
         )
         basel_sum.next_to(arrow, DOWN)
         basel_cross = Cross(basel_sum)
-        useful_for = TexText("Useful for")
+        useful_for = OldTexText("Useful for")
         useful_for.next_to(arrow, RIGHT)
 
-        wallis_product = Tex(
+        wallis_product = OldTex(
             "{2 \\over 1} \\cdot", "{2 \\over 3} \\cdot",
             "{4 \\over 3} \\cdot", "{4 \\over 5} \\cdot",
             "{6 \\over 5} \\cdot", "{6 \\over 7} \\cdot",
@@ -1321,7 +1321,7 @@ class Lemma1(DistanceProductScene):
         self.wiggle_observer()
 
     def add_title(self):
-        title = self.title = TexText("Two lemmas:")
+        title = self.title = OldTexText("Two lemmas:")
         title.set_color(YELLOW)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(title)
@@ -1333,7 +1333,7 @@ class Lemma1(DistanceProductScene):
             *circle_group.family_members_with_points())))
 
     def state_lemma_premise(self):
-        premise = TexText(
+        premise = OldTexText(
             "Lemma 1: If observer is halfway between lighthouses,")
         self.premise = premise
         premise.next_to(self.title, DOWN)
@@ -1356,7 +1356,7 @@ class Lemma1(DistanceProductScene):
         self.wait()
 
     def show_product(self):
-        lemma = TexText(self.lemma_text)
+        lemma = OldTexText(self.lemma_text)
         lemma.set_color(BLUE)
         lemma.next_to(self.premise, DOWN)
         self.add_numeric_distance_labels()
@@ -1444,7 +1444,7 @@ class Lemma2(Lemma1):
         self.wiggle_observer()
 
     def state_lemma_premise(self):
-        premise = self.premise = TexText(
+        premise = self.premise = OldTexText(
             "Lemma 2: If the observer replaces a lighthouse,"
         )
         premise.next_to(self.title, DOWN)
@@ -1545,13 +1545,13 @@ class FromGeometryToAlgebra(DistanceProductScene):
             arcs, lag_ratio=0, run_time=2
         )
 
-        spacing_words = self.spacing_words = TexText("Evenly-spaced")
+        spacing_words = self.spacing_words = OldTexText("Evenly-spaced")
         spacing_words.set_width(self.get_radius())
         spacing_words.move_to(circle)
 
         arrows = self.get_arrows()
 
-        geometric_words = self.geometric_words = TexText(
+        geometric_words = self.geometric_words = OldTexText(
             "Geometric property")
         geometric_words.to_edge(UP)
         geometric_words.add_background_rectangle()
@@ -1585,27 +1585,27 @@ class FromGeometryToAlgebra(DistanceProductScene):
 
         geometric_words = self.geometric_words
         geometric_words.generate_target()
-        arrow = Tex("\\rightarrow")
+        arrow = OldTex("\\rightarrow")
         arrow.add_background_rectangle()
-        algebraic_words = TexText("Algebraic property")
+        algebraic_words = OldTexText("Algebraic property")
         algebraic_words.add_background_rectangle()
         word_group = VGroup(geometric_words.target, arrow, algebraic_words)
         word_group.arrange(RIGHT)
         word_group.move_to(origin)
         word_group.to_edge(UP)
 
-        unit_circle_words = TexText("Unit circle", "")
+        unit_circle_words = OldTexText("Unit circle", "")
         unit_circle_words.match_color(circle_group.target[0])
         for part in unit_circle_words:
             part.add_background_rectangle()
         unit_circle_words.next_to(origin, UP)
 
-        complex_plane_words = TexText("Complex Plane")
+        complex_plane_words = OldTexText("Complex Plane")
         self.complex_plane_words = complex_plane_words
         complex_plane_words.move_to(word_group)
         complex_plane_words.add_background_rectangle()
 
-        roots_of_unity_words = TexText("Roots of\\\\", "unity")
+        roots_of_unity_words = OldTexText("Roots of\\\\", "unity")
         roots_of_unity_words.move_to(origin)
         roots_of_unity_words.set_color(YELLOW)
         for part in roots_of_unity_words:
@@ -1672,7 +1672,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         )
 
         # Turn decimal into z
-        x_term = self.x_term = Tex("x")
+        x_term = self.x_term = OldTex("x")
         x_term.add_background_rectangle()
         x_term.move_to(complex_decimal, DOWN)
         x_term.shift(0.5 * SMALL_BUFF * (DR))
@@ -1685,7 +1685,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         plane = self.complex_plane
         origin = plane.number_to_point(0)
 
-        question = TexText("What is $x^2$")
+        question = OldTexText("What is $x^2$")
         question.next_to(x_term, RIGHT, LARGE_BUFF)
         question.set_color(YELLOW)
 
@@ -1703,7 +1703,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         ])
         angle_labels = VGroup()
         for i, arc in enumerate(angle_arcs):
-            label = Tex("(%d / %d)\\tau" % (i, self.num_lighthouses))
+            label = OldTex("(%d / %d)\\tau" % (i, self.num_lighthouses))
             label.scale(0.5)
             label.add_background_rectangle()
             point = arc.point_from_proportion(0.5)
@@ -1721,12 +1721,12 @@ class FromGeometryToAlgebra(DistanceProductScene):
         angle_label = angle_labels[1].copy()
         angle_label.shift(0.25 * SMALL_BUFF * DR)
 
-        magnitude_label = Tex("1")
+        magnitude_label = OldTex("1")
         magnitude_label.next_to(line.get_center(), UL, buff=SMALL_BUFF)
 
         power_labels = VGroup()
         for i, arrow in enumerate(outer_arrows[:-1]):
-            label = Tex("x^%d" % i)
+            label = OldTex("x^%d" % i)
             label.next_to(
                 arrow.get_start(), -arrow.get_vector(),
                 submobject_to_align=label[0]
@@ -1737,7 +1737,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         power_labels.submobjects[1] = x_term
 
         L_labels = self.L_labels = VGroup(*[
-            Tex("L_%d" % i).move_to(power_label, DOWN).add_background_rectangle(
+            OldTex("L_%d" % i).move_to(power_label, DOWN).add_background_rectangle(
                 opacity=1
             )
             for i, power_label in enumerate(power_labels)
@@ -1791,19 +1791,19 @@ class FromGeometryToAlgebra(DistanceProductScene):
         self.wait()
 
     def raise_everything_to_the_nth(self):
-        func_label = Tex("L \\rightarrow L^7")
+        func_label = OldTex("L \\rightarrow L^7")
         func_label.set_color(YELLOW)
         func_label.to_corner(UL, buff=LARGE_BUFF)
         func_label.add_background_rectangle()
 
         polynomial_scale_factor = 0.8
 
-        polynomial = Tex("x^%d - 1" % self.num_lighthouses, "=", "0")
+        polynomial = OldTex("x^%d - 1" % self.num_lighthouses, "=", "0")
         polynomial.scale(polynomial_scale_factor)
         polynomial.next_to(func_label, UP)
         polynomial.to_edge(LEFT)
 
-        factored_polynomial = Tex(
+        factored_polynomial = OldTex(
             "(x-L_0)(x-L_1)\\cdots(x-L_{%d - 1})" % self.num_lighthouses, "=", "0"
         )
         factored_polynomial.scale(polynomial_scale_factor)
@@ -1864,7 +1864,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         morty.scale(0.5)
         morty.next_to(brace.get_center(), DL, buff=LARGE_BUFF)
 
-        L1_rhs = Tex("= \\cos(\\tau / 7) + \\\\", "\\sin(\\tau / 7)i")
+        L1_rhs = OldTex("= \\cos(\\tau / 7) + \\\\", "\\sin(\\tau / 7)i")
         L1_rhs.next_to(self.L_labels[1], RIGHT, aligned_edge=UP)
         for part in L1_rhs:
             part.add_background_rectangle()
@@ -1899,7 +1899,7 @@ class FromGeometryToAlgebra(DistanceProductScene):
         sevens = VGroup(polynomial[0][1][1], factored_polynomial[0][1][-4])
         n_terms = VGroup()
         for seven in sevens:
-            n_term = Tex("N")
+            n_term = OldTex("N")
             n_term.replace(seven, dim_to_match=1)
             n_term.scale(0.9)
             n_term.shift(0.25 * SMALL_BUFF * DR)
@@ -1977,7 +1977,7 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
     def label_roots(self):
         origin = self.origin
         labels = VGroup(*[
-            Tex("L_%d" % d)
+            OldTex("L_%d" % d)
             for d in range(self.num_lighthouses)
         ])
         self.root_labels = labels
@@ -2020,15 +2020,15 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
         arrow.next_to(observer, -vect, buff=SMALL_BUFF)
         arrow.set_color(WHITE)
 
-        full_name = TexText("Observer")
-        var_name = self.var_name = Tex("O")
+        full_name = OldTexText("Observer")
+        var_name = self.var_name = OldTex("O")
         for mob in full_name, var_name:
             mob.match_color(observer)
             mob.next_to(arrow.get_start(), UP, SMALL_BUFF)
             mob.add_background_rectangle()
 
         complex_decimal = DecimalNumber(0, include_background_rectangle=True)
-        equals = Tex("=")
+        equals = OldTex("=")
         complex_decimal_animation = ChangingDecimal(
             complex_decimal,
             lambda a: self.plane.point_to_number(dot.get_center()),
@@ -2128,7 +2128,7 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
 
         text_scale_val = 0.8
 
-        question = TexText(
+        question = OldTexText(
             "What fraction \\\\", "between $L_0$ and $L_1$", "?",
             arg_separator=""
         )
@@ -2136,8 +2136,8 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
         question.next_to(dot, RIGHT)
         question.add_background_rectangle_to_submobjects()
 
-        f_words = TexText("$f$", "of the way")
-        third_words = TexText("$\\frac{1}{3}$", "of the way")
+        f_words = OldTexText("$f$", "of the way")
+        third_words = OldTexText("$\\frac{1}{3}$", "of the way")
         for words in f_words, third_words:
             words.scale(text_scale_val)
             words.move_to(question[0])
@@ -2159,13 +2159,13 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
         O_to_N_dot = dot.copy().move_to(O_to_N_arc.point_from_proportion(1))
         O_to_N_arrow = Vector(0.5 * DR).next_to(O_to_N_dot, UL, SMALL_BUFF)
         O_to_N_arrow.set_color(WHITE)
-        O_to_N_label = Tex("O", "^N")
+        O_to_N_label = OldTex("O", "^N")
         O_to_N_label.set_color_by_tex("O", dot.get_color())
         O_to_N_label.next_to(O_to_N_arrow.get_start(), UP, SMALL_BUFF)
         O_to_N_label.shift(SMALL_BUFF * RIGHT)
         O_to_N_group = VGroup(O_to_N_arc, O_to_N_arrow, O_to_N_label)
 
-        around_circle_words = TexText("around the circle")
+        around_circle_words = OldTexText("around the circle")
         around_circle_words.scale(text_scale_val)
         around_circle_words.add_background_rectangle()
         around_circle_words.next_to(self.circle.get_top(), UR)
@@ -2179,7 +2179,7 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
         )
         chord_halves.set_stroke(WHITE, 5)
 
-        chord_label = Tex("|", "O", "^N", "-", "1", "|")
+        chord_label = OldTex("|", "O", "^N", "-", "1", "|")
         chord_label.set_color_by_tex("O", MAROON_B)
         chord_label.add_background_rectangle()
         chord_label.next_to(chord.get_center(), DOWN, SMALL_BUFF)
@@ -2331,7 +2331,7 @@ class PlugObserverIntoPolynomial(DistanceProductScene):
     def get_polynomial_equation(self, var="x", color=None):
         if color is None:
             color = self.observer_config["color"]
-        equation = Tex(
+        equation = OldTex(
             "\\left(", var, "^N", "-", "1", "\\right)", "=",
             "\\left(", var, "-", "L_0", "\\right)",
             "\\left(", var, "-", "L_1", "\\right)",
@@ -2386,7 +2386,7 @@ class DefineChordF(Scene):
     def construct(self):
         radius = 2.5
 
-        full_chord_f = TexText(
+        full_chord_f = OldTexText(
             "``", "Chord(", "$f$", ")", "''", arg_separator="")
         full_chord_f.set_color_by_tex("$f$", YELLOW)
         full_chord_f.to_edge(UP)
@@ -2396,12 +2396,12 @@ class DefineChordF(Scene):
         circle = Circle(radius=2.5)
         circle.set_color(RED)
         radius_line = Line(circle.get_center(), circle.get_right())
-        one_label = Tex("1")
+        one_label = OldTex("1")
         one_label.next_to(radius_line, DOWN, SMALL_BUFF)
 
         chord = Line(*[circle.point_from_proportion(f) for f in [0, 1. / 3]])
         chord.set_color(YELLOW)
-        chord_third = TexText("Chord(", "$1/3$", ")", arg_separator="")
+        chord_third = OldTexText("Chord(", "$1/3$", ")", arg_separator="")
         chord_third.set_color_by_tex("1/3", YELLOW)
         for term in chord_third, chord_f.target:
             term.next_to(chord.get_center(), UP, SMALL_BUFF)
@@ -2418,12 +2418,12 @@ class DefineChordF(Scene):
         brace.target.move_to(brace, DR)
         brace.target.shift(2 * SMALL_BUFF * LEFT)
 
-        f_label = Tex("f")
+        f_label = OldTex("f")
         f_label.set_color(YELLOW)
         point = circle.point_from_proportion(1.0 / 6)
         f_label.move_to(point + 0.4 * (point - circle.get_center()))
 
-        third_label = Tex("\\frac{1}{3}")
+        third_label = OldTex("\\frac{1}{3}")
         third_label.scale(0.7)
         third_label.move_to(f_label)
         third_label.match_color(f_label)
@@ -2450,7 +2450,7 @@ class DefineChordF(Scene):
             angle=TAU / 6,
         )
         angle_arc.shift(origin)
-        angle_label = Tex("\\frac{f}{2}", "2\\pi")
+        angle_label = OldTex("\\frac{f}{2}", "2\\pi")
         angle_label[0][0].set_color(YELLOW)
         angle_label.scale(0.6)
         angle_label.next_to(angle_arc, RIGHT, SMALL_BUFF, DOWN)
@@ -2463,7 +2463,7 @@ class DefineChordF(Scene):
             angle_arc, angle_label,
         )
 
-        formula = Tex(
+        formula = OldTex(
             "= 2 \\cdot \\sin\\left(\\frac{f}{2} 2\\pi \\right)",
             "= 2 \\cdot \\sin\\left(f \\pi \\right)",
         )
@@ -2568,7 +2568,7 @@ class DistanceProductIsChordF(PlugObserverIntoPolynomial):
         for dot, vect, tex in [(O_dot, DL, "O"), (O_to_N_dot, DR, "O^N")]:
             arrow = Vector(0.5 * vect, color=WHITE)
             arrow.next_to(dot.get_center(), -vect, SMALL_BUFF)
-            label = Tex(tex)
+            label = OldTex(tex)
             O_part = label[0]
             O_part.match_color(dot)
             label.add_background_rectangle()
@@ -2582,8 +2582,8 @@ class DistanceProductIsChordF(PlugObserverIntoPolynomial):
             dot.generate_target()
 
         fraction_words = VGroup(
-            TexText("$f$", "of the way"),
-            TexText("between lighthouses")
+            OldTexText("$f$", "of the way"),
+            OldTexText("between lighthouses")
         )
         fraction_words.scale(0.8)
         fraction_words[0][0].set_color(YELLOW)
@@ -2632,7 +2632,7 @@ class DistanceProductIsChordF(PlugObserverIntoPolynomial):
 
         f_terms = VGroup(fraction_words[0][1][0], chord_f_as_product[1][1])
         half_terms = VGroup(*[
-            Tex("\\frac{1}{2}").scale(0.6).set_color(YELLOW).move_to(f)
+            OldTex("\\frac{1}{2}").scale(0.6).set_color(YELLOW).move_to(f)
             for f in f_terms
         ])
         half_terms[1].move_to(chord_f_as_product.target[1][1])
@@ -2651,7 +2651,7 @@ class DistanceProductIsChordF(PlugObserverIntoPolynomial):
             )
 
         equals_two_terms = VGroup(*[
-            Tex("=2").next_to(mob, DOWN, SMALL_BUFF)
+            OldTex("=2").next_to(mob, DOWN, SMALL_BUFF)
             for mob in (chord_half, chord_f_as_product.target)
         ])
 
@@ -2736,7 +2736,7 @@ class ProveLemma2(PlugObserverIntoPolynomial):
             0.5 / self.num_lighthouses))
         arrow = Vector(0.5 * DL, color=WHITE)
         arrow.next_to(dot, UR, SMALL_BUFF)
-        O_label = self.O_dot_label = Tex("O")
+        O_label = self.O_dot_label = OldTex("O")
         O_label.match_color(dot)
         O_label.add_background_rectangle()
         O_label.next_to(arrow, UR, SMALL_BUFF)
@@ -2763,7 +2763,7 @@ class ProveLemma2(PlugObserverIntoPolynomial):
             black_rect.get_top() + MED_SMALL_BUFF * DOWN
         )
         stacked_labels, h_line, times, product_decimal = column_group
-        q_marks = self.q_marks = TexText("???")
+        q_marks = self.q_marks = OldTexText("???")
         q_marks.move_to(product_decimal, LEFT)
         q_marks.match_color(product_decimal)
 
@@ -2823,7 +2823,7 @@ class ProveLemma2(PlugObserverIntoPolynomial):
         frac_line = Line(LEFT, RIGHT, color=WHITE)
         frac_line.match_width(lhs, stretch=True)
         frac_line.next_to(lhs, DOWN, SMALL_BUFF)
-        O_minus_1 = Tex("\\left(", "O", "-", "1", "\\right)")
+        O_minus_1 = OldTex("\\left(", "O", "-", "1", "\\right)")
         O_minus_1.next_to(frac_line, DOWN, SMALL_BUFF)
         new_lhs_background = BackgroundRectangle(
             VGroup(lhs, O_minus_1), buff=SMALL_BUFF)
@@ -2866,7 +2866,7 @@ class ProveLemma2(PlugObserverIntoPolynomial):
         )
 
         # Expand rhs
-        expanded_rhs = self.expanded_rhs = Tex(
+        expanded_rhs = self.expanded_rhs = OldTex(
             "=", "1", "+",
             "O", "+",
             "O", "^2", "+",
@@ -2894,12 +2894,12 @@ class ProveLemma2(PlugObserverIntoPolynomial):
         expanded_rhs = self.expanded_rhs
         O_terms = expanded_rhs.get_parts_by_tex("O")
         ones = VGroup(*[
-            Tex("1").move_to(O_term, RIGHT)
+            OldTex("1").move_to(O_term, RIGHT)
             for O_term in O_terms
         ])
         ones.match_color(O_terms[0])
 
-        equals_1 = Tex("= 1")
+        equals_1 = OldTex("= 1")
         equals_1.next_to(self.O_dot_label, RIGHT, SMALL_BUFF)
         brace = Brace(expanded_rhs[1:], DOWN)
         N_term = brace.get_text("N")
@@ -2935,7 +2935,7 @@ class LocalMathematician(PiCreatureScene):
         screen.to_corner(UL)
         screen.fade(1)
 
-        mathy_name = TexText("Local \\\\ mathematician")
+        mathy_name = OldTexText("Local \\\\ mathematician")
         mathy_name.next_to(mathy, LEFT, LARGE_BUFF)
         arrow = Arrow(mathy_name, mathy)
 
@@ -3013,7 +3013,7 @@ class ArmedWithTwoKeyFacts(TeacherStudentsScene, DistanceProductScene):
             observer.move_to(point)
             lines = self.get_distance_lines(point, line_class=DashedLine)
 
-            label = TexText("Distance product = %s" % dp)
+            label = OldTexText("Distance product = %s" % dp)
             label.scale(0.7)
             label.next_to(circle, RIGHT)
             labels.add(label)
@@ -3119,7 +3119,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         ])
         arrows.set_color(WHITE)
 
-        words = TexText("N evenly-spaced \\\\ lighthouses")
+        words = OldTexText("N evenly-spaced \\\\ lighthouses")
         words.scale(0.8)
         words.move_to(origin)
 
@@ -3142,7 +3142,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         sailor.target_point = self.get_sailor_point()
 
         for pi, text in (keeper, "Keeper"), (sailor, "Sailor"):
-            pi.title = TexText(text)
+            pi.title = OldTexText(text)
             pi.title.next_to(pi, DOWN)
             pi.dot = Dot()
             pi.dot.match_color(pi)
@@ -3176,7 +3176,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
             self.wait()
 
     def write_distance_product_fraction(self):
-        fraction = self.distance_product_fraction = Tex(
+        fraction = self.distance_product_fraction = OldTex(
             "{\\text{Keeper's distance product}", "\\over",
             "\\text{Sailor's distance product}}"
         )
@@ -3211,8 +3211,8 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         # stacked_labels, h_line, times, product_decimal = column
 
         # Define result fraction
-        equals = self.distance_product_equals = Tex("=")
-        result_fraction = self.result_fraction = Tex(
+        equals = self.distance_product_equals = OldTex("=")
+        result_fraction = self.result_fraction = OldTex(
             "{N", "{\\text{distance} \\choose \\text{between obs.}}", "\\over", "2}"
         )
         N, dist, frac_line, two = result_fraction
@@ -3221,7 +3221,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         for part in result_fraction:
             part.save_state()
             part.generate_target()
-        div = Tex("/")
+        div = OldTex("/")
         first_denom = VGroup(two.target, div, dist)
         first_denom.arrange(RIGHT, buff=SMALL_BUFF)
         first_denom.move_to(two, UP)
@@ -3343,7 +3343,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         result_fraction = self.result_fraction
         result_fraction_rect = SurroundingRectangle(result_fraction)
 
-        product_parts = self.product_parts = Tex(
+        product_parts = self.product_parts = OldTex(
             "{|L_1 - K|", "\\over", "|L_1 - S|}", "\\cdot",
             "{|L_2 - K|", "\\over", "|L_2 - S|}", "\\cdot",
             "{|L_3 - K|", "\\over", "|L_3 - S|}", "\\cdots",
@@ -3534,9 +3534,9 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         term_rects = self.get_term_rects(ratios)
 
         limit_fractions = VGroup(
-            Tex("{2", "\\over", "1}"),
-            Tex("{4", "\\over", "3}"),
-            Tex("{6", "\\over", "5}"),
+            OldTex("{2", "\\over", "1}"),
+            OldTex("{4", "\\over", "3}"),
+            OldTex("{6", "\\over", "5}"),
         )
         limit_arrows = VGroup()
         for rect, fraction in zip(term_rects, limit_fractions):
@@ -3544,7 +3544,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
             arrow = Arrow(rect, fraction, color=WHITE)
             limit_arrows.add(arrow)
 
-        approx = Tex("\\approx")
+        approx = OldTex("\\approx")
         approx.scale(1.5)
         approx.rotate(90 * DEGREES)
         approx.move_to(limit_arrows[0])
@@ -3611,7 +3611,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         # Set up for lighthouse "before" keeper
         ccw_product_group = VGroup(
             product_parts, limit_arrows, limit_fractions)
-        cw_product_parts = Tex(
+        cw_product_parts = OldTex(
             "\\cdots", "{|L_{-3} - K|", "\\over", "|L_{-3} - S|}",
             "\\cdot", "{|L_{-2} - K|", "\\over", "|L_{-2} - S|}",
             "\\cdot", "{|L_{-1} - K|", "\\over", "|L_{-1} - S|}",
@@ -3625,9 +3625,9 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         cw_ratios = VGroup(*[cw_product_parts[i:i + 3] for i in (9, 5, 1)])
         cw_term_rects = self.get_term_rects(cw_ratios)
         cw_limit_fractions = VGroup(
-            Tex("{2", "\\over", "3}"),
-            Tex("{4", "\\over", "5}"),
-            Tex("{6", "\\over", "7}"),
+            OldTex("{2", "\\over", "3}"),
+            OldTex("{4", "\\over", "5}"),
+            OldTex("{6", "\\over", "7}"),
         )
         cw_limit_arrows = VGroup()
         for rect, fraction in zip(cw_term_rects, cw_limit_fractions):
@@ -3707,10 +3707,10 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         for fraction in fractions.target:
             fraction.match_height(cw_limit_fractions[0])
             wallis_product.add(fraction)
-            dot = Tex("\\cdot")
+            dot = OldTex("\\cdot")
             wallis_product.add(dot)
             dots.add(dot)
-        final_dot = Tex("\\cdots")
+        final_dot = OldTex("\\cdots")
         for group in wallis_product, dots:
             group.submobjects[-1] = final_dot
         wallis_product.arrange(RIGHT, buff=MED_SMALL_BUFF)
@@ -3747,11 +3747,11 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         result_rect = SurroundingRectangle(result_fraction)
         result_rect.set_color(WHITE)
 
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.next_to(brace, LEFT, SMALL_BUFF)
         approx1, approx2, approx3 = [Tex("\\approx") for x in range(3)]
         approx1.next_to(brace, LEFT, SMALL_BUFF)
-        half_two_pi_over_N = Tex(
+        half_two_pi_over_N = OldTex(
             "{1", "\\over", "2}", "{2", "\\pi", "\\over", "N}",
         )
         pi = half_two_pi_over_N.get_part_by_tex("\\pi")
@@ -3760,12 +3760,12 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
 
         approx3.move_to(distance_product_equals)
 
-        pi_over_N = Tex("(", "\\pi", "/", "N", ")")
+        pi_over_N = OldTex("(", "\\pi", "/", "N", ")")
         pi_over_N.next_to(N, RIGHT)
         N_shift = MED_LARGE_BUFF * RIGHT
         pi_over_N.shift(N_shift)
 
-        pi_halves = Tex("{\\pi", "\\over", "2}")
+        pi_halves = OldTex("{\\pi", "\\over", "2}")
         pi_halves.next_to(result_rect, DOWN, LARGE_BUFF)
         pi_halves.shift(RIGHT)
         pi_halves_arrow = Arrow(
@@ -3775,7 +3775,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
             buff=SMALL_BUFF
         )
 
-        last_equals = Tex("=")
+        last_equals = OldTex("=")
         last_equals.next_to(pi_halves, LEFT)
 
         self.play(ShowCreation(result_rect))
@@ -3976,7 +3976,7 @@ class KeeperAndSailor(DistanceProductScene, PiCreatureScene):
         for count, point in enumerate(self.get_lh_points()):
             if count > self.num_lighthouses / 2:
                 count -= self.num_lighthouses
-            label = Tex("L_{%d}" % count)
+            label = OldTex("L_{%d}" % count)
             label.scale(0.8)
             labels.add(label)
         self.position_labels_outside_lights(labels)
@@ -4045,7 +4045,7 @@ class MentionJohnWallis(Scene):
         product = get_wallis_product(10)
         product.to_edge(UP)
 
-        name = TexText("``Wallis product''")
+        name = OldTexText("``Wallis product''")
         name.scale(1.5)
         name.set_color(BLUE)
         name.next_to(product, DOWN, MED_LARGE_BUFF)
@@ -4053,10 +4053,10 @@ class MentionJohnWallis(Scene):
         image = ImageMobject("John_Wallis")
         image.set_height(3)
         image.next_to(name, DOWN)
-        image_name = TexText("John Wallis")
+        image_name = OldTexText("John Wallis")
         image_name.next_to(image, DOWN)
 
-        infinity = Tex("\\infty")
+        infinity = OldTex("\\infty")
         infinity.set_height(1.5)
         infinity.next_to(image, RIGHT, MED_LARGE_BUFF)
 
@@ -4075,7 +4075,7 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
         mathy, morty = self.pi_creatures
 
         scale_val = 0.7
-        factors = Tex(
+        factors = OldTex(
             "{|L_1 - K|", "\\over", "|L_1 - S|}", "\\cdot",
             "{|L_{-1} - K|", "\\over", "|L_{-1} - S|}", "\\cdot",
             "{|L_2 - K|", "\\over", "|L_2 - S|}", "\\cdot",
@@ -4087,8 +4087,8 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
             "K": BLUE,
             "S": YELLOW,
         })
-        equals = Tex("=")
-        result = Tex(
+        equals = OldTex("=")
+        result = OldTex(
             "{N", "{\\text{distance} \\choose \\text{between obs.}}",
             "\\over", "2}"
         )
@@ -4124,15 +4124,15 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
         result_limit = wallis_product[-3:]
         result_limit.next_to(result_limit_arrow, DOWN, MED_SMALL_BUFF)
 
-        lower_equals = Tex("=")
+        lower_equals = OldTex("=")
         lower_equals.next_to(result_limit, LEFT)
 
         mult_signs = VGroup()
         for f1, f2 in zip(fraction_limits, fraction_limits[1:]):
-            mult_sign = Tex("\\times")
+            mult_sign = OldTex("\\times")
             mult_sign.move_to(VGroup(f1, f2))
             mult_signs.add(mult_sign)
-        cdots = Tex("\\cdots")
+        cdots = OldTex("\\cdots")
         cdots.move_to(VGroup(fraction_limits[-1], lower_equals))
         mult_signs.add(cdots)
 
@@ -4187,14 +4187,14 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
         self.wait(2)
 
         # Write general limit rule
-        limit_rule = Tex(
+        limit_rule = OldTex(
             "\\left( \\lim_{N \\to \\infty} a_N^{(1)} \\right)",
             "\\left( \\lim_{N \\to \\infty} a_N^{(2)} \\right)",
             "\\cdots", "=",
             "\\lim_{N \\to \\infty} \\left( a_N^{(1)} a_N^{(2)} \\cdots \\right)"
         )
         limit_rule.next_to(self.pi_creatures, UP)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.set_color(YELLOW)
         limit_equals = limit_rule.get_part_by_tex("=")
         q_marks.next_to(limit_equals, UP, SMALL_BUFF)
@@ -4235,11 +4235,11 @@ class HowThisArgumentRequiresCommunitingLimits(PiCreatureScene):
             mover.next_to, FRAME_HEIGHT * UP / 2, UP,
             limit_rule.to_edge, UP,
         )
-        dominated_convergence = TexText("``Dominated convergence''")
+        dominated_convergence = OldTexText("``Dominated convergence''")
         dominated_convergence.set_color(BLUE)
         dominated_convergence.next_to(limit_rule, DOWN, LARGE_BUFF)
 
-        see_blog_post = TexText("(See supplementary blog post)")
+        see_blog_post = OldTexText("(See supplementary blog post)")
         see_blog_post.next_to(dominated_convergence, DOWN)
 
         self.play(
@@ -4289,7 +4289,7 @@ class NonCommunitingLimitsExample(Scene):
         column_rects.set_color(BLUE)
 
         row_arrows = VGroup(*[
-            Tex("\\rightarrow").next_to(row, RIGHT)
+            OldTex("\\rightarrow").next_to(row, RIGHT)
             for row in rows[:-1]
         ])
         row_products = VGroup(*[
@@ -4298,14 +4298,14 @@ class NonCommunitingLimitsExample(Scene):
         ])
         row_products.set_color(YELLOW)
 
-        row_product_limit_dots = Tex("\\vdots")
+        row_product_limit_dots = OldTex("\\vdots")
         row_product_limit_dots.next_to(row_products, DOWN)
         row_product_limit = Integer(7)
         row_product_limit.set_color(YELLOW)
         row_product_limit.next_to(row_product_limit_dots, DOWN)
 
         column_arrows = VGroup(*[
-            Tex("\\downarrow").next_to(part, DOWN, SMALL_BUFF)
+            OldTex("\\downarrow").next_to(part, DOWN, SMALL_BUFF)
             for part in rows[-1][0]
         ])
         column_limits = VGroup(*[
@@ -4315,7 +4315,7 @@ class NonCommunitingLimitsExample(Scene):
         column_limits.set_color(BLUE)
         column_limit_dots = self.get_row_dots(column_limits)
 
-        column_limits_arrow = Tex("\\rightarrow").next_to(
+        column_limits_arrow = OldTex("\\rightarrow").next_to(
             column_limit_dots, RIGHT
         )
         product_of_limits = Integer(1).next_to(column_limits_arrow, RIGHT)
@@ -4370,7 +4370,7 @@ class NonCommunitingLimitsExample(Scene):
 
     def get_v_dot_row(self):
         row = VGroup(*[
-            Tex("\\vdots")
+            OldTex("\\vdots")
             for x in range(self.num_terms_per_row)
         ])
         self.arrange_row(row)
@@ -4385,8 +4385,8 @@ class NonCommunitingLimitsExample(Scene):
     def get_row_dots(self, row):
         dots = VGroup()
         for p1, p2 in zip(row, row[1:]):
-            dots.add(Tex("\\cdot").move_to(VGroup(p1, p2)))
-        dots.add(Tex("\\cdots").next_to(row, RIGHT))
+            dots.add(OldTex("\\cdot").move_to(VGroup(p1, p2)))
+        dots.add(OldTex("\\cdots").next_to(row, RIGHT))
         return dots
 
 
@@ -4395,7 +4395,7 @@ class DelicacyInIntermixingSeries(Scene):
         n_terms = 6
 
         top_product, bottom_product = products = VGroup(*[
-            Tex(*it.chain(*[
+            OldTex(*it.chain(*[
                 ["{%d" % (2 * x), "\\over", "%d}" % (2 * x + u), "\\cdot"]
                 for x in range(1, n_terms + 1)
             ]))
@@ -4406,13 +4406,13 @@ class DelicacyInIntermixingSeries(Scene):
         top_product.to_edge(UP)
         bottom_product.next_to(top_product, DOWN, LARGE_BUFF)
 
-        infinity = Tex("\\infty")
+        infinity = OldTex("\\infty")
         top_product.limit = infinity
-        zero = Tex("0")
+        zero = OldTex("0")
         bottom_product.limit = zero
 
         for product in products:
-            cdots = Tex("\\cdots")
+            cdots = OldTex("\\cdots")
             cdots.move_to(product[-1], LEFT)
             cdots.match_color(product)
             product.submobjects[-1] = cdots
@@ -4431,9 +4431,9 @@ class DelicacyInIntermixingSeries(Scene):
         h_line = Line(LEFT, RIGHT)
         h_line.stretch_to_fit_width(group.get_width() + LARGE_BUFF)
         h_line.next_to(group, DOWN, aligned_edge=RIGHT)
-        times = Tex("\\times")
+        times = OldTex("\\times")
         times.next_to(h_line, UP, aligned_edge=LEFT)
-        q_marks = Tex("?????")
+        q_marks = OldTex("?????")
         q_marks.set_color_by_gradient(BLUE, YELLOW)
         q_marks.scale(2)
         q_marks.next_to(h_line, DOWN)
@@ -4487,7 +4487,7 @@ class DelicacyInIntermixingSeries(Scene):
         self.add(ghost_top, top_product)
         self.add(ghost_bottom, bottom_product)
 
-        new_limit = Tex("\\frac{\\pi}{2}", "\\sqrt{2}")
+        new_limit = OldTex("\\frac{\\pi}{2}", "\\sqrt{2}")
         new_limit.next_to(new_arrow, RIGHT)
 
         randy = Randolph(height=1.5)
@@ -4599,11 +4599,11 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         brace2.apply_function(warp_func)
 
         scale_val = 0.7
-        words1 = TexText("Instead of", "$\\frac{1}{2}$")
+        words1 = OldTexText("Instead of", "$\\frac{1}{2}$")
         words1.set_color_by_tex("$", YELLOW)
         words1.scale(scale_val)
         words1.next_to(brace1.get_center(), LEFT)
-        words2 = TexText("Some other fraction", "$f$")
+        words2 = OldTexText("Some other fraction", "$f$")
         words2.set_color_by_tex("$", GREEN)
         words2.scale(scale_val)
         words2.next_to(brace2.get_center(), LEFT)
@@ -4636,7 +4636,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         sailor_lines = self.get_distance_lines(
             self.sailor.dot.get_center(), line_class=DashedLine
         )
-        chord_f = TexText("Chord(", "$f$", ")", arg_separator="")
+        chord_f = OldTexText("Chord(", "$f$", ")", arg_separator="")
         chord_f.set_color_by_tex("$f$", GREEN)
         chord_f.move_to(two, UP)
 
@@ -4672,11 +4672,11 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         fraction_label_group = self.fraction_label_group
         fraction_brace, fraction_words = fraction_label_group
 
-        frac1 = Tex(
+        frac1 = OldTex(
             "{N", "(", "f", " \\cdot 2\\pi / N)", "\\over",
             "\\text{Chord}(", "f", ")}"
         )
-        frac2 = Tex(
+        frac2 = OldTex(
             "{f", "\\cdot", "2", "\\pi", "\\over",
             "\\text{Chord}(", "f", ")}"
         )
@@ -4692,7 +4692,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         group.next_to(self.result_fraction, DOWN)
         big_group = VGroup(self.result_fraction, *group)
 
-        arrow = Tex("\\rightarrow")
+        arrow = OldTex("\\rightarrow")
         arrow.move_to(self.distance_product_equals)
 
         fraction_brace.generate_target()
@@ -4730,7 +4730,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
 
     def show_new_infinite_product(self):
         scale_val = 0.7
-        fractions = Tex(
+        fractions = OldTex(
             "\\cdots",
             "{|L_{-2} - K|", "\\over", "|L_{-2} - S|}", "\\cdot",
             "{|L_{-1} - K|", "\\over", "|L_{-1} - S|}", "\\cdot",
@@ -4759,7 +4759,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
             for ratio in ratios
         ])
         limits = VGroup(*[
-            Tex("{%d" % k, "\\over", "%d" % k, "-", "f}")
+            OldTex("{%d" % k, "\\over", "%d" % k, "-", "f}")
             for k in (-2, -1, 1, 2, 3)
         ])
         for limit, arrow in zip(limits, limit_arrows):
@@ -4767,14 +4767,14 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
             limit.scale(scale_val)
             limit.next_to(arrow, DOWN, SMALL_BUFF)
         dots = VGroup()
-        dots.add(Tex("\\cdots").next_to(limits, LEFT))
+        dots.add(OldTex("\\cdots").next_to(limits, LEFT))
         for l1, l2 in zip(limits, limits[1:]):
-            dots.add(Tex("\\cdot").move_to(VGroup(l1, l2)))
-        dots.add(Tex("\\cdots").next_to(limits, RIGHT))
+            dots.add(OldTex("\\cdot").move_to(VGroup(l1, l2)))
+        dots.add(OldTex("\\cdots").next_to(limits, RIGHT))
         full_limits_group = VGroup(*list(limits) + list(dots))
 
         # brace = Brace(limits, DOWN)
-        product = Tex(
+        product = OldTex(
             "\\prod_{k \\ne 0}", "{k", "\\over", "k", "-", "f}"
         )
         product.next_to(limits, DOWN, LARGE_BUFF)
@@ -4824,7 +4824,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         )
         big_group.generate_target()
         big_group.target.to_edge(UP)
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.next_to(big_group.target[-1], LEFT)
         result_fraction.generate_target()
         result_fraction.target.next_to(equals, LEFT)
@@ -4844,7 +4844,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         over = result_fraction.get_part_by_tex("\\over")
         dot_two = result_fraction[1:3]
 
-        two_sine_f_pi = Tex("2", "\\sin(", "f", "\\pi", ")")
+        two_sine_f_pi = OldTex("2", "\\sin(", "f", "\\pi", ")")
         sine_f_pi = two_sine_f_pi[1:]
         two_sine_f_pi.set_color_by_tex("f", GREEN)
         two_sine_f_pi.move_to(chord_f)
@@ -4893,7 +4893,7 @@ class KeeperAndSailorForSineProduct(KeeperAndSailor):
         self.wait()
 
         # Rearrange
-        one_minus_f_over_k = Tex(
+        one_minus_f_over_k = OldTex(
             "\\left(", "1", "-", "{f", "\\over", "k}", "\\right)"
         )
         # 0 1 2 3 4
@@ -4968,7 +4968,7 @@ class Conclusion(TeacherStudentsScene):
             color = GREEN if (i / 4) % 2 == 0 else BLUE
             wallis_product[i:i + 3].set_color(color)
 
-        sine_formula = Tex(
+        sine_formula = OldTex(
             "\\sin(", "f", "\\pi", ")", "=", "f", "\\pi",
             "\\prod_{k \\ne 0}", "\\left(", "1", "-",
             "{f", "\\over", "k}", "\\right)"
@@ -4980,7 +4980,7 @@ class Conclusion(TeacherStudentsScene):
 
         euler = ImageMobject("Euler")
         euler.set_height(2.5)
-        basel_problem = Tex(
+        basel_problem = OldTex(
             "\\frac{1}{1^2} + ",
             "\\frac{1}{2^2} + ",
             "\\frac{1}{3^2} + ",
@@ -4988,7 +4988,7 @@ class Conclusion(TeacherStudentsScene):
             "\\frac{\\pi^2}{6}"
         )
         basel_problem.move_to(self.hold_up_spot, DOWN)
-        implication = Tex("\\Rightarrow")
+        implication = OldTex("\\Rightarrow")
         implication.next_to(basel_problem[0][1], LEFT)
 
         self.play(
@@ -5039,7 +5039,7 @@ class Conclusion(TeacherStudentsScene):
 
 class ByLine(Scene):
     def construct(self):
-        self.add(TexText("""
+        self.add(OldTexText("""
             Written and animated by \\\\
             \\quad \\\\
             Sridhar Ramesh \\\\
@@ -5053,7 +5053,7 @@ class SponsorUnderlay(PiCreatureScene):
     }
 
     def construct(self):
-        url = TexText("https://udacity.com/3b1b/")
+        url = OldTexText("https://udacity.com/3b1b/")
         url.to_corner(UL)
 
         rect = ScreenRectangle(height=5.5)
@@ -5227,7 +5227,7 @@ class Thumbnail(DistanceProductScene):
         product[-4:].next_to(product[:-4], DOWN, MED_LARGE_BUFF)
         product.scale(1.2).center().to_edge(UP)
 
-        # new_proof = TexText("New proof")
+        # new_proof = OldTexText("New proof")
         # new_proof.scale(2.5)
         # new_proof.set_color(YELLOW)
         # new_proof.set_stroke(RED, 0.75)

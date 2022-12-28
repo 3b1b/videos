@@ -424,7 +424,7 @@ class PlayingCard(VGroup):
         return VGroup(sub_rect, pi_creature, pi_copy)
 
     def get_corner_numbers(self, value, symbol):
-        value_mob = TexText(value)
+        value_mob = OldTexText(value)
         width = self.get_width() / self.card_width_to_corner_num_width
         height = self.get_height() / self.card_height_to_corner_num_height
         value_mob.set_width(width)

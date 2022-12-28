@@ -134,7 +134,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         q_marks = VGroup()
         for target in her.hand.target:
             heart = SuitSymbol("hearts")
-            q_mark = Tex("?")
+            q_mark = OldTex("?")
             heart_q = VGroup(heart, q_mark)
             for mob in heart_q:
                 mob.set_height(0.5)
@@ -179,7 +179,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
 
     def compute_flush_probability(self):
         you, her = self.you, self.her
-        equation = Tex(
+        equation = OldTex(
             "{ {10 \\choose 2}", "\\over", "{45 \\choose 2} }", 
             "=", "{45 \\over 990}", "\\approx", "4.5\\%"
         )
@@ -187,7 +187,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         percentage = equation.get_part_by_tex("4.5")
 
         ten = VGroup(*equation[0][1:3])
-        num_hearts = TexText("\\# Remaining hearts")
+        num_hearts = OldTexText("\\# Remaining hearts")
         num_hearts.scale(0.75)
         num_hearts.next_to(
             ten, UP, aligned_edge = LEFT
@@ -200,7 +200,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         )
 
         fourty_five = VGroup(*equation[2][1:3])
-        num_cards = TexText("\\# Remaining cards")
+        num_cards = OldTexText("\\# Remaining cards")
         num_cards.scale(0.75)
         num_cards.next_to(fourty_five, LEFT)
         num_cards.to_edge(LEFT)
@@ -290,7 +290,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         you, her = self.you, self.her
         pre_money = VGroup(*[
             VGroup(*[
-                Tex("\\$")
+                OldTex("\\$")
                 for x in range(10)
             ]).arrange(RIGHT, buff = SMALL_BUFF)
             for y in range(4)
@@ -354,10 +354,10 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         )
 
     def name_bayes_rule(self):
-        title = TexText("Bayes' rule")
+        title = OldTexText("Bayes' rule")
         title.set_color(BLUE)
         title.to_edge(UP)
-        subtitle = TexText("Update ", "prior ", "beliefs")
+        subtitle = OldTexText("Update ", "prior ", "beliefs")
         subtitle.scale(0.8)
         subtitle.next_to(title, DOWN)
         prior_word = subtitle.get_part_by_tex("prior")
@@ -366,7 +366,7 @@ class IntroducePokerHand(PiCreatureScene, SampleSpaceScene):
         arrow = Arrow(prior_word.get_bottom(), rect.get_top())
         arrow.set_color(GREEN)
 
-        words = TexText(
+        words = OldTexText(
             "Maybe she really \\\\ does have a flush $\\dots$",
             alignment = ""
         )
@@ -496,7 +496,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         label = self.get_conditional_label(p, True)
         brace, _ignore = top_part.get_top_braces_and_labels([label])
 
-        explanation = TexText(
+        explanation = OldTexText(
             "Probability of", "high bet", "given", "flush"
         )
         explanation.set_color_by_tex("high bet", GREEN)
@@ -545,7 +545,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         label = self.get_conditional_label(p, False)
         brace, _ignore = bottom_part.get_bottom_braces_and_labels([label])
 
-        explanation = TexText(
+        explanation = OldTexText(
             "Probability of", "high bet", "given", "no flush"
         )
         explanation.set_color_by_tex("high bet", GREEN)
@@ -591,7 +591,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         randy.scale(0.75)
         randy.to_edge(RIGHT)
         randy.shift(2*DOWN)
-        words = TexText("Where do these \\\\", "numbers", "come from?")
+        words = OldTexText("Where do these \\\\", "numbers", "come from?")
         numbers_word = words.get_part_by_tex("numbers")
         numbers_word.set_color(YELLOW)
         words.scale(0.7)
@@ -693,7 +693,7 @@ class UpdatePokerPrior(SampleSpaceScene):
             ])
             for j in range(2)
         ]
-        words = Tex("P(", self.cash_string, ")")
+        words = OldTex("P(", self.cash_string, ")")
         words.set_color_by_tex(self.cash_string, GREEN)
         words.next_to(self.sample_space, RIGHT)
         low_bet_space.generate_target()
@@ -723,7 +723,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         self.high_bet_space = high_bet_space
 
     def write_P_flush_given_bet(self):
-        posterior_tex = Tex(
+        posterior_tex = OldTex(
             "P(", self.double_heart_template, 
             "|", self.cash_string, ")"
         )
@@ -735,15 +735,15 @@ class UpdatePokerPrior(SampleSpaceScene):
         for rect in rects:
             rect.generate_target()
         numerator = rects[0].target
-        plus = Tex("+")
+        plus = OldTex("+")
         denominator = VGroup(rects[1].target, plus, rects[2].target)
         denominator.arrange(RIGHT, buff = SMALL_BUFF)
-        frac_line = Tex("\\over")
+        frac_line = OldTex("\\over")
         frac_line.stretch_to_fit_width(denominator.get_width())
         fraction = VGroup(numerator, frac_line, denominator)
         fraction.arrange(DOWN)
 
-        arrow = Tex("\\downarrow")
+        arrow = OldTex("\\downarrow")
         group = VGroup(posterior_tex, arrow, fraction)
         group.arrange(DOWN)
         group.to_corner(UP+RIGHT)
@@ -794,7 +794,7 @@ class UpdatePokerPrior(SampleSpaceScene):
             for tex in [prior_tex, post_tex]
         ]
 
-        post_words = TexText("Posterior", "probability")
+        post_words = OldTexText("Posterior", "probability")
         post_words.scale(0.8)
         post_words.to_corner(UP+RIGHT)
         post_arrow = Arrow(
@@ -843,7 +843,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         post_rects = self.post_rects
         posterior = VGroup(post_rects.braces, post_rects.labels)
         prior_rects = self.get_prior_rectangles()
-        risk_averse_words = TexText(
+        risk_averse_words = OldTexText(
             "Suppose risk \\\\ averse \\dots"
         )
         risk_averse_words.scale(0.7)
@@ -922,7 +922,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         post_tex = self.posterior_tex
         prior_rhs_group = self.get_prior_rhs_group()
 
-        fraction = Tex(
+        fraction = OldTex(
             "{(0.045)", "(0.97)", "\\over", 
             "(0.995)", "(0.3)", "+", "(0.045)", "(0.97)}"
         )
@@ -946,7 +946,7 @@ class UpdatePokerPrior(SampleSpaceScene):
             "color" : WHITE,
             "tip_length" : 0.15,
         }
-        rhs = Tex("\\approx", "0.13")
+        rhs = OldTex("\\approx", "0.13")
         rhs.scale(0.8)
         rhs.next_to(post_tex, RIGHT)
         to_rhs_arrow = Arrow(
@@ -1006,7 +1006,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         p_str = "%0.3f"%value
         q_str = "%0.3f"%(1-value)
         labels = [
-            Tex(
+            OldTex(
                 "P(", s, self.double_heart_template, ")",
                 "= ", num
             )
@@ -1023,7 +1023,7 @@ class UpdatePokerPrior(SampleSpaceScene):
         return VGroup(*[label[-1] for label in labels])
 
     def get_conditional_label(self, value, given_flush = True):
-        label = Tex(
+        label = OldTex(
             "P(", self.cash_string, "|", 
             "" if given_flush else "\\text{not }",
             self.double_heart_template, ")",
@@ -1075,7 +1075,7 @@ class BayesRuleInMemory(Scene):
         bubble.pin_to(randy)
         B = "\\text{Belief}"
         D = "\\text{Data}"
-        rule = Tex(
+        rule = OldTex(
             "P(", B, "|", D, ")", "=", 
             "P(", "B", ")", 
             "{P(", D, "|", B, ")", "\\over", "P(", D, ")}"
@@ -1119,7 +1119,7 @@ class NextVideoWrapper(TeacherStudentsScene):
         "title" : "Upcoming chapter: Bayesian networks"
     }
     def construct(self):
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.scale(0.8)
         title.to_edge(UP, buff = SMALL_BUFF)
         screen = ScreenRectangle(height = 4)
@@ -1260,8 +1260,8 @@ class GeneralizeBayesRule(SampleSpaceScene):
         sample_space.divide_horizontally(0.4)
         sample_space.horizontal_parts.set_fill(opacity = 0)
         labels = [
-            Tex("P(", "B", ")"),
-            Tex("P(\\text{not }", "B", ")"),
+            OldTex("P(", "B", ")"),
+            OldTex("P(\\text{not }", "B", ")"),
         ]
         for label in labels:
             label.scale(0.7)
@@ -1278,7 +1278,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
             part, value, given_str, colors, vect = tup
             part.divide_vertically(value, colors = colors)
             part.vertical_parts.set_fill(opacity = 0.8)
-            label = Tex(
+            label = OldTex(
                 "P(", "I", "|", given_str, "B", ")"
             )
             label.scale(0.7)
@@ -1296,7 +1296,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
         self.sample_space = sample_space
 
     def add_title(self):
-        title = TexText(
+        title = OldTexText(
             "Updating", "Beliefs", "from new", "Information"
         )
         self.color_label(title)
@@ -1309,7 +1309,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
         prior_rects = self.get_prior_rectangles()
         post_rects = self.get_posterior_rectangles()
 
-        label = Tex("P(", "B", "|", "I", ")")
+        label = OldTex("P(", "B", "|", "I", ")")
         label.scale(0.7)
         self.color_label(label)
         braces, labels = self.get_posterior_rectangle_braces_and_labels(
@@ -1329,7 +1329,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
         self.posterior_tex = label
 
     def add_bayes_rule(self):
-        rule = Tex(
+        rule = OldTex(
              "=", "{P(", "B", ")", "P(", "I", "|", "B", ")",
             "\\over", "P(", "I", ")}",
         )
@@ -1337,7 +1337,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
         rule.scale(0.7)
         rule.next_to(self.posterior_tex, RIGHT)
 
-        bayes_rule_words = TexText("Bayes' rule")
+        bayes_rule_words = OldTexText("Bayes' rule")
         bayes_rule_words.next_to(VGroup(*rule[1:]), UP, LARGE_BUFF)
         bayes_rule_words.shift_onto_screen()
 
@@ -1355,8 +1355,8 @@ class GeneralizeBayesRule(SampleSpaceScene):
         likelihood = VGroup(*self.bayes_rule[4:9])
         P_I = VGroup(*self.bayes_rule[-3:])
 
-        prior_word = TexText("Prior")
-        posterior_word = TexText("Posterior")
+        prior_word = OldTexText("Prior")
+        posterior_word = OldTexText("Posterior")
         words = [prior_word, posterior_word]
         for word in words:
             word.set_color(YELLOW)
@@ -1426,7 +1426,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
             SurroundingRectangle(mob, buff = SMALL_BUFF)
             for mob in likelihoods
         ]
-        name = TexText("Likelihood")
+        name = OldTexText("Likelihood")
         name.scale(0.7)
         name.next_to(self.posterior_tex, UP, 1.5*LARGE_BUFF)
         arrows = [
@@ -1466,7 +1466,7 @@ class GeneralizeBayesRule(SampleSpaceScene):
 
     def dont_memorize(self):
         rule = VGroup(*self.bayes_rule[1:])
-        word = TexText("Memorize")
+        word = OldTexText("Memorize")
         word.scale(0.7)
         word.next_to(rule, DOWN)
         cross = VGroup(
@@ -1595,8 +1595,8 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
         sample_space.shift(DOWN)
         sample_space.divide_horizontally(0.8, colors = [MAROON_D, BLUE_E])
         labels = VGroup(
-            Tex("P(S) = ", "0.8"),
-            Tex("P(\\text{not } S) = ", "0.2"),
+            OldTex("P(S) = ", "0.8"),
+            OldTex("P(\\text{not } S) = ", "0.2"),
         )
         labels.scale(0.7)
         braces, labels = sample_space.get_side_braces_and_labels(labels)
@@ -1672,7 +1672,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
             height = 1.25, width = 3, direction = RIGHT,
             fill_opacity = 0,
         )
-        content = TexText("Phenomenal!")
+        content = OldTexText("Phenomenal!")
         content.scale(0.75)
         bubble.add_content(content)
         VGroup(bubble, content).next_to(friends, LEFT, SMALL_BUFF)
@@ -1716,7 +1716,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
             height = 1.25, width = 4.5, direction = RIGHT,
             fill_opacity = 0,
         )
-        content = TexText("The beat was consistent.")
+        content = OldTexText("The beat was consistent.")
         content.scale(0.75)
         bubble.add_content(content)
         VGroup(bubble, content).next_to(friend, LEFT, SMALL_BUFF)
@@ -1784,7 +1784,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
     def show_posterior_rectangles(self):
         prior_rects = self.get_prior_rectangles()
         post_rects = self.get_posterior_rectangles()
-        label = Tex("P(S | ", "\\checkmark", ")")
+        label = OldTex("P(S | ", "\\checkmark", ")")
         label.scale(0.7)
         label.set_color_by_tex("\\checkmark", GREEN)
         braces, labels = self.get_posterior_rectangle_braces_and_labels(
@@ -1806,8 +1806,8 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
     def show_prior_rectangle_areas(self):
         prior_rects = self.get_prior_rectangles()
         products = VGroup(
-            Tex("(", "0.8", ")(", "0.9", ")"),
-            Tex("(", "0.2", ")(", "0.99", ")"),
+            OldTex("(", "0.8", ")(", "0.9", ")"),
+            OldTex("(", "0.2", ")(", "0.99", ")"),
         )
         top_product, bottom_product = products
         for product, rect in zip(products, prior_rects):
@@ -1846,10 +1846,10 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
 
     def show_posterior_probability(self):
         post_tex = self.post_tex
-        rhs = Tex("\\approx", "0.78")
+        rhs = OldTex("\\approx", "0.78")
         rhs.scale(0.7)
         rhs.next_to(post_tex, RIGHT)
-        ratio = Tex(
+        ratio = OldTex(
             "{(0.8)(0.9)", "\\over", 
             "(0.8)(0.9)", "+", "(0.2)(0.99)}"
         )
@@ -1949,7 +1949,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
             part.vertical_parts.submobjects.reverse()
         new_prior_rects = self.get_prior_rectangles()
         post_rects = self.get_posterior_rectangles()
-        label = Tex(
+        label = OldTex(
             "P(S | \\text{not } ", "\\checkmark", ")",
             "\\approx", "0.98"
         )
@@ -1998,7 +1998,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
         for friend, mode in zip(friends, modes):
             friend.generate_target()
             friend.target.change(mode, randy.eyes)
-        content = TexText("Horrible.  Just horrible.")
+        content = OldTexText("Horrible.  Just horrible.")
         content.scale(0.6)
         bubble.add_content(content)
 
@@ -2022,7 +2022,7 @@ class MusicExample(SampleSpaceScene, PiCreatureScene):
 
     def get_conditional_label(self, value, given_suck = True):
         positive_str = "\\checkmark"
-        label = Tex(
+        label = OldTex(
             "P(", positive_str, "|", 
             "" if given_suck else "\\text{not }",
             "S", ")",
@@ -2087,12 +2087,12 @@ class FinalWordsOnRule(SampleSpaceScene):
         )
         B = "\\text{Belief}"
         D = "\\text{Data}"
-        P_B = Tex("P(", B, ")")
-        P_D_given_B = Tex("P(", D, "|", B, ")")
-        P_D_given_not_B = Tex(
+        P_B = OldTex("P(", B, ")")
+        P_D_given_B = OldTex("P(", D, "|", B, ")")
+        P_D_given_not_B = OldTex(
             "P(", D, "|", "\\text{not }", B, ")"
         )
-        P_B_given_D = Tex("P(", B, "|", D, ")")
+        P_B_given_D = OldTex("P(", B, "|", D, ")")
         labels = VGroup(P_B, P_D_given_B, P_D_given_not_B, P_B_given_D)
         for label in labels:
             label.scale(0.7)
@@ -2123,7 +2123,7 @@ class FinalWordsOnRule(SampleSpaceScene):
         self.post_rects = post_rects
 
     def add_uses(self):
-        uses = TexText(
+        uses = OldTexText(
             "Machine learning, ", 
             "scientific inference, $\\dots$",
         )
@@ -2212,13 +2212,13 @@ class PatreonThanks(PatreonThanks):
 
 class Thumbnail(SampleSpaceScene):
     def construct(self):
-        title = TexText("Bayes' rule")
+        title = OldTexText("Bayes' rule")
         title.scale(2)
         title.to_edge(UP)
         self.add(title)
 
-        prior_label = Tex("P(", "H", ")")
-        post_label = Tex("P(", "H", "|", "D", ")")
+        prior_label = OldTex("P(", "H", ")")
+        post_label = OldTex("P(", "H", "|", "D", ")")
         for label in prior_label, post_label:
             label.set_color_by_tex("H", YELLOW)
             label.set_color_by_tex("D", GREEN)

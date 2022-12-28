@@ -9,7 +9,7 @@ class BinaryOption(VMobject):
     def __init__(self, mob1, mob2, **kwargs):
 
         VMobject.__init__(self, **kwargs)
-        text = TexText("or").scale(self.text_scale)
+        text = OldTexText("or").scale(self.text_scale)
         mob1.next_to(text, LEFT)
         mob2.next_to(text, RIGHT)
         self.add(mob1, text, mob2)

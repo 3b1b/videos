@@ -17,7 +17,7 @@ MANDELBROT_COLORS = [
 
 def get_c_dot_label(dot, get_c, font_size=24, direction=UP):
     c_label = VGroup(
-        Tex("c = ", font_size=font_size),
+        OldTex("c = ", font_size=font_size),
         DecimalNumber(get_c(), font_size=font_size, include_sign=True)
     ).arrange(RIGHT, buff=0.075)
     c_label[0].shift(0.02 * DOWN)
@@ -41,7 +41,7 @@ def get_iteration_label(font_size=36):
         },
         "font_size": font_size,
     }
-    iterations = Tex(
+    iterations = OldTex(
         """
         z_0 \\longrightarrow
         z_1 \\longrightarrow
@@ -52,12 +52,12 @@ def get_iteration_label(font_size=36):
         **kw
     )
     for part in iterations.get_parts_by_tex("\\longrightarrow"):
-        f = Tex("f", **kw)
+        f = OldTex("f", **kw)
         f.scale(0.5)
         f.next_to(part, UP, buff=0)
         part.add(f)
 
-    rule = Tex("z_{n + 1} &= f(z_n)", **kw)
+    rule = OldTex("z_{n + 1} &= f(z_n)", **kw)
     result = VGroup(rule, iterations)
     result.arrange(DOWN, buff=MED_LARGE_BUFF)
     return result
@@ -172,10 +172,10 @@ class HolomorphicDynamics(Scene):
         frames.to_edge(DOWN)
 
         goals = VGroup(
-            # TexText("Newton's fractal $\\leftrightarrow$ Mandelbrot"),
-            # TexText("Tie up loose ends"),
-            TexText("Goal 1: Other Mandelbrot occurrences"),
-            TexText("Goal 2: Tie up loose ends"),
+            # OldTexText("Newton's fractal $\\leftrightarrow$ Mandelbrot"),
+            # OldTexText("Tie up loose ends"),
+            OldTexText("Goal 1: Other Mandelbrot occurrences"),
+            OldTexText("Goal 2: Tie up loose ends"),
         )
         goals.set_width(frames[0].get_width())
         goals.set_fill(GREY_A)
@@ -215,8 +215,8 @@ class HolomorphicDynamics(Scene):
             }
         }
         f_def = VGroup(
-            Tex("f : \\mathds{C} \\rightarrow \\mathds{C}", **kw),
-            Tex("f'(z) \\text{ exists}", **kw)
+            OldTex("f : \\mathds{C} \\rightarrow \\mathds{C}", **kw),
+            OldTex("f'(z) \\text{ exists}", **kw)
         )
         f_def.arrange(RIGHT, aligned_edge=DOWN, buff=LARGE_BUFF)
         f_def.next_to(self.title, DOWN, buff=MED_LARGE_BUFF)
@@ -227,10 +227,10 @@ class HolomorphicDynamics(Scene):
 
         # Examples
         examples = VGroup(
-            Tex("f(z) = z^2 + 1", **kw),
-            Tex("f(z) = e^z", **kw),
-            Tex("f(z) = \\sin\\left(z\\right)", **kw),
-            Tex("\\vdots")
+            OldTex("f(z) = z^2 + 1", **kw),
+            OldTex("f(z) = e^z", **kw),
+            OldTex("f(z) = \\sin\\left(z\\right)", **kw),
+            OldTex("\\vdots")
         )
         examples.arrange(DOWN, buff=0.35, aligned_edge=LEFT)
         examples[-1].shift(0.25 * RIGHT)
@@ -257,7 +257,7 @@ class HolomorphicDynamics(Scene):
         self.wait()
 
     def repeated_functions(self):
-        words = TexText("For some function $f(z)$,")
+        words = OldTexText("For some function $f(z)$,")
         rule, iterations = get_iteration_label()
         group = VGroup(words, iterations, rule)
         group.arrange(DOWN, buff=MED_LARGE_BUFF)
@@ -275,16 +275,16 @@ class HolomorphicDynamics(Scene):
         )))
 
     def example_fractals(self):
-        newton = Tex("z - {P(z) \\over P'(z)}")
-        mandelbrot = Tex("z^2 + c")
-        exponential = Tex("a^z")
+        newton = OldTex("z - {P(z) \\over P'(z)}")
+        mandelbrot = OldTex("z^2 + c")
+        exponential = OldTex("a^z")
 
         rhss = VGroup(newton, mandelbrot, exponential)
         f_eqs = VGroup()
         lhss = VGroup()
         for rhs in rhss:
             rhs.generate_target()
-            lhs = Tex("f(z) = ")
+            lhs = OldTex("f(z) = ")
             lhs.next_to(rhs, LEFT)
             f_eqs.add(VGroup(lhs, rhs))
             lhss.add(lhs)
@@ -378,7 +378,7 @@ class HolomorphicPreview(Scene):
             path_arc=-PI / 4,
             stroke_width=5,
         )
-        f_label = Tex("f(z)")
+        f_label = OldTex("f(z)")
         f_label.next_to(arrow, UP, SMALL_BUFF)
 
         words = Text("Looks roughly like\nscaling + rotating")
@@ -416,7 +416,7 @@ class AmbientRepetition(Scene):
         z0 = complex(0, 0)
         dot = Dot(color=BLUE)
         dot.move_to(plane.n2p(z0))
-        z_label = Tex("z", font_size=font_size)
+        z_label = OldTex("z", font_size=font_size)
         z_label.set_stroke(BLACK, 5, background=True)
         z_label.next_to(dot, UP, SMALL_BUFF)
         if not self.show_labels:
@@ -438,7 +438,7 @@ class AmbientRepetition(Scene):
             dot_copy = dot.copy()
             dot_copy.move_to(new_point)
             dot_copy.set_color(YELLOW)
-            fz_label = Tex("f(z)", font_size=font_size)
+            fz_label = OldTex("f(z)", font_size=font_size)
             fz_label.set_stroke(BLACK, 8, background=True)
             fz_label.next_to(dot_copy, normalize(new_point - dot.get_center()), buff=0)
             if not self.show_labels:
@@ -501,7 +501,7 @@ class RepeatedNewtonPlain(RepeatedNewton):
 class RationalFunctions(Scene):
     def construct(self):
         # Show function
-        equation = Tex(
+        equation = OldTex(
             "f(z)",
             "=", "z - {P(z) \\over P'(z)}",
             "=", "z - {z^3 - 1 \\over 3z^2}",
@@ -552,7 +552,7 @@ class RationalFunctions(Scene):
         # Name rational function
         box = SurroundingRectangle(equation[6], buff=SMALL_BUFF)
         box.set_stroke(YELLOW, 2)
-        rational_name = TexText("``Rational function''")
+        rational_name = OldTexText("``Rational function''")
         rational_name.next_to(box, UP, buff=1.5)
         arrow = Arrow(rational_name, box)
 
@@ -584,16 +584,16 @@ class RationalFunctions(Scene):
 
         rhs = equation[6]
         functions = VGroup(
-            Tex("3z^4 + z^3 + 4 \\over z^5 + 5z + 9"),
-            Tex("2z^6 + 7z^4 + 1z \\over 8z^3 + 2z^2 + 8"),
-            Tex("(z^2 + 1)^2 \\over 4z(z^2 - 1)"),
-            Tex("az + b \\over cz + d"),
-            Tex("z^2 + az + b \\over z^2 + cz + d"),
-            Tex(
+            OldTex("3z^4 + z^3 + 4 \\over z^5 + 5z + 9"),
+            OldTex("2z^6 + 7z^4 + 1z \\over 8z^3 + 2z^2 + 8"),
+            OldTex("(z^2 + 1)^2 \\over 4z(z^2 - 1)"),
+            OldTex("az + b \\over cz + d"),
+            OldTex("z^2 + az + b \\over z^2 + cz + d"),
+            OldTex(
                 "a_n z^n + \\cdots + a_0 \\over "
                 "b_m z^m + \\cdots + b_0"
             ),
-            Tex("z^2 + c \\over 1"),
+            OldTex("z^2 + c \\over 1"),
         )
 
         for function in functions:
@@ -693,7 +693,7 @@ class ShowFatouAndJulia(Scene):
 
 class IveSeenThis(TeacherStudentsScene):
     def construct(self):
-        equation = Tex("f(z) = z^2 + c")
+        equation = OldTex("f(z) = z^2 + c")
         equation.to_edge(UP)
         self.add(equation)
 
@@ -748,14 +748,14 @@ class MandelbrotIntro(Scene):
             }
         }
         terms = self.terms = VGroup(
-            Tex("z_{n + 1} = z_n^2 + {c}", **kw),
-            Tex("{c} \\text{ can be changed}", **kw),
-            Tex("z_0 = 0", **kw),
+            OldTex("z_{n + 1} = z_n^2 + {c}", **kw),
+            OldTex("{c} \\text{ can be changed}", **kw),
+            OldTex("z_0 = 0", **kw),
         )
         terms.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         terms.to_corner(UL)
 
-        equation = Tex("f(z) = z^2 + c")
+        equation = OldTex("f(z) = z^2 + c")
         equation.to_edge(UP)
 
         self.process_terms = terms
@@ -843,11 +843,11 @@ class MandelbrotIntro(Scene):
             }
         }
         new_lines = VGroup(
-            Tex("z_1 = 0^2 + c = c", **kw),
-            Tex("z_2 = c^2 + c", **kw),
-            Tex("z_3 = (c^2 + c)^2 + c", **kw),
-            Tex("z_4 = ((c^2 + c)^2 + c)^2 + c", **kw),
-            Tex("\\vdots", **kw),
+            OldTex("z_1 = 0^2 + c = c", **kw),
+            OldTex("z_2 = c^2 + c", **kw),
+            OldTex("z_3 = (c^2 + c)^2 + c", **kw),
+            OldTex("z_4 = ((c^2 + c)^2 + c)^2 + c", **kw),
+            OldTex("\\vdots", **kw),
         )
         new_lines.arrange(DOWN, aligned_edge=LEFT)
         new_lines[-2].scale(0.8, about_edge=LEFT)
@@ -924,8 +924,8 @@ class ParameterSpaceVsSeedSpace(Scene):
         self.add(boxes)
 
         f_labels = VGroup(
-            Tex("f(z) = z^2 + c"),
-            Tex("f(z) = z - {P(z) \\over P'(z)}"),
+            OldTex("f(z) = z^2 + c"),
+            OldTex("f(z) = z - {P(z) \\over P'(z)}"),
         )
         kw = {
             "tex_to_color_map": {
@@ -934,8 +934,8 @@ class ParameterSpaceVsSeedSpace(Scene):
             }
         }
         top_labels = VGroup(
-            TexText("One seed\\\\Pixel $\\leftrightarrow$ function", **kw),
-            TexText("One function\\\\Pixel $\\leftrightarrow$ seed", **kw),
+            OldTexText("One seed\\\\Pixel $\\leftrightarrow$ function", **kw),
+            OldTexText("One function\\\\Pixel $\\leftrightarrow$ seed", **kw),
         )
         for f_label, box in zip(f_labels, boxes[::2]):
             f_label.set_max_width(3.25)
@@ -1026,19 +1026,19 @@ class ClassicJuliaSetDemo(MandelbrotIntro):
             },
         }
 
-        title = TexText("Iterate\\\\$z^2 + c$")
+        title = OldTexText("Iterate\\\\$z^2 + c$")
         title.move_to(Line(*planes))
         title[0][-1].set_color(YELLOW)
         self.add(title)
 
         labels = VGroup(
             VGroup(
-                Tex("{c} \\leftrightarrow \\text{Pixel}", **kw),
-                Tex("z_0 = 0", **kw),
+                OldTex("{c} \\leftrightarrow \\text{Pixel}", **kw),
+                OldTex("z_0 = 0", **kw),
             ),
             VGroup(
-                Tex("{c} = \\text{const.}", **kw),
-                Tex("z_0 \\leftrightarrow \\text{Pixel}", **kw),
+                OldTex("{c} = \\text{const.}", **kw),
+                OldTex("z_0 \\leftrightarrow \\text{Pixel}", **kw),
             )
         )
 
@@ -1047,8 +1047,8 @@ class ClassicJuliaSetDemo(MandelbrotIntro):
             label.next_to(plane, UP)
 
         space_labels = VGroup(
-            Tex("{c}\\text{-space}", **kw),
-            Tex("{z_0}\\text{-space}", **kw),
+            OldTex("{c}\\text{-space}", **kw),
+            OldTex("{z_0}\\text{-space}", **kw),
         )
         for label, plane in zip(space_labels, planes):
             label.scale(0.5)
@@ -1081,7 +1081,7 @@ class ClassicJuliaSetDemo(MandelbrotIntro):
 class AskAboutGeneralTheory(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("Think about constructing\\\\a general theory"),
+            OldTexText("Think about constructing\\\\a general theory"),
             added_anims=[self.change_students(
                 "pondering", "thinking", "pondering",
                 look_at=UP,
@@ -1089,7 +1089,7 @@ class AskAboutGeneralTheory(TeacherStudentsScene):
         )
         self.wait(3)
         self.teacher_says(
-            TexText("What questions would\\\\you ask?"),
+            OldTexText("What questions would\\\\you ask?"),
             target_mode="tease",
         )
         self.play_student_changes("thinking", "pondering")
@@ -1122,7 +1122,7 @@ class FixedPoints(Scene):
         z_dot, z_label = self.add_z_dot()
 
         # Ask question
-        question = TexText("When does $z$ stay fixed in place?")
+        question = OldTexText("When does $z$ stay fixed in place?")
         question.next_to(plane, RIGHT, MED_LARGE_BUFF, aligned_edge=UP)
 
         arrow = self.get_arrow_loop(z_dot)
@@ -1133,17 +1133,17 @@ class FixedPoints(Scene):
             "tex_to_color_map": t2c,
             "isolate": ["=", "\\Rightarrow", "A(", "B(", ")"],
         }
-        equation = Tex("f(z) = z", **kw)
+        equation = OldTex("f(z) = z", **kw)
         equation.next_to(question, DOWN, MED_LARGE_BUFF)
 
-        newton_example = Tex(
+        newton_example = OldTex(
             "z - {P(z) \\over P'(z)} = z",
             "\\quad \\Leftrightarrow \\quad ",
             "P(z) = 0",
             **kw,
         )
         newton_example.next_to(equation, DOWN, buff=LARGE_BUFF)
-        mandelbrot_example = Tex(
+        mandelbrot_example = OldTex(
             "\\text{Exercise 1a: Find the fixed points}\\\\",
             "\\text{of }", "f(z) = z^2 + c",
             alignment="\\centering",
@@ -1188,9 +1188,9 @@ class FixedPoints(Scene):
         VGroup(question_group.target, iterations.target).to_edge(UP)
 
         rational_parts = VGroup(
-            Tex("{A(z) \\over B(z)} = z", **kw),
-            Tex("A(z) = z \\cdot B(z)", **kw),
-            Tex("A(z) - z \\cdot B(z) = 0", **kw),
+            OldTex("{A(z) \\over B(z)} = z", **kw),
+            OldTex("A(z) = z \\cdot B(z)", **kw),
+            OldTex("A(z) - z \\cdot B(z) = 0", **kw),
         )
         rational_parts.arrange(DOWN, buff=MED_LARGE_BUFF)
         for part, tex in zip(rational_parts[1:], ("=", "-")):
@@ -1307,7 +1307,7 @@ class FixedPoints(Scene):
         morty = Mortimer(height=2)
         morty.to_corner(DR)
 
-        deriv_ineq = Tex("|f'(z)| < 1", **kw)
+        deriv_ineq = OldTex("|f'(z)| < 1", **kw)
         deriv_ineq.next_to(equation, DOWN, MED_LARGE_BUFF)
 
         equation.generate_target()
@@ -1316,7 +1316,7 @@ class FixedPoints(Scene):
         group.move_to(equation)
 
         attracting_condition = deriv_ineq.copy()
-        repelling_condition = Tex("|f'(z)| > 1", **kw)
+        repelling_condition = OldTex("|f'(z)| > 1", **kw)
         conditions = VGroup(attracting_condition, repelling_condition)
         for condition, words in zip(conditions, stability_words):
             condition.scale(0.7)
@@ -1360,15 +1360,15 @@ class FixedPoints(Scene):
 
         # Newton derivative examples
         newton_case = VGroup(
-            Tex("f(z) = z - {P(z) \\over P'(z)}", **kw),
-            Tex("f'(z) = {P(z)P''(z) \\over P'(z)^2}", **kw),
-            Tex("P(z) = 0 \\quad \\Rightarrow \\quad f'(z) = 0", **kw),
+            OldTex("f(z) = z - {P(z) \\over P'(z)}", **kw),
+            OldTex("f'(z) = {P(z)P''(z) \\over P'(z)^2}", **kw),
+            OldTex("P(z) = 0 \\quad \\Rightarrow \\quad f'(z) = 0", **kw),
         )
         newton_case.arrange(DOWN, aligned_edge=LEFT, buff=MED_LARGE_BUFF)
         newton_case.scale(0.8)
         newton_case.next_to(equation, DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
 
-        alt_line1 = Tex("f'(z) = 1 - {P'(z)P'(z) - P(z)P''(z) \\over P'(z)^2}", **kw)
+        alt_line1 = OldTex("f'(z) = 1 - {P'(z)P'(z) - P(z)P''(z) \\over P'(z)^2}", **kw)
         alt_line1.match_height(newton_case[1])
         alt_line1.move_to(newton_case[1], LEFT)
 
@@ -1422,7 +1422,7 @@ class FixedPoints(Scene):
                 )
 
         rect = SurroundingRectangle(newton_case[2][6:])
-        super_words = TexText("``Superattracting''", font_size=36)
+        super_words = OldTexText("``Superattracting''", font_size=36)
         super_words.set_color(YELLOW)
         super_words.next_to(rect, DOWN, SMALL_BUFF)
 
@@ -1454,11 +1454,11 @@ class FixedPoints(Scene):
         # Mandelbrot exercise
         part1 = mandelbrot_example
         part1.set_height(0.9)
-        part2 = TexText(
+        part2 = OldTexText(
             "Exercise 1b: Determine when at least\\\\"
             "one fixed point is attracting.",
         )
-        part3 = TexText(
+        part3 = OldTexText(
             "Exercise 1c$^{**}$: Show that the set of values\\\\",
             "$c$ satisfying this form a cardioid.",
             tex_to_color_map={"$c$": YELLOW}
@@ -1526,7 +1526,7 @@ class FixedPoints(Scene):
     def add_z_dot(self, z=1 + 1j, z_tex="z"):
         z_dot = Dot(radius=0.05, color=BLUE)
         z_dot.move_to(self.plane.n2p(z))
-        z_label = Tex(z_tex, font_size=30)
+        z_label = OldTex(z_tex, font_size=30)
         z_label.next_to(z_dot, UL, buff=0)
         self.add(z_dot, z_label)
         return z_dot, z_label
@@ -1546,7 +1546,7 @@ class FixedPoints(Scene):
 class UseNewton(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText(
+            OldTexText(
                 "You could solve\\\\ $A(z) - z\\cdot B(z) = 0$ \\\\",
                 "using Newton's method"
             ),
@@ -1593,8 +1593,8 @@ class DescribeDerivative(Scene):
             },
             "isolate": ["f", "(", ")", "=", z_str, fz_str, fpz_str],
         }
-        f_label = Tex("f(z) = z^2", **kw)
-        df_label = Tex("f'(z) = 2z", **kw)
+        f_label = OldTex("f(z) = z^2", **kw)
+        df_label = OldTex("f'(z) = 2z", **kw)
         labels = VGroup(f_label, df_label)
         labels.arrange(DOWN)
         labels.to_corner(UL)
@@ -1654,8 +1654,8 @@ class DescribeDerivative(Scene):
 
         # Show function evaluation
         ex_labels = VGroup(
-            Tex(f"f({z_str}) = {fz_str}", **kw),
-            Tex(f"f'({z_str}) = {fpz_str}", **kw),
+            OldTex(f"f({z_str}) = {fz_str}", **kw),
+            OldTex(f"f'({z_str}) = {fpz_str}", **kw),
         )
         for ex_label, gen_label in zip(ex_labels, labels):
             ex_label.next_to(gen_label, RIGHT, MED_LARGE_BUFF)
@@ -1740,7 +1740,7 @@ class LooksLikeTwoMult(Scene):
     const = "2"
 
     def construct(self):
-        tex = TexText(f"Looks like $z \\rightarrow {self.const}\\cdot z$")
+        tex = OldTexText(f"Looks like $z \\rightarrow {self.const}\\cdot z$")
         tex.set_stroke(BLACK, 5, background=True)
         self.play(FadeIn(tex, lag_ratio=0.1))
         self.wait()
@@ -1766,7 +1766,7 @@ class Cycles(FixedPoints):
         z_labels = VGroup(z0_label, z1_label)
 
         # Ask question
-        question = TexText("When does $z$ cycle?")
+        question = OldTexText("When does $z$ cycle?")
         question.next_to(plane, UP, MED_SMALL_BUFF)
 
         kw = {"path_arc": PI / 3, "buff": 0.1}
@@ -1800,13 +1800,13 @@ class Cycles(FixedPoints):
             "isolate": ["f"],
         }
 
-        f2_equation = Tex("f(f(z)) = z", **kw)
+        f2_equation = OldTex("f(f(z)) = z", **kw)
         f2_equation.next_to(plane, RIGHT, MED_LARGE_BUFF, aligned_edge=UP)
 
         julia_fractal = JuliaFractal(plane)
         julia_fractal.set_c(-0.18 + 0.77j)
 
-        z2c = Tex("f(z) = z^2 + c", **kw)
+        z2c = OldTex("f(z) = z^2 + c", **kw)
         z2c.next_to(f2_equation, RIGHT, LARGE_BUFF)
 
         self.play(FadeIn(f2_equation, 0.25 * DOWN))
@@ -1821,8 +1821,8 @@ class Cycles(FixedPoints):
 
         # Example with z^2 + c
         julia_f2_eqs = VGroup(
-            Tex("(z^2 + c)^2 + c = z", **kw),
-            Tex("z^4 + 2cz^2 -z + c^2 + c = 0", **kw),
+            OldTex("(z^2 + c)^2 + c = z", **kw),
+            OldTex("z^4 + 2cz^2 -z + c^2 + c = 0", **kw),
         )
         julia_f2_eqs.arrange(DOWN, buff=0.7, aligned_edge=LEFT)
         julia_f2_eqs.next_to(f2_equation, DOWN, buff=1.0, aligned_edge=LEFT)
@@ -1870,7 +1870,7 @@ class Cycles(FixedPoints):
         )
 
         # N cycles
-        fn_eq = Tex(
+        fn_eq = OldTex(
             "f(f(\\cdots f(z) \\cdots)) = z",
             **kw
         )
@@ -1942,7 +1942,7 @@ class Cycles(FixedPoints):
         million = Integer(1e6, font_size=36)
         million.next_to(brace, DOWN)
         million.set_value(0)
-        mega_poly = Tex(
+        mega_poly = OldTex(
             "z^{2^{1{,}000{,}000}} +",
             "\\cdots \\text{(nightmare)} \\cdots",
             "= 0",
@@ -1994,7 +1994,7 @@ class Cycles(FixedPoints):
         )
 
         # Rational map
-        rational = Tex("f(z) = {A(z) \\over B(z)}", **kw)
+        rational = OldTex("f(z) = {A(z) \\over B(z)}", **kw)
         rational.next_to(million, DOWN, LARGE_BUFF)
         rational.align_to(fn_eq, LEFT)
 
@@ -2039,7 +2039,7 @@ class Cycles(FixedPoints):
                 )
 
         # Possibly add on a bit for Fatou's theorem?
-        theorem = TexText(
+        theorem = OldTexText(
             "Theorem (Fatou 1919): If $f(z)$ has an\\\\",
             "attracting cycle, then at least one solution\\\\",
             "to $f'(z) = 0$ will fall into it.",
@@ -2055,10 +2055,10 @@ class Cycles(FixedPoints):
 
     def show_composition(self, ref_mob, morty, **kwargs):
         tex = "z^2 + c"
-        polys = VGroup(Tex(tex, **kwargs))
+        polys = VGroup(OldTex(tex, **kwargs))
         for n in range(20):
             new_tex_parts = ["\\left(", tex, "\\right)^2 + c"]
-            polys.add(Tex(*new_tex_parts))
+            polys.add(OldTex(*new_tex_parts))
             if n < 3:
                 tex = "".join(new_tex_parts)
 
@@ -2106,7 +2106,7 @@ class TwoToMillionPoints(Scene):
     def construct(self):
         plane, julia_fractal = self.get_plane_and_fractal()
 
-        words = TexText("$\\approx 2^{1{,}000{,}000}$ solutions!")
+        words = OldTexText("$\\approx 2^{1{,}000{,}000}$ solutions!")
         words.set_stroke(BLACK, 8, background=True)
         words.move_to(plane, UL)
         words.shift(MED_SMALL_BUFF * DR)
@@ -2147,11 +2147,11 @@ class TwoToMillionPoints(Scene):
 class CyclesHaveSolutions(Scene):
     def construct(self):
         text = VGroup(
-            Tex(
+            OldTex(
                 "f^n(z) = z \\text{ has solutions}",
                 tex_to_color_map={"z": BLUE},
             ),
-            Tex("\\sim D^n \\text{ of them...}"),
+            OldTex("\\sim D^n \\text{ of them...}"),
         )
         text.arrange(DOWN)
 
@@ -2164,8 +2164,8 @@ class MandelbrotFunctions(Scene):
     def construct(self):
         kw = {"tex_to_color_map": {"c": YELLOW}}
         group = VGroup(
-            Tex("f(z) = z^2 + c", **kw),
-            Tex("f'(z) = 2z"),
+            OldTex("f(z) = z^2 + c", **kw),
+            OldTex("f'(z) = 2z"),
         )
         group.arrange(DOWN, aligned_edge=LEFT)
         self.add(group)
@@ -2256,7 +2256,7 @@ class CyclicAttractorSmallRadius(CyclicAttractor):
 
 class CyclicExercise(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Exercise 2: If $f(z) = z - {z^3 - 2z + 2 \\over 3z^2 - 2}$,\\\\",
             "and $g(z) = f(f(z))$, confirm that $|g'(0)| < 1$."
         )
@@ -2267,7 +2267,7 @@ class CyclicExercise(Scene):
         group = VGroup(box, words)
         group.to_edge(UP, buff=0)
 
-        hint = TexText(
+        hint = OldTexText(
             "Hint: Don't expand out $g(z)$. Use\\\\",
             "the chain rule: $g'(0) = f'(f(0))f'(0)$"
         )
@@ -2287,7 +2287,7 @@ class CyclicExercise(Scene):
 class AskHowOftenThisHappensAlt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("How often does\\\\this happen?"),
+            OldTexText("How often does\\\\this happen?"),
             bubble_config={
                 "height": 3,
                 "width": 4,
@@ -2329,8 +2329,8 @@ class AskHowOftenThisHappensAlt(TeacherStudentsScene):
 
 class WhatDoesBlackMean(Scene):
     def construct(self):
-        lhs = TexText("$z_n$ never gets\\\\near a root")
-        rhs = TexText("$\\Rightarrow$ ", "Black ", )
+        lhs = OldTexText("$z_n$ never gets\\\\near a root")
+        rhs = OldTexText("$\\Rightarrow$ ", "Black ", )
         rhs.next_to(lhs, RIGHT)
         words = VGroup(lhs, rhs)
         words.next_to(ORIGIN, UR, MED_LARGE_BUFF)
@@ -2382,7 +2382,7 @@ class ShowCenterOfMassPoint(PlayWithRootsSeekingCycles):
             window.add_updater(lambda m: m.move_to(mean_dot))
             self.add(window)
 
-        mean_label = Tex("(r_1 + r_2 + r_3) / 3", font_size=24)
+        mean_label = OldTex("(r_1 + r_2 + r_3) / 3", font_size=24)
         mean_label.set_stroke(BLACK, 2, background=True)
         mean_label.add_updater(lambda m: m.next_to(mean_dot, UP, buff=0.1))
         self.add(mean_label)
@@ -2412,7 +2412,7 @@ class ShowCenterOfMassPointFocusIn(ShowCenterOfMassPoint):
 
 class CenterOfMassStatement(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "If there's an attracting cycle, the seed\\\\",
             "$z_0 = (r_1 + r_2 + r_3) / 3$ will fall into it."
         )
@@ -2434,7 +2434,7 @@ class GenerateCubicParameterPlot(Scene):
                 "\\lambda": colors[2],
             }
         }
-        title = Tex(
+        title = OldTex(
             "z_{n+1} = z_n - {P(z_n) \\over P'(z_n)} \\qquad\\qquad ",
             "P(z) = (z - 1)(z + 1)(z - \\lambda)",
             font_size=30,
@@ -2465,7 +2465,7 @@ class GenerateCubicParameterPlot(Scene):
         ))
         root_dots.set_stroke(BLACK, 2)
 
-        lambda_label = Tex("\\lambda", font_size=36)
+        lambda_label = OldTex("\\lambda", font_size=36)
         lambda_label.set_color(interpolate_color(colors[2], WHITE, 0.75))
         lambda_label.set_stroke(BLACK, 3, background=True)
         lambda_label.add_updater(lambda m: m.next_to(
@@ -2495,8 +2495,8 @@ class GenerateCubicParameterPlot(Scene):
 
         # Plane titles
         plane_titles = VGroup(
-            TexText("Pixel $\\leftrightarrow z_0$"),
-            TexText("Pixel $\\leftrightarrow$ ", "$\\lambda$"),
+            OldTexText("Pixel $\\leftrightarrow z_0$"),
+            OldTexText("Pixel $\\leftrightarrow$ ", "$\\lambda$"),
         )
         plane_titles[1][-1].set_color(colors[2])
         for plane_title, plane in zip(plane_titles, planes):
@@ -2600,7 +2600,7 @@ class GenerateCubicParameterPlot(Scene):
 
 class Z0RuleLabel(Scene):
     def construct(self):
-        label = Tex("z_0 = (r_1 + r_2 + r_3) / 3")
+        label = OldTex("z_0 = (r_1 + r_2 + r_3) / 3")
         self.add(label)
 
 
@@ -2615,7 +2615,7 @@ class WhyFractals(Scene):
 class SmallCircleProperty(Scene):
     def construct(self):
         # Titles
-        rule = TexText(
+        rule = OldTexText(
             "For any rational map, color points\\\\based on their limiting behavior...\\\\",
             "(which limit point, which limit cycle, etc.)",
             font_size=36,
@@ -2624,7 +2624,7 @@ class SmallCircleProperty(Scene):
         rule[-1].shift(SMALL_BUFF * DOWN)
         rule[-1].set_color(GREY_B)
 
-        r_map = Tex("z_{n + 1} = A(z_n) / B(z_n)")
+        r_map = OldTex("z_{n + 1} = A(z_n) / B(z_n)")
         r_map.to_corner(UR)
 
         # Fractal
@@ -2782,7 +2782,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
         # Show Julia set
         otherwise = Text("Otherwise...")
         otherwise.next_to(rhs, DOWN, LARGE_BUFF)
-        j_condition = TexText("$z_0 \\in$", " Julia set", " of $f$")
+        j_condition = OldTexText("$z_0 \\in$", " Julia set", " of $f$")
         j_condition.match_height(rhs)
         j_condition.next_to(otherwise, DOWN, LARGE_BUFF)
 
@@ -2841,7 +2841,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
         colors = self.colors
         f_planes = VGroup(*(self.get_plane() for x in range(n)))
         f_planes.arrange(RIGHT, buff=LARGE_BUFF)
-        plusses = Tex("+").replicate(n - 1)
+        plusses = OldTex("+").replicate(n - 1)
         f_group = Group(*it.chain(*zip(f_planes, plusses)))
         f_group.add(f_planes[-1])
         f_group.arrange(RIGHT)
@@ -2888,7 +2888,7 @@ class MentionFatouSetsAndJuliaSets(Scene):
         return plane
 
     def get_fatou_condition(self):
-        zn = Tex(
+        zn = OldTex(
             "z_0", "\\overset{f}{\\longrightarrow}",
             "z_1", "\\overset{f}{\\longrightarrow}",
             "z_2", "\\overset{f}{\\longrightarrow}",
@@ -2896,19 +2896,19 @@ class MentionFatouSetsAndJuliaSets(Scene):
             "\\longrightarrow"
         )
         words = VGroup(
-            TexText("Stable fixed point"),
-            TexText("Stable cycle"),
-            TexText("$\\infty$"),
+            OldTexText("Stable fixed point"),
+            OldTexText("Stable cycle"),
+            OldTexText("$\\infty$"),
         )
         words.arrange(DOWN, aligned_edge=LEFT)
         brace = Brace(words, LEFT)
         zn.next_to(brace, LEFT)
         lhs = VGroup(zn, brace, words)
 
-        arrow = Tex("\\Rightarrow")
+        arrow = OldTex("\\Rightarrow")
         arrow.scale(2)
         arrow.next_to(lhs, RIGHT, MED_LARGE_BUFF)
-        rhs = Tex("z_0 \\in", " \\text{Fatou set of $f$}")
+        rhs = OldTex("z_0 \\in", " \\text{Fatou set of $f$}")
         rhs.next_to(arrow, RIGHT, buff=MED_LARGE_BUFF)
 
         result = VGroup(lhs, arrow, rhs)
@@ -3002,7 +3002,7 @@ class AboutFatouDisks(Scene):
         words.to_edge(UP)
 
         disks, arrows = self.get_disks_and_arrow()
-        arrows[-1].add(Tex("\\dots").next_to(arrows[-1], RIGHT))
+        arrows[-1].add(OldTex("\\dots").next_to(arrows[-1], RIGHT))
         group = VGroup(disks, arrows)
         group.next_to(words, DOWN)
 
@@ -3039,7 +3039,7 @@ class AboutFatouDisks(Scene):
 
     def get_disks_and_arrow(self):
         disks = self.get_disks()
-        arrows = Tex("\\rightarrow").replicate(len(disks))
+        arrows = OldTex("\\rightarrow").replicate(len(disks))
         group = VGroup(*it.chain(*zip(disks, arrows)))
         group.arrange(RIGHT)
         group.set_width(FRAME_WIDTH - 2)
@@ -3048,7 +3048,7 @@ class AboutFatouDisks(Scene):
 
 class AboutFatouDisksJustWords(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "(Small enough) disks around points in the Fatou set...\\\\",
             "...eventually shrink to 0"
         )
@@ -3126,7 +3126,7 @@ class AboutJuliaDisks(AboutFatouDisks):
         words3 = Text("with at most two exceptions.")
         words3.next_to(words2, DOWN, MED_LARGE_BUFF, aligned_edge=RIGHT)
 
-        words4 = TexText(
+        words4 = OldTexText(
             "``Stuff goes everywhere'' principle of Julia sets",
             font_size=60
         )
@@ -3339,7 +3339,7 @@ class SimulationAnnotations(Scene):
             for theta in np.linspace(0, TAU, int(r * 20)) + random.random() * TAU
         ])
 
-        n_points_label = TexText("$\\sim 2{,}000$ points")
+        n_points_label = OldTexText("$\\sim 2{,}000$ points")
         n_points_label.next_to(dots, UP)
 
         brace = Brace(
@@ -3347,7 +3347,7 @@ class SimulationAnnotations(Scene):
             Line(dots.get_center(), dots.get_right()),
             DOWN, buff=0
         )
-        brace_tex = Tex("\\text{Radius } \\approx 1 / 1{,}000{,}000")
+        brace_tex = OldTex("\\text{Radius } \\approx 1 / 1{,}000{,}000")
         brace_tex.next_to(dots, DOWN)
 
         group = VGroup(n_points_label, brace, brace_tex)
@@ -3365,17 +3365,17 @@ class SimulationAnnotations(Scene):
 class LattesExample(TeacherStudentsScene):
     def construct(self):
         example = VGroup(
-            TexText("Lattè's example: "),
-            Tex(r"L(z)=\frac{\left(z^{2}+1\right)^{2}}{4 z\left(z^{2}-1\right)}"),
+            OldTexText("Lattè's example: "),
+            OldTex(r"L(z)=\frac{\left(z^{2}+1\right)^{2}}{4 z\left(z^{2}-1\right)}"),
         )
         example.arrange(RIGHT)
         example[0].shift(SMALL_BUFF * DOWN)
         example.move_to(self.hold_up_spot, DOWN)
         example.set_x(0)
 
-        j_fact = TexText("Julia set of $L(z)$ is all of $\\mathds{C}$")
+        j_fact = OldTexText("Julia set of $L(z)$ is all of $\\mathds{C}$")
         j_fact.move_to(example)
-        subwords = TexText("(and the point at $\\infty$)", font_size=36)
+        subwords = OldTexText("(and the point at $\\infty$)", font_size=36)
         subwords.set_fill(GREY_A)
         subwords.next_to(j_fact, DOWN)
 
@@ -3413,7 +3413,7 @@ class JFunctionMention(Scene):
     def construct(self):
         image = ImageMobject("j_invariant")
         image.set_height(5)
-        name = TexText("Klein's $j$ function")
+        name = OldTexText("Klein's $j$ function")
         name.next_to(image, UP)
         words = Text("A whole story...")
         words.next_to(image, RIGHT)

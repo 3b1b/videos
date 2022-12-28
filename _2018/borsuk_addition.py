@@ -67,7 +67,7 @@ class StudentsWatching(TeacherStudentsScene):
 
 class UnexpectedConnection(Scene):
     def construct(self):
-        primes = Tex(
+        primes = OldTex(
             "2,", "3,", "5,", "7,", "11,", "13,", "17,", "\\dots"
         )
         primes.move_to(2.5 * UP)
@@ -90,7 +90,7 @@ class UnexpectedConnection(Scene):
         arrow.scale(1.5)
         arrow.fade(1)
 
-        formula = Tex(
+        formula = OldTex(
             "\\frac{\\pi^2}{6} = \\prod_{p \\text{ prime}}"
             "\\frac{1}{1 - p^{-2}}"
         )
@@ -119,7 +119,7 @@ class UnexpectedConnection(Scene):
         decimal.add_updater(
             lambda d: d.set_value(radius.get_angle())
         )
-        pi = Tex("\\pi")
+        pi = OldTex("\\pi")
         pi.scale(2)
         pi.next_to(circle, LEFT)
 
@@ -200,7 +200,7 @@ class MapOfVideo(MovingCameraScene):
 
 class MathIsDeep(PiCreatureScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Math", "is", "deep"
         )
         words.scale(2)
@@ -312,7 +312,7 @@ class MinimizeSharding(Scene):
 
 class Antipodes(Scene):
     def construct(self):
-        word = TexText("``Antipodes''")
+        word = OldTexText("``Antipodes''")
         word.set_width(FRAME_WIDTH - 1)
         word.set_color(MAROON_B)
         self.play(Write(word))
@@ -321,7 +321,7 @@ class Antipodes(Scene):
 
 class TopologyWordBreak(Scene):
     def construct(self):
-        word = TexText("Topology")
+        word = OldTexText("Topology")
         word.scale(2)
         colors = [BLUE, YELLOW, RED]
         classes = VGroup(*[VGroup() for x in range(3)])
@@ -336,7 +336,7 @@ class TopologyWordBreak(Scene):
             new_group = VGroup()
             for elem in group[:-1]:
                 new_group.add(elem)
-                sign = Tex("\\simeq")
+                sign = OldTex("\\simeq")
                 new_group.add(sign)
                 signs.add(sign)
             new_group.add(group[-1])
@@ -350,7 +350,7 @@ class TopologyWordBreak(Scene):
         classes.shift(2 * RIGHT)
 
         genus_labels = VGroup(*[
-            TexText("Genus %d:" % d).scale(1.5).next_to(
+            OldTexText("Genus %d:" % d).scale(1.5).next_to(
                 classes[d], LEFT, MED_LARGE_BUFF
             )
             for d in range(3)
@@ -384,7 +384,7 @@ class GreenLine(Scene):
 
 class Thief(Scene):
     def construct(self):
-        self.play(Write(TexText("Thief")))
+        self.play(Write(OldTexText("Thief")))
         self.wait()
 
 
@@ -404,17 +404,17 @@ class FunctionGInSymbols(Scene):
                     tex, color, substring=False
                 )
 
-        f_of_p = Tex("f", "(", p_tex, ")")
+        f_of_p = OldTex("f", "(", p_tex, ")")
         f_of_p.shift(2.5 * LEFT + 2.5 * UP)
-        f_of_neg_p = Tex("f", "(", neg_p_tex, ")")
-        g_of_p = Tex("g", "(", p_tex, ")")
+        f_of_neg_p = OldTex("f", "(", neg_p_tex, ")")
+        g_of_p = OldTex("g", "(", p_tex, ")")
         g_of_p[0].set_color(YELLOW)
         for mob in f_of_p, f_of_neg_p, g_of_p:
             color_tex(mob)
         dec_rhs = DecimalMatrix([[-0.9], [0.5]])
         dec_rhs.next_to(f_of_p, RIGHT)
-        minus = Tex("-")
-        equals = Tex("=")
+        minus = OldTex("-")
+        equals = OldTex("=")
         equals.next_to(f_of_p, RIGHT)
         zero_zero = IntegerMatrix([[0], [0]])
 
@@ -473,12 +473,12 @@ class FunctionGInSymbols(Scene):
         self.wait()
 
         # Define g
-        def_eq = Tex(":=")
+        def_eq = OldTex(":=")
         def_eq.next_to(f_of_p, LEFT)
         g_of_p.next_to(def_eq, LEFT)
         rect = SurroundingRectangle(VGroup(g_of_p, f_of_neg_p))
         rect.set_stroke(width=1)
-        seeking_text = Tex(
+        seeking_text = OldTex(
             "\\text{Looking for }", p_tex, "\\text{ where}"
         )
         color_tex(seeking_text)
@@ -504,9 +504,9 @@ class FunctionGInSymbols(Scene):
         self.play(FadeOut(rect))
 
         # Show g is odd
-        g_of_neg_p = Tex("{g}", "(", neg_p_tex, ")")
-        eq2 = Tex("=")
-        rhs = Tex(
+        g_of_neg_p = OldTex("{g}", "(", neg_p_tex, ")")
+        eq2 = OldTex("=")
+        rhs = OldTex(
             "f", "(", neg_p_tex, ")", "-",
             "f", "(", p_tex, ")", "=",
             "-", "{g}", "(", p_tex, ")",
@@ -585,7 +585,7 @@ class FunctionGInputSpace(SpecialThreeDScene):
         arrow.rotate(90 * DEGREES, axis=arrow.get_vector())
         arrow.add_to_back(arrow.copy().set_stroke(BLACK, 5))
 
-        p_label = self.p_label = Tex("\\vec{\\textbf{p}}")
+        p_label = self.p_label = OldTex("\\vec{\\textbf{p}}")
         p_label.set_color(YELLOW)
         p_label.next_to(arrow.get_start(), OUT, buff=0.3)
         p_label.set_shade_in_3d(True)
@@ -619,7 +619,7 @@ class FunctionGInputSpace(SpecialThreeDScene):
             ).set_color(RED)
         )
 
-        neg_p = Tex("-\\vec{\\textbf{p}}")
+        neg_p = OldTex("-\\vec{\\textbf{p}}")
         neg_p.add_updater(
             lambda p: p.next_to(end_dot, UP + RIGHT + IN)
         )
@@ -828,7 +828,7 @@ class FunctionGOutputSpace(FunctionGInputSpace):
         self.remove(dot)
 
         p_tex = "\\vec{\\textbf{p}}"
-        fp_label = self.fp_label = Tex("f(", p_tex, ")")
+        fp_label = self.fp_label = OldTex("f(", p_tex, ")")
         fp_label.set_color_by_tex(p_tex, YELLOW)
 
         self.play(Write(axes, run_time=3))
@@ -885,13 +885,13 @@ class FunctionGOutputSpace(FunctionGInputSpace):
         path = DashedVMobject(pre_path)
 
         fp_label = self.fp_label
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.next_to(fp_label, RIGHT, SMALL_BUFF)
-        f_neg_p = Tex("f(", "-\\vec{\\textbf{p}}", ")")
+        f_neg_p = OldTex("f(", "-\\vec{\\textbf{p}}", ")")
         f_neg_p[1].set_color(RED)
         f_neg_p.next_to(equals, RIGHT)
 
-        gp_label = Tex("g", "(", "\\vec{\\textbf{p}}", ")")
+        gp_label = OldTex("g", "(", "\\vec{\\textbf{p}}", ")")
         gp_label[0].set_color(GREEN)
         gp_label[2].set_color(YELLOW)
         gp_label.add_updater(lambda m: m.next_to(dot, UL, SMALL_BUFF))
@@ -925,7 +925,7 @@ class FunctionGOutputSpace(FunctionGInputSpace):
         path.apply_function(self.odd_func)
         end_dot = Dot(color=RED)
         end_dot.move_to(path[-1].point_from_proportion(1))
-        g_neg_p = Tex(
+        g_neg_p = OldTex(
             "g", "(", "-\\vec{\\textbf{p}}", ")"
         )
         g_neg_p[0].set_color(GREEN)
@@ -1057,13 +1057,13 @@ class RotationOfEquatorGraphInOuputSpace(FunctionGOutputSpace):
 
 class WriteInputSpace(Scene):
     def construct(self):
-        self.play(Write(TexText("Input space")))
+        self.play(Write(OldTexText("Input space")))
         self.wait()
 
 
 class WriteOutputSpace(Scene):
     def construct(self):
-        self.play(Write(TexText("Output space")))
+        self.play(Write(OldTexText("Output space")))
         self.wait()
 
 
@@ -1083,7 +1083,7 @@ class ShowFlash(Scene):
 
 class WaitForIt(Scene):
     def construct(self):
-        words = TexText("Wait for it", "$\\dots$", arg_separator="")
+        words = OldTexText("Wait for it", "$\\dots$", arg_separator="")
         words.scale(2)
         self.add(words[0])
         self.play(Write(words[1], run_time=3))
@@ -1094,7 +1094,7 @@ class DrawSphere(SpecialThreeDScene):
     def construct(self):
         sphere = self.get_sphere()
         sphere.shift(IN)
-        question = TexText("What \\emph{is} a sphere?")
+        question = OldTexText("What \\emph{is} a sphere?")
         question.set_width(FRAME_WIDTH - 3)
         question.to_edge(UP)
         self.move_camera(phi=70 * DEGREES, run_time=0)
@@ -1168,7 +1168,7 @@ class ThreeDSpace(ThreeDScene):
 
 class NecklaceSphereConnectionTitle(Scene):
     def construct(self):
-        text = TexText("Necklace Sphere Association")
+        text = OldTexText("Necklace Sphere Association")
         text.set_width(FRAME_WIDTH - 1)
         self.add(text)
 

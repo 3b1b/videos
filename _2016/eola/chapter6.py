@@ -3,14 +3,14 @@ from ka_playgrounds.circuits import Resistor, Source, LongResistor
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "To ask the",
             "right question\\\\",
             "is harder than to answer it." 
         )
         words.to_edge(UP)
         words[1].set_color(BLUE)
-        author = TexText("-Georg Cantor")
+        author = OldTexText("-Georg Cantor")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -21,7 +21,7 @@ class OpeningQuote(Scene):
 
 class ListTerms(Scene):
     def construct(self):
-        title = TexText("Under the light of linear transformations")
+        title = OldTexText("Under the light of linear transformations")
         title.set_color(YELLOW)
         title.to_edge(UP)
         randy = Randolph().to_corner()
@@ -66,7 +66,7 @@ class NoComputations(TeacherStudentsScene):
         self.random_blink()
         self.wait()
         new_words = self.teacher.bubble.position_mobject_inside(
-            TexText([
+            OldTexText([
                 "Search",
                 "``Gaussian elimination'' \\\\",
                 "and",
@@ -91,13 +91,13 @@ class PuntToSoftware(Scene):
 
 class UsefulnessOfMatrices(Scene):
     def construct(self):
-        title = TexText("Usefulness of matrices")
+        title = OldTexText("Usefulness of matrices")
         title.set_color(YELLOW)
         title.to_edge(UP)
         self.add(title)
         self.wait(3) #Play some 3d linear transform over this
 
-        equations = Tex("""
+        equations = OldTex("""
             6x - 3y + 2z &= 7 \\\\
             x + 2y + 5z &= 0 \\\\
             2x - 8y - z &= -2 \\\\
@@ -127,7 +127,7 @@ class UsefulnessOfMatrices(Scene):
 
 class CircuitDiagram(Scene):
     def construct(self):
-        self.add(TexText("Voltages").to_edge(UP))
+        self.add(OldTexText("Voltages").to_edge(UP))
 
         source = Source()
         p1, p2 = source.get_top(), source.get_bottom()
@@ -138,9 +138,9 @@ class CircuitDiagram(Scene):
         l2 = Line(p2+2*2*RIGHT, p2)
         circuit = VMobject(source, r1, r2, r3, l1, l2)
         circuit.center()
-        v1 = Tex("v_1").next_to(r1, UP)
-        v2 = Tex("v_2").next_to(r2, RIGHT)
-        v3 = Tex("v_3").next_to(r3, UP)
+        v1 = OldTex("v_1").next_to(r1, UP)
+        v2 = OldTex("v_2").next_to(r2, RIGHT)
+        v3 = OldTex("v_3").next_to(r3, UP)
         unknowns = VMobject(v1, v2, v3)
         unknowns.set_color(BLUE)
 
@@ -163,7 +163,7 @@ class StockLine(VMobject):
 
 class StockPrices(Scene):
     def construct(self):
-        self.add(TexText("Stock prices").to_edge(UP))
+        self.add(OldTexText("Stock prices").to_edge(UP))
 
         x_axis = Line(ORIGIN, FRAME_X_RADIUS*RIGHT)
         y_axis = Line(ORIGIN, FRAME_Y_RADIUS*UP)
@@ -186,7 +186,7 @@ class StockPrices(Scene):
 
 class MachineLearningNetwork(Scene):
     def construct(self):
-        self.add(TexText("Machine learning parameters").to_edge(UP))
+        self.add(OldTexText("Machine learning parameters").to_edge(UP))
 
         layers = []
         for i, num_nodes in enumerate([3, 4, 4, 1]):
@@ -195,7 +195,7 @@ class MachineLearningNetwork(Scene):
                 for x in range(num_nodes)
             ])
             for j, mob in enumerate(layer.split()):
-                sym = Tex("x_{%d, %d}"%(i, j))
+                sym = OldTex("x_{%d, %d}"%(i, j))
                 sym.move_to(mob)
                 mob.add(sym)
             layer.arrange(DOWN, buff = 0.5)
@@ -213,7 +213,7 @@ class MachineLearningNetwork(Scene):
 
 class ComplicatedSystem(Scene):
     def construct(self):
-        system = Tex("""
+        system = OldTex("""
         \\begin{align*}
             \\dfrac{1}{1-e^{2x-3y+4z}} &= 1 \\\\ \\\\
             \\sin(xy) + z^2 &= \\sqrt{y} \\\\ \\\\
@@ -304,16 +304,16 @@ class SystemOfEquations(Scene):
         self.play(other_equations.restore)
 
     def show_nonlinearity_examples(self):
-        squared = Tex("x^2")
+        squared = OldTex("x^2")
         squared.split()[0].set_color(X_COLOR)
-        sine = Tex("\\sin(x)")
+        sine = OldTex("\\sin(x)")
         sine.split()[-2].set_color(X_COLOR)
-        product = Tex("xy")
+        product = OldTex("xy")
         product.split()[0].set_color(X_COLOR)
         product.split()[1].set_color(Y_COLOR)
 
 
-        words = TexText("Not allowed!")
+        words = OldTexText("Not allowed!")
         words.set_color(RED)
         words.to_corner(UP+LEFT, buff = 1)
         arrow = Vector(RIGHT, color = RED)
@@ -371,7 +371,7 @@ class SystemOfEquations(Scene):
             mob.square.replace(mob, stretch = True)
             mob.square.scale(1.1)
             if hasattr(mob, "words"):
-                mob.words = TexText(mob.words)
+                mob.words = OldTexText(mob.words)
                 mob.words.set_color(color)
                 mob.words.next_to(mob.square, UP)
         ys.square.add(xs.square, zs.square)
@@ -383,7 +383,7 @@ class SystemOfEquations(Scene):
             ]
         ])
         zero_circles.set_color(PINK)
-        zero_circles.words = TexText("Add zeros as needed")
+        zero_circles.words = OldTexText("Add zeros as needed")
         zero_circles.words.set_color(zero_circles.get_color())
         zero_circles.words.next_to(equations, UP)
 
@@ -401,7 +401,7 @@ class SystemOfEquations(Scene):
         self.wait()
         self.play(*list(map(FadeOut, [zero_circles, zero_circles.words])))
         self.wait()
-        title = TexText("``Linear system of equations''")
+        title = OldTexText("``Linear system of equations''")
         title.scale(1.5)
         title.to_edge(UP)
         self.play(Write(title))
@@ -426,7 +426,7 @@ class SystemOfEquations(Scene):
         matrix = Matrix(copy.deepcopy(coefficients))
         x_array = Matrix(copy.deepcopy(variable_arrays[0]))
         v_array = Matrix(copy.deepcopy(rhs_entries))
-        equals = Tex("=")
+        equals = OldTex("=")
         ax_equals_v = VMobject(matrix, x_array, equals, v_array)
         ax_equals_v.arrange(RIGHT)
         ax_equals_v.to_edge(RIGHT)
@@ -478,7 +478,7 @@ class SystemOfEquations(Scene):
             mob.brace = Brace(mob, UP)
             mob.words = mob.brace.get_text(mob.words)
             mob.words.shift_onto_screen()
-            mob.symbol = Tex(mob.symbol)
+            mob.symbol = OldTex(mob.symbol)
             mob.brace.put_at_tip(mob.symbol)
         x_array.words.set_submobject_colors_by_gradient(
             X_COLOR, Y_COLOR, Z_COLOR
@@ -502,7 +502,7 @@ class SystemOfEquations(Scene):
             mob.symbol for mob in parts
         ])
         compact_equation.submobjects.insert(
-            2, Tex("=").next_to(x_array, RIGHT)
+            2, OldTex("=").next_to(x_array, RIGHT)
         )
         compact_equation.target = compact_equation.copy()
         compact_equation.target.arrange(buff = 0.1)
@@ -517,7 +517,7 @@ class SystemOfEquations(Scene):
 class LinearSystemTransformationScene(LinearTransformationScene):
     def setup(self):
         LinearTransformationScene.setup(self)
-        equation = Tex([
+        equation = OldTex([
             "A",
             "\\vec{\\textbf{x}}",
             "=",
@@ -580,7 +580,7 @@ class ThinkAboutWhatsHappening(Scene):
         randy = Randolph()
         randy.to_corner()
         bubble = randy.get_bubble(height = 5)
-        bubble.add_content(Tex("""
+        bubble.add_content(OldTex("""
             3x + 1y + 4z &= 1 \\\\
             5x + 9y + 2z &= 6 \\\\
             5x + 3y + 5z &= 8
@@ -603,7 +603,7 @@ class ThinkAboutWhatsHappening(Scene):
 
 class SystemOfTwoEquationsTwoUnknowns(Scene):
     def construct(self):
-        system = Tex("""
+        system = OldTex("""
             2x + 2y &= -4 \\\\
             1x + 3y &= -1
         """)
@@ -616,7 +616,7 @@ class SystemOfTwoEquationsTwoUnknowns(Scene):
         x = Matrix(["x", "y"])
         x.get_entries().set_submobject_colors_by_gradient(X_COLOR, Y_COLOR)
         matrix_system = VMobject(
-            matrix, x, Tex("="), v
+            matrix, x, OldTex("="), v
         )
         matrix_system.arrange(RIGHT)
         matrix_system.next_to(system, DOWN, buff = 1)
@@ -660,11 +660,11 @@ class ShowBijectivity(LinearTransformationScene):
             for v in vectors.split()
         ])
         titles = [
-            TexText([
+            OldTexText([
                 "Each vector lands on\\\\",
                 "exactly one vector"
             ]),
-            TexText([
+            OldTexText([
                 "Every vector has \\\\",
                 "been landed on"
             ])
@@ -700,7 +700,7 @@ class LabeledExample(LinearSystemTransformationScene):
     }
     def setup(self):
         LinearSystemTransformationScene.setup(self)
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.next_to(self.equation, DOWN, buff = 1)
         title.add_background_rectangle()
         title.shift_onto_screen()
@@ -740,7 +740,7 @@ class FullRankExmapleDet(FullRankExmapleWithWords):
 
 class StartWithNonzeroDetCase(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Let's start with \\\\",
             "the", "$\\det(A) \\ne 0$", "case"
         )
@@ -755,7 +755,7 @@ class StartWithNonzeroDetCase(TeacherStudentsScene):
 
 class DeclareNewTransformation(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Playing a transformation in\\\\",
             "reverse gives a", "new transformation"
         )
@@ -785,12 +785,12 @@ class DescribeInverse(LinearTransformationScene):
         "inv_label" : "$A^{-1}$",
     }
     def construct(self):
-        title = TexText("Transformation:")
-        new_title = TexText("Inverse transformation:")
+        title = OldTexText("Transformation:")
+        new_title = OldTexText("Inverse transformation:")
         matrix = Matrix(self.t_matrix.T)
         if not self.show_actual_inverse:
             inv_matrix = matrix.copy()
-            neg_1 = Tex("-1")
+            neg_1 = OldTex("-1")
             neg_1.move_to(
                 inv_matrix.get_corner(UP+RIGHT), 
                 aligned_edge = LEFT
@@ -843,7 +843,7 @@ class ShearInverseShear(DescribeInverse):
 class MultiplyToIdentity(LinearTransformationScene):
     def construct(self):
         self.setup()
-        lhs = Tex("A^{-1}", "A", "=")
+        lhs = OldTex("A^{-1}", "A", "=")
         lhs.scale(1.5)
         A_inv, A, eq = lhs.split()
         identity = Matrix([[1, 0], [0, 1]])
@@ -908,14 +908,14 @@ class ThereAreComputationMethods(TeacherStudentsScene):
 
 class TwoDInverseFormula(Scene):
     def construct(self):
-        title = TexText("If you're curious...")
+        title = OldTexText("If you're curious...")
         title.set_color(YELLOW)
         title.to_edge(UP)
         morty = Mortimer().to_corner(DOWN+RIGHT)
         self.add(title, morty)
         matrix = [["a", "b"], ["c", "d"]]
         scaled_inv = [["d", "-b"], ["-c", "a"]]
-        formula = Tex("""
+        formula = OldTex("""
             %s^{-1} = \\dfrac{1}{ad-bc} %s
         """%(
             matrix_to_tex_string(matrix),
@@ -929,16 +929,16 @@ class SymbolicInversion(Scene):
     def construct(self):
         vec = lambda s : "\\vec{\\textbf{%s}}"%s
         
-        words = TexText("Once you have this:")
+        words = OldTexText("Once you have this:")
         words.to_edge(UP, buff = 2)
-        inv = Tex("A^{-1}")
+        inv = OldTex("A^{-1}")
         inv.set_color(GREEN)
         inv.next_to(words.split()[-1], RIGHT, aligned_edge = DOWN)
         inv2 = inv.copy()
 
-        start = Tex("A", vec("x"), "=", vec("v"))
-        interim = Tex("A^{-1}", "A", vec("x"), "=", "A^{-1}", vec("v"))
-        end = Tex(vec("x"), "=", "A^{-1}", vec("v"))
+        start = OldTex("A", vec("x"), "=", vec("v"))
+        interim = OldTex("A^{-1}", "A", vec("x"), "=", "A^{-1}", vec("v"))
+        end = OldTex(vec("x"), "=", "A^{-1}", vec("v"))
 
         A, x, eq, v = start.split()
         x.set_color(PINK)
@@ -985,7 +985,7 @@ class PlayInReverseWithSolution(PlayInReverse):
     }
     def setup(self):
         LinearTransformationScene.setup(self)
-        equation = Tex([
+        equation = OldTex([
             "\\vec{\\textbf{x}}",
             "=",
             "A^{-1}",
@@ -1002,7 +1002,7 @@ class PlayInReverseWithSolution(PlayInReverse):
 
 class OneUniqueSolution(Scene):
     def construct(self):
-        system = Tex("""
+        system = OldTex("""
             \\begin{align*}
                 ax + cy &= e \\\\
                 bx + dy &= f
@@ -1034,9 +1034,9 @@ class ThreeDTransformAndReverse(Scene):
 
 class DetNEZeroRule(Scene):
     def construct(self):
-        text = Tex("\\det(A) \\ne 0")
+        text = OldTex("\\det(A) \\ne 0")
         text.shift(2*UP)
-        A_inv = TexText("$A^{-1}$ exists")
+        A_inv = OldTexText("$A^{-1}$ exists")
         A_inv.shift(DOWN)
         arrow = Arrow(text, A_inv)
         self.play(Write(text))
@@ -1048,7 +1048,7 @@ class DetNEZeroRule(Scene):
 
 class ThreeDInverseRule(Scene):
     def construct(self):
-        form = Tex("A^{-1} A = ")
+        form = OldTex("A^{-1} A = ")
         form.scale(2)
         matrix = Matrix(np.identity(3, 'int'))
         matrix.set_column_colors(X_COLOR, Y_COLOR, Z_COLOR)
@@ -1073,14 +1073,14 @@ class InvertNonInvertable(LinearTransformationScene):
     }
     def setup(self):
         LinearTransformationScene.setup(self)
-        det_text = Tex("\\det(A) = 0")
+        det_text = OldTex("\\det(A) = 0")
         det_text.scale(1.5)
         det_text.to_corner(UP+LEFT)
         det_text.add_background_rectangle()
         self.add_foreground_mobject(det_text)
 
     def construct(self):
-        no_func = TexText("No function does this")
+        no_func = OldTexText("No function does this")
         no_func.shift(2*UP)
         no_func.set_color(RED)
         no_func.add_background_rectangle()
@@ -1110,7 +1110,7 @@ class OneInputMultipleOutputs(InvertNonInvertable):
 
         self.apply_transposed_matrix(self.t_matrix, path_arc = 0)
         self.play(ShowCreation(output_vector))
-        single_input = TexText("Single vector")
+        single_input = OldTexText("Single vector")
         single_input.add_background_rectangle()
         single_input.next_to(output_vector.get_end(), UP)
         single_input.set_color(YELLOW) 
@@ -1125,7 +1125,7 @@ class OneInputMultipleOutputs(InvertNonInvertable):
             ] + list(map(Animation, self.foreground_mobjects)),
             run_time = 3
         )
-        multiple_outputs = TexText(
+        multiple_outputs = OldTexText(
             "Must map to \\\\",
             "multiple vectors"
         )
@@ -1137,7 +1137,7 @@ class OneInputMultipleOutputs(InvertNonInvertable):
 
 class SolutionsCanStillExist(TeacherStudentsScene):
     def construct(self):
-        words = TexText("""
+        words = OldTexText("""
             Solutions can still 
             exist when""",  "$\\det(A) = 0$"
         )
@@ -1162,7 +1162,7 @@ class ShowVInAndOutOfColumnSpace(LinearSystemTransformationScene):
         self.wait()
         for v in v_in, v_out:
             self.add_vector(v, animate = True)
-            words = TexText(v.words)
+            words = OldTexText(v.words)
             words.set_color(v.words_color)
             words.next_to(v.get_end(), DOWN+RIGHT)
             words.add_background_rectangle()
@@ -1179,7 +1179,7 @@ class NotAllSquishesAreCreatedEqual(TeacherStudentsScene):
 
 class PrepareForRank(Scene):
     def construct(self):
-        new_term, rank = words = TexText(
+        new_term, rank = words = OldTexText(
             "New terminology: ",
             "rank"
         )
@@ -1189,10 +1189,10 @@ class PrepareForRank(Scene):
 
 class DefineRank(Scene):
     def construct(self):
-        rank = TexText("``Rank''")
+        rank = OldTexText("``Rank''")
         rank.set_color(TEAL)
         arrow = DoubleArrow(LEFT, RIGHT)
-        dims = TexText(
+        dims = OldTexText(
             "Number of\\\\", "dimensions \\\\", 
             "in the output"
         )
@@ -1210,7 +1210,7 @@ class DefineRank(Scene):
 
 class DefineColumnSpace(Scene):
     def construct(self):
-        left_words = TexText(
+        left_words = OldTexText(
             "Set of all possible\\\\",
             "outputs",
             "$A\\vec{\\textbf{v}}$",
@@ -1218,7 +1218,7 @@ class DefineColumnSpace(Scene):
         left_words[1].set_color(TEAL)
         VMobject(*left_words[-1][1:]).set_color(YELLOW)
         arrow = DoubleArrow(LEFT, RIGHT).to_edge(UP)
-        right_words = TexText("``Column space''", "of $A$")
+        right_words = OldTexText("``Column space''", "of $A$")
         right_words[0].set_color(left_words[1].get_color())
 
         everyone = VMobject(left_words, arrow, right_words)
@@ -1238,7 +1238,7 @@ class ColumnsRepresentBasisVectors(Scene):
         matrix = Matrix([[3, 1], [4, 1]])
         matrix.shift(UP)
         i_hat_words, j_hat_words = [
-            TexText("Where $\\hat{\\%smath}$ lands"%char)
+            OldTexText("Where $\\hat{\\%smath}$ lands"%char)
             for char in ("i", "j")
         ]
         i_hat_words.set_color(X_COLOR)
@@ -1285,9 +1285,9 @@ class TowDColumnsDontSpan(LinearTransformationScene):
         self.add_foreground_mobject(matrix)
         brace = Brace(matrix)
         words = VMobject(
-            TexText("Span", "of columns"),
-            Tex("\\Updownarrow"),
-            TexText("``Column space''")
+            OldTexText("Span", "of columns"),
+            OldTex("\\Updownarrow"),
+            OldTexText("``Column space''")
         )
         words.arrange(DOWN, buff = 0.1)
         words.next_to(brace, DOWN)
@@ -1329,7 +1329,7 @@ class TowDColumnsDontSpan(LinearTransformationScene):
 
 class FullRankWords(Scene):
     def construct(self):
-        self.play(Write(TexText("Full rank").scale(2)))
+        self.play(Write(OldTexText("Full rank").scale(2)))
 
 class ThreeDColumnsDontSpan(Scene):
     def construct(self):
@@ -1366,7 +1366,7 @@ class NameColumnSpace(Scene):
         cols = list(matrix.copy().get_mob_matrix().T)
         col_arrays = list(map(Matrix, cols))
 
-        span_text = Tex(
+        span_text = OldTex(
             "\\text{Span}", 
             "\\Big(",
             matrix_to_tex_string([1, 2, 3]),
@@ -1388,7 +1388,7 @@ class NameColumnSpace(Scene):
         span_text.arrange(RIGHT, buff = 0.2)
 
         arrow = DoubleArrow(LEFT, RIGHT)
-        column_space = TexText("``Column space''")
+        column_space = OldTexText("``Column space''")
         for mob in column_space, arrow:
             mob.set_color(TEAL)
         text = VMobject(span_text, arrow, column_space)
@@ -1417,7 +1417,7 @@ class NameColumnSpace(Scene):
         self.clear()
         self.add(text)
 
-        words = TexText(
+        words = OldTexText(
             "To solve", 
             "$A\\vec{\\textbf{x}} = \\vec{\\textbf{v}}$,\\\\",
             "$\\vec{\\textbf{v}}$", 
@@ -1537,7 +1537,7 @@ class RankNumber(Scene):
         "color" : BLUE
     }
     def construct(self):
-        words = TexText("Rank", "%d"%self.number)
+        words = OldTexText("Rank", "%d"%self.number)
         words[1].set_color(self.color)
         self.add(words)
 
@@ -1569,7 +1569,7 @@ class NameFullRank(Scene):
             "When", "rank", "$=$", "number of columns",
         )
         top_words[1].set_color(MAROON)
-        low_words = TexText(
+        low_words = OldTexText(
             "matrix is", "``full rank''"
         )
         low_words[1].set_color(MAROON)
@@ -1587,7 +1587,7 @@ class NameFullRank(Scene):
 class OriginIsAlwaysInColumnSpace(LinearTransformationScene):
     def construct(self):
         vector = Matrix([0, 0]).set_color(YELLOW)
-        words = TexText("is always in the", "column space")
+        words = OldTexText("is always in the", "column space")
         words[1].set_color(TEAL)
         words.next_to(vector, RIGHT)
         vector.add_to_back(BackgroundRectangle(vector))
@@ -1621,8 +1621,8 @@ class FullRankCase(LinearTransformationScene):
         ]
         vector = Matrix([0, 0]).set_color(YELLOW)
         title = VMobject(
-            TexText("Only"), vector,
-            TexText("lands on"), vector.copy()
+            OldTexText("Only"), vector,
+            OldTexText("lands on"), vector.copy()
         )
         title.arrange(buff = 0.2)
         title.to_edge(UP)
@@ -1653,8 +1653,8 @@ class NameNullSpace(LinearTransformationScene):
         dot = Dot(ORIGIN, color = YELLOW)
         line = Line(vectors[0].get_end(), vectors[-1].get_end())
         line.set_color(YELLOW)
-        null_space_label = TexText("``Null space''")
-        kernel_label = TexText("``Kernel''")
+        null_space_label = OldTexText("``Null space''")
+        kernel_label = OldTexText("``Kernel''")
         null_space_label.move_to(vectors[13].get_end(), aligned_edge = UP+LEFT)
         kernel_label.next_to(null_space_label, DOWN)
         for mob in null_space_label, kernel_label:
@@ -1715,7 +1715,7 @@ class ThreeDNullSpaceIsPlane(Scene):
 class NullSpaceSolveForVEqualsZero(NameNullSpace):
     def construct(self):
         vec = lambda s : "\\vec{\\textbf{%s}}"%s
-        equation = Tex("A", vec("x"), "=", vec("v"))
+        equation = OldTex("A", vec("x"), "=", vec("v"))
         A, x, eq, v = equation
         x.set_color(PINK)
         v.set_color(YELLOW)
@@ -1752,7 +1752,7 @@ class OffsetNullSpace(NameNullSpace):
         )
         circle = Circle(color = YELLOW).replace(dot)
         circle.scale(5)
-        words = TexText("""
+        words = OldTexText("""
             All vectors still land 
             on the same spot
         """)
@@ -1804,7 +1804,7 @@ class ShowAdditivityProperty(LinearTransformationScene):
         v.set_color(YELLOW)
         w.set_color(MAROON_B)
         sum_vect = Vector(v.get_end()+w.get_end(), color = PINK)
-        form = Tex(
+        form = OldTex(
             "A(",
             "\\vec{\\textbf{v}}",
             "+",
@@ -1857,13 +1857,13 @@ class AddJustOneNullSpaceVector(NameNullSpace):
             color = PINK
         )
         for v in x, null_vector:
-            v.label = TexText(v.label)
+            v.label = OldTexText(v.label)
             v.label.set_color(v.get_color())
             v.label.next_to(v.get_end(), UP)
             v.label.add_background_rectangle()
         dot = Dot(ORIGIN, color = null_vector.get_color())
 
-        form = Tex(
+        form = OldTex(
             "A(",
             "\\vec{\\textbf{x}}",
             "+",
@@ -1920,7 +1920,7 @@ class AddJustOneNullSpaceVector(NameNullSpace):
         self.wait()
         self.play(Write(brace))
         self.wait()
-        words = TexText(
+        words = OldTexText(
             "$\\vec{\\textbf{x}}$",
             "and the",
             "$\\vec{\\textbf{x}} + \\vec{\\textbf{n}}$\\\\",
@@ -1937,18 +1937,18 @@ class AddJustOneNullSpaceVector(NameNullSpace):
 class NullSpaceOffsetRule(Scene):
     def construct(self):
         vec = lambda s : "\\vec{\\textbf{%s}}"%s
-        equation = Tex("A", vec("x"), "=", vec("v"))
+        equation = OldTex("A", vec("x"), "=", vec("v"))
         A, x, equals, v = equation
         x.set_color(PINK)
         v.set_color(YELLOW)
-        A_text = TexText(
+        A_text = OldTexText(
             "When $A$ is not", "full rank"
         )
         A_text[1].set_color(MAROON_C)
         A_text.next_to(A, UP+LEFT, buff = 1)
         A_text.shift_onto_screen()
         A_arrow = Arrow(A_text.get_bottom(), A, color = WHITE)
-        v_text = TexText(
+        v_text = OldTexText(
             "If", "$%s$"%vec("v"), "is in the", 
             "column space", "of $A$"
         )
@@ -1999,7 +1999,7 @@ class NotToLearnItAllNow(TeacherStudentsScene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TexText("""
+        title = OldTexText("""
             Next video: Nonsquare matrices
         """)
         title.set_width(FRAME_WIDTH - 2)

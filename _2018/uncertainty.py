@@ -276,7 +276,7 @@ class TrafficLight(SVGMobject):
 
 class MentionUncertaintyPrinciple(TeacherStudentsScene):
     def construct(self):
-        title = TexText("Heisenberg Uncertainty Principle")
+        title = OldTexText("Heisenberg Uncertainty Principle")
         title.to_edge(UP)
 
         dot_cloud = ProbabalisticDotCloud()
@@ -377,7 +377,7 @@ class FourierTradeoff(Scene):
             y_max = 2,
             y_axis_config = {"unit_size" : 0.5}
         )
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.scale(1.5)
         time_label.next_to(
             time_axes.x_axis.get_right(), UP+LEFT,
@@ -399,7 +399,7 @@ class FourierTradeoff(Scene):
             },
             color = TEAL,
         )
-        frequency_label = TexText("Frequency")
+        frequency_label = OldTexText("Frequency")
         frequency_label.scale(1.5)
         frequency_label.next_to(
             frequency_axes.x_axis.get_right(), UP+LEFT,
@@ -458,9 +458,9 @@ class FourierTradeoff(Scene):
             ),
             color = FREQUENCY_COLOR,
         )
-        fourier_words = TexText("Fourier Transform")
+        fourier_words = OldTexText("Fourier Transform")
         fourier_words.next_to(arrow, LEFT, buff = MED_LARGE_BUFF)
-        sub_words = TexText("(To be explained shortly)")
+        sub_words = OldTexText("(To be explained shortly)")
         sub_words.set_color(BLUE)
         sub_words.scale(0.75)
         sub_words.next_to(fourier_words, DOWN)
@@ -501,7 +501,7 @@ class ShowPlan(PiCreatureScene):
         self.play_quantum_anims(words[2])
 
     def add_title(self):
-        title = TexText("The plan")
+        title = OldTexText("The plan")
         title.scale(1.5)
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
@@ -516,7 +516,7 @@ class ShowPlan(PiCreatureScene):
         ]
         words = VGroup()
         for topic, tradeoff, color in trips:
-            word = TexText("Uncertainty for", topic, tradeoff)
+            word = OldTexText("Uncertainty for", topic, tradeoff)
             word[1:].set_color(color)
             word[2].scale(0.75)
             word[2].next_to(word[1], DOWN, buff = 1.5*SMALL_BUFF)
@@ -615,7 +615,7 @@ class ShowPlan(PiCreatureScene):
 
 
         checkmark = self.get_checkmark(word)
-        ish = TexText("$\\dots$ish")
+        ish = OldTexText("$\\dots$ish")
         ish.next_to(checkmark, RIGHT, -SMALL_BUFF, DOWN)
 
         self.add(dot_cloud)
@@ -637,7 +637,7 @@ class ShowPlan(PiCreatureScene):
     ##
 
     def get_checkmark(self, word):
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.set_color(GREEN)
         checkmark.scale(1.25)
         checkmark.next_to(word[1], UP+RIGHT, buff = 0)
@@ -731,10 +731,10 @@ class TwoCarsAtRedLight(Scene):
             },
         )
         axes.x_axis.add_numbers(1, 2, 3)
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.scale(self.text_scale_val)
         time_label.next_to(axes.x_axis.get_right(), DOWN)
-        y_title = TexText("Signal")
+        y_title = OldTexText("Signal")
         y_title.scale(self.text_scale_val)
         y_title.next_to(axes.y_axis, UP, SMALL_BUFF)
         axes.add(time_label, y_title)
@@ -751,7 +751,7 @@ class TwoCarsAtRedLight(Scene):
             axes.input_to_graph_point(1, graph),
             axes.input_to_graph_point(3, graph),
         ), UP)
-        text = TexText("Short duration observation")
+        text = OldTexText("Short duration observation")
         text.scale(self.text_scale_val)
         text.next_to(brace, UP, SMALL_BUFF)
         text.align_to(
@@ -800,7 +800,7 @@ class TwoCarsAtRedLight(Scene):
         )
         frequency_axes.next_to(time_axes, DOWN, LARGE_BUFF)
         frequency_axes.set_color(GREY_B)
-        frequency_label = TexText("Frequency")
+        frequency_label = OldTexText("Frequency")
         frequency_label.scale(self.text_scale_val)
         frequency_label.next_to(frequency_axes.x_axis.get_right(), DOWN)
         frequency_axes.add(
@@ -819,7 +819,7 @@ class TwoCarsAtRedLight(Scene):
         )
 
         #Setup label
-        label = TexText("Low confidence")
+        label = OldTexText("Low confidence")
         label.scale(self.text_scale_val)
         label.move_to(peak_point + UP+RIGHT, DOWN)
         label.match_color(frequency_graph)
@@ -915,7 +915,7 @@ class TwoCarsAtRedLight(Scene):
     def show_high_confidence(self):
         #Frequency stuff
         arrow = self.frequency_graph_label[1]
-        label = TexText("High confidence")
+        label = OldTexText("High confidence")
         label.scale(self.text_scale_val)
         label.next_to(arrow.get_start(), UP, SMALL_BUFF)
         label.match_color(arrow)
@@ -925,7 +925,7 @@ class TwoCarsAtRedLight(Scene):
         #Time stuff
         new_time_graph = self.new_time_graph
         brace = Brace(new_time_graph, UP, buff = SMALL_BUFF)
-        text = TexText("Long duration observation")
+        text = OldTexText("Long duration observation")
         text.scale(self.text_scale_val)
         text.next_to(brace, UP, buff = SMALL_BUFF)
 
@@ -986,7 +986,7 @@ class VariousMusicalNotes(Scene):
         graph_update_anim.update(0)
 
         phrases = [
-            TexText(*words.split(" "))
+            OldTexText(*words.split(" "))
             for words in [
                 "Very clear frequency",
                 "Less clear frequency",
@@ -1025,11 +1025,11 @@ class VariousMusicalNotes(Scene):
             last_brace = brace
 
         #Talk about correlations
-        short_signal_words = TexText(
+        short_signal_words = OldTexText(
             "Short", "signal", "correlates",
             "with", "wide range", "of frequencies"
         )
-        long_signal_words = TexText(
+        long_signal_words = OldTexText(
             "Only", "wide", "signals", "correlate",
             "with a", "short range", "of frequencies"
         )
@@ -1083,8 +1083,8 @@ class VariousMusicalNotes(Scene):
 class CrossOutDefinitenessAndCertainty(TeacherStudentsScene):
     def construct(self):
         words = VGroup(
-            TexText("Definiteness"),
-            TexText("Certainty"),
+            OldTexText("Definiteness"),
+            OldTexText("Certainty"),
         )
         words.arrange(DOWN)
         words.next_to(self.teacher, UP+LEFT)
@@ -1103,7 +1103,7 @@ class CrossOutDefinitenessAndCertainty(TeacherStudentsScene):
 
 class BringInFourierTranform(TeacherStudentsScene):
     def construct(self):
-        fourier = TexText("Fourier")
+        fourier = OldTexText("Fourier")
         fourier.scale(1.5)
         fourier.next_to(self.teacher.get_corner(UP+LEFT), UP, LARGE_BUFF)
         fourier.save_state()
@@ -1120,7 +1120,7 @@ class BringInFourierTranform(TeacherStudentsScene):
 
 class LastVideoWrapper(Scene):
     def construct(self):
-        title = TexText("Visualizing the Fourier Transform")
+        title = OldTexText("Visualizing the Fourier Transform")
         title.to_edge(UP)
         screen_rect = ScreenRectangle(height = 6)
         screen_rect.next_to(title, DOWN)
@@ -1175,8 +1175,8 @@ class FourierRecapScene(DrawFrequencyPlot):
         fourier_graph.pointwise_become_partial(fourier_graph, 0.1, 1)
 
         #labels
-        signal_label = TexText("Signal")
-        fourier_label = TexText("Fourier transform")
+        signal_label = OldTexText("Signal")
+        fourier_label = OldTexText("Fourier transform")
         signal_label.next_to(time_graph, UP, buff = SMALL_BUFF)
         fourier_label.next_to(fourier_graph, UP)
         fourier_label.match_color(fourier_graph)
@@ -1267,7 +1267,7 @@ class FourierRecapScene(DrawFrequencyPlot):
         com_arrow = Arrow(UP+3*RIGHT, ORIGIN)
         com_arrow.shift(com_dot.get_center())
         com_arrow.match_color(com_dot)
-        com_words = TexText("Center of mass")
+        com_words = OldTexText("Center of mass")
         com_words.next_to(com_arrow.get_start(), UP)
         com_words.match_color(com_arrow)
         com_words.add_background_rectangle()
@@ -1353,7 +1353,7 @@ class FourierRecapScene(DrawFrequencyPlot):
 
 class RealPartOfInsert(Scene):
     def construct(self):
-        words = TexText("(Real part of the)")
+        words = OldTexText("(Real part of the)")
         words.set_color(RED)
         self.add(words)
         self.play(Write(words))
@@ -1430,7 +1430,7 @@ class CenterOfMassDescription(FourierRecapScene):
             )
             for factor in (1, 2)
         ]
-        theta = Tex("\\theta")
+        theta = OldTex("\\theta")
         theta.shift(1.5*arc.point_from_proportion(0.5))
 
         self.play(
@@ -1648,7 +1648,7 @@ class CleanerFourierTradeoff(FourierTradeoff):
 
 class MentionDopplerRadar(TeacherStudentsScene):
     def construct(self):
-        words = TexText("Doppler Radar")
+        words = OldTexText("Doppler Radar")
         words.next_to(self.teacher, UP)
         words.save_state()
         words.shift(DOWN).fade(1)
@@ -1705,7 +1705,7 @@ class IntroduceDopplerRadar(Scene):
             y_max = 1.5
         )
         axes.move_to(DOWN)
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.next_to(axes.x_axis.get_right(), UP)
         axes.time_label = time_label
         axes.add(time_label)
@@ -1736,7 +1736,7 @@ class IntroduceDopplerRadar(Scene):
             arrow.next_to(graph.peak_point, UP, SMALL_BUFF)
             arrow.match_color(graph)
             graph.arrow = arrow
-            label = TexText(word)
+            label = OldTexText(word)
             label.next_to(arrow.get_start(), UP, SMALL_BUFF)
             label.match_color(graph)
             graph.label = label
@@ -1746,7 +1746,7 @@ class IntroduceDopplerRadar(Scene):
             echo_graph.peak_point,
             color = WHITE
         )
-        distance_text = TexText("$2 \\times$ distance/(signal speed)")
+        distance_text = OldTexText("$2 \\times$ distance/(signal speed)")
         distance_text.set_width(0.9*double_arrow.get_width())
         distance_text.next_to(double_arrow, UP, SMALL_BUFF)
 
@@ -1826,7 +1826,7 @@ class IntroduceDopplerRadar(Scene):
         pulse_text = pulse_brace.get_text("Original signal")
         pulse_text.add_background_rectangle()
         echo_text = echo_brace.get_text("Echo")
-        echo_subtext = TexText("(Higher frequency)")
+        echo_subtext = OldTexText("(Higher frequency)")
         echo_subtext.next_to(echo_text, RIGHT)
         echo_subtext.match_color(echo_graph)
 
@@ -1890,7 +1890,7 @@ class IntroduceDopplerRadar(Scene):
         )
         frequency_axes.move_to(self.axes, LEFT)
         frequency_axes.to_edge(DOWN)
-        frequency_label = TexText("Frequency")
+        frequency_label = OldTexText("Frequency")
         frequency_label.next_to(
             frequency_axes.x_axis.get_right(), UP,
         )
@@ -1923,7 +1923,7 @@ class IntroduceDopplerRadar(Scene):
         # words = ["original signal", "echo"]
         # for brace, word in zip(braces, words):
         #     brace.add(brace.get_text("F.T. of \\\\ %s"%word))
-        fourier_label = Tex("||\\text{Fourier transform}||")
+        fourier_label = OldTex("||\\text{Fourier transform}||")
         # fourier_label.next_to(sum_graph.fourier_transform, UP, MED_LARGE_BUFF)
         fourier_label.next_to(frequency_axes.y_axis, UP, buff = SMALL_BUFF)
         fourier_label.shift_onto_screen()
@@ -2045,7 +2045,7 @@ class IntroduceDopplerRadar(Scene):
 
 class DopplerFormulaInsert(Scene):
     def construct(self):
-        formula = Tex(
+        formula = OldTex(
             "f_{\\text{echo}", "=",
             "\\left(1 + \\frac{v}{c}\\right)",
             "f_{\\text{pulse}}"
@@ -2070,7 +2070,7 @@ class DopplerFormulaInsert(Scene):
 
 class MentionPRFNuance(TeacherStudentsScene):
     def construct(self):
-        title = TexText(
+        title = OldTexText(
             "Speed of light", "$\\gg$", "Speed of a plane"
         )
         title.to_edge(UP)
@@ -2081,7 +2081,7 @@ class MentionPRFNuance(TeacherStudentsScene):
             y_min = 0, y_max = 2,
         )
         axes.next_to(title, DOWN, buff = MED_LARGE_BUFF)
-        frequency_label = TexText("Frequency")
+        frequency_label = OldTexText("Frequency")
         frequency_label.scale(0.7)
         frequency_label.next_to(axes.x_axis.get_right(), UP)
         axes.add(frequency_label)
@@ -2095,8 +2095,8 @@ class MentionPRFNuance(TeacherStudentsScene):
         self.add(pulse_graph)
 
         brace = Brace(peak_points, UP, buff = SMALL_BUFF)
-        displayed_doppler_shift = TexText("How I'm showing the \\\\", "Doppler shift")
-        actual_doppler_shift = TexText("Actual\\\\", "Doppler shift")
+        displayed_doppler_shift = OldTexText("How I'm showing the \\\\", "Doppler shift")
+        actual_doppler_shift = OldTexText("Actual\\\\", "Doppler shift")
         doppler_shift_words = VGroup(displayed_doppler_shift, actual_doppler_shift)
         doppler_shift_words.set_color(YELLOW)
         doppler_shift_words.scale(0.75)
@@ -2183,7 +2183,7 @@ class TimeAndFrequencyGivePositionAndVelocity(IntroduceDopplerRadar):
             y_min = -2, y_max = 2,
         )
         axes.center()
-        title = TexText("Echo signal")
+        title = OldTexText("Echo signal")
         title.next_to(axes.y_axis, UP)
         axes.add(title)
         axes.to_edge(UP)
@@ -2196,7 +2196,7 @@ class TimeAndFrequencyGivePositionAndVelocity(IntroduceDopplerRadar):
             color = WHITE,
             buff = SMALL_BUFF,
         )
-        time = TexText("Time")
+        time = OldTexText("Time")
         time.next_to(arrow, DOWN, SMALL_BUFF)
 
         delta_x = 0.7
@@ -2207,17 +2207,17 @@ class TimeAndFrequencyGivePositionAndVelocity(IntroduceDopplerRadar):
             ),
             UP
         )
-        frequency = TexText("Frequency")
+        frequency = OldTexText("Frequency")
         frequency.set_color(YELLOW)
         frequency.next_to(brace, UP, SMALL_BUFF)
 
-        time_updown_arrow = Tex("\\Updownarrow")
+        time_updown_arrow = OldTex("\\Updownarrow")
         time_updown_arrow.next_to(time, DOWN, SMALL_BUFF)
         freq_updown_arrow = time_updown_arrow.copy()
         freq_updown_arrow.next_to(frequency, UP, SMALL_BUFF)
-        distance = TexText("Distance")
+        distance = OldTexText("Distance")
         distance.next_to(time_updown_arrow, DOWN, SMALL_BUFF)
-        velocity = TexText("Velocity")
+        velocity = OldTexText("Velocity")
         velocity.next_to(freq_updown_arrow, UP, SMALL_BUFF)
         VGroup(freq_updown_arrow, velocity).match_style(frequency)
 
@@ -2253,7 +2253,7 @@ class RadarOperatorUncertainty(Scene):
         dish = RadarDish()
         dish.scale(3)
         dish.move_to(4*RIGHT + 2*DOWN)
-        dish_words = TexText("3b1b industrial \\\\ enterprises")
+        dish_words = OldTexText("3b1b industrial \\\\ enterprises")
         dish_words.scale(0.25)
         dish_words.set_stroke(BLACK, 0.5)
         dish_words.set_color(BLACK)
@@ -2328,7 +2328,7 @@ class AmbiguityInLongEchos(IntroduceDopplerRadar, PiCreatureScene):
             x_min = 0, x_max = 10,
             y_min = -1.5, y_max = 1.5,
         )
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.next_to(axes.x_axis.get_right(), UP)
         axes.add(time_label)
         axes.center()
@@ -2539,7 +2539,7 @@ class AmbiguityInLongEchos(IntroduceDopplerRadar, PiCreatureScene):
                 "tick_frequency" : 0.006
             }
         )
-        frequency_label = TexText("Frequency")
+        frequency_label = OldTexText("Frequency")
         frequency_label.next_to(frequency_axes.x_axis.get_right(), UP)
         frequency_axes.add(frequency_label)
         first_echo_graph = self.first_echo_graph
@@ -2779,13 +2779,13 @@ class SummarizeFourierTradeoffForDoppler(Scene):
         time_axes.center().to_edge(UP, buff = LARGE_BUFF)
         frequency_axes = time_axes.copy()
         frequency_axes.next_to(time_axes, DOWN, buff = 2)
-        time_label = TexText("Time")
-        frequency_label = TexText("Frequency")
+        time_label = OldTexText("Time")
+        frequency_label = OldTexText("Frequency")
         for label, axes in (time_label, time_axes), (frequency_label, frequency_axes):
             label.next_to(axes.get_right(), UP, SMALL_BUFF)
             axes.add(label)
         frequency_label.shift_onto_screen()
-        title = TexText("Fourier Trade-off")
+        title = OldTexText("Fourier Trade-off")
         title.next_to(time_axes, DOWN)
         self.add(title)
 
@@ -2848,7 +2848,7 @@ class IntroduceDeBroglie(Scene):
         picture = ImageMobject("de_Broglie")
         picture.set_height(4)
         picture.to_corner(UP+LEFT)
-        name = TexText("Louis de Broglie")
+        name = OldTexText("Louis de Broglie")
         name.next_to(picture, DOWN)
 
         picture.save_state()
@@ -2901,7 +2901,7 @@ class IntroduceDeBroglie(Scene):
         }
         arrow = Vector(DOWN, color = WHITE)
         arrow.next_to(time_line.number_to_point(1914), UP)
-        words = TexText(year_to_words[1914])
+        words = OldTexText(year_to_words[1914])
         words.scale(text_scale_val)
         date = Integer(1914)
         date.next_to(arrow, UP, LARGE_BUFF)
@@ -3042,23 +3042,23 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
         self.react_to_claim()
 
     def introduce_formula(self):
-        formula = p, eq, h, xi = Tex("p", "=", "h", "\\xi")
+        formula = p, eq, h, xi = OldTex("p", "=", "h", "\\xi")
         formula.move_to(ORIGIN)
         formula.scale(1.5)
 
         word_shift_val = 1.75
-        p_words = TexText("Momentum")
+        p_words = OldTexText("Momentum")
         p_words.next_to(p, UP, LARGE_BUFF).shift(word_shift_val*LEFT)
         p_arrow = Arrow(
             p_words.get_bottom(), p.get_corner(UP+LEFT),
             buff = SMALL_BUFF
         )
-        added_p_words = TexText("(Classically $m \\times v$)")
+        added_p_words = OldTexText("(Classically $m \\times v$)")
         added_p_words.move_to(p_words, DOWN)
         VGroup(p, p_words, added_p_words, p_arrow).set_color(self.p_color)
 
-        xi_words = TexText("Spatial frequency")
-        added_xi_words = TexText("(cycles per unit \\emph{distance})")
+        xi_words = OldTexText("Spatial frequency")
+        added_xi_words = OldTexText("(cycles per unit \\emph{distance})")
         xi_words.next_to(xi, UP, LARGE_BUFF).shift(word_shift_val*RIGHT)
         xi_words.align_to(p_words)
         xi_arrow = Arrow(
@@ -3202,7 +3202,7 @@ class ShowMomentumFormula(IntroduceDeBroglie, TeacherStudentsScene):
 class AskPhysicists(PiCreatureScene):
     def construct(self):
         morty, physy1, physy2, physy3 = self.pi_creatures
-        formula = Tex("p", "=", "h", "\\xi")
+        formula = OldTex("p", "=", "h", "\\xi")
         formula.set_color_by_tex_to_color_map({
             "p" : BLUE,
             "\\xi" : YELLOW,
@@ -3328,10 +3328,10 @@ class SortOfDopplerEffect(PiCreatureScene):
             randy, lambda r : r.look_at(rect)
         )
 
-        ref_frame1 = TexText("Reference frame 1")
+        ref_frame1 = OldTexText("Reference frame 1")
         # ref_frame1.next_to(randy, UP, aligned_edge = LEFT)
         ref_frame1.to_edge(UP)
-        ref_frame2 = TexText("Reference frame 2")
+        ref_frame2 = OldTexText("Reference frame 2")
         ref_frame2.next_to(rect, UP)
         # ref_frame2.set_fill(opacity = 0)
         ref_frame2_follow = Mobject.add_updater(
@@ -3369,14 +3369,14 @@ class SortOfDopplerEffect(PiCreatureScene):
         )
 
         #Frequency words
-        temporal_frequency = TexText("Temporal", "frequency")
-        spatial_frequency = TexText("Spatial", "frequency")
+        temporal_frequency = OldTexText("Temporal", "frequency")
+        spatial_frequency = OldTexText("Spatial", "frequency")
         temporal_frequency.move_to(screen_rect).to_edge(UP)
         spatial_frequency.next_to(temporal_frequency, DOWN)
         cross = Cross(temporal_frequency[0])
 
-        time = TexText("Time")
-        space = TexText("Space")
+        time = OldTexText("Time")
+        space = OldTexText("Space")
         time.next_to(temporal_frequency, RIGHT, buff = 2)
         space.next_to(time, DOWN)
         space.align_to(spatial_frequency)
@@ -3512,7 +3512,7 @@ class HangingWeightsScene(MovingCameraScene):
         self.wait(3)
 
     def show_analogy_with_electron(self):
-        words = TexText(
+        words = OldTexText(
             "Analogous to the energy of a particle \\\\",
             "(in the sense of $E=mc^2$)"
         )
@@ -3526,7 +3526,7 @@ class HangingWeightsScene(MovingCameraScene):
         de_broglie = ImageMobject("de_Broglie")
         de_broglie.set_height(3.5)
         de_broglie.to_corner(DOWN+RIGHT)
-        words = TexText("""
+        words = OldTexText("""
             If a photon's energy is carried as a wave \\\\
             is this true for any particle?
         """)
@@ -3677,7 +3677,7 @@ class MinutPhysicsWrapper(Scene):
         logo.to_corner(UP+LEFT)
         self.add(logo)
 
-        title = TexText("Minute Physics on special relativity")
+        title = OldTexText("Minute Physics on special relativity")
         title.to_edge(UP).shift(MED_LARGE_BUFF*RIGHT)
 
         screen_rect = ScreenRectangle()
@@ -3723,7 +3723,7 @@ class FourierTransformOfWaveFunction(Scene):
                 "tick_frequency" : 0.5
             }
         )
-        position_label = TexText("Position")
+        position_label = OldTexText("Position")
         position_label.next_to(axes.x_axis.get_right(), UP)
         axes.add(position_label)
         axes.center().to_edge(UP, buff = LARGE_BUFF)
@@ -3763,7 +3763,7 @@ class FourierTransformOfWaveFunction(Scene):
                 "tick_frequency" : 0.05,
             }
         )
-        label = self.frequency_x_axis_label = TexText("Spatial frequency")
+        label = self.frequency_x_axis_label = OldTexText("Spatial frequency")
         label.next_to(frequency_axes.x_axis.get_right(), UP)
         frequency_axes.add(label)
         frequency_axes.move_to(self.axes, LEFT)
@@ -3795,7 +3795,7 @@ class FourierTransformOfWaveFunction(Scene):
             frequency_axes.coords_to_point(1, 0.1),
             color = YELLOW,
         )
-        fourier_label = TexText("Fourier Transform")
+        fourier_label = OldTexText("Fourier Transform")
         fourier_label.next_to(arrow.get_center(), RIGHT)
 
         self.play(ReplacementTransform(
@@ -3826,7 +3826,7 @@ class FourierTransformOfWaveFunction(Scene):
         v_line = DashedLine(1.5*UP, ORIGIN, color = YELLOW)
         v_line.move_to(frequency_axes.coords_to_point(1, 0), DOWN)
 
-        f_equals = Tex("f = ")
+        f_equals = OldTex("f = ")
         freq_decimal = DecimalNumber(1)
         freq_decimal.next_to(f_equals, RIGHT, buff = SMALL_BUFF)
         freq_label = VGroup(f_equals, freq_decimal)
@@ -3857,7 +3857,7 @@ class FourierTransformOfWaveFunction(Scene):
         ])))
 
     def this_is_momentum(self):
-        formula = Tex("p", "=", "h", "\\xi")
+        formula = OldTex("p", "=", "h", "\\xi")
         formula.set_color_by_tex_to_color_map({
             "p" : BLUE,
             "xi" : YELLOW,
@@ -3869,7 +3869,7 @@ class FourierTransformOfWaveFunction(Scene):
         f_max = 0.12
         brace = Brace(Line(2*LEFT, 2*RIGHT), UP)
         brace.move_to(self.frequency_axes.coords_to_point(1, f_max), DOWN)
-        words = TexText("This wave \\\\ describes momentum")
+        words = OldTexText("This wave \\\\ describes momentum")
         words.next_to(brace, UP)
 
         self.play(Write(formula))
@@ -3946,7 +3946,7 @@ class MusicalNote(AddingPureFrequencies):
             y_min = -1.5, y_max = 1.5
         )
         axes.center().to_edge(UP)
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.next_to(axes.x_axis.get_right(), UP)
         axes.add(time_label)
 
@@ -4051,7 +4051,7 @@ class ProbabalisticDetection(FourierTransformOfWaveFunction):
         rect.set_fill(YELLOW, 0.3)
         rect.move_to(self.axes.coords_to_point(self.x0_tracker.get_value(), 0))
         brace = Brace(rect, UP, buff = 0)
-        question = TexText("Do we detect the particle \\\\ in this region?")
+        question = OldTexText("Do we detect the particle \\\\ in this region?")
         question.next_to(brace, UP)
         question.add_background_rectangle()
         rect.save_state()
@@ -4065,8 +4065,8 @@ class ProbabalisticDetection(FourierTransformOfWaveFunction):
 
         self.add(rect, brace, question)
 
-        yes = TexText("Yes").set_color(GREEN)
-        no = TexText("No").set_color(RED)
+        yes = OldTexText("Yes").set_color(GREEN)
+        no = OldTexText("No").set_color(RED)
         for word in yes, no:
             word.next_to(rect, DOWN)
             # word.add_background_rectangle()
@@ -4173,14 +4173,14 @@ class OneLevelDeeper(Scene):
         heisenberg.to_corner(UP+LEFT)
         self.add(heisenberg)
 
-        hup_words = TexText("Heisenberg's uncertainty principle")
-        wave_words = TexText("Interpretation of the wave function")
+        hup_words = OldTexText("Heisenberg's uncertainty principle")
+        wave_words = OldTexText("Interpretation of the wave function")
         arrow = Vector(UP)
         group = VGroup(hup_words, arrow, wave_words)
         group.arrange(DOWN)
 
         randomness = ProbabalisticMobjectCloud(
-            TexText("Randomness"),
+            OldTexText("Randomness"),
             n_copies = 5,
             time_per_change = 0.05
         )
@@ -4204,18 +4204,18 @@ class OneLevelDeeper(Scene):
 
 class BetterTranslation(TeacherStudentsScene):
     def construct(self):
-        english_term = TexText("Uncertainty principle")
-        german_word = TexText("Unschärferelation")
-        translation = TexText("Unsharpness relation")
+        english_term = OldTexText("Uncertainty principle")
+        german_word = OldTexText("Unschärferelation")
+        translation = OldTexText("Unsharpness relation")
 
-        to_german_words = TexText("In German")
+        to_german_words = OldTexText("In German")
         to_german_words.scale(0.5)
         to_german_arrow = Vector(DOWN, color = WHITE, buff = SMALL_BUFF)
         to_german_words.next_to(to_german_arrow, RIGHT, SMALL_BUFF)
         to_german_words.set_color(YELLOW)
         to_german_group = VGroup(to_german_arrow, to_german_words)
 
-        translation_words = TexText("Literal translation")
+        translation_words = OldTexText("Literal translation")
         translation_words.scale(0.5)
         translation_arrow = Vector(DOWN, color = WHITE, buff = SMALL_BUFF)
         translation_words.next_to(translation_arrow, LEFT, SMALL_BUFF)
@@ -4318,17 +4318,17 @@ class ThinkOfHeisenbergUncertainty(PiCreatureScene):
         VGroup(momentum, frequency).set_color(YELLOW)
         groups = VGroup()
         for m1, m2 in (position, momentum), (time, frequency):
-            arrow = Tex("\\updownarrow").scale(1.5)
+            arrow = OldTex("\\updownarrow").scale(1.5)
             group = VGroup(m1, arrow, m2)
             group.arrange(DOWN)
-            lp, rp = parens = Tex("\\big(\\big)")
+            lp, rp = parens = OldTex("\\big(\\big)")
             parens.stretch(1.5, 1)
             parens.match_height(group)
             lp.next_to(group, LEFT, buff = SMALL_BUFF)
             rp.next_to(group, RIGHT, buff = SMALL_BUFF)
             group.add(parens)
             groups.add(group)
-        arrow = Tex("\\Leftrightarrow").scale(2)
+        arrow = OldTex("\\Leftrightarrow").scale(2)
         groups.submobjects.insert(1, arrow)
         groups.arrange(RIGHT)
         groups.next_to(morty, UP+RIGHT, LARGE_BUFF)
@@ -4372,7 +4372,7 @@ class PatreonMention(PatreonThanks):
         patreon_logo = PatreonLogo()
         patreon_logo.to_edge(UP)
 
-        thank_you = TexText("Thank you.")
+        thank_you = OldTexText("Thank you.")
         thank_you.next_to(patreon_logo, DOWN)
 
         self.play(
@@ -4390,7 +4390,7 @@ class Promotion(PiCreatureScene):
     def construct(self):
         aops_logo = AoPSLogo()
         aops_logo.next_to(self.pi_creature, UP+LEFT)
-        url = TexText(
+        url = OldTexText(
             "AoPS.com/", "3b1b",
             arg_separator = ""
         )
@@ -4418,7 +4418,7 @@ class Promotion(PiCreatureScene):
         book.next_to(mathy, UP+LEFT).shift(MED_LARGE_BUFF*LEFT)
         mathy.get_center = mathy.get_top
 
-        words = TexText("""
+        words = OldTexText("""
             Interested in working for \\\\ 
             one of my favorite math\\\\ 
             education companies?
@@ -4525,13 +4525,13 @@ class Promotion(PiCreatureScene):
 class PuzzleStatement(Scene):
     def construct(self):
         aops_logo = AoPSLogo()
-        url = TexText("AoPS.com/3b1b")
+        url = OldTexText("AoPS.com/3b1b")
         url.next_to(aops_logo, UP)
         group = VGroup(aops_logo, url)
         group.to_edge(UP)
         self.add(group)
 
-        words = TexText("""
+        words = OldTexText("""
             AoPS must choose one of 20 people to send to a 
             tug-of-war tournament.  We don't care who we send, 
             as long as we don't send our weakest person. \\\\ \\\\
@@ -4641,14 +4641,14 @@ class UncertaintyEndScreen(PatreonEndScreen):
 
 class Thumbnail(Scene):
     def construct(self):
-        uncertainty_principle = TexText("Uncertainty \\\\", "principle")
+        uncertainty_principle = OldTexText("Uncertainty \\\\", "principle")
         uncertainty_principle[1].shift(SMALL_BUFF*UP)
-        quantum = TexText("Quantum")
+        quantum = OldTexText("Quantum")
         VGroup(uncertainty_principle, quantum).scale(2.5)
         uncertainty_principle.to_edge(UP, MED_LARGE_BUFF)
         quantum.to_edge(DOWN, MED_LARGE_BUFF)
 
-        arrow = Tex("\\Downarrow")
+        arrow = OldTex("\\Downarrow")
         arrow.scale(4)
         arrow.move_to(Line(
             uncertainty_principle.get_bottom(),
@@ -4658,7 +4658,7 @@ class Thumbnail(Scene):
         cross = Cross(arrow)
         cross.set_stroke(RED, 20)
 
-        is_word, not_word = is_not = TexText("is", "\\emph{NOT}")
+        is_word, not_word = is_not = OldTexText("is", "\\emph{NOT}")
         is_not.scale(3)
         is_word.move_to(arrow)
         # is_word.shift(0.6*UP)

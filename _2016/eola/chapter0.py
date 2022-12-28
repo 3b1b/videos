@@ -5,7 +5,7 @@ EXAMPLE_TRANFORM = [[0, 1], [-1, 1]]
 TRANFORMED_VECTOR = [[1], [2]]
 
 def matrix_multiplication():
-    return Tex("""
+    return OldTex("""
         \\left[
             \\begin{array}{cc}
                 a & b \\\\
@@ -29,7 +29,7 @@ def matrix_multiplication():
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             """
             ``There is hardly any theory which is more elementary 
             than linear algebra, in spite of the fact that generations 
@@ -42,7 +42,7 @@ class OpeningQuote(Scene):
         words.to_edge(UP)        
         for mob in words.submobjects[48:49+13]:
             mob.set_color(GREEN)
-        author = TexText("-Jean Dieudonn\\'e")
+        author = OldTexText("-Jean Dieudonn\\'e")
         author.set_color(YELLOW)
         author.next_to(words, DOWN)
 
@@ -92,7 +92,7 @@ class AboutLinearAlgebra(Scene):
         self.to_thought_bubble()
 
     def show_dependencies(self):
-        linalg = TexText("Linear Algebra")
+        linalg = OldTexText("Linear Algebra")
         subjects = list(map(TexText, [
             "Computer science",
             "Physics",
@@ -131,7 +131,7 @@ class AboutLinearAlgebra(Scene):
         randy.to_corner()
         bubble = randy.get_bubble(width = 10)
         new_linalg = bubble.position_mobject_inside(linalg.copy())
-        q_marks = TexText("???").next_to(randy, UP)
+        q_marks = OldTexText("???").next_to(randy, UP)
 
         self.play(*list(map(FadeOut, all_else)))
         self.remove(*all_else)
@@ -180,7 +180,7 @@ class AboutLinearAlgebra(Scene):
         return matrix_multiplication()
 
     def get_determinant(self):
-        return Tex("""
+        return OldTex("""
             \\text{Det}\\left(
                 \\begin{array}{cc}
                     a & b \\\\
@@ -192,7 +192,7 @@ class AboutLinearAlgebra(Scene):
         """)
 
     def get_cross_product(self):
-        return Tex("""
+        return OldTex("""
             \\vec{\\textbf{v}} \\times \\textbf{w} =
             \\text{Det}\\left(
                 \\begin{array}{ccc}
@@ -204,12 +204,12 @@ class AboutLinearAlgebra(Scene):
         """)
 
     def get_eigenvalue(self):
-        result = Tex("\\text{Det}\\left(A - \\lambda I \\right) = 0")
+        result = OldTex("\\text{Det}\\left(A - \\lambda I \\right) = 0")
         result.submobjects[0][-5].set_color(YELLOW)
         return result
 
     def get_matrix_multiplication_question(self):
-        why = TexText("Why?").set_color(BLUE) 
+        why = OldTexText("Why?").set_color(BLUE) 
         mult = self.get_matrix_multiplication()
         why.next_to(mult, UP)
         result = VMobject(why, mult)
@@ -217,10 +217,10 @@ class AboutLinearAlgebra(Scene):
         return result
 
     def get_cross_product_question(self):
-        cross = Tex("\\vec{v} \\times \\vec{w}")
+        cross = OldTex("\\vec{v} \\times \\vec{w}")
         left_right_arrow = DoubleArrow(Point(LEFT), Point(RIGHT))
-        det = TexText("Det")
-        q_mark = TexText("?")
+        det = OldTexText("Det")
+        q_mark = OldTexText("?")
         left_right_arrow.next_to(cross)
         det.next_to(left_right_arrow)
         q_mark.next_to(left_right_arrow, UP)
@@ -229,7 +229,7 @@ class AboutLinearAlgebra(Scene):
         return cross_question
 
     def get_eigen_question(self):
-        result = TexText(
+        result = OldTexText(
             "What the heck \\\\ does ``eigen'' mean?",
 
         )
@@ -246,8 +246,8 @@ class NumericVsGeometric(Scene):
         self.list_geometric_benefits()
 
     def setup(self):
-        numeric = TexText("Numeric operations")
-        geometric = TexText("Geometric intuition")
+        numeric = OldTexText("Numeric operations")
+        geometric = OldTexText("Geometric intuition")
         for mob in numeric, geometric:
             mob.to_corner(UP+LEFT)
         geometric.shift(FRAME_X_RADIUS*RIGHT)
@@ -262,7 +262,7 @@ class NumericVsGeometric(Scene):
         digest_locals(self)
 
     def specifics_concepts(self):
-        matrix_vector_product = Tex(" ".join([
+        matrix_vector_product = OldTex(" ".join([
             matrix_to_tex_string(EXAMPLE_TRANFORM),
             matrix_to_tex_string(TRANFORMED_VECTOR),
             "&=",
@@ -302,7 +302,7 @@ class NumericVsGeometric(Scene):
         )
 
     def list_geometric_benefits(self):
-        follow_words = TexText("is helpful for \\dots")
+        follow_words = OldTexText("is helpful for \\dots")
         follow_words.next_to(self.geometric)
         #Ugly hack
         diff = follow_words.submobjects[0].get_bottom()[1] - \
@@ -319,7 +319,7 @@ class NumericVsGeometric(Scene):
         thoughts = [
             matrix_to_mobject(EXAMPLE_TRANFORM),
             bulb,
-            TexText("So therefore...").scale(0.5)
+            OldTexText("So therefore...").scale(0.5)
         ]
 
         self.play(Write(follow_words, run_time = 1.5))
@@ -352,9 +352,9 @@ class ExampleTransformation(LinearTransformationScene):
 
 class NumericToComputations(Scene):
     def construct(self):
-        top = TexText("Numeric understanding")
+        top = OldTexText("Numeric understanding")
         arrow = Arrow(UP, DOWN)
-        bottom = TexText("Actual computations")
+        bottom = OldTexText("Actual computations")
         top.next_to(arrow, UP)
         bottom.next_to(arrow, DOWN)
 
@@ -401,14 +401,14 @@ class LinAlgPyramid(Scene):
     def place_words_in_rects(self, words, rects):
         result = []
         for word, rect in zip(words, rects):
-            tex_mob = TexText(word)
+            tex_mob = OldTexText(word)
             tex_mob.shift(rect.get_center())
             result.append(tex_mob)
         return result
 
     def list_applications(self, top_mob):
         subjects = [
-            TexText(word).to_corner(UP+RIGHT)
+            OldTexText(word).to_corner(UP+RIGHT)
             for word in [
                 "computer science", 
                 "engineering", 
@@ -436,8 +436,8 @@ class IntimidatingProf(Scene):
         randy = Randolph().to_corner()
         morty = Mortimer().to_corner(DOWN+RIGHT)
         morty.shift(3*LEFT)
-        morty_name1 = TexText("Professor")
-        morty_name2 = TexText("Coworker")
+        morty_name1 = OldTexText("Professor")
+        morty_name2 = OldTexText("Coworker")
         for name in morty_name1, morty_name2:
             name.to_edge(RIGHT)
             name.shift(2*UP)
@@ -450,7 +450,7 @@ class IntimidatingProf(Scene):
         thought_bubble.next_to(morty, UP)
         thought_bubble.to_edge(RIGHT, buff = -1)
         thought_bubble.make_green_screen()
-        q_marks = TexText("???")
+        q_marks = OldTexText("???")
         q_marks.next_to(randy, UP)
         randy_bubble = randy.get_bubble()
         randy_bubble.add_content(matrix_multiplication())
@@ -501,7 +501,7 @@ class SineApproximations(Scene):
         one_approx.set_color(YELLOW)
         pi_sixts_approx = self.get_approx_series("\\pi/6", np.pi/6)
         pi_sixts_approx.set_color(RED)
-        words = TexText("(How calculators compute sine)")
+        words = OldTexText("(How calculators compute sine)")
         words.set_color(GREEN)
 
         series.to_edge(UP)
@@ -520,7 +520,7 @@ class SineApproximations(Scene):
         self.wait()
 
     def get_series(self):
-        return Tex("""
+        return OldTex("""
             \\sin(x) = x - \\dfrac{x^3}{3!} + \\dfrac{x^5}{5!}
             + \\cdots + (-1)^n \\dfrac{x^{2n+1}}{(2n+1)!} + \\cdots
         """)
@@ -528,7 +528,7 @@ class SineApproximations(Scene):
     def get_approx_series(self, val_str, val):
         #Default to 3 terms
         approximation = val - (val**3)/6. + (val**5)/120.
-        return Tex("""
+        return OldTex("""
             \\sin(%s) \\approx 
             %s - \\dfrac{(%s)^3}{3!} + \\dfrac{(%s)^5}{5!} \\approx
             %.04f
@@ -537,13 +537,13 @@ class SineApproximations(Scene):
 
 class LooseConnectionToTriangles(Scene):
     def construct(self):
-        sine = Tex("\\sin(x)")
+        sine = OldTex("\\sin(x)")
         triangle = Polygon(ORIGIN, 2*RIGHT, 2*RIGHT+UP)
         arrow = DoubleArrow(LEFT, RIGHT)        
         sine.next_to(arrow, LEFT)
         triangle.next_to(arrow, RIGHT)
 
-        q_mark = TexText("?").scale(1.5)
+        q_mark = OldTexText("?").scale(1.5)
         q_mark.next_to(arrow, UP)
 
         self.add(sine)
@@ -555,7 +555,7 @@ class LooseConnectionToTriangles(Scene):
 
 class PhysicsExample(Scene):
     def construct(self):
-        title = TexText("Physics")
+        title = OldTexText("Physics")
         title.to_corner(UP+LEFT)
         parabola = FunctionGraph(
             lambda x : (3-x)*(3+x)/4,
@@ -601,16 +601,16 @@ class PhysicsExample(Scene):
             radius = vector_length / 4.
         )
         arc.shift(p1)
-        theta = Tex("\\theta").scale(0.75)
+        theta = OldTex("\\theta").scale(0.75)
         theta.next_to(arc, RIGHT, buff = 0.1)
 
-        v_label = Tex("\\vec{v}")
+        v_label = OldTex("\\vec{v}")
         v_label.shift(p1 + RIGHT*vector[0]/4 + UP*vector[1]/2)
         v_label.set_color(v_mob.get_color())
-        vx_label = Tex("||\\vec{v}|| \\cos(\\theta)")
+        vx_label = OldTex("||\\vec{v}|| \\cos(\\theta)")
         vx_label.next_to(vx, UP)
         vx_label.set_color(vx.get_color())
-        vy_label = Tex("||\\vec{v}|| \\sin(\\theta)")
+        vy_label = OldTex("||\\vec{v}|| \\sin(\\theta)")
         vy_label.next_to(vy, RIGHT)
         vy_label.set_color(vy.get_color())
 
@@ -627,7 +627,7 @@ class PhysicsExample(Scene):
         self.wait()
 
     def approximate_sine(self):
-        approx = Tex("\\sin(\\theta) \\approx 0.7\\text{-ish}")
+        approx = OldTex("\\sin(\\theta) \\approx 0.7\\text{-ish}")
         morty = Mortimer(mode = "speaking")
         morty.flip()
         morty.to_corner()
@@ -647,7 +647,7 @@ class PhysicsExample(Scene):
 
 class LinearAlgebraIntuitions(Scene):
     def construct(self):
-        title = TexText("Preview of core visual intuitions")
+        title = OldTexText("Preview of core visual intuitions")
         title.to_edge(UP)
         h_line = Line(FRAME_X_RADIUS*LEFT, FRAME_X_RADIUS*RIGHT)
         h_line.next_to(title, DOWN)
@@ -667,7 +667,7 @@ class LinearAlgebraIntuitions(Scene):
 
         for count, intuition in enumerate(intuitions, 3):
             intuition += " (details coming in chapter %d)"%count
-            mob = TexText(intuition)
+            mob = OldTexText(intuition)
             mob.scale(0.7)
             mob.next_to(h_line, DOWN)
             self.play(FadeIn(mob))
@@ -709,9 +709,9 @@ class MatrixMultiplicationIs(Scene):
         matrix1.next_to(arrow, LEFT)
         matrix2.next_to(matrix1, LEFT)
         brace1 = Brace(matrix1, UP)
-        apply_first = TexText("Apply first").next_to(brace1, UP)
+        apply_first = OldTexText("Apply first").next_to(brace1, UP)
         brace2 = Brace(matrix2, DOWN)
-        apply_second = TexText("Apply second").next_to(brace2, DOWN)
+        apply_second = OldTexText("Apply second").next_to(brace2, DOWN)
 
         self.play(
             Write(matrix1), 
@@ -739,7 +739,7 @@ class ComposedTransformsForIntuitionList(LinearTransformationScene):
 
 class DeterminantsAre(Scene):
     def construct(self):
-        tex_mob = Tex("""
+        tex_mob = OldTex("""
             \\text{Det}\\left(\\left[
                 \\begin{array}{cc}
                     1 & -1 \\\\
@@ -775,7 +775,7 @@ class ProfessorsTry(Scene):
         morty.shift(3*LEFT)
         speech_bubble = morty.get_bubble(SpeechBubble, height = 4, width = 8)
         speech_bubble.shift(RIGHT)
-        words = TexText(
+        words = OldTexText(
             "It really is beautiful!  I want you to \\\\" + \
             "see it the way I do...",
         )
@@ -807,7 +807,7 @@ class ExampleMatrixMultiplication(NumericalMatrixMultiplication):
 
 class TableOfContents(Scene):
     def construct(self):
-        title = TexText("Essence of Linear Algebra")
+        title = OldTexText("Essence of Linear Algebra")
         title.set_color(BLUE)
         title.to_corner(UP+LEFT)
         h_line = Line(FRAME_X_RADIUS*LEFT, FRAME_X_RADIUS*RIGHT)
@@ -839,7 +839,7 @@ class TableOfContents(Scene):
         self.wait(2)
 
         entry3 = chapters.split()[2]
-        added_words = TexText("(Personally, I'm most excited \\\\ to do this one)")
+        added_words = OldTexText("(Personally, I'm most excited \\\\ to do this one)")
         added_words.scale(0.5)
         added_words.set_color(YELLOW)
         added_words.next_to(h_line, DOWN)
@@ -921,7 +921,7 @@ class ResourceForTeachers(Scene):
 
 class AboutPacing(Scene):
     def construct(self):
-        words = TexText("About pacing...")
+        words = OldTexText("About pacing...")
         dots = words.split()[-3:]
         words.remove(*dots)
         self.play(FadeIn(words))
@@ -968,7 +968,7 @@ class DifferingBackgrounds(Scene):
 
 class PauseAndPonder(Scene):
     def construct(self):
-        pause = Tex("=").rotate(np.pi/2)
+        pause = OldTex("=").rotate(np.pi/2)
         pause.stretch(0.5, 1)
         pause.set_height(1.5)
         bubble = ThoughtBubble().set_height(2)
@@ -982,7 +982,7 @@ class PauseAndPonder(Scene):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TexText("Next video: Vectors, what even are they?")
+        title = OldTexText("Next video: Vectors, what even are they?")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(6)

@@ -226,7 +226,7 @@ class IntroducePuzzle(Scene):
 
         count_label = VGroup(
             Integer(0, edge_to_fix=RIGHT),
-            TexText("Coins")
+            OldTexText("Coins")
         )
         count_label.arrange(RIGHT, aligned_edge=DOWN)
         count_label.to_corner(UL)
@@ -308,7 +308,7 @@ class IntroducePuzzle(Scene):
         )
 
         # State goal
-        goal = TexText(
+        goal = OldTexText(
             "Communicate where\\\\the key is",
             " by turning\\\\over one coin.",
             alignment=""
@@ -358,15 +358,15 @@ class PrisonerPuzzleSetting(PiCreatureScene):
         p1, p2, warden = self.pi_creatures
 
         names = VGroup(
-            TexText("Prisoner 1\\\\(you)"),
-            TexText("Prisoner 2"),
-            TexText("Warden"),
+            OldTexText("Prisoner 1\\\\(you)"),
+            OldTexText("Prisoner 2"),
+            OldTexText("Warden"),
         )
         for name, pi in zip(names, pis):
             name.match_color(pi.body)
             name.next_to(pi, DOWN)
 
-        question = TexText(
+        question = OldTexText(
             "Why do mathematicians\\\\always set their puzzles\\\\in prisons?",
             alignment=""
         )
@@ -428,8 +428,8 @@ class FromCoinToSquareMaps(ThreeDScene):
         arrow = Arrow(board1.get_right(), board2.get_left())
         arrow.tip.set_stroke(width=0)
 
-        title1 = TexText("Pattern of coins")
-        title2 = TexText("Individual square")
+        title1 = OldTexText("Pattern of coins")
+        title2 = OldTexText("Individual square")
 
         for title, board in [(title1, board1), (title2, board2)]:
             title.scale(0.5 / title[0][0].get_height())
@@ -540,10 +540,10 @@ class DiagramOfProgression(ThreeDScene):
             }
         }
         titles = VGroup(
-            TexText("Prisoners conspire", **kw),
-            TexText("Prisoner 1 sees key", **kw),
-            TexText("Prisoner 1 flips coin", **kw),
-            TexText("Prisoner 2 guesses key square", **kw),
+            OldTexText("Prisoners conspire", **kw),
+            OldTexText("Prisoner 1 sees key", **kw),
+            OldTexText("Prisoner 1 flips coin", **kw),
+            OldTexText("Prisoner 2 guesses key square", **kw),
         )
 
         for panel, title in zip(panels, titles):
@@ -671,7 +671,7 @@ class ImpossibleVariations(FromCoinToSquareMaps):
     def construct(self):
         # Definitions
         frame = self.camera.frame
-        title = TexText("Describe any square\\\\with one flip")
+        title = OldTexText("Describe any square\\\\with one flip")
         title.set_height(1.2)
         title.to_edge(UP)
         title.fix_in_frame()
@@ -729,7 +729,7 @@ class ImpossibleVariations(FromCoinToSquareMaps):
         cross.fix_in_frame()
         cross.set_stroke(RED, 8)
         cross.shift(2 * LEFT)
-        imp_words = TexText("Impossible!")
+        imp_words = OldTexText("Impossible!")
         imp_words.fix_in_frame()
         imp_words.next_to(title, RIGHT, buff=1.5)
         imp_words.shift(2 * LEFT)
@@ -749,7 +749,7 @@ class ImpossibleVariations(FromCoinToSquareMaps):
         to_remove = Group(
             left_board[63], right_board[63], coins[63]
         )
-        remove_words = TexText("Remove one\\\\square")
+        remove_words = OldTexText("Remove one\\\\square")
         remove_words.set_color(RED)
         remove_words.to_corner(DOWN, buff=1.5)
         remove_words.fix_in_frame()
@@ -800,7 +800,7 @@ class ErrorCorrectionMention(Scene):
 
         arrow = Arrow(board.get_right(), right_board.get_left())
 
-        words = TexText("Feels a bit like ", "Error correction codes", "$\\dots$")
+        words = OldTexText("Feels a bit like ", "Error correction codes", "$\\dots$")
         words.scale(1.2)
         words.to_edge(UP)
 
@@ -821,18 +821,18 @@ class ErrorCorrectionMention(Scene):
 
         bits_rect = SurroundingRectangle(bits, buff=MED_SMALL_BUFF)
         bits_rect.set_stroke(YELLOW, 2)
-        data_label = TexText("Data")
+        data_label = OldTexText("Data")
         data_label.next_to(bits_rect, UP)
         data_label.set_color(YELLOW)
 
-        meaning_label = TexText(f"``{message}''")
-        error_meaning_label = TexText(f"``{error_message}''")
+        meaning_label = OldTexText(f"``{message}''")
+        error_meaning_label = OldTexText(f"``{error_message}''")
         for label in meaning_label, error_meaning_label:
             label.scale(1.5)
             label.next_to(arrow, RIGHT)
         error_meaning_label[0][5].set_color(RED)
 
-        message_label = TexText("Message")
+        message_label = OldTexText("Message")
         message_label.set_color(BLUE)
         message_label.next_to(meaning_label, UP, buff=1.5)
         message_label.to_edge(RIGHT, LARGE_BUFF)
@@ -887,7 +887,7 @@ class ErrorCorrectionMention(Scene):
         self.wait()
 
         # Ask about correction
-        question = TexText("How can you\\\\detect the error?")
+        question = OldTexText("How can you\\\\detect the error?")
         question.next_to(bits_rect, RIGHT, aligned_edge=UP)
         self.play(Write(question))
         self.wait(2)
@@ -925,7 +925,7 @@ class ErrorCorrectionMention(Scene):
             line.set_stroke(GREEN, 1, opacity=0.7)
             lines.add(line)
 
-        alert = Tex("!!!")[0]
+        alert = OldTex("!!!")[0]
         alert.arrange(RIGHT, buff=SMALL_BUFF)
         alert.scale(1.5)
         alert.set_color(RED)
@@ -955,7 +955,7 @@ class ErrorCorrectionMention(Scene):
         self.wait()
 
         # Hamming name
-        hamming_label = TexText("e.g. Hamming codes")
+        hamming_label = OldTexText("e.g. Hamming codes")
         hamming_label.move_to(ecc_name, LEFT)
 
         self.play(
@@ -975,7 +975,7 @@ class StandupMathsWrapper(Scene):
         fsr.set_fill(GREY_E, 1)
         self.add(fsr)
 
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -1022,7 +1022,7 @@ class TitleCard(Scene):
         frame = self.camera.frame
         frame.set_phi(45 * DEGREES)
 
-        text = TexText("The impossible\\\\chessboard puzzle")
+        text = OldTexText("The impossible\\\\chessboard puzzle")
         # text.set_width(board.get_width() - 0.5)
         text.set_width(FRAME_WIDTH - 2)
         text.set_stroke(BLACK, 10, background=True)
@@ -1086,7 +1086,7 @@ class TwoSquareCase(ThreeDScene):
 
         frame.set_phi(45 * DEGREES)
 
-        two_square_words = TexText("What about a 2-square board?")
+        two_square_words = OldTexText("What about a 2-square board?")
         two_square_words.fix_in_frame()
         two_square_words.set_height(0.5)
         two_square_words.center().to_edge(UP)
@@ -1146,7 +1146,7 @@ class TwoSquareCase(ThreeDScene):
 
         # Show four states pointing to two message
         states = VGroup(*[
-            TexText(letters, tex_to_color_map={"H": GOLD, "T": RED_D})
+            OldTexText(letters, tex_to_color_map={"H": GOLD, "T": RED_D})
             for letters in ["TT", "HT", "TH", "HH"]
         ])
         states.set_height(0.8)
@@ -1251,7 +1251,7 @@ class TwoSquareCase(ThreeDScene):
 
         # Erase H and T, replace with 1 and 0
         bin_states = VGroup(*[
-            TexText(letters, tex_to_color_map={"1": GOLD, "0": RED_D})
+            OldTexText(letters, tex_to_color_map={"1": GOLD, "0": RED_D})
             for letters in ["00", "10", "01", "11"]
         ])
         for bin_state, state in zip(bin_states, states):
@@ -1273,7 +1273,7 @@ class TwoSquareCase(ThreeDScene):
 
         # Add labels
         c_labels = VGroup(*[
-            Tex(name)
+            OldTex(name)
             for name in self.coin_names
         ])
         arrow_kw = {
@@ -1370,7 +1370,7 @@ class TwoSquareCase(ThreeDScene):
         self.wait()
 
         # Talk about null bit
-        null_word = TexText("Null bit")
+        null_word = OldTexText("Null bit")
         null_word.next_to(bin_coins[0], DOWN, buff=1.5, aligned_edge=LEFT)
         null_arrow = Arrow(null_word.get_top(), bin_coins[0].get_bottom())
 
@@ -1393,14 +1393,14 @@ class TwoSquareCase(ThreeDScene):
         # Written mathematically
         frame.generate_target()
         frame.target.set_height(10, about_edge=DOWN)
-        rule_words = TexText("Rule: Just look at coin 1")
+        rule_words = OldTexText("Rule: Just look at coin 1")
         rule_words.set_height(0.6)
         rule_words.next_to(frame.target.get_corner(UL), DR, buff=0.5)
         rule_arrow = Vector(1.5 * RIGHT)
         rule_arrow.next_to(rule_words, RIGHT)
         rule_arrow.set_color(BLUE)
-        rule_equation = Tex("K", "=", self.coin_names[1])
-        rule_equation_long = Tex(
+        rule_equation = OldTex("K", "=", self.coin_names[1])
+        rule_equation_long = OldTex(
             "K", "=", "0", "\\cdot",
             self.coin_names[0], "+", "1", "\\cdot",
             self.coin_names[1],
@@ -1412,8 +1412,8 @@ class TwoSquareCase(ThreeDScene):
             equation.next_to(rule_arrow, RIGHT)
 
         s_labels = VGroup(
-            Tex("K", "= 0"),
-            Tex("K", "= 1"),
+            OldTex("K", "= 0"),
+            OldTex("K", "= 1"),
         )
         for label, board in zip(s_labels, small_boards):
             label.set_height(0.5)
@@ -1501,7 +1501,7 @@ class WalkingTheSquare(ThreeDScene):
         coord_labels = VGroup()
         dots = VGroup()
         for x, y in coords:
-            label = Tex(f"({x}, {y})")
+            label = OldTex(f"({x}, {y})")
             point = plane.c2p(x, y)
             label.next_to(point, UR, buff=0.25)
             dot = Dot(point, radius=0.075)
@@ -1573,8 +1573,8 @@ class WalkingTheSquare(ThreeDScene):
         key.next_to(board[0], UP, SMALL_BUFF)
 
         s_labels = VGroup(
-            Tex("\\text{Key} = 0").next_to(low_rect, UP, SMALL_BUFF),
-            Tex("\\text{Key} = 1").next_to(high_rect, UP, SMALL_BUFF),
+            OldTex("\\text{Key} = 0").next_to(low_rect, UP, SMALL_BUFF),
+            OldTex("\\text{Key} = 1").next_to(high_rect, UP, SMALL_BUFF),
         )
 
         self.play(
@@ -1631,7 +1631,7 @@ class ThreeSquareCase(ThreeDScene):
             Chessboard(shape=(2, 2), height=0.25 * 2),
             Chessboard(shape=(8, 8), height=0.25 * 8),
         )
-        dots = Tex("\\dots")
+        dots = OldTex("\\dots")
         group = Group(*boards[:3], dots, boards[3])
 
         group.arrange(RIGHT)
@@ -1674,7 +1674,7 @@ class ThreeSquareCase(ThreeDScene):
         board = boards[1]
         coins = board.coins
 
-        title = TexText("Three square case")
+        title = OldTexText("Three square case")
         title.set_height(0.7)
         title.to_edge(UP)
 
@@ -1697,7 +1697,7 @@ class ThreeSquareCase(ThreeDScene):
         self.wait()
 
         # Try 0*c0 + 1*c1 + 2*c2
-        s_sum = Tex(
+        s_sum = OldTex(
             "0", "\\cdot", self.coin_names[0], "+",
             "1", "\\cdot", self.coin_names[1], "+",
             "2", "\\cdot", self.coin_names[2],
@@ -1738,7 +1738,7 @@ class ThreeSquareCase(ThreeDScene):
         self.wait()
         self.add(s_sum, c_sum, coin_copies)
 
-        rhs = VGroup(Tex("="), Integer(1))
+        rhs = VGroup(OldTex("="), Integer(1))
         rhs.arrange(RIGHT)
         rhs[1].set_color(YELLOW)
         rhs.match_height(c_sum[0])
@@ -1764,7 +1764,7 @@ class ThreeSquareCase(ThreeDScene):
 
         # Show values of S
         s_labels = VGroup(*[
-            Tex(f"K = {n}")
+            OldTex(f"K = {n}")
             for n in range(3)
         ])
         for label, square in zip(s_labels, board):
@@ -1794,12 +1794,12 @@ class ThreeSquareCase(ThreeDScene):
             self.wait(0.5)
 
         # Mod 3 label
-        mod3_label = TexText("(mod 3)")
+        mod3_label = OldTexText("(mod 3)")
         mod3_label.match_height(s_sum)
         mod3_label.set_color(BLUE)
         mod3_label.next_to(s_sum, RIGHT, buff=0.75)
 
-        rhs_rhs = Tex("\\equiv 0")
+        rhs_rhs = OldTex("\\equiv 0")
         rhs_rhs.match_height(rhs)
         rhs_rhs.next_to(rhs, RIGHT)
 
@@ -1831,8 +1831,8 @@ class ThreeSquareCase(ThreeDScene):
             self.wait()
 
         # Show general sum
-        general_sum = Tex(r"\sum ^{63}_{n=0}n\cdot c_n")
-        mod_64 = TexText("(mod 64)")
+        general_sum = OldTex(r"\sum ^{63}_{n=0}n\cdot c_n")
+        mod_64 = OldTexText("(mod 64)")
         mod_64.next_to(general_sum, DOWN)
         general_sum.add(mod_64)
         general_sum.to_corner(UL)
@@ -1906,13 +1906,13 @@ class FailedMod3Addition(Scene):
     def construct(self):
         coin = Coin(height=0.5, numeric_labels=True)
         csum = Group(
-            Tex("0 \\cdot"),
+            OldTex("0 \\cdot"),
             coin.deepcopy().flip(),
-            Tex(" + 1 \\cdot"),
+            OldTex(" + 1 \\cdot"),
             coin.deepcopy().flip(),
-            Tex("+ 2 \\cdot"),
+            OldTex("+ 2 \\cdot"),
             coin.deepcopy(),
-            Tex("="),
+            OldTex("="),
             Integer(2, color=YELLOW),
         )
         csum.arrange(RIGHT, buff=SMALL_BUFF)
@@ -1937,13 +1937,13 @@ class TreeOfThreeFlips(ThreeDScene):
     def construct(self):
         # Setup sums
         csum = Group(
-            Tex("0 \\cdot"),
+            OldTex("0 \\cdot"),
             Coin(numeric_labels=True),
-            Tex("+\\,1 \\cdot"),
+            OldTex("+\\,1 \\cdot"),
             Coin(numeric_labels=True),
-            Tex("+\\,2 \\cdot"),
+            OldTex("+\\,2 \\cdot"),
             Coin(numeric_labels=True),
-            Tex("="),
+            OldTex("="),
             Integer(0)
         )
         csum.coins = csum[1:7:2]
@@ -1983,7 +1983,7 @@ class TreeOfThreeFlips(ThreeDScene):
         arrows = VGroup()
         for i, ncs in enumerate(new_csums):
             arrow = Arrow(csum_rect.get_right(), ncs.get_left())
-            label = TexText(f"Flip coin {i}")
+            label = OldTexText(f"Flip coin {i}")
             label.set_height(0.3)
             label.set_fill(GREY_A)
             label.set_stroke(BLACK, 3, background=True)
@@ -1995,7 +1995,7 @@ class TreeOfThreeFlips(ThreeDScene):
         arrows.set_color(GREY)
 
         # Initial state label
-        is_label = TexText(
+        is_label = OldTexText(
             "Initial state: 010",
             tex_to_color_map={"0": RED_D, "1": GOLD_D}
         )
@@ -2093,9 +2093,9 @@ class SeventyFivePercentChance(Scene):
             num = Integer(n)
             row = Group(
                 coin,
-                Tex("\\cdot"),
+                OldTex("\\cdot"),
                 num,
-                Tex("+"),
+                OldTex("+"),
             )
             VGroup(*row[1:]).set_stroke(BLACK, 3, background=True)
             row.arrange(RIGHT, buff=MED_SMALL_BUFF)
@@ -2103,7 +2103,7 @@ class SeventyFivePercentChance(Scene):
             coins.add(coin)
             nums.add(num)
 
-        vdots = Tex("\\vdots")
+        vdots = OldTex("\\vdots")
         rows = Group(*rows[:n_shown], vdots, *rows[n_shown:])
         rows.arrange(DOWN, buff=MED_SMALL_BUFF, aligned_edge=LEFT)
         vdots.match_x(rows[0][2])
@@ -2123,12 +2123,12 @@ class SeventyFivePercentChance(Scene):
         # Show desired sums
         brace = Brace(rows, LEFT)
         b_label = brace.get_text("Sum mod 64")
-        sum_label = TexText("=\\, 53 (say)")
+        sum_label = OldTexText("=\\, 53 (say)")
         sum_label.next_to(b_label, DOWN)
-        want_label = TexText("Need to encode 55 (say)")
+        want_label = OldTexText("Need to encode 55 (say)")
         want_label.next_to(sum_label, DOWN, buff=0.25, aligned_edge=RIGHT)
         want_label.set_color(YELLOW)
-        need_label = TexText("Must add 2")
+        need_label = OldTexText("Must add 2")
         need_label.next_to(want_label, DOWN, buff=0.25)
         need_label.set_color(BLUE)
 
@@ -2207,7 +2207,7 @@ class ModNStrategy(ThreeDScene):
         #     square_groups[-n_shown:],
         # )
         # segments.generate_target()
-        # dots = Tex("\\cdots")
+        # dots = OldTex("\\cdots")
         # dots.center()
         # segments.target[0].next_to(dots, LEFT)
         # segments.target[2].next_to(dots, RIGHT)
@@ -2246,9 +2246,9 @@ class ModNStrategy(ThreeDScene):
             num.set_height(0.5)
             summand = Group(
                 coin,
-                Tex("\\cdot"),
+                OldTex("\\cdot"),
                 num,
-                Tex("+"),
+                OldTex("+"),
             )
             to_fade_in.add(summand[1], summand[3])
             VGroup(*summand[1:]).set_stroke(BLACK, 3, background=True)
@@ -2256,7 +2256,7 @@ class ModNStrategy(ThreeDScene):
 
             full_sum.add(summand)
 
-        dots = Tex("\\dots")
+        dots = OldTex("\\dots")
         full_sum = Group(*full_sum[:n_shown], dots, *full_sum[n_shown:])
         full_sum.arrange(RIGHT, buff=MED_SMALL_BUFF)
         full_sum.set_width(FRAME_WIDTH - 1)
@@ -2265,7 +2265,7 @@ class ModNStrategy(ThreeDScene):
 
         brace = Brace(full_sum, DOWN)
         s_label = VGroup(
-            TexText("Sum (mod 64) = "),
+            OldTexText("Sum (mod 64) = "),
             Integer(53),
         )
         s_label[1].set_color(BLUE)
@@ -2274,7 +2274,7 @@ class ModNStrategy(ThreeDScene):
         s_label[1].align_to(s_label[0][0][0], DOWN)
         s_label.next_to(brace, DOWN)
 
-        words = TexText("Can't know if a flip will add or subtract")
+        words = OldTexText("Can't know if a flip will add or subtract")
         words.to_edge(UP)
 
         for mob in mid_coins, mid_nums:
@@ -2368,13 +2368,13 @@ class ShowCube(ThreeDScene):
             vert = axes.c2p(*coords)
             verts.append(vert)
             x, y, z = coords
-            label = Tex(f"({x}, {y}, {z})")
+            label = OldTex(f"({x}, {y}, {z})")
             label.set_height(0.3)
             label.next_to(vert, UR, SMALL_BUFF)
             label.rotate(89 * DEGREES, RIGHT, about_point=vert)
             coord_labels.add(label)
             if z == 0:
-                label_2d = Tex(f"({x}, {y})")
+                label_2d = OldTex(f"({x}, {y})")
                 label_2d.set_height(0.3)
                 label_2d.next_to(vert, UR, SMALL_BUFF)
                 coord_labels_2d.add(label_2d)
@@ -2515,7 +2515,7 @@ class ShowCube(ThreeDScene):
         )
 
         colors = [RED, GREEN, BLUE_D]
-        title = TexText("Strategy", "\\, $\\Leftrightarrow$ \\,", "Coloring")
+        title = OldTexText("Strategy", "\\, $\\Leftrightarrow$ \\,", "Coloring")
         title[2].set_submobject_colors_by_gradient(*colors)
         title.set_stroke(BLACK, 5, background=True)
         title.set_height(0.7)
@@ -2524,7 +2524,7 @@ class ShowCube(ThreeDScene):
         title.fix_in_frame()
 
         color_label_templates = [
-            Tex(char, color=color).rotate(PI / 2, RIGHT).match_depth(coord_labels[0])
+            OldTex(char, color=color).rotate(PI / 2, RIGHT).match_depth(coord_labels[0])
             for char, color in zip("RGB", colors)
         ]
         coord_labels.color_labels = VGroup(*[VMobject() for cl in coord_labels])
@@ -2565,7 +2565,7 @@ class ShowCube(ThreeDScene):
             self.wait()
 
         # Some specific color examples
-        S0 = Tex("\\text{Key} = 0")
+        S0 = OldTex("\\text{Key} = 0")
         S0.to_edge(LEFT)
         S0.shift(UP)
         S0.fix_in_frame()
@@ -2575,7 +2575,7 @@ class ShowCube(ThreeDScene):
         )
         self.wait(5)
 
-        bit_sum = Tex("\\text{Key} = \\,&c_0 + c_1")
+        bit_sum = OldTex("\\text{Key} = \\,&c_0 + c_1")
         bit_sum.scale(0.8)
         bit_sum.to_edge(LEFT)
         bit_sum.shift(UP)
@@ -2587,7 +2587,7 @@ class ShowCube(ThreeDScene):
         )
         self.wait(6)
 
-        bit_sum_with_coefs = Tex(
+        bit_sum_with_coefs = OldTex(
             "\\text{Key} = \\,&(0\\cdot c_0 + 1\\cdot c_1 + 2\\cdot c_2) \\\\ &\\quad \\mod 3"
         )
         bit_sum_with_coefs.scale(0.8)
@@ -2678,8 +2678,8 @@ class ShowCube(ThreeDScene):
             self.wait()
 
         # Count all strategies
-        count = TexText("$3^8$ total strategies")
-        count64 = TexText("$64^{(2^{64})}$ total strategies")
+        count = OldTexText("$3^8$ total strategies")
+        count64 = OldTexText("$64^{(2^{64})}$ total strategies")
         for words in count, count64:
             words.to_edge(LEFT, buff=MED_SMALL_BUFF)
             words.shift(UP)
@@ -2783,7 +2783,7 @@ class CubeSupplement(ThreeDScene):
         for value, board, choice_board in zip(s_values, boards, choice_boards):
             arrow = Vector(RIGHT)
             arrow.next_to(board, RIGHT, SMALL_BUFF)
-            c_label = TexText(color_words[value], color=colors[value])
+            c_label = OldTexText(color_words[value], color=colors[value])
             c_label.next_to(choice_board, RIGHT)
             c_labels.add(c_label)
             s_arrows.add(arrow)
@@ -2851,11 +2851,11 @@ class CubeEdgeDescription(Scene):
             tip_config={"length": 0.15, "width": 0.15}
         )
         arrow.set_color(BLUE)
-        words = TexText("Bit flip")
+        words = OldTexText("Bit flip")
         words.set_color(BLUE)
         words.next_to(arrow, LEFT)
         bf_group = VGroup(bits, arrow, words)
-        parens = Tex("()")[0]
+        parens = OldTex("()")[0]
         parens.scale(2)
         parens.match_height(bf_group, stretch=True)
         parens[0].next_to(bf_group, LEFT, SMALL_BUFF)
@@ -2863,7 +2863,7 @@ class CubeEdgeDescription(Scene):
         bf_group.add(parens)
         bf_group.to_edge(UP)
 
-        cube_words = TexText("Edge of an\\\\n-dimensional cube")
+        cube_words = OldTexText("Edge of an\\\\n-dimensional cube")
         top_group = VGroup(
             bf_group,
             Vector(RIGHT),
@@ -2889,11 +2889,11 @@ class CubeEdgeDescription(Scene):
 class EdgeColoringExample(Scene):
     def construct(self):
         words = VGroup(
-            TexText(
+            OldTexText(
                 "Color edges\\\\red or blue",
                 tex_to_color_map={"red": RED, "blue": BLUE}
             ),
-            TexText("Prove there is a\\\\monochromatic triangle", alignment=""),
+            OldTexText("Prove there is a\\\\monochromatic triangle", alignment=""),
         )
         words.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
         words.to_edge(RIGHT)
@@ -2938,21 +2938,21 @@ class EdgeColoringExample(Scene):
 
 class GrahamsConstantAlt(Scene):
     def construct(self):
-        # lhs = Tex("g_{64}", "=")
+        # lhs = OldTex("g_{64}", "=")
         # lhs[0][1:].scale(0.7, about_edge=DL)
-        lhs = Tex("")
+        lhs = OldTex("")
         lhs.scale(2)
 
         rhs = VGroup()
         for ndots in [1, 3, 6, 7, 9, 12]:
             row = VGroup(*[
-                Tex("2"),
-                Tex("\\uparrow\\uparrow"),
+                OldTex("2"),
+                OldTex("\\uparrow\\uparrow"),
                 VGroup(*[
-                    Tex("\\cdot") for x in range(ndots)
+                    OldTex("\\cdot") for x in range(ndots)
                 ]).arrange(RIGHT, buff=0.2),
-                Tex("\\uparrow\\uparrow"),
-                Tex("3"),
+                OldTex("\\uparrow\\uparrow"),
+                OldTex("3"),
             ])
             row.arrange(RIGHT, buff=MED_SMALL_BUFF)
             if ndots == 1:
@@ -2964,7 +2964,7 @@ class GrahamsConstantAlt(Scene):
             rhs.add(row)
         rhs.replace_submobject(0, Integer(12))
         # rhs[0][-1].set_opacity(0)
-        rhs.replace_submobject(3, Tex("\\vdots"))
+        rhs.replace_submobject(3, OldTex("\\vdots"))
         rhs.arrange(UP)
         rhs.next_to(lhs, RIGHT)
 
@@ -3066,7 +3066,7 @@ class AttemptAColoring(ThreeDScene):
                 else:
                     v_target.set_color(color)
                     v_target.set_height(tall_vert_height)
-                    label = Tex(color_label_choices[n])
+                    label = OldTex(color_label_choices[n])
                     label.set_color(color)
                     label.set_stroke(BLACK, 3, background=True)
                 label.next_to(vert, UR, buff=0)
@@ -3165,7 +3165,7 @@ class AttemptAColoring(ThreeDScene):
         # Show what we want
         want_rect = SurroundingRectangle(trees, buff=MED_SMALL_BUFF)
         want_rect.set_stroke(WHITE, 1)
-        want_label = TexText("What we want")
+        want_label = OldTexText("What we want")
         want_label.next_to(want_rect, UP)
 
         trees.save_state()
@@ -3175,7 +3175,7 @@ class AttemptAColoring(ThreeDScene):
             colors = [RED, GREEN, BLUE_D]
             letters = ["R", "G", "B"]
             for color, letter, leaf, label in zip(colors, letters, tree.leafs, tree.labels):
-                new_label = TexText(letter)
+                new_label = OldTexText(letter)
                 new_label.set_fill(color)
                 new_label.replace(label, dim_to_match=1)
                 old_label = label.copy()
@@ -3252,7 +3252,7 @@ class AttemptAColoring(ThreeDScene):
         self.wait()
 
         # Mention it'll never work
-        nv_label = TexText("It'll never work!")
+        nv_label = OldTexText("It'll never work!")
         nv_label.set_height(0.5)
         nv_label.next_to(cube, UP, buff=0.75)
 
@@ -3291,11 +3291,11 @@ class AttemptAColoring(ThreeDScene):
         self.wait()
 
         # Show implication
-        implies = Tex("\\Rightarrow")
+        implies = OldTex("\\Rightarrow")
         implies.set_height(0.7)
         implies.next_to(want_rect, RIGHT)
         number_labels = VGroup(*[
-            TexText("Number of ", f"{color} vertices")
+            OldTexText("Number of ", f"{color} vertices")
             for color in ["red", "green", "blue"]
         ])
         for color, label in zip(colors, number_labels):
@@ -3312,7 +3312,7 @@ class AttemptAColoring(ThreeDScene):
 
         rhss = VGroup()
         for label in number_labels:
-            rhs = Tex("= \\frac{8}{3}")
+            rhs = OldTex("= \\frac{8}{3}")
             rhs.scale(1.25)
             rhs.next_to(label, RIGHT)
             rhss.add(rhs)
@@ -3434,7 +3434,7 @@ class AttemptAColoring(ThreeDScene):
         r_labels = VGroup()
         r_edge_groups = VGroup()
         for r_vert in r_verts:
-            r_label = Tex("R")
+            r_label = OldTex("R")
             r_label.set_color(RED)
             r_label.next_to(r_vert, UR, buff=0)
             r_labels.add(r_label)
@@ -3460,7 +3460,7 @@ class AttemptAColoring(ThreeDScene):
             self.play(ShowCreationThenDestruction(edges, lag_ratio=0.1))
         self.wait()
 
-        rhs = Tex("=", "3", "\\, (\\text{\\# Red corners})")
+        rhs = OldTex("=", "3", "\\, (\\text{\\# Red corners})")
         rhs[2].set_color(RED)
         rhs.match_height(red_total)
         rhs[:2].match_height(red_total, about_edge=RIGHT)
@@ -3472,7 +3472,7 @@ class AttemptAColoring(ThreeDScene):
         three = rhs[1]
         three.generate_target()
         three.target.move_to(red_total, RIGHT)
-        over = Tex("/")
+        over = OldTex("/")
         over.match_height(three)
         over.next_to(three.target, LEFT, MED_SMALL_BUFF)
         self.play(
@@ -3483,7 +3483,7 @@ class AttemptAColoring(ThreeDScene):
         )
         self.wait()
 
-        np_label = TexText("Not possible!")
+        np_label = OldTexText("Not possible!")
         np_label.set_height(0.6)
         np_label.next_to(rhs, RIGHT, LARGE_BUFF)
         self.play(Write(np_label))
@@ -3556,7 +3556,7 @@ class HighDimensionalCount(ThreeDScene):
                 args.append(str(coord))
                 args.append(",")
             args[-1] = ")"
-            return Tex(*args)
+            return OldTex(*args)
 
         def get_board_with_highlights(n, height=1, N=N, colors=colors):
             board = VGroup(*[Square() for x in range(N)])
@@ -3737,7 +3737,7 @@ class HighDimensionalCount(ThreeDScene):
         count.set_color(RED)
         count.scale(1.5)
         count.next_to(total_label, UP, LARGE_BUFF, aligned_edge=LEFT)
-        two_to_n_label = Tex("2^n")
+        two_to_n_label = OldTex("2^n")
         two_to_n_label.scale(1.5)
         two_to_n_label.set_color(RED)
         two_to_n_label.move_to(count, LEFT)
@@ -3767,7 +3767,7 @@ class HighDimensionalCount(ThreeDScene):
         self.add(two_to_n_label)
         self.wait()
 
-        rhs = Tex("=", "n", "\\cdot", "(\\text{\\# Red vertices})")
+        rhs = OldTex("=", "n", "\\cdot", "(\\text{\\# Red vertices})")
         rhs.scale(1.5)
         rhs.next_to(two_to_n_label, RIGHT)
         rhs.shift(0.05 * DOWN)
@@ -3785,7 +3785,7 @@ class HighDimensionalCount(ThreeDScene):
         self.wait(2)
 
         # Conclusion
-        pairs = VGroup(VGroup(Tex("n"), Tex("2^n")))
+        pairs = VGroup(VGroup(OldTex("n"), OldTex("2^n")))
         pairs.set_color(YELLOW)
         for n in range(1, 10):
             pairs.add(VGroup(Integer(n), Integer(2**n)))
@@ -3880,10 +3880,10 @@ class WhenIsItHopeless(Scene):
                 coins[-diff:].set_opacity(0)
 
             if sum(int_to_bit_coords(n)) == 1:
-                words = TexText("Maybe possible")
+                words = OldTexText("Maybe possible")
                 words.set_color(GREEN)
             else:
-                words = TexText("Futile!")
+                words = OldTexText("Futile!")
                 words.set_color(RED)
             words.scale(1.5)
             words.next_to(board, UP, MED_LARGE_BUFF)
@@ -4046,7 +4046,7 @@ class IntroduceHypercube(FourDCubeColoringFromTrees):
                     ))
 
         # Show increasing dimensions
-        label = VGroup(Integer(0), Tex("D"))
+        label = VGroup(Integer(0), OldTex("D"))
         label.arrange(RIGHT, buff=SMALL_BUFF)
         label.scale(1.5)
         label.to_edge(UP)
@@ -4173,15 +4173,15 @@ class WantAdditionToBeSubtraction(ThreeDScene):
         for coin, coef in zip(coins, coefs):
             coin.set_height(0.7)
             coef.set_height(0.5)
-            summand = Group(coin, Tex("\\cdot"), coef, Tex("+"))
+            summand = Group(coin, OldTex("\\cdot"), coef, OldTex("+"))
             to_fade.add(*summand[1::2])
             summand.arrange(RIGHT, buff=0.2)
             full_sum.add(summand)
-        full_sum.add(Tex("\\dots"))
+        full_sum.add(OldTex("\\dots"))
         full_sum.arrange(RIGHT, buff=0.2)
         to_fade.add(full_sum[-1])
 
-        some_label = TexText("Some kind of ``numbers''")
+        some_label = OldTexText("Some kind of ``numbers''")
         some_label.next_to(full_sum, DOWN, buff=2)
         arrows = VGroup(*[
             Arrow(some_label.get_top(), coef.get_bottom())
@@ -4207,8 +4207,8 @@ class WantAdditionToBeSubtraction(ThreeDScene):
         self.play(FadeOut(some_label), FadeOut(arrows))
 
         # Show a flip
-        add_label = Tex("+X_2", color=GREEN)
-        sub_label = Tex("-X_2", color=RED)
+        add_label = OldTex("+X_2", color=GREEN)
+        sub_label = OldTex("-X_2", color=RED)
         for label in add_label, sub_label:
             label.next_to(coins[2], UR)
             label.match_height(coefs[2])
@@ -4219,8 +4219,8 @@ class WantAdditionToBeSubtraction(ThreeDScene):
             self.play(FadeOut(label))
 
         # What we want
-        want_label = TexText("Want: ", "$X_i = -X_i$")
-        eq = TexText("$X_i + X_i = 0$")
+        want_label = OldTexText("Want: ", "$X_i = -X_i$")
+        eq = OldTexText("$X_i + X_i = 0$")
         want_label.next_to(full_sum, DOWN, LARGE_BUFF)
         eq.next_to(want_label[1], DOWN, aligned_edge=LEFT)
 
@@ -4269,10 +4269,10 @@ class BitVectorSum(ThreeDScene):
         cdots = VGroup()
         plusses = VGroup()
         for cc, vector in zip(coin_copies, bit_vectors):
-            dot = Tex("\\cdot")
+            dot = OldTex("\\cdot")
             dot.next_to(vector, LEFT, MED_SMALL_BUFF)
             cdots.add(dot)
-            plus = Tex("+")
+            plus = OldTex("+")
             plus.next_to(vector, RIGHT, MED_SMALL_BUFF)
             plusses.add(plus)
             cc.next_to(dot, LEFT, MED_SMALL_BUFF)
@@ -4287,7 +4287,7 @@ class BitVectorSum(ThreeDScene):
         self.wait()
 
         # Show sum
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.move_to(plusses[-1])
 
         def get_rhs(coins=coins, bit_vectors=bit_vectors, all_coords=all_coords, eq=eq):
@@ -4315,7 +4315,7 @@ class BitVectorSum(ThreeDScene):
 
         rhs = get_rhs()
 
-        mod2_label = TexText("(Add mod 2)")
+        mod2_label = OldTexText("(Add mod 2)")
         mod2_label.next_to(rhs, DOWN, MED_LARGE_BUFF)
         mod2_label.to_edge(RIGHT)
 
@@ -4427,10 +4427,10 @@ class SkipSkipYesYes(Scene):
         board = Chessboard()
         board.next_to(ORIGIN, DOWN)
         words = VGroup(
-            TexText("Skip"),
-            TexText("Skip"),
-            TexText("Yes"),
-            TexText("Yes"),
+            OldTexText("Skip"),
+            OldTexText("Skip"),
+            OldTexText("Yes"),
+            OldTexText("Yes"),
         )
         words.add(*words.copy())
         words.set_width(board[0].get_width() * 0.8)
@@ -4455,9 +4455,9 @@ class ShowCurrAndTarget(Scene):
 
     def construct(self):
         words = VGroup(
-            TexText("Current: "),
-            TexText("Need to\\\\change:"),
-            TexText("Target: "),
+            OldTexText("Current: "),
+            OldTexText("Need to\\\\change:"),
+            OldTexText("Target: "),
         )
         words.arrange(DOWN, buff=0.75, aligned_edge=RIGHT)
         words.to_corner(UL)
@@ -4686,10 +4686,10 @@ class ShowFinalStrategy(Scene):
         encoding_lines.next_to(board, LEFT, LARGE_BUFF)
         encoding_lines.shift(UP)
 
-        code_words = TexText("Encoding")
+        code_words = OldTexText("Encoding")
         code_words.next_to(encoding_lines, DOWN)
 
-        add_words = TexText("Check the parity\\\\of these coins")
+        add_words = OldTexText("Check the parity\\\\of these coins")
         add_words.next_to(board, LEFT, LARGE_BUFF, aligned_edge=UP)
 
         self.add(board, coins)
@@ -4845,7 +4845,7 @@ class Thumbnail(FourDCubeColoringFromTrees):
         return
 
         # Instructions
-        message = TexText(
+        message = OldTexText(
             "Flip one coin\\\\to describe a\\\\",
             "unique square",
             alignment="",

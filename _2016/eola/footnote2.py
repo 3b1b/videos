@@ -4,7 +4,7 @@ from ka_playgrounds.circuits import Resistor, Source, LongResistor
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "``On this quiz, I asked you to find the determinant of a",
             "2x3 matrix.",
             "Some of you, to my great amusement, actually tried to do this.''" 
@@ -12,7 +12,7 @@ class OpeningQuote(Scene):
         words.set_width(FRAME_WIDTH - 2)
         words.to_edge(UP)
         words[1].set_color(GREEN)
-        author = TexText("-(Via mathprofessorquotes.com, no name listed)")
+        author = OldTexText("-(Via mathprofessorquotes.com, no name listed)")
         author.set_color(YELLOW)
         author.scale(0.7)
         author.next_to(words, DOWN, buff = 0.5)
@@ -36,14 +36,14 @@ class ColumnsRepresentBasisVectors(Scene):
     def construct(self):
         matrix = Matrix([[3, 1], [4, 1], [5, 9]])
         i_hat_words, j_hat_words = [
-            TexText("Where $\\hat{\\%smath}$ lands"%char)
+            OldTexText("Where $\\hat{\\%smath}$ lands"%char)
             for char in ("i", "j")
         ]
         i_hat_words.set_color(X_COLOR)
         i_hat_words.next_to(ORIGIN, LEFT).to_edge(UP)
         j_hat_words.set_color(Y_COLOR)
         j_hat_words.next_to(ORIGIN, RIGHT).to_edge(UP)
-        question = TexText("How to interpret?")
+        question = OldTexText("How to interpret?")
         question.next_to(matrix, UP)
         question.set_color(YELLOW)
 
@@ -91,7 +91,7 @@ class ColumnsRepresentBasisVectors(Scene):
 
 class Symbolic2To3DTransform(Scene):
     def construct(self):
-        func = Tex("L(", "\\vec{\\textbf{v}}", ")")
+        func = OldTex("L(", "\\vec{\\textbf{v}}", ")")
         input_array = Matrix([2, 7])
         input_array.set_color(YELLOW)
         in_arrow = Arrow(LEFT, RIGHT, color = input_array.get_color())
@@ -142,7 +142,7 @@ class PlaneStartState(LinearTransformationScene):
 
 class OutputIn3dWords(Scene):
     def construct(self):
-        words = TexText("Output in 3d")
+        words = OldTexText("Output in 3d")
         words.scale(1.5)
         self.play(Write(words))
         self.wait()
@@ -155,7 +155,7 @@ class ShowSideBySide2dTo3d(Scene):
 
 class AnimationLaziness(Scene):
     def construct(self):
-        self.add(TexText("But there is some animation laziness..."))
+        self.add(OldTexText("But there is some animation laziness..."))
 
 class DescribeColumnsInSpecificTransformation(Scene):
     def construct(self):
@@ -169,7 +169,7 @@ class DescribeColumnsInSpecificTransformation(Scene):
         i_col, j_col = [VMobject(*mob_matrix[:,i]) for i in (0, 1)]
         for col, char, vect in zip([i_col, j_col], ["i", "j"], [UP, DOWN]):
             color = col[0].get_color()
-            col.words = TexText("Where $\\hat\\%smath$ lands"%char)
+            col.words = OldTexText("Where $\\hat\\%smath$ lands"%char)
             col.words.next_to(matrix, vect, buff = LARGE_BUFF)
             col.words.set_color(color)
             col.arrow = Arrow(
@@ -202,7 +202,7 @@ class CountRowsAndColumns(Scene):
         cols_brace = Brace(matrix, UP)
         cols_words = cols_brace.get_text("2", "columns")
         cols_words.set_color(TEAL)
-        title = Tex("3", "\\times", "2", "\\text{ matrix}")
+        title = OldTex("3", "\\times", "2", "\\text{ matrix}")
         title.to_edge(UP)
 
         self.add(matrix)
@@ -233,9 +233,9 @@ class WriteColumnSpaceDefinition(Scene):
 
         brace = Brace(matrix)
         words = VMobject(
-            TexText("Span", "of columns"),
-            Tex("\\Updownarrow"),
-            TexText("``Column space''")
+            OldTexText("Span", "of columns"),
+            OldTex("\\Updownarrow"),
+            OldTexText("``Column space''")
         )
         words.arrange(DOWN, buff = 0.1)
         words.next_to(brace, DOWN)
@@ -324,7 +324,7 @@ class ThreeDToTwoDInput(Scene):
 
 class ThreeDToTwoDInputWords(Scene):
     def construct(self):
-        words = TexText("3d input")
+        words = OldTexText("3d input")
         words.scale(2)
         self.play(Write(words))
         self.wait()
@@ -340,9 +340,9 @@ class ThreeDToTwoDOutput(LinearTransformationScene):
         },
     }
     def construct(self):
-        title = TexText("Output in 2d")
+        title = OldTexText("Output in 2d")
         title.to_edge(UP, buff = SMALL_BUFF)
-        subwords = TexText("""
+        subwords = OldTexText("""
             (only showing basis vectors,
             full 3d grid would be a mess)
         """)
@@ -372,7 +372,7 @@ class ThreeDToTwoDSideBySide(Scene):
 
 class Symbolic2To1DTransform(Scene):
     def construct(self):
-        func = Tex("L(", "\\vec{\\textbf{v}}", ")")
+        func = OldTex("L(", "\\vec{\\textbf{v}}", ")")
         input_array = Matrix([2, 7])
         input_array.set_color(YELLOW)
         in_arrow = Arrow(LEFT, RIGHT, color = input_array.get_color())
@@ -428,10 +428,10 @@ class TwoDTo1DTransform(LinearTransformationScene):
     }
     def construct(self):
         line = NumberLine()
-        plane_words = TexText("2d space")
+        plane_words = OldTexText("2d space")
         plane_words.next_to(self.j_hat, UP, buff = MED_SMALL_BUFF)
         plane_words.add_background_rectangle()
-        line_words = TexText("1d space (number line)")
+        line_words = OldTexText("1d space (number line)")
         line_words.next_to(line, UP)
 
 
@@ -453,7 +453,7 @@ class TwoDTo1DTransform(LinearTransformationScene):
 
     def show_matrix(self):
         for vect, char in zip([self.i_hat, self.j_hat], ["i", "j"]):
-            vect.words = TexText(
+            vect.words = OldTexText(
                 "$\\hat\\%smath$ lands on"%char,
                 str(int(vect.get_end()[0]))
             )
@@ -461,7 +461,7 @@ class TwoDTo1DTransform(LinearTransformationScene):
             vect.words.next_to(vect.get_end(), direction, buff = LARGE_BUFF)
             vect.words.set_color(vect.get_color())
         matrix = Matrix([[1, 2]])
-        matrix_words = TexText("Transformation matrix: ")
+        matrix_words = OldTexText("Transformation matrix: ")
         matrix_group = VMobject(matrix_words, matrix)
         matrix_group.arrange(buff = MED_SMALL_BUFF)
         matrix_group.to_edge(UP)
@@ -495,7 +495,7 @@ class TwoDTo1DTransformWithDots(TwoDTo1DTransform):
             )
             for dot in dots
         ])
-        words = TexText(
+        words = OldTexText(
             "Line of dots remains evenly spaced"
         )
         words.next_to(line, UP, buff = MED_SMALL_BUFF)
@@ -510,7 +510,7 @@ class TwoDTo1DTransformWithDots(TwoDTo1DTransform):
 
 class NextVideo(Scene):
     def construct(self):
-        title = TexText("""
+        title = OldTexText("""
             Next video: Dot products and duality
         """)
         title.set_width(FRAME_WIDTH - 2)
@@ -545,7 +545,7 @@ class DotProductPreview(VectorScene):
         w = matrix_to_mobject(self.w_coords).set_color(self.w_color)
         v.add_background_rectangle()
         w.add_background_rectangle()
-        dot = Tex("\\cdot")
+        dot = OldTex("\\cdot")
         eq = VMobject(v, dot, w)
         eq.arrange(RIGHT, buff = SMALL_BUFF)
         eq.to_corner(UP+LEFT)

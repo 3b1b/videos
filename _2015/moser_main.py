@@ -47,7 +47,7 @@ class CircleScene(Scene):
         ]
         self.dots = [Dot(point) for point in self.points]
         self.lines = [Line(p1, p2) for p1, p2 in it.combinations(self.points, 2)]
-        self.n_equals = Tex(
+        self.n_equals = OldTex(
             "n=%d"%len(radians),
         ).shift((-FRAME_X_RADIUS+1, FRAME_Y_RADIUS-1.5, 0))
         self.add(self.circle, self.n_equals, *self.dots + self.lines)
@@ -142,7 +142,7 @@ class MoserPattern(CircleScene):
     def __init__(self, radians, *args, **kwargs):
         CircleScene.__init__(self, radians, *args, **kwargs)
         self.remove(*self.dots + self.lines + [self.n_equals])
-        n_equals, num = Tex(["n=", "10"]).split()
+        n_equals, num = OldTex(["n=", "10"]).split()
         for mob in n_equals, num:
             mob.shift((-FRAME_X_RADIUS + 1.5, FRAME_Y_RADIUS - 1.5, 0))
         self.add(n_equals)
@@ -150,8 +150,8 @@ class MoserPattern(CircleScene):
             self.add(*self.dots[:n])
             self.add(*[Line(p[0], p[1]) for p in it.combinations(self.get_points()[:n], 2)])
             tex_stuffs = [
-                Tex(str(moser_function(n))),
-                Tex(str(n)).shift(num.get_center())
+                OldTex(str(moser_function(n))),
+                OldTex(str(n)).shift(num.get_center())
             ]
             self.add(*tex_stuffs)
             self.wait(0.5)
@@ -175,8 +175,8 @@ class HardProblemsSimplerQuestions(Scene):
             )
             for sym in ["n", "2", "3"]
         ])
-        # not_that_hard = TexText("(maybe not that hard...)").scale(0.5)
-        fermat2, fermat2_jargon = Tex([
+        # not_that_hard = OldTexText("(maybe not that hard...)").scale(0.5)
+        fermat2, fermat2_jargon = OldTex([
             r"&x^2 + y^2 = z^2 \\",
             r"""
                 &(3, 4, 5) \\
@@ -187,7 +187,7 @@ class HardProblemsSimplerQuestions(Scene):
                 &\quad \vdots
             """
         ]).split()
-        fermat3, fermat3_jargon = Tex([
+        fermat3, fermat3_jargon = OldTex([
             r"&x^3 + y^3 = z^3\\",
             r"""
                 &y^3 = (z - x)(z - \omega x)(z - \omega^2 x) \\
@@ -230,7 +230,7 @@ class HardProblemsSimplerQuestions(Scene):
         circle_grid = Mobject(
             Circle(), 
             Grid(radius = 2),
-            Tex(r"\mathds{R}^2").shift((2, -2, 0))
+            OldTex(r"\mathds{R}^2").shift((2, -2, 0))
         )
         start_line = Line((-1, 0, 0), (-1, 2, 0))
         end_line   = Line((-1, 0, 0), (-1, -2, 0))
@@ -239,7 +239,7 @@ class HardProblemsSimplerQuestions(Scene):
 
         other_grid = Mobject(
             Grid(radius = 2),
-            Tex(r"\mathds{C}").shift((2, -2, 0))
+            OldTex(r"\mathds{C}").shift((2, -2, 0))
         )
         omega = np.array((0.5, 0.5*np.sqrt(3), 0))
         dots = Mobject(*[
@@ -276,9 +276,9 @@ class CountLines(CircleScene):
         #TODO, Count things explicitly?        
         text_center = (self.radius + 1, self.radius -1, 0)
         scale_factor = 0.4
-        text = Tex(r"\text{How Many Lines?}", size = r"\large")
+        text = OldTex(r"\text{How Many Lines?}", size = r"\large")
         n = len(radians)
-        formula, answer = Tex([
+        formula, answer = OldTex([
             r"{%d \choose 2} = \frac{%d(%d - 1)}{2} = "%(n, n, n),
             str(choose(n, 2))
         ])
@@ -323,9 +323,9 @@ class CountIntersectionPoints(CircleScene):
         text_center = (self.radius + 0.5, self.radius -0.5, 0)
         size = r"\large"
         scale_factor = 0.4
-        text = Tex(r"\text{How Many Intersection Points?}", size = size)
+        text = OldTex(r"\text{How Many Intersection Points?}", size = size)
         n = len(radians)
-        formula, answer = Tex([
+        formula, answer = OldTex([
             r"{%d \choose 4} = \frac{%d(%d - 1)(%d - 2)(%d-3)}{1\cdot 2\cdot 3 \cdot 4}="%(n, n, n, n, n),
             str(choose(n, 4))
         ]).split()
@@ -362,7 +362,7 @@ class NonGeneralPosition(CircleScene):
             ]
         )
         center_region
-        text = Tex(r"\text{This region disappears}", size = r"\large")
+        text = OldTex(r"\text{This region disappears}", size = r"\large")
         text.center().scale(0.5).shift((-self.radius, self.radius-0.3, 0))
         arrow = Arrow(
             point = (-0.35, -0.1, 0),
@@ -410,7 +410,7 @@ class GeneralPositionRule(Scene):
         for radians, words, pairs in tuples:
             cs = CircleScene(radians)
             self.add(*cs.mobjects)
-            words_mob = TexText(words).scale(2).shift((5, 3, 0))
+            words_mob = OldTexText(words).scale(2).shift((5, 3, 0))
             if not first_time:
                 self.add(words_mob)
             if words == "Okay":
@@ -485,7 +485,7 @@ class IllustrateNChooseK(Scene):
         Scene.__init__(self, *args, **kwargs)
         nrange = list(range(1, n+1))
         tuples  = list(it.combinations(nrange, k))
-        nrange_mobs = Tex([str(n) + r'\;' for n in nrange]).split()
+        nrange_mobs = OldTex([str(n) + r'\;' for n in nrange]).split()
         tuple_mobs  = Texs(
             [
                 (r'\\&' if c%(20//k) == 0 else r'\;\;') + str(p)
@@ -508,12 +508,12 @@ class IllustrateNChooseK(Scene):
             """%(n, k, n, n, n, n)
         else: 
             str1 = r"{%d \choose %d} ="%(n, k)
-        form1, count, form2 = Tex([
+        form1, count, form2 = OldTex([
             str1,
             "%d"%choose(n, k),
             r" \text{ total %s}"%tuple_term
         ])
-        pronunciation = TexText(
+        pronunciation = OldTexText(
             "(pronounced ``%d choose %d\'\')"%(n, k)
         )
         for mob in nrange_mobs:
@@ -532,7 +532,7 @@ class IllustrateNChooseK(Scene):
         run_time = 6.0
         frame_time = run_time / len(tuples)
         for tup, count in zip(tuples, it.count()):
-            count_mob = Tex(str(count+1))
+            count_mob = OldTex(str(count+1))
             count_mob.center().shift(count_center)
             self.add(count_mob)
             tuple_copy = Mobject(*[nrange_mobs[index-1] for index in tup])
@@ -575,8 +575,8 @@ class IntersectionPointCorrespondances(CircleScene):
             self.dots[p]
             for p in indices
         ]
-        line_statement = Tex(r"\text{Pair of Lines}")
-        dots_statement = Tex(r"&\text{Quadruplet of} \\ &\text{outer dots}")
+        line_statement = OldTex(r"\text{Pair of Lines}")
+        dots_statement = OldTex(r"&\text{Quadruplet of} \\ &\text{outer dots}")
         for mob in line_statement, dots_statement:
             mob.center()
             mob.scale(0.7)
@@ -678,7 +678,7 @@ class GraphsAndEulersFormulaJoke(Scene):
         graph.filter_out(lambda x_y_z : abs(x_y_z[1]) > FRAME_Y_RADIUS)
         self.add(axes)
         self.play(ShowCreation(graph), run_time = 1.0)
-        eulers = Tex("e^{\pi i} = -1").shift((0, 3, 0))
+        eulers = OldTex("e^{\pi i} = -1").shift((0, 3, 0))
         self.play(CounterclockwiseTransform(
             deepcopy(graph), eulers
         ))
@@ -698,8 +698,8 @@ class DefiningGraph(GraphScene):
     def __init__(self, *args, **kwargs):
         GraphScene.__init__(self, *args, **kwargs)
         word_center = (0, 3, 0)
-        vertices_word = TexText("``Vertices\"").shift(word_center)
-        edges_word = TexText("``Edges\"").shift(word_center)
+        vertices_word = OldTexText("``Vertices\"").shift(word_center)
+        edges_word = OldTexText("``Edges\"").shift(word_center)
         dots, lines = self.vertices, self.edges
         self.remove(*dots + lines)
         all_dots = Mobject(*dots)
@@ -824,7 +824,7 @@ class CannotDirectlyApplyEulerToMoser(CircleScene):
     def __init__(self, radians, *args, **kwargs):
         CircleScene.__init__(self, radians, *args, **kwargs)
         self.remove(self.n_equals)
-        n_equals, intersection_count = Tex([
+        n_equals, intersection_count = OldTex([
             r"&n = %d\\"%len(radians),
             r"&{%d \choose 4} = %d"%(len(radians), choose(len(radians), 4))
         ]).split()
@@ -847,7 +847,7 @@ class CannotDirectlyApplyEulerToMoser(CircleScene):
         self.play(ShowCreation(yellow_lines))
         self.wait()
         self.remove(yellow_lines)
-        cannot_intersect = TexText(r"""
+        cannot_intersect = OldTexText(r"""
             Euler's formula does not apply to \\
             graphs whose edges intersect!
             """
@@ -870,8 +870,8 @@ class ShowMoserGraphLines(CircleScene):
         radians = list(set([x%(2*np.pi) for x in radians]))
         radians.sort()
         CircleScene.__init__(self, radians, *args, **kwargs)
-        n, plus_n_choose_4 = Tex(["n", "+{n \\choose 4}"]).split()
-        n_choose_2, plus_2_n_choose_4, plus_n = Tex([
+        n, plus_n_choose_4 = OldTex(["n", "+{n \\choose 4}"]).split()
+        n_choose_2, plus_2_n_choose_4, plus_n = OldTex([
             r"{n \choose 2}",r"&+2{n \choose 4}\\",r"&+n"
         ]).split()
         for mob in n, plus_n_choose_4, n_choose_2, plus_2_n_choose_4, plus_n:
@@ -1021,19 +1021,19 @@ class ApplyEulerToMoser(CircleScene):
                  equals, two, two1, n, n1, nc2, nc4, nc41]
 
         V[1], minus[1], E[1], plus[1], F[1], equals[1], two[1] = \
-            Tex(["V", "-", "E", "+", "F", "=", "2"]).split()
+            OldTex(["V", "-", "E", "+", "F", "=", "2"]).split()
         F[2], equals[2], E[2], minus[2], V[2], plus[2], two[2] = \
-            Tex(["F", "=", "E", "-", "V", "+", "2"]).split()
+            OldTex(["F", "=", "E", "-", "V", "+", "2"]).split()
         F[3], equals[3], E[3], minus[3], n[3], minus1[3], nc4[3], plus[3], two[3] = \
-            Tex(["F", "=", "E", "-", "n", "-", r"{n \choose 4}", "+", "2"]).split()
+            OldTex(["F", "=", "E", "-", "n", "-", r"{n \choose 4}", "+", "2"]).split()
         F[4], equals[4], nc2[4], plus1[4], two1[4], nc41[4], plus2[4], n1[4], minus[4], n[4], minus1[4], nc4[4], plus[4], two[4] = \
-            Tex(["F", "=", r"{n \choose 2}", "+", "2", r"{n \choose 4}", "+", "n","-", "n", "-", r"{n \choose 4}", "+", "2"]).split()
+            OldTex(["F", "=", r"{n \choose 2}", "+", "2", r"{n \choose 4}", "+", "n","-", "n", "-", r"{n \choose 4}", "+", "2"]).split()
         F[5], equals[5], nc2[5], plus1[5], two1[5], nc41[5], minus1[5], nc4[5], plus[5], two[5] = \
-            Tex(["F", "=", r"{n \choose 2}", "+", "2", r"{n \choose 4}", "-", r"{n \choose 4}", "+", "2"]).split()
+            OldTex(["F", "=", r"{n \choose 2}", "+", "2", r"{n \choose 4}", "-", r"{n \choose 4}", "+", "2"]).split()
         F[6], equals[6], nc2[6], plus1[6], nc4[6], plus[6], two[6] = \
-            Tex(["F", "=", r"{n \choose 2}", "+", r"{n \choose 4}", "+", "2"]).split()
+            OldTex(["F", "=", r"{n \choose 2}", "+", r"{n \choose 4}", "+", "2"]).split()
         F[7], equals[7], two[7], plus[7], nc2[7], plus1[7], nc4[7] = \
-            Tex(["F", "=", "2", "+", r"{n \choose 2}", "+", r"{n \choose 4}"]).split()
+            OldTex(["F", "=", "2", "+", r"{n \choose 2}", "+", r"{n \choose 4}"]).split()
         shift_val = (0, 3, 0)
         for d in dicts:
             if not d:
@@ -1174,7 +1174,7 @@ class ApplyEulerToMoser(CircleScene):
         self.set_color_region(self.exterior, "black")
         self.remove(two[6])
         two = two[7]
-        one = Tex("1").shift(two.get_center())
+        one = OldTex("1").shift(two.get_center())
         two.set_color("red")
         self.add(two)
         self.play(CounterclockwiseTransform(two, one))
@@ -1209,7 +1209,7 @@ class FormulaRelatesToPowersOfTwo(Scene):
             for s, result in zip(sums, results)
         ])
         powers_of_two = [
-            Tex("2^{%d}"%(i-1)
+            OldTex("2^{%d}"%(i-1)
             ).scale(scale_factor
             ).shift(result.get_center()
             ).set_color()
@@ -1253,7 +1253,7 @@ class PascalRuleExample(PascalsTriangleScene):
         k = randint(1, n-1)
         self.coords_to_mobs[n][k].set_color("green")
         self.wait()
-        plus = Tex("+").scale(0.5)
+        plus = OldTex("+").scale(0.5)
         nums_above = [self.coords_to_mobs[n-1][k-1], self.coords_to_mobs[n-1][k]]
         plus.center().shift(sum(map(Mobject.get_center, nums_above)) / 2)
         self.add(plus)
@@ -1291,7 +1291,7 @@ class PascalsTriangleNChooseKExample(PascalsTriangleScene):
         PascalsTriangleScene.__init__(self, nrows, *args, **kwargs)
         wait_time = 0.5
         triangle_terms = [self.coords_to_mobs[a][b] for a, b in self.coords]
-        formula_terms = left, n_mob, k_mob, right = Tex([
+        formula_terms = left, n_mob, k_mob, right = OldTex([
             r"\left(", str(n), r"\atop %d"%k, r"\right)"
         ])
         formula_center = (FRAME_X_RADIUS - 1, FRAME_Y_RADIUS - 1, 0)
@@ -1310,7 +1310,7 @@ class PascalsTriangleNChooseKExample(PascalsTriangleScene):
         self.remove(n_mob, k_mob)
         for a in range(n+1):
             row = [self.coords_to_mobs[a][b] for b in range(a+1)]
-            a_mob = Tex(str(a))
+            a_mob = OldTex(str(a))
             a_mob.shift(n_mob.get_center())
             a_mob.set_color("green")
             self.add(a_mob)
@@ -1323,7 +1323,7 @@ class PascalsTriangleNChooseKExample(PascalsTriangleScene):
                 self.remove(a_mob)
         self.wait()
         for b in range(k+1):
-            b_mob = Tex(str(b))
+            b_mob = OldTex(str(b))
             b_mob.shift(k_mob.get_center())
             b_mob.set_color("yellow")
             self.add(b_mob)
@@ -1346,7 +1346,7 @@ class PascalsTriangleSumRows(PascalsTriangleScene):
         powers_of_two   = []
         equalses        = []
         powers_of_two_symbols = []
-        plus = Tex("+")
+        plus = OldTex("+")
         desired_plus_width = self.coords_to_mobs[0][0].get_width()
         if plus.get_width() > desired_plus_width:
             plus.scale(desired_plus_width / plus.get_width())
@@ -1357,12 +1357,12 @@ class PascalsTriangleSumRows(PascalsTriangleScene):
             new_plus.center().shift(self.coords_to_mobs[n][k].get_center())
             new_plus.shift((-self.cell_width / 2.0, 0, 0))
             pluses.append(new_plus)
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.scale(min(1, 0.7 * self.cell_height / equals.get_width()))
         for n in range(self.nrows):
             new_equals = deepcopy(equals)
             pof2 = Texs(str(2**n))
-            symbol = Tex("2^{%d}"%n)
+            symbol = OldTex("2^{%d}"%n)
             desired_center = np.array((
                 self.diagram_width / 2.0, 
                 self.coords_to_mobs[n][0].get_center()[1],
@@ -1416,7 +1416,7 @@ class MoserSolutionInPascal(PascalsTriangleScene):
         term_color = "green"
         self.generate_n_choose_k_mobs()
         self.remove(*[self.coords_to_mobs[n0][k0] for n0, k0 in self.coords])
-        terms = one, plus0, n_choose_2, plus1, n_choose_4 = Tex([
+        terms = one, plus0, n_choose_2, plus1, n_choose_4 = OldTex([
             "1", "+", r"{%d \choose 2}"%n, "+", r"{%d \choose 4}"%n
         ]).split()
         target_terms = []
@@ -1478,7 +1478,7 @@ class MoserSolutionInPascal(PascalsTriangleScene):
             ))
             self.remove(*above_terms)
         self.wait()
-        terms_sum = Tex(str(moser_function(n)))
+        terms_sum = OldTex(str(moser_function(n)))
         terms_sum.shift((FRAME_X_RADIUS-1, terms[0].get_center()[1], 0))
         terms_sum.set_color(term_color)
         self.play(Transform(Mobject(*terms), terms_sum))
@@ -1530,7 +1530,7 @@ class ExplainNChoose2Formula(Scene):
             nums[x].shift((0, x*height, 0))
         nums_compound = Mobject(*nums)
         nums_compound.shift(a_mob.get_center() - nums[0].get_center())
-        n_mob, n_minus_1, over_2 = Tex([
+        n_mob, n_minus_1, over_2 = OldTex([
             str(n), "(%d-1)"%n, r"\over{2}"
         ]).split()
         for part in n_mob, n_minus_1, over_2:
@@ -1578,7 +1578,7 @@ class ExplainNChoose2Formula(Scene):
             CounterclockwiseTransform(a_mob, a_copy),
             CounterclockwiseTransform(b_mob, b_copy),
             FadeIn(parens_copy),
-            FadeIn(TexText("is considered the same as"))
+            FadeIn(OldTexText("is considered the same as"))
         )
 
 class ExplainNChoose4Formula(Scene):
@@ -1596,7 +1596,7 @@ class ExplainNChoose4Formula(Scene):
         )
         quad_mobs = tuple_mobs[1::2]
         parens = Mobject(*tuple_mobs[0::2])
-        form_mobs = Tex([
+        form_mobs = OldTex([
             str(n), "(%d-1)"%n, "(%d-2)"%n,"(%d-3)"%n,
             r"\over {4 \cdot 3 \cdot 2 \cdot 1}"
         ]).split()
@@ -1636,7 +1636,7 @@ class ExplainNChoose4Formula(Scene):
                 ])
             curr_num = quad[i]
         self.remove(*self.mobjects)
-        num_perms_explain = TexText(
+        num_perms_explain = OldTexText(
             r"There are $(4 \cdot 3 \cdot 2 \cdot 1)$ total permutations"
         ).shift((0, -2, 0))
         self.add(parens, num_perms_explain, *form_mobs)
@@ -1678,7 +1678,7 @@ class IntersectionChoppingExamples(Scene):
         for pairs, exp in [(pairs1, "3 + 2(2) = 7"), 
                            (pairs2, "4 + 2(3) = 10")]:
             lines = [Line(*pair).scale(2) for pair in pairs]
-            self.add(Tex(exp).shift((0, FRAME_Y_RADIUS-1, 0)))
+            self.add(OldTex(exp).shift((0, FRAME_Y_RADIUS-1, 0)))
             self.add(*lines)
             self.wait()
             self.play(*[

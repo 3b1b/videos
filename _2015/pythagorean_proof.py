@@ -47,7 +47,7 @@ class Triangle(Polygon):
         return self
 
     def add_letter(self, char, nudge = 0.3):
-        mob = Tex(char).scale(TEX_MOB_SCALE_FACTOR)
+        mob = OldTex(char).scale(TEX_MOB_SCALE_FACTOR)
         if char == "a":
             points = self.get_vertices()[[0, 2, 1]]
         elif char == "b":
@@ -89,7 +89,7 @@ def c_square(**kwargs):
 class DrawPointsReference(Scene):
     def construct(self):
         for point, count in zip(POINTS, it.count()):
-            mob = Tex(str(count)).scale(TEX_MOB_SCALE_FACTOR)
+            mob = OldTex(str(count)).scale(TEX_MOB_SCALE_FACTOR)
             mob.shift(POINTS[count])
             self.add(mob)
 
@@ -104,7 +104,7 @@ class DrawAllThreeSquares(Scene):
         c = c_square()
         self.add(Triangle(), a, b, c)
         for letter, mob in zip("abc", [a, b, c]):
-            char_mob = Tex(letter+"^2").scale(TEX_MOB_SCALE_FACTOR)
+            char_mob = OldTex(letter+"^2").scale(TEX_MOB_SCALE_FACTOR)
             char_mob.shift(mob.get_center())
             self.add(char_mob)
 
@@ -235,8 +235,8 @@ class ShowBigRectangleDimensions(DrawAllThreeSquaresWithMoreTriangles):
         for brace in u_brace, side_brace:
             brace.shift(0.2*DOWN)
         side_brace.rotate(-np.pi/2)
-        a_plus_2b = Tex("a+2b").scale(TEX_MOB_SCALE_FACTOR)
-        b_plus_2a = Tex("b+2a").scale(TEX_MOB_SCALE_FACTOR)
+        a_plus_2b = OldTex("a+2b").scale(TEX_MOB_SCALE_FACTOR)
+        b_plus_2a = OldTex("b+2a").scale(TEX_MOB_SCALE_FACTOR)
         a_plus_2b.next_to(u_brace, DOWN)
         b_plus_2a.next_to(side_brace, LEFT)
         self.add_mobjects_among(list(locals().values()))
@@ -263,7 +263,7 @@ class DrawOnlyABSquares(Scene):
         a = a_square()
         b = b_square()
         for char, mob in zip("ab", [a, b]):
-            symobl = Tex(char+"^2").scale(TEX_MOB_SCALE_FACTOR)
+            symobl = OldTex(char+"^2").scale(TEX_MOB_SCALE_FACTOR)
             symobl.shift(mob.get_center())
             self.add(symobl)
         triangle = Triangle()
@@ -394,8 +394,8 @@ class ZoomInOnTroublePoint(Scene):
             for mob in self.mobjects:
                 mob.rotate(np.pi/2)
         if with_labels:
-            alpha = Tex("\\alpha").scale(TEX_MOB_SCALE_FACTOR)
-            beta = Tex("90-\\alpha").scale(TEX_MOB_SCALE_FACTOR)
+            alpha = OldTex("\\alpha").scale(TEX_MOB_SCALE_FACTOR)
+            beta = OldTex("90-\\alpha").scale(TEX_MOB_SCALE_FACTOR)
             if rotate:
                 alpha.next_to(angle1_arc, UP+0.1*LEFT)
                 beta.next_to(angle2_arc, DOWN+0.5*LEFT)
@@ -427,8 +427,8 @@ class DrawTriangleWithAngles(Scene):
         angle2_arc = Circle(radius = 0.2, **kwargs).filter_out(
             lambda x_y_z1 : not(x_y_z1[0] < 0 and x_y_z1[1] > 0 and x_y_z1[1] < -3*x_y_z1[0])
         ).shift(vertices[2])
-        alpha = Tex("\\alpha")
-        beta = Tex("90-\\alpha")
+        alpha = OldTex("\\alpha")
+        beta = OldTex("90-\\alpha")
         alpha.shift(vertices[1]+3*RIGHT+DOWN)
         beta.shift(vertices[2]+3*RIGHT+UP)
         arrow1 = Arrow(alpha, angle1_arc)
@@ -446,7 +446,7 @@ class LabelLargeSquare(DrawCSquareWithAllTraingles):
         u_brace.shift(0.2*DOWN)
         side_brace = deepcopy(u_brace).rotate(np.pi/2)
         upper_brace = deepcopy(u_brace).rotate(np.pi)
-        a_plus_b = Tex("a+b").scale(TEX_MOB_SCALE_FACTOR)
+        a_plus_b = OldTex("a+b").scale(TEX_MOB_SCALE_FACTOR)
         upper_brace.add(a_plus_b.next_to(upper_brace, UP))
         side_brace.add(a_plus_b.next_to(side_brace, RIGHT))
         self.add(upper_brace, side_brace)

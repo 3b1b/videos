@@ -42,9 +42,9 @@ class PhotonPassesCompletelyOrNotAtAll(DirectionOfPolarizationScene):
         lower_filter.save_state()
         pol_filter.remove(pol_filter.label)
 
-        passing_words = TexText("Photon", "passes through\\\\", "entirely")
+        passing_words = OldTexText("Photon", "passes through\\\\", "entirely")
         passing_words.set_color(GREEN)
-        filtered_words = TexText("Photon", "is blocked\\\\", "entirely")
+        filtered_words = OldTexText("Photon", "is blocked\\\\", "entirely")
         filtered_words.set_color(RED)
         for words in passing_words, filtered_words:
             words.next_to(ORIGIN, UP+LEFT)
@@ -110,7 +110,7 @@ class DirectionOfPolarization(DirectionOfPolarizationScene):
     def construct(self):
         self.remove(self.pol_filter)
         self.axes.z_axis.rotate(np.pi/2, OUT)
-        words = TexText("Polarization direction")
+        words = OldTexText("Polarization direction")
         words.next_to(ORIGIN, UP+RIGHT, LARGE_BUFF)
         words.shift(2*UP)
         words.rotate(np.pi/2, RIGHT)
@@ -198,7 +198,7 @@ class PhotonsThroughPerpendicularFilters(PhotonPassesCompletelyOrNotAtAll):
         ]
 
     def get_probability_text(self, prob = 0):
-        prob_text = Tex(
+        prob_text = OldTex(
             "P(", "\\substack", "{\\text{photons that make it} \\\\ ", 
             " \\text{here } ", "\\text{make it}", 
             " \\text{ here} }", ")", "=", str(int(prob*100)), "\\%",
@@ -368,12 +368,12 @@ class AngryPiCreature(PiCreatureScene):
 
 class ShowALittleMath(TeacherStudentsScene):
     def construct(self):
-        exp1 = Tex(
+        exp1 = OldTex(
             "|", "\\psi", "\\rangle = ",
             "\\alpha", "|\\uparrow\\rangle", 
             "+", "\\beta", "|\\rightarrow\\rangle"
         )
-        exp2 = Tex(
+        exp2 = OldTex(
             "|| \\langle", "\\psi", "|", "\\psi", "\\rangle ||^2",
             "= ", "\\alpha", "^2", "+", "\\beta", "^2"
         )
@@ -408,7 +408,7 @@ class ShowALittleMath(TeacherStudentsScene):
 
 class SecondVideoWrapper(Scene):
     def construct(self):
-        title = TexText("Some light quantum mechanics")
+        title = OldTexText("Some light quantum mechanics")
         title.to_edge(UP)
         self.add(title)
 
@@ -429,9 +429,9 @@ class BasicsOfPolarization(DirectionOfPolarizationScene):
     def show_continual_wave(self):
         em_wave = self.em_wave
 
-        title = TexText("Waves in the ``electromagnetic field''")
+        title = OldTexText("Waves in the ``electromagnetic field''")
         title.to_edge(UP)
-        subtitle = TexText("Polarization = Direction of", "wiggling")
+        subtitle = OldTexText("Polarization = Direction of", "wiggling")
         subtitle.set_color_by_tex("wiggling", BLUE)
         subtitle.next_to(title, DOWN)
         for words in title, subtitle:
@@ -462,12 +462,12 @@ class BasicsOfPolarization(DirectionOfPolarizationScene):
         self.reference_line.put_start_and_end_on(ORIGIN, RIGHT)
 
     def show_photons(self):
-        quantum_left_words = TexText(
+        quantum_left_words = OldTexText(
             "Quantum", "$\\Rightarrow$",
         )
         quantum_left_words.next_to(ORIGIN, UP+RIGHT)
         quantum_left_words.shift(UP)
-        quantum_right_words = TexText(
+        quantum_right_words = OldTexText(
             "Completely through", "or \\\\",
             "Completely blocked",
         )
@@ -478,7 +478,7 @@ class BasicsOfPolarization(DirectionOfPolarizationScene):
         quantum_words = VGroup(quantum_left_words, quantum_right_words)
         quantum_words.rotate(np.pi/2, RIGHT)
 
-        prob_eq = Tex(
+        prob_eq = OldTex(
             "&P(", "\\text{Pass}", ")", "=", "p\\\\",
             "&P(", "\\text{Blocked}", ")", "=", "1-p",
         )
@@ -534,9 +534,9 @@ class BasicsOfPolarization(DirectionOfPolarizationScene):
 
 class AngleToProbabilityChart(Scene):
     def construct(self):
-        left_title = TexText("Angle between \\\\ filters")
+        left_title = OldTexText("Angle between \\\\ filters")
         left_title.to_corner(UP+LEFT)
-        right_title = TexText(
+        right_title = OldTexText(
             "Probability that photons passing \\\\",
             "through the first pass through the second"
         )
@@ -552,7 +552,7 @@ class AngleToProbabilityChart(Scene):
 
         angles = [0, 22.5, 45, 67.5, 90]
         angle_mobs = VGroup(*[
-            Tex(str(angle) + "^\\circ")
+            OldTex(str(angle) + "^\\circ")
             for angle in angles
         ])
         angle_mobs.arrange(DOWN, buff = MED_LARGE_BUFF)
@@ -563,7 +563,7 @@ class AngleToProbabilityChart(Scene):
             for angle in angles
         ]
         prob_mobs = VGroup(*[
-            Tex("%.1f"%(100*prob) + "\\%")
+            OldTex("%.1f"%(100*prob) + "\\%")
             for prob in probs
         ])
         prob_mobs.set_color(YELLOW)
@@ -581,7 +581,7 @@ class AngleToProbabilityChart(Scene):
                 angle_mobs[i].copy(), prob_mobs[i]
             ))
 
-        explanation = TexText("Based on $\\cos(\\theta)^2$")
+        explanation = OldTexText("Based on $\\cos(\\theta)^2$")
         explanation.next_to(prob_mobs, RIGHT, LARGE_BUFF)
         self.play(Write(explanation, run_time = 2))
         self.wait()
@@ -818,7 +818,7 @@ class ShowVariousFilterPairs(ShowVariousFilterPairsWithPhotonsOverTime):
         if pol_filter is None:
             pol_filter = self.second_filter
         prob = self.get_prob(pol_filter)
-        prob_mob = TexText(str(int(prob*100)) + "\\%", " pass")
+        prob_mob = OldTexText(str(int(prob*100)) + "\\%", " pass")
         prob_mob.scale(0.7)
         prob_mob.rotate(np.pi/2, RIGHT)
         prob_mob.next_to(pol_filter.arrow_label, RIGHT)
@@ -878,7 +878,7 @@ class ShowVariousFilterPairsFrom0To45(ShowVariousFilterPairs):
             rects.add(rect)
 
         cosines = VGroup(*[
-            Tex("\\cos^2(%s^\\circ)"%str(x))
+            OldTex("\\cos^2(%s^\\circ)"%str(x))
             for x in (45, 22.5)
         ])
         cosines.scale(0.8)
@@ -944,7 +944,7 @@ class ForgetPreviousActions(ShowVariousFilterPairs):
         rect1.rotate(np.pi/2, RIGHT)
         rect1.rescale_to_fit(group.get_depth()+MED_SMALL_BUFF, 2, True)
         rect1.stretch_in_place(1.2, 0)
-        prob_words = TexText(
+        prob_words = OldTexText(
             "Probabilities depend only\\\\",
             "on this angle difference"
         )
@@ -964,7 +964,7 @@ class ForgetPreviousActions(ShowVariousFilterPairs):
         rect2.rotate(np.pi/2, RIGHT)
         rect2.rescale_to_fit(front_filter.get_depth()+MED_SMALL_BUFF, 2, True)
         rect2.stretch_in_place(1.5, 0)
-        ignore_words = TexText("Photon \\\\", "``forgets'' this")
+        ignore_words = OldTexText("Photon \\\\", "``forgets'' this")
         ignore_words.add_background_rectangle()
         ignore_words.rotate(np.pi/2, RIGHT)
         ignore_words.next_to(rect2, OUT)
@@ -1027,7 +1027,7 @@ class IntroduceLabeledFilters(ShowVariousFilterPairs):
 
     def add_letters_to_labels(self):
         for char, pf, color in zip("ABC", self.pol_filters, [RED, GREEN, BLUE]):
-            label = TexText(char)
+            label = OldTexText(char)
             label.scale(0.9)
             label.add_background_rectangle()
             label.set_color(color)
@@ -1115,7 +1115,7 @@ class IntroduceLabeledFilters(ShowVariousFilterPairs):
             color = BLUE,
             stroke_width = 5,
         )
-        words = TexText("50\\% blocked")
+        words = OldTexText("50\\% blocked")
         words.set_color(BLUE)
         words.next_to(arrow, RIGHT, buff = 0)
         group = VGroup(arrow, words)
@@ -1191,14 +1191,14 @@ class IntroduceLabeledFilters(ShowVariousFilterPairs):
         )
         arrow2 = arrow1.copy()
         arrow2.next_to(arrow1, RIGHT, buff = LARGE_BUFF)
-        words1 = TexText("15\\%", "blocked")
+        words1 = OldTexText("15\\%", "blocked")
         words1.set_color(GREEN)
         words2 = words1.copy()
         words1.next_to(arrow1, DOWN, buff = SMALL_BUFF)
         words2.next_to(arrow2, DOWN, buff = SMALL_BUFF)
         words2.shift(MED_LARGE_BUFF*RIGHT)
 
-        words0 = TexText("85\\%", "pass")
+        words0 = OldTexText("85\\%", "pass")
         words0.move_to(words1)
 
         group = VGroup(arrow0, arrow1, arrow2, words0, words1, words2)
@@ -1229,11 +1229,11 @@ class IntroduceLabeledFilters(ShowVariousFilterPairs):
     def show_sum(self):
         fifteen1, fifteen2 = self.fifteens
         fifty = self.blocked_at_C_words
-        plus = Tex("+").rotate(np.pi/2, RIGHT)
+        plus = OldTex("+").rotate(np.pi/2, RIGHT)
         plus.move_to(Line(fifteen1.get_right(), fifteen2.get_left()))
-        equals = Tex("=").rotate(np.pi/2, RIGHT)
+        equals = OldTex("=").rotate(np.pi/2, RIGHT)
         equals.next_to(fifteen2, RIGHT, 2*SMALL_BUFF)
-        q_mark = Tex("?").rotate(np.pi/2, RIGHT)
+        q_mark = OldTex("?").rotate(np.pi/2, RIGHT)
         q_mark.next_to(equals, OUT, SMALL_BUFF)
         q_mark.set_color(RED)
         randy = Randolph(mode = "confused").flip()
@@ -1387,7 +1387,7 @@ class VennDiagramProofByContradiction(Scene):
         angles = [0, np.pi/8, np.pi/4]
         for circle, char, prop, angle in zip(venn_diagram, "ABC", props, angles):
             label, alt_label = [
-                TexText(
+                OldTexText(
                     "%s \\\\"%start,
                     "through", char + "$\\! \\uparrow$"
                 ).set_color_by_tex(char, circle.get_color())
@@ -1453,7 +1453,7 @@ class VennDiagramProofByContradiction(Scene):
         eyes = Eyes(photon)
         photon.eyes = eyes
 
-        hundred, photon_word, s = words = TexText(
+        hundred, photon_word, s = words = OldTexText(
             "100 ", "Photon", "s",
             arg_separator = ""
         )
@@ -1489,7 +1489,7 @@ class VennDiagramProofByContradiction(Scene):
         photon.save_state()
         photon.generate_target()
 
-        answers = TexText(
+        answers = OldTexText(
             "Pass through A?", "Yes\\\\",
             "Pass through B?", "No\\\\",
             "Pass through C?", "No\\\\",
@@ -1594,7 +1594,7 @@ class VennDiagramProofByContradiction(Scene):
             out_of_B.shift, 0.15*(UP+RIGHT),
         )
 
-        words1 = TexText("85 also \\\\", "pass ", "B")
+        words1 = OldTexText("85 also \\\\", "pass ", "B")
         words1.set_color_by_tex("B", GREEN)
         words1.scale(0.8)
         words1.next_to(A_group, LEFT, LARGE_BUFF).shift(UP)
@@ -1604,7 +1604,7 @@ class VennDiagramProofByContradiction(Scene):
         )
         arrow1.set_color(GREEN)
 
-        words2 = TexText("15 blocked \\\\", "by ", "B")
+        words2 = OldTexText("15 blocked \\\\", "by ", "B")
         words2.set_color_by_tex("B", GREEN)
         words2.scale(0.8)
         words2.next_to(A_group, LEFT, MED_LARGE_BUFF, UP)
@@ -1665,7 +1665,7 @@ class VennDiagramProofByContradiction(Scene):
         out_of_C = VGroup(*in_B[-11:])
         in_C_out_B = VGroup(*self.out_of_B[:6])
 
-        words = TexText(
+        words = OldTexText(
             "$15\\%$", "passing", "B \\\\",
             "get blocked by ", "C",
         )
@@ -1677,9 +1677,9 @@ class VennDiagramProofByContradiction(Scene):
         words.next_to(self.out_of_B_words, DOWN, LARGE_BUFF)
         words.to_edge(LEFT)
         percent = words[0]
-        pound = Tex("\\#")
+        pound = OldTex("\\#")
         pound.move_to(percent, RIGHT)
-        less_than_15 = Tex("<15")
+        less_than_15 = OldTex("<15")
         less_than_15.next_to(words, DOWN)
 
 
@@ -1748,12 +1748,12 @@ class VennDiagramProofByContradiction(Scene):
         ])
 
         terms = VGroup(
-            Tex("N(", "A", "\\checkmark", ",", "C", ")", "\\le"),
-            Tex(
+            OldTex("N(", "A", "\\checkmark", ",", "C", ")", "\\le"),
+            OldTex(
                 "N(", "A", "\\checkmark", ",", 
                 "B", "\\checkmark", ",", "C", ")"
             ),
-            Tex("+\\, N(", "A", "\\checkmark", ",", "B", ")"),
+            OldTex("+\\, N(", "A", "\\checkmark", ",", "B", ")"),
         )
         terms.arrange(RIGHT)
         terms.to_edge(UP)
@@ -1772,12 +1772,12 @@ class VennDiagramProofByContradiction(Scene):
         terms[2][0].add_to_back(plus)
         last_rects = VGroup(*rects[1:])
 
-        should_be_50 = TexText("Should be 50 \\\\", "...somehow")
+        should_be_50 = OldTexText("Should be 50 \\\\", "...somehow")
         should_be_50.scale(0.8)
         should_be_50.next_to(rects[0], DOWN)
 
         lt_fifteen = VGroup(self.out_of_C_words[-1]).copy()
-        something_lt_15 = TexText("(Something", "$<15$", ")")
+        something_lt_15 = OldTexText("(Something", "$<15$", ")")
         something_lt_15.scale(0.8)
         something_lt_15.next_to(rects[1], DOWN)
         lt_fifteen.target = something_lt_15
@@ -1844,7 +1844,7 @@ class VennDiagramProofByContradiction(Scene):
             Brace(everything_copy, LEFT),
             Brace(everything_copy, RIGHT),
         ).scale(3)
-        funny_business = TexText("Funny business")
+        funny_business = OldTexText("Funny business")
         funny_business.scale(1.5)
         funny_business.to_edge(UP)
         funny_business.shift(RIGHT)
@@ -1906,7 +1906,7 @@ class VennDiagramProofByContradiction(Scene):
 
         morty = Mortimer()
         morty.to_corner(DOWN+RIGHT)
-        contradiction = TexText("Contradiction!")
+        contradiction = OldTexText("Contradiction!")
         contradiction.next_to(morty, UP, aligned_edge = RIGHT)
         contradiction.set_color(RED)
 
@@ -1939,7 +1939,7 @@ class VennDiagramProofByContradiction(Scene):
         photon.target.scale(4)
         photon.target.center().to_edge(LEFT).shift(DOWN)
         bubble = ThoughtBubble()
-        content = Tex("A", "\\checkmark", ",", "C")
+        content = OldTex("A", "\\checkmark", ",", "C")
         content.set_color_by_tex("checkmark", "#00ff00")
         cross = Cross(content[-1])
         cross.set_color("#ff0000")
@@ -2068,7 +2068,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         A0, B0, C0 = self.black_circles
         A1, B1, C1 = self.filled_circles
 
-        words = TexText("Should be 15\\% \\\\ of circle ", "A")
+        words = OldTexText("Should be 15\\% \\\\ of circle ", "A")
         words.scale(0.7)
         words.set_color_by_tex("A", RED)
         words.next_to(A, UP, LARGE_BUFF)
@@ -2107,7 +2107,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         A0, B0, C0 = self.black_circles
         A1, B1, C1 = self.filled_circles
 
-        words = TexText("Should be 15\\% \\\\ of circle ", "B")
+        words = OldTexText("Should be 15\\% \\\\ of circle ", "B")
         words.scale(0.7)
         words.set_color_by_tex("B", GREEN)
         words.next_to(B, LEFT)
@@ -2194,9 +2194,9 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         A1_yellow_copy = self.A1_yellow_copy
 
         inequality = VGroup(
-            Tex("N(", "A", "\\checkmark", ",", "C", ")"),
-            Tex("N(", "B", "\\checkmark", ",", "C", ")"),
-            Tex("N(", "A", "\\checkmark", ",", "B", ")"),
+            OldTex("N(", "A", "\\checkmark", ",", "C", ")"),
+            OldTex("N(", "B", "\\checkmark", ",", "C", ")"),
+            OldTex("N(", "A", "\\checkmark", ",", "B", ")"),
         )
         inequality.arrange(RIGHT)
         for tex in inequality:
@@ -2206,8 +2206,8 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
                 cross.set_stroke(width = 8)
                 tex[-2].add(cross)
         inequality.space_out_submobjects(2.1)
-        big_le = Tex("\\le").scale(2)
-        big_plus = Tex("+").scale(2)
+        big_le = OldTex("\\le").scale(2)
+        big_plus = OldTex("+").scale(2)
         big_le.move_to(2.75*LEFT)
         big_plus.move_to(2.25*RIGHT)
 
@@ -2290,7 +2290,7 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         self.wait()
 
     def write_50_percent(self):
-        words = TexText(
+        words = OldTexText(
             "Should be 50\\% \\\\ of circle ", "A",
             "...somehow"
         )
@@ -2302,11 +2302,11 @@ class ReEmphasizeVennDiagram(VennDiagramProofByContradiction):
         self.wait()
 
     def write_assumption(self):
-        words = TexText("Assume circles have the same size$^*$")
+        words = OldTexText("Assume circles have the same size$^*$")
         words.scale(0.8)
         words.to_edge(UP)
 
-        footnote = TexText("""
+        footnote = OldTexText("""
             *If you prefer, you can avoid the need for that 
             assumption by swapping the roles of A and C here 
             and writing a second inequality for added constraint.
@@ -2396,7 +2396,7 @@ class NoFirstMeasurementPreferenceBasedOnDirection(ShowVariousFilterPairs):
         for z, char, color, pf in zip(zs, chars, colors, self.pol_filters):
             pf.scale(0.7)
             pf.move_to(z*OUT)
-            label = TexText(char)
+            label = OldTexText(char)
             label.add_background_rectangle()
             label.set_color(color)
             label.scale(0.7)
@@ -2412,7 +2412,7 @@ class NoFirstMeasurementPreferenceBasedOnDirection(ShowVariousFilterPairs):
         self.show_lines()
 
     def reposition_camera(self):
-        words = TexText("No statistical preference")
+        words = OldTexText("No statistical preference")
         words.to_corner(UP+LEFT)
         words.rotate(np.pi/2, RIGHT)
         self.move_camera(

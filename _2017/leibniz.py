@@ -84,7 +84,7 @@ class LatticePointScene(Scene):
             color = color
         )
         r_squared = int(np.round(radius**2))
-        root_label = Tex("\\sqrt{%d}"%r_squared)
+        root_label = OldTex("\\sqrt{%d}"%r_squared)
         root_label.add_background_rectangle()
         root_label.next_to(radial_line, UP, SMALL_BUFF)
 
@@ -134,11 +134,11 @@ class LatticePointScene(Scene):
             for y in y_range
         ])
         x_labels = VGroup(*[
-            Tex(str(x))
+            OldTex(str(x))
             for x in x_range
         ])
         y_labels = VGroup(*[
-            Tex(str(y) + "i")
+            OldTex(str(y) + "i")
             for y in y_range
         ])
 
@@ -227,8 +227,8 @@ class Introduction(PiCreatureScene):
         screen = ScreenRectangle(height = 4.3)
         screen.to_edge(LEFT)
         titles = VGroup(
-            TexText("From zeta video"),
-            TexText("Coming up")
+            OldTexText("From zeta video"),
+            OldTexText("Coming up")
         )
         for title in titles:
             title.next_to(screen, UP)
@@ -243,7 +243,7 @@ class Introduction(PiCreatureScene):
         self.wait(3)
 
     def get_primes(self):
-        return Tex("2, 3, 5, 7, 11, 13, \\dots")
+        return OldTex("2, 3, 5, 7, 11, 13, \\dots")
 
     def get_complex_numbers(self):
         plane = ComplexPlane(
@@ -253,7 +253,7 @@ class Introduction(PiCreatureScene):
         plane.add_coordinates()
         point = plane.number_to_point(complex(1, 2))
         dot = Dot(point, radius = YELLOW)
-        label = Tex("1 + 2i")
+        label = OldTex("1 + 2i")
         label.add_background_rectangle()
         label.next_to(dot, UP+RIGHT, buff = SMALL_BUFF)
         label.set_color(YELLOW)
@@ -262,7 +262,7 @@ class Introduction(PiCreatureScene):
         return plane
 
     def get_pi_group(self):
-        result = Tex("\\pi", "=", "%.8f\\dots"%np.pi)
+        result = OldTex("\\pi", "=", "%.8f\\dots"%np.pi)
         pi = result.get_part_by_tex("pi")
         pi.scale(2, about_point = pi.get_right())
         pi.set_color(MAROON_B)
@@ -305,14 +305,14 @@ class ShowSum(TeacherStudentsScene):
         ]
         dot = Dot(points[0])
 
-        sum_mob = Tex(
+        sum_mob = OldTex(
             "1", "-\\frac{1}{3}", 
             "+\\frac{1}{5}", "-\\frac{1}{7}",
             "+\\frac{1}{9}", "-\\frac{1}{11}",
             "+\\cdots"
         )
         sum_mob.to_corner(UP+RIGHT)
-        lhs = Tex(
+        lhs = OldTex(
             "\\frac{\\pi}{4}", "=", 
         )
         lhs.next_to(sum_mob, LEFT)
@@ -322,7 +322,7 @@ class ShowSum(TeacherStudentsScene):
             sum_point
         )
         fading_terms = [
-            Tex(sign + "\\frac{1}{%d}"%(2*n + 1))
+            OldTex(sign + "\\frac{1}{%d}"%(2*n + 1))
             for n, sign in zip(
                 list(range(self.num_terms_to_add)),
                 it.cycle("+-")
@@ -381,7 +381,7 @@ class ShowSum(TeacherStudentsScene):
 
 class FermatsDreamExcerptWrapper(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "From ``Fermat's dream'' by Kato, Kurokawa and Saito"
         )
         words.scale(0.8)
@@ -391,17 +391,17 @@ class FermatsDreamExcerptWrapper(Scene):
 
 class ShowCalculus(PiCreatureScene):
     def construct(self):
-        frac_sum = Tex(
+        frac_sum = OldTex(
             "1 - \\frac{1}{3} + \\frac{1}{5} - \\frac{1}{7} + \\cdots",
         )
-        int1 = Tex(
+        int1 = OldTex(
             "= \\int_0^1 (1 - x^2 + x^4 - \\dots )\\,dx"
         )
-        int2 = Tex(
+        int2 = OldTex(
             "= \\int_0^1 \\frac{1}{1+x^2}\\,dx"
         )
-        arctan = Tex("= \\tan^{-1}(1)")
-        pi_fourths = Tex("= \\frac{\\pi}{4}")
+        arctan = OldTex("= \\tan^{-1}(1)")
+        pi_fourths = OldTex("= \\frac{\\pi}{4}")
 
         frac_sum.to_corner(UP+LEFT)
         frac_sum.shift(RIGHT)
@@ -453,7 +453,7 @@ class CertainRegularityInPrimes(LatticePointScene):
         self.walk_through_primes()
 
     def add_pi_formula(self):
-        formula = Tex(
+        formula = OldTex(
             "\\frac{\\pi}{4}", "=",
             "1", "-", "\\frac{1}{3}",
             "+", "\\frac{1}{5}", "-", "\\frac{1}{7}",
@@ -503,11 +503,11 @@ class Outline(PiCreatureScene):
 
     def generate_list(self):
         steps = VGroup(
-            TexText("1. Count lattice points"),
-            Tex("2. \\text{ Things like }17 = ", "4", "^2 + ", "1", "^2"),
-            Tex("3. \\text{ Things like }17 = (", "4", " + ", "i", ")(", "4", " - ", "i", ")"),
-            TexText("4. Introduce $\\chi$"),
-            TexText("5. Shift perspective"),
+            OldTexText("1. Count lattice points"),
+            OldTex("2. \\text{ Things like }17 = ", "4", "^2 + ", "1", "^2"),
+            OldTex("3. \\text{ Things like }17 = (", "4", " + ", "i", ")(", "4", " - ", "i", ")"),
+            OldTexText("4. Introduce $\\chi$"),
+            OldTexText("5. Shift perspective"),
         )
         for step in steps[1:3]:
             step.set_color_by_tex("1", RED, substring = False)
@@ -523,7 +523,7 @@ class Outline(PiCreatureScene):
         self.steps = steps
 
     def wonder_at_pi(self):
-        question = Tex("\\pi", "=???")
+        question = OldTex("\\pi", "=???")
         pi = question.get_part_by_tex("pi")
         pi.scale(2, about_point = pi.get_right())
         pi.set_color(YELLOW)
@@ -616,7 +616,7 @@ class Outline(PiCreatureScene):
     def show_chi(self):
         input_range = list(range(1, 7))
         chis = VGroup(*[
-            Tex("\\chi(%d)"%n)
+            OldTex("\\chi(%d)"%n)
             for n in input_range
         ])
         chis.arrange(RIGHT, buff = LARGE_BUFF)
@@ -624,10 +624,10 @@ class Outline(PiCreatureScene):
         numerators = VGroup()
         arrows = VGroup()
         for chi, n in zip(chis, input_range):
-            arrow = Tex("\\Downarrow")
+            arrow = OldTex("\\Downarrow")
             arrow.next_to(chi, DOWN, SMALL_BUFF)
             arrows.add(arrow)
-            value = Tex(str(chi_func(n)))
+            value = OldTex(str(chi_func(n)))
             value.set_color_by_tex("1", BLUE)
             value.set_color_by_tex("-1", GREEN)
             value.next_to(arrow, DOWN)
@@ -653,7 +653,7 @@ class Outline(PiCreatureScene):
         self.numerators = numerators
 
     def show_complicated_formula(self):
-        rhs = Tex(
+        rhs = OldTex(
             " = \\lim_{N \\to \\infty}",
             " \\frac{4}{N}",
             "\\sum_{n = 1}^N",
@@ -676,14 +676,14 @@ class Outline(PiCreatureScene):
         self.complicated_formula = rhs
 
     def show_last_step(self):
-        expression = Tex(
+        expression = OldTex(
             "=", "\\frac{\\quad}{1}",
             *it.chain(*[
                 ["+", "\\frac{\\quad}{%d}"%d]
                 for d in range(2, len(self.numerators)+1)
             ] + [["+ \\cdots"]])
         )
-        over_four = Tex("\\quad \\over 4")
+        over_four = OldTex("\\quad \\over 4")
         over_four.to_corner(DOWN+LEFT)
         over_four.shift(UP)
         pi = self.pi
@@ -736,7 +736,7 @@ class CountLatticePoints(LatticePointScene):
             color = self.dot_color,
             radius = 1.5*self.dot_radius,
         )
-        label = Tex(str(self.example_coords))
+        label = OldTex(str(self.example_coords))
         label.add_background_rectangle()
         label.next_to(example_dot, UP+RIGHT, buff = 0)
         h_line = Line(
@@ -828,12 +828,12 @@ class CountLatticePoints(LatticePointScene):
     def write_pi_R_squared(self):
         equations = VGroup(*[
             VGroup(
-                TexText(
+                OldTexText(
                     "\\# Lattice points\\\\",
                     "within radius ", R,
                     alignment = ""
                 ),
-                Tex(
+                OldTex(
                     "\\approx \\pi", "(", R, ")^2"
                 )
             ).arrange(RIGHT)
@@ -869,7 +869,7 @@ class CountLatticePoints(LatticePointScene):
         self.radius_R_eq = radius_R_eq
 
     def allude_to_alternate_counting_method(self):
-        alt_count = TexText(
+        alt_count = OldTexText(
             "(...something else...)", "$R^2$", "=",
             arg_separator = ""
         )
@@ -982,8 +982,8 @@ class CountThroughRings(LatticePointScene):
             color = self.dot_color,
             radius = self.dot_radius
         )
-        label = Tex("(a, b)")
-        num_label = Tex(str(self.example_coords))
+        label = OldTex("(a, b)")
+        num_label = OldTex(str(self.example_coords))
         for mob in label, num_label:
             mob.add_background_rectangle()
             mob.next_to(dot, UP + RIGHT, SMALL_BUFF)
@@ -996,8 +996,8 @@ class CountThroughRings(LatticePointScene):
         v_line = Line(x_spot, dot)
         v_line.set_color(RED)
 
-        distance = Tex("\\sqrt{a^2 + b^2}")
-        distance_num = Tex("\\sqrt{%d}"%(x**2 + y**2))
+        distance = OldTex("\\sqrt{a^2 + b^2}")
+        distance_num = OldTex("\\sqrt{%d}"%(x**2 + y**2))
         for mob in distance, distance_num:
             mob.scale(0.75)
             mob.add_background_rectangle()
@@ -1019,7 +1019,7 @@ class CountThroughRings(LatticePointScene):
         self.wait(2)
 
         a_num, b_num = [
-            Tex(str(coord))[0]
+            OldTex(str(coord))[0]
             for coord in self.example_coords
         ]
         a_num.move_to(a, UP)
@@ -1045,7 +1045,7 @@ class CountThroughRings(LatticePointScene):
             for N in range(self.max_lattice_point_radius**2 + 1)
         ]
         left_list = VGroup(*[
-            Tex(
+            OldTex(
                 "\\sqrt{%d} \\Rightarrow"%n, str(count)
             )
             for n, count in zip(
@@ -1069,7 +1069,7 @@ class CountThroughRings(LatticePointScene):
         left_list.to_corner(UP + LEFT)
 
         top_list = VGroup(*[
-            Tex("%d, "%count)
+            OldTex("%d, "%count)
             for count in counts
         ])
         top_list.set_color(YELLOW)
@@ -1117,7 +1117,7 @@ class CountThroughRings(LatticePointScene):
             self.plane_center, self.plane.coords_to_point(radius, 0),
             color = RED
         )
-        root = Tex("\\sqrt{%d}"%radius_squared)
+        root = OldTex("\\sqrt{%d}"%radius_squared)
         root.add_background_rectangle()
         root.set_width(
             min(0.7*radial_line.get_width(), root.get_width())
@@ -1183,7 +1183,7 @@ class LookAtExampleRing(LatticePointScene):
         radius, root_label = self.get_radial_line_with_label(5)
         coords_list = [(5, 0), (4, 3), (3, 4), (0, 5), (-3, 4), (-4, 3)]
         labels = [
-            Tex("(", str(x), ",", str(y), ")")
+            OldTex("(", str(x), ",", str(y), ")")
             for x, y in coords_list
         ]
         for label in labels:
@@ -1203,7 +1203,7 @@ class LookAtExampleRing(LatticePointScene):
             return "(%d)"%n if n < 0 else str(n)
 
         sums_of_squares = [
-            Tex(
+            OldTex(
                 special_str(x), "^2", "+", 
                 special_str(y), "^2", "= 25"
             )
@@ -1291,7 +1291,7 @@ class LookAtExampleRing(LatticePointScene):
         R = np.sqrt(11)
         circle = self.get_circle(radius = R)
         radius, root_label = self.get_radial_line_with_label(R)
-        equation = Tex("11 \\ne ", "a", "^2", "+", "b", "^2")
+        equation = OldTex("11 \\ne ", "a", "^2", "+", "b", "^2")
         equation.set_color_by_tex("a", GREEN)
         equation.set_color_by_tex("b", RED)
         equation.add_background_rectangle()
@@ -1317,7 +1317,7 @@ class LookAtExampleRing(LatticePointScene):
 
 class Given2DThinkComplex(TeacherStudentsScene):
     def construct(self):
-        tex = TexText("2D $\\Leftrightarrow$ Complex numbers")
+        tex = OldTexText("2D $\\Leftrightarrow$ Complex numbers")
         plane = ComplexPlane(
             x_radius = 0.6*FRAME_X_RADIUS,
             y_radius = 0.6*FRAME_Y_RADIUS,
@@ -1381,21 +1381,21 @@ class IntroduceComplexConjugate(LatticePointScene):
         v_arrow = Arrow(x_point, point, buff = 0)
         h_arrow.set_color(x_color)
         v_arrow.set_color(y_color)
-        x_coord = Tex(str(x))
+        x_coord = OldTex(str(x))
         x_coord.next_to(h_arrow, DOWN, SMALL_BUFF)
         x_coord.set_color(x_color)
         x_coord.add_background_rectangle()
-        y_coord = Tex(str(y))
-        imag_y_coord = Tex(str(y) + "i")
+        y_coord = OldTex(str(y))
+        imag_y_coord = OldTex(str(y) + "i")
         for coord in y_coord, imag_y_coord:
             coord.next_to(v_arrow, RIGHT, SMALL_BUFF)
             coord.set_color(y_color)
             coord.add_background_rectangle()
 
-        tuple_label = Tex(str((x, y)))
+        tuple_label = OldTex(str((x, y)))
         tuple_label[1].set_color(x_color)
         tuple_label[3].set_color(y_color)
-        complex_label = Tex("%d+%di"%(x, y))
+        complex_label = OldTex("%d+%di"%(x, y))
         complex_label[0].set_color(x_color)
         complex_label[2].set_color(y_color)
         for label in tuple_label, complex_label:
@@ -1419,7 +1419,7 @@ class IntroduceComplexConjugate(LatticePointScene):
                 tex = "-i"
             else:
                 tex = "%di"%y
-            imag_coord = Tex(tex)
+            imag_coord = OldTex(tex)
             imag_coord.scale(0.75)
             imag_coord.add_background_rectangle()
             imag_coord.next_to(tick, LEFT, SMALL_BUFF)
@@ -1451,9 +1451,9 @@ class IntroduceComplexConjugate(LatticePointScene):
     def introduce_complex_conjugate(self):
         x, y = self.example_coords
         equation = VGroup(
-            Tex("25 = ", str(x), "^2", "+", str(y), "^2", "="),
-            Tex("(", str(x), "+", str(y), "i", ")"),
-            Tex("(", str(x), "-", str(y), "i", ")"),
+            OldTex("25 = ", str(x), "^2", "+", str(y), "^2", "="),
+            OldTex("(", str(x), "+", str(y), "i", ")"),
+            OldTex("(", str(x), "-", str(y), "i", ")"),
         )
         equation.arrange(
             RIGHT, buff = SMALL_BUFF,
@@ -1471,14 +1471,14 @@ class IntroduceComplexConjugate(LatticePointScene):
             self.plane.coords_to_point(x, -y),
             color = self.dot_color
         )
-        label = Tex("%d-%di"%(x, y))
+        label = OldTex("%d-%di"%(x, y))
         label[0].set_color(self.x_color)
         label[2].set_color(self.y_color)
         label.add_background_rectangle()
         label.next_to(dot, DOWN+RIGHT, buff = 0)
 
         brace = Brace(equation[-1], DOWN)
-        conjugate_words = TexText("Complex \\\\ conjugate")
+        conjugate_words = OldTexText("Complex \\\\ conjugate")
         conjugate_words.scale(0.8)
         conjugate_words.add_background_rectangle()
         conjugate_words.next_to(brace, DOWN)
@@ -1541,15 +1541,15 @@ class IntroduceComplexConjugate(LatticePointScene):
     def expand_algebraically(self):
         x, y = self.example_coords
         expansion = VGroup(
-            Tex(str(x), "^2"),
-            Tex("-", "(", str(y), "i", ")^2")
+            OldTex(str(x), "^2"),
+            OldTex("-", "(", str(y), "i", ")^2")
         )
         expansion.arrange(RIGHT, buff = SMALL_BUFF)
         expansion.next_to(
             VGroup(*self.equation[-2:]), 
             DOWN, LARGE_BUFF
         )
-        alt_y_term = Tex("+", str(y), "^2")
+        alt_y_term = OldTex("+", str(y), "^2")
         alt_y_term.move_to(expansion[1], LEFT)
         for tex_mob in list(expansion) + [alt_y_term]:
             tex_mob.set_color_by_tex(str(x), self.x_color)
@@ -1653,10 +1653,10 @@ class IntroduceComplexConjugate(LatticePointScene):
             )
             dot.arc.shift(self.plane_center)
             dot.arc.add_tip(tip_length = 0.2)
-            dot.rotate_word = TexText("Rotate")
+            dot.rotate_word = OldTexText("Rotate")
             dot.rotate_word.scale(0.5)
             dot.rotate_word.next_to(dot.arc, RIGHT, SMALL_BUFF)
-            dot.magnitude_word = TexText("Length 5")
+            dot.magnitude_word = OldTexText("Length 5")
             dot.magnitude_word.scale(0.6)
             dot.magnitude_word.next_to(
                 ORIGIN,
@@ -1666,7 +1666,7 @@ class IntroduceComplexConjugate(LatticePointScene):
             dot.magnitude_word.add_background_rectangle()
             dot.magnitude_word.rotate(dot.angle)
             dot.magnitude_word.shift(dot.line.get_center())
-        twenty_five_label = Tex("25")
+        twenty_five_label = OldTex("25")
         twenty_five_label.add_background_rectangle()
         twenty_five_label.next_to(
             self.plane.coords_to_point(25, 0),
@@ -1730,7 +1730,7 @@ class NameGaussianIntegers(LatticePointScene):
         self.show_question_algebraically()
 
     def add_a_plus_bi(self):
-        label = Tex(
+        label = OldTex(
             "a", "+", "b", "i"
         )
         a = label.get_part_by_tex("a")
@@ -1739,7 +1739,7 @@ class NameGaussianIntegers(LatticePointScene):
         b.set_color(RED)
         label.add_background_rectangle()
         label.to_corner(UP+RIGHT)
-        integers = TexText("Integers")
+        integers = OldTexText("Integers")
         integers.next_to(label, DOWN, LARGE_BUFF)
         integers.add_background_rectangle()
         arrows = VGroup(*[
@@ -1752,14 +1752,14 @@ class NameGaussianIntegers(LatticePointScene):
         self.integers_label = VGroup(integers, arrows)
 
     def add_name(self):
-        gauss_name = TexText(
+        gauss_name = OldTexText(
             "Carl Friedrich Gauss"
         )
         gauss_name.add_background_rectangle()
         gauss_name.next_to(ORIGIN, UP, MED_LARGE_BUFF)
         gauss_name.to_edge(LEFT)
 
-        gaussian_integers = TexText("``Gaussian integers'': ")
+        gaussian_integers = OldTexText("``Gaussian integers'': ")
         gaussian_integers.scale(0.9)
         gaussian_integers.next_to(self.a_plus_bi, LEFT)
         gaussian_integers.add_background_rectangle()
@@ -1803,7 +1803,7 @@ class NameGaussianIntegers(LatticePointScene):
             x, y = self.dot_to_int_coords(dot)
             x_str = str(x)
             y_str = str(y) if y >= 0 else "(%d)"%y
-            label = Tex(x_str, "+", y_str, "i")
+            label = OldTex(x_str, "+", y_str, "i")
             label.scale(0.8)
             label.next_to(
                 dot, 
@@ -1813,7 +1813,7 @@ class NameGaussianIntegers(LatticePointScene):
             label.add_background_rectangle()
             dot.label = label
 
-            equation = Tex(
+            equation = OldTex(
                 "25 = "
                 "(", x_str, "+", y_str, "i", ")",
                 "(", x_str, "-", y_str, "i", ")",
@@ -1868,7 +1868,7 @@ class NameGaussianIntegers(LatticePointScene):
 
 class FactorOrdinaryNumber(TeacherStudentsScene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "2{,}250", "=", "2 \\cdot 3^2 \\cdot 5^3"
         )
         equation.next_to(self.get_pi_creatures(), UP, LARGE_BUFF)
@@ -1888,7 +1888,7 @@ class FactorOrdinaryNumber(TeacherStudentsScene):
             alt_rhs.move_to(equation.get_right())
         number.save_state()
         number.next_to(self.teacher, UP+LEFT)
-        title = TexText("Almost", "Unique factorization")
+        title = OldTexText("Almost", "Unique factorization")
         title.set_color_by_tex("Almost", YELLOW)
         title.to_edge(UP)
 
@@ -1975,7 +1975,7 @@ class IntroduceGaussianPrimes(LatticePointScene, PiCreatureScene):
         VGroup(p2_dot, p4_dot, p6_dot).set_color(RED)
 
         labels = [
-            Tex(tex).add_background_rectangle()
+            OldTex(tex).add_background_rectangle()
             for tex in ("5", "2+i", "2-i", "-1+2i", "-1-2i", "-2-i", "-2+i")
         ]
         five_label, p1_label, p2_label, p3_label, p4_label, p5_label, p6_label = labels
@@ -1997,13 +1997,13 @@ class IntroduceGaussianPrimes(LatticePointScene, PiCreatureScene):
             p2_dot.get_bottom(), p4_dot.get_bottom(), 
             path_arc = -arc_angle
         )
-        times_i = Tex("\\times i")
+        times_i = OldTex("\\times i")
         times_i.add_background_rectangle()
         times_i.next_to(
             times_i_arc.point_from_proportion(0.5),
             UP
         )
-        times_neg_i = Tex("\\times (-i)")
+        times_neg_i = OldTex("\\times (-i)")
         times_neg_i.add_background_rectangle()
         times_neg_i.next_to(
             times_neg_i_arc.point_from_proportion(0.5),
@@ -2013,19 +2013,19 @@ class IntroduceGaussianPrimes(LatticePointScene, PiCreatureScene):
             times_i, times_neg_i, times_i_arc, times_neg_i_arc
         ).set_color(MAROON_B)
 
-        gaussian_prime = TexText("$\\Rightarrow$ ``Gaussian prime''")
+        gaussian_prime = OldTexText("$\\Rightarrow$ ``Gaussian prime''")
         gaussian_prime.add_background_rectangle()
         gaussian_prime.scale(0.9)
         gaussian_prime.next_to(p1_label, RIGHT)
 
-        factorization = Tex(
+        factorization = OldTex(
             "5", "= (2+i)(2-i)"
         )
         factorization.to_corner(UP+RIGHT)
         factorization.shift(1.5*LEFT)
         factorization.add_background_rectangle()
-        neg_alt_factorization = Tex("=(-2-i)(-2+i)")
-        i_alt_factorization = Tex("=(-1+2i)(-1-2i)")
+        neg_alt_factorization = OldTex("=(-2-i)(-2+i)")
+        i_alt_factorization = OldTex("=(-1+2i)(-1-2i)")
         for alt_factorization in neg_alt_factorization, i_alt_factorization:
             alt_factorization.next_to(
                 factorization.get_part_by_tex("="), DOWN,
@@ -2123,7 +2123,7 @@ class IntroduceGaussianPrimes(LatticePointScene, PiCreatureScene):
 
 class FromIntegerFactorsToGaussianFactors(TeacherStudentsScene):
     def construct(self):
-        expression = Tex(
+        expression = OldTex(
             "30", "=", "2", "\\cdot", "3", "\\cdot", "5"
         )
         expression.shift(2*UP)
@@ -2131,8 +2131,8 @@ class FromIntegerFactorsToGaussianFactors(TeacherStudentsScene):
         five = expression.get_part_by_tex("5")
         two.set_color(BLUE)
         five.set_color(GREEN)
-        two.factors = Tex("(1+i)", "(1-i)")
-        five.factors = Tex("(2+i)", "(2-i)")
+        two.factors = OldTex("(1+i)", "(1-i)")
+        five.factors = OldTex("(2+i)", "(2-i)")
         for mob, vect in (two, DOWN), (five, UP):
             mob.factors.next_to(mob, vect, LARGE_BUFF)
             mob.factors.set_color(mob.get_color())
@@ -2214,7 +2214,7 @@ class FactorizationPattern(Scene):
             arrows.add(arrow)
 
         factorizations = VGroup(*[
-            Tex("=(%d+%si)(%d-%si)"%(x, y_str, x, y_str))
+            OldTex("=(%d+%si)(%d-%si)"%(x, y_str, x, y_str))
             for x, y in [(2, 1), (3, 2), (4, 1), (5, 2)]
             for y_str in [str(y) if y is not 1 else ""]
         ])
@@ -2227,7 +2227,7 @@ class FactorizationPattern(Scene):
             mover.generate_target()
             mover.target.next_to(factorization, LEFT)
             movers.add(mover)
-        v_dots = Tex("\\vdots")
+        v_dots = OldTex("\\vdots")
         v_dots.next_to(factorizations[-1][0], DOWN)
         factorization.add(v_dots)
 
@@ -2269,7 +2269,7 @@ class FactorizationPattern(Scene):
             arrow.set_color(dot.get_color())
             arrows.add(arrow)
 
-        words = TexText("Already Gaussian primes")
+        words = OldTexText("Already Gaussian primes")
         words.to_corner(UP+LEFT)
         word_arrows = VGroup(*[
             Line(
@@ -2299,7 +2299,7 @@ class FactorizationPattern(Scene):
         randy.to_edge(LEFT)
         randy.shift(0.8*UP)
 
-        links_text = TexText("(See links in description)")
+        links_text = OldTexText("(See links in description)")
         links_text.scale(0.7)
         links_text.to_corner(UP+RIGHT)
         links_text.shift(DOWN)
@@ -2323,7 +2323,7 @@ class FactorizationPattern(Scene):
 
     def show_two(self):
         two_dot = Dot(self.number_line.number_to_point(2))
-        two = Tex("2")
+        two = OldTex("2")
         two.next_to(two_dot, UP, LARGE_BUFF)
         arrow = Arrow(two, two_dot, buff = SMALL_BUFF)
         VGroup(two_dot, two, arrow).set_color(YELLOW)
@@ -2331,7 +2331,7 @@ class FactorizationPattern(Scene):
         mover = two.copy()
         mover.generate_target()
         mover.target.to_corner(UP+LEFT)
-        factorization = Tex("=", "(1+i)", "(1-i)")
+        factorization = OldTex("=", "(1+i)", "(1-i)")
         factorization.next_to(mover.target, RIGHT)
         factors = VGroup(*factorization[1:])
 
@@ -2340,11 +2340,11 @@ class FactorizationPattern(Scene):
             factors[0].get_bottom(),
             path_arc = -np.pi
         )
-        times_i = Tex("\\times i")
+        times_i = OldTex("\\times i")
         # times_i.scale(1.5)
         times_i.next_to(time_i_arrow, DOWN)
         times_i.set_color(time_i_arrow.get_color())
-        words = TexText("You'll see why this matters...")
+        words = OldTexText("You'll see why this matters...")
         words.next_to(times_i, DOWN)
         words.shift_onto_screen()
 
@@ -2392,11 +2392,11 @@ class FactorTwo(LatticePointScene):
             Dot(self.plane.coords_to_point(1, u))
             for u in (1, -1)
         ])
-        two_label = Tex("2").next_to(two_dot, DOWN)
+        two_label = OldTex("2").next_to(two_dot, DOWN)
         two_label.set_color(YELLOW)
         two_label.add_background_rectangle()
         factor_labels = VGroup(*[
-            Tex(tex).add_background_rectangle().next_to(dot, vect)
+            OldTex(tex).add_background_rectangle().next_to(dot, vect)
             for tex, dot, vect in zip(
                 ["1+i", "1-i"], factor_dots, [UP, DOWN]
             )
@@ -2462,7 +2462,7 @@ class IntroduceRecipe(Scene):
         self.swap_factors()
 
     def add_title(self):
-        title = Tex(
+        title = OldTex(
             "\\text{Recipe for }",
             "a", "+", "b", "i",
             "\\text{ satisfying }",
@@ -2489,7 +2489,7 @@ class IntroduceRecipe(Scene):
 
         factors = self.integer_factors
         symbols = ["="] + ["\\cdot"]*(len(factors)-1)
-        factorization = Tex(*it.chain(*list(zip(
+        factorization = OldTex(*it.chain(*list(zip(
             symbols, list(map(str, factors))
         ))))
         factorization.next_to(N_mob.target, RIGHT)
@@ -2507,7 +2507,7 @@ class IntroduceRecipe(Scene):
 
     def subfactor_ordinary_factorization(self):
         factors = self.gaussian_factors
-        factorization = Tex(
+        factorization = OldTex(
             "=", *list(map(self.complex_number_to_tex, factors))
         )
         max_width = FRAME_WIDTH - 2
@@ -2582,7 +2582,7 @@ class IntroduceRecipe(Scene):
                 tip_length = SMALL_BUFF,
                 color = GREEN
             )
-            word = TexText("Conjugates")
+            word = OldTexText("Conjugates")
             word.scale(0.75)
             word.add_background_rectangle()
             word.next_to(arrow, DOWN, SMALL_BUFF)
@@ -2613,7 +2613,7 @@ class IntroduceRecipe(Scene):
 
     def mark_left_product_as_result(self):
         rect = self.get_result_surrounding_rect()
-        words = TexText("Output", " of recipe")
+        words = OldTexText("Output", " of recipe")
         words.next_to(rect, DOWN, buff = MED_LARGE_BUFF)
         words.to_edge(LEFT)
         arrow = Arrow(words.get_top(), rect.get_left())
@@ -2673,7 +2673,7 @@ class IntroduceRecipe(Scene):
         for factors in self.left_factors, self.right_factors:
             line = Line(ORIGIN, 3*RIGHT)
             line.next_to(factors, DOWN, SMALL_BUFF)
-            times = Tex("\\times")
+            times = OldTex("\\times")
             times.next_to(line.get_left(), UP+RIGHT, SMALL_BUFF)
             line.add(times)
             lines.add(line)
@@ -2692,7 +2692,7 @@ class IntroduceRecipe(Scene):
                 factor.get_color()
                 for factor in factors
             ])
-            product_mob = Tex(
+            product_mob = OldTex(
                 self.complex_number_to_tex(product)
             )
             product_mob.set_color(color)
@@ -2736,7 +2736,7 @@ class IntroduceRecipe(Scene):
 
     def write_last_step(self):
         output_words, arrow = self.output_label_group
-        final_step = TexText(
+        final_step = OldTexText(
             "Multiply by $1$, $i$, $-1$ or $-i$"
         )
         final_step.scale(0.9)
@@ -2797,7 +2797,7 @@ class ThreeOutputsAsLatticePoints(LatticePointScene):
             else:
                 y_str = "%di"%y
                 vect = DOWN+RIGHT
-            label = Tex("%d%s"%(x, y_str))
+            label = OldTex("%d%s"%(x, y_str))
             label.add_background_rectangle()
             point = self.plane.coords_to_point(x, y)
             label.next_to(point, vect)
@@ -2858,7 +2858,7 @@ class WriteAlternateLastStep(IntroduceRecipe):
 
     def cross_out_output_words(self):
         output_words, arrow = self.output_label_group
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.replace(output_words, stretch = True)
         cross.set_color(RED)
         
@@ -2884,7 +2884,7 @@ class ThreeOutputsAsLatticePointsContinued(ThreeOutputsAsLatticePoints):
             lines.add(line)
             dot.add(line)
         words_group = VGroup(*[
-            TexText("Multiply by $%s$"%s)
+            OldTexText("Multiply by $%s$"%s)
             for s in ("1", "i", "-1", "-i")
         ])
         for words, color in zip(words_group, self.colors):
@@ -3075,7 +3075,7 @@ class RecipeFor1125(IntroduceRecipe):
         self.write_last_step()
 
     def write_last_step(self):
-        words = TexText(
+        words = OldTexText(
             "Multiply by \\\\ ", 
             "$1$, $i$, $-1$ or $-i$"
         )
@@ -3142,7 +3142,7 @@ class SummarizeCountingRule(Show125Circle):
         self.ask_about_two()
 
     def add_count_words(self):
-        words = TexText(
+        words = OldTexText(
             "\\# Lattice points \\\\ on $\\sqrt{%s}$ circle"%self.N_str
         )
         words.to_corner(UP+LEFT)
@@ -3154,7 +3154,7 @@ class SummarizeCountingRule(Show125Circle):
         radius = np.sqrt(self.radius_squared)
         circle = self.get_circle(radius)
         radial_line, num_root_label = self.get_radial_line_with_label(radius)
-        root_label = Tex("\\sqrt{%s}"%self.N_str)
+        root_label = OldTex("\\sqrt{%s}"%self.N_str)
         root_label.next_to(radial_line, UP, SMALL_BUFF)
         dots = VGroup(*[
             Dot(
@@ -3198,7 +3198,7 @@ class SummarizeCountingRule(Show125Circle):
         )
 
     def talk_through_rules(self):
-        factorization = Tex(
+        factorization = OldTex(
             "N =", 
             "3", "^4", "\\cdot",
             "5", "^3", "\\cdot",
@@ -3232,7 +3232,7 @@ class SummarizeCountingRule(Show125Circle):
             choices.scale(0.75, about_point = choices.get_top())
         thirteen_choices.next_to(five_choices, RIGHT)
         three_choices.next_to(five_choices, LEFT)
-        alt_three_choices = Tex("(", "0", ")")
+        alt_three_choices = OldTex("(", "0", ")")
         alt_three_choices.scale(0.75)
         alt_three_choices.move_to(three_choices, RIGHT)
 
@@ -3284,10 +3284,10 @@ class SummarizeCountingRule(Show125Circle):
         )
         self.wait()
 
-        equals_four = Tex("=", "4")
+        equals_four = OldTex("=", "4")
         four = equals_four.get_part_by_tex("4")
         four.set_color(YELLOW)
-        final_choice_words = TexText(
+        final_choice_words = OldTexText(
             "Mutiply", "by $1$, $i$, $-1$ or $-i$"
         )
         final_choice_words.set_color(YELLOW)
@@ -3360,7 +3360,7 @@ class RecipeFor10(IntroduceRecipe):
         left = self.left_factors[0]
         right = self.right_factors[0]
         arrow = Arrow(right, left, buff = SMALL_BUFF)
-        times_i = Tex("\\times i")
+        times_i = OldTex("\\times i")
         times_i.next_to(arrow, DOWN, 0)
         times_i.add_background_rectangle()
         curr_product = self.product_mobjects[0].copy()
@@ -3387,7 +3387,7 @@ class RecipeFor10(IntroduceRecipe):
 
 class FactorsOfTwoNeitherHelpNorHurt(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Factors of", "$2^k$", "neither \\\\ help nor hurt"
         )
         words.set_color_by_tex("2", YELLOW)
@@ -3458,7 +3458,7 @@ class IntroduceChi(FactorizationPattern):
 
 
     def add_define_chi_label(self):
-        label = TexText("Define $\\chi(n)$:")
+        label = OldTexText("Define $\\chi(n)$:")
         chi_expressions = VGroup(*[
             self.get_chi_expression(numbers, color)
             for numbers, color in zip(
@@ -3514,7 +3514,7 @@ class IntroduceChi(FactorizationPattern):
     def cyclic_pattern(self):
         input_range = list(range(1, 9))
         chis = VGroup(*[
-            Tex("\\chi(%d)"%n)
+            OldTex("\\chi(%d)"%n)
             for n in input_range
         ])
         chis.arrange(RIGHT, buff = LARGE_BUFF)
@@ -3522,10 +3522,10 @@ class IntroduceChi(FactorizationPattern):
         numbers = VGroup()
         arrows = VGroup()
         for chi, n in zip(chis, input_range):
-            arrow = Tex("\\Uparrow")
+            arrow = OldTex("\\Uparrow")
             arrow.next_to(chi, UP, SMALL_BUFF)
             arrows.add(arrow)
-            value = Tex(str(chi_func(n)))
+            value = OldTex(str(chi_func(n)))
             for tex, color in zip(["1", "-1", "0"], self.colors):
                 value.set_color_by_tex(tex, color)
             value.next_to(arrow, UP)
@@ -3571,7 +3571,7 @@ class IntroduceChi(FactorizationPattern):
         pairs = [(3, 5), (5, 5), (2, 13), (3, 11)]
         expressions = VGroup()
         for x, y in pairs:
-            expression = Tex(
+            expression = OldTex(
                 "\\chi(%d)"%x,
                 "\\cdot",
                 "\\chi(%d)"%y,
@@ -3615,7 +3615,7 @@ class IntroduceChi(FactorizationPattern):
         for number in numbers:
             point = self.number_line.number_to_point(number)
             dot = Dot(point)
-            label = Tex(str(number))
+            label = OldTex(str(number))
             label.scale(0.8)
             label.next_to(dot, UP, LARGE_BUFF)
             arrow = Arrow(label, dot, buff = SMALL_BUFF)
@@ -3650,7 +3650,7 @@ class IntroduceChi(FactorizationPattern):
     def get_chi_expression(self, numbers, color, num_terms = 4):
         truncated_numbers = numbers[:num_terms]
         output = str(chi_func(numbers[0]))
-        result = Tex(*it.chain(*[
+        result = OldTex(*it.chain(*[
             ["\\chi(", str(n), ")", "="]
             for n in truncated_numbers
         ] + [
@@ -3688,7 +3688,7 @@ class WriteCountingRuleWithChi(SummarizeCountingRule):
         self.circle_four()
 
     def add_factorization_and_rule(self):
-        factorization = Tex(
+        factorization = OldTex(
             "N", "=", 
             "2", "^2", "\\cdot",
             "3", "^4", "\\cdot",
@@ -3700,10 +3700,10 @@ class WriteCountingRuleWithChi(SummarizeCountingRule):
         factorization.shift(LEFT)
 
         count = VGroup(
-            Tex("=", "4"),
-            Tex("(", "1", ")"),
-            Tex("(", "1", ")"),
-            Tex("(", "3+1", ")"),
+            OldTex("=", "4"),
+            OldTex("(", "1", ")"),
+            OldTex("(", "1", ")"),
+            OldTex("(", "3+1", ")"),
         )
         count.arrange(RIGHT, buff = SMALL_BUFF)
         for i, color in zip([3, 2, 1], self.colors):
@@ -3734,14 +3734,14 @@ class WriteCountingRuleWithChi(SummarizeCountingRule):
         self.count = count
 
     def write_chi_expression(self):
-        equals_four = Tex("=", "4")
+        equals_four = OldTex("=", "4")
         expression = VGroup(equals_four)
         for n, k, color in zip([2, 3, 5], [2, 4, 3], reversed(self.colors)):
             args = ["(", "\\chi(", "1", ")", "+"]
             for i in range(1, k+1):
                 args += ["\\chi(", str(n), "^%d"%i, ")", "+"]
             args[-1] = ")"
-            factor = Tex(*args)
+            factor = OldTex(*args)
             factor.set_color_by_tex(str(n), color, substring = False)
             factor.set_color_by_tex("1", color, substring = False)
             factor.scale(0.8)
@@ -3809,10 +3809,10 @@ class WriteCountingRuleWithChi(SummarizeCountingRule):
             self.play(Indicate(count, color = PINK))
             self.wait()
             if base.get_tex() is "3":
-                new_exp = Tex("3")
+                new_exp = OldTex("3")
                 new_exp.replace(exp)
                 count_num = count[1]
-                new_count = Tex("0")
+                new_count = OldTex("0")
                 new_count.replace(count_num, dim_to_match = 1)
                 new_count.set_color(count_num.get_color())
                 evaluation_point = VectorizedPoint(evaluation[-4].get_right())
@@ -3882,7 +3882,7 @@ class ExpandCountWith45(SummarizeCountingRule):
 
 
     def add_factorization_and_count(self):
-        factorization = Tex(
+        factorization = OldTex(
             "45", "=", "3", "^2", "\\cdot", "5",
         )
         for tex, color in zip(["5", "3",], [GREEN, RED]):
@@ -3890,7 +3890,7 @@ class ExpandCountWith45(SummarizeCountingRule):
         factorization.to_edge(UP)
         factorization.shift(1.7*LEFT)
 
-        equals_four = Tex("=", "4")
+        equals_four = OldTex("=", "4")
         expression = VGroup(equals_four)
         for n, k, color in zip([3, 5], [2, 1], [RED, GREEN]):
             args = ["("]
@@ -3904,7 +3904,7 @@ class ExpandCountWith45(SummarizeCountingRule):
                     input_str = "%d^%d"%(n, i)
                 args += ["\\chi(%s)"%input_str, "+"]
             args[-1] = ")"
-            factor = Tex(*args)
+            factor = OldTex(*args)
             for part in factor[1::2]:
                 part[2].set_color(color)
             factor.scale(0.8)
@@ -3970,7 +3970,7 @@ class ExpandCountWith45(SummarizeCountingRule):
                 prime_pair.add(mover.target[2])
             prime_pairs.add(prime_pair)
             if index != sorted_indices[-1]:
-                plus = Tex("+")
+                plus = OldTex("+")
                 plusses.add(plus)
                 expansion.add(plus)
         expansion.add(rp)
@@ -4018,14 +4018,14 @@ class ExpandCountWith45(SummarizeCountingRule):
         product_mobs = VGroup()
         chi_mobs = VGroup()
         for product in products:
-            chi_mob = Tex("\\chi(", str(product), ")")
+            chi_mob = OldTex("\\chi(", str(product), ")")
             product_mob = chi_mob.get_part_by_tex(str(product))
             product_mob.set_color(color)
             product_mobs.add(product_mob)
             divisor_sum.add(chi_mob)
             chi_mobs.add(chi_mob)
             if product != products[-1]:
-                divisor_sum.add(Tex("+"))
+                divisor_sum.add(OldTex("+"))
         divisor_sum.add(rp)
         divisor_sum.arrange(RIGHT, buff = SMALL_BUFF)
         divisor_sum.next_to(self.expansion, DOWN, MED_LARGE_BUFF)
@@ -4089,10 +4089,10 @@ class CountLatticePointsInBigCircle(LatticePointScene):
         circle = self.get_circle(radius = self.max_lattice_point_radius)
         radius = Line(ORIGIN, circle.get_right())
         radius.set_color(RED)
-        R = Tex("R").next_to(radius, UP)
+        R = OldTex("R").next_to(radius, UP)
         R_rect = BackgroundRectangle(R)
         R_group = VGroup(R_rect, R)
-        pi_R_squared = Tex("\\pi", "R", "^2")
+        pi_R_squared = OldTex("\\pi", "R", "^2")
         pi_R_squared.next_to(ORIGIN, UP)
         pi_R_squared.to_edge(RIGHT)
         pi_R_squared_rect = BackgroundRectangle(pi_R_squared)
@@ -4212,12 +4212,12 @@ class CountLatticePointsInBigCircle(LatticePointScene):
     @staticmethod
     def get_radicals():
         radicals = VGroup(*[
-            Tex("\\sqrt{%d}"%N)
+            OldTex("\\sqrt{%d}"%N)
             for N in range(1, 13)
         ])
         radicals.add(
-            Tex("\\vdots"),
-            Tex("\\sqrt{R^2}")
+            OldTex("\\vdots"),
+            OldTex("\\sqrt{R^2}")
         )
         radicals.arrange(DOWN, buff = MED_SMALL_BUFF)
         radicals.set_height(FRAME_HEIGHT - MED_LARGE_BUFF)
@@ -4285,13 +4285,13 @@ class AddUpGrid(Scene):
             for d in range(1, N+1):
                 if N%d != 0:
                     continue
-                chi_mob = Tex("\\chi(", str(d), ")")
+                chi_mob = OldTex("\\chi(", str(d), ")")
                 chi_mob[1].set_color(YELLOW)
                 chi_mob.d = d
                 chi_mobs.add(chi_mob)
                 chi_sum.add(chi_mob)
                 if d != N:
-                    plus = Tex("+")
+                    plus = OldTex("+")
                     plus.chi_mob = chi_mob
                     plusses.add(plus)
                     chi_sum.add(plus)
@@ -4315,7 +4315,7 @@ class AddUpGrid(Scene):
         ])
 
     def put_four_in_corner(self):
-        corner_four = Tex("4")
+        corner_four = OldTex("4")
         corner_four.to_corner(DOWN+RIGHT, buff = MED_SMALL_BUFF)
         rect = SurroundingRectangle(corner_four, color = BLUE)
         corner_four.rect = rect
@@ -4402,10 +4402,10 @@ class AddUpGrid(Scene):
         )
         rect.move_to(3*LEFT, LEFT)
         rect.to_edge(UP, buff = SMALL_BUFF)
-        words = TexText("Total")
+        words = OldTexText("Total")
         words.scale(0.8)
         words.next_to(rect.get_left(), RIGHT, SMALL_BUFF)
-        approx = Tex("\\approx")
+        approx = OldTex("\\approx")
         approx.scale(0.7)
         approx.next_to(words, RIGHT, SMALL_BUFF)
         words.add(approx)
@@ -4427,9 +4427,9 @@ class AddUpGrid(Scene):
             if d != 1:
                 R_args.append("\\over %d}"%d)
             term = VGroup(
-                Tex(*R_args),
-                Tex("\\chi(", str(d), ")"),
-                Tex("+")
+                OldTex(*R_args),
+                OldTex("\\chi(", str(d), ")"),
+                OldTex("+")
             )
             term.arrange(RIGHT, SMALL_BUFF)
             term[1][1].set_color(YELLOW)
@@ -4477,8 +4477,8 @@ class AddUpGrid(Scene):
 
     def factor_out_R(self):
         self.corner_four.generate_target()
-        R_squared = Tex("R^2")
-        dots = Tex("\\cdots")
+        R_squared = OldTex("R^2")
+        dots = OldTex("\\cdots")
         lp, rp = list(map(Tex, ["\\big(", "\\big)"]))
         new_sum = VGroup(
             self.corner_four.target, R_squared, lp
@@ -4532,7 +4532,7 @@ class AddUpGrid(Scene):
         self.new_sum = new_sum
 
     def show_chi_sum_values(self):
-        alt_rhs = Tex(
+        alt_rhs = OldTex(
             "\\approx", "4", "R^2", 
             "\\left(1 - \\frac{1}{3} + \\frac{1}{5}" + \
             "-\\frac{1}{7} + \\frac{1}{9} - \\frac{1}{11}" + \
@@ -4561,7 +4561,7 @@ class AddUpGrid(Scene):
         self.alt_rhs = alt_rhs
 
     def compare_to_pi_R_squared(self):
-        approx, pi, R_squared = area_rhs = Tex(
+        approx, pi, R_squared = area_rhs = OldTex(
             "\\approx", "\\pi", "R^2"
         )
         area_rhs.next_to(self.alt_rhs, RIGHT)
@@ -4573,7 +4573,7 @@ class AddUpGrid(Scene):
             "Arbitrarily good as $R \\to \\infty$"
         ))
 
-        pi_sum = Tex(
+        pi_sum = OldTex(
             "4", self.alt_rhs[-1].get_tex(),
             "=", "\\pi"
         )
@@ -4623,7 +4623,7 @@ class IntersectionOfTwoFields(TeacherStudentsScene):
             circle.stretch_to_fit_width(7)
             circle.stretch_to_fit_height(4)
             circle.shift(FRAME_X_RADIUS*vect/3.0 + LEFT)
-            title = TexText("%s \\\\ number theory"%adj)
+            title = OldTexText("%s \\\\ number theory"%adj)
             title.scale(0.7)
             title.move_to(circle)
             title.to_edge(UP, buff = SMALL_BUFF)
@@ -4631,10 +4631,10 @@ class IntersectionOfTwoFields(TeacherStudentsScene):
             title.set_color(color)
             circle.title = title
             circles.add(circle)
-        new_number_systems = TexText(
+        new_number_systems = OldTexText(
             "New \\\\ number systems"
         )
-        gaussian_integers = TexText(
+        gaussian_integers = OldTexText(
             "e.g. Gaussian \\\\ integers"
         )
         new_number_systems.next_to(circles[0].get_top(), DOWN, MED_SMALL_BUFF)
@@ -4643,8 +4643,8 @@ class IntersectionOfTwoFields(TeacherStudentsScene):
         gaussian_integers.set_color(BLUE)
         circles[0].words = VGroup(new_number_systems, gaussian_integers)
 
-        zeta = Tex("\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}")
-        L_function = Tex(
+        zeta = OldTex("\\zeta(s) = \\sum_{n=1}^\\infty \\frac{1}{n^s}")
+        L_function = OldTex(
             "L(s, \\chi) = \\sum_{n=1}^\\infty \\frac{\\chi(n)}{n^s}"
         )
         for mob in zeta, L_function:
@@ -4655,7 +4655,7 @@ class IntersectionOfTwoFields(TeacherStudentsScene):
         L_function.set_color(YELLOW)
         circles[1].words = VGroup(zeta, L_function)
 
-        mid_words = TexText("Where\\\\ we \\\\ were")
+        mid_words = OldTexText("Where\\\\ we \\\\ were")
         mid_words.scale(0.7)
         mid_words.move_to(circles)
 
@@ -4748,7 +4748,7 @@ class Sponsorship(PiCreatureScene):
         VGroup(*logo[6:]).set_color_by_gradient(BLUE_B, BLUE_E)
         logo.next_to(morty.get_corner(UP+LEFT), UP)
 
-        url = TexText("www.remix.com")
+        url = OldTexText("www.remix.com")
         url.to_corner(UP+LEFT)
         rect = ScreenRectangle(height = 5)
         rect.next_to(url, DOWN, aligned_edge = LEFT)

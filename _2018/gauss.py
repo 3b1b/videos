@@ -15,7 +15,7 @@ class FractionMobject(VGroup):
         self.add(numerator)
         if fraction.denominator != 1:
             denominator = Integer(fraction.denominator)
-            line = Tex("/")
+            line = OldTex("/")
             numerator.next_to(line, LEFT, SMALL_BUFF)
             denominator.next_to(line, RIGHT, SMALL_BUFF)
             self.add(numerator, line, denominator)
@@ -24,7 +24,7 @@ class FractionMobject(VGroup):
 
     def add_plus_if_needed(self):
         if self.value > 0:
-            plus = Tex("+")
+            plus = OldTex("+")
             plus.next_to(self, LEFT, SMALL_BUFF)
             plus.match_color(self)
             self.add_to_back(plus)
@@ -114,12 +114,12 @@ class ShowRowReduction(Scene):
         new_row.set_color(self.changing_row_color)
 
         label = VGroup(
-            Tex("r_%d" % (row_index + 1)),
-            Tex("\\rightarrow"),
-            Tex("("),
+            OldTex("r_%d" % (row_index + 1)),
+            OldTex("\\rightarrow"),
+            OldTex("("),
             FractionMobject(scale_factor),
-            Tex(")"),
-            Tex("r_%d" % (row_index + 1)),
+            OldTex(")"),
+            OldTex("r_%d" % (row_index + 1)),
         )
         label.arrange(RIGHT, buff=SMALL_BUFF)
         label.to_edge(UP)
@@ -127,7 +127,7 @@ class ShowRowReduction(Scene):
 
         scalar_mob = FractionMobject(scale_factor)
         scalar_mob.add_to_back(
-            Tex("\\times").next_to(scalar_mob, LEFT, SMALL_BUFF)
+            OldTex("\\times").next_to(scalar_mob, LEFT, SMALL_BUFF)
         )
         scalar_mob.scale(0.5)
         scalar_mob.next_to(row[0], DR, SMALL_BUFF)
@@ -168,14 +168,14 @@ class ShowRowReduction(Scene):
             elem2.next_to(elem1, UL, buff=SMALL_BUFF)
 
         label = VGroup(
-            Tex("r_%d" % (row1_index + 1)),
-            Tex("\\rightarrow"),
-            Tex("r_%d" % (row1_index + 1)),
-            Tex("+"),
-            Tex("("),
+            OldTex("r_%d" % (row1_index + 1)),
+            OldTex("\\rightarrow"),
+            OldTex("r_%d" % (row1_index + 1)),
+            OldTex("+"),
+            OldTex("("),
             FractionMobject(scale_factor),
-            Tex(")"),
-            Tex("r_%d" % (row2_index + 1)),
+            OldTex(")"),
+            OldTex("r_%d" % (row2_index + 1)),
         )
         label.arrange(RIGHT, buff=SMALL_BUFF)
         label.to_edge(UP)
@@ -191,7 +191,7 @@ class ShowRowReduction(Scene):
         row1.target.align_to(row1, LEFT)
 
         row2.target.next_to(row1.target, DOWN, buff=MED_LARGE_BUFF)
-        lp, rp = row2_parens = Tex("()")
+        lp, rp = row2_parens = OldTex("()")
         row2_parens.set_height(row2.get_height() + 2 * SMALL_BUFF)
         lp.next_to(row2, LEFT, SMALL_BUFF)
         rp.next_to(row2, RIGHT, SMALL_BUFF)

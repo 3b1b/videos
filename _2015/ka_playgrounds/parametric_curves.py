@@ -36,7 +36,7 @@ class Test(Scene):
         def func(t):
             return 0.5*(t*np.cos(t)*RIGHT + t*np.sin(t)*UP)
 
-        words = TexText("Parametric functions")
+        words = OldTexText("Parametric functions")
         words.set_color(YELLOW)
         words.to_edge(UP+LEFT)
         self.add(words)

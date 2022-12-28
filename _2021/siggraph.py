@@ -38,11 +38,11 @@ class PendulumAxes(Scene):
                 "stroke_color": WHITE,
             }
         )
-        theta1 = Tex("\\theta_1").next_to(plane.c2p(2, 0), RIGHT, SMALL_BUFF)
-        theta2 = Tex("\\theta_2").next_to(plane.c2p(0, 2), DR, SMALL_BUFF)
+        theta1 = OldTex("\\theta_1").next_to(plane.c2p(2, 0), RIGHT, SMALL_BUFF)
+        theta2 = OldTex("\\theta_2").next_to(plane.c2p(0, 2), DR, SMALL_BUFF)
         labels = VGroup(theta1, theta2)
 
-        x_labels = VGroup(Tex("-\\pi"), Tex("-{\\pi \\over 2}"), Tex("{\\pi \\over 2}"), Tex("\\pi"))
+        x_labels = VGroup(OldTex("-\\pi"), OldTex("-{\\pi \\over 2}"), OldTex("{\\pi \\over 2}"), OldTex("\\pi"))
         y_labels = VGroup()
         for label, x in zip(x_labels, (-2, -1, 1, 2)):
             label.scale(0.5)
@@ -144,9 +144,9 @@ class InterpolatingOrientations(ThreeDScene):
             kw = {"num_decimal_places": 3, "include_sign": True}
             quat_label = VGroup(
                 VGroup(DecimalNumber(1, **kw)),
-                VGroup(DecimalNumber(0, **kw), Tex("i")),
-                VGroup(DecimalNumber(0, **kw), Tex("j")),
-                VGroup(DecimalNumber(0, **kw), Tex("k")),
+                VGroup(DecimalNumber(0, **kw), OldTex("i")),
+                VGroup(DecimalNumber(0, **kw), OldTex("j")),
+                VGroup(DecimalNumber(0, **kw), OldTex("k")),
             )
             for mob in quat_label:
                 mob.arrange(RIGHT, buff=SMALL_BUFF)
@@ -216,24 +216,24 @@ class FirstStepIsToCare(Scene):
     def construct(self):
         morty = Mortimer()
         morty.to_corner(DR)
-        self.play(PiCreatureSays(morty, TexText("The first step\\\\is to care.")))
+        self.play(PiCreatureSays(morty, OldTexText("The first step\\\\is to care.")))
 
 
 class NeverNeeded(Scene):
     def construct(self):
-        formula = Tex("\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}")
+        formula = OldTex("\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}")
         formula.set_height(2)
         formula.to_corner(UL)
         self.add(formula)
 
         morty = Mortimer()
         morty.to_corner(DR)
-        self.play(PiCreatureSays(morty, TexText("Who actually\\\\uses it!"), target_mode="angry"))
+        self.play(PiCreatureSays(morty, OldTexText("Who actually\\\\uses it!"), target_mode="angry"))
 
 
 class Thanks(Scene):
     def construct(self):
         morty = Mortimer()
         morty.to_corner(DR)
-        self.play(PiCreatureSays(morty, TexText("Thanks"), target_mode="gracious"))
+        self.play(PiCreatureSays(morty, OldTexText("Thanks"), target_mode="gracious"))
         morty.look_at(OUT)

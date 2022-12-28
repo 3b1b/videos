@@ -68,7 +68,7 @@ class RearrangeEquation(Scene):
         """
         num_start_terms = len(start_terms)
         all_mobs = np.array(
-            Tex(start_terms).split() + Tex(end_terms).split())
+            OldTex(start_terms).split() + OldTex(end_terms).split())
         all_terms = np.array(start_terms + end_terms)
         for term in set(all_terms):
             matches = all_terms == term
@@ -92,7 +92,7 @@ class FlipThroughSymbols(Animation):
         self.tex_list = tex_list
         self.start_center = start_center
         self.end_center = end_center
-        mobject = Tex(self.curr_tex).shift(start_center)
+        mobject = OldTex(self.curr_tex).shift(start_center)
         Animation.__init__(self, mobject, **kwargs)
 
     def interpolate_mobject(self, alpha):
@@ -100,7 +100,7 @@ class FlipThroughSymbols(Animation):
 
         if new_tex != self.curr_tex:
             self.curr_tex = new_tex
-            self.mobject = Tex(new_tex).shift(self.start_center)
+            self.mobject = OldTex(new_tex).shift(self.start_center)
         if not all(self.start_center == self.end_center):
             self.mobject.center().shift(
                 (1 - alpha) * self.start_center + alpha * self.end_center

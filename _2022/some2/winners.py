@@ -316,7 +316,7 @@ class YTStatement(InteractiveScene):
         # Start
         words = VGroup(
             Text("Shared viewer base"),
-            Tex("\\Downarrow", font_size=96).set_stroke(WHITE, 0),
+            OldTex("\\Downarrow", font_size=96).set_stroke(WHITE, 0),
             Text("""
                 YT is more likely to
                 recommend one video
@@ -478,7 +478,7 @@ class ValueInSharedGoals(TeacherStudentsScene):
             Text("summbit.com/blog/bezier-curve-guide"),
             Text("lukelavalva.com/theoryofsliding"),
             Text("chessengines.org"),
-            Tex("\\vdots")
+            OldTex("\\vdots")
         )
         links.arrange(DOWN, aligned_edge=LEFT)
         links[-1].match_x(links[-2])
@@ -1057,7 +1057,7 @@ class WhoCares(TeacherStudentsScene):
         morty = self.teacher
         stds = self.students
 
-        equation = Tex("\\sum_{n=1}^N n^2 = \\frac{N(N + 1)(2N + 1)}{6}")
+        equation = OldTex("\\sum_{n=1}^N n^2 = \\frac{N(N + 1)(2N + 1)}{6}")
         equation.set_stroke(WHITE, 1)
         equation.move_to(self.hold_up_spot, DOWN).shift(UL)
 
@@ -1137,7 +1137,7 @@ class Overphilosophizing(TeacherStudentsScene):
         self.play(*right_shift(-1))
 
         # Examples beat philosophy
-        exs = TexText("Examples", " > Sweeping statements", font_size=36)
+        exs = OldTexText("Examples", " > Sweeping statements", font_size=36)
         exs.to_edge(UP)
         exs.align_to(rects, LEFT)
         arrow = Arrow(exs[0].get_bottom(), rects[0].get_top(), buff=0.1)

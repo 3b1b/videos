@@ -160,7 +160,7 @@ class CombineWavesToImage_SlowFPS(FourierCirclesScene):
         ))
         all_axes.arrange(DOWN, buff=1.0)
 
-        dots = Tex("\\vdots", font_size=100)
+        dots = OldTex("\\vdots", font_size=100)
         dots.next_to(all_axes, DOWN, buff=0.5)
         dots.match_x(all_axes[0].get_origin())
         dots.set_fill(WHITE)
@@ -309,7 +309,7 @@ class CombineWavesToImage_SlowFPS(FourierCirclesScene):
             rate_func=lambda a: a**2,
         ))
 
-        inf = Tex("\\infty")
+        inf = OldTex("\\infty")
         inf.match_height(label[0])
         inf.move_to(label[0], RIGHT)
         inf.set_fill(WHITE)
@@ -396,12 +396,12 @@ class CombineWavesToImage_SlowFPS(FourierCirclesScene):
         font_size = max(180 / n_terms, 5)
         terms = VGroup()
         for k in ks:
-            terms.add(MTex("c_{k} e^{k \\cdot 2 \\pi i \\cdot t} +".replace("k", str(k))))
+            terms.add(Tex("c_{k} e^{k \\cdot 2 \\pi i \\cdot t} +".replace("k", str(k))))
         if n_terms <= max_terms:
             terms[-1][-1].set_opacity(0)
         else:
-            terms.add_to_back(MTex("\\cdots + "))
-            terms.add(MTex("\\cdots"))
+            terms.add_to_back(Tex("\\cdots + "))
+            terms.add(Tex("\\cdots"))
 
         terms.arrange(RIGHT, SMALL_BUFF)
         terms.scale(font_size / 48)

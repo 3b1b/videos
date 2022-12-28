@@ -36,7 +36,7 @@ class PreviousTwoVideos(BlocksAndWallExample):
             ))
             video.replace(block)
 
-            title = TexText("Part {}".format(n))
+            title = OldTexText("Part {}".format(n))
             title.scale(1.5)
             title.next_to(video, UP, MED_SMALL_BUFF)
             video.add(title)

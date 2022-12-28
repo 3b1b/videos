@@ -51,10 +51,10 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         for n, bar in zip(it.count(2), conv_bars):
             sum_sym = VGroup(
                 top_bars[0].die.copy().scale(0.7),
-                Tex("+", font_size=16),
+                OldTex("+", font_size=16),
                 low_bars[0].die.copy().scale(0.7),
-                Tex("=", font_size=24).rotate(PI / 2),
-                Tex(str(n), font_size=24),
+                OldTex("=", font_size=24).rotate(PI / 2),
+                OldTex(str(n), font_size=24),
             )
             sum_sym[0].remove(sum_sym[0][1])
             sum_sym[2].remove(sum_sym[2][1])
@@ -66,9 +66,9 @@ class ConvolveDiscreteDistributions(InteractiveScene):
 
         # Dist labels
         plabel_kw = dict(tex_to_color_map={"X": BLUE, "Y": RED})
-        PX = MTex("P_X", **plabel_kw)
-        PY = MTex("P_Y", **plabel_kw)
-        PXY = MTex("P_{X + Y}", **plabel_kw)
+        PX = Tex("P_X", **plabel_kw)
+        PY = Tex("P_Y", **plabel_kw)
+        PXY = Tex("P_{X + Y}", **plabel_kw)
 
         PX.next_to(top_bars.get_corner(UR), DR)
         PY.next_to(low_bars.get_corner(UR), DR)
@@ -137,11 +137,11 @@ class ConvolveDiscreteDistributions(InteractiveScene):
             fade_anims = []
             if self.long_form:
                 # Spell out the full dot product
-                products = MTex(R"P(O) \cdot P(O)", isolate="O", font_size=36).replicate(len(pairs))
+                products = Tex(R"P(O) \cdot P(O)", isolate="O", font_size=36).replicate(len(pairs))
                 products.arrange(DOWN, buff=MED_LARGE_BUFF)
                 products.next_to(conv_bars, LEFT, MED_LARGE_BUFF)
                 products.to_edge(UP, buff=LARGE_BUFF)
-                plusses = Tex("+", font_size=36).replicate(len(pairs) - 1)
+                plusses = OldTex("+", font_size=36).replicate(len(pairs) - 1)
                 for plus, lp1, lp2 in zip(plusses, products, products[1:]):
                     plus.move_to(VGroup(lp1, lp2))
 
@@ -201,7 +201,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         arrow = Arrow(func_label, PX.get_top(), buff=0.2)
         VGroup(func_label, arrow).set_color(YELLOW)
         x_args = VGroup(*(
-            MTex(
+            Tex(
                 f"({x}) = {np.round(dist1[x - 1], 2)}"
             ).next_to(PX, RIGHT, SMALL_BUFF)
             for x in range(1, 7)
@@ -252,7 +252,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         )))
 
         # State definition again
-        conv_def = MTex(
+        conv_def = Tex(
             R"\big[P_X * P_Y\big](s) = \sum_{x = 1}^6 P_X(x) \cdot P_Y(s - x)",
             font_size=36,
             **plabel_kw,
@@ -262,7 +262,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         PXY.generate_target()
         lhs = conv_def[:10]
         PXY.target.next_to(lhs, UP, LARGE_BUFF).shift_onto_screen(buff=SMALL_BUFF)
-        eq = Tex("=").rotate(90 * DEGREES)
+        eq = OldTex("=").rotate(90 * DEGREES)
         eq.move_to(midpoint(PXY.target.get_bottom(), lhs.get_top()))
 
         self.play(LaggedStart(
@@ -560,7 +560,7 @@ class Convolutions(InteractiveScene):
         self.conv_graph_dot = graph_dot
         self.conv_graph_line = graph_line
 
-        conv_label = self.conv_label = MTex(self.conv_label_tex, **self.label_config)
+        conv_label = self.conv_label = Tex(self.conv_label_tex, **self.label_config)
         conv_label.next_to(conv_axes, UP)
 
         self.add(conv_graph)
@@ -577,7 +577,7 @@ class Convolutions(InteractiveScene):
         all_axes.to_edge(DOWN, buff=0.1)
 
         for i, axes in enumerate(all_axes):
-            x_label = Tex("x" if i < 3 else "s", font_size=24)
+            x_label = OldTex("x" if i < 3 else "s", font_size=24)
             x_label.next_to(axes.x_axis.get_right(), UP, MED_SMALL_BUFF)
             axes.x_label = x_label
             axes.x_axis.add(x_label)
@@ -587,7 +587,7 @@ class Convolutions(InteractiveScene):
         return all_axes
 
     def get_label(self, tex, axes):
-        label = MTex(tex, **self.label_config)
+        label = Tex(tex, **self.label_config)
         label.move_to(midpoint(axes.get_origin(), axes.get_right()))
         label.match_y(axes.get_top())
         return label
@@ -633,20 +633,20 @@ class ProbConvolutions(Convolutions):
         f_axes.x_axis.add_numbers(font_size=16, buff=0.1)
         self.add(f_axes)
 
-        y_label = MTex("y").replace(g_axes.x_label)
+        y_label = Tex("y").replace(g_axes.x_label)
         g_label.shift(0.2 * UP)
-        gy_label = MTex("p_Y(y)", **self.label_config).replace(g_label, dim_to_match=1)
-        gmx_label = MTex("p_Y(-x)", **self.label_config).replace(g_label, dim_to_match=1)
+        gy_label = Tex("p_Y(y)", **self.label_config).replace(g_label, dim_to_match=1)
+        gmx_label = Tex("p_Y(-x)", **self.label_config).replace(g_label, dim_to_match=1)
         g_axes.x_label.set_opacity(0)
         self.remove(g_label)
         self.add(y_label)
         self.add(gy_label)
 
-        alt_fg_label = MTex(R"p_X(x) \cdot p_Y(-x)", **self.label_config)
+        alt_fg_label = Tex(R"p_X(x) \cdot p_Y(-x)", **self.label_config)
         alt_fg_label.move_to(fg_label)
 
         conv_label.shift_onto_screen()
-        sum_label = MTex("p_{X + Y}(s)", **self.label_config)
+        sum_label = Tex("p_{X + Y}(s)", **self.label_config)
         sum_label.move_to(conv_label)
         self.remove(fg_axes, prod_graphs, fg_label)
         self.remove(conv_label)
@@ -755,7 +755,7 @@ class ProbConvolutions(Convolutions):
         self.wait()
 
         # Move p_{X + Y}
-        equals = Tex("=").rotate(PI / 2)
+        equals = OldTex("=").rotate(PI / 2)
         equals.next_to(lhs, UP)
 
         self.play(
@@ -787,7 +787,7 @@ class ProbConvolutions(Convolutions):
         for x in highlighted_xs:
             x_tex = f"{{{np.round(x, 1)}}}"
             diff_tex = f"{{{np.round(s - x, 1)}}}"
-            label = MTex(
+            label = Tex(
                 fR"p_X({x_tex}) \cdot p_Y({diff_tex})",
                 tex_to_color_map={diff_tex: YELLOW, x_tex: BLUE},
                 font_size=36
@@ -970,12 +970,12 @@ class MovingAverageAsConvolution(Convolutions):
         rect.add_updater(lambda m: m.set_x(s_indicator.get_x()))
         rect.add_updater(lambda m: m.set_y(g_axes.get_origin()[1], DOWN))
 
-        area_label = Tex(R"\text{Area } = 1", font_size=36)
+        area_label = OldTex(R"\text{Area } = 1", font_size=36)
         area_label.next_to(rect, UP, MED_LARGE_BUFF)
         area_label.to_edge(LEFT)
         arrow = Arrow(area_label.get_bottom(), rect.get_center())
 
-        avg_label = TexText(R"Average value of\\$f(x)$ in the window", font_size=24)
+        avg_label = OldTexText(R"Average value of\\$f(x)$ in the window", font_size=24)
         avg_label.move_to(area_label, DL)
         shift_value = self.all_axes[2].get_origin() - g_axes.get_origin() + 0.5 * DOWN
         avg_label.shift(shift_value)
@@ -1059,7 +1059,7 @@ class DiagonalSlices(ProbConvolutions):
         surface_mesh = SurfaceMesh(surface, resolution=(21, 21))
         surface_mesh.set_stroke(WHITE, 0.5, 0.5)
 
-        func_name = MTex(
+        func_name = Tex(
             R"p_X(x) \cdot p_Y(y)",
             tex_to_color_map={"X": BLUE, "Y": YELLOW},
             font_size=42,
@@ -1076,13 +1076,13 @@ class DiagonalSlices(ProbConvolutions):
         slice_shadow = self.get_slice_shadow(t_tracker)
         slice_graph = self.get_slice_graph(t_tracker)
 
-        equation = VGroup(MTex("x + y = "), DecimalNumber(color=YELLOW))
+        equation = VGroup(Tex("x + y = "), DecimalNumber(color=YELLOW))
         equation[1].next_to(equation[0][-1], RIGHT, buff=0.2)
         equation.to_corner(UR)
         equation.fix_in_frame()
         equation[1].add_updater(lambda m: m.set_value(t_tracker.get_value()))
 
-        ses_label = MTex(R"\{(x, s - x): x \in \mathds{R}\}", tex_to_color_map={"s": YELLOW}, font_size=30)
+        ses_label = Tex(R"\{(x, s - x): x \in \mathds{R}\}", tex_to_color_map={"s": YELLOW}, font_size=30)
         ses_label.next_to(equation, DOWN, MED_LARGE_BUFF, aligned_edge=RIGHT)
         ses_label.fix_in_frame()
 
@@ -1277,7 +1277,7 @@ class RepeatedConvolution(MovingAverageAsConvolution):
         conv_axes_copy = conv_axes.deepcopy()
 
         f_label = self.f_label
-        new_f_label = MTex(f"f_{{{self.n}}}(x)", **self.label_config)
+        new_f_label = Tex(f"f_{{{self.n}}}(x)", **self.label_config)
         new_f_label.replace(self.conv_label[0])
         new_f_label[-2].set_opacity(0)
 
@@ -1299,7 +1299,7 @@ class RepeatedConvolution(MovingAverageAsConvolution):
         new_conv_label = self.get_conv_label(self.n + 1)
         new_conv_label.replace(self.conv_label)
         prod_rhs = self.fg_label[6:]
-        new_prod_rhs = MTex(f"f_{{{self.n}}}(s - x)")
+        new_prod_rhs = Tex(f"f_{{{self.n}}}(s - x)")
         new_prod_rhs.replace(prod_rhs, dim_to_match=1)
 
         to_remove = VGroup(
@@ -1352,7 +1352,7 @@ class RepeatedConvolution(MovingAverageAsConvolution):
     def get_conv_label(self, n):
         lhs = f"f_{{{n}}}(s)"
         last = f"f_{{{n - 1}}}"
-        result = Tex(lhs, "=", R"\big[", last, "*", "f_1", R"\big]", "(s)")
+        result = OldTex(lhs, "=", R"\big[", last, "*", "f_1", R"\big]", "(s)")
         result.set_height(0.5)
         result.next_to(self.all_axes[3], DOWN, MED_LARGE_BUFF)
         return result
@@ -1443,9 +1443,9 @@ class RectConvolutionsNewNotation(MovingAverages):
         rect_defs[0].next_to(axes1, UP).shift_onto_screen()
 
         conv_labels = VGroup(
-            Tex(R"\big[\text{rect} * \text{rect}_3\big](x)"),
-            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5\big](x)"),
-            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5 * \text{rect}_7 \big](x)"),
+            OldTex(R"\big[\text{rect} * \text{rect}_3\big](x)"),
+            OldTex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5\big](x)"),
+            OldTex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5 * \text{rect}_7 \big](x)"),
         )
         conv_labels.scale(0.75)
         conv_labels.match_x(axes3).match_y(rect_defs)
@@ -1525,36 +1525,36 @@ class RectConvolutionsNewNotation(MovingAverages):
         )
 
     def get_rect_k_def(self, k):
-        return Tex(Rf"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
+        return OldTex(Rf"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
 
 
 class RectConvolutionFacts(InteractiveScene):
     def construct(self):
         # Equations
         equations = VGroup(
-            Tex(R"\text{rect}", "(0)", "=", "1.0"),
-            Tex(
+            OldTex(R"\text{rect}", "(0)", "=", "1.0"),
+            OldTex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            Tex(
+            OldTex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*",
                 R"\text{rect}_5",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            Tex(R"\vdots"),
-            Tex(
+            OldTex(R"\vdots"),
+            OldTex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*", R"\cdots", "*",
                 R"\text{rect}_{13}",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            Tex(
+            OldTex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*", R"\cdots", "*",

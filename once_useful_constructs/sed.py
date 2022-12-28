@@ -70,7 +70,7 @@ class SEDTest(MovingCameraScene):
         #     label.next_to(point, DOWN, MED_SMALL_BUFF)
         #     x_axis_labels.add(label)
         # axes.x_axis.add(x_axis_labels)
-        # x_label = TexText("Time (minutes)")
+        # x_label = OldTexText("Time (minutes)")
         # x_label.next_to(axes.x_axis, UP, SMALL_BUFF)
         # x_label.to_edge(RIGHT)
         # axes.x_axis.add(x_label)
@@ -82,7 +82,7 @@ class SEDTest(MovingCameraScene):
             label.next_to(point, LEFT)
             y_axis_labels.add(label)
         axes.y_axis.add(y_axis_labels)
-        y_label = TexText("Heart rates")
+        y_label = OldTexText("Heart rates")
         y_label.next_to(axes.y_axis, RIGHT, aligned_edge=UP)
         axes.y_axis.add(y_label)
 
@@ -98,7 +98,7 @@ class SEDTest(MovingCameraScene):
             line = DashedLine(c2p(t, 0), c2p(t, 120), **kwargs)
             line.set_stroke(width=2)
             if label is not None:
-                label_mob = TexText(label)
+                label_mob = OldTexText(label)
                 label_mob.next_to(line, UP)
                 label_mob.set_color(WHITE)
                 line.label = label_mob
@@ -140,7 +140,7 @@ class SEDTest(MovingCameraScene):
         # base_line = Line(
         #     c2p(0, 55), c2p(180, 55),
         # )
-        # base_line_label = TexText(
+        # base_line_label = OldTexText(
         #     "(Felipe's resting HR)"
         # )
         # base_line_label.next_to(base_line, DOWN)
@@ -169,7 +169,7 @@ class SEDTest(MovingCameraScene):
             tick = Line(DOWN, UP)
             tick.set_height(0.5)
             tick.move_to(point)
-            label = TexText(words)
+            label = OldTexText(words)
             label.next_to(tick, DOWN)
             time_labels.add(VGroup(tick, label))
 

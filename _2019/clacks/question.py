@@ -35,7 +35,7 @@ class Block(Square):
         self.add(self.label)
 
     def get_label(self):
-        label = TexText(self.label_text)
+        label = OldTexText(self.label_text)
         label.scale(self.label_scale_value)
         label.next_to(self, UP, SMALL_BUFF)
         return label
@@ -321,7 +321,7 @@ class BlocksAndWallScene(Scene):
 
     def add_counter(self):
         self.n_clacks = 0
-        counter_label = TexText(self.counter_label)
+        counter_label = OldTexText(self.counter_label)
         counter_mob = Integer(self.n_clacks)
         counter_mob.next_to(
             counter_label[-1], RIGHT,
@@ -386,7 +386,7 @@ class BlocksAndWallScene(Scene):
 
 class NameIntro(Scene):
     def construct(self):
-        name = TexText("3Blue", "1Brown", arg_separator="")
+        name = OldTexText("3Blue", "1Brown", arg_separator="")
         blue, brown = name
         name.scale(2.5)
         for part in name:
@@ -430,9 +430,9 @@ class MathAndPhysicsConspiring(Scene):
         v_line.save_state()
         v_line.fade(1)
         v_line.scale(0)
-        math_title = TexText("Math")
+        math_title = OldTexText("Math")
         math_title.set_color(BLUE)
-        physics_title = TexText("Physics")
+        physics_title = OldTexText("Physics")
         physics_title.set_color(YELLOW)
         for title, vect in (math_title, LEFT), (physics_title, RIGHT):
             title.scale(2)
@@ -440,7 +440,7 @@ class MathAndPhysicsConspiring(Scene):
             title.to_edge(UP)
 
         math_stuffs = VGroup(
-            Tex("\\pi = {:.16}\\dots".format(PI)),
+            OldTex("\\pi = {:.16}\\dots".format(PI)),
             self.get_tangent_image(),
         )
         math_stuffs.arrange(DOWN, buff=MED_LARGE_BUFF)
@@ -468,20 +468,20 @@ class MathAndPhysicsConspiring(Scene):
         circle.set_color(WHITE)
         theta = 30 * DEGREES
         arc = Arc(angle=theta, radius=0.4)
-        theta_label = Tex("\\theta")
+        theta_label = OldTex("\\theta")
         theta_label.scale(0.5)
         theta_label.next_to(arc.get_center(), RIGHT, buff=SMALL_BUFF)
         theta_label.shift(0.025 * UL)
         line = Line(ORIGIN, rotate_vector(RIGHT, theta))
         line.set_color(WHITE)
-        one = Tex("1").scale(0.5)
+        one = OldTex("1").scale(0.5)
         one.next_to(line.point_from_proportion(0.7), UL, 0.5 * SMALL_BUFF)
         tan_line = Line(
             line.get_end(),
             (1.0 / np.cos(theta)) * RIGHT
         )
         tan_line.set_color(RED)
-        tan_text = Tex("\\tan(\\theta)")
+        tan_text = OldTex("\\tan(\\theta)")
         tan_text.rotate(tan_line.get_angle())
         tan_text.scale(0.5)
         tan_text.move_to(tan_line)
@@ -598,7 +598,7 @@ class BlocksAndWallExampleMass1e1(BlocksAndWallExample):
 
 class TwoBlocksLabel(Scene):
     def construct(self):
-        label = TexText("Two sliding \\\\ blocks")
+        label = OldTexText("Two sliding \\\\ blocks")
         label.to_edge(UP)
         arrows = VGroup(*[
             Arrow(label.get_bottom(), point)
@@ -617,7 +617,7 @@ class WallLabel(Scene):
     def construct(self):
         wall = Line(TOP, 2 * DOWN)
         wall.set_stroke(YELLOW, 10)
-        word = TexText("Wall")
+        word = OldTexText("Wall")
         word.rotate(-90 * DEGREES)
         word.next_to(wall, RIGHT, MED_SMALL_BUFF)
         self.play(
@@ -633,7 +633,7 @@ class CowToSphere(ExternallyAnimatedScene):
 
 class NoFrictionLabel(Scene):
     def construct(self):
-        words = TexText("Frictionless")
+        words = OldTexText("Frictionless")
         words.shift(2 * RIGHT)
         words.add_updater(
             lambda m, dt: m.shift(dt * LEFT)
@@ -648,7 +648,7 @@ class Mass1e1WithElasticLabel(BlocksAndWallExampleMass1e1):
     def add_flash_animations(self):
         super().add_flash_animations()
         flashes = self.clack_flashes
-        label = TexText(
+        label = OldTexText(
             "Purely elastic collisions\\\\"
             "(no energy lost)"
         )
@@ -708,7 +708,7 @@ class AskAboutSoundlessness(TeacherStudentsScene):
 
 class ShowCreationRect(Scene):
     def construct(self):
-        rect = SurroundingRectangle(TexText("\\# Collisions: 3"))
+        rect = SurroundingRectangle(OldTexText("\\# Collisions: 3"))
         self.play(ShowCreation(rect))
         self.play(FadeOut(rect))
         self.wait()
@@ -793,7 +793,7 @@ class BlocksAndWallExampleMass1e4SlowMo(BlocksAndWallExample):
 
 class SlowMotionLabel(Scene):
     def construct(self):
-        words = TexText("Slow motion replay")
+        words = OldTexText("Slow motion replay")
         words.scale(2).to_edge(UP)
         self.play(Write(words))
         self.wait()
@@ -856,7 +856,7 @@ class DigitsOfPi(Scene):
         nd = self.n_digits
         pow10 = int(10**nd)
         rounded_pi = int(pow10 * PI) / pow10
-        equation = Tex(
+        equation = OldTex(
             ("\\pi = {:." + str(nd) + "f}...").format(rounded_pi)
         )
         equation.set_color(YELLOW)
@@ -895,16 +895,16 @@ class PiComputingAlgorithmsAxes(Scene):
             }
         )
 
-        y_label = TexText("Efficiency")
+        y_label = OldTexText("Efficiency")
         y_label.rotate(90 * DEGREES)
         y_label.next_to(axes.y_axis, LEFT, SMALL_BUFF)
-        x_label = TexText("Elegance")
+        x_label = OldTexText("Elegance")
         x_label.next_to(axes.x_axis, DOWN, SMALL_BUFF)
         axes.add(y_label, x_label)
         axes.center().to_edge(DOWN)
         self.axes = axes
 
-        title = TexText("Algorithms for computing $\\pi$")
+        title = OldTexText("Algorithms for computing $\\pi$")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
 
@@ -922,7 +922,7 @@ class PiComputingAlgorithmsAxes(Scene):
 
         algorithms = VGroup()
         for method, location in method_location_list:
-            cross = Tex("\\times")
+            cross = OldTex("\\times")
             cross.set_color(RED)
             cross.move_to(self.axes.coords_to_point(*location))
             method.next_to(cross, UP, SMALL_BUFF)
@@ -939,7 +939,7 @@ class PiComputingAlgorithmsAxes(Scene):
         self.play(ShowCreationThenFadeAround(algorithms[-1][0]))
 
     def get_machin_like_formula(self):
-        formula = Tex(
+        formula = OldTex(
             "\\frac{\\pi}{4} = "
             "12\\arctan\\left(\\frac{1}{49}\\right) + "
             "32\\arctan\\left(\\frac{1}{57}\\right) - "
@@ -950,7 +950,7 @@ class PiComputingAlgorithmsAxes(Scene):
         return formula
 
     def get_viete(self):
-        formula = Tex(
+        formula = OldTex(
             "\\frac{2}{\\pi} = "
             "\\frac{\\sqrt{2}}{2} \\cdot"
             "\\frac{\\sqrt{2 + \\sqrt{2}}}{2} \\cdot"
@@ -960,13 +960,13 @@ class PiComputingAlgorithmsAxes(Scene):
         return formula
 
     def get_measuring_tape(self):
-        return TexText("Measuring tape").scale(0.75)
+        return OldTexText("Measuring tape").scale(0.75)
 
     def get_monte_carlo(self):
-        return TexText("Monte Carlo").scale(0.75)
+        return OldTexText("Monte Carlo").scale(0.75)
 
     def get_basel(self):
-        formula = Tex(
+        formula = OldTex(
             "\\frac{\\pi^2}{6} = "
             "\\sum_{n=1}^\\infty \\frac{1}{n^2}"
         )
@@ -1035,18 +1035,18 @@ class StepsOfTheAlgorithm(TeacherStudentsScene):
 
     def get_steps(self):
         return VGroup(
-            TexText("Step 1:", "Implement a physics engine"),
-            TexText(
+            OldTexText("Step 1:", "Implement a physics engine"),
+            OldTexText(
                 "Step 2:",
                 "Choose the number of digits, $d$,\\\\"
                 "of $\\pi$ that you want to compute"
             ),
-            TexText(
+            OldTexText(
                 "Step 3:",
                 "Set one mass to $100^{d - 1}$,\\\\"
                 "the other to $1$"
             ),
-            TexText("Step 4:", "Count collisions"),
+            OldTexText("Step 4:", "Count collisions"),
         )
 
 
@@ -1096,7 +1096,7 @@ class CompareToGalacticMass(Scene):
 
     def add_digits_of_pi(self):
         # 20 digits of pi
-        digits = Tex("3.1415926535897932384...")
+        digits = OldTex("3.1415926535897932384...")
         digits.set_width(FRAME_WIDTH - 3)
         digits.to_edge(UP)
 
@@ -1124,7 +1124,7 @@ class CompareToGalacticMass(Scene):
         self.add(digits)
         self.remove(*highlighted_digits)
 
-        digits_word = TexText("digits")
+        digits_word = OldTexText("digits")
         digits_word.scale(1.5)
         digits_word.match_color(counter)
         counter.generate_target()
@@ -1183,7 +1183,7 @@ class CompareToGalacticMass(Scene):
         group.add(arrow)
 
         brace = Brace(block1.label[:-2], UP, buff=SMALL_BUFF)
-        number_words = TexText(
+        number_words = OldTexText(
             "100", *["billion"] * 4,
         )
         number_words.next_to(brace, UP, buff=SMALL_BUFF)
@@ -1229,11 +1229,11 @@ class CompareToGalacticMass(Scene):
             bh.scale(3)
             bh.set_fill(GREY_D, 0)
 
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.scale(2)
         equals.next_to(self.block1, RIGHT)
 
-        words = TexText("10x Sgr A$^*$ \\\\ supermassive \\\\ black hole")
+        words = OldTexText("10x Sgr A$^*$ \\\\ supermassive \\\\ black hole")
         words.next_to(equals, RIGHT)
         self.add(words)
 
@@ -1254,7 +1254,7 @@ class CompareToGalacticMass(Scene):
         digits = self.pi_digits_group[0]
         to_fade = self.pi_digits_group[1:]
         tex_string = "{:,}".format(31415926535897932384)
-        number = Tex(tex_string)
+        number = OldTex(tex_string)
         number.scale(1.5)
         number.to_edge(UP)
 
@@ -1309,7 +1309,7 @@ class BlocksAndWallExampleGalacticMass(BlocksAndWallExample):
 
     def setup(self):
         super().setup()
-        words = TexText(
+        words = OldTexText(
             "Burst of $10^{38}$ clacks per second"
         )
         words.scale(1.5)
@@ -1319,8 +1319,8 @@ class BlocksAndWallExampleGalacticMass(BlocksAndWallExample):
 
 class RealPhysicsVsThis(Scene):
     def construct(self):
-        physics = TexText("Real physics")
-        this = TexText("This process")
+        physics = OldTexText("Real physics")
+        this = OldTexText("This process")
         this.set_color()
         physics.to_edge(LEFT)
         this.next_to(physics)
@@ -1362,7 +1362,7 @@ class CompareAlgorithmToPhysics(PiCreatureScene):
         )
         self.wait()
 
-        digits = Tex("3.141592653589793238462643383279502884197...")
+        digits = OldTex("3.141592653589793238462643383279502884197...")
         digits.set_width(FRAME_WIDTH - 1)
         digits.to_edge(UP)
         self.play(
@@ -1396,7 +1396,7 @@ class AskAboutWhy(TeacherStudentsScene):
     def construct(self):
         circle = Circle(radius=2, color=YELLOW)
         circle.next_to(self.teacher, UL)
-        ke_conservation = Tex(
+        ke_conservation = OldTex(
             "\\frac{1}{2}m_1 v_1^2 + "
             "\\frac{1}{2}m_2 v_2^2 = \\text{const.}"
         )
@@ -1451,19 +1451,19 @@ class NextVideo(Scene):
         videos.arrange(RIGHT, buff=2)
 
         titles = VGroup(
-            TexText("Here and now"),
-            TexText("Solution"),
+            OldTexText("Here and now"),
+            OldTexText("Solution"),
         )
         for title, video in zip(titles, videos):
             # title.scale(1.5)
             title.next_to(video, UP)
             video.add(title)
 
-        dots = TexText(".....")
+        dots = OldTexText(".....")
         dots.scale(2)
         dots.move_to(videos)
 
-        mid_words = TexText(
+        mid_words = OldTexText(
             "Patient\\\\", "problem\\\\", "solving"
         )
         mid_words.next_to(dots, DOWN)
@@ -1542,7 +1542,7 @@ class EndScreen(Scene):
             rect.reverse_points()
         video_rect.set_fill(GREY_D, 0.5)
         video_rect.set_stroke(GREY_BROWN, 0.5)
-        date = TexText(
+        date = OldTexText(
             "Solution will be\\\\"
             "posted", "1/20/19",
         )
@@ -1550,7 +1550,7 @@ class EndScreen(Scene):
         date.set_width(video_rect.get_width() - 2 * MED_SMALL_BUFF)
         date.move_to(video_rect)
 
-        handle = TexText("@3blue1brown")
+        handle = OldTexText("@3blue1brown")
         handle.next_to(video_rect, DOWN, MED_LARGE_BUFF)
 
         self.add(video_rect, date, handle)
@@ -1625,7 +1625,7 @@ class Thumbnail(BlocksAndWallExample, MovingCameraScene):
         self.add(arrow)
 
     def add_text(self):
-        question = self.question = TexText(
+        question = self.question = OldTexText(
             "How many\\\\collisions?"
         )
         question.scale(2.5)

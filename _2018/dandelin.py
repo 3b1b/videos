@@ -57,11 +57,11 @@ class ThinkingAboutAProof(PiCreatureScene):
 
         you_arrow = Vector(LEFT, color=WHITE)
         you_arrow.next_to(randy, RIGHT)
-        you = TexText("You")
+        you = OldTexText("You")
         you.next_to(you_arrow, RIGHT)
         lm_arrow = Vector(DOWN, color=WHITE)
         lm_arrow.next_to(randy, UP)
-        love_math = TexText("Love math")
+        love_math = OldTexText("Love math")
         love_math.next_to(lm_arrow, UP)
         love_math.shift_onto_screen()
 
@@ -88,7 +88,7 @@ class SumOfIntegersProof(Scene):
     }
 
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "1", "+", "2", "+", "3", "+",
             "\\cdots", "+", "n",
             "=", "\\frac{n(n+1)}{2}"
@@ -167,7 +167,7 @@ class SumOfIntegersProof(Scene):
 
 class FeynmansLostLectureWrapper(Scene):
     def construct(self):
-        title = TexText("Feynman's Lost Lecture")
+        title = OldTexText("Feynman's Lost Lecture")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height=6)
@@ -180,7 +180,7 @@ class FeynmansLostLectureWrapper(Scene):
 
 class HoldUpProof(TeacherStudentsScene):
     def construct(self):
-        title = TexText("One of my all-time favorite proofs")
+        title = OldTexText("One of my all-time favorite proofs")
         title.to_edge(UP)
         self.add(title)
 
@@ -206,9 +206,9 @@ class MultipleDefinitionsOfAnEllipse(Scene):
         self.add(title)
 
         definitions = VGroup(
-            TexText("1. Stretch a circle"),
-            TexText("2. Thumbtack \\\\ \\quad\\, construction"),
-            TexText("3. Slice a cone"),
+            OldTexText("1. Stretch a circle"),
+            OldTexText("2. Thumbtack \\\\ \\quad\\, construction"),
+            OldTexText("3. Slice a cone"),
         )
         definitions.arrange(
             DOWN, buff=LARGE_BUFF,
@@ -260,8 +260,8 @@ class StretchACircle(Scene):
         end_point.stretch(0.5, 0)
         end_point.set_color(RED)
 
-        xy = Tex("(x, y)")
-        cxy = Tex("(c \\cdot x, y)")
+        xy = OldTex("(x, y)")
+        cxy = OldTex("(c \\cdot x, y)")
         cxy[1].set_color(RED)
         for tex in xy, cxy:
             tex.scale(1.5)
@@ -332,10 +332,10 @@ class ShowArrayOfEccentricities(Scene):
         for label, ellipse in zip(eccentricity_labels, ellipses):
             label.next_to(ellipse, UP)
 
-        name = TexText("Eccentricity")
+        name = OldTexText("Eccentricity")
         name.scale(1.5)
         name.to_edge(UP)
-        alt_name = TexText("(read ``squishification'')")
+        alt_name = OldTexText("(read ``squishification'')")
         alt_name.set_color(YELLOW)
         alt_name.next_to(name, RIGHT)
         alt_name.shift_onto_screen()
@@ -469,10 +469,10 @@ class ShowOrbits(ShowArrayOfEccentricities):
             earth_eccentricity,
             num_decimal_places=4
         )
-        eccentricity_equals = TexText(
+        eccentricity_equals = OldTexText(
             "Eccentricity = "
         )
-        earth_orbit_words = TexText("Earth's orbit")
+        earth_orbit_words = OldTexText("Earth's orbit")
         earth_orbit_words.set_color(BLUE)
         full_label = VGroup(
             earth_orbit_words,
@@ -482,7 +482,7 @@ class ShowOrbits(ShowArrayOfEccentricities):
         earth_orbit_words.shift(0.5 * SMALL_BUFF * UL)
         full_label.to_edge(UP)
 
-        comet_orbit_words = TexText("Halley's comet orbit")
+        comet_orbit_words = OldTexText("Halley's comet orbit")
         comet_orbit_words.set_color(GREY_B)
         comet_orbit_words.move_to(earth_orbit_words, RIGHT)
 
@@ -542,7 +542,7 @@ class EccentricityInThumbtackCase(ShowArrayOfEccentricities):
         outer_lines = self.get_outer_dashed_lines(ellipse)
         outer_lines_brace = Brace(outer_lines, DOWN)
 
-        focus_distance = TexText("Focus distance")
+        focus_distance = OldTexText("Focus distance")
         focus_distance.set_color(GREEN)
         focus_distance.next_to(inner_brace_update.mobject, DOWN, SMALL_BUFF)
         focus_distance.add_to_back(focus_distance.copy().set_stroke(BLACK, 5))
@@ -552,11 +552,11 @@ class EccentricityInThumbtackCase(ShowArrayOfEccentricities):
                 inner_brace_update.mobject.get_width(),
             ).next_to(inner_brace_update.mobject, DOWN, SMALL_BUFF)
         )
-        diameter = TexText("Diameter")
+        diameter = OldTexText("Diameter")
         diameter.set_color(RED)
         diameter.next_to(outer_lines_brace, DOWN, SMALL_BUFF)
 
-        fraction = Tex(
+        fraction = OldTex(
             "{\\text{Focus distance}", "\\over",
             "\\text{Diameter}}"
         )
@@ -670,7 +670,7 @@ class EccentricityInThumbtackCase(ShowArrayOfEccentricities):
         )
 
     def get_eccentricity_label(self):
-        words = TexText("Eccentricity = ")
+        words = OldTexText("Eccentricity = ")
         decimal = DecimalNumber(0, num_decimal_places=2)
         group = VGroup(words, decimal)
         group.arrange(RIGHT)
@@ -716,7 +716,7 @@ class EccentricityInThumbtackCase(ShowArrayOfEccentricities):
 
 class EccentricityForSlicedConed(Scene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "\\text{Eccentricity} = ",
             "{\\sin(", "\\text{angle of plane}", ")", "\\over",
             "\\sin(", "\\text{angle of cone slant}", ")}"
@@ -815,7 +815,7 @@ class TriangleOfEquivalences(Scene):
         rects.next_to(title, DOWN)
 
         arrows = VGroup(*[
-            Tex("\\Leftrightarrow")
+            OldTex("\\Leftrightarrow")
             for x in range(3)
         ])
         arrows.scale(2)
@@ -856,7 +856,7 @@ class ShowMeasurementBook(TeacherStudentsScene):
         measurement.set_height(3.5)
         measurement.move_to(self.hold_up_spot, DOWN)
 
-        words = TexText("Highly recommended")
+        words = OldTexText("Highly recommended")
         arrow = Vector(RIGHT, color=WHITE)
         arrow.next_to(measurement, LEFT)
         words.next_to(arrow, LEFT)
@@ -924,7 +924,7 @@ class AskAboutWhyYouWouldAddSpheres(PiCreatureScene):
 
         graph_spot = VectorizedPoint()
 
-        why = TexText("...why?")
+        why = OldTexText("...why?")
         why.next_to(randy, UP)
 
         bubble = ThoughtBubble(height=2, width=2)
@@ -962,10 +962,10 @@ class ShowFocalLinesAsTangent(ExternallyAnimatedScene):
 
 class UseDefiningFeatures(Scene):
     def construct(self):
-        title = TexText("Problem-solving tip:")
+        title = OldTexText("Problem-solving tip:")
         title.scale(1.5)
         title.to_edge(UP)
-        tip = TexText(
+        tip = OldTexText(
             """
             - Make sure you're using all the \\\\
             \\phantom{-} defining features of the objects \\\\
@@ -1008,8 +1008,8 @@ class ShowSegmentSplit(Scene):
         braces.move_to(0.85 * UP + 1.7 * LEFT)
 
         words = VGroup(
-            TexText("Top segment"),
-            TexText("Bottom segment")
+            OldTexText("Top segment"),
+            OldTexText("Bottom segment")
         )
         for word, brace in zip(words, braces):
             word.next_to(
@@ -1070,7 +1070,7 @@ class WriteConjecture(Scene):
             image.set_height(FRAME_HEIGHT)
             self.add(image)
 
-        title = TexText("Conjecture:")
+        title = OldTexText("Conjecture:")
         title.to_corner(UR)
 
         cone_line = Line(self.q_coords, self.circle_point_coords)
@@ -1078,8 +1078,8 @@ class WriteConjecture(Scene):
         plane_line.set_color(self.plane_line_color)
         lines = VGroup(cone_line, plane_line)
 
-        cone_line_words = TexText("Cone line")
-        plane_line_words = TexText("Plane line")
+        cone_line_words = OldTexText("Cone line")
+        plane_line_words = OldTexText("Plane line")
         plane_line_words.set_color(self.plane_line_color)
         words = VGroup(cone_line_words, plane_line_words)
 
@@ -1088,13 +1088,13 @@ class WriteConjecture(Scene):
             word.in_equation = word.copy()
 
         equation = VGroup(
-            Tex("||"),
+            OldTex("||"),
             words[0].in_equation,
-            Tex("||"),
-            Tex("="),
-            Tex("||"),
+            OldTex("||"),
+            OldTex("="),
+            OldTex("||"),
             words[1].in_equation,
-            Tex("||"),
+            OldTex("||"),
         )
         equation.arrange(RIGHT, buff=SMALL_BUFF)
         equation.scale(0.75)
@@ -1143,7 +1143,7 @@ class WriteConjectureV2(WriteConjecture):
 
 class ShowQ(Scene):
     def construct(self):
-        mob = Tex("Q")
+        mob = OldTex("Q")
         mob.scale(2)
         mob.add_to_back(mob.copy().set_stroke(BLACK, 5))
         self.play(FadeInFromDown(mob))
@@ -1183,7 +1183,7 @@ class QuickGeometryProof(Scene):
         ticks.scale(0.1)
         ticks.arrange(RIGHT, buff=SMALL_BUFF)
 
-        equation = Tex(
+        equation = OldTex(
             "\\Delta OP_1Q \\cong \\Delta OP_2Q",
             tex_to_color_map={
                 "O": BLUE,
@@ -1197,10 +1197,10 @@ class QuickGeometryProof(Scene):
 
         self.add(circle)
         self.add(
-            Tex("O").next_to(O, LEFT),
-            Tex("P_1").next_to(p1, UP).set_color(MAROON_B),
-            Tex("P_2").next_to(p2, DOWN).set_color(MAROON_B),
-            Tex("Q").next_to(Q, RIGHT).set_color(YELLOW),
+            OldTex("O").next_to(O, LEFT),
+            OldTex("P_1").next_to(p1, UP).set_color(MAROON_B),
+            OldTex("P_2").next_to(p2, DOWN).set_color(MAROON_B),
+            OldTex("Q").next_to(Q, RIGHT).set_color(YELLOW),
         )
         self.add(O_p1, O_p2, p1_Q, p2_Q, O_Q)
         self.add(
@@ -1243,7 +1243,7 @@ class NameDandelin(Scene):
     CONFIG = {"camera_config": {"background_opacity": 1}}
 
     def construct(self):
-        title = TexText(
+        title = OldTexText(
             "Proof by\\\\",
             "Germinal Pierre Dandelin (1822)"
         )
@@ -1258,7 +1258,7 @@ class NameDandelin(Scene):
         google_result.center()
         google_result.to_corner(DR)
 
-        cmon_google = TexText("C'mon Google...")
+        cmon_google = OldTexText("C'mon Google...")
         cmon_google.set_color(RED)
         cmon_google.next_to(google_result, RIGHT)
         cmon_google.next_to(google_result, UP, aligned_edge=RIGHT)
@@ -1324,7 +1324,7 @@ class AskWhyYouWouldChooseThisProof(PiCreatureScene):
         for pi, vect, word in (randy, UP, "You"), (other, LEFT, "Non-math \\\\ enthusiast"):
             arrow = Vector(-vect, color=WHITE)
             arrow.next_to(pi, vect)
-            label = TexText(word)
+            label = OldTexText(word)
             label.next_to(arrow, vect)
             pi.arrow = arrow
             pi.label = label
@@ -1369,7 +1369,7 @@ class CreativeConstruction(PiCreatureScene):
         kant.set_height(3)
         bubble = ThoughtBubble(height=3, width=4)
         bubble.pin_to(kant)
-        kant_words = TexText(
+        kant_words = OldTexText(
             "How is synthetic a priori\\\\" +
             "reasoning possible?"
         )
@@ -1408,7 +1408,7 @@ class CreativeConstruction(PiCreatureScene):
         q_marks = VGroup()
         for submob in lightbulb.target.family_members_with_points():
             if True or get_norm(submob.get_center() - lightbulb.get_center()) > 0.25:
-                q_mark = Tex("?")
+                q_mark = OldTex("?")
                 q_mark.set_height(0.25)
                 q_mark.move_to(submob)
                 Transform(submob, q_mark).update(1)
@@ -1471,7 +1471,7 @@ class LockhartQuote(Scene):
             when it happens to me, I feel very fortunate.
         """ % strings
         quote_parts = [s for s in quote_text.split(" ") if s]
-        quote = TexText(
+        quote = OldTexText(
             *quote_parts,
             tex_to_color_map={
                 mb_string: BLUE,
@@ -1557,7 +1557,7 @@ class ShowApollonianCircles(Scene):
         circles.set_stroke(width=5)
         circles.set_color_by_gradient(BLUE, YELLOW)
 
-        equation = Tex("""
+        equation = OldTex("""
             \\left(
             {1 \\over r_1} + {1 \\over r_2} +
             {1 \\over r_3} + {1 \\over r_4}
@@ -1594,7 +1594,7 @@ class EllipseLengthsLinedUp(EccentricityInThumbtackCase):
 
         arrow = Vector(RIGHT, color=WHITE)
         arrow.to_edge(LEFT)
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.next_to(arrow, UP)
 
         lines = VGroup(*[Line(UP, DOWN) for x in range(2)])
@@ -1657,7 +1657,7 @@ class ReactionToGlimpseOfGenius(TeacherStudentsScene, CreativeConstruction):
 
         q_marks = VGroup()
         for submob in lightbulb:
-            q_mark = Tex("?")
+            q_mark = OldTex("?")
             q_mark.move_to(submob)
             q_marks.add(q_mark)
         q_marks.space_out_submobjects(2)

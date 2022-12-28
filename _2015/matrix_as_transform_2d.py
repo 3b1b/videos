@@ -14,7 +14,7 @@ def matrix_to_string(matrix):
     return "--".join(["-".join(map(str, row)) for row in matrix])
 
 def matrix_mobject(matrix):
-    return TexText(
+    return OldTexText(
         """
         \\left(
             \\begin{array}{%s}
@@ -101,7 +101,7 @@ class ExamplesOfNonlinearOneDimensionalTransforms(NumberLineScene):
             (x, y, z) = x_y_z
             return (2*x+4, y, z)
 
-        self.nonlinear = TexText("Not a Linear Transform")
+        self.nonlinear = OldTexText("Not a Linear Transform")
         self.nonlinear.set_color(LIGHT_RED).to_edge(UP, buff = 1.5)
         pairs = [
             (sinx_plux_x, "numbers don't remain evenly spaced"),
@@ -119,7 +119,7 @@ class ExamplesOfNonlinearOneDimensionalTransforms(NumberLineScene):
             "density" : 5*DEFAULT_POINT_DENSITY_1D,
         }
         NumberLineScene.construct(self, **config)
-        words = TexText(explanation).set_color(LIGHT_RED)
+        words = OldTexText(explanation).set_color(LIGHT_RED)
         words.next_to(self.nonlinear, DOWN, buff = 0.5)
         self.add(words)
 
@@ -305,7 +305,7 @@ class ExamplesOfNonlinearTwoDimensionalTransformations(Scene):
             (x, y, z) = x_y_z
             return (2*x + 3*y + 4, -1*x+y+2, z)
 
-        self.nonlinear = TexText("Nonlinear Transform")
+        self.nonlinear = OldTexText("Nonlinear Transform")
         self.nonlinear.set_color(LIGHT_RED)
         self.nonlinear.to_edge(UP, buff = 1.5)
         pairs = [
@@ -327,7 +327,7 @@ class ExamplesOfNonlinearTwoDimensionalTransformations(Scene):
         }
         number_plane = NumberPlane(**config)
         numbers = number_plane.get_coordinate_labels()
-        words = TexText(explanation)
+        words = OldTexText(explanation)
         words.set_color(LIGHT_RED)
         words.next_to(self.nonlinear, DOWN, buff = 0.5)
 
@@ -361,7 +361,7 @@ class ExamplesOfNonlinearTwoDimensionalTransformations(Scene):
 
         region = region_from_polygon_vertices(*vertices)
         image = disp.paint_region(region, color = WHITE)
-        self.blackness = TexText("")
+        self.blackness = OldTexText("")
         ImageMobject.generate_points_from_image_array(self.blackness, image)
         self.blackness.set_color(BLACK)
         rectangle = Rectangle(width = 7, height=1.7)
@@ -380,7 +380,7 @@ class TrickyExamplesOfNonlinearTwoDimensionalTransformations(Scene):
             "stroke_width" : 2*DEFAULT_STROKE_WIDTH
         }
         number_plane = NumberPlane(**config)
-        phrase1, phrase2 = TexText([
+        phrase1, phrase2 = OldTexText([
             "These might look like they keep lines straight...",
             "but diagonal lines get curved"
         ]).to_edge(UP, buff = 1.5).split()
@@ -435,7 +435,7 @@ class TrickyExamplesOfNonlinearTwoDimensionalTransformations(Scene):
 
         region = region_from_polygon_vertices(*vertices)
         image = disp.paint_region(region, color = WHITE)
-        self.blackness = TexText("")
+        self.blackness = OldTexText("")
         ImageMobject.generate_points_from_image_array(self.blackness, image)
         self.blackness.set_color(BLACK)
         rectangle = Rectangle(width = 9, height=1.5)

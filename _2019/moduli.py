@@ -31,15 +31,15 @@ class TriangleModuliSpace(Scene):
 
     def show_meaning_of_similar(self):
         # Setup titles
-        title = TexText("Space", " of all ", "triangles")
+        title = OldTexText("Space", " of all ", "triangles")
         title.scale(1.5)
         title.to_edge(UP)
 
-        subtitle = TexText("up to similarity.")
+        subtitle = OldTexText("up to similarity.")
         subtitle.scale(1.5)
         subtitle.next_to(title, DOWN, MED_SMALL_BUFF)
 
-        question = TexText("What ", "is ", "a\\\\", "moduli ", "space", "?")
+        question = OldTexText("What ", "is ", "a\\\\", "moduli ", "space", "?")
         question.scale(2)
 
         # Setup all triangles
@@ -104,12 +104,12 @@ class TriangleModuliSpace(Scene):
 
         # Dots
         per_class_dots = VGroup(*[
-            Tex("\\vdots").move_to(
+            OldTex("\\vdots").move_to(
                 tri_class
             ).set_y(rects.get_bottom()[1] + 0.4)
             for tri_class in tri_classes.target
         ])
-        all_class_dots = Tex("\\dots").next_to(
+        all_class_dots = OldTex("\\dots").next_to(
             rects, RIGHT, MED_SMALL_BUFF,
         )
 
@@ -131,12 +131,12 @@ class TriangleModuliSpace(Scene):
         tri1.save_state()
         tri2.save_state()
 
-        sim_sign = Tex("\\sim")
+        sim_sign = OldTex("\\sim")
         sim_sign.set_width(1)
         sim_sign.move_to(midpoint(rects.get_top(), TOP))
         sim_sign.shift(0.25 * DOWN)
 
-        similar_word = TexText("Similar")
+        similar_word = OldTexText("Similar")
         similar_word.scale(1.5)
         similar_word.move_to(sim_sign)
         similar_word.to_edge(UP)
@@ -172,7 +172,7 @@ class TriangleModuliSpace(Scene):
         self.wait(2)
 
         # Show non-similar example
-        not_similar_word = TexText("Not ", "Similar")
+        not_similar_word = OldTexText("Not ", "Similar")
         not_similar_word.scale(1.5)
         not_similar_word.move_to(similar_word)
         not_similar_word.set_color(RED)
@@ -214,7 +214,7 @@ class TriangleModuliSpace(Scene):
         self.wait()
 
         # Back to classes
-        new_title = TexText("Space of all\\\\", "Similarity classes")
+        new_title = OldTexText("Space of all\\\\", "Similarity classes")
         new_title.scale(1.5)
         new_title[1].set_color(YELLOW)
         new_title.to_edge(UP)
@@ -353,8 +353,8 @@ class TriangleModuliSpace(Scene):
         self.wait()
 
         # Label x and y
-        x_label = Tex("x")
-        y_label = Tex("y")
+        x_label = OldTex("x")
+        y_label = OldTex("y")
         xy_labels = VGroup(x_label, y_label)
         xy_labels.scale(1.5)
 
@@ -409,8 +409,8 @@ class TriangleModuliSpace(Scene):
         x_axis = axes.x_axis
         y_axis = axes.y_axis
 
-        x_axis.add(Tex("x", color=x_color).next_to(x_axis, RIGHT))
-        y_axis.add(Tex("y", color=y_color).next_to(y_axis, UP))
+        x_axis.add(OldTex("x", color=x_color).next_to(x_axis, RIGHT))
+        y_axis.add(OldTex("y", color=y_color).next_to(y_axis, UP))
 
         for axis, vect in [(x_axis, DOWN), (y_axis, LEFT)]:
             axis.add_numbers(
@@ -461,7 +461,7 @@ class TriangleModuliSpace(Scene):
             )
         )
 
-        coord_label = Tex("(", "0.00", ",", "0.00", ")")
+        coord_label = OldTex("(", "0.00", ",", "0.00", ")")
         cl_buff = 0
         coord_label.next_to(dot, UR, buff=cl_buff)
         for i, coord in zip([1, 3], coords):
@@ -504,8 +504,8 @@ class TriangleModuliSpace(Scene):
 
         # Show box
         t2c = {"x": x_color, "y": y_color}
-        ineq1 = Tex("0", "\\le ", "x", "\\le", "1", tex_to_color_map=t2c)
-        ineq2 = Tex("0", "\\le ", "y", "\\le", "1", tex_to_color_map=t2c)
+        ineq1 = OldTex("0", "\\le ", "x", "\\le", "1", tex_to_color_map=t2c)
+        ineq2 = OldTex("0", "\\le ", "y", "\\le", "1", tex_to_color_map=t2c)
 
         ineqs = VGroup(ineq1, ineq2)
         ineqs.scale(1.5)
@@ -549,11 +549,11 @@ class TriangleModuliSpace(Scene):
 
         x_eq_y_line = Line(axes.c2p(0, 0), axes.c2p(1, 1))
         x_eq_y_line.set_stroke(self.x_eq_y_color, 2)
-        x_eq_y_label = Tex("x=y", tex_to_color_map=t2c)
+        x_eq_y_label = OldTex("x=y", tex_to_color_map=t2c)
         x_eq_y_label.next_to(x_eq_y_line.get_end(), LEFT, MED_LARGE_BUFF)
         x_eq_y_label.shift(0.75 * DL)
 
-        ineq = Tex("0", "\\le", "y", "\\le", "x", "\\le", "1")
+        ineq = OldTex("0", "\\le", "y", "\\le", "x", "\\le", "1")
         ineq.set_color_by_tex("x", x_color)
         ineq.set_color_by_tex("y", y_color)
         ineq.scale(1.5)
@@ -576,11 +576,11 @@ class TriangleModuliSpace(Scene):
         # x + y <= 1 slice
         xpy1_line = Line(axes.c2p(0, 1), axes.c2p(1, 0))
         xpy1_line.set_stroke(GREEN, 2)
-        xpy1_label = Tex("x+y=1", tex_to_color_map=t2c)
+        xpy1_label = OldTex("x+y=1", tex_to_color_map=t2c)
         xpy1_label.next_to(xpy1_line.get_start(), RIGHT, MED_LARGE_BUFF)
         xpy1_label.shift(0.75 * DR)
 
-        xpy1_ineq = Tex("1 \\le x + y", tex_to_color_map=t2c)
+        xpy1_ineq = OldTex("1 \\le x + y", tex_to_color_map=t2c)
         xpy1_ineq.scale(1.5)
         xpy1_ineq.next_to(ineq, DOWN, buff=MED_LARGE_BUFF)
 
@@ -638,7 +638,7 @@ class TriangleModuliSpace(Scene):
         self.wait()
 
         # Label as moduli space
-        ms_words = TexText("Moduli\\\\", "Space")
+        ms_words = OldTexText("Moduli\\\\", "Space")
         ms_words.scale(1.5)
         ms_words.next_to(ms_region, RIGHT, buff=0.35)
         ms_arrow = Arrow(
@@ -677,7 +677,7 @@ class TriangleModuliSpace(Scene):
         elbow_circle.move_to(new_tip)
         elbow_circle.set_stroke(self.right_color, 3)
 
-        right_words = TexText("Right triangle")
+        right_words = OldTexText("Right triangle")
         right_words.scale(1.5)
         right_words.set_color(self.right_color)
         right_words.next_to(triangle, DOWN, buff=1.5)
@@ -699,7 +699,7 @@ class TriangleModuliSpace(Scene):
         )
 
         # Show circular arc
-        pythag_eq = Tex("x^2 + y^2", "=", "1", tex_to_color_map=t2c)
+        pythag_eq = OldTex("x^2 + y^2", "=", "1", tex_to_color_map=t2c)
         pythag_eq.scale(1.5)
         pythag_eq.next_to(right_words, DOWN, buff=MED_LARGE_BUFF)
 
@@ -737,18 +737,18 @@ class TriangleModuliSpace(Scene):
         obtuse_region.set_fill(self.obtuse_color, 1)
         obtuse_region.set_stroke(width=0)
 
-        acute_words = TexText("Acute triangle")
+        acute_words = OldTexText("Acute triangle")
         acute_words.set_color(self.acute_color)
-        obtuse_words = TexText("Obtuse triangle")
+        obtuse_words = OldTexText("Obtuse triangle")
         obtuse_words.set_color(self.obtuse_color)
         for words in [acute_words, obtuse_words]:
             words.scale(1.5)
             words.move_to(right_words)
 
         eq = pythag_eq[-2]
-        gt = Tex(">").replace(eq)
+        gt = OldTex(">").replace(eq)
         gt.set_color(self.acute_color)
-        lt = Tex("<").replace(eq)
+        lt = OldTex("<").replace(eq)
         lt.set_color(self.obtuse_color)
 
         self.add(acute_region, coord_label, x_line, y_line, xpy1_line, x_eq_y_line, dot)
@@ -909,9 +909,9 @@ class TriangleModuliSpace(Scene):
 class Credits(Scene):
     def construct(self):
         items = VGroup(
-            TexText("Written by\\\\Jayadev Athreya"),
-            TexText("Illustrated and Narrated by\\\\Grant Sanderson"),
-            TexText(
+            OldTexText("Written by\\\\Jayadev Athreya"),
+            OldTexText("Illustrated and Narrated by\\\\Grant Sanderson"),
+            OldTexText(
                 "3Blue1Brown\\\\",
                 "\\copyright {} Copyright 2019\\\\",
                 "www.3blue1brown.com\\\\",

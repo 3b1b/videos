@@ -40,7 +40,7 @@ class AstuteAmongYou(TeacherStudentsScene):
         stds = self.students
         self.play(
             stds[2].says(
-                TexText("What about\\\\$x=0$?"),
+                OldTexText("What about\\\\$x=0$?"),
                 bubble_direction=LEFT,
                 mode="raise_right_hand"
             ),
@@ -70,7 +70,7 @@ class AstuteAmongYou(TeacherStudentsScene):
 class AreaToSignedArea(InteractiveScene):
     def construct(self):
         # Words
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.to_edge(UP, buff=1.0).shift(2.5 * LEFT)
         area = Text("Area")
         area.next_to(equals, RIGHT)
@@ -79,7 +79,7 @@ class AreaToSignedArea(InteractiveScene):
         signed_area = Text("Signed area", t2s={"Signed": ITALIC})
         signed_area.next_to(equals, RIGHT)
 
-        blue_minus_red = TexText(
+        blue_minus_red = OldTexText(
             "= (Blue area) - (Red area)",
             tex_to_color_map={"(Blue area)": BLUE, "(Red area)": RED}
         )
@@ -134,7 +134,7 @@ class WhatsThePoint(TeacherStudentsScene):
         stds = self.students
         self.play(
             stds[2].says(
-                TexText(R"So it computes $\pi$ \\ what's the point?"),
+                OldTexText(R"So it computes $\pi$ \\ what's the point?"),
                 bubble_direction=LEFT,
                 mode="angry",
             ),
@@ -154,7 +154,7 @@ class WhatsThePoint(TeacherStudentsScene):
 
 class BillionBillionBillion(InteractiveScene):
     def construct(self):
-        fraction = Tex(get_fifteenth_frac_tex())[0]
+        fraction = OldTex(get_fifteenth_frac_tex())[0]
         # self.add(fraction)
 
         for x in (4, 16, 28):
@@ -216,7 +216,7 @@ class XInMovingAverageGraphs(MovingAverages):
         x = -0.61
         y = 0.1
         xp1 = axes1.c2p(x, 0)
-        x_label = Tex(f"x = {x}", tex_to_color_map={"x": YELLOW})
+        x_label = OldTex(f"x = {x}", tex_to_color_map={"x": YELLOW})
         x_label.next_to(xp1, DOWN, buff=LARGE_BUFF)
         arrow = Arrow(x_label[0].get_top(), xp1, buff=0.2).set_color(YELLOW)
 
@@ -278,8 +278,8 @@ class HeavyMachinery(TeacherStudentsScene):
         # Heavy machinery
         kw = dict(font_size=60)
         ft = Text("Fourier Transforms", **kw)
-        conv = TexText("Convolution", "s", **kw)
-        conv_thm = TexText("The ", "Convolution", R"\\Theorem", **kw)
+        conv = OldTexText("Convolution", "s", **kw)
+        conv_thm = OldTexText("The ", "Convolution", R"\\Theorem", **kw)
         for text in ft, conv, conv_thm:
             text.move_to(self.hold_up_spot, DOWN)
 
@@ -328,7 +328,7 @@ class HeavyMachinery(TeacherStudentsScene):
 class EngineersSinc(InteractiveScene):
     def construct(self):
         # Blah
-        sinc = Tex(R"{\text{sin}(\pi x) \over \pi x}", tex_to_color_map={R"\pi": TEAL})
+        sinc = OldTex(R"{\text{sin}(\pi x) \over \pi x}", tex_to_color_map={R"\pi": TEAL})
         sinc.shift(UP)
         rect = SurroundingRectangle(sinc, buff=SMALL_BUFF)
         rect.set_stroke(YELLOW, 2)
@@ -410,7 +410,7 @@ class SubPiComment(InteractiveScene):
         morty.to_corner(DL)
 
         self.play(
-            morty.says(Tex(R"x \rightarrow \pi x", tex_to_color_map={R"\pi": TEAL}))
+            morty.says(OldTex(R"x \rightarrow \pi x", tex_to_color_map={R"\pi": TEAL}))
         )
         self.play(morty.animte.look(RIGHT))
         for x in range(2):
@@ -472,7 +472,7 @@ class TranslateToFourierLand(InteractiveScene):
         )
         left_graphs.set_submobject_colors_by_gradient(BLUE, YELLOW, GREEN)
 
-        left_symbols = VGroup(Tex("+"), Tex("=").rotate(PI / 2)).scale(1.5)
+        left_symbols = VGroup(OldTex("+"), OldTex("=").rotate(PI / 2)).scale(1.5)
         left_symbols[0].move_to(left_axes[0:2])
         left_symbols[1].move_to(left_axes[1:3])
 
@@ -517,17 +517,17 @@ class TranslateToFourierLand(InteractiveScene):
 
         property_pairs = [
             VGroup(
-                Tex(R"\int_{-\infty}^\infty f(t) dt"),
-                Tex(R"\hat f(0)"),
+                OldTex(R"\int_{-\infty}^\infty f(t) dt"),
+                OldTex(R"\hat f(0)"),
             ),
             VGroup(
-                Tex(R"f(t) \cdot g(t)"),
-                # Tex(R"\hat f(\omega) * \hat g(\omega)", tex_to_color_map={R"\omega": YELLOW}),
-                Tex(R"\int_{-\infty}^\infty \hat f(\xi) \hat g(\omega - \xi) d\xi", tex_to_color_map={R"\omega": YELLOW}),
+                OldTex(R"f(t) \cdot g(t)"),
+                # OldTex(R"\hat f(\omega) * \hat g(\omega)", tex_to_color_map={R"\omega": YELLOW}),
+                OldTex(R"\int_{-\infty}^\infty \hat f(\xi) \hat g(\omega - \xi) d\xi", tex_to_color_map={R"\omega": YELLOW}),
             ),
             VGroup(
-                Tex(R"\sum_{n = -\infty}^\infty f(n)"),
-                Tex(R"\sum_{k = -\infty}^\infty \hat f(k)"),
+                OldTex(R"\sum_{n = -\infty}^\infty f(n)"),
+                OldTex(R"\sum_{k = -\infty}^\infty \hat f(k)"),
             ),
         ]
 
@@ -549,8 +549,8 @@ class KeyFactFrame(VideoWrapper):
 class TranslatedByFourier(InteractiveScene):
     def construct(self):
         # Two expressions
-        # left_expr = MTex(R"\int_{-\infty}^\infty f(t) \cdot g(t) dt")
-        # right_expr = MTex(
+        # left_expr = Tex(R"\int_{-\infty}^\infty f(t) \cdot g(t) dt")
+        # right_expr = Tex(
         #     R"\Big[ \mathcal{F}[f(t)] * \mathcal{F}[g(t)] \Big](0)",
         #     tex_to_color_map={R"\mathcal{F}": TEAL}
         # )
@@ -559,7 +559,7 @@ class TranslatedByFourier(InteractiveScene):
         left_expr.move_to(2 * UP).set_x(-FRAME_WIDTH / 4)
         right_expr.match_y(left_expr).set_x(FRAME_WIDTH / 4)
 
-        equals = Tex("=").move_to(midpoint(left_expr.get_right(), right_expr.get_left()))
+        equals = OldTex("=").move_to(midpoint(left_expr.get_right(), right_expr.get_left()))
         arrow = Vector(2 * RIGHT, color=TEAL)
         arrow.move_to(equals)
         arrow_label = Text("Translate to\nFourier land", font_size=24)
@@ -567,7 +567,7 @@ class TranslatedByFourier(InteractiveScene):
         arrow_label.match_color(arrow)
 
         # brace = Brace(right_expr[:-3], UP, buff=SMALL_BUFF)
-        # brace_text = TexText("To be explained,\\\\think ``moving average''", font_size=36)
+        # brace_text = OldTexText("To be explained,\\\\think ``moving average''", font_size=36)
         # brace_text.next_to(brace, UP, SMALL_BUFF)
 
         self.play(Write(left_expr))

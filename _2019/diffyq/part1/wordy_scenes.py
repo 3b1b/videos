@@ -4,14 +4,14 @@ from _2019.diffyq.part1.shared_constructs import *
 
 class SmallAngleApproximationTex(Scene):
     def construct(self):
-        approx = Tex(
+        approx = OldTex(
             "\\sin", "(", "\\theta", ") \\approx \\theta",
             tex_to_color_map={"\\theta": RED},
             arg_separator="",
         )
 
-        implies = Tex("\\Downarrow")
-        period = Tex(
+        implies = OldTex("\\Downarrow")
+        period = OldTex(
             "\\text{Period}", "\\approx",
             "2\\pi \\sqrt{\\,{L} / {g}}",
             **Lg_formula_config,
@@ -20,7 +20,7 @@ class SmallAngleApproximationTex(Scene):
         group.arrange(DOWN)
 
         approx_brace = Brace(approx, UP, buff=SMALL_BUFF)
-        approx_words = TexText(
+        approx_words = OldTexText(
             "For small $\\theta$",
             tex_to_color_map={"$\\theta$": RED},
         )
@@ -74,7 +74,7 @@ class StrogatzQuote(Scene):
         law_words = "laws of physics"
         language_words = "language of differential equations"
         author = "-Steven Strogatz"
-        quote = TexText(
+        quote = OldTexText(
             """
             \\Large
             ``Since Newton, mankind has come to realize
@@ -99,9 +99,9 @@ class StrogatzQuote(Scene):
 
 class WriteInRadians(Scene):
     def construct(self):
-        words = TexText("In radians")
+        words = OldTexText("In radians")
         words.set_color(YELLOW)
-        square = SurroundingRectangle(Tex("\\theta"))
+        square = SurroundingRectangle(OldTex("\\theta"))
         square.next_to(words, UP)
         self.play(ShowCreation(square))
         self.play(Write(words), FadeOut(square))
@@ -110,7 +110,7 @@ class WriteInRadians(Scene):
 
 class XEqLThetaToCorner(Scene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "x = L\\theta",
             tex_to_color_map={
                 "x": GREEN,
@@ -135,7 +135,7 @@ class ComingUp(Scene):
             fill_opacity=1,
             height=6
         )
-        title = TexText("Coming up")
+        title = OldTexText("Coming up")
         title.scale(1.5)
         title.to_edge(UP)
         frame.next_to(title, DOWN)
@@ -146,7 +146,7 @@ class ComingUp(Scene):
 
 class InputLabel(Scene):
     def construct(self):
-        label = TexText("Input")
+        label = OldTexText("Input")
         label.scale(1.25)
         arrow = Vector(UP)
         arrow.next_to(label, UP)
@@ -159,7 +159,7 @@ class InputLabel(Scene):
 
 class ReallyHardToSolve(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "They're", "really\\\\",
             "freaking", "hard\\\\",
             "to", "solve\\\\",
@@ -177,10 +177,10 @@ class ReallyHardToSolve(Scene):
 class ReasonForSolution(Scene):
     def construct(self):
         # Words
-        eq_word = TexText("Differential\\\\Equation")
-        s_word = TexText("Solution")
-        u_word = TexText("Understanding")
-        c_word = TexText("Computation")
+        eq_word = OldTexText("Differential\\\\Equation")
+        s_word = OldTexText("Solution")
+        u_word = OldTexText("Understanding")
+        c_word = OldTexText("Computation")
         cu_group = VGroup(u_word, c_word)
         cu_group.arrange(DOWN, buff=2)
         group = VGroup(eq_word, s_word, cu_group)
@@ -213,12 +213,12 @@ class ReasonForSolution(Scene):
             "{x}": BLUE,
             "{\\dot x}": RED,
         }
-        equation = Tex(
+        equation = OldTex(
             "{\\dot x}(t) = k {x}(t)",
             tex_to_color_map=t2c,
         )
         equation.next_to(eq_word, DOWN)
-        solution = Tex(
+        solution = OldTex(
             "{x}(t) = x_0 e^{kt}",
             tex_to_color_map=t2c,
         )
@@ -241,7 +241,7 @@ class ReasonForSolution(Scene):
         graph.scale(0.5)
         graph.next_to(u_word, UP)
 
-        computation = Tex(
+        computation = OldTex(
             # "\\displaystyle "
             "e^x = \\sum_{n=0}^\\infty "
             "\\frac{x^n}{n!}"
@@ -257,7 +257,7 @@ class ReasonForSolution(Scene):
         ode.scale(0.75)
         second_examples = VGroup(
             ode,
-            Tex("???").set_color(GREY_B),
+            OldTex("???").set_color(GREY_B),
             ScreenRectangle(
                 height=2,
                 stroke_width=1,
@@ -311,7 +311,7 @@ class ReasonForSolution(Scene):
 
 class WritePhaseSpace(Scene):
     def construct(self):
-        word = TexText("Phase space")
+        word = OldTexText("Phase space")
         word.scale(2)
         word.shift(FRAME_WIDTH * LEFT / 4)
         word.to_edge(UP)
@@ -341,7 +341,7 @@ class WritePhaseSpace(Scene):
 
 class GleickQuote(Scene):
     def construct(self):
-        quote = TexText(
+        quote = OldTexText(
             "``[Phase space is] one of the most\\\\",
             "powerful inventions", "of modern science.''\\\\",
         )
@@ -371,7 +371,7 @@ class GleickQuote(Scene):
 
 class WritePhaseFlow(Scene):
     def construct(self):
-        words = TexText("Phase flow")
+        words = OldTexText("Phase flow")
         words.scale(2)
         words.shift(FRAME_WIDTH * LEFT / 4)
         words.to_edge(UP)
@@ -401,7 +401,7 @@ class ShowSineValues(Scene):
         self.wait()
 
     def get_sine_formula(self, angle):
-        sin, lp, rp = Tex(
+        sin, lp, rp = OldTex(
             "\\sin", "(", ") = "
         )
         input_part = Integer(
@@ -426,9 +426,9 @@ class SetAsideSeekingSolution(Scene):
     def construct(self):
         ode = get_ode()
         ode.to_edge(UP)
-        q1 = TexText("Find an exact solution")
+        q1 = OldTexText("Find an exact solution")
         q1.set_color(YELLOW)
-        q2 = Tex(
+        q2 = OldTex(
             "\\text{What is }", "\\theta", "(t)",
             "\\text{'s personality?}",
             tex_to_color_map={"\\theta": BLUE},
@@ -472,7 +472,7 @@ class SetAsideSeekingSolution(Scene):
 
 class ThreeBodyTitle(Scene):
     def construct(self):
-        title = TexText("Three body problem")
+        title = OldTexText("Three body problem")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
@@ -518,8 +518,8 @@ class ThreeBodySymbols(Scene):
     def introduce_coord_groups(self):
         groups = self.coord_groups
         x_group, p_group = groups
-        x_word = TexText("Positions")
-        p_word = TexText("Momenta")
+        x_word = OldTexText("Positions")
+        p_word = OldTexText("Momenta")
         words = VGroup(x_word, p_word)
         for word, group in zip(words, groups):
             word.next_to(group, UP)
@@ -571,7 +571,7 @@ class ThreeBodySymbols(Scene):
                     coord_copies.add(coord_copy)
 
         count = Integer()
-        count_word = TexText("18", "degrees \\\\ of freedom")[1]
+        count_word = OldTexText("18", "degrees \\\\ of freedom")[1]
         count_group = VGroup(count, count_word)
         count_group.arrange(
             RIGHT,
@@ -612,7 +612,7 @@ class ThreeBodyEquation(Scene):
             }
         }
         equations = VGroup(*[
-            Tex(
+            OldTex(
                 "{d^2", t1, "\\over dt^2}", "=",
                 "G", "\\left("
                 "{" + m2, "(", t2, "-", t1, ")"
@@ -648,7 +648,7 @@ class JumpToThisPoint(Scene):
 
         arrow = Vector(DR, color=WHITE)
         arrow.next_to(dot, UL, SMALL_BUFF)
-        words = TexText(
+        words = OldTexText(
             "Jump directly to\\\\",
             "this point?",
         )
@@ -667,7 +667,7 @@ class JumpToThisPoint(Scene):
 
 class ChaosTitle(Scene):
     def construct(self):
-        title = TexText("Chaos theory")
+        title = OldTexText("Chaos theory")
         title.scale(1.5)
         title.to_edge(UP)
         line = Line(LEFT, RIGHT)
@@ -689,7 +689,7 @@ class RevisitQuote(StrogatzQuote, PiCreatureScene):
         quote.set_stroke(BLACK, 6, background=True)
         quote.scale(0.8, about_edge=UL)
 
-        new_langauge_part = TexText(
+        new_langauge_part = OldTexText(
             "\\Large Language of differential equations"
         )
         new_langauge_part.to_edge(UP)

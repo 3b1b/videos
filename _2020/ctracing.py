@@ -4,7 +4,7 @@ from _2020.sir import *
 
 class LastFewMonths(Scene):
     def construct(self):
-        words = TexText("Last ", "few\\\\", "months:")
+        words = OldTexText("Last ", "few\\\\", "months:")
         words.set_height(4)
         underlines = VGroup()
         for word in words:
@@ -22,7 +22,7 @@ class LastFewMonths(Scene):
 
 class UnemploymentTitle(Scene):
     def construct(self):
-        words = TexText("Unemployment claims\\\\per week in the US")[0]
+        words = OldTexText("Unemployment claims\\\\per week in the US")[0]
         words.set_width(FRAME_WIDTH - 1)
         words.to_edge(UP)
         arrow = Arrow(
@@ -44,8 +44,8 @@ class ExplainTracing(Scene):
     def construct(self):
         # Words
         words = VGroup(
-            TexText("Testing, ", "Testing, ", "Testing!"),
-            TexText("Contact Tracing"),
+            OldTexText("Testing, ", "Testing, ", "Testing!"),
+            OldTexText("Contact Tracing"),
         )
         words[0].set_color(GREEN)
         words[1].set_color(BLUE_B)
@@ -90,7 +90,7 @@ class ExplainTracing(Scene):
         boxes.set_stroke(WHITE, 1)
 
         sicky = clusters[0][2]
-        covid_words = TexText("COVID-19\\\\Positive!")
+        covid_words = OldTexText("COVID-19\\\\Positive!")
         covid_words.set_color(RED)
         arrow = Vector(RIGHT, color=RED)
         arrow.next_to(sicky, LEFT)
@@ -132,15 +132,15 @@ class ExplainTracing(Scene):
         self.play(ct_word.move_to, 2 * UP)
 
         # Underlines
-        implies = Tex("\\Downarrow")
+        implies = OldTex("\\Downarrow")
         implies.scale(2)
         implies.next_to(ct_word, DOWN, MED_LARGE_BUFF)
-        loc_tracking = TexText("Location Tracking")
+        loc_tracking = OldTexText("Location Tracking")
         loc_tracking.set_color(GREY_BROWN)
         loc_tracking.match_height(ct_word)
         loc_tracking.next_to(implies, DOWN, MED_LARGE_BUFF)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.scale(2)
         q_marks.next_to(implies, RIGHT)
 
@@ -176,10 +176,10 @@ class ExplainTracing(Scene):
         )
         self.wait()
 
-        dp_3t = TexText("DP-3T")
+        dp_3t = OldTexText("DP-3T")
         dp_3t.match_height(ct_word)
         dp_3t.move_to(loc_tracking)
-        dp_3t_long = TexText("Decentralized Privacy-Preserving Proximity Tracing")
+        dp_3t_long = OldTexText("Decentralized Privacy-Preserving Proximity Tracing")
         dp_3t_long.next_to(dp_3t, DOWN, LARGE_BUFF)
 
         arrow = Vector(UP)
@@ -200,14 +200,14 @@ class ExplainTracing(Scene):
 class ContactTracingMisnomer(Scene):
     def construct(self):
         # Word play
-        words = TexText("Contact ", "Tracing")
+        words = OldTexText("Contact ", "Tracing")
         words.scale(2)
         rects = VGroup(*[
             SurroundingRectangle(word, buff=0.2)
             for word in words
         ])
-        expl1 = TexText("Doesn't ``trace'' you...")
-        expl2 = TexText("...or your contacts")
+        expl1 = OldTexText("Doesn't ``trace'' you...")
+        expl2 = OldTexText("...or your contacts")
         expls = VGroup(expl1, expl2)
         colors = [RED, BLUE]
 
@@ -236,7 +236,7 @@ class ContactTracingMisnomer(Scene):
 
 class ContactTracingWords(Scene):
     def construct(self):
-        words = TexText("Contact\\\\", "Tracing")
+        words = OldTexText("Contact\\\\", "Tracing")
         words.set_height(4)
         for word in words:
             self.add(word)
@@ -431,7 +431,7 @@ class AppleGoogleCoop(Scene):
 
 class LocationTracking(Scene):
     def construct(self):
-        question = TexText(
+        question = OldTexText(
             "Would you like this company to track\\\\",
             "and occasionally sell your location?"
         )
@@ -457,7 +457,7 @@ class LocationTracking(Scene):
             direction=LEFT,
         )
 
-        answer = TexText("Um...", "no.")
+        answer = OldTexText("Um...", "no.")
         answer.set_height(0.4)
         answer.set_color(YELLOW)
         bubble.add_content(answer)
@@ -490,7 +490,7 @@ class LocationTracking(Scene):
 
 class MoreLinks(Scene):
     def construct(self):
-        words = TexText("See more links\\\\in the description.")
+        words = OldTexText("See more links\\\\in the description.")
         words.scale(2)
         words.to_edge(UP, buff=2)
         arrows = VGroup(*[

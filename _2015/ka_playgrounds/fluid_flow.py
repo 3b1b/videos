@@ -82,7 +82,7 @@ class FluidFlow(Scene):
         ))
 
     def label(self, text, time = 5):
-        mob = TexText(text)
+        mob = OldTexText(text)
         mob.scale(1.5)
         mob.to_edge(UP)
         mob.set_color(self.text_color)        

@@ -435,7 +435,7 @@ class LogoGenerationFivefold(LogoGenerationTemplate):
         logo = self.logo
         iris, spike_layers, pupil = logo
 
-        name = TexText("3Blue1Brown")
+        name = OldTexText("3Blue1Brown")
         name.scale(2.5)
         name.next_to(logo, DOWN, buff=MED_LARGE_BUFF)
         name.set_gloss(0.2)
@@ -479,7 +479,7 @@ class LogoGenerationFivefold(LogoGenerationTemplate):
 
 class Vertical3B1B(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "3", "Blue", "1", "Brown",
         )
         words.scale(2)

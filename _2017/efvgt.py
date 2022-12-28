@@ -97,7 +97,7 @@ class Anniversary(TeacherStudentsScene):
         self.complain()
 
     def celebrate(self):
-        title = TexText(self.message)
+        title = OldTexText(self.message)
         title.scale(1.5)
         title.to_edge(UP)
 
@@ -109,7 +109,7 @@ class Anniversary(TeacherStudentsScene):
         )
         first_video.next_to(self.get_teacher(), UP+LEFT)
         first_video.shift(RIGHT)
-        formula = Tex("e^{\\pi i} = -1")
+        formula = OldTex("e^{\\pi i} = -1")
         formula.move_to(first_video)
         first_video.add(formula)
         first_video.fade(1)
@@ -254,7 +254,7 @@ class QuickExplanation(ComplexTransformationScene):
         self.add_vectors()
 
     def add_equation(self):
-        equation = Tex(
+        equation = OldTex(
             "\\frac{d(e^{it})}{dt}",
             "=",
             "i", "e^{it}"
@@ -264,7 +264,7 @@ class QuickExplanation(ComplexTransformationScene):
         equation.add_background_rectangle()        
         brace = Brace(equation, UP)
         equation.add(brace)
-        brace_text = TexText(
+        brace_text = OldTexText(
             "Velocity vector", "is a", 
             "$90^\\circ$ \\\\ rotation", 
             "of", "position vector"
@@ -280,7 +280,7 @@ class QuickExplanation(ComplexTransformationScene):
         self.brace_text = brace_text
 
     def add_explanation(self):
-        words = TexText("""
+        words = OldTexText("""
             Only a walk around the unit
             circle at rate 1 satisfies both
             this property and e^0 = 1.
@@ -354,7 +354,7 @@ class SymmetriesOfSquare(ThreeDScene):
         self.name_dihedral_group()
 
     def add_title(self):
-        title = TexText("Groups", "$\\leftrightarrow$", "Symmetry")
+        title = OldTexText("Groups", "$\\leftrightarrow$", "Symmetry")
         title.to_edge(UP)
 
         for index in 0, 2:
@@ -424,7 +424,7 @@ class SymmetriesOfSquare(ThreeDScene):
         self.wait()
 
     def show_full_group(self):
-        new_title = TexText("Group", "of", "symmetries")
+        new_title = OldTexText("Group", "of", "symmetries")
         new_title.move_to(self.title)
 
         all_squares = VGroup(*[
@@ -496,7 +496,7 @@ class SymmetriesOfSquare(ThreeDScene):
         self.wait()
 
     def name_dihedral_group(self):
-        new_title = TexText(
+        new_title = OldTexText(
             "``Dihedral group'' of order 8"
         )
         new_title.to_edge(UP)
@@ -585,7 +585,7 @@ class SymmetriesOfSquare(ThreeDScene):
         labels = VGroup()
         dots = VGroup()
         for tex, vertex in zip("ABCD", square.get_anchors()):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.add_background_rectangle()
             label.next_to(vertex, vertex-square.get_center(), SMALL_BUFF)
             labels.add(label)
@@ -618,7 +618,7 @@ class CircleSymmetries(Scene):
         self.associate_rotations_with_points()
 
     def add_circle_and_title(self):
-        title = TexText("Group of rotations")
+        title = OldTexText("Group of rotations")
         title.to_edge(UP)
 
         circle = self.get_circle()
@@ -640,7 +640,7 @@ class CircleSymmetries(Scene):
         self.add_radial_line()
         arc_circle = self.get_arc_circle()
 
-        theta = Tex("\\theta = ")
+        theta = OldTex("\\theta = ")
         theta_value = DecimalNumber(0.00)
         theta_value.next_to(theta, RIGHT)
         theta_group = VGroup(theta, theta_value)
@@ -745,7 +745,7 @@ class GroupOfCubeSymmetries(ThreeDScene):
         "put_randy_on_cube" : True,
     }
     def construct(self):
-        title = TexText("Group of cube symmetries")
+        title = OldTexText("Group of cube symmetries")
         title.to_edge(UP)
         self.add(title)
 
@@ -808,13 +808,13 @@ class AddSquareSymmetries(SymmetriesOfSquare):
         square.shift(DOWN)
         self.add_randy_to_square(square, mode = "shruggie")
         alt_square = square.copy()
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.move_to(square)
 
         equation_square = Square(**self.square_config)
         equation = VGroup(
-            equation_square, Tex("+"), 
-            equation_square.copy(), Tex("="),
+            equation_square, OldTex("+"), 
+            equation_square.copy(), OldTex("="),
             equation_square.copy(),
         )
         equation[0].add(self.get_rotation_arcs(
@@ -874,7 +874,7 @@ class AddCircleSymmetries(CircleSymmetries):
             for scalar in [1, 1.2, 1.4]
         ]
 
-        equation = Tex(
+        equation = OldTex(
             "270^\\circ", "+", "120^\\circ", "=", "30^\\circ",
         )
         equation.to_edge(UP)
@@ -889,7 +889,7 @@ class AddCircleSymmetries(CircleSymmetries):
         alt_radius = circle.radius.copy()
         alt_radius.set_color(GREY)
         alt_circle = circle.copy()
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.move_to(circle)
 
         def rotate(circle, angle, arc, terms):
@@ -959,8 +959,8 @@ class AddCubeSymmetries(GroupOfCubeSymmetries):
         cube = self.get_cube()
 
         equation = cube1, plus, cube2, equals, cube3 = VGroup(
-            cube, Tex("+"), 
-            cube.copy(), Tex("="),
+            cube, OldTex("+"), 
+            cube.copy(), OldTex("="),
             cube.copy()
         )
         equation.arrange(RIGHT, buff = MED_LARGE_BUFF)
@@ -981,7 +981,7 @@ class AddCubeSymmetries(GroupOfCubeSymmetries):
         self.rotate_cube(cube3, *angle_axis_pairs[2])
         self.wait(2)
 
-        times = Tex("\\times")
+        times = OldTex("\\times")
         times.scale(1.5)
         times.move_to(plus)
         times.set_color(RED)
@@ -1077,8 +1077,8 @@ class DihedralGroupStructure(SymmetriesOfSquare):
         # self.add_labels_and_dots(prototype_square)
         prototype_square.scale(0.7)
         expression = s1, plus, s2, equals, s3 = VGroup(
-            prototype_square, Tex("+").scale(2), 
-            prototype_square.copy(), Tex("=").scale(2),
+            prototype_square, OldTex("+").scale(2), 
+            prototype_square.copy(), OldTex("=").scale(2),
             prototype_square.copy()
         )
 
@@ -1156,7 +1156,7 @@ class DihedralGroupStructure(SymmetriesOfSquare):
 
 class ThisIsAVeryGeneralIdea(Scene):
     def construct(self):
-        groups = TexText("Groups")
+        groups = OldTexText("Groups")
         groups.to_edge(UP)
         groups.set_color(BLUE)
 
@@ -1289,7 +1289,7 @@ class AdditiveGroupOfReals(Scene):
             self.play(FadeOut(arrow))
 
     def write_group_of_slides(self):
-        title = TexText("Group of line symmetries")
+        title = OldTexText("Group of line symmetries")
         title.to_edge(UP)
         self.play(Write(title))
         self.title = title
@@ -1300,7 +1300,7 @@ class AdditiveGroupOfReals(Scene):
             color = self.zero_color
         )
         arrow = Arrow(dot, color = self.zero_color)
-        words = TexText("Follow zero")
+        words = OldTexText("Follow zero")
         words.next_to(arrow.get_start(), UP)
         words.set_color(self.zero_color)
 
@@ -1339,7 +1339,7 @@ class AdditiveGroupOfReals(Scene):
             self.number_line.number_to_point(0)+MED_LARGE_BUFF*UP,
             self.shadow_line.number_to_point(0)+MED_LARGE_BUFF*DOWN,
         )
-        words = Tex("0 \\leftrightarrow \\text{Do nothing}")
+        words = OldTex("0 \\leftrightarrow \\text{Do nothing}")
         words.shift(line.get_top()+MED_SMALL_BUFF*UP - words[0].get_bottom())
 
         self.play(
@@ -1350,7 +1350,7 @@ class AdditiveGroupOfReals(Scene):
         self.play(*list(map(FadeOut, [line, words])))
 
     def get_write_name_of_group_anim(self):
-        new_title = TexText("Additive group of real numbers")
+        new_title = OldTexText("Additive group of real numbers")
         VGroup(*new_title[-len("realnumbers"):]).set_color(BLUE)
         VGroup(*new_title[:len("Additive")]).set_color(ADDER_COLOR)
         new_title.to_edge(UP)
@@ -1424,7 +1424,7 @@ class AdditiveGroupOfReals(Scene):
             arrow.set_color(RED)
             arrow.shift(SMALL_BUFF*UP)
         sign = "+" if num >= 0 else ""
-        num_mob = Tex(sign + str(num))
+        num_mob = OldTex(sign + str(num))
         num_mob.next_to(arrow, UP)
         num_mob.set_color(arrow.get_color())
         return zero_point, num_point, arrow, num_mob
@@ -1509,7 +1509,7 @@ class AdditiveGroupOfComplexNumbers(ComplexTransformationScene):
         dot = Dot(point, color = YELLOW)
         arrow = Vector(point, buff = dot.radius)
         arrow.set_color(dot.get_color())
-        label = Tex("%d + %di"%(z.real, z.imag))
+        label = OldTex("%d + %di"%(z.real, z.imag))
         label.next_to(point, UP)
         label.set_color(dot.get_color())
         label.add_background_rectangle()
@@ -1569,7 +1569,7 @@ class AdditiveGroupOfComplexNumbers(ComplexTransformationScene):
             buff = dot2.radius,
             color = dot2.get_color()
         )
-        label2 = Tex(
+        label2 = OldTex(
             "%d %di"%(z2.real, z2.imag)
         )
         label2.next_to(point2, UP+RIGHT)
@@ -1605,7 +1605,7 @@ class AdditiveGroupOfComplexNumbers(ComplexTransformationScene):
             ]
         ]
         imag_arrow.shift(real_arrow.get_end())
-        plus = Tex("+").next_to(
+        plus = OldTex("+").next_to(
             real_arrow.get_center(), UP+RIGHT
         )
         plus.add_background_rectangle()
@@ -1666,7 +1666,7 @@ class AdditiveGroupOfComplexNumbers(ComplexTransformationScene):
         self.wait()
 
     def write_group_name(self):
-        title = TexText(
+        title = OldTexText(
             "Additive", "group of", "complex numbers"
         )
         title[0].set_color(ADDER_COLOR)
@@ -1708,19 +1708,19 @@ class SchizophrenicNumbers(Scene):
             FRAME_Y_RADIUS*UP,
             FRAME_Y_RADIUS*DOWN
         )
-        left_title = TexText("Additive group")
+        left_title = OldTexText("Additive group")
         left_title.shift(FRAME_X_RADIUS*LEFT/2)
-        right_title = TexText("Multiplicative group")
+        right_title = OldTexText("Multiplicative group")
         right_title.shift(FRAME_X_RADIUS*RIGHT/2)
         VGroup(left_title, right_title).to_edge(UP)
         self.add(v_line, left_title, right_title)
 
         numbers = VGroup(
             Randolph(mode = "happy").scale(0.2),
-            Tex("3").shift(UP+LEFT),
-            Tex("5.83").shift(UP+RIGHT),
-            Tex("\\sqrt{2}").shift(DOWN+LEFT),
-            Tex("2-i").shift(DOWN+RIGHT),
+            OldTex("3").shift(UP+LEFT),
+            OldTex("5.83").shift(UP+RIGHT),
+            OldTex("\\sqrt{2}").shift(DOWN+LEFT),
+            OldTex("2-i").shift(DOWN+RIGHT),
         )
         for number in numbers:
             number.set_color(ADDER_COLOR)
@@ -1792,7 +1792,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
         self.compose_actions(1.5, 1.5)
 
     def add_title(self):
-        self.title = TexText("Group of stretching/squishing actions")
+        self.title = OldTexText("Group of stretching/squishing actions")
         self.title.to_edge(UP)
         self.add(self.title)
 
@@ -1814,7 +1814,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
     def show_zero_fixed_in_place(self):
         arrow = Arrow(self.zero_point + UP, self.zero_point, buff = 0)
         arrow.set_color(ADDER_COLOR)
-        words = TexText("Fix zero")
+        words = OldTexText("Fix zero")
         words.set_color(ADDER_COLOR)
         words.next_to(arrow, UP)
 
@@ -1835,7 +1835,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
     def follow_one(self):
         dot = Dot(self.number_line.number_to_point(1))
         arrow = Arrow(dot.get_center()+UP+RIGHT, dot)
-        words = TexText("Follow one")
+        words = OldTexText("Follow one")
         words.next_to(arrow.get_start(), UP)
         for mob in dot, arrow, words:
             mob.set_color(MULTIPLIER_COLOR)
@@ -1853,7 +1853,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
             half_point+UP+LEFT, half_point, buff = SMALL_BUFF,
             tip_length = 0.15,
         )
-        half_label = Tex("1/2")
+        half_label = OldTex("1/2")
         half_label.scale(0.7)
         half_label.set_color(MULTIPLIER_COLOR)
         half_label.next_to(half_arrow.get_start(), LEFT, buff = SMALL_BUFF)
@@ -1916,7 +1916,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
             self.shadow_line.number_to_point(FRAME_X_RADIUS),
             color = self.positive_reals_color
         )
-        positive_reals_words = TexText("All positive reals")
+        positive_reals_words = OldTexText("All positive reals")
         positive_reals_words.set_color(self.positive_reals_color)
         positive_reals_words.next_to(positive_reals_line, UP)
         positive_reals_words.add_background_rectangle()
@@ -1963,11 +1963,11 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
 
     def compose_actions(self, num1, num2):
         words = VGroup(*[
-            TexText("(%s by %s)"%(word, str(num)))
+            OldTexText("(%s by %s)"%(word, str(num)))
             for num in (num1, num2, num1*num2)
             for word in ["Stretch" if num > 1 else "Squish"]
         ])
-        words.submobjects.insert(2, Tex("="))
+        words.submobjects.insert(2, OldTex("="))
         words.arrange(RIGHT)
         top_words = VGroup(*words[:2])
         top_words.set_color(MULTIPLIER_COLOR)
@@ -1993,7 +1993,7 @@ class MultiplicativeGroupOfReals(AdditiveGroupOfReals):
         self.wait()
 
     def write_group_name(self):
-        new_title = TexText(
+        new_title = OldTexText(
             "Multiplicative group of positive real numbers"
         )
         new_title.to_edge(UP)
@@ -2058,7 +2058,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         self.add(self.plane)
 
     def add_title(self):
-        title = TexText(
+        title = OldTexText(
             "Multiplicative", "group of", 
             "complex numbers"
         )
@@ -2077,7 +2077,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
             buff = 2*self.dot_radius
         )
         zero_arrow.set_color(ADDER_COLOR)
-        zero_words = TexText("Fix zero")
+        zero_words = OldTexText("Fix zero")
         zero_words.set_color(ADDER_COLOR)
         zero_words.add_background_rectangle()
         zero_words.next_to(zero_arrow.get_start(), UP)
@@ -2088,7 +2088,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
             buff = 2*self.dot_radius,
             color = MULTIPLIER_COLOR,
         )
-        one_words = TexText("Drag one")
+        one_words = OldTexText("Drag one")
         one_words.set_color(MULTIPLIER_COLOR)
         one_words.add_background_rectangle()
         one_words.next_to(one_arrow.get_start(), UP)
@@ -2177,7 +2177,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         self.reset_plane(FadeOut(self.turn_arrow))
 
     def show_i_squared_is_negative_one(self):
-        equation = Tex("i", "\\cdot", "i", "=", "-1")
+        equation = OldTex("i", "\\cdot", "i", "=", "-1")
         terms = equation[::2]
         equation.add_background_rectangle()
         equation.next_to(ORIGIN, RIGHT)
@@ -2204,7 +2204,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         angle = np.angle(z)
         point = self.z_to_point(z)
         dot = Dot(point, color = WHITE)
-        label = Tex("%d + %di"%(z.real, z.imag))
+        label = OldTex("%d + %di"%(z.real, z.imag))
         label.add_background_rectangle()
         label.next_to(dot, UP+RIGHT, buff = 0)
 
@@ -2219,7 +2219,7 @@ class MultiplicativeGroupOfComplexNumbers(AdditiveGroupOfComplexNumbers):
         brace_text.rotate(angle).rotate(-angle)
         VGroup(brace, brace_text).set_color(MAROON_B)
         arc = Arc(angle, color = WHITE, radius = 0.5)
-        angle_label = Tex("30^\\circ")
+        angle_label = OldTex("30^\\circ")
         angle_label.scale(0.7)
         angle_label.next_to(
             arc, RIGHT, 
@@ -2335,8 +2335,8 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.show_non_counting_exponents()
 
     def show_repeated_multiplication(self):
-        three_twos = Tex("2 \\cdot 2 \\cdot 2")
-        five_twos = Tex("2 \\cdot "*4 + "2")
+        three_twos = OldTex("2 \\cdot 2 \\cdot 2")
+        five_twos = OldTex("2 \\cdot "*4 + "2")
         exponents = []
         teacher_corner = self.get_teacher().get_corner(UP+LEFT)
         for twos in three_twos, five_twos:
@@ -2374,8 +2374,8 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         ))
         self.wait(2)
 
-        cdot = Tex("\\cdot")
-        lhs = Tex("2^{%d + %d} = "%tuple(exponents))
+        cdot = OldTex("\\cdot")
+        lhs = OldTex("2^{%d + %d} = "%tuple(exponents))
         rule = VGroup(
             lhs, three_twos.target, cdot, five_twos.target
         )
@@ -2397,7 +2397,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.play_student_changes(*["happy"]*3)
         self.wait()
 
-        general_equation = Tex("2^{x+y}=", "2^x", "2^y")
+        general_equation = OldTex("2^{x+y}=", "2^x", "2^y")
         general_equation.to_edge(UP, buff = MED_LARGE_BUFF)
         general_equation[0].set_color(GREEN_B)
         VGroup(*general_equation[1:]).set_color(MULTIPLIER_COLOR)
@@ -2423,9 +2423,9 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
             self.expanded_exponential_rule.to_corner, UP+LEFT
         )
         half_power, neg_power, imag_power = alt_powers = VGroup(
-            Tex("2^{1/2}"),
-            Tex("2^{-1}"),
-            Tex("2^{i}"),
+            OldTex("2^{1/2}"),
+            OldTex("2^{-1}"),
+            OldTex("2^{i}"),
         )
         alt_powers.arrange(RIGHT, buff = LARGE_BUFF)
         alt_powers.next_to(self.get_students(), UP, buff = LARGE_BUFF)
@@ -2454,11 +2454,11 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         self.play_student_changes("pondering", "confused", "erm")
         self.wait()
 
-        half_expression = Tex(
+        half_expression = OldTex(
             "\\big(", "2^{1/2}", "\\big)", 
             "\\big(2^{1/2}\\big) = 2^{1}"
         )
-        neg_one_expression = Tex(
+        neg_one_expression = OldTex(
             "\\big(", "2^{-1}", "\\big)", 
             "\\big( 2^{1} \\big) = 2^{0}"
         )
@@ -2499,7 +2499,7 @@ class ExponentsAsRepeatedMultiplication(TeacherStudentsScene):
         ]))
         self.wait()
 
-        group_theory_words = TexText("Group theory?")
+        group_theory_words = OldTexText("Group theory?")
         group_theory_words.next_to(
             self.exponential_rule, UP, buff = LARGE_BUFF
         )
@@ -2538,7 +2538,7 @@ class ExponentsAsHomomorphism(Scene):
         self.add_quote()
 
     def comment_on_equation(self):
-        equation = Tex(
+        equation = OldTex(
             "2", "^{x", "+", "y}", "=", "2^x", "2^y"
         )
         lhs = VGroup(*equation[:4])
@@ -2656,7 +2656,7 @@ class ExponentsAsHomomorphism(Scene):
         target_texs = list(map(str, inputs))
         target_texs += ["2^{%d}"%x for x in inputs]
         for mob, target_tex in zip(terms, target_texs):
-            target = Tex(target_tex)
+            target = OldTex(target_tex)
             target.set_color(mob[0].get_color())
             target.move_to(mob, DOWN)
             if mob in self.adders:
@@ -2686,7 +2686,7 @@ class ExponentsAsHomomorphism(Scene):
 
     def add_quote(self):
         brace = Brace(self.equation, UP)
-        quote = TexText("``Preserves the group structure''")
+        quote = OldTexText("``Preserves the group structure''")
         quote.add_background_rectangle()
         quote.next_to(brace, UP)
 
@@ -2747,7 +2747,7 @@ class DihedralCubeHomomorphism(GroupOfCubeSymmetries, SymmetriesOfSquare):
         ]
         angle_axis_pairs *= 3
 
-        title = TexText(
+        title = OldTexText(
             "``", "Homo", "morph", "ism", "''", 
             arg_separator = ""
         )
@@ -2763,7 +2763,7 @@ class DihedralCubeHomomorphism(GroupOfCubeSymmetries, SymmetriesOfSquare):
         homo_group = VGroup(title[1], homo_brace, homo_def)
         morph_group = VGroup(title[2], morph_brace, morph_def)
 
-        equation = Tex("f(X \\circ Y) = f(X) \\circ f(Y)")
+        equation = OldTex("f(X \\circ Y) = f(X) \\circ f(Y)")
         equation.next_to(title, DOWN)
 
         self.add(title, equation)
@@ -2848,7 +2848,7 @@ class ComplexExponentiationAbstract():
         self.skip_animations = should_skip_animations
 
     def add_title(self):
-        title = TexText(self.group_type, "group")
+        title = OldTexText(self.group_type, "group")
         title.scale(0.8)
         title[0].set_color(self.color)
         title.add_background_rectangle()
@@ -2859,7 +2859,7 @@ class ComplexExponentiationAbstract():
         arrow = Arrow(LEFT, RIGHT, color = WHITE)
         arrow.move_to(-FRAME_X_RADIUS*self.vect/2 + 2*UP)
         arrow.set_stroke(width = 6),
-        func_mob = Tex("2^x")    
+        func_mob = OldTex("2^x")    
         func_mob.next_to(arrow, UP, aligned_edge = LEFT)
         func_mob.add_background_rectangle()
 
@@ -2896,7 +2896,7 @@ class ComplexExponentiationAbstract():
             self.wait()
 
     def change_base(self, new_base, new_base_tex):
-        new_func_mob = Tex(new_base_tex + "^x")
+        new_func_mob = OldTex(new_base_tex + "^x")
         new_func_mob.add_background_rectangle()
         new_func_mob.move_to(self.func_mob)
 
@@ -2906,7 +2906,7 @@ class ComplexExponentiationAbstract():
         self.base = new_base
 
     def write_eulers_formula(self):
-        formula = Tex("e^", "{\\pi", "i}", "=", "-1")
+        formula = OldTex("e^", "{\\pi", "i}", "=", "-1")
         VGroup(*formula[1:3]).set_color(ADDER_COLOR)
         formula[-1].set_color(MULTIPLIER_COLOR)
         formula.scale(1.5)
@@ -3123,7 +3123,7 @@ class ComplexExponentiationMultiplierHalf(
         )
 
         half_point = arc.point_from_proportion(0.5)
-        radians_label = Tex("%.3f"%angle)
+        radians_label = OldTex("%.3f"%angle)
         radians_label.add_background_rectangle()
         radians_label.next_to(
             1.5*half_point, np.round(half_point), buff = 0
@@ -3140,7 +3140,7 @@ class ComplexExponentiationMultiplierHalf(
         for last_angle, angle in zip([0]+angles, angles):
             arc, brace, curved_brace, label = self.get_arc_braces_and_label(angle)
             if angle == np.pi:
-                label = Tex("%.5f\\dots"%np.pi)
+                label = OldTex("%.5f\\dots"%np.pi)
                 label.add_background_rectangle(opacity = 1)
                 label.next_to(curved_brace, UP, buff = SMALL_BUFF)
 
@@ -3206,7 +3206,7 @@ class WhyE(TeacherStudentsScene):
 
 class ReadFormula(Scene):
     def construct(self):
-        formula = Tex("e^", "{\\pi i}", "=", "-1")
+        formula = OldTex("e^", "{\\pi i}", "=", "-1")
         formula[1].set_color(GREEN_B)
         formula[3].set_color(MULTIPLIER_COLOR)
         formula.scale(2)
@@ -3331,7 +3331,7 @@ class ExpTransformation(ComplexTransformationScene):
         cylinder = self.plane.copy().apply_function(
             lambda x_y_z : np.array([x_y_z[0], np.sin(x_y_z[1]), -np.cos(x_y_z[1])])
         )
-        title = Tex("x \\to e^x")
+        title = OldTex("x \\to e^x")
         title.add_background_rectangle()
         title.scale(1.5)
         title.next_to(ORIGIN, RIGHT)
@@ -3353,16 +3353,16 @@ class ExpTransformation(ComplexTransformationScene):
 
 class Thumbnail(Scene):
     def construct(self):
-        formula = Tex("e^", "{\\pi i}", "=", "-1")
+        formula = OldTex("e^", "{\\pi i}", "=", "-1")
         formula[1].set_color(GREEN_B)
         formula[3].set_color(YELLOW)
         formula.scale(4)
         formula.to_edge(UP, buff = LARGE_BUFF)
         self.add(formula)
 
-        via = TexText("via")
+        via = OldTexText("via")
         via.scale(2)
-        groups = TexText("Group theory")
+        groups = OldTexText("Group theory")
         groups.scale(3)
         groups.to_edge(DOWN)
         via.move_to(VGroup(formula, groups))

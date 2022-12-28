@@ -23,7 +23,7 @@ def glow_dot(point, r_min=0.05, r_max=0.15, color=YELLOW, n=20, opacity_mult=1.0
 def get_newton_rule(font_size=36, var="z", **kwargs):
     terms = [f"{var}_n", f"{var}_{{n + 1}}"]
     t0, t1 = terms
-    return Tex(
+    return OldTex(
         t1, "=", t0, "-",
         "{P(", t0, ")", "\\over ", "P'(", t0, ")}",
         font_size=36,
@@ -239,9 +239,9 @@ class PragmaticOrigins(Scene):
         roots.sort()
         coefs *= 0.2
 
-        solve = TexText("Solve $f(x) = 0$", font_size=36)
+        solve = OldTexText("Solve $f(x) = 0$", font_size=36)
         solve.next_to(axes, UP, aligned_edge=LEFT)
-        expr = Tex("f(x) = x^5 - x^4 - 2x^3 + x^2 -3x + 2")
+        expr = OldTex("f(x) = x^5 - x^4 - 2x^3 + x^2 -3x + 2")
         expr.match_width(axes)
         expr.next_to(axes, DOWN)
         graph_x_range = (-2, 2.4)
@@ -257,7 +257,7 @@ class PragmaticOrigins(Scene):
         root_eqs = VGroup()
         root_groups = VGroup()
         for i, root, dot in zip(it.count(1), roots, root_dots):
-            lhs = Tex(f"x_{i} = ")
+            lhs = OldTex(f"x_{i} = ")
             rhs = DecimalNumber(root, num_decimal_places=3)
             rhs.set_color(YELLOW)
             eq = VGroup(lhs, rhs)
@@ -415,7 +415,7 @@ class SphereExample(Scene):
         )
 
         # Expression
-        equation = Tex(
+        equation = OldTex(
             "1.00", "\\,x^2", "+",
             "1.00", "\\,y^2", "+",
             "1.00", "\\,z^2", "=",
@@ -502,9 +502,8 @@ class CurvesDefiningFonts(Scene):
         # Setup
         frame = self.camera.frame
 
-        chars = TexText("When a computer\\\\renders text...")[0]
+        chars = OldTexText("When a computer\\\\renders text...")[0]
         chars.set_width(FRAME_WIDTH - 3)
-        chars.refresh_unit_normal()
         chars.refresh_triangulation()
         filled_chars = chars.copy()
         filled_chars.insert_n_curves(50)
@@ -576,7 +575,7 @@ class CurvesDefiningFonts(Scene):
             dot.scale(1 / 2)
 
         labels = VGroup(*(
-            Tex(f"P_{i}").set_height(0.05)
+            OldTex(f"P_{i}").set_height(0.05)
             for i in range(3)
         ))
         for label, dot, vect in zip(labels, curve_group.target[2], [LEFT, UP, UP]):
@@ -592,7 +591,7 @@ class CurvesDefiningFonts(Scene):
             )
         )
 
-        equation = Tex(
+        equation = OldTex(
             "(1-t)^{2} P_0 +2(1-t)t P_1 +t^2 P_2",
             tex_to_color_map={
                 "P_0": BLUE,
@@ -710,7 +709,7 @@ class RasterizingBezier(Scene):
         # Pixel
         pixel = pixels[725].deepcopy()
         pixel.set_fill(opacity=0)
-        label = TexText("Pixel $\\vec{\\textbf{p}}$")
+        label = OldTexText("Pixel $\\vec{\\textbf{p}}$")
         label.refresh_triangulation()
         label.set_fill(YELLOW)
         label.set_stroke(BLACK, 4, background=True)
@@ -731,7 +730,7 @@ class RasterizingBezier(Scene):
         self.play(ShowCreation(curve))
 
         # Show P(t) value
-        ct = VGroup(Tex("\\vec{\\textbf{c}}(")[0], DecimalNumber(0), Tex(")")[0])
+        ct = VGroup(OldTex("\\vec{\\textbf{c}}(")[0], DecimalNumber(0), OldTex(")")[0])
         ct.arrange(RIGHT, buff=0)
         ct.add_updater(lambda m: m.set_stroke(BLACK, 4, background=True))
         t_tracker = ValueTracker(0)
@@ -755,7 +754,7 @@ class RasterizingBezier(Scene):
             ShowCreation(curve_copy, run_time=3),
             VFadeIn(P_dot),
         )
-        new_ct = Tex("\\vec{\\textbf{c}}(", "t", ")")
+        new_ct = OldTex("\\vec{\\textbf{c}}(", "t", ")")
         new_ct.move_to(ct, LEFT)
         new_ct.set_stroke(BLACK, 4, background=True)
         self.play(FadeTransformPieces(ct, new_ct))
@@ -868,7 +867,7 @@ class RasterizingBezier(Scene):
             axis_config={"include_tip": False}
         )
         axes.to_corner(UR, buff=SMALL_BUFF)
-        y_label = Tex(
+        y_label = OldTex(
             "&\\text{Distance}^2\\\\",
             "&||\\vec{\\textbf{p}} - \\vec{\\textbf{c}}(t)||^2",
             font_size=24,
@@ -908,7 +907,7 @@ class RasterizingBezier(Scene):
         # Dumb hack, not sure why it's needed
         graph.get_points()[:133] += 0.015 * UP
 
-        y_label = VGroup(Tex("\\frac{d}{dt}", font_size=24), top_y_label[2].copy())
+        y_label = VGroup(OldTex("\\frac{d}{dt}", font_size=24), top_y_label[2].copy())
         y_label.arrange(RIGHT, buff=0.05)
         y_label.next_to(axes.y_axis.get_top(), RIGHT, buff=2 * SMALL_BUFF)
 
@@ -922,7 +921,7 @@ class RasterizingBezier(Scene):
 
 class WriteThisIsPolynomial(Scene):
     def construct(self):
-        text = TexText("(Some polynomial in $t$)", font_size=24)
+        text = OldTexText("(Some polynomial in $t$)", font_size=24)
         self.play(Write(text))
         self.wait()
 
@@ -951,7 +950,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
 
         # Student asks about what the function is.
         self.student_says(
-            TexText("Wait, what is that\\\\function exactly?"),
+            OldTexText("Wait, what is that\\\\function exactly?"),
             look_at=image1,
             index=2,
             added_anims=[
@@ -970,7 +969,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
         self.wait(3)
 
         self.teacher_says(
-            TexText("Just some\\\\polynomial"),
+            OldTexText("Just some\\\\polynomial"),
             bubble_config={
                 "width": 4,
                 "height": 3,
@@ -996,7 +995,7 @@ class DontWorryAboutDetails(TeacherStudentsScene):
             look_at=image1,
         )
         self.teacher_says(
-            Tex("P(x) = 0"),
+            OldTex("P(x) = 0"),
             target_mode="tease",
             bubble_config={
                 "width": 3,
@@ -1075,9 +1074,9 @@ class ShowManyGraphs(Scene):
         quadratic.generate_target()
         quadratic.target.set_height(6)
         quadratic.target.center().to_edge(LEFT)
-        equation = Tex("{a}x^2 + {b}x + {c} = 0", **kw)
+        equation = OldTex("{a}x^2 + {b}x + {c} = 0", **kw)
         equation.next_to(quadratic.target, UP)
-        form = Tex(
+        form = OldTex(
             "r_1, r_2 = {-{b} \\pm \\sqrt{\\,{b}^2 - 4{a}{c}} \\over 2{a}}",
             **kw
         )
@@ -1153,7 +1152,7 @@ class ShowManyGraphs(Scene):
             FadeIn(coco_logo),
         )
 
-        over_trillion = Tex("> 1{,}000{,}000{,}000{,}000")[0]
+        over_trillion = OldTex("> 1{,}000{,}000{,}000{,}000")[0]
         over_trillion.next_to(form, RIGHT)
         over_trillion.shift(3 * DOWN)
         form_copies = form[4:].replicate(50)
@@ -1182,12 +1181,12 @@ class ShowManyGraphs(Scene):
             buff=0.01,
             fill_opacity=0.95,
         )
-        cubic_eq = Tex("x^3 + {p}x + {q} = 0", **kw)
+        cubic_eq = OldTex("x^3 + {p}x + {q} = 0", **kw)
         cubic_eq.next_to(cubic, LEFT, LARGE_BUFF, aligned_edge=UP)
         cubic_eq.shift_onto_screen()
-        cubic_name = TexText("Cubic\\\\", "Formula")
+        cubic_name = OldTexText("Cubic\\\\", "Formula")
         cubic_name.to_corner(UL)
-        cubic_form = Tex(
+        cubic_form = OldTex(
             "\\text{root}", "=",
             "\\sqrt[3]{\\,-{{q} \\over 2} + \\sqrt{\\, {{q}^2 \\over 4} + {{p}^3 \\over 27}} }+",
             "\\sqrt[3]{\\,-{{q} \\over 2} - \\sqrt{\\, {{q}^2 \\over 4} + {{p}^3 \\over 27}} }",
@@ -1227,14 +1226,14 @@ class ShowManyGraphs(Scene):
         self.play(Blink(randy))
 
         # Quartic
-        quartic_name = TexText("Quartic ", "Formula")
+        quartic_name = OldTexText("Quartic ", "Formula")
         quartic_name.move_to(quartic).to_edge(UP)
         cubic_fade_rect = BackgroundRectangle(cubic, buff=0.01, fill_opacity=0.95)
-        quartic_eq = Tex("{a}x^4 + {b}x^3 + {c}x^2 + {d}x + {e} = 0", **kw)
+        quartic_eq = OldTex("{a}x^4 + {b}x^3 + {c}x^2 + {d}x + {e} = 0", **kw)
         quartic_eq.next_to(quartic, UP)
 
-        main_form = Tex(r"r_{i}&=-\frac{b}{4 a}-S \pm \frac{1}{2} \sqrt{-4 S^{2}-2 p \pm \frac{q}{S}}")
-        details = Tex(r"""
+        main_form = OldTex(r"r_{i}&=-\frac{b}{4 a}-S \pm \frac{1}{2} \sqrt{-4 S^{2}-2 p \pm \frac{q}{S}}")
+        details = OldTex(r"""
             &\text{Where}\\\\
             p&=\frac{8 a c-3 b^{2}}{8 a^{2}} \qquad \qquad\\\\
             q&=\frac{b^{3}-4 a b c+8 a^{2} d}{8 a^{3}}\\\\
@@ -1274,7 +1273,7 @@ class ShowManyGraphs(Scene):
         quintic.generate_target()
         quintic.target.set_height(5)
         quintic.target.to_corner(UL).shift(DOWN)
-        quintic_eq = Tex(
+        quintic_eq = OldTex(
             "{a}x^5 + {b}x^4 + {c}x^3 + {d}x^2 + {e}x + {f}",
             **kw
         )
@@ -1285,13 +1284,13 @@ class ShowManyGraphs(Scene):
         quintic_name.to_edge(UP)
 
         subwords = VGroup(
-            TexText("There is none.", "$^*$"),
-            TexText("And there never can be."),
+            OldTexText("There is none.", "$^*$"),
+            OldTexText("And there never can be."),
         )
 
         subwords.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         subwords.next_to(quintic_name, DOWN, LARGE_BUFF, aligned_edge=LEFT)
-        footnote = Tex(
+        footnote = OldTex(
             "^*\\text{Using }",
             "+,\\,",
             "-,\\,",
@@ -1423,7 +1422,7 @@ class AskAboutFractals(TeacherStudentsScene):
         )
         self.wait()
         self.teacher_says(
-            TexText("We're getting\\\\there"),
+            OldTexText("We're getting\\\\there"),
             bubble_config={
                 "height": 3,
                 "width": 4,
@@ -1489,12 +1488,12 @@ class RealNewtonsMethod(Scene):
         self.add(graph)
 
     def add_title(self, axes, opacity=0):
-        title = TexText("Newton's method", font_size=60)
+        title = OldTexText("Newton's method", font_size=60)
         title.move_to(midpoint(axes.get_left(), LEFT_SIDE))
         title.to_edge(UP)
         title.set_opacity(opacity)
 
-        poly = Tex(f"P({self.poly_tex[0]}) = ", self.poly_tex, "= 0 ")
+        poly = OldTex(f"P({self.poly_tex[0]}) = ", self.poly_tex, "= 0 ")
         poly.match_width(title)
         poly.next_to(title, DOWN, buff=MED_LARGE_BUFF)
         poly.set_fill(GREY_A)
@@ -1557,7 +1556,7 @@ class RealNewtonsMethod(Scene):
         # Show values numerically
         root_strs = ["{0:.4}".format(root) for root in real_roots]
         equations = VGroup(*(
-            Tex(
+            OldTex(
                 "P(", root_str, ")", "=", "0",
                 font_size=self.rule_font_size
             ).set_color_by_tex(root_str, YELLOW)
@@ -1666,7 +1665,7 @@ class RealNewtonsMethod(Scene):
         graph = self.graph
 
         # Add labels
-        guess_label = Tex(
+        guess_label = OldTex(
             "\\text{Guess: } x_0 = " + f"{self.seed}",
             tex_to_color_map={"x_0": YELLOW}
         )
@@ -1689,7 +1688,7 @@ class RealNewtonsMethod(Scene):
         v_line = axes.get_v_line(axes.i2gp(get_guess(), graph))
         tan_line = self.get_tan_line(get_guess())
 
-        v_line_label = Tex("P(x_0)", font_size=30, fill_color=GREY_A)
+        v_line_label = OldTex("P(x_0)", font_size=30, fill_color=GREY_A)
         v_line_label.next_to(v_line, RIGHT, SMALL_BUFF)
 
         self.add(v_line, guess_marker, guess_value)
@@ -1720,7 +1719,7 @@ class RealNewtonsMethod(Scene):
         self.wait()
 
         # Show derivative
-        dpoly = Tex("P'(x) = ", self.dpoly_tex)
+        dpoly = OldTex("P'(x) = ", self.dpoly_tex)
         dpoly.match_height(self.poly)
         dpoly.match_style(self.poly)
         dpoly.next_to(self.poly, DOWN, aligned_edge=LEFT)
@@ -1752,7 +1751,7 @@ class RealNewtonsMethod(Scene):
             "\\text{Step} = -{P(x_0) \\over P'(x_0)}",
         ]
         slope_eqs = [
-            Tex(
+            OldTex(
                 tex,
                 isolate=[
                     "P'(x_0)",
@@ -1884,7 +1883,7 @@ class RealNewtonsMethod(Scene):
         return line
 
     def get_update_rule(self, char="x"):
-        rule = Tex(
+        rule = OldTex(
             """
                 z_1 =
                 z_0 - {P(z_0) \\over P'(z_0)}
@@ -1907,12 +1906,12 @@ class RealNewtonsMethod(Scene):
         char = rule.get_tex().strip()[0]
         zns = VGroup()
         for old_zn in rule.zns:
-            zn = Tex(f"{char}_{{{rule.n}}}", font_size=self.rule_font_size)
+            zn = OldTex(f"{char}_{{{rule.n}}}", font_size=self.rule_font_size)
             zn[0][1:].set_max_width(0.2, about_edge=DL)
             zn.move_to(old_zn)
             zn.match_color(old_zn)
             zns.add(zn)
-        znp1 = Tex(f"{char}_{{{rule.n + 1}}}", font_size=self.rule_font_size)
+        znp1 = OldTex(f"{char}_{{{rule.n + 1}}}", font_size=self.rule_font_size)
         znp1.move_to(rule.znp1)
         znp1.match_color(rule.znp1[0])
 
@@ -1967,7 +1966,7 @@ class AssumingItsGood(TeacherStudentsScene):
     def construct(self):
         self.pi_creatures.refresh_triangulation()
         self.teacher_says(
-            TexText("Assuming this\\\\approximation\\\\is decent...", font_size=42),
+            OldTexText("Assuming this\\\\approximation\\\\is decent...", font_size=42),
             bubble_config={
                 "height": 3, "width": 4,
             }
@@ -1992,7 +1991,7 @@ class AltPauseAndPonder(Scene):
         morty = Mortimer(height=2)
         morty.flip().to_corner(DL)
         self.play(PiCreatureSays(
-            morty, TexText("Pause and\\\\Ponder", font_size=36),
+            morty, OldTexText("Pause and\\\\Ponder", font_size=36),
             target_mode="hooray",
             bubble_config={
                 "height": 2,
@@ -2051,7 +2050,7 @@ class GutCheckFormula(RealNewtonsMethod):
         self.graph = graph
 
     def add_rule(self):
-        rule = Tex(
+        rule = OldTex(
             "x_{n + 1}", "=",
             "x_{n}", " - ", "{P(x) ", "\\over ", "P'(x)}"
         )
@@ -2095,7 +2094,7 @@ class GutCheckFormula(RealNewtonsMethod):
         self.add(v_line)
 
         if include_px:
-            px_label = Tex("P(x)", font_size=36)
+            px_label = OldTex("P(x)", font_size=36)
             px_label.add_updater(lambda m: m.next_to(v_line, RIGHT, buff=0.05))
             self.add(px_label)
 
@@ -2299,7 +2298,7 @@ class CalcHomework(GutCheckFormula):
         self.add(axes)
 
         # Homework
-        hw = TexText(
+        hw = OldTexText(
             "Homework:\\\\",
             "\\quad Approximate $\\sqrt{7}$ by hand using\\\\",
             "\\quad the ", "Newton-Raphson method.",
@@ -2332,7 +2331,7 @@ class CalcHomework(GutCheckFormula):
             x_range=(-math.sqrt(17), math.sqrt(17))
         )
         graph.set_stroke(BLUE, 2)
-        graph_label = Tex("x^2 - 7", font_size=36)
+        graph_label = OldTex("x^2 - 7", font_size=36)
         graph_label.set_color(BLUE)
         graph_label.next_to(graph.pfp(0.99), LEFT)
 
@@ -2351,7 +2350,7 @@ class CalcHomework(GutCheckFormula):
         # Update
         tan_line = self.get_tan_line(graph, 3)
         tan_line.set_stroke(width=3)
-        update_tex = Tex(
+        update_tex = OldTex(
             "3 \\rightarrow 3 - {3^2 - 7 \\over 2 \\cdot 3}",
             tex_to_color_map={"3": YELLOW},
             font_size=28
@@ -2385,7 +2384,7 @@ class FactorPolynomial(RealNewtonsMethodHigherGraph):
     def show_factors(self):
         poly = self.poly
         colors = color_gradient((BLUE, YELLOW), 5)
-        factored = Tex(
+        factored = OldTex(
             "P(x) = ", *(
                 f"(x - r_{n})"
                 for n in range(5)
@@ -2403,7 +2402,7 @@ class FactorPolynomial(RealNewtonsMethodHigherGraph):
         )
         self.wait()
 
-        words = TexText("Potentially complex\\\\", "$r_n = a_n + b_n i$")
+        words = OldTexText("Potentially complex\\\\", "$r_n = a_n + b_n i$")
         words.set_color(GREY_A)
         words.next_to(factored, DOWN, buff=1.5)
         words.shift(LEFT)
@@ -2580,11 +2579,11 @@ class TransitionToComplexPlane(RealNewtonsMethodHigherGraph):
             poly(in_plane.p2n(in_dot.get_center()), self.coefs)
         )))
 
-        z_label = Tex("z", font_size=24)
+        z_label = OldTex("z", font_size=24)
         z_label.set_fill(YELLOW)
         z_label.add_background_rectangle()
         z_label.add_updater(lambda m: m.next_to(in_dot, UP, SMALL_BUFF))
-        pz_label = Tex("P(z)", font_size=24)
+        pz_label = OldTex("P(z)", font_size=24)
         pz_label.set_fill(MAROON_B)
         pz_label.add_background_rectangle()
         pz_label.add_updater(lambda m: m.next_to(out_dot, UP, SMALL_BUFF))
@@ -2669,7 +2668,7 @@ class ComplexNewtonsMethod(RealNewtonsMethod):
 
     def add_z0_def(self):
         seed_text = Text("(Arbitrary seed)")
-        z0_def = Tex(
+        z0_def = OldTex(
             f"z_0 = {self.seed_tex}",
             tex_to_color_map={"z_0": self.guess_color},
             font_size=self.rule_font_size
@@ -2713,7 +2712,7 @@ class ComplexNewtonsMethod(RealNewtonsMethod):
 
         pz_dot = Dot(color=self.pz_color)
         pz_dot.add_updater(lambda m: m.move_to(plane.n2p(get_pz())))
-        pz_label = Tex("P(z)", font_size=24)
+        pz_label = OldTex("P(z)", font_size=24)
         pz_label.set_color(self.pz_color)
         pz_label.add_background_rectangle()
         pz_label.add_updater(lambda m: m.next_to(pz_dot, UL, buff=0))
@@ -2808,7 +2807,7 @@ class ComplexNewtonsMethod(RealNewtonsMethod):
 
 class OutputIsZero(Scene):
     def construct(self):
-        words = TexText("Output $\\approx 0$")
+        words = OldTexText("Output $\\approx 0$")
         words.set_stroke(BLACK, 5, background=True)
         arrow = Vector(0.5 * UL)
         words.next_to(arrow, DR)
@@ -2823,7 +2822,7 @@ class OutputIsZero(Scene):
 
 class FunPartWords(Scene):
     def construct(self):
-        text = TexText("Now here's \\\\ the fun part", font_size=72)
+        text = OldTexText("Now here's \\\\ the fun part", font_size=72)
         self.add(text)
 
 
@@ -2856,7 +2855,7 @@ class ComplexNewtonsMethodManySeeds(ComplexNewtonsMethod):
 
     def add_z0_def(self):
         seed_text = Text("Many seeds: ")
-        z0_def = Tex(
+        z0_def = OldTex(
             "z_0",
             tex_to_color_map={"z_0": self.guess_color},
             font_size=self.rule_font_size
@@ -3104,7 +3103,7 @@ class IntroNewtonFractal(Scene):
 class ChaosOnBoundary(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("Chaos at\\\\the boundary"),
+            OldTexText("Chaos at\\\\the boundary"),
             bubble_config={
                 "height": 3,
                 "width": 3,
@@ -3267,7 +3266,7 @@ class EquationToFrame(Scene):
         equation = get_newton_rule()
         equation.next_to(screens[0], UP)
 
-        title = TexText("Unreasonable intricacy")
+        title = OldTexText("Unreasonable intricacy")
         title.next_to(screens[1], UP)
 
         self.wait()
@@ -3339,7 +3338,7 @@ class RepeatedNewton(Scene):
         self.add(plane)
 
     def add_labels(self):
-        eq_label = self.eq_label = Tex(
+        eq_label = self.eq_label = OldTex(
             "P(z) = " + coefs_to_poly_string(self.coefs),
             font_size=36
         )
@@ -3560,7 +3559,7 @@ class UnrelatedIdeas(TeacherStudentsScene):
         )
         self.wait(2)
         self.teacher_says(
-            TexText("Unrelated\\\\ideas"),
+            OldTexText("Unrelated\\\\ideas"),
             bubble_config={
                 "height": 3,
                 "width": 4,
@@ -3622,7 +3621,7 @@ class SimpleFractalScene(IntroNewtonFractal):
             f"r_{i + 1}": interpolate_color(self.colors[i], WHITE, 0.5)
             for i in range(n)
         }
-        label = Tex(
+        label = OldTex(
             "p(z) = ", *(
                 f"(z - r_{i})"
                 for i in range(1, n + 1)
@@ -3642,7 +3641,7 @@ class SimpleFractalScene(IntroNewtonFractal):
         def get_z():
             return self.plane.p2n(root_dot.get_center())
         label = VGroup(
-            Tex(f"r_{n} = "),
+            OldTex(f"r_{n} = "),
             DecimalNumber(get_z(), include_sign=True),
         )
         label.scale(0.5)
@@ -3686,8 +3685,8 @@ class FromTwoToThree(EquationToFrame):
         screens = self.get_screens()
         arrow = Arrow(*screens)
 
-        quadratic = Tex("x^2 + c_1 x + c_0")
-        cubic = Tex("x^3 + c_2 x^2 + c_1 x + c_0")
+        quadratic = OldTex("x^2 + c_1 x + c_0")
+        cubic = OldTex("x^3 + c_2 x^2 + c_1 x + c_0")
         quadratic.next_to(screens[0], UP)
         cubic.next_to(screens[1], UP)
 
@@ -3700,7 +3699,7 @@ class FromTwoToThree(EquationToFrame):
 class StudentAsksAboutComplexity(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("Why is it\\\\so complicated?"),
+            OldTexText("Why is it\\\\so complicated?"),
             index=0,
             bubble_config={
                 "height": 3,
@@ -3718,7 +3717,7 @@ class StudentAsksAboutComplexity(TeacherStudentsScene):
         self.wait()
         self.play(LaggedStart(
             PiCreatureSays(
-                self.teacher, TexText("Math is what\\\\it is"),
+                self.teacher, OldTexText("Math is what\\\\it is"),
                 target_mode="well",
                 bubble_config={
                     "height": 3,
@@ -3782,7 +3781,7 @@ class PeculiarBoundaryProperty(Scene):
         underline.insert_n_curves(20)
         underline.set_stroke(BLUE, [1, *5 * [3], 1])
 
-        subtitle = TexText(
+        subtitle = OldTexText(
             "Boundary of one color",
             " = "
             "Boundary of any other",
@@ -3816,8 +3815,8 @@ class PeculiarBoundaryProperty(Scene):
             bound_words.add(bound_word)
 
         low_equals = VGroup(
-            Tex("=").move_to(grid[3:5]),
-            Tex("=").move_to(grid[4:6]),
+            OldTex("=").move_to(grid[3:5]),
+            OldTex("=").move_to(grid[4:6]),
         )
 
         # Fractals
@@ -4230,8 +4229,8 @@ class ArtPuzzle(Scene):
     def construct(self):
         words = VGroup(
             Text("Art Puzzle:", font_size=60),
-            TexText("- Use $\\ge 3$ colors"),
-            TexText("- Boundary of one color = Boundary of all"),
+            OldTexText("- Use $\\ge 3$ colors"),
+            OldTexText("- Boundary of one color = Boundary of all"),
         )
         words.set_color(BLACK)
         words.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
@@ -4272,7 +4271,7 @@ class ZoomInOnCubic(ThreeRootFractal):
 
 class BlobsOnBlobsOnBlobs(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Blobs", *(
                 " on blobs " + ("\\\\" if n == 2 else "")
                 for n in range(6)
@@ -4290,7 +4289,7 @@ class BlobsOnBlobsOnBlobs(Scene):
 
 class FractalDimensionWords(Scene):
     def construct(self):
-        text = TexText("Fractal dimension $\\approx$ 1.44", font_size=60)
+        text = OldTexText("Fractal dimension $\\approx$ 1.44", font_size=60)
         text.to_corner(UL)
         self.play(Write(text))
         self.wait()
@@ -4305,7 +4304,7 @@ class ThinkAboutWhatPropertyMeans(TeacherStudentsScene):
         self.add(image)
 
         self.teacher_says(
-            TexText("Think about what\\\\this tells us."),
+            OldTexText("Think about what\\\\this tells us."),
             bubble_config={
                 "height": 3,
                 "width": 4,
@@ -4417,8 +4416,8 @@ class CommentsOnNaming(Scene):
 
     def setup_table(self):
         titles = VGroup(
-            TexText("How it started", font_size=60),
-            TexText("How it's going", font_size=60),
+            OldTexText("How it started", font_size=60),
+            OldTexText("How it's going", font_size=60),
         )
         titles.to_edge(UP, buff=MED_SMALL_BUFF)
         titles.set_color(GREY_A)
@@ -4446,7 +4445,7 @@ class CommentsOnNaming(Scene):
         newton_formula = get_newton_rule(var="x")
         newton_formula.next_to(newton, UP)
 
-        nf_label = TexText("``Newton's'' fractal")
+        nf_label = OldTexText("``Newton's'' fractal")
         nf_label.align_to(newton_formula, UP)
         nf_label.set_x(self.right_point[0])
 
@@ -4464,7 +4463,7 @@ class CommentsOnNaming(Scene):
             height=4,
         )
         hamilton.move_to(self.left_point)
-        hamiltons_equation = Tex(
+        hamiltons_equation = OldTex(
             r"\frac{\mathrm{d} \boldsymbol{q}}{\mathrm{d} t}=\frac{\partial \mathcal{H}}{\partial \boldsymbol{p}}, \quad \frac{\mathrm{d} \boldsymbol{p}}{\mathrm{d} t}=-\frac{\partial \mathcal{H}}{\partial \boldsymbol{q}}"
         )
         hamiltons_equation.match_width(hamilton[0])
@@ -4493,7 +4492,7 @@ class CommentsOnNaming(Scene):
             height=4
         )
         fourier.move_to(self.left_point)
-        fourier_transform = Tex(
+        fourier_transform = OldTex(
             r"f(t)=\int_{0}^{\infty}(a(\lambda) \cos (2 \pi \lambda t)+b(\lambda) \sin (2 \pi \lambda t)) d \lambda"
         )
         fourier_transform.set_width(fourier.get_width() * 1.5)
@@ -4552,7 +4551,7 @@ class CommentsOnNaming(Scene):
 class MakeFunOfNextVideo(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("``Next part''...I've\\\\heard that before."),
+            OldTexText("``Next part''...I've\\\\heard that before."),
             target_mode="sassy",
             index=2,
             added_anims=[LaggedStart(
@@ -4563,7 +4562,7 @@ class MakeFunOfNextVideo(TeacherStudentsScene):
         )
         self.wait()
         self.teacher_says(
-            TexText("Wait, for real\\\\this time!"),
+            OldTexText("Wait, for real\\\\this time!"),
             bubble_config={
                 "height": 3,
                 "width": 3,
@@ -4647,18 +4646,18 @@ class HolomorphicDynamics(Scene):
         self.image = image
 
     def repeated_functions(self):
-        basic_expr = Tex(
+        basic_expr = OldTex(
             "z", "\\rightarrow ", " f(z)"
         )
         fz = basic_expr.get_part_by_tex("f(z)")
         basic_expr.next_to(self.title, DOWN, LARGE_BUFF)
         basic_expr.to_edge(LEFT, buff=LARGE_BUFF)
         brace = Brace(fz, DOWN)
-        newton = Tex("z - {P(z) \\over P'(z)}")
+        newton = OldTex("z - {P(z) \\over P'(z)}")
         newton.next_to(brace, DOWN)
         newton.align_to(basic_expr[1], LEFT)
-        newton_example = Tex("z - {z^3 + z - 1 \\over 3z^2 + 1}")
-        eq = Tex("=").rotate(PI / 2)
+        newton_example = OldTex("z - {z^3 + z - 1 \\over 3z^2 + 1}")
+        eq = OldTex("=").rotate(PI / 2)
         eq.next_to(newton, DOWN)
         newton_example.next_to(eq, DOWN)
 
@@ -4670,10 +4669,10 @@ class HolomorphicDynamics(Scene):
         newton_group.target.scale(0.7)
         newton_group.target.to_corner(DL)
 
-        mandelbrot = Tex("z^2 + c")
+        mandelbrot = OldTex("z^2 + c")
         mandelbrot.next_to(brace, DOWN)
 
-        exponential = Tex("a^z")
+        exponential = OldTex("a^z")
         exponential.next_to(brace, DOWN)
 
         self.play(
@@ -4710,7 +4709,7 @@ class HolomorphicDynamics(Scene):
             rhs.generate_target()
             if rhs is not exponential:
                 rhs.target.scale(1 / 0.7)
-            lhs = Tex("f(z) = ")
+            lhs = OldTex("f(z) = ")
             lhs.next_to(rhs.target, LEFT)
             f_eqs.add(VGroup(lhs, rhs.target))
             lhss.add(lhs)
@@ -4769,7 +4768,7 @@ class HolomorphicDynamics(Scene):
         out_words.next_to(brace, DOWN)
         out_words.set_color(YELLOW)
 
-        f_prime = TexText("$f'(z)$ exists")
+        f_prime = OldTexText("$f'(z)$ exists")
         f_prime.set_color(YELLOW)
         f_prime.next_to(underline, DOWN, MED_LARGE_BUFF)
         f_prime.match_y(fz)
@@ -4810,7 +4809,7 @@ class AmbientRepetition(Scene):
         z0 = complex(0, 0)
         dot = Dot(color=BLUE)
         dot.move_to(plane.n2p(z0))
-        z_label = Tex("z", font_size=font_size)
+        z_label = OldTex("z", font_size=font_size)
         z_label.set_stroke(BLACK, 5, background=True)
         z_label.next_to(dot, UP, SMALL_BUFF)
         self.add(dot, z_label)
@@ -4829,7 +4828,7 @@ class AmbientRepetition(Scene):
             dot_copy = dot.copy()
             dot_copy.move_to(new_point)
             dot_copy.set_color(YELLOW)
-            fz_label = Tex("f(z)", font_size=font_size)
+            fz_label = OldTex("f(z)", font_size=font_size)
             fz_label.set_stroke(BLACK, 8, background=True)
             fz_label.next_to(dot_copy, UP, SMALL_BUFF)
 
@@ -4881,9 +4880,9 @@ class BriefMandelbrot(Scene):
             }
         }
         terms = self.terms = VGroup(
-            Tex("z_{n + 1} = z_n^2 + {c}", **kw),
-            Tex("z_0 = 0", **kw),
-            Tex("{c} \\text{ can be changed}", **kw),
+            OldTex("z_{n + 1} = z_n^2 + {c}", **kw),
+            OldTex("z_0 = 0", **kw),
+            OldTex("{c} \\text{ can be changed}", **kw),
         )
         terms.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         terms.next_to(self.plane, LEFT, MED_LARGE_BUFF)

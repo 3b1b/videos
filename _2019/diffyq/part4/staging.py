@@ -5,14 +5,14 @@ from _2019.diffyq.part2.wordy_scenes import WriteHeatEquationTemplate
 
 class FourierName(Scene):
     def construct(self):
-        name = TexText("Joseph Fourier")
+        name = OldTexText("Joseph Fourier")
         name.scale(1.5)
         self.add(name)
 
 
 class FourierSeriesFormula(Scene):
     def construct(self):
-        formula = Tex(
+        formula = OldTex(
             "c_{n} = \\int_0^1 e^{-2\\pi i {n} {t}}f({t}){dt}",
             tex_to_color_map={
                 "{n}": YELLOW,
@@ -26,7 +26,7 @@ class FourierSeriesFormula(Scene):
 
 class Zoom100Label(Scene):
     def construct(self):
-        text = TexText("100x Zoom")
+        text = OldTexText("100x Zoom")
         text.scale(2)
         self.play(GrowFromCenter(text))
         self.wait()
@@ -43,7 +43,7 @@ class RelationToOtherVideos(Scene):
         # Show three videos
         videos = self.get_video_thumbnails()
         brace = Brace(videos, UP)
-        text = TexText("Heat equation")
+        text = OldTexText("Heat equation")
         text.scale(2)
         text.next_to(brace, UP)
 
@@ -160,7 +160,7 @@ class FourierGainsImmortality(Scene):
         fourier = ImageMobject("Joseph Fourier")
         fourier.set_height(5)
         fourier.to_edge(LEFT)
-        name = TexText("Joseph Fourier")
+        name = OldTexText("Joseph Fourier")
         name.next_to(fourier, DOWN)
 
         immortals = self.get_immortals()
@@ -194,7 +194,7 @@ class FourierGainsImmortality(Scene):
 
         frame = SurroundingRectangle(images)
         frame.set_color(WHITE)
-        title = TexText("Immortals of Math")
+        title = OldTexText("Immortals of Math")
         title.match_width(frame)
         title.next_to(frame, UP)
 
@@ -248,7 +248,7 @@ class WhichWavesAreAvailable(Scene):
         axes_group.set_height(FRAME_HEIGHT - 1.25)
         axes_group.to_edge(RIGHT)
         axes_group.to_edge(UP, buff=MED_SMALL_BUFF)
-        dots = TexText("\\vdots")
+        dots = OldTexText("\\vdots")
         dots.next_to(axes_group, DOWN)
         dots.shift_onto_screen()
 
@@ -273,7 +273,7 @@ class WhichWavesAreAvailable(Scene):
             graph.set_stroke(width=2)
             graphs.add(graph)
 
-            func_label = Tex(
+            func_label = OldTex(
                 self.trig_func_tex + "\\left(",
                 str(k),
                 "(\\pi / L)x\\right)",
@@ -293,7 +293,7 @@ class WhichWavesAreAvailable(Scene):
             hl2.move_to(graph.get_end())
             h_lines.add(hl1, hl2)
 
-        words = TexText(self.bc_words)
+        words = OldTexText(self.bc_words)
         words.next_to(axes_group, LEFT)
         words.to_edge(UP)
 
@@ -347,21 +347,21 @@ class CommentOnFouriersImmortality(FourierGainsImmortality):
         immortals = self.get_immortals()
         immortals.to_edge(LEFT)
         fourier = immortals.fourier
-        name = TexText("Joseph", "Fourier")
+        name = OldTexText("Joseph", "Fourier")
         name.scale(1.5)
         name.move_to(FRAME_WIDTH * RIGHT / 4)
         name.to_edge(DOWN)
 
         fourier_things = VGroup(
-            TexText("Fourier transform"),
-            TexText("Fourier series"),
-            TexText("Complex Fourier series"),
-            TexText("Discrete Fourier transform"),
-            TexText("Fractional Fourier transform"),
-            TexText("Fast Fourier transform"),
-            TexText("Quantum Fourier transform"),
-            TexText("Fourier transform spectroscopy"),
-            Tex("\\vdots"),
+            OldTexText("Fourier transform"),
+            OldTexText("Fourier series"),
+            OldTexText("Complex Fourier series"),
+            OldTexText("Discrete Fourier transform"),
+            OldTexText("Fractional Fourier transform"),
+            OldTexText("Fast Fourier transform"),
+            OldTexText("Quantum Fourier transform"),
+            OldTexText("Fourier transform spectroscopy"),
+            OldTex("\\vdots"),
         )
         fourier_things.arrange(
             DOWN,
@@ -466,7 +466,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
             dots, DOWN, MED_LARGE_BUFF,
             aligned_edge=RIGHT
         )
-        words = TexText("Sum to $\\infty$")
+        words = OldTexText("Sum to $\\infty$")
         words.next_to(arrow, DOWN)
 
         self.play(
@@ -552,7 +552,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         outline.set_stroke(YELLOW, 1)
         outline.set_fill(opacity=0)
 
-        question = TexText(
+        question = OldTexText(
             "What$\\dots$\\\\ does this mean?"
         )
         question.scale(0.7)
@@ -589,7 +589,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
             num_decimal_places=1
         )
 
-        num_inf_sum = Tex(
+        num_inf_sum = OldTex(
             "{1 \\over 1}",
             "-{1 \\over 3}",
             "+{1 \\over 5}",
@@ -655,7 +655,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         decimal.add_updater(lambda d: d.next_to(tip, UP, SMALL_BUFF))
 
         term_count = VGroup(
-            Integer(1), TexText("terms")
+            Integer(1), OldTexText("terms")
         )
         term_count_tracker = ValueTracker(1)
         term_count[0].set_color(YELLOW)
@@ -672,7 +672,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         pi_fourths_tip.move_to(
             number_line.n2p(PI / 4), UP,
         )
-        pi_fourths_label = Tex(
+        pi_fourths_label = OldTex(
             "{\\pi \\over 4} ="
         )
         pi_fourths_value = DecimalNumber(
@@ -837,7 +837,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         )
         get_input = input_tracker.get_value
 
-        input_label = Tex("x =", "0.2")
+        input_label = OldTex("x =", "0.2")
         input_decimal = DecimalNumber(get_input())
         input_decimal.replace(input_label[1])
         input_decimal.set_color(BLUE)
@@ -888,7 +888,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
             ))
         )
 
-        n_waves_label = TexText(
+        n_waves_label = OldTexText(
             "Sum of", "10", "waves"
         )
         n_waves_label.next_to(axes1.c2p(0.5, 1), UR)
@@ -983,7 +983,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
 
     def get_infinite_sum(self):
         colors = self.colors
-        inf_sum = Tex(
+        inf_sum = OldTex(
             "{4 \\over \\pi}", "\\left(",
             "{\\cos\\left({1}\\pi x\\right) \\over {1}}",
             "-",
@@ -1038,7 +1038,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
         conditions.next_to(values, RIGHT, LARGE_BUFF)
         brace = Brace(values, LEFT)
 
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.scale(1.5)
         eq.next_to(brace, LEFT)
 
@@ -1058,7 +1058,7 @@ class StepFunctionSolutionFormla(WriteHeatEquationTemplate):
     }
 
     def construct(self):
-        formula = Tex(
+        formula = OldTex(
             "T({x}, {t}) = ",
             "{4 \\over \\pi}",
             "\\left(",
@@ -1084,7 +1084,7 @@ class StepFunctionSolutionFormla(WriteHeatEquationTemplate):
 
 class TechnicalNuances(Scene):
     def construct(self):
-        title = TexText("Technical nuances not discussed")
+        title = OldTexText("Technical nuances not discussed")
         title.scale(1.5)
         title.set_color(YELLOW)
         line = DashedLine(title.get_left(), title.get_right())
@@ -1172,8 +1172,8 @@ class AskAboutComplexNotVector(Scene):
         group.to_corner(UL, buff=0.2)
 
         q1, q2 = questions = VGroup(
-            TexText("Why not this?").set_color(BLUE),
-            TexText("Instead of this?").set_color(YELLOW),
+            OldTexText("Why not this?").set_color(BLUE),
+            OldTexText("Instead of this?").set_color(YELLOW),
         )
         questions.scale(1.5)
         for q, ex in zip(questions, group):
@@ -1227,11 +1227,11 @@ class SwapIntegralAndSum(Scene):
                 "{n}": YELLOW,
             },
         }
-        int_ft = Tex(
+        int_ft = OldTex(
             "\\int_0^1 f({t}) {dt}",
             **tex_config
         )
-        int_sum = Tex(
+        int_sum = OldTex(
             """
             =
             \\int_0^1 \\left(
@@ -1245,7 +1245,7 @@ class SwapIntegralAndSum(Scene):
             """,
             **tex_config
         )
-        sum_int = Tex(
+        sum_int = OldTex(
             """
             = \\cdots +
             \\int_0^1
@@ -1282,21 +1282,21 @@ class SwapIntegralAndSum(Scene):
         sum_int.exp_terms = self.get_exp_terms(sum_int)
         sum_int.int_terms = self.get_integral_terms(sum_int)
 
-        breakdown_label = TexText(
+        breakdown_label = OldTexText(
             "Break this down"
         )
         arrow = Vector(LEFT)
         arrow.next_to(int_ft, RIGHT)
         breakdown_label.next_to(arrow, RIGHT)
 
-        aos_label = TexText(
+        aos_label = OldTexText(
             "Average of a sum",
             tex_to_color_map={
                 "Average": light_pink,
                 "sum": YELLOW,
             }
         )
-        soa_label = TexText(
+        soa_label = OldTexText(
             "Sum over averages",
             tex_to_color_map={
                 "averages": light_pink,
@@ -1412,7 +1412,7 @@ class SwapIntegralAndSum(Scene):
         self.show_individual_average(braces[3], 2)
         self.show_individual_average(braces[1], 0)
 
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(int_ft, RIGHT)
         c0 = self.c0.copy()
         c0.generate_target()
@@ -1436,7 +1436,7 @@ class SwapIntegralAndSum(Scene):
         c2_rect.set_stroke(WHITE, 2)
         c2_rect.stretch(1.5, 1, about_edge=DOWN)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(c2_rect, UP)
 
         last_diagram = self.all_average_diagrams[-2]
@@ -1465,13 +1465,13 @@ class SwapIntegralAndSum(Scene):
 
         dt_part = int_ft.get_part_by_tex("{dt}")
         pre_dt_part = int_ft[:-1]
-        new_exp = Tex(
+        new_exp = OldTex(
             "e^{{-2} \\cdot 2\\pi i {t}}",
             **self.tex_config,
         )
         new_exp.next_to(pre_dt_part, RIGHT, SMALL_BUFF)
         new_exp.shift(0.05 * UP)
-        something = TexText("(something)")
+        something = OldTexText("(something)")
         something.replace(new_exp, dim_to_match=0)
         something.align_to(new_exp, DOWN)
 
@@ -1503,7 +1503,7 @@ class SwapIntegralAndSum(Scene):
         moving_exp = new_exp.copy()
         rect = SurroundingRectangle(moving_exp)
         rect.set_stroke(GREY_B, width=1)
-        times = Tex("\\times")
+        times = OldTex("\\times")
         times.next_to(rect, LEFT, SMALL_BUFF)
         moving_exp.add(VGroup(rect, times))
         moving_exp[-1].set_opacity(0)
@@ -1526,7 +1526,7 @@ class SwapIntegralAndSum(Scene):
                 n_str = "{\\cdot" + str(abs(n)) + "}"
             else:
                 n_str = "{" + str(n) + "}"
-            replacement1 = Tex(
+            replacement1 = OldTex(
                 "e^{", n_str, "\\cdot 2\\pi i", "{t}",
                 tex_to_color_map={
                     "{t}": PINK,
@@ -1565,7 +1565,7 @@ class SwapIntegralAndSum(Scene):
         int_ft = self.int_ft
         c2 = self.c0.copy()
         c2.generate_target()
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(int_ft, RIGHT)
         c2.target.next_to(eq, RIGHT)
         c2.target.shift(0.05 * DOWN)
@@ -1576,7 +1576,7 @@ class SwapIntegralAndSum(Scene):
         self.wait()
 
     def add_general_expression(self):
-        expression = Tex(
+        expression = OldTex(
             """
             c_{n} =
             \\int_0^1 f({t})
@@ -1609,11 +1609,11 @@ class SwapIntegralAndSum(Scene):
         if n == 0:
             if cn_tex is None:
                 cn_tex = "c_" + str(n)
-            result = Tex(cn_tex)
+            result = OldTex(cn_tex)
             result[0][1].set_color(YELLOW)
             self.c0 = result
         else:
-            result = Tex("0")
+            result = OldTex("0")
             result.set_color(self.light_pink)
         result.next_to(brace, DOWN, SMALL_BUFF)
 
@@ -1702,7 +1702,7 @@ class SwapIntegralAndSum(Scene):
     #
     def fix_minuses(self, tex_mob):
         for mob in tex_mob.get_parts_by_tex("{\\cdot"):
-            minus = Tex("-")
+            minus = OldTex("-")
             minus.match_style(mob[0])
             minus.set_width(
                 3 * mob[0].get_width(),
@@ -1734,7 +1734,7 @@ class SwapIntegralAndSum(Scene):
 
 class FootnoteOnSwappingIntegralAndSum(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             """
             Typically in math, you have to be more\\\\
             careful swapping the order of sums like\\\\
@@ -1777,11 +1777,11 @@ class ShowRangeOfCnFormulas(Scene):
 
     def get_formula(self, n):
         if n is None:
-            return Tex("\\vdots")
+            return OldTex("\\vdots")
         light_pink = interpolate_color(PINK, WHITE, 0.25)
         n_str = "{" + str(n) + "}"
         neg_n_str = "{" + str(-n) + "}"
-        expression = Tex(
+        expression = OldTex(
             "c_" + n_str, "=",
             "\\int_0^1 f({t})",
             "e^{", neg_n_str,
@@ -1816,7 +1816,7 @@ class DescribeSVG(Scene):
 
         dot = Dot()
         dot.set_color(PINK)
-        ft_label = Tex("f(t) = ")
+        ft_label = OldTex("f(t) = ")
         ft_label.to_corner(UL)
         z_decimal = DecimalNumber(num_decimal_places=3)
         z_decimal.next_to(ft_label, RIGHT)
@@ -1827,11 +1827,11 @@ class DescribeSVG(Scene):
         rect = BackgroundRectangle(VGroup(ft_label, z_decimal))
 
         brace = Brace(rect, DOWN)
-        question = TexText("Where is this defined?")
+        question = OldTexText("Where is this defined?")
         question.add_background_rectangle()
         question.next_to(brace, DOWN)
 
-        answer = TexText("Read in some .svg")
+        answer = OldTexText("Read in some .svg")
         answer.add_background_rectangle()
         answer.next_to(question, DOWN, LARGE_BUFF)
 
@@ -1912,7 +1912,7 @@ class NumericalIntegration(Scene):
         self.add_integral()
 
     def add_title(self):
-        title = TexText("Integrate numerically")
+        title = OldTexText("Integrate numerically")
         title.scale(1.5)
         title.to_edge(UP)
         line = Line()
@@ -1922,14 +1922,14 @@ class NumericalIntegration(Scene):
         self.title = title
 
     def add_integral(self):
-        integral = Tex(
+        integral = OldTex(
             "c_{n}", "=", "\\int_0^1 f({t})"
             "e^{-{n} \\cdot 2\\pi i {t}}{dt}",
             **self.tex_config,
         )
         integral.to_edge(LEFT)
 
-        sum_tex = Tex(
+        sum_tex = OldTex(
             " \\approx \\text{sum([} \\dots",
             "f({0.01}) e^{-{n} \\cdot 2\\pi i ({0.01})}({0.01})"
             "\\dots \\text{])}",
@@ -2005,7 +2005,7 @@ class StepFunctionIntegral(Scene):
                 "{n}": YELLOW,
             }
         }
-        cn_expression = Tex(
+        cn_expression = OldTex(
             """
             c_{n} =
             \\int_0^1 \\text{step}({t})
@@ -2013,7 +2013,7 @@ class StepFunctionIntegral(Scene):
             """,
             **tex_config
         )
-        expansion = Tex(
+        expansion = OldTex(
             """
             =
             \\int_0^{0.5} 1 \\cdot e^{-{n}\\cdot 2\\pi i {t}} {dt} +
@@ -2026,14 +2026,14 @@ class StepFunctionIntegral(Scene):
         group.set_width(FRAME_WIDTH - 1)
         group.to_corner(UL)
 
-        words1 = Tex(
+        words1 = OldTex(
             "\\text{Challenge 1: Show that }"
             "c_{n} = {2 \\over {n} \\pi i}",
             "\\text{ for odd }", "{n}",
             "\\text{ and 0 otherwise}",
             **tex_config,
         )
-        words2 = Tex(
+        words2 = OldTex(
             "\\text{Challenge 2: }",
             "&\\text{Using }",
             "\\sin(x) = (e^{ix} - e^{-ix}) / 2i,",
@@ -2047,7 +2047,7 @@ class StepFunctionIntegral(Scene):
             "\\sin\\left({n} \\cdot 2\\pi {t}\\right)",
             **tex_config,
         )
-        words3 = TexText(
+        words3 = OldTexText(
             "Challenge 3: How can you turn this into an "
             "expansion with \\\\ \\phantom{Challenge 3:} cosines? "
             "(Hint: Draw the sine waves over $[0.25, 0.75]$)",
@@ -2071,7 +2071,7 @@ class StepFunctionIntegral(Scene):
 
 class GeneralChallenge(Scene):
     def construct(self):
-        title = TexText("More ambitious challenge")
+        title = OldTexText("More ambitious challenge")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         title.set_color(BLUE)
@@ -2089,12 +2089,12 @@ class GeneralChallenge(Scene):
                 "{n}": YELLOW,
             }
         }
-        words1 = TexText(
+        words1 = OldTexText(
             "In some texts, for a function $f$ on the input range $[0, 1]$,\\\\",
             "its Fourier series is presented like this:",
             alignment="",
         )
-        formula1 = Tex(
+        formula1 = OldTex(
             "f(t) = {a_{0} \\over 2} + "
             "\\sum_{n = 1}^{\\infty} \\big("
             "a_{n} \\cos\\left({n} \\cdot 2\\pi {t}\\right) + "
@@ -2102,14 +2102,14 @@ class GeneralChallenge(Scene):
             **tex_config
         )
         formula1[0][6].set_color(YELLOW)
-        words2 = TexText("where")
-        formula2 = Tex(
+        words2 = OldTexText("where")
+        formula2 = OldTex(
             "a_{n} = 2\\int_0^1 f({t})\\cos\\left({n} \\cdot 2\\pi {t}\\right) {dt}\\\\"
             # "\\text{ and }"
             "b_{n} = 2\\int_0^1 f({t})\\sin\\left({n} \\cdot 2\\pi {t}\\right) {dt}",
             **tex_config
         )
-        words3 = TexText("How is this the same as what we just did?")
+        words3 = OldTexText("How is this the same as what we just did?")
 
         prompt = VGroup(words1, formula1, words2, formula2, words3)
         prompt.arrange(DOWN, buff=MED_LARGE_BUFF)
@@ -2128,8 +2128,8 @@ class HintToGeneralChallenge(Scene):
             fill_color=GREY_E,
             fill_opacity=1,
         ))
-        words1 = TexText("Hint: Try writing")
-        formula1 = Tex(
+        words1 = OldTexText("Hint: Try writing")
+        formula1 = OldTex(
             "c_{n} =",
             "{", "a_{n} \\over 2} +",
             "{", "b_{n} \\over 2} i",
@@ -2137,8 +2137,8 @@ class HintToGeneralChallenge(Scene):
                 "{n}": YELLOW,
             }
         )
-        words2 = TexText("and")
-        formula2 = Tex(
+        words2 = OldTexText("and")
+        formula2 = OldTex(
             "e^{i{x}} =",
             "\\cos\\left({x}\\right) +",
             "i\\sin\\left({x}\\right)",
@@ -2163,8 +2163,8 @@ class OtherResources(Scene):
             ImageMobject("CodingTrainFourier"),
         )
         names = VGroup(
-            TexText("Mathologer"),
-            TexText("The Coding Train"),
+            OldTexText("Mathologer"),
+            OldTexText("The Coding Train"),
         )
 
         for thumbnail, name in zip(thumbnails, names):
@@ -2183,7 +2183,7 @@ class OtherResources(Scene):
             )
             self.wait()
 
-        url = TexText("www.jezzamon.com")
+        url = OldTexText("www.jezzamon.com")
         url.scale(1.5)
         url.move_to(FRAME_WIDTH * RIGHT / 5)
         url.to_edge(UP)
@@ -2203,7 +2203,7 @@ class ExponentialsMoreBroadly(Scene):
         self.show_matrix_exponent()
 
     def write_fourier_series(self):
-        formula = Tex(
+        formula = OldTex(
             "f({t}) = "
             "\\sum_{n = -\\infty}^\\infty",
             "c_{n}", "e^{{n} \\cdot 2\\pi i {t}}"
@@ -2237,7 +2237,7 @@ class ExponentialsMoreBroadly(Scene):
     def pull_out_complex_exponent(self):
         formula = self.formula
 
-        c_exp = Tex("e^{it}")
+        c_exp = OldTex("e^{it}")
         c_exp[0][2].set_color(LIGHT_PINK)
         c_exp.set_stroke(BLACK, 3, background=True)
         c_exp.move_to(formula.get_part_by_tex("e^"), DL)
@@ -2273,7 +2273,7 @@ class ExponentialsMoreBroadly(Scene):
         circle = self.circle
         dot = self.dot
 
-        m_exp = Tex(
+        m_exp = OldTex(
             "\\text{exp}\\left("
             "\\left[ \\begin{array}{cc}0 & -1 \\\\ 1 & 0 \\end{array} \\right]",
             "{t} \\right)",

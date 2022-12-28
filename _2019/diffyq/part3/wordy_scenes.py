@@ -5,7 +5,7 @@ from _2019.diffyq.part2.wordy_scenes import *
 class ThreeMainObservations(Scene):
     def construct(self):
         fourier = ImageMobject("Joseph Fourier")
-        name = TexText("Joseph Fourier")
+        name = OldTexText("Joseph Fourier")
         name.match_width(fourier)
         name.next_to(fourier, DOWN, SMALL_BUFF)
         fourier.add(name)
@@ -20,15 +20,15 @@ class ThreeMainObservations(Scene):
         bubble.move_tip_to(fourier.get_corner(UL) + 0.5 * DR)
 
         observations = VGroup(
-            TexText(
+            OldTexText(
                 "1)",
                 "Sine = Nice",
             ),
-            TexText(
+            OldTexText(
                 "2)",
                 "Linearity"
             ),
-            TexText(
+            OldTexText(
                 "3)",
                 "Fourier series"
             ),
@@ -75,7 +75,7 @@ class LastChapterWrapper(Scene):
         rect = ScreenRectangle(height=6)
         rect.set_stroke(WHITE, 2)
         rect.set_fill(BLACK, 1)
-        title = TexText("Last chapter")
+        title = OldTexText("Last chapter")
         title.scale(2)
         title.to_edge(UP)
         rect.next_to(title, DOWN)
@@ -95,7 +95,7 @@ class ThreeConstraints(WriteHeatEquationTemplate):
 
     def cross_out_solving(self):
         equation = self.get_d1_equation()
-        words = TexText("Solve this equation")
+        words = OldTexText("Solve this equation")
         words.to_edge(UP)
         equation.next_to(words, DOWN)
         cross = Cross(words)
@@ -112,7 +112,7 @@ class ThreeConstraints(WriteHeatEquationTemplate):
         equation = self.equation
         to_remove = self.to_remove
 
-        title = Tex(
+        title = OldTex(
             "\\text{Constraints }"
             "T({x}, {t})"
             "\\text{ must satisfy:}",
@@ -121,9 +121,9 @@ class ThreeConstraints(WriteHeatEquationTemplate):
         title.to_edge(UP)
 
         items = VGroup(
-            TexText("1)", "The PDE"),
-            TexText("2)", "Boundary condition"),
-            TexText("3)", "Initial condition"),
+            OldTexText("1)", "The PDE"),
+            OldTexText("2)", "Boundary condition"),
+            OldTexText("3)", "Initial condition"),
         )
         items.scale(0.7)
         items.arrange(RIGHT, buff=LARGE_BUFF)
@@ -132,7 +132,7 @@ class ThreeConstraints(WriteHeatEquationTemplate):
         items[1].set_color(MAROON_B)
         items[2].set_color(RED)
 
-        bc_paren = TexText("(Explained soon)")
+        bc_paren = OldTexText("(Explained soon)")
         bc_paren.scale(0.7)
         bc_paren.next_to(items[1], DOWN)
 
@@ -179,7 +179,7 @@ class BorderRect(Scene):
 class SeekIdealized(Scene):
     def construct(self):
         phrases = VGroup(*[
-            TexText(
+            OldTexText(
                 "Seek", text, "problems",
                 tex_to_color_map={
                     "realistic": GREEN,
@@ -208,10 +208,10 @@ class SeekIdealized(Scene):
         low_arrow = arrow.copy()
         low_arrow.next_to(words[3], DOWN)
 
-        solutions = TexText("solutions")
+        solutions = OldTexText("solutions")
         solutions.scale(2)
         solutions.move_to(phrases[3][1], UL)
-        models = TexText("models")
+        models = OldTexText("models")
         models.scale(2)
         models.next_to(
             words[0], RIGHT, buff=0.35,
@@ -266,7 +266,7 @@ class SeekIdealized(Scene):
 
 class SecondDerivativeOfSine(Scene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "{d^2 \\over d{x}^2}",
             "\\cos\\left({x}\\right) =",
             "-\\cos\\left({x}\\right)",
@@ -290,11 +290,11 @@ class EquationAboveSineAnalysis(WriteHeatEquationTemplate):
         t_terms = equation.get_parts_by_tex("{t}")[1:]
         t_terms.save_state()
         zeros = VGroup(*[
-            Tex("0").replace(t, dim_to_match=1)
+            OldTex("0").replace(t, dim_to_match=1)
             for t in t_terms
         ])
         zeros.align_to(t_terms, DOWN)
-        new_rhs = Tex(
+        new_rhs = OldTex(
             "=", "-\\alpha \\cdot {T}", "({x}, 0)",
             **self.tex_mobject_config
         )
@@ -346,7 +346,7 @@ class ExpVideoWrapper(Scene):
         rect = SurroundingRectangle(screen, buff=0)
         rect.set_stroke(WHITE, 2)
         screen.add(rect)
-        title = TexText("Need a refresher?")
+        title = OldTexText("Need a refresher?")
         title.scale(1.5)
         title.to_edge(UP)
         screen.next_to(title, DOWN)
@@ -375,18 +375,18 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
         pde.to_edge(UP)
         pde.generate_target()
 
-        new_rhs = Tex(
+        new_rhs = OldTex(
             "=- \\alpha \\cdot T",
             **self.tex_mobject_config,
         )
         new_rhs.next_to(pde, RIGHT)
         new_rhs.align_to(pde.get_part_by_tex("alpha"), DOWN)
 
-        equation1 = Tex(
+        equation1 = OldTex(
             "T({x}, {0}) = \\sin\\left({x}\\right)",
             **self.tex_mobject_config
         )
-        equation2 = Tex(
+        equation2 = OldTex(
             "T({x}, {t}) = \\sin\\left({x}\\right)",
             "e^{-\\alpha{t}}",
             **self.tex_mobject_config
@@ -425,7 +425,7 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
         self.play(FadeOut(exp_rect))
 
         # Take partial derivatives wrt x
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.next_to(pde.get_part_by_tex("="), UP)
         q_mark.set_color(RED)
 
@@ -435,7 +435,7 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
             eq2_part2.get_corner(DL),
             DOWN, MED_LARGE_BUFF
         )
-        ddx_label1 = Tex(
+        ddx_label1 = OldTex(
             "\\partial \\over \\partial {x}",
             **self.tex_mobject_config,
         )
@@ -455,11 +455,11 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
 
         eq2_part2_rect = SurroundingRectangle(eq2_part2)
 
-        dx = Tex(
+        dx = OldTex(
             "\\cos\\left({x}\\right)", "e^{-\\alpha {t}}",
             **self.tex_mobject_config
         )
-        ddx = Tex(
+        ddx = OldTex(
             "-\\sin\\left({x}\\right)", "e^{-\\alpha {t}}",
             **self.tex_mobject_config
         )
@@ -544,7 +544,7 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
         dt_arrow.flip(UP)
         dt_arrow.next_to(dx_arrows, LEFT, MED_LARGE_BUFF)
 
-        dt_label = Tex(
+        dt_label = OldTex(
             "\\partial \\over \\partial {t}",
             **self.tex_mobject_config,
         )
@@ -561,10 +561,10 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
 
         minus_alpha_in_exp = rhs_copy[-3][1:].copy()
         minus_alpha_in_exp.set_color(RED)
-        minus_alpha = Tex("-\\alpha")
+        minus_alpha = OldTex("-\\alpha")
         minus_alpha.next_to(rhs_copy, LEFT)
         minus_alpha.align_to(rhs_copy[0][0], DOWN)
-        dot = Tex("\\cdot")
+        dot = OldTex("\\cdot")
         dot.move_to(midpoint(
             minus_alpha.get_right(),
             rhs_copy.get_left(),
@@ -605,7 +605,7 @@ class ShowSinExpDerivatives(WriteHeatEquationTemplate):
         self.wait()
 
         #
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.set_color(GREEN)
         checkmark.move_to(q_mark, DOWN)
         self.play(
@@ -625,13 +625,13 @@ class DerivativesOfLinearFunction(WriteHeatEquationTemplate):
     }
 
     def construct(self):
-        func = Tex(
+        func = OldTex(
             "T({x}, {t}) = {c} \\cdot {x}",
             **self.tex_mobject_config
         )
-        dx_T = Tex("{c}", **self.tex_mobject_config)
-        ddx_T = Tex("0")
-        dt_T = Tex("0")
+        dx_T = OldTex("{c}", **self.tex_mobject_config)
+        ddx_T = OldTex("0")
+        dt_T = OldTex("0")
 
         for mob in func, dx_T, ddx_T, dt_T:
             mob.scale(1.5)
@@ -654,7 +654,7 @@ class DerivativesOfLinearFunction(WriteHeatEquationTemplate):
         )
         dx_group.arrange(RIGHT)
         for arrow, char, vect in zip(arrows, "xxt", [UP, UP, RIGHT]):
-            label = Tex(
+            label = OldTex(
                 "\\partial \\over \\partial {%s}" % char,
                 **self.tex_mobject_config
             )
@@ -700,7 +700,7 @@ class FlatAtBoundaryWords(Scene):
         self.wait()
 
     def get_bc_words(self):
-        return TexText(
+        return OldTexText(
             "Flat at boundary\\\\"
             "for all", "${t}$", "$> 0$",
         )
@@ -747,7 +747,7 @@ class WriteOutBoundaryCondition(FlatAtBoundaryWords, ThreeConstraints, MovingCam
     def write_bc_equation(self):
         bc_words = self.bc_words
 
-        equation = Tex(
+        equation = OldTex(
             "{\\partial {T} \\over \\partial {x}}(0, {t}) = ",
             "{\\partial {T} \\over \\partial {x}}(L, {t}) = ",
             "0",
@@ -836,7 +836,7 @@ class CompareFreqDecays1to2(Scene):
 
     def get_formula(self, freq):
         f_str = str(freq)
-        return Tex(
+        return OldTex(
             "\\cos\\left(%s \\cdot {x}\\right)" % f_str,
             "e^{-\\alpha \\cdot %s^2 \\cdot {t}}" % f_str,
             tex_to_color_map={
@@ -863,7 +863,7 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
     def construct(self):
         eq = self.get_d1_equation()
         diffyq = self.get_diffyq_set()
-        is_in = Tex("\\in")
+        is_in = OldTex("\\in")
         is_in.scale(2)
 
         group = VGroup(eq, is_in, diffyq)
@@ -873,7 +873,7 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
         arrow = Vector(DOWN)
         arrow.set_stroke(WHITE, 5)
         arrow.next_to(eq, DOWN)
-        themes = TexText("Frequent themes")
+        themes = OldTexText("Frequent themes")
         themes.scale(1.5)
         themes.next_to(arrow, DOWN)
 
@@ -900,7 +900,7 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
 
     # def get_d1_equation(self):
     #     result = super().get_d1_equation()
-    #     lp, rp = parens = Tex("(", ")")
+    #     lp, rp = parens = OldTex("(", ")")
     #     parens.match_height(result)
     #     lp.next_to(result, LEFT, SMALL_BUFF)
     #     rp.next_to(result, RIGHT, SMALL_BUFF)
@@ -909,7 +909,7 @@ class WorryAboutGenerality(TeacherStudentsScene, WriteHeatEquationTemplate):
     #     return result
 
     def get_diffyq_set(self):
-        words = TexText(
+        words = OldTexText(
             "Differential\\\\equations"
         )
         words.scale(1.5)

@@ -11,13 +11,13 @@ def get_matrix_exponential(matrix, height=1.5, scalar_tex="t", **matrix_config):
         mat_class = DecimalMatrix
 
     matrix = mat_class(matrix, **matrix_config)
-    base = Tex("e")
+    base = OldTex("e")
     base.set_height(0.4 * height)
     matrix.set_height(0.6 * height)
     matrix.move_to(base.get_corner(UR), DL)
     result = VGroup(base, matrix)
     if scalar_tex:
-        scalar = Tex(scalar_tex)
+        scalar = OldTex(scalar_tex)
         scalar.set_height(0.7 * base.get_height())
         scalar.next_to(matrix, RIGHT, buff=SMALL_BUFF, aligned_edge=DOWN)
         result.add(scalar)
@@ -76,7 +76,7 @@ def mat_exp(matrix, N=100):
 
 
 def get_1d_equation(r="r"):
-    return Tex(
+    return OldTex(
         "{d \\over d{t}} x({t}) = {" + r + "} \\cdot x({t})",
         tex_to_color_map={
             "{t}": GREY_B,
@@ -87,7 +87,7 @@ def get_1d_equation(r="r"):
 
 
 def get_2d_equation(matrix=[["a", "b"], ["c", "d"]]):
-    deriv = Tex("d \\over dt", tex_to_color_map={"t": GREY_B})
+    deriv = OldTex("d \\over dt", tex_to_color_map={"t": GREY_B})
     vect = Matrix(
         [["x(t)"], ["y(t)"]],
         bracket_h_buff=SMALL_BUFF,
@@ -98,7 +98,7 @@ def get_2d_equation(matrix=[["a", "b"], ["c", "d"]]):
         }
     )
     deriv.match_height(vect)
-    equals = Tex("=")
+    equals = OldTex("=")
     matrix_mob = Matrix(matrix, h_buff=0.8)
     matrix_mob.set_color(TEAL)
     matrix_mob.match_height(vect)
@@ -118,7 +118,7 @@ class VideoWrapper(Scene):
         screen_rect.to_edge(DOWN)
         self.add(screen_rect)
 
-        title = TexText(self.title, font_size=90)
+        title = OldTexText(self.title, font_size=90)
         if title.get_width() > screen_rect.get_width():
             title.set_width(screen_rect.get_width())
         title.next_to(screen_rect, UP)
@@ -163,7 +163,7 @@ class ZoomInOnProblem(Scene):
         self.add(image)
 
         # Write problem
-        problem = TexText(
+        problem = OldTexText(
             "Compute the {{matrix}} {{$e^{At}$}}\\\\if the {{matrix A}} has the form..."
         )
         problem.to_corner(UL)
@@ -190,10 +190,10 @@ class ZoomInOnProblem(Scene):
         self.wait()
 
         # Show inputs
-        examples_label = TexText("Various matrices to\\\\plug in for $A$", font_size=40)
+        examples_label = OldTexText("Various matrices to\\\\plug in for $A$", font_size=40)
         examples_label.next_to(examples_rect)
 
-        lhs = Tex("A = ", font_size=96)
+        lhs = OldTex("A = ", font_size=96)
         lhs.set_stroke(BLACK, 5, background=True)
 
         matrices = VGroup(
@@ -227,18 +227,18 @@ class ZoomInOnProblem(Scene):
 
 class LeadToPhysicsAndQM(Scene):
     def construct(self):
-        de_words = TexText("Differential\\\\equations", font_size=60)
+        de_words = OldTexText("Differential\\\\equations", font_size=60)
         de_words.set_x(-3).to_edge(UP)
         mat_exp = get_matrix_exponential([[3, 1, 4], [1, 5, 9], [2, 6, 5]])
         mat_exp[1].set_color(TEAL)
         mat_exp.next_to(de_words, DOWN, buff=3)
 
-        qm_words = TexText("Quantum\\\\mechanics", font_size=60)
+        qm_words = OldTexText("Quantum\\\\mechanics", font_size=60)
         qm_words.set_x(3).to_edge(UP)
-        physics_words = TexText("Physics", font_size=60)
+        physics_words = OldTexText("Physics", font_size=60)
         physics_words.move_to(qm_words)
 
-        qm_exp = Tex("e^{-i \\hat{H} t / \\hbar}")
+        qm_exp = OldTex("e^{-i \\hat{H} t / \\hbar}")
         qm_exp.scale(2)
         qm_exp.refresh_bounding_box()
         qm_exp[0][0].set_height(mat_exp[0].get_height(), about_edge=UR)
@@ -281,7 +281,7 @@ class PlanForThisVideo(TeacherStudentsScene):
     def construct(self):
         s0, s1, s2 = self.students
         self.play(
-            PiCreatureSays(s0, TexText("But what\\\\is $e^{M}$?"), target_mode="raise_left_hand"),
+            PiCreatureSays(s0, OldTexText("But what\\\\is $e^{M}$?"), target_mode="raise_left_hand"),
             s1.change("erm", UL),
             s2.change("pondering", UL),
         )
@@ -289,7 +289,7 @@ class PlanForThisVideo(TeacherStudentsScene):
         s0.bubble = None
         self.play(
             PiCreatureSays(
-                s2, TexText("And who cares?"), target_mode="sassy",
+                s2, OldTexText("And who cares?"), target_mode="sassy",
                 bubble_config={"direction": LEFT},
             ),
             s1.change("hesitant", UL),
@@ -301,7 +301,7 @@ class PlanForThisVideo(TeacherStudentsScene):
 class IntroduceTheComputation(Scene):
     def construct(self):
         # Matrix in exponent
-        base = Tex("e")
+        base = OldTex("e")
         base.set_height(1.0)
         matrix = IntegerMatrix(
             [[3, 1, 4],
@@ -336,7 +336,7 @@ class IntroduceTheComputation(Scene):
         self.play(Blink(randy))
 
         # Question the repeated multiplication implication
-        rhs = Tex("= e \\cdot e \\dots e \\cdot e")
+        rhs = OldTex("= e \\cdot e \\dots e \\cdot e")
         rhs.set_height(0.75 * base.get_height())
         rhs.next_to(matrix_exp, RIGHT)
         rhs.align_to(base, DOWN)
@@ -351,7 +351,7 @@ class IntroduceTheComputation(Scene):
         brace_label.next_to(brace, DOWN, SMALL_BUFF)
 
         bubble = randy.get_bubble(
-            TexText("I'm sorry,\\\\what?!").scale(0.75),
+            OldTexText("I'm sorry,\\\\what?!").scale(0.75),
             height=2,
             width=3,
             bubble_type=SpeechBubble,
@@ -421,7 +421,7 @@ class IntroduceTheComputation(Scene):
         false_group = VGroup(false_equation, fe_rect, cross, nonsense)
 
         # Show Taylor series
-        real_equation = Tex(
+        real_equation = OldTex(
             "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots",
             isolate=["x"]
         )
@@ -471,7 +471,7 @@ class IntroduceTheComputation(Scene):
         self.wait()
 
         # Taylor series example
-        ex_rhs = Tex(
+        ex_rhs = OldTex(
             """
             {2}^0 +
             {2}^1 +
@@ -501,7 +501,7 @@ class IntroduceTheComputation(Scene):
             ]
         ))
         term_brace = Brace(ex_parts[0], DOWN)
-        frac = Tex("1", font_size=36)
+        frac = OldTex("1", font_size=36)
         frac.next_to(term_brace, DOWN, SMALL_BUFF)
 
         rects = VGroup(*(
@@ -535,9 +535,9 @@ class IntroduceTheComputation(Scene):
             value.next_to(rects[n], UP, SMALL_BUFF)
             new_brace = Brace(ex_part, DOWN)
             if fact == 1:
-                new_frac = Tex(f"{2**n}", font_size=36)
+                new_frac = OldTex(f"{2**n}", font_size=36)
             else:
-                new_frac = Tex(f"{2**n} / {fact}", font_size=36)
+                new_frac = OldTex(f"{2**n} / {fact}", font_size=36)
             new_frac.next_to(new_brace, DOWN, SMALL_BUFF)
             self.play(
                 term_brace.animate.become(new_brace),
@@ -569,7 +569,7 @@ class IntroduceTheComputation(Scene):
         )
         self.play(Blink(randy))
 
-        lhs = Tex("e \\cdot e =")
+        lhs = OldTex("e \\cdot e =")
         lhs.match_height(real_equation[0])
         lhs.next_to(ex_rhs, LEFT)
         self.play(Write(lhs))
@@ -579,10 +579,10 @@ class IntroduceTheComputation(Scene):
         # Increment input
         twos = ex_rhs.get_parts_by_tex("{2}")
         threes = VGroup(*(
-            Tex("3").set_color(YELLOW).replace(two)
+            OldTex("3").set_color(YELLOW).replace(two)
             for two in twos
         ))
-        new_lhs = Tex("e \\cdot e \\cdot e = ")
+        new_lhs = OldTex("e \\cdot e \\cdot e = ")
         new_lhs.match_height(lhs)
         new_lhs[0].space_out_submobjects(0.8)
         new_lhs[0][-1].shift(SMALL_BUFF * RIGHT)
@@ -634,14 +634,14 @@ class IntroduceTheComputation(Scene):
 
         # Alternate inputs
         rhs_tex = "X^0 + X^1 + \\frac{1}{2} X^2 + \\frac{1}{6} X^3 + \\cdots + \\frac{1}{n!} X^n + \\cdots"
-        pii_rhs = Tex(
+        pii_rhs = OldTex(
             rhs_tex.replace("X", "(\\pi i)"),
             tex_to_color_map={"(\\pi i)": BLUE},
         )
         pii_rhs.match_width(real_rhs)
 
         mat_tex = "\\left[ \\begin{array}{ccc} 3 & 1 & 4 \\\\ 1 & 5 & 9 \\\\ 2 & 6 & 5 \\end{array} \\right]"
-        mat_rhs = Tex(
+        mat_rhs = OldTex(
             rhs_tex.replace("X", mat_tex),
             tex_to_color_map={mat_tex: TEAL},
         )
@@ -698,9 +698,9 @@ class IntroduceTheComputation(Scene):
             morty.change("tease"),
         )
 
-        pii_lhs = Tex("\\text{exp}\\left(\\pi i \\right) = ")[0]
+        pii_lhs = OldTex("\\text{exp}\\left(\\pi i \\right) = ")[0]
         pii_lhs.next_to(pii_rhs, LEFT)
-        mat_lhs = Tex("\\text{exp}\\left(" + mat_tex + "\\right) = ")[0]
+        mat_lhs = OldTex("\\text{exp}\\left(" + mat_tex + "\\right) = ")[0]
         mat_lhs.match_height(mat_rhs)
         mat_lhs[:3].match_height(pii_lhs[:3])
         mat_lhs[:3].next_to(mat_lhs[3:5], LEFT, SMALL_BUFF)
@@ -741,8 +741,8 @@ class IntroduceTheComputation(Scene):
             power = part.copy()
             part.set_opacity(0)
             self.add(power)
-            base = Tex("e", font_size=60)
-            equal = Tex(":=")
+            base = OldTex("e", font_size=60)
+            equal = OldTex(":=")
             power.generate_target()
             if power.target.get_height() > 0.7:
                 power.target.set_height(0.7)
@@ -857,7 +857,7 @@ class IntroduceTheComputation(Scene):
         matrix_square = np.dot(matrix, matrix)
         result = IntegerMatrix(matrix_square, h_buff=1.3, v_buff=0.7)
         result.match_height(mat)
-        square_eq = VGroup(mat.copy(), mat.copy(), Tex("="), result)
+        square_eq = VGroup(mat.copy(), mat.copy(), OldTex("="), result)
         square_eq.arrange(RIGHT, buff=SMALL_BUFF)
         square_eq.next_to(mat_brace, DOWN)
 
@@ -886,9 +886,9 @@ class IntroduceTheComputation(Scene):
         mat_cubed.match_height(mat)
         cube_eq = VGroup(
             VGroup(mat.copy(), mat.copy(), mat.copy()).arrange(RIGHT, buff=SMALL_BUFF),
-            Tex("=").rotate(90 * DEGREES),
+            OldTex("=").rotate(90 * DEGREES),
             VGroup(mat.copy(), mat_squared.deepcopy()).arrange(RIGHT, buff=SMALL_BUFF),
-            Tex("=").rotate(90 * DEGREES),
+            OldTex("=").rotate(90 * DEGREES),
             mat_cubed
         )
         cube_eq.arrange(DOWN)
@@ -931,7 +931,7 @@ class IntroduceTheComputation(Scene):
             ["d / n!", "e / n!", "f / n!"],
             ["g / n!", "h / n!", "i / n!"],
         ])
-        factor = Tex("1 \\over n!")
+        factor = OldTex("1 \\over n!")
         factor.scale(1.5)
         factor.next_to(example_matrix, LEFT, MED_SMALL_BUFF)
 
@@ -956,9 +956,9 @@ class IntroduceTheComputation(Scene):
 
         sum_eq = VGroup(
             IntegerMatrix(mat1),
-            Tex("+"),
+            OldTex("+"),
             IntegerMatrix(mat2),
-            Tex("="),
+            OldTex("="),
             Matrix(
                 np.array([
                     f"{m1} + {m2}"
@@ -989,7 +989,7 @@ class IntroduceTheComputation(Scene):
         self.play(FadeOut(last_rects))
 
         # Ask about infinity
-        bubble = randy.get_bubble(TexText("But...going\\\\to $\\infty$?"))
+        bubble = randy.get_bubble(OldTexText("But...going\\\\to $\\infty$?"))
         bubble.shift(SMALL_BUFF * RIGHT)
         self.play(
             Write(bubble),
@@ -1010,7 +1010,7 @@ class IntroduceTheComputation(Scene):
         # Replace matrix
         pi_mat_tex = ""
         pi_mat_tex = "\\left[ \\begin{array}{cc} 0 & -\\pi \\\\ \\pi & 0 \\end{array} \\right]"
-        pi_mat_rhs = Tex(
+        pi_mat_rhs = OldTex(
             rhs_tex.replace("X", pi_mat_tex),
             tex_to_color_map={pi_mat_tex: BLUE},
         )
@@ -1069,7 +1069,7 @@ class IntroduceTheComputation(Scene):
                     MoveToTarget(brace),
                 ]
             else:
-                n_label = Tex(f"n = {n}", font_size=24)
+                n_label = OldTex(f"n = {n}", font_size=24)
                 n_label.next_to(brace.get_corner(DR), DL, SMALL_BUFF)
                 anims = [
                     FadeIn(n_label),
@@ -1116,7 +1116,7 @@ class IntroduceTheComputation(Scene):
         # Ask why
         why = Text("Why?")
         why.move_to(bubble.content, UL)
-        epii = Tex("e^{\\pi i} = -1")
+        epii = OldTex("e^{\\pi i} = -1")
         epii.next_to(morty, UL)
         later_text = Text("...but that comes later", font_size=24)
         later_text.set_color(GREY_A)
@@ -1139,7 +1139,7 @@ class IntroduceTheComputation(Scene):
         )
 
         # Show partial sums
-        new_mat_rhs = Tex(
+        new_mat_rhs = OldTex(
             rhs_tex.replace("X", mat_tex),
             tex_to_color_map={mat_tex: TEAL},
             isolate=["+"]
@@ -1186,7 +1186,7 @@ class IntroduceTheComputation(Scene):
             new_mat_rhs[:k].set_opacity(1)
             self.wait(0.5)
         brace.become(Brace(new_mat_rhs, DOWN))
-        n_label = VGroup(Tex("n = "), Integer(n))
+        n_label = VGroup(OldTex("n = "), Integer(n))
         n_label[1].set_height(n_label[0].get_height() * 1.2)
         n_label.arrange(RIGHT, SMALL_BUFF)
         n_label.set_color(GREY_B)
@@ -1272,10 +1272,10 @@ class ShowHigherMatrixPowers(IntroduceTheComputation):
         equation = VGroup(
             mat_mobs[1].deepcopy(),
             Integer(2, font_size=18),
-            Tex("="),
+            OldTex("="),
             mat_mobs[1].deepcopy(),
             mat_mobs[1].deepcopy(),
-            Tex("="),
+            OldTex("="),
             mat_mobs[2].deepcopy()
         )
         equation.arrange(RIGHT)
@@ -1331,13 +1331,13 @@ class WhyTortureMatrices(TeacherStudentsScene):
         )
         q_marks = VGroup()
         for student in self.students:
-            marks = Tex("???")
+            marks = OldTex("???")
             marks.next_to(student, UP)
             q_marks.add(marks)
         self.play(FadeIn(q_marks, 0.25 * UP, lag_ratio=0.1, run_time=2))
         self.wait(2)
         self.student_says(
-            TexText("Why...would you\\\\ever want\\\\to do that?"),
+            OldTexText("Why...would you\\\\ever want\\\\to do that?"),
             index=2,
             added_anims=[FadeOut(q_marks)],
         )
@@ -1359,16 +1359,16 @@ class DefinitionFirstVsLast(Scene):
         low_title = Text("Discovery progression")
 
         top_prog = VGroup(
-            TexText("Definition", color=BLUE),
-            TexText("Theorem"),
-            TexText("Proof"),
-            TexText("Examples"),
+            OldTexText("Definition", color=BLUE),
+            OldTexText("Theorem"),
+            OldTexText("Proof"),
+            OldTexText("Examples"),
         )
         low_prog = VGroup(
-            TexText("Specific\n\nproblem"),
-            TexText("General\n\nproblems"),
-            TexText("Helpful\n\nconstructs"),
-            TexText("Definition", color=BLUE),
+            OldTexText("Specific\n\nproblem"),
+            OldTexText("General\n\nproblems"),
+            OldTexText("Helpful\n\nconstructs"),
+            OldTexText("Definition", color=BLUE),
         )
         progs = VGroup(top_prog, low_prog)
         for progression in progs:
@@ -1382,7 +1382,7 @@ class DefinitionFirstVsLast(Scene):
                 arrows.add(Arrow(m1, m2))
             progression.arrows = arrows
 
-        top_dots = Tex("\\dots", font_size=72)
+        top_dots = OldTex("\\dots", font_size=72)
         top_dots.next_to(top_prog.arrows[0], RIGHT)
         low_dots = top_dots.copy()
         low_dots.next_to(low_prog.arrows[-1], LEFT)
@@ -1469,7 +1469,7 @@ class DefinitionFirstVsLast(Scene):
         love.set_fill(RED, 1)
         love.set_stroke(MAROON_B, 1)
 
-        quantum = Tex("|\\psi\\rangle")
+        quantum = OldTex("|\\psi\\rangle")
         quantum.set_color(BLUE)
         quantum.match_height(love)
         group = VGroup(quantum, love)
@@ -1525,8 +1525,8 @@ class RomeoAndJuliet(Scene):
         scales = [juliet_scale, romeo_scale]
 
         scale_labels = VGroup(
-            TexText("Juliet's love for Romeo", font_size=30),
-            TexText("Romeo's love for Juliet", font_size=30),
+            OldTexText("Juliet's love for Romeo", font_size=30),
+            OldTexText("Romeo's love for Juliet", font_size=30),
         )
         scale_arrows = VGroup()
         for scale, label in zip(scales, scale_labels):
@@ -1550,8 +1550,8 @@ class RomeoAndJuliet(Scene):
         # Juliet's rule
         frame = self.camera.frame
         equations = VGroup(
-            Tex("{dx \\over dt} {{=}} -{{y(t)}}"),
-            Tex("{dy \\over dt} {{=}} {{x(t)}}"),
+            OldTex("{dx \\over dt} {{=}} -{{y(t)}}"),
+            OldTex("{dy \\over dt} {{=}} {{x(t)}}"),
         )
         juliet_eq, romeo_eq = equations
         juliet_eq.next_to(scale_labels[0], UR)
@@ -1792,7 +1792,7 @@ class RomeoAndJuliet(Scene):
         dot = Dot(color=color)
         dot.add_updater(lambda m: m.move_to(number_line.n2p(creature.love_tracker.get_value())))
 
-        label = VGroup(Tex(var_name, "=", font_size=36), DecimalNumber(font_size=24))
+        label = VGroup(OldTex(var_name, "=", font_size=36), DecimalNumber(font_size=24))
         label.set_color(color)
         label[0].shift(label[1].get_left() + SMALL_BUFF * LEFT - label[0][1].get_right())
         label.next_to(number_line, UP)
@@ -1812,8 +1812,8 @@ class DiscussSystem(Scene):
     def construct(self):
         # Setup equations
         equations = VGroup(
-            Tex("{dx \\over dt} {{=}} -{{y(t)}}"),
-            Tex("{dy \\over dt} {{=}} {{x(t)}}"),
+            OldTex("{dx \\over dt} {{=}} -{{y(t)}}"),
+            OldTex("{dy \\over dt} {{=}} {{x(t)}}"),
         )
         equations.arrange(RIGHT, buff=LARGE_BUFF)
         equations.to_edge(UP, buff=1.5)
@@ -1838,8 +1838,8 @@ class DiscussSystem(Scene):
 
         # Ask for explicit solutions
         solutions = VGroup(
-            Tex("x(t) {{=}} (\\text{expression with } t)"),
-            Tex("y(t) {{=}} (\\text{expression with } t)"),
+            OldTex("x(t) {{=}} (\\text{expression with } t)"),
+            OldTex("y(t) {{=}} (\\text{expression with } t)"),
         )
         for solution in solutions:
             solution.set_color_by_tex("expression", GREY_B)
@@ -1856,8 +1856,8 @@ class DiscussSystem(Scene):
 
         # Show a guess
         guess_rhss = VGroup(
-            Tex("\\cos(t)", color=GREY_B)[0],
-            Tex("\\sin(t)", color=GREY_B)[0],
+            OldTex("\\cos(t)", color=GREY_B)[0],
+            OldTex("\\sin(t)", color=GREY_B)[0],
         )
         temp_rhss = VGroup()
         for rhs, solution in zip(guess_rhss, solutions):
@@ -1899,8 +1899,8 @@ class DiscussSystem(Scene):
         # Initial condition
         solutions.generate_target()
         initial_conditions = VGroup(
-            Tex("x(0) = x_0"),
-            Tex("y(0) = y_0"),
+            OldTex("x(0) = x_0"),
+            OldTex("y(0) = y_0"),
         )
         full_requirement = VGroup(*solutions.target, *initial_conditions)
         full_requirement.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
@@ -1940,9 +1940,9 @@ class MoreGeneralSystem(Scene):
             }
         }
         equations = VGroup(
-            Tex("{dx \\over d{t} } = a\\cdot x({t}) + b\\cdot y({t}) + c\\cdot z({t})", **kw),
-            Tex("{dy \\over d{t} } = d\\cdot x({t}) + e\\cdot y({t}) + f\\cdot z({t})", **kw),
-            Tex("{dz \\over d{t} } = g\\cdot x({t}) + h\\cdot y({t}) + i\\cdot z({t})", **kw),
+            OldTex("{dx \\over d{t} } = a\\cdot x({t}) + b\\cdot y({t}) + c\\cdot z({t})", **kw),
+            OldTex("{dy \\over d{t} } = d\\cdot x({t}) + e\\cdot y({t}) + f\\cdot z({t})", **kw),
+            OldTex("{dz \\over d{t} } = g\\cdot x({t}) + h\\cdot y({t}) + i\\cdot z({t})", **kw),
         )
         equations.arrange(DOWN, buff=LARGE_BUFF)
 
@@ -2139,7 +2139,7 @@ class RomeoJulietVectorSpace(RomeoAndJuliet):
         # Add coordinates
         equation = VGroup(
             Matrix([["x"], ["y"]], bracket_h_buff=SMALL_BUFF),
-            Tex("="),
+            OldTex("="),
             DecimalMatrix(
                 np.reshape(get_psp()[:2], (2, 1)),
                 element_to_mobject_config={
@@ -2264,7 +2264,7 @@ class RomeoJulietVectorSpace(RomeoAndJuliet):
 
         # Show equation
         rhs = VGroup(
-            Tex("="),
+            OldTex("="),
             Matrix([["-y(t)"], ["x(t)"]], bracket_h_buff=SMALL_BUFF)
         )
         rhs.match_height(deriv_lhs)
@@ -2285,7 +2285,7 @@ class RomeoJulietVectorSpace(RomeoAndJuliet):
         deriv_lhs.generate_target()
         new_eq = VGroup(
             deriv_lhs.target,
-            Tex("="),
+            OldTex("="),
             IntegerMatrix([[0, -1], [1, 0]], bracket_v_buff=MED_LARGE_BUFF),
             Matrix([["x(t)"], ["y(t)"]], bracket_h_buff=SMALL_BUFF),
         )
@@ -2317,7 +2317,7 @@ class RomeoJulietVectorSpace(RomeoAndJuliet):
         self.play(FadeOut(both_rects))
 
         # Write general form
-        general_form = Tex(
+        general_form = OldTex(
             "{d \\over dt}",
             "\\vec{\\textbf{v} }",
             "(t)",
@@ -2495,11 +2495,11 @@ class From2DTo1D(Scene):
         if self.show_solution:
             equation.generate_target()
             equation.target.to_edge(LEFT)
-            implies = Tex("\\Rightarrow")
+            implies = OldTex("\\Rightarrow")
             implies.next_to(equation.target, RIGHT)
             solution = VGroup(
                 equation[1].copy(),
-                Tex("="),
+                OldTex("="),
                 mat_exp,
                 Matrix(
                     [["x(0)"], ["y(0)"]],
@@ -2553,7 +2553,7 @@ class From2DTo1D(Scene):
             self.play(Write(arrow2, run_time=2))
             self.wait(4)
 
-            normal_exp = Tex("e^{rt}")[0]
+            normal_exp = OldTex("e^{rt}")[0]
             normal_exp.set_height(1.0)
             normal_exp[1].set_color(BLUE)
             normal_exp.move_to(mat_exp)
@@ -2578,7 +2578,7 @@ class From2DTo1D(Scene):
         nl2.set_opacity(0)
         nl.add(nl2)
 
-        new_equation = Tex(
+        new_equation = OldTex(
             "{d \\over dt}", "x(t)", "=", "r \\cdot ", "x(t)",
         )
         new_equation[0][3].set_color(GREY_B)
@@ -2652,18 +2652,18 @@ class SchroedingersEquationIntro(Scene):
             "=": WHITE,
             "i\\hbar": WHITE,
         }
-        original_equation = Tex(
+        original_equation = OldTex(
             "i\\hbar \\frac{\\partial}{\\partial t} |\\psi \\rangle = {H} |\\psi \\rangle",
             tex_to_color_map=t2c
         )
-        equation = Tex(
+        equation = OldTex(
             "\\frac{\\partial}{\\partial t} |\\psi \\rangle = \\frac{1}{i\\hbar} {H} |\\psi \\rangle",
             tex_to_color_map=t2c
         )
         VGroup(original_equation, equation).scale(1.5)
 
         psis = original_equation.get_parts_by_tex("\\psi")
-        state_label = TexText("State of a system \\\\ as a vector", font_size=36)
+        state_label = OldTexText("State of a system \\\\ as a vector", font_size=36)
         state_label.next_to(psis, DOWN, buff=1.5)
         state_label.shift(0.5 * RIGHT)
         state_arrows = VGroup(*(Arrow(state_label, psi) for psi in psis))
@@ -2718,7 +2718,7 @@ class SchroedingersEquationIntro(Scene):
         self.wait()
 
         # Complicating factors
-        psi_words = TexText(
+        psi_words = OldTexText(
             "Often this is a function.\\\\",
             "(But whatever functions are really\\\\just infinite-dimensional vectors)"
         )
@@ -2760,7 +2760,7 @@ class SchroedingersEquationIntro(Scene):
 
 class SimpleDerivativeOfExp(TeacherStudentsScene):
     def construct(self):
-        eq = Tex(
+        eq = OldTex(
             "{d \\over dt}", "e^{rt}", "=", "r", "e^{rt}",
         )
         eq.set_color_by_tex("r", TEAL, substring=False)
@@ -2817,7 +2817,7 @@ class SimpleDerivativeOfExp(TeacherStudentsScene):
 
 class ETitleCard(Scene):
     def construct(self):
-        title = TexText("A brief review of $e$\\\\and exponentials")
+        title = OldTexText("A brief review of $e$\\\\and exponentials")
         title.scale(2)
         self.add(title)
 
@@ -2842,7 +2842,7 @@ class GraphAndHistoryOfExponential(Scene):
         axes.add(graph_template)
 
         equation = self.get_equation()
-        solution = Tex("x({t}) = e^{r{t} }", tex_to_color_map={"{t}": GREY_B, "r": BLUE})
+        solution = OldTex("x({t}) = e^{r{t} }", tex_to_color_map={"{t}": GREY_B, "r": BLUE})
         solution.next_to(equation, DOWN, MED_LARGE_BUFF)
 
         self.add(axes)
@@ -2933,7 +2933,7 @@ class GraphAndHistoryOfExponential(Scene):
         self.wait()
 
         # Introduce 2.71828
-        solution_with_number = Tex(
+        solution_with_number = OldTex(
             "{d \\over dt}",
             "(2.71828...)^{", "r", "t", "}",
             "=",
@@ -2943,7 +2943,7 @@ class GraphAndHistoryOfExponential(Scene):
                 "2.71828...": TEAL,
             }
         )
-        solution_with_e = Tex(
+        solution_with_e = OldTex(
             "{d \\over dt}",
             "{e}^{", "r", "t", "}",
             "=",
@@ -3024,7 +3024,7 @@ class GraphAndHistoryOfExponential(Scene):
             lines.set_stroke(GREY_A, 2)
             lines[-1].stretch(0.5, 0, about_edge=LEFT)
 
-            eq = Tex(letter, "= 2.71828\\dots")
+            eq = OldTex(letter, "= 2.71828\\dots")
             eq[0].scale(1.5, about_edge=RIGHT)
             eq[0].align_to(eq[1], DOWN)
             eq.set_color(TEAL)
@@ -3088,8 +3088,8 @@ class GraphAndHistoryOfExponential(Scene):
         )
         self.wait()
 
-        pi_eq = Tex("\\pi = 3.1415\\dots", fill_color=GREEN, font_size=36)
-        func_eq = Tex("f(x)", font_size=36)
+        pi_eq = OldTex("\\pi = 3.1415\\dots", fill_color=GREEN, font_size=36)
+        func_eq = OldTex("f(x)", font_size=36)
         pi_eq.next_to(e_usage, DOWN, buff=0.5, aligned_edge=LEFT)
         func_eq.next_to(pi_eq, DOWN, buff=0.5, aligned_edge=LEFT)
 
@@ -3150,7 +3150,7 @@ class BernoullisThoughts(Scene):
         )
         self.wait()
 
-        limit = Tex("\\left(1 + \\frac{r}{n}\\right)^{nt}")
+        limit = OldTex("\\left(1 + \\frac{r}{n}\\right)^{nt}")
         limit.move_to(bubble.get_bubble_center())
         limit.scale(1.5)
 
@@ -3172,7 +3172,7 @@ class CompoundInterestPopulationAndEpidemic(Scene):
             points, key=lambda p: get_norm(p) + 0.5 * random.random()
         )))
 
-        dollar = Tex("\\$")
+        dollar = OldTex("\\$")
         dollar.set_fill(GREEN)
         person = SVGMobject("person")
         person.set_fill(GREY_B, 1)
@@ -3246,7 +3246,7 @@ class Compare1DTo2DEquations(Scene):
         equations.to_edge(LEFT, buff=1.0)
 
         solutions = VGroup(
-            Tex("e^{rt}", tex_to_color_map={"r": BLUE}),
+            OldTex("e^{rt}", tex_to_color_map={"r": BLUE}),
             get_matrix_exponential(
                 [["a", "b"], ["c", "d"]],
                 h_buff=0.75,
@@ -3306,7 +3306,7 @@ class EBaseMisconception(Scene):
         self.add(randy)
         self.play(
             PiCreatureSays(
-                randy, TexText("This function is\\\\about about $e$", tex_to_color_map={"$e$": BLUE}),
+                randy, OldTexText("This function is\\\\about about $e$", tex_to_color_map={"$e$": BLUE}),
                 target_mode="thinking",
                 bubble_config={"height": 3, "width": 4},
             )
@@ -3329,7 +3329,7 @@ class EBaseMisconception(Scene):
 class OneFinalPoint(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("One final point\\\\about one-dimension"),
+            OldTexText("One final point\\\\about one-dimension"),
             bubble_config={"height": 3, "width": 4},
         )
         self.play_student_changes(
@@ -3366,7 +3366,7 @@ class ManySolutionsDependingOnInitialCondition(VideoWrapper):
         graph = get_graph(1)
         graph.set_color(BLUE)
 
-        solution = Tex(
+        solution = OldTex(
             "x({t}) = e^{0.3 {t} } \\cdot x_0",
             tex_to_color_map={"{t}": GREY_B, "0.3": BLUE, "=": WHITE},
         )
@@ -3393,7 +3393,7 @@ class ManySolutionsDependingOnInitialCondition(VideoWrapper):
         eq_arrow, sol_arrow = arrows
 
         # Show many possible representations
-        alt_rhs = Tex(
+        alt_rhs = OldTex(
             "&= 2^{(0.4328\\dots) t }\\\\",
             "&= 3^{(0.2730\\dots) t }\\\\",
             "&= 4^{(0.2164\\dots) t }\\\\",
@@ -3476,7 +3476,7 @@ class ManySolutionsDependingOnInitialCondition(VideoWrapper):
         x0_tracker = ValueTracker(1)
         get_x0 = x0_tracker.get_value
         x0_label = VGroup(
-            Tex("x_0 = ", font_size=36),
+            OldTex("x_0 = ", font_size=36),
             DecimalNumber(1, font_size=36),
         )
         x0_label.set_color(MAROON_B)
@@ -3597,10 +3597,10 @@ class ExoticExponentsWithEBase(Scene):
     def construct(self):
         # Write exotic exponents
         exps = VGroup(
-            Tex("e", "^{it}"),
+            OldTex("e", "^{it}"),
             get_matrix_exponential([[3, 1], [4, 1]]),
-            Tex("e", "^{((i + j + k) / \\sqrt{3})t}"),
-            Tex("e", "^{\\left(\\frac{\\partial}{\\partial x}\\right)t}"),
+            OldTex("e", "^{((i + j + k) / \\sqrt{3})t}"),
+            OldTex("e", "^{\\left(\\frac{\\partial}{\\partial x}\\right)t}"),
         )
         for i in (0, 2, 3):
             exps[i][0].scale(1.25)
@@ -3625,7 +3625,7 @@ class ExoticExponentsWithEBase(Scene):
         arrow = Arrow(labels.get_corner(UL), labels.get_corner(DL), buff=0)
         arrow.shift(0.5 * LEFT)
         arrow.set_color(TEAL)
-        exotic_label = TexText("More\\\\exotic\\\\exponents", alignment="")
+        exotic_label = OldTexText("More\\\\exotic\\\\exponents", alignment="")
         exotic_label.next_to(arrow, LEFT)
         VGroup(arrow, exotic_label).set_opacity(0)
 
@@ -3647,7 +3647,7 @@ class ExoticExponentsWithEBase(Scene):
         self.wait()
 
         # Analytic number theory exception
-        zeta = Tex("\\sum_{n = 1}^\\infty \\frac{1}{n^s}")
+        zeta = OldTex("\\sum_{n = 1}^\\infty \\frac{1}{n^s}")
         zeta.move_to(exps[0], LEFT)
 
         self.play(
@@ -3666,7 +3666,7 @@ class ExoticExponentsWithEBase(Scene):
         for n in ["2", "5", "\\pi", "1{,}729"]:
             n_mobs = VGroup()
             for e_mob in e_mobs:
-                n_mob = Tex(n)
+                n_mob = OldTex(n)
                 n_mob.match_height(e_mob)
                 n_mob.scale(1.2)
                 n_mob.move_to(e_mob, UR)
@@ -3687,10 +3687,10 @@ class ExoticExponentsWithEBase(Scene):
 
         # Show which equations are solved.
         equations = VGroup(
-            Tex("\\frac{dz}{dt}(t) = i \\cdot z(t)"),
+            OldTex("\\frac{dz}{dt}(t) = i \\cdot z(t)"),
             get_2d_equation([["3", "1"], ["4", "1"]]),
-            Tex("\\frac{dq}{dt}(t) = \\frac{i + j + k}{ \\sqrt{3} } \\cdot q(t)"),
-            Tex("{\\partial \\over \\partial t}f(x, t) = {\\partial \\over \\partial x}f(x, t)"),
+            OldTex("\\frac{dq}{dt}(t) = \\frac{i + j + k}{ \\sqrt{3} } \\cdot q(t)"),
+            OldTex("{\\partial \\over \\partial t}f(x, t) = {\\partial \\over \\partial x}f(x, t)"),
         )
         for eq, exp in zip(equations, exps):
             eq.match_height(exp)
@@ -3725,7 +3725,7 @@ class TryToDefineExp(TeacherStudentsScene):
     }
 
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Try to define {{$e^{M}$}} to\\\\make sure this is true!",
         )
         words[1][1].set_color(TEAL)
@@ -3757,7 +3757,7 @@ class SolutionToRomeoJuliet(Scene):
                 bracket_h_buff=SMALL_BUFF,
                 bracket_v_buff=SMALL_BUFF,
             ),
-            Tex("="),
+            OldTex("="),
             mat_exp,
             Matrix(
                 [["x(0)"], ["y(0)"]],
@@ -3802,7 +3802,7 @@ class ExpRotMatrixComputation(Scene):
         mat_exp.to_corner(UL)
         mat_exp[1].set_color(TEAL)
 
-        equation = Tex(
+        equation = OldTex(
             "e^X", ":=", "X^0 + X^1 + \\frac{1}{2} X^2 + \\frac{1}{6} X^3 + \\cdots + \\frac{1}{n!} X^n + \\cdots",
             isolate=["X", "+"],
         )
@@ -3812,13 +3812,13 @@ class ExpRotMatrixComputation(Scene):
 
         rhs_tex = "{t}^0 X^0 + {t}^1 X^1 + \\frac{1}{2} {t}^2 X^2 + \\frac{1}{6} {t}^3 X^3 + \\cdots + \\frac{1}{n!} {t}^n X^n + \\cdots"
         mat_tex = "\\left[ \\begin{array}{cc} 0 & -1 \\\\ 1 & 0 \\end{array} \\right]"
-        mat_rhs = Tex(
+        mat_rhs = OldTex(
             rhs_tex.replace("X", mat_tex),
             tex_to_color_map={mat_tex: TEAL},
             isolate=["{t}", "+"],
         )
         mat_rhs.scale(0.5)
-        mat_equals = Tex("=")
+        mat_equals = OldTex("=")
 
         mat_exp.match_height(mat_rhs)
         mat_equation = VGroup(mat_exp, mat_equals, mat_rhs)
@@ -3889,13 +3889,13 @@ class ExpRotMatrixComputation(Scene):
             for j in range(4):
                 mat_power_copy = mat_powers[j].deepcopy()
                 power = str(4 * (i + 1) + j)
-                coef = Tex("+\\frac{1}{" + power + "!} t^{" + power + "}")
+                coef = OldTex("+\\frac{1}{" + power + "!} t^{" + power + "}")
                 coef.match_height(mat_equation[2][10])
                 coef.next_to(mat_power_copy, LEFT, SMALL_BUFF)
                 row.add(coef, mat_power_copy)
             row.shift(1.1 * (i + 1) * DOWN)
             rows.add(row)
-        dots = Tex("+ \\cdots", font_size=24)
+        dots = OldTex("+ \\cdots", font_size=24)
         dots.next_to(rows, DOWN, aligned_edge=LEFT)
 
         for row in rows:
@@ -3999,7 +3999,7 @@ class ExpRotMatrixComputation(Scene):
         self.wait()
 
         # Ask question
-        question = TexText("What transformation\\\\is this?")
+        question = OldTexText("What transformation\\\\is this?")
         question.next_to(final_result, RIGHT, buff=1.5)
         question.shift_onto_screen()
         arrow = Arrow(question, final_result, buff=SMALL_BUFF)
@@ -4026,7 +4026,7 @@ class ExpRotMatrixComputation(Scene):
 class ThatsHorrifying(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("You want us to\\\\do what?"),
+            OldTexText("You want us to\\\\do what?"),
             index=2,
             target_mode="pleading",
             added_anims=[LaggedStart(
@@ -4104,7 +4104,7 @@ class HowBasisVectorMultiplicationPullsOutColumns(Scene):
         def show_basis_product(index, matrix):
             basis_label_copies[index].match_height(matrix)
             basis_label_copies[index].next_to(matrix, RIGHT, SMALL_BUFF),
-            equals = Tex("=")
+            equals = OldTex("=")
             equals.next_to(basis_label_copies[index], RIGHT, SMALL_BUFF)
             rhss[index].next_to(equals, RIGHT, SMALL_BUFF)
             rhss[index].set_color(colors[index])
@@ -4177,7 +4177,7 @@ class ReadColumnsOfRotationMatrix(Scene):
 
         equation = VGroup(
             get_matrix_exponential([[0, -1], [1, 0]]),
-            Tex("="),
+            OldTex("="),
             Matrix(
                 [["\\cos(t)", "-\\sin(t)"], ["\\sin(t)", "\\cos(t)"]],
                 h_buff=2.0
@@ -4229,7 +4229,7 @@ class ReadColumnsOfRotationMatrix(Scene):
             Arc(PI / 2, angle, arc_center=plane.get_origin(), radius=0.5),
         )
         arcs.set_stroke(WHITE, 2)
-        arc_label = TexText("$t$", " ")
+        arc_label = OldTexText("$t$", " ")
         arc_label.next_to(arcs[0], RIGHT, SMALL_BUFF)
         arc_label.shift(SMALL_BUFF * UP)
 
@@ -4303,7 +4303,7 @@ class AnalyzeRomeoAndJulietSpace(RomeoJulietVectorSpace):
         equation = get_2d_equation(matrix)
         equation.to_corner(UR)
 
-        implies = Tex("\\Downarrow", font_size=72)
+        implies = OldTex("\\Downarrow", font_size=72)
         implies.next_to(equation, DOWN, buff=0.3)
 
         initial_condition = Matrix([["x_0"], ["y_0"]], bracket_h_buff=0.1)
@@ -4314,7 +4314,7 @@ class AnalyzeRomeoAndJulietSpace(RomeoJulietVectorSpace):
         ic_source.next_to(ps_arrow.get_end(), RIGHT, SMALL_BUFF)
 
         mat_exp = get_matrix_exponential(matrix, h_buff=0.8)
-        solution = VGroup(equation[1].copy(), Tex("="), mat_exp, initial_condition)
+        solution = VGroup(equation[1].copy(), OldTex("="), mat_exp, initial_condition)
         solution[2][1].set_color(TEAL)
         solution.arrange(RIGHT)
         solution.scale(0.8)
@@ -4334,7 +4334,7 @@ class AnalyzeRomeoAndJulietSpace(RomeoJulietVectorSpace):
         solution2.next_to(solution, DOWN, buff=0.7)
 
         rot_matrix_brace = Brace(rot_matrix, DOWN)
-        rot_label = TexText("Rotate by angle $t$")
+        rot_label = OldTexText("Rotate by angle $t$")
         rot_label.next_to(rot_matrix_brace, DOWN, SMALL_BUFF)
 
         self.add(equation)
@@ -4388,7 +4388,7 @@ class AnalyzeRomeoAndJulietSpace(RomeoJulietVectorSpace):
             return arc
 
         arc = always_redraw(get_arc)
-        t_label = VGroup(Tex("t = ", font_size=30), DecimalNumber(font_size=24))
+        t_label = VGroup(OldTex("t = ", font_size=30), DecimalNumber(font_size=24))
         t_label.arrange(RIGHT, buff=SMALL_BUFF)
 
         def update_t_label(label):
@@ -4608,7 +4608,7 @@ class GeometricReasoningForRomeoJuliet(AnalyzeRomeoAndJulietSpace):
         sector.set_stroke(width=0)
         sector.set_fill(GREY_D, 1)
 
-        t_label = VGroup(Tex("t = ", font_size=30), DecimalNumber(0, font_size=20))
+        t_label = VGroup(OldTex("t = ", font_size=30), DecimalNumber(0, font_size=20))
         t_label.arrange(RIGHT, buff=SMALL_BUFF)
         t_label.next_to(arc.pfp(0.5), UR, SMALL_BUFF)
 
@@ -4731,7 +4731,7 @@ class Show90DegreeRotationColumnByColumn(Scene):
 
 class DistanceOverTimeEquation(Scene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "{\\text{Distance}", " \\over", " \\text{Time} }", "=", "\\text{Radius}",
         )
         # equation[:3].set_color(RED_B)
@@ -4750,8 +4750,8 @@ class ExplicitSolution(Scene):
 
         }}
         solutions = VGroup(
-            Tex("x({t}) = \\cos(t) x_0 - \\sin(t) y_0", **kw),
-            Tex("y({t}) = \\sin(t) x_0 + \\cos(t) y_0", **kw),
+            OldTex("x({t}) = \\cos(t) x_0 - \\sin(t) y_0", **kw),
+            OldTex("y({t}) = \\sin(t) x_0 + \\cos(t) y_0", **kw),
         )
         solutions.arrange(DOWN, buff=MED_LARGE_BUFF)
         for solution in solutions:
@@ -4793,7 +4793,7 @@ class ImaginaryExponent(ExternallyAnimatedScene):
 class ComplexEquation(Scene):
     def construct(self):
         # Equation
-        equation = Tex(
+        equation = OldTex(
             """
             \\frac{d}{d{t} } \\Big[ x(t) + {i}y(t)\\Big] =
             {i} \\cdot \\Big[ x(t) + {i}y(t) \\Big]
@@ -4815,7 +4815,7 @@ class ComplexEquation(Scene):
         ))
         braces.set_fill(GREY_A, 1)
         for brace in braces:
-            brace.zt = Tex("z(t)", tex_to_color_map={"z": BLUE, "t": GREY_B})
+            brace.zt = OldTex("z(t)", tex_to_color_map={"z": BLUE, "t": GREY_B})
             brace.zt.next_to(brace, UP, SMALL_BUFF)
 
         self.add(equation)
@@ -4829,9 +4829,9 @@ class ComplexEquation(Scene):
         x_part = equation.get_part_by_tex("x")
         y_part = equation.get_part_by_tex("y")
 
-        juliet_label = TexText("Juliet's love", font_size=30)
+        juliet_label = OldTexText("Juliet's love", font_size=30)
         juliet_label.next_to(x_part, DOWN, LARGE_BUFF)
-        romeo_label = TexText("Romeo's love", font_size=30)
+        romeo_label = OldTexText("Romeo's love", font_size=30)
         romeo_label.next_to(y_part, DOWN, LARGE_BUFF)
         juliet_label.align_to(romeo_label, DOWN)
         VGroup(juliet_label, romeo_label).space_out_submobjects(1.5)
@@ -4851,7 +4851,7 @@ class ComplexEquation(Scene):
 
         # Describe i
         i_part = equation.get_parts_by_tex("{i}")[1]
-        i_label = TexText("90-degree rotation", font_size=30)
+        i_label = OldTexText("90-degree rotation", font_size=30)
         i_label.set_color(RED)
         i_label.next_to(romeo_label, RIGHT, MED_LARGE_BUFF, aligned_edge=DOWN)
         i_arrow = Arrow(i_part, i_label, fill_color=RED)
@@ -4865,7 +4865,7 @@ class ComplexEquation(Scene):
         all_labels = VGroup(romeo_label, juliet_label, i_label)
 
         # Show solution
-        solution = Tex(
+        solution = OldTex(
             "z(t) = e^{it} z_0",
             tex_to_color_map={
                 "i": RED,
@@ -4907,7 +4907,7 @@ class JulietChidingRomeo(Scene):
         self.add(pis)
         self.play(
             PiCreatureSays(
-                juliet, TexText("It just seems like \\\\ your feelings aren't \\\\ real"),
+                juliet, OldTexText("It just seems like \\\\ your feelings aren't \\\\ real"),
                 bubble_config={"height": 2.5, "width": 3.5},
                 target_mode="sassy",
             ),
@@ -4924,8 +4924,8 @@ class General90DegreeRotationExponents(Scene):
         # Setup
         exps = VGroup(
             get_matrix_exponential([["0", "-1"], ["1", "0"]]),
-            Tex("e^{it}", tex_to_color_map={"i": RED}),
-            Tex(
+            OldTex("e^{it}", tex_to_color_map={"i": RED}),
+            OldTex(
                 "e^{(ai + bj + ck)t}",
                 tex_to_color_map={
                     "i": RED,
@@ -4933,7 +4933,7 @@ class General90DegreeRotationExponents(Scene):
                     "k": BLUE,
                 }
             ),
-            Tex(
+            OldTex(
                 "e^{i \\sigma_x t}, \\quad ",
                 "e^{i \\sigma_y t}, \\quad ",
                 "e^{i \\sigma_z t}",
@@ -4950,10 +4950,10 @@ class General90DegreeRotationExponents(Scene):
         exps.arrange(DOWN, buff=1.5, aligned_edge=LEFT)
 
         labels = VGroup(
-            TexText("$90^\\circ$ rotation matrix"),
-            TexText("Imaginary numbers"),
-            TexText("Quaternions"),
-            TexText("Pauli matrices"),
+            OldTexText("$90^\\circ$ rotation matrix"),
+            OldTexText("Imaginary numbers"),
+            OldTexText("Quaternions"),
+            OldTexText("Pauli matrices"),
         )
         for label, exp in zip(labels, exps):
             label.scale(0.75)
@@ -4962,7 +4962,7 @@ class General90DegreeRotationExponents(Scene):
 
         VGroup(exps, labels).to_edge(LEFT)
 
-        quat_note = Tex("(a^2 + b^2 + c^2 = 1)", font_size=24)
+        quat_note = OldTex("(a^2 + b^2 + c^2 = 1)", font_size=24)
         quat_note.next_to(exps[2], DOWN, aligned_edge=LEFT)
         exps[2].add(quat_note)
 
@@ -5049,7 +5049,7 @@ class RotationIn3dPlane(Scene):
 class StoryForAnotherTime(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("The full story\\\\takes more time."),
+            OldTexText("The full story\\\\takes more time."),
             bubble_config={"height": 3, "width": 3.5},
             added_anims=[self.change_students("confused", "erm", "hesitant", look_at=self.screen)]
         )
@@ -5060,8 +5060,8 @@ class SchrodingerSum(Scene):
     def construct(self):
         # Add title
         equation_label = VGroup(
-            TexText("Schrödinger equation:"),
-            Tex(
+            OldTexText("Schrödinger equation:"),
+            OldTex(
                 "{i} \\hbar \\frac{\\partial}{\\partial t} |\\psi(t)\\rangle = \\hat{H} |\\psi(t)\\rangle",
                 tex_to_color_map={
                     "|\\psi(t)\\rangle": BLUE,
@@ -5203,7 +5203,7 @@ class BasicVectorFieldIdea(Scene):
     def construct(self):
         # Equation
         v_tex = "\\vec{\\textbf{v} }(t)"
-        equation = Tex(
+        equation = OldTex(
             "{d \\over dt}", v_tex, "=", "M", v_tex,
             tex_to_color_map={
                 "M": GREY_A,
@@ -5281,7 +5281,7 @@ class BasicVectorFieldIdea(Scene):
 
         dot = Dot(color=YELLOW, radius=0.05)
         dot.move_to(plane.c2p(*coords))
-        dot_label = Tex("\\vec{\\textbf{v}}", color=YELLOW)
+        dot_label = OldTex("\\vec{\\textbf{v}}", color=YELLOW)
         dot_label.next_to(dot, UR, SMALL_BUFF)
 
         vector = Arrow(plane.get_origin(), dot.get_center(), buff=0)
@@ -5290,7 +5290,7 @@ class BasicVectorFieldIdea(Scene):
 
         Mv = Arrow(plane.get_origin(), plane.c2p(*3 * func(*coords)), buff=0)
         Mv.set_fill(RED, 1)
-        Mv_label = Tex("M", "\\vec{\\textbf{v}}")
+        Mv_label = OldTex("M", "\\vec{\\textbf{v}}")
         Mv_label[0].set_color(GREY_B)
         Mv_label.next_to(Mv.get_end(), DOWN)
         attached_Mv = lil_vect.copy().set_opacity(1)
@@ -5376,7 +5376,7 @@ class BasicVectorFieldIdea(Scene):
         self.wait()
 
         # Show exponential solution
-        solution = Tex(
+        solution = OldTex(
             v_tex, "=", "e^{M t}", "\\vec{\\textbf{v} }(0)"
         )
 
@@ -5585,7 +5585,7 @@ class MoreShakesperianRomeoJuliet(RomeoAndJuliet):
 
 class NotAllThatRomanticLabel(Scene):
     def construct(self):
-        text = TexText("Not all that\n\n romantic!")
+        text = OldTexText("Not all that\n\n romantic!")
         arrow = Vector(LEFT)
         arrow.next_to(text, LEFT)
         text.set_color(RED)
@@ -5609,17 +5609,17 @@ class TransitionWrapper(Scene):
         self.add(screens)
 
         arrow = Arrow(*screens)
-        exp = Tex("e^{Mt}")
+        exp = OldTex("e^{Mt}")
         exp.next_to(arrow, UP)
         titles = VGroup(
-            TexText("Time: $0$"),
-            TexText("Time: $t$"),
+            OldTexText("Time: $0$"),
+            OldTexText("Time: $t$"),
         )
         for screen, title in zip(screens, titles):
             title.next_to(screen, UP)
             screen.add(title)
 
-        vf_words = TexText("Vector field defined by $\\vec{\\textbf{v} } \\rightarrow M\\vec{\\textbf{v} }$")
+        vf_words = OldTexText("Vector field defined by $\\vec{\\textbf{v} } \\rightarrow M\\vec{\\textbf{v} }$")
         vf_words.match_width(screens[0])
         vf_words.next_to(screens[0], DOWN)
         self.add(vf_words)
@@ -5647,8 +5647,8 @@ class DerivativeOfExpMt(Scene):
         }
 
         # Show claim
-        solution = Tex("\\vec{\\textbf{v} }({t}) = e^{M {t} } " + v0_tex, **kw)
-        equation = Tex("{d \\over dt} \\vec{\\textbf{v} }({t}) = M \\vec{\\textbf{v} }({t})", **kw)
+        solution = OldTex("\\vec{\\textbf{v} }({t}) = e^{M {t} } " + v0_tex, **kw)
+        equation = OldTex("{d \\over dt} \\vec{\\textbf{v} }({t}) = M \\vec{\\textbf{v} }({t})", **kw)
         arrow = Vector(1.5 * RIGHT)
         top_line = VGroup(solution, arrow, equation)
         top_line.arrange(RIGHT, buff=MED_LARGE_BUFF)
@@ -5734,7 +5734,7 @@ class DerivativeOfExpMt(Scene):
         ]
 
         lines = VGroup(*(
-            Tex(tex.replace("v_0", v0_tex), **kw)
+            OldTex(tex.replace("v_0", v0_tex), **kw)
             for tex in tex_expressions
         ))
         lines.set_width(FRAME_WIDTH - 1)
@@ -5880,7 +5880,7 @@ class TryIt(Scene):
 
 class TracePropertyAndComputation(TeacherStudentsScene):
     def construct(self):
-        trace_eq = Tex(
+        trace_eq = OldTex(
             "\\text{Det}\\left(e^{Mt}\\right) = e^{\\text{Tr}(M) t}",
             tex_to_color_map={
                 "\\text{Det}": GREEN_D,
@@ -5896,7 +5896,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
         self.play_student_changes("pondering", "confused", "pondering", look_at=trace_eq)
         self.wait(2)
 
-        text = TexText("Diagonalization $\\rightarrow$ Easier computation")
+        text = OldTexText("Diagonalization $\\rightarrow$ Easier computation")
         text.move_to(self.hold_up_spot, DOWN)
         text.shift_onto_screen()
 
@@ -5913,7 +5913,7 @@ class TracePropertyAndComputation(TeacherStudentsScene):
 
         topics = VGroup(trace_eq, text)
 
-        exp_deriv = Tex("e", "{d \\over dx}")
+        exp_deriv = OldTex("e", "{d \\over dx}")
         exp_deriv[0].scale(2)
         exp_deriv[1].move_to(exp_deriv[0].get_corner(UR), DL)
         exp_deriv.move_to(self.hold_up_spot, DOWN)
@@ -6003,7 +6003,7 @@ class ExponentialPhaseFlow(Scene):
         changing_t.move_to(exponential[2], DL)
         exponential.replace_submobject(2, changing_t)
 
-        equals = Tex("=")
+        equals = OldTex("=")
         rhs = DecimalMatrix(
             np.zeros((2, 2)),
             element_to_mobject_config={"num_decimal_places": 3},
@@ -6035,7 +6035,7 @@ class ExponentialEvaluationWithTime(Scene):
             return slow_factor * self.time
 
         exponential = get_matrix_exponential(matrix)
-        dot = Tex("\\cdot")
+        dot = OldTex("\\cdot")
         dot.move_to(exponential[2], LEFT)
         changing_t = DecimalNumber(0)
         changing_t.match_height(exponential[2])
@@ -6044,7 +6044,7 @@ class ExponentialEvaluationWithTime(Scene):
         changing_t.add_updater(lambda m: m.set_value(get_t()).set_color(YELLOW))
         lhs = VGroup(*exponential[:2], dot, changing_t)
 
-        equals = Tex("=")
+        equals = OldTex("=")
         rhs = DecimalMatrix(
             np.zeros((2, 2)),
             element_to_mobject_config={"num_decimal_places": 2},
@@ -6258,8 +6258,8 @@ class PrerequisitesWrapper(Scene):
         screens.set_stroke(WHITE, 2)
 
         topics = VGroup(
-            TexText("Basics of $e^x$"),
-            TexText("How matrices act\\\\as transformations"),
+            OldTexText("Basics of $e^x$"),
+            OldTexText("How matrices act\\\\as transformations"),
         )
         for topic, screen in zip(topics, screens):
             topic.next_to(screen, UP)
@@ -6285,7 +6285,7 @@ class SchroedingersComplicatingFactors(TeacherStudentsScene):
 class OldComputationCode(Scene):
     def construct(self):
         # Taylor series example
-        ex_rhs = Tex(
+        ex_rhs = OldTex(
             """
             {2}^0 +
             {2}^1 +
@@ -6315,7 +6315,7 @@ class OldComputationCode(Scene):
             ]
         ))
         term_brace = Brace(ex_parts[0], DOWN)
-        frac = Tex("1", font_size=36)
+        frac = OldTex("1", font_size=36)
         frac.next_to(term_brace, DOWN, SMALL_BUFF)
 
         rects = VGroup(*(
@@ -6349,9 +6349,9 @@ class OldComputationCode(Scene):
             value.next_to(rects[n], UP, SMALL_BUFF)
             new_brace = Brace(ex_part, DOWN)
             if fact == 1:
-                new_frac = Tex(f"{2**n}", font_size=36)
+                new_frac = OldTex(f"{2**n}", font_size=36)
             else:
-                new_frac = Tex(f"{2**n} / {fact}", font_size=36)
+                new_frac = OldTex(f"{2**n} / {fact}", font_size=36)
             new_frac.next_to(new_brace, DOWN, SMALL_BUFF)
             self.play(
                 term_brace.animate.become(new_brace),
@@ -6383,7 +6383,7 @@ class OldComputationCode(Scene):
         )
         self.play(Blink(randy))
 
-        lhs = Tex("e \\cdot e =")
+        lhs = OldTex("e \\cdot e =")
         lhs.match_height(real_equation[0])
         lhs.next_to(ex_rhs, LEFT)
         self.play(Write(lhs))
@@ -6393,10 +6393,10 @@ class OldComputationCode(Scene):
         # Increment input
         twos = ex_rhs.get_parts_by_tex("{2}")
         threes = VGroup(*(
-            Tex("3").set_color(YELLOW).replace(two)
+            OldTex("3").set_color(YELLOW).replace(two)
             for two in twos
         ))
-        new_lhs = Tex("e \\cdot e \\cdot e = ")
+        new_lhs = OldTex("e \\cdot e \\cdot e = ")
         new_lhs.match_height(lhs)
         new_lhs[0].space_out_submobjects(0.8)
         new_lhs[0][-1].shift(SMALL_BUFF * RIGHT)

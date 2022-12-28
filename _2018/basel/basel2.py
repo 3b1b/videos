@@ -302,7 +302,7 @@ class IntroScene(PiCreatureScene):
 
     def build_up_euler_sum(self):
         morty = self.pi_creature
-        euler_sum = self.euler_sum = Tex(
+        euler_sum = self.euler_sum = OldTex(
            "1", "+", 
            "{1 \\over 4}", "+",
            "{1 \\over 9}", "+",
@@ -369,9 +369,9 @@ class IntroScene(PiCreatureScene):
 
             if i <= 5:
                 if i == 1:
-                    rect_label = Tex("1")
+                    rect_label = OldTex("1")
                 else:
-                    rect_label = Tex("\\frac{1}{%d}"%(i**2))
+                    rect_label = OldTex("\\frac{1}{%d}"%(i**2))
                     rect_label.scale(0.75)
                 max_width = 0.7*rect.get_width()
                 if rect_label.get_width() > max_width:
@@ -393,7 +393,7 @@ class IntroScene(PiCreatureScene):
             rect_anims.append(rect_anim)
             rect_label_anims.append(rect_label_anim)
             lines.add(line)
-        dots = Tex("\\dots").scale(0.5)
+        dots = OldTex("\\dots").scale(0.5)
         last_rect = rect_anims[-1].target_mobject
         dots.set_width(0.9*last_rect.get_width())
         dots.move_to(last_rect, UP+RIGHT)
@@ -449,7 +449,7 @@ class IntroScene(PiCreatureScene):
             self.play(*anims, run_time = 2./i)
 
         brace = self.brace = Brace(partial_sum_decimal, DOWN)
-        q_marks = self.q_marks = TexText("???")
+        q_marks = self.q_marks = OldTexText("???")
         q_marks.next_to(brace, DOWN)
         q_marks.set_color(LIGHT_COLOR)
 
@@ -475,12 +475,12 @@ class IntroScene(PiCreatureScene):
         pietro = ImageMobject("Pietro_Mengoli")
         euler = ImageMobject("Euler")
 
-        pietro_words = TexText("Challenge posed by \\\\ Pietro Mengoli in 1644")
+        pietro_words = OldTexText("Challenge posed by \\\\ Pietro Mengoli in 1644")
         pietro_words.scale(0.75)
         pietro_words.next_to(pietro, DOWN)
         pietro.add(pietro_words)
 
-        euler_words = TexText("Solved by Leonard \\\\ Euler in 1735")
+        euler_words = OldTexText("Solved by Leonard \\\\ Euler in 1735")
         euler_words.scale(0.75)
         euler_words.next_to(euler, DOWN)
         euler.add(euler_words)
@@ -488,10 +488,10 @@ class IntroScene(PiCreatureScene):
         pietro.next_to(FRAME_X_RADIUS*LEFT, LEFT)
         euler.next_to(FRAME_X_RADIUS*RIGHT, RIGHT)
 
-        pi_answer = self.pi_answer = Tex("{\\pi^2 \\over 6}")
+        pi_answer = self.pi_answer = OldTex("{\\pi^2 \\over 6}")
         pi_answer.set_color(YELLOW)
         pi_answer.move_to(self.partial_sum_decimal, LEFT)
-        equals_sign = Tex("=")
+        equals_sign = OldTex("=")
         equals_sign.next_to(pi_answer, RIGHT)
         pi_answer.shift(SMALL_BUFF*UP)
         self.partial_sum_decimal.generate_target()
@@ -553,11 +553,11 @@ class IntroScene(PiCreatureScene):
             FadeOut(self.number_line)
         )
 
-        self.leibniz_sum = Tex(
+        self.leibniz_sum = OldTex(
             "1-{1\\over 3}+{1\\over 5}-{1\\over 7}+{1\\over 9}-\\cdots",
             "=", "{\\pi \\over 4}")
 
-        self.wallis_product = Tex(
+        self.wallis_product = OldTex(
             "{2\\over 1} \\cdot {2\\over 3} \\cdot {4\\over 3} \\cdot {4\\over 5}" +
              "\\cdot {6\\over 5} \\cdot {6\\over 7} \\cdots",
              "=", "{\\pi \\over 2}")
@@ -608,7 +608,7 @@ class IntroScene(PiCreatureScene):
             radius = 0.4, 
             stroke_width = 10.0
         )
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.next_to(q_circle)
 
         thought = Group(q_circle, q_mark)
@@ -620,7 +620,7 @@ class IntroScene(PiCreatureScene):
 
 class PiHidingWrapper(Scene):
     def construct(self):
-        title = TexText("Pi hiding in prime regularities")
+        title = OldTexText("Pi hiding in prime regularities")
         title.to_edge(UP)
         screen = ScreenRectangle(height = 6)
         screen.next_to(title, DOWN)
@@ -641,7 +641,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
     def complain_that_pi_is_not_about_circles(self):
         jerk, randy = self.pi_creatures
 
-        words = self.words = TexText(
+        words = self.words = OldTexText(
             "I am not",
             "fundamentally \\\\", 
             "about circles"
@@ -659,15 +659,15 @@ class MathematicalWebOfConnections(PiCreatureScene):
         jerk, randy = self.pi_creatures
         words = self.words
 
-        basel_sum = Tex(
+        basel_sum = OldTex(
             "1 + {1 \\over 4} + {1 \\over 9} + {1 \\over 16} + \\cdots", 
             "=", "{\\pi^2 \\over 6}"
         )
-        leibniz_sum = Tex(
+        leibniz_sum = OldTex(
             "1-{1\\over 3}+{1\\over 5}-{1\\over 7}+{1\\over 9}-\\cdots",
             "=", "{\\pi \\over 4}")
 
-        wallis_product = Tex(
+        wallis_product = OldTex(
             "{2\\over 1} \\cdot {2\\over 3} \\cdot {4\\over 3} \\cdot {4\\over 5}" +
              "\\cdot {6\\over 5} \\cdot {6\\over 7} \\cdots",
              "=", "{\\pi \\over 2}")
@@ -720,7 +720,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
         )
         self.wait()
 
-        question = TexText("Does this mean \\\\ anything?")
+        question = OldTexText("Does this mean \\\\ anything?")
         question.scale(0.8)
         question.set_stroke(WHITE, 0.5)
         question.next_to(fundamentally, DOWN, LARGE_BUFF)
@@ -751,7 +751,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
             decimal.move_to(semi_circle.get_points()[-1])
             decimal.shift(0.3*radius.get_vector())
 
-        one = Tex("1")
+        one = OldTex("1")
         one.next_to(radius, UP)
 
         self.play(ShowCreation(radius), FadeIn(one))
@@ -790,7 +790,7 @@ class MathematicalWebOfConnections(PiCreatureScene):
 
     def show_web_of_connections(self):
         self.remove(self.pi_creatures)
-        title = TexText("Interconnected web of mathematics")
+        title = OldTexText("Interconnected web of mathematics")
         title.to_edge(UP)
         basel_sum = self.basel_sum
 
@@ -1004,7 +1004,7 @@ class FirstLighthouseScene(PiCreatureScene):
         bubble.pin_to(morty)
         bubble.add_content(light_indicator)
 
-        euler_sum_above = Tex(
+        euler_sum_above = OldTex(
             "1", "+", 
             "{1\over 4}", "+", 
             "{1\over 9}", "+", 
@@ -1024,10 +1024,10 @@ class FirstLighthouseScene(PiCreatureScene):
             term.shift([0,new_y - old_y,0])
 
         # show limit value in light indicator and an equals sign
-        limit_reading = Tex("{\pi^2 \over 6}")
+        limit_reading = OldTex("{\pi^2 \over 6}")
         limit_reading.move_to(light_indicator.reading)
 
-        equals_sign = Tex("=")
+        equals_sign = OldTex("=")
         equals_sign.next_to(morty, UP)
         old_y = equals_sign.get_center()[1]
         new_y = euler_sum_above.get_center()[1]
@@ -1141,7 +1141,7 @@ class FirstLighthouseScene(PiCreatureScene):
 
 class RearrangeWords(Scene):
     def construct(self):
-        words = TexText("Rearrange without changing \\\\ the apparent brightness")
+        words = OldTexText("Rearrange without changing \\\\ the apparent brightness")
         self.play(Write(words))
         self.wait(5)
 
@@ -1222,7 +1222,7 @@ class IntroduceScreen(Scene):
 
         screen.next_to(observer_point, LEFT)
 
-        screen_label = TexText("Screen")
+        screen_label = OldTexText("Screen")
         screen_label.next_to(screen, UP+LEFT)
         screen_arrow = Arrow(
             screen_label.get_bottom(),
@@ -1464,8 +1464,8 @@ class EarthScene(IntroduceScreen):
         )
         for arrow in equator_arrow, pole_arrow:
             arrow.pointwise_become_partial(arrow, 0, 0.95)
-        equator_words = TexText("Some", "unit of area")
-        pole_words = TexText("The same\\\\", "unit of area")
+        equator_words = OldTexText("Some", "unit of area")
+        pole_words = OldTexText("The same\\\\", "unit of area")
         pole_words.next_to(pole_arrow.get_start(), DOWN)
         equator_words.next_to(equator_arrow.get_start(), UP)
 
@@ -1579,7 +1579,7 @@ class ShowLightInThreeDimensions(IntroduceScreen, ThreeDScene):
 
 class LightInThreeDimensionsOverlay(Scene):
     def construct(self):
-        words = TexText("""
+        words = OldTexText("""
             ``Solid angle'' \\\\
             (measured in ``steradians'')
         """)
@@ -1699,7 +1699,7 @@ class InverseSquareLaw(ThreeDScene):
         )
         self.wait()
 
-        q_marks = TexText("???")
+        q_marks = OldTexText("???")
         q_marks.next_to(light_indicator, UP)
         self.play(
             Write(q_marks),
@@ -1883,14 +1883,14 @@ class InverseSquareLaw(ThreeDScene):
 
 class OtherInstanceOfInverseSquareLaw(Scene):
     def construct(self):
-        title = TexText("Where the inverse square law shows up")
+        title = OldTexText("Where the inverse square law shows up")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
         self.add(title, h_line)
 
         items = VGroup(*[
-            TexText("- %s"%s).scale(1)
+            OldTexText("- %s"%s).scale(1)
             for s in [
                 "Heat", "Sound", "Radio waves", "Electric fields",
             ]
@@ -1996,7 +1996,7 @@ class ManipulateLightsourceSetups(PiCreatureScene):
         )
         self.wait()
 
-        plus = Tex("+")
+        plus = OldTex("+")
         point = light_indicator.get_center()
         plus.move_to(point)
         light_indicator_copy = light_indicator.copy()
@@ -2105,13 +2105,13 @@ class TwoLightSourcesScene(ManipulateLightsourceSetups):
         lsC.move_source_to(H)
 
         #Lighthouse labels
-        A_label = TexText("A")
+        A_label = OldTexText("A")
         A_label.next_to(lsA.lighthouse, RIGHT)
-        B_label = TexText("B")
+        B_label = OldTexText("B")
         B_label.next_to(lsB.lighthouse, LEFT)
 
         #Identical lighthouse labels
-        identical_lighthouses_words = TexText("All identical \\\\ lighthouses")
+        identical_lighthouses_words = OldTexText("All identical \\\\ lighthouses")
         identical_lighthouses_words.to_corner(UP+RIGHT)
         identical_lighthouses_words.shift(LEFT)
         identical_lighthouses_arrows = VGroup(*[
@@ -2133,13 +2133,13 @@ class TwoLightSourcesScene(ManipulateLightsourceSetups):
         line_h = Line(H, C)
         line_h.set_color(GREEN)
 
-        label_a = Tex("a")
+        label_a = OldTex("a")
         label_a.match_color(line_a)
         label_a.next_to(line_a, DOWN, buff = SMALL_BUFF)
-        label_b = Tex("b")
+        label_b = OldTex("b")
         label_b.match_color(line_b)
         label_b.next_to(line_b, LEFT, buff = SMALL_BUFF)
-        label_h = Tex("h")
+        label_h = OldTex("h")
         label_h.match_color(line_h)
         label_h.next_to(line_h.get_center(), RIGHT, buff = SMALL_BUFF)
 
@@ -2185,7 +2185,7 @@ class TwoLightSourcesScene(ManipulateLightsourceSetups):
         intensity += lsB.ambient_light.opacity_function(distance2) / indicator.opacity_for_unit_intensity
 
         # IPT Theorem
-        theorem = Tex(
+        theorem = OldTex(
             "{1 \over ", "a^2}", "+", 
             "{1 \over", "b^2}", "=", "{1 \over","h^2}"
         )
@@ -2194,7 +2194,7 @@ class TwoLightSourcesScene(ManipulateLightsourceSetups):
             "b" : line_b.get_color(),
             "h" : line_h.get_color(),
         })
-        theorem_name = TexText("Inverse Pythagorean Theorem")
+        theorem_name = OldTexText("Inverse Pythagorean Theorem")
         theorem_name.to_corner(UP+RIGHT)
         theorem.next_to(theorem_name, DOWN, buff = MED_LARGE_BUFF)
         theorem_box = SurroundingRectangle(theorem, color = WHITE)
@@ -2329,7 +2329,7 @@ class TwoLightSourcesScene(ManipulateLightsourceSetups):
 
 class MathologerVideoWrapper(Scene):
     def construct(self):
-        title = TexText("""
+        title = OldTexText("""
             Mathologer's excellent video on \\\\
             the many Pythagorean theorem cousins
         """)
@@ -2366,7 +2366,7 @@ class SimpleIPTProof(Scene):
             Line(C, H, color = GREEN)
         )
         for line, char in zip(triangle, ["a", "b", "c", "h"]):
-            label = Tex(char)
+            label = OldTex(char)
             label.match_color(line)
             vect = line.get_center() - triangle.get_center()
             vect /= get_norm(vect)
@@ -2379,20 +2379,20 @@ class SimpleIPTProof(Scene):
         self.add(triangle)
 
         argument_lines = VGroup(
-            Tex(
+            OldTex(
                 "\\text{Area} = ", 
                 "{1 \\over 2}", "a", "b", "=",
                 "{1 \\over 2}", "c", "h"
             ),
-            Tex("\\Downarrow"),
-            Tex("a^2", "b^2", "=", "c^2", "h^2"),
-            Tex("\\Downarrow"),
-            Tex(
+            OldTex("\\Downarrow"),
+            OldTex("a^2", "b^2", "=", "c^2", "h^2"),
+            OldTex("\\Downarrow"),
+            OldTex(
                 "a^2", "b^2", "=", 
                 "(",  "a^2", "+", "b^2", ")", "h^2"
             ),
-            Tex("\\Downarrow"),
-            Tex(
+            OldTex("\\Downarrow"),
+            OldTex(
                 "{1 \\over ", "h^2}", "=", 
                 "{1 \\over ", "b^2}", "+", 
                 "{1 \\over ", "a^2}",
@@ -2505,9 +2505,9 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
         lsC.move_source_to(H)
 
         #Lighthouse labels
-        A_label = TexText("A")
+        A_label = OldTexText("A")
         A_label.next_to(lsA.lighthouse, RIGHT)
-        B_label = TexText("B")
+        B_label = OldTexText("B")
         B_label.next_to(lsB.lighthouse, LEFT)
 
         #Lines
@@ -2519,13 +2519,13 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
         line_h = Line(H, C)
         line_h.set_color(GREEN)
 
-        label_a = Tex("a")
+        label_a = OldTex("a")
         label_a.match_color(line_a)
         label_a.next_to(line_a, DOWN, buff = SMALL_BUFF)
-        label_b = Tex("b")
+        label_b = OldTex("b")
         label_b.match_color(line_b)
         label_b.next_to(line_b, LEFT, buff = SMALL_BUFF)
-        label_h = Tex("h")
+        label_h = OldTex("h")
         label_h.match_color(line_h)
         label_h.next_to(line_h.get_center(), RIGHT, buff = SMALL_BUFF)
 
@@ -2550,7 +2550,7 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
             part.target = part_target
 
         # Screen label
-        screen_word = TexText("Screen")
+        screen_word = OldTexText("Screen")
         screen_word.next_to(mini_triangle.target, UP+RIGHT, LARGE_BUFF)
         screen_arrow = Arrow(
             screen_word.get_bottom(),
@@ -2559,7 +2559,7 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
         )
 
         # IPT Theorem
-        theorem = Tex(
+        theorem = OldTex(
             "{1 \over ", "a^2}", "+", 
             "{1 \over", "b^2}", "=", "{1 \over","h^2}"
         )
@@ -2568,7 +2568,7 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
             "b" : line_b.get_color(),
             "h" : line_h.get_color(),
         })
-        theorem_name = TexText("Inverse Pythagorean Theorem")
+        theorem_name = OldTexText("Inverse Pythagorean Theorem")
         theorem_name.to_corner(UP+RIGHT)
         theorem.next_to(theorem_name, DOWN, buff = MED_LARGE_BUFF)
         theorem_box = SurroundingRectangle(theorem, color = WHITE)
@@ -2730,7 +2730,7 @@ class IPTScene(TwoLightSourcesScene, ZoomedScene):
 
 class HomeworkWrapper(Scene):
     def construct(self):
-        title = TexText("Homework")
+        title = OldTexText("Homework")
         title.to_edge(UP)
         screen = ScreenRectangle(height = 6)
         screen.center()
@@ -2754,7 +2754,7 @@ class DiameterTheorem(TeacherStudentsScene):
         center = Dot(circle.get_center(), color = WHITE)
         self.add_foreground_mobject(center)
 
-        diameter_word = TexText("Diameter")
+        diameter_word = OldTexText("Diameter")
         diameter_word.next_to(center, DOWN, SMALL_BUFF)
 
         point = VectorizedPoint(circle.get_top())
@@ -2813,7 +2813,7 @@ class InscribedeAngleThreorem(TeacherStudentsScene):
         circle.next_to(self.students[2], UP)
         self.add(circle)
 
-        title = TexText("Inscribed angle \\\\ theorem")
+        title = OldTexText("Inscribed angle \\\\ theorem")
         title.to_corner(UP+LEFT)
         self.add(title)
 
@@ -2839,7 +2839,7 @@ class InscribedeAngleThreorem(TeacherStudentsScene):
         angle_mark = Arc(start_angle = -TAU/8, angle = TAU/4)
         angle_mark.scale(0.3, about_point = ORIGIN)
         angle_mark.shift(circle.get_center())
-        theta = Tex("\\theta").set_color(RED)
+        theta = OldTex("\\theta").set_color(RED)
         theta.next_to(angle_mark, RIGHT, MED_SMALL_BUFF)
         angle_mark.match_color(theta)
 
@@ -2847,7 +2847,7 @@ class InscribedeAngleThreorem(TeacherStudentsScene):
         half_angle_mark.scale(0.3, about_point = ORIGIN)
         half_angle_mark.shift(point.get_center())
         half_angle_mark.add(point.copy())
-        theta_halves = Tex("\\theta/2").set_color(GREEN)
+        theta_halves = OldTex("\\theta/2").set_color(GREEN)
         theta_halves.scale(0.7)
         half_angle_mark.match_color(theta_halves)
         theta_halves_update = UpdateFromFunc(
@@ -3029,7 +3029,7 @@ class PondScene(ThreeDScene):
         )
         arc_left.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_left = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_left = OldTex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_left.next_to(arc_left,LEFT)
     
         arc_right = Arc(TAU/2,
@@ -3040,7 +3040,7 @@ class PondScene(ThreeDScene):
         )
         arc_right.move_arc_center_to(OBSERVER_POINT + LAKE0_RADIUS * UP)
 
-        one_right = Tex("1", color = LAKE_COLOR).scale(TEX_SCALE)
+        one_right = OldTex("1", color = LAKE_COLOR).scale(TEX_SCALE)
         one_right.next_to(arc_right,RIGHT)
 
         # New introduction
@@ -3051,7 +3051,7 @@ class PondScene(ThreeDScene):
         morty.fade(1)
         lake0.center()
 
-        lake_word = TexText("Lake")
+        lake_word = OldTexText("Lake")
         lake_word.scale(2)
         lake_word.move_to(lake0)
 
@@ -3116,7 +3116,7 @@ class PondScene(ThreeDScene):
             buff = 0,
             color = WHITE,
         )
-        diameter_text = Tex("d").scale(TEX_SCALE)
+        diameter_text = OldTex("d").scale(TEX_SCALE)
         diameter_text.next_to(diameter,RIGHT)
 
         self.play(
@@ -3127,7 +3127,7 @@ class PondScene(ThreeDScene):
         )
         self.wait()
 
-        indicator_reading = Tex("{1 \over d^2}").scale(TEX_SCALE)
+        indicator_reading = OldTex("{1 \over d^2}").scale(TEX_SCALE)
         indicator_reading.move_to(indicator)
         self.unzoomable_mobs.add(indicator_reading)
 
@@ -3141,7 +3141,7 @@ class PondScene(ThreeDScene):
         self.wait()
 
         # replace d with its value
-        new_diameter_text = Tex("{2 \over \pi}").scale(TEX_SCALE)
+        new_diameter_text = OldTex("{2 \over \pi}").scale(TEX_SCALE)
         new_diameter_text.color = LAKE_COLOR
         new_diameter_text.move_to(diameter_text)
         self.play(FadeOut(diameter_text))
@@ -3149,7 +3149,7 @@ class PondScene(ThreeDScene):
         self.wait(2)
 
         # insert into indicator reading
-        new_reading = Tex("{\pi^2 \over 4}").scale(TEX_SCALE)
+        new_reading = OldTex("{\pi^2 \over 4}").scale(TEX_SCALE)
         new_reading.move_to(indicator)
         new_diameter_text_copy = new_diameter_text.copy()
         new_diameter_text_copy.submobjects.reverse()
@@ -3679,7 +3679,7 @@ class PondScene(ThreeDScene):
             FadeIn(self.number_line_labels)
         )
 
-        two_sided_sum = Tex("\dots", "+", "{1\over (-11)^2}",\
+        two_sided_sum = OldTex("\dots", "+", "{1\over (-11)^2}",\
          "+", "{1\over (-9)^2}", " + ", "{1\over (-7)^2}", " + ", "{1\over (-5)^2}", " + ", \
          "{1\over (-3)^2}", " + ", "{1\over (-1)^2}", " + ", "{1\over 1^2}", " + ", \
          "{1\over 3^2}", " + ", "{1\over 5^2}", " + ", "{1\over 7^2}", " + ", \
@@ -3719,7 +3719,7 @@ class PondScene(ThreeDScene):
         self.add_foreground_mobject(indicator_reading)
 
 
-        half_indicator_reading = Tex("{\pi^2 \over 8}").scale(TEX_SCALE)
+        half_indicator_reading = OldTex("{\pi^2 \over 8}").scale(TEX_SCALE)
         half_indicator_reading.move_to(indicator)
 
         central_plus_sign = two_sided_sum[13]
@@ -3730,7 +3730,7 @@ class PondScene(ThreeDScene):
             FadeOut(central_plus_sign)
         )
 
-        equals_sign = Tex("=").scale(TEX_SCALE)
+        equals_sign = OldTex("=").scale(TEX_SCALE)
         equals_sign.move_to(central_plus_sign)
         p = 2 * scale * LEFT + central_plus_sign.get_center()[1] * UP
 
@@ -3751,14 +3751,14 @@ class PondScene(ThreeDScene):
 class CircumferenceText(Scene):
     CONFIG = {"n" : 16}
     def construct(self):
-        words = TexText("Circumference %d"%self.n)
+        words = OldTexText("Circumference %d"%self.n)
         words.scale(1.25)
         words.to_corner(UP+LEFT)
         self.add(words)
 
 class CenterOfLargerCircleOverlayText(Scene):
     def construct(self):
-        words = TexText("Center of \\\\ larger circle")
+        words = OldTexText("Center of \\\\ larger circle")
         arrow = Vector(DOWN+LEFT, color = WHITE)
         arrow.shift(words.get_bottom() + SMALL_BUFF*DOWN - arrow.get_start())
         group = VGroup(words, arrow)
@@ -3768,7 +3768,7 @@ class CenterOfLargerCircleOverlayText(Scene):
 
 class DiameterWordOverlay(Scene):
     def construct(self):
-        word = TexText("Diameter")
+        word = OldTexText("Diameter")
         word.set_width(FRAME_X_RADIUS)
         word.rotate(-45*DEGREES)
         self.play(Write(word))
@@ -3828,13 +3828,13 @@ class ThinkBackToHowAmazingThisIs(ThreeDScene):
 
         # pi^2/4 label
         brace = Brace(decimal, DOWN)
-        pi_term = Tex("\pi^2 \over 4")
+        pi_term = OldTex("\pi^2 \over 4")
         pi_term.next_to(brace, DOWN)
 
         term_mobjects = VGroup()
         for n in range(1, self.max_shown_n, 2):
-            p_term = Tex("\\left(\\frac{1}{%d}\\right)^2"%n)
-            n_term = Tex("\\left(\\frac{-1}{%d}\\right)^2"%n)
+            p_term = OldTex("\\left(\\frac{1}{%d}\\right)^2"%n)
+            n_term = OldTex("\\left(\\frac{-1}{%d}\\right)^2"%n)
             group = VGroup(p_term, n_term)
             group.scale(0.7)
             p_term.next_to(number_line.number_to_point(n), UP, LARGE_BUFF)
@@ -3843,7 +3843,7 @@ class ThinkBackToHowAmazingThisIs(ThreeDScene):
         term_mobjects.set_color_by_gradient(BLUE, YELLOW)
         plusses = VGroup(*[
             VGroup(*[
-                Tex("+").next_to(
+                OldTex("+").next_to(
                     number_line.number_to_point(u*n), UP, buff = 1.25,
                 )
                 for u in (-1, 1)
@@ -3997,10 +3997,10 @@ class FinalSumManipulationScene(PiCreatureScene):
         odd_terms = VMobject()
         for i in odd_range:
             if i == 1:
-                term = Tex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}",
+                term = OldTex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}",
                     fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
             else:
-                term = Tex("+\,\,\, {1\over " + str(i) + "^2}",
+                term = OldTex("+\,\,\, {1\over " + str(i) + "^2}",
                     fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
 
             term.next_to(self.number_line1.number_to_point(i), DOWN, buff = 1.5)
@@ -4014,7 +4014,7 @@ class FinalSumManipulationScene(PiCreatureScene):
                 Write(term, run_time = switch_on_time)
             )
 
-        result1 = Tex("{\pi^2\over 8} =", fill_color = LIGHT_COLOR,
+        result1 = OldTex("{\pi^2\over 8} =", fill_color = LIGHT_COLOR,
             stroke_color = LIGHT_COLOR)
         result1.next_to(self.number_line1, LEFT, buff = 0.5)
         result1.shift(0.87 * vertical_spacing)
@@ -4067,7 +4067,7 @@ class FinalSumManipulationScene(PiCreatureScene):
 
         even_terms = VMobject()
         for i in even_range:
-            term = Tex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR)
+            term = OldTex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR)
             term.next_to(self.number_line1.number_to_point(i), DOWN, buff = sum_vertical_spacing)
             even_terms.add(term)
 
@@ -4115,7 +4115,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         Q2 = interpolate(P1, P2, 0.8)
         quarter_arrow = Arrow(Q1, Q2,
             color = LIGHT_COLOR2)
-        quarter_label = Tex("\\times {1\over 4}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR2)
+        quarter_label = OldTex("\\times {1\over 4}", fill_color = LIGHT_COLOR2, stroke_color = LIGHT_COLOR2)
         quarter_label.scale(0.7)
         quarter_label.next_to(quarter_arrow.get_center(), RIGHT)
 
@@ -4130,7 +4130,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         R2 = interpolate(P1, P3, 0.8)
         three_quarters_arrow = Arrow(R1, R2,
             color = LIGHT_COLOR)
-        three_quarters_label = Tex("\\times {3\over 4}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
+        three_quarters_label = OldTex("\\times {3\over 4}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
         three_quarters_label.scale(0.7)
         three_quarters_label.next_to(three_quarters_arrow.get_center(), LEFT)
 
@@ -4141,7 +4141,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         self.wait()
 
         four_thirds_arrow = Arrow(R2, R1, color = LIGHT_COLOR)
-        four_thirds_label = Tex("\\times {4\over 3}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
+        four_thirds_label = OldTex("\\times {4\over 3}", fill_color = LIGHT_COLOR, stroke_color = LIGHT_COLOR)
         four_thirds_label.scale(0.7)
         four_thirds_label.next_to(four_thirds_arrow.get_center(), LEFT)
 
@@ -4164,11 +4164,11 @@ class FinalSumManipulationScene(PiCreatureScene):
         full_terms = VMobject()
         for i in range(1,8): #full_range:
             if i == 1:
-                term = Tex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = OldTex("\phantom{+\,\,\,}{1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
             elif i == 7:
-                term = Tex("+\,\,\,\dots", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = OldTex("+\,\,\,\dots", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
             else:
-                term = Tex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+                term = OldTex("+\,\,\, {1\over " + str(i) + "^2}", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
 
             term.move_to(self.number_line2.number_to_point(i))
             full_terms.add(term)
@@ -4205,7 +4205,7 @@ class FinalSumManipulationScene(PiCreatureScene):
         )
         self.wait()
 
-        final_result = Tex("{\pi^2 \over 6}=", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
+        final_result = OldTex("{\pi^2 \over 6}=", fill_color = LIGHT_COLOR3, stroke_color = LIGHT_COLOR3)
         final_result.next_to(arrow_copy, DOWN)
 
         self.play(
@@ -4324,7 +4324,7 @@ class InfiniteCircleScene(PiCreatureScene):
 
         arrow = Arrow(ORIGIN, 2.4 * RIGHT)
         dot = Dot(color = BLUE).next_to(arrow)
-        ellipsis = Tex("\dots")
+        ellipsis = OldTex("\dots")
 
         infsum = VGroup()
         infsum.add(ellipsis.copy())
@@ -4425,7 +4425,7 @@ class Promotion(PiCreatureScene):
         "seconds_to_blink" : 5,
     }
     def construct(self):
-        url = TexText("https://brilliant.org/3b1b/")
+        url = OldTexText("https://brilliant.org/3b1b/")
         url.to_corner(UP+LEFT)
 
         rect = Rectangle(height = 9, width = 16)
@@ -4557,7 +4557,7 @@ class BaselPatreonThanks(PatreonEndScreen):
         ],
     }
     def construct(self):
-        next_video = TexText("$\\uparrow$  Next video $\\uparrow$")
+        next_video = OldTexText("$\\uparrow$  Next video $\\uparrow$")
         next_video.to_edge(RIGHT, buff = 1.5)
         next_video.shift(MED_SMALL_BUFF*UP)
         next_video.set_color(YELLOW)
@@ -4574,7 +4574,7 @@ class Thumbnail(Scene):
         }
     }
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "1", "+", "{1\over 4}", "+", 
             "{1\over 9}","+", "{1\over 16}","+", 
             "{1\over 25}", "+", "\cdots"
@@ -4582,13 +4582,13 @@ class Thumbnail(Scene):
         equation.scale(1.8)
         equation.move_to(2*UP)
         equation.set_stroke(RED, 1)
-        answer = Tex("= \\frac{\\pi^2}{6}", color = LIGHT_COLOR)
+        answer = OldTex("= \\frac{\\pi^2}{6}", color = LIGHT_COLOR)
         answer.scale(3)
         answer.set_stroke(RED, 1)
         # answer.next_to(equation, DOWN, buff = 1)
         answer.move_to(1.25*DOWN)
         #equation.move_to(2 * UP)
-        #answer = Tex("={\pi^2\over 6}", color = LIGHT_COLOR).scale(3)
+        #answer = OldTex("={\pi^2\over 6}", color = LIGHT_COLOR).scale(3)
         #answer.next_to(equation, DOWN, buff = 1)
 
         lake_radius = 6

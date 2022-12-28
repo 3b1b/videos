@@ -19,7 +19,7 @@ def get_equation(index, x = 2, y = 3, z = 8, expression_only = False):
         tex = tex1
     else:
         tex = tex1+tex2
-    return Tex(tex).set_color(OPERATION_COLORS[index])
+    return OldTex(tex).set_color(OPERATION_COLORS[index])
 
 def get_inverse_rules():
     return list(map(Tex, [
@@ -44,7 +44,7 @@ def get_top_inverse_rules():
     for i, j in pairs:
         top = get_top_inverse(i, j)
         char = ["x", "y", "z"][j]
-        eq = Tex("= %s"%char)
+        eq = OldTex("= %s"%char)
         eq.scale(2)
         eq.next_to(top, RIGHT)
         diff = eq.get_center() - top.triangle.get_center()
@@ -100,7 +100,7 @@ class TOP(VMobject):
         if isinstance(value, numbers.Number):
             value = str(value)
         if isinstance(value, str):
-            value = Tex(value)
+            value = OldTex(value)
         if isinstance(value, TOP):
             return self.put_top_on_vertix(index, value)
         self.rescale_corner_mobject(value)
@@ -166,7 +166,7 @@ class TOP(VMobject):
 class IntroduceNotation(Scene):
     def construct(self):
         top = TOP()
-        equation = Tex("2^3 = 8")
+        equation = OldTex("2^3 = 8")
         equation.to_corner(UP+LEFT)
         two, three, eight = [
             top.put_on_vertex(i, num)
@@ -198,7 +198,7 @@ class ShowRule(Scene):
         equation.to_corner(UP+LEFT)
         top = TOP(2, 3, 8)
         new_top = top.copy()
-        equals = Tex("=").scale(1.5)
+        equals = OldTex("=").scale(1.5)
         new_top.next_to(equals, LEFT, buff = 1)
         new_top.values[index].next_to(equals, RIGHT, buff = 1)
         circle = Circle(
@@ -244,7 +244,7 @@ class AllThree(Scene):
             tops.append(top)
             equations.append(equation)
         VMobject(*tops+equations).center()
-        # name = TexText("Triangle of Power")
+        # name = OldTexText("Triangle of Power")
         # name.to_edge(UP)
 
         for top, eq in zip(tops, equations):
@@ -261,7 +261,7 @@ class SixDifferentInverses(Scene):
         ))
         for rule, vect in zip(rules, vects):
             rule.shift(vect)
-        general_idea = Tex("f(f^{-1}(a)) = a")
+        general_idea = OldTex("f(f^{-1}(a)) = a")
 
         self.play(Write(VMobject(*rules)))
         self.wait()
@@ -341,7 +341,7 @@ class SixSixSix(Scene):
         randy = Randolph(mode = "pondering").to_corner()
         bubble = ThoughtBubble().pin_to(randy)
         rules = get_inverse_rules()
-        sixes = Tex(["6", "6", "6"], next_to_buff = 1)
+        sixes = OldTex(["6", "6", "6"], next_to_buff = 1)
         sixes.to_corner(UP+RIGHT)
         sixes = sixes.split()
         speech_bubble = SpeechBubble()
@@ -402,8 +402,8 @@ class AdditiveProperty(Scene):
 
 
     def write_old_style_rules(self):
-        start = Tex("a^x a^y = a^{x+y}")
-        end = Tex("\\log_a(xy) = \\log_a(x) + \\log_a(y)")
+        start = OldTex("a^x a^y = a^{x+y}")
+        end = OldTex("\\log_a(xy) = \\log_a(x) + \\log_a(y)")
         start.shift(UP)
         end.shift(DOWN)
         a1, x1, a2, y1, eq1, a3, p1, x2, y2 = start.split()
@@ -426,12 +426,12 @@ class AdditiveProperty(Scene):
     def get_new_style_rules(self):
         upper_mobs = [
             TOP("a", "x", "R"), Dot(), 
-            TOP("a", "y", "R"), Tex("="), 
+            TOP("a", "y", "R"), OldTex("="), 
             TOP("a", "x+y")
         ]
         lower_mobs = [
-            TOP("a", None, "xy"), Tex("="),
-            TOP("a", None, "x"), Tex("+"),
+            TOP("a", None, "xy"), OldTex("="),
+            TOP("a", None, "x"), OldTex("+"),
             TOP("a", None, "y"),
         ]
         for mob in upper_mobs + lower_mobs:
@@ -506,8 +506,8 @@ class DrawInsideTriangle(Scene):
         top = TOP()
         top.scale(2)
         dot = top.put_in_vertex(0, Dot())
-        plus = top.put_in_vertex(1, Tex("+"))
-        times = top.put_in_vertex(2, Tex("\\times"))
+        plus = top.put_in_vertex(1, OldTex("+"))
+        times = top.put_in_vertex(2, OldTex("\\times"))
         plus.set_color(GREEN)
         times.set_color(YELLOW)
 
@@ -521,16 +521,16 @@ class ConstantOnTop(Scene):
     def construct(self):
         top = TOP()
         dot = top.put_in_vertex(1, Dot())
-        times1 = top.put_in_vertex(0, Tex("\\times"))
-        times2 = top.put_in_vertex(2, Tex("\\times"))
+        times1 = top.put_in_vertex(0, OldTex("\\times"))
+        times2 = top.put_in_vertex(2, OldTex("\\times"))
         times1.set_color(YELLOW)
         times2.set_color(YELLOW)
         three = top.put_on_vertex(1, "3")
         lower_left_x = top.put_on_vertex(0, "x")
         lower_right_x = top.put_on_vertex(2, "x")
-        x_cubed = Tex("x^3").to_edge(UP)
+        x_cubed = OldTex("x^3").to_edge(UP)
         x_cubed.submobjects.reverse() #To align better        
-        cube_root_x = Tex("\\sqrt[3]{x}").to_edge(UP)
+        cube_root_x = OldTex("\\sqrt[3]{x}").to_edge(UP)
 
         self.add(top)
         self.play(ShowCreation(three))
@@ -555,8 +555,8 @@ class ConstantOnTop(Scene):
 def get_const_top_TOP(*args):
         top = TOP(*args)
         dot = top.put_in_vertex(1, Dot())
-        times1 = top.put_in_vertex(0, Tex("\\times"))
-        times2 = top.put_in_vertex(2, Tex("\\times"))
+        times1 = top.put_in_vertex(0, OldTex("\\times"))
+        times2 = top.put_in_vertex(2, OldTex("\\times"))
         times1.set_color(YELLOW)
         times2.set_color(YELLOW)
         top.add(dot, times1, times2)
@@ -568,16 +568,16 @@ class MultiplyWithConstantTop(Scene):
         top1 = get_const_top_TOP("x", "3")
         top2 = get_const_top_TOP("y", "3")
         top3 = get_const_top_TOP("xy", "3")
-        times = Tex("\\times")
-        equals = Tex("=")
+        times = OldTex("\\times")
+        equals = OldTex("=")
         top_exp_equation = VMobject(
             top1, times, top2, equals, top3
         )
         top_exp_equation.arrange()
-        old_style_exp = Tex("(x^3)(y^3) = (xy)^3")
+        old_style_exp = OldTex("(x^3)(y^3) = (xy)^3")
         old_style_exp.to_edge(UP)
         old_style_exp.set_color(GREEN)
-        old_style_rad = Tex("\\sqrt[3]{x} \\sqrt[3]{y} = \\sqrt[3]{xy}")
+        old_style_rad = OldTex("\\sqrt[3]{x} \\sqrt[3]{y} = \\sqrt[3]{xy}")
         old_style_rad.to_edge(UP)
         old_style_rad.set_color(RED)
 
@@ -605,11 +605,11 @@ class RightStaysConstantQ(Scene):
     def construct(self):
         top1, top2, top3 = old_tops = [
             TOP(None, s, "8")
-            for s in ("x", "y", Tex("x?y"))
+            for s in ("x", "y", OldTex("x?y"))
         ]
-        q_mark = Tex("?").scale(2)
+        q_mark = OldTex("?").scale(2)
         equation = VMobject(
-            top1, q_mark, top2, Tex("="), top3
+            top1, q_mark, top2, OldTex("="), top3
         )
         equation.arrange(buff = 0.7)
         symbols_at_top = VMobject(*[
@@ -620,9 +620,9 @@ class RightStaysConstantQ(Scene):
             top.put_on_vertex(0, top.values[1].copy())
             for top in (top1, top2, top3)
         ])
-        old_style_eq1 = Tex("\\sqrt[x]{8} ? \\sqrt[y]{8} = \\sqrt[x?y]{8}")
+        old_style_eq1 = OldTex("\\sqrt[x]{8} ? \\sqrt[y]{8} = \\sqrt[x?y]{8}")
         old_style_eq1.set_color(BLUE)
-        old_style_eq2 = Tex("\\log_x(8) ? \\log_y(8) = \\log_{x?y}(8)")
+        old_style_eq2 = OldTex("\\log_x(8) ? \\log_y(8) = \\log_{x?y}(8)")
         old_style_eq2.set_color(YELLOW)
         for eq in old_style_eq1, old_style_eq2:
             eq.to_edge(UP)
@@ -664,7 +664,7 @@ class RightStaysConstantQ(Scene):
 
 class AOplusB(Scene):
     def construct(self):
-        self.add(Tex(
+        self.add(OldTex(
             "a \\oplus b = \\dfrac{1}{\\frac{1}{a} + \\frac{1}{b}}"
         ).scale(2))
         self.wait()
@@ -673,12 +673,12 @@ class AOplusB(Scene):
 class ConstantLowerRight(Scene):
     def construct(self):
         top = TOP()
-        times = top.put_in_vertex(0, Tex("\\times"))
+        times = top.put_in_vertex(0, OldTex("\\times"))
         times.set_color(YELLOW)
-        oplus = top.put_in_vertex(1, Tex("\\oplus"))
+        oplus = top.put_in_vertex(1, OldTex("\\oplus"))
         oplus.set_color(BLUE)
         dot = top.put_in_vertex(2, Dot())
-        eight = top.put_on_vertex(2, Tex("8"))
+        eight = top.put_on_vertex(2, OldTex("8"))
 
         self.add(top)
         self.play(ShowCreation(eight))
@@ -691,8 +691,8 @@ class ConstantLowerRight(Scene):
         top1, top2, top3 = tops = [
             top.copy() for i in range(3)
         ]
-        big_oplus = Tex("\\oplus").scale(2).set_color(BLUE)
-        equals = Tex("=")
+        big_oplus = OldTex("\\oplus").scale(2).set_color(BLUE)
+        equals = OldTex("=")
         equation = VMobject(
             top1, big_oplus, top2, equals, top3
         )
@@ -702,7 +702,7 @@ class ConstantLowerRight(Scene):
             t.put_on_vertex(0, s)
             for t, s in zip(tops, ["x", "y", "xy"])
         ]
-        old_style_eq = Tex(
+        old_style_eq = OldTex(
             "\\dfrac{1}{\\frac{1}{\\log_x(8)} + \\frac{1}{\\log_y(8)}} = \\log_{xy}(8)"
         )
         old_style_eq.to_edge(UP).set_color(RED)
@@ -725,11 +725,11 @@ class ConstantLowerRight(Scene):
             t.put_on_vertex(1, s)
             for t, s in zip(tops, ["x", "y", "x \\oplus y"])
         ])
-        new_old_style_eq = Tex(
+        new_old_style_eq = OldTex(
             "\\sqrt[x]{8} \\sqrt[y]{8} = \\sqrt[X]{8}"
         )
         X = new_old_style_eq.split()[-4]
-        frac = Tex("\\frac{1}{\\frac{1}{x} + \\frac{1}{y}}")
+        frac = OldTex("\\frac{1}{\\frac{1}{x} + \\frac{1}{y}}")
         frac.replace(X)
         frac_lower_right = frac.get_corner(DOWN+RIGHT)
         frac.scale(2)
@@ -737,7 +737,7 @@ class ConstantLowerRight(Scene):
         new_old_style_eq.submobjects[-4] = frac
         new_old_style_eq.to_edge(UP)
         new_old_style_eq.set_color(RED)
-        big_times = Tex("\\times").set_color(YELLOW)
+        big_times = OldTex("\\times").set_color(YELLOW)
         big_times.shift(big_oplus.get_center())
         self.play(
             Transform(old_style_eq, new_old_style_eq),
@@ -749,7 +749,7 @@ class ConstantLowerRight(Scene):
 
 class TowerExponentFrame(Scene):
     def construct(self):
-        words = TexText("""
+        words = OldTexText("""
             Consider an expression like $3^{3^3}$.  It's 
             ambiguous whether this means $27^3$ or $3^{27}$,
             which is the difference between $19{,}683$ and
@@ -771,7 +771,7 @@ class TowerExponentFrame(Scene):
 
 class ExponentialGrowth(Scene):
     def construct(self):
-        words = TexText("""
+        words = OldTexText("""
             Let's say you are studying a certain growth rate, 
             and you come across an expression like $T^a$.  It
             matters a lot whether you consider $T$ or $a$
@@ -786,8 +786,8 @@ class ExponentialGrowth(Scene):
         words.to_edge(UP)
         top = TOP("T", "a")
         top.next_to(words, DOWN)
-        dot = top.put_in_vertex(0, Tex("\\cdot"))
-        sim = top.put_in_vertex(1, Tex("\\sim"))
+        dot = top.put_in_vertex(0, OldTex("\\cdot"))
+        sim = top.put_in_vertex(1, OldTex("\\sim"))
 
         self.add(words, top, dot, sim)
         self.show_frame()
@@ -798,8 +798,8 @@ class ExponentialGrowth(Scene):
 
 class GoExplore(Scene):
     def construct(self):
-        explore = TexText("Go explore!")
-        by_the_way = TexText("by the way \\dots")
+        explore = OldTexText("Go explore!")
+        by_the_way = OldTexText("by the way \\dots")
         by_the_way.shift(20*RIGHT)
 
         self.play(Write(explore))

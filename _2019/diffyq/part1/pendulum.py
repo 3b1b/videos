@@ -135,7 +135,7 @@ class Pendulum(VGroup):
         self.add(self.theta_label)
 
     def get_label(self):
-        label = Tex("\\theta")
+        label = OldTex("\\theta")
         label.set_height(self.theta_label_height)
         if self.set_theta_label_height_cap:
             max_height = self.angle_arc.get_width()
@@ -278,11 +278,11 @@ class ThetaVsTAxes(Axes):
         x_axis = self.get_x_axis()
         y_axis = self.get_y_axis()
 
-        t_label = self.t_label = Tex("t")
+        t_label = self.t_label = OldTex("t")
         t_label.next_to(x_axis.get_right(), UP, MED_SMALL_BUFF)
         x_axis.label = t_label
         x_axis.add(t_label)
-        theta_label = self.theta_label = Tex("\\theta(t)")
+        theta_label = self.theta_label = OldTex("\\theta(t)")
         theta_label.next_to(y_axis.get_top(), UP, SMALL_BUFF)
         y_axis.label = theta_label
         y_axis.add(theta_label)
@@ -312,7 +312,7 @@ class ThetaVsTAxes(Axes):
             for tex, value in (pos_tex, pos_value), (neg_tex, neg_value):
                 if value > self.y_max or value < self.y_min:
                     continue
-                symbol = Tex(tex)
+                symbol = OldTex(tex)
                 symbol.scale(0.5)
                 point = y_axis.number_to_point(value)
                 symbol.next_to(point, LEFT, MED_SMALL_BUFF)
@@ -412,8 +412,8 @@ class IntroducePendulum(PiCreatureScene, MovingCameraScene):
 
     def label_pi_creatures(self):
         randy, morty = self.pi_creatures
-        randy_label = TexText("Physics\\\\", "student")
-        morty_label = TexText("Physics\\\\", "teacher")
+        randy_label = OldTexText("Physics\\\\", "student")
+        morty_label = OldTexText("Physics\\\\", "teacher")
         labels = VGroup(randy_label, morty_label)
         labels.scale(0.5)
         randy_label.next_to(randy, UP, LARGE_BUFF)
@@ -496,11 +496,11 @@ class IntroducePendulum(PiCreatureScene, MovingCameraScene):
         self.add(self.graph)
 
     def label_function(self):
-        hm_word = TexText("Simple harmonic motion")
+        hm_word = OldTexText("Simple harmonic motion")
         hm_word.scale(1.25)
         hm_word.to_edge(UP)
 
-        formula = Tex(
+        formula = OldTex(
             "=\\theta_0 \\cos(\\sqrt{g / L} t)"
         )
         formula.next_to(
@@ -773,7 +773,7 @@ class LowAnglePendulum(Scene):
         )
         dashed_prediction = DashedVMobject(prediction, num_dashes=300)
         dashed_prediction.set_stroke(WHITE, 1)
-        prediction_formula = Tex(
+        prediction_formula = OldTex(
             "\\theta_0", "\\cos(\\sqrt{g / L} \\cdot t)"
         )
         prediction_formula.scale(0.75)
@@ -814,12 +814,12 @@ class LowAnglePendulum(Scene):
 
 class ApproxWordsLowAnglePendulum(Scene):
     def construct(self):
-        period = Tex(
+        period = OldTex(
             "\\text{Period}", "\\approx",
             "2\\pi \\sqrt{\\,{L} / {g}}",
             **Lg_formula_config
         )
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.set_color(GREEN)
         checkmark.scale(2)
         checkmark.next_to(period, RIGHT, MED_LARGE_BUFF)
@@ -906,10 +906,10 @@ class WherePendulumLeads(PiCreatureScene):
         )
         pendulum.start_swinging()
 
-        l_title = TexText("Linearization")
+        l_title = OldTexText("Linearization")
         l_title.scale(1.5)
         l_title.to_corner(UL)
-        c_title = TexText("Chaos")
+        c_title = OldTexText("Chaos")
         c_title.scale(1.5)
         c_title.move_to(l_title)
         c_title.move_to(
@@ -946,7 +946,7 @@ class WherePendulumLeads(PiCreatureScene):
         weight.set_sheen(1, UL)
         spring_system = VGroup(spring, weight)
 
-        linear_formula = Tex(
+        linear_formula = OldTex(
             "\\frac{d \\vec{\\textbf{x}}}{dt}="
             "A\\vec{\\textbf{x}}"
         )
@@ -958,7 +958,7 @@ class WherePendulumLeads(PiCreatureScene):
         randy.center()
         randy.to_edge(DOWN)
         randy.shift(3 * LEFT)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(randy, UP)
 
         self.add(pendulum, randy)
@@ -1058,15 +1058,15 @@ class AnalyzePendulumForce(MovingCameraScene):
         brace.shift(MED_SMALL_BUFF * normalize(
             arc.point_from_proportion(0.5) - top
         ))
-        x_sym = Tex("x")
+        x_sym = OldTex("x")
         x_sym.set_color(GREEN)
         x_sym.next_to(brace.point, DR, buff=SMALL_BUFF)
 
-        rhs = Tex("=", "L", "\\theta")
+        rhs = OldTex("=", "L", "\\theta")
         rhs.set_color_by_tex("\\theta", BLUE)
         rhs.next_to(x_sym, RIGHT)
         rhs.shift(0.7 * SMALL_BUFF * UP)
-        line_L = Tex("L")
+        line_L = OldTex("L")
         line_L.next_to(
             pendulum.rod.get_center(), UR, SMALL_BUFF,
         )
@@ -1126,7 +1126,7 @@ class AnalyzePendulumForce(MovingCameraScene):
         g_vect = self.g_vect = GravityVector(
             pendulum, **self.g_vect_config,
         )
-        g_word = self.g_word = TexText("Gravity")
+        g_word = self.g_word = OldTexText("Gravity")
         g_word.rotate(-90 * DEGREES)
         g_word.scale(0.75)
         g_word.add_updater(lambda m: m.next_to(
@@ -1195,9 +1195,9 @@ class AnalyzePendulumForce(MovingCameraScene):
             radius=0.5,
             arc_center=g_vect.get_end(),
         )
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.next_to(arc.get_center(), UL, SMALL_BUFF)
-        theta_label = Tex("\\theta")
+        theta_label = OldTex("\\theta")
         theta_label.move_to(q_mark)
 
         self.add(g_vect)
@@ -1237,7 +1237,7 @@ class AnalyzePendulumForce(MovingCameraScene):
         g_word = self.g_word
         g_word.clear_updaters()
 
-        g_term = self.g_term = Tex("-g")
+        g_term = self.g_term = OldTex("-g")
         g_term.add_updater(lambda m: m.next_to(
             g_vect,
             RIGHT if self.pendulum.get_theta() >= 0 else LEFT,
@@ -1245,7 +1245,7 @@ class AnalyzePendulumForce(MovingCameraScene):
         ))
 
         def create_vect_label(vect, tex, direction):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.set_stroke(width=0, background=True)
             label.add_background_rectangle()
             label.scale(0.7)
@@ -1315,7 +1315,7 @@ class AnalyzePendulumForce(MovingCameraScene):
         x_eq = self.x_eq
         g_sin_theta = self.g_sin_label
 
-        equation = Tex(
+        equation = OldTex(
             "a", "=",
             "\\ddot", "x",
             "=",
@@ -1330,21 +1330,21 @@ class AnalyzePendulumForce(MovingCameraScene):
         eq2 = equation.get_parts_by_tex("=")[1]
         rhs = equation[5:]
 
-        second_deriv_L_form = Tex(
+        second_deriv_L_form = OldTex(
             "L", "\\ddot", "\\theta"
         )
         second_deriv_L_form.move_to(second_deriv, DOWN)
-        eq3 = Tex("=")
+        eq3 = OldTex("=")
         eq3.rotate(90 * DEGREES)
         eq3.next_to(second_deriv_L_form, UP)
 
-        g_L_frac = Tex(
+        g_L_frac = OldTex(
             "-", "{g", "\\over", "L}"
         )
         g_L_frac.move_to(rhs[:2], LEFT)
         g_L_frac.shift(SMALL_BUFF * UP / 2)
 
-        mu_term = Tex(
+        mu_term = OldTex(
             "-\\mu", "\\dot", "\\theta",
         )
         mu_term.next_to(g_L_frac, LEFT)
@@ -1459,7 +1459,7 @@ class AnalyzePendulumForce(MovingCameraScene):
         g_sin_copy.generate_target()
         g_sin_copy.target.scale(1 / 0.75)
         g_sin_copy.target.rotate(-angle)
-        a_eq = Tex("a=")
+        a_eq = OldTex("a=")
         thought_term = VGroup(a_eq, g_sin_copy.target)
         thought_term.arrange(RIGHT, buff=SMALL_BUFF)
         thought_term.move_to(bubble.get_bubble_center())
@@ -1575,15 +1575,15 @@ class BuildUpEquation(Scene):
         self.add(line)
 
     def show_derivatives(self):
-        a_eq = Tex(
+        a_eq = OldTex(
             "{a}", "=", "{d{v} \\over dt}",
             **self.tex_config,
         )
-        v_eq = Tex(
+        v_eq = OldTex(
             "{v}", "=", "{d{x} \\over dt}",
             **self.tex_config,
         )
-        x_eq = Tex(
+        x_eq = OldTex(
             "{x} = {L} \\theta",
             **self.tex_config,
         )
@@ -1591,7 +1591,7 @@ class BuildUpEquation(Scene):
         eqs.arrange(DOWN, buff=LARGE_BUFF)
         eqs.to_corner(UL)
 
-        v_rhs = Tex(
+        v_rhs = OldTex(
             "={L}{d\\theta \\over dt}",
             "=", "{L}\\dot{\\theta}",
             **self.tex_config,
@@ -1601,7 +1601,7 @@ class BuildUpEquation(Scene):
         v_rhs.shift(
             UP * (v_eq[1].get_bottom()[1] - v_rhs[0].get_bottom()[1])
         )
-        a_rhs = Tex(
+        a_rhs = OldTex(
             "={L}{d", "\\dot{\\theta}", "\\over dt}",
             "=", "{L}\\ddot{\\theta}",
             **self.tex_config,
@@ -1695,10 +1695,10 @@ class BuildUpEquation(Scene):
 
         shift_vect = 1.5 * DOWN
 
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.rotate(90 * DEGREES)
         equals.next_to(a_deriv[0], UP, MED_LARGE_BUFF)
-        g_sin_eq = Tex(
+        g_sin_eq = OldTex(
             "-", "g", "\\sin", "(", "\\theta", ")",
             **self.tex_config,
         )
@@ -1743,7 +1743,7 @@ class BuildUpEquation(Scene):
         equals, L, ddot, theta, junk = a_rhs
         L_dd_theta = VGroup(L, ddot, theta)
         minus, g, sin, lp, theta2, rp = g_sin_eq
-        m2, g2, over, L2 = frac = Tex("-", "{g", "\\over", "L}")
+        m2, g2, over, L2 = frac = OldTex("-", "{g", "\\over", "L}")
         frac.next_to(equals, RIGHT)
 
         self.play(
@@ -1827,7 +1827,7 @@ class BuildUpEquation(Scene):
         theta = sin_part[2]
         arrow = Vector(0.5 * UP, color=WHITE)
         arrow.next_to(theta, DOWN, SMALL_BUFF)
-        word = TexText("Input")
+        word = OldTexText("Input")
         word.next_to(arrow, DOWN)
 
         self.play(
@@ -1851,7 +1851,7 @@ class BuildUpEquation(Scene):
         tdd_eq = main_equation[:3]
         rhs = main_equation[3:]
 
-        new_term = Tex(
+        new_term = OldTex(
             "-", "\\mu", "\\dot{", "\\theta}",
         )
         new_term.set_color_by_tex("\\theta", BLUE)

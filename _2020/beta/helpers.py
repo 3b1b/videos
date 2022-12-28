@@ -220,7 +220,7 @@ def get_coin(symbol, color=None):
     circ.set_fill(color, 1)
     circ.set_stroke(WHITE, 1)
     circ.set_height(1)
-    label = TexText(symbol)
+    label = OldTexText(symbol)
     label.set_height(0.5 * circ.get_height())
     label.move_to(circ)
     coin.add(circ, label)
@@ -233,7 +233,7 @@ def get_random_coin(**kwargs):
 
 
 def get_prob_coin_label(symbol="H", color=None, p=0.5, num_decimal_places=2):
-    label = Tex("P", "(", "00", ")", "=",)
+    label = OldTex("P", "(", "00", ")", "=",)
     coin = get_coin(symbol, color)
     template = label.get_part_by_tex("00")
     coin.replace(template)
@@ -248,7 +248,7 @@ def get_q_box(mob):
     box = SurroundingRectangle(mob)
     box.set_stroke(WHITE, 1)
     box.set_fill(GREY_E, 1)
-    q_marks = Tex("???")
+    q_marks = OldTex("???")
     max_width = 0.8 * box.get_width()
     max_height = 0.8 * box.get_height()
 
@@ -276,11 +276,11 @@ def get_coin_grid(bools, height=6):
 def get_prob_positive_experience_label(include_equals=False,
                                        include_decimal=False,
                                        include_q_mark=False):
-    label = Tex(
+    label = OldTex(
         "P", "(", "00000", ")",
     )
 
-    pe = TexText("Positive\\\\experience")
+    pe = OldTexText("Positive\\\\experience")
     pe.set_color(GREEN)
     pe.replace(label[2], dim_to_match=0)
     label.replace_submobject(2, pe)
@@ -288,7 +288,7 @@ def get_prob_positive_experience_label(include_equals=False,
         pe, stretch=True, about_edge=DOWN,
     )
     if include_equals:
-        eq = Tex("=").next_to(label, RIGHT)
+        eq = OldTex("=").next_to(label, RIGHT)
         label.add(eq)
     if include_decimal:
         decimal = DecimalNumber(0.95)
@@ -297,7 +297,7 @@ def get_prob_positive_experience_label(include_equals=False,
         label.decimal = decimal
         label.add(decimal)
     if include_q_mark:
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.relative_mob = label[-1]
         q_mark.add_updater(
             lambda m: m.next_to(m.relative_mob, RIGHT, SMALL_BUFF)
@@ -343,7 +343,7 @@ def get_beta_dist_axes(y_max=20, y_unit=2, label_y=False, **kwargs):
         result.y_axis.add_numbers(
             *np.arange(y_unit, y_max, y_unit)
         )
-        label = TexText("Probability density")
+        label = OldTexText("Probability density")
         label.scale(0.5)
         label.next_to(result.y_axis.get_top(), UR, SMALL_BUFF)
         label.next_to(result.y_axis, UP, SMALL_BUFF)
@@ -392,7 +392,7 @@ def get_beta_graph(axes, n_plus, n_minus, **kwargs):
 
 
 def get_beta_label(n_plus, n_minus, point=ORIGIN):
-    template = TexText("Beta(", "00", ",", "00", ")")
+    template = OldTexText("Beta(", "00", ",", "00", ")")
     template.scale(1.5)
     a_label = Integer(n_plus + 1)
     a_label.set_color(GREEN)
@@ -415,11 +415,11 @@ def get_plusses_and_minuses(n_rows=15, n_cols=20, p=0.95):
     result = VGroup()
     for x in range(n_rows * n_cols):
         if random.random() < p:
-            mob = Tex(CMARK_TEX)
+            mob = OldTex(CMARK_TEX)
             mob.set_color(GREEN)
             mob.is_plus = True
         else:
-            mob = Tex(XMARK_TEX)
+            mob = OldTex(XMARK_TEX)
             mob.set_color(RED)
             mob.is_plus = False
         mob.set_width(1)
@@ -434,10 +434,10 @@ def get_checks_and_crosses(bools, width=12):
     result = VGroup()
     for positive in bools:
         if positive:
-            mob = Tex(CMARK_TEX)
+            mob = OldTex(CMARK_TEX)
             mob.set_color(GREEN)
         else:
-            mob = Tex(XMARK_TEX)
+            mob = OldTex(XMARK_TEX)
             mob.set_color(RED)
         mob.positive = positive
         mob.set_width(0.5)
@@ -474,10 +474,10 @@ def get_random_num_row(s, n=10):
         num.positive = (num.get_value() < s)
         if num.positive:
             num.set_color(GREEN)
-            sym = Tex(CMARK_TEX)
+            sym = OldTex(CMARK_TEX)
         else:
             num.set_color(RED)
-            sym = Tex(XMARK_TEX)
+            sym = OldTex(XMARK_TEX)
         sym.match_color(num)
         sym.match_height(num)
         sym.positive = num.positive
@@ -497,7 +497,7 @@ def get_random_num_row(s, n=10):
 
 
 def get_prob_review_label(n_positive, n_negative, s=0.95):
-    label = Tex(
+    label = OldTex(
         "P(",
         f"{n_positive}\\,{CMARK_TEX}", ",\\,",
         f"{n_negative}\\,{XMARK_TEX}",
@@ -524,7 +524,7 @@ def get_binomial_formula(n, k, p):
     p_str = "P" * len(k_mob)
     nmk_str = "M" * len(nmk_mob)
 
-    formula = Tex(
+    formula = OldTex(
         "\\left(",
         "{" + n_str,
         "\\over",
@@ -572,9 +572,9 @@ def get_binomial_formula(n, k, p):
 def get_check_count_label(nc, nx, include_rect=True):
     result = VGroup(
         Integer(nc),
-        Tex(CMARK_TEX, color=GREEN),
+        OldTex(CMARK_TEX, color=GREEN),
         Integer(nx),
-        Tex(XMARK_TEX, color=RED),
+        OldTex(XMARK_TEX, color=RED),
     )
     result.arrange(RIGHT, buff=SMALL_BUFF)
     result[2:].shift(SMALL_BUFF * RIGHT)

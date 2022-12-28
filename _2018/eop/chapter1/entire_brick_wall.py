@@ -24,7 +24,7 @@ class EntireBrickWall(BrickRowScene, MovingCameraScene):
         self.add(rows)
             
         zero_counter = Integer(0).next_to(start_point + 0.5 * rows[0].width * RIGHT)
-        nb_flips_text = TexText("\# of flips")
+        nb_flips_text = OldTexText("\# of flips")
         nb_flips_text.next_to(zero_counter, RIGHT, buff = LARGE_BUFF)
         self.add(zero_counter, nb_flips_text)
         flip_counters = VGroup(zero_counter)
@@ -56,10 +56,10 @@ class EntireBrickWall(BrickRowScene, MovingCameraScene):
             if i < 6 or i > 14:
                 continue
             if i == 6:
-                counter = Tex("\dots", color = COLOR_TAILS)
+                counter = OldTex("\dots", color = COLOR_TAILS)
                 counter.next_to(rect, DOWN, buff = 1.5 * MED_SMALL_BUFF)
             elif i == 14:
-                counter = Tex("\dots", color = COLOR_TAILS)
+                counter = OldTex("\dots", color = COLOR_TAILS)
                 counter.next_to(rect, DOWN, buff = 1.5 * MED_SMALL_BUFF)
                 counter.shift(0.2 * RIGHT)
             else:
@@ -67,7 +67,7 @@ class EntireBrickWall(BrickRowScene, MovingCameraScene):
                 counter.next_to(rect, DOWN)
             tails_counters.add(counter)
 
-        nb_tails_text = TexText("\# of tails", color = COLOR_TAILS)
+        nb_tails_text = OldTexText("\# of tails", color = COLOR_TAILS)
         nb_tails_text.next_to(tails_counters[-1], RIGHT, buff = LARGE_BUFF)
 
         self.play(

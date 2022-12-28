@@ -7,7 +7,7 @@ from _2016.eola.chapter9 import get_small_bubble
 
 class OpeningQuote(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "``Last time, I asked: `What does",
             "mathematics", 
             """ mean to you?', and some people answered: `The 
@@ -23,7 +23,7 @@ class OpeningQuote(Scene):
         words.set_color_by_tex("music", BLUE)
         words.set_width(FRAME_WIDTH - 2)
         words.to_edge(UP)
-        author = TexText("-Serge Lang")
+        author = OldTexText("-Serge Lang")
         author.set_color(YELLOW)
         author.next_to(words, DOWN, buff = 0.5)
 
@@ -34,7 +34,7 @@ class OpeningQuote(Scene):
 
 class StudentsFindThisConfusing(TeacherStudentsScene):
     def construct(self):
-        title = TexText("Eigenvectors and Eigenvalues")
+        title = OldTexText("Eigenvectors and Eigenvalues")
         title.to_edge(UP)
         students = self.get_students()
 
@@ -74,7 +74,7 @@ class StudentsFindThisConfusing(TeacherStudentsScene):
             aligned_edge = LEFT, 
             buff = MED_SMALL_BUFF
         )
-        equation = Tex(
+        equation = OldTex(
             "\\det\\left( %s \\right)=0"%matrix_to_tex_string([
                 ["a-\\lambda", "b"],
                 ["c", "d-\\lambda"],
@@ -104,7 +104,7 @@ class EigenThingsArentAllThatBad(TeacherStudentsScene):
 
 class ManyPrerequisites(Scene):
     def construct(self):
-        title = TexText("Many prerequisites")
+        title = OldTexText("Many prerequisites")
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS)
         h_line.next_to(title, DOWN)
@@ -121,7 +121,7 @@ class ManyPrerequisites(Scene):
             "Change of basis",
         ]
         for rect, word in zip(rects, words):
-            word_mob = TexText(word)
+            word_mob = OldTexText(word)
             word_mob.next_to(rect, UP, buff = MED_SMALL_BUFF)
             rect.add(word_mob)
 
@@ -199,7 +199,7 @@ class VectorKnockedOffSpan(ExampleTranformationScene):
         vector = Vector([2, 1])
         line = Line(vector.get_end()*-4, vector.get_end()*4, color = MAROON_B)
         vector.scale(0.7)
-        top_words, off, span_label = all_words = TexText(
+        top_words, off, span_label = all_words = OldTexText(
             "\\centering Vector gets knocked", "\\\\ off", "Span"
         )
         all_words.shift(
@@ -228,7 +228,7 @@ class VectorRemainsOnSpan(ExampleTranformationScene):
         vector = Vector([1, -1])
         v_end = vector.get_end()
         line = Line(-4*v_end, 4*v_end, color = MAROON_B)
-        words = TexText("Vector remains on", "\\\\its own span")
+        words = OldTexText("Vector remains on", "\\\\its own span")
         words.next_to(ORIGIN, DOWN+LEFT)
         for part in words:
             part.add_to_back(BackgroundRectangle(part))
@@ -328,7 +328,7 @@ class SneakierEigenVector(ExampleTranformationScene):
         array.target = array.copy()
         array.next_to(vector.get_end(), LEFT)
         array.target.next_to(2*vector.get_end(), LEFT)
-        two_times = Tex("2 \\cdot")
+        two_times = OldTex("2 \\cdot")
         two_times.add_background_rectangle()
         two_times.next_to(array.target, LEFT)
         span_line = Line(-4*vector.get_end(), 4*vector.get_end())
@@ -363,7 +363,7 @@ class FullSneakyEigenspace(ExampleTranformationScene):
             for u in [-1, 1]
         ])
         vectors.set_color_by_gradient(MAROON_B, YELLOW)
-        words = TexText("Stretch by 2")
+        words = OldTexText("Stretch by 2")
         words.add_background_rectangle()
         words.next_to(ORIGIN, DOWN+LEFT, buff = MED_SMALL_BUFF)
         words.shift(MED_SMALL_BUFF*LEFT)
@@ -403,17 +403,17 @@ class NameEigenvectorsAndEigenvalues(ExampleTranformationScene):
         sneak_vectors.set_color_by_gradient(MAROON_B, YELLOW)
         self.remove(sneak_vectors)
 
-        x_words = TexText("Stretched by 3")
-        sneak_words = TexText("Stretched by 2")
+        x_words = OldTexText("Stretched by 3")
+        sneak_words = OldTexText("Stretched by 2")
         for words in x_words, sneak_words:
             words.add_background_rectangle()
             words.next_to(x_vectors, DOWN)
             words.next_to(words.get_center(), LEFT, buff = 1.5)
-            eigen_word = TexText("Eigenvectors")
+            eigen_word = OldTexText("Eigenvectors")
             eigen_word.add_background_rectangle()
             eigen_word.replace(words)
             words.target = eigen_word
-            eigen_val_words = TexText(
+            eigen_val_words = OldTexText(
                 "with eigenvalue ",
                 "%s"%words.get_tex()[-1]
             )
@@ -435,7 +435,7 @@ class NameEigenvectorsAndEigenvalues(ExampleTranformationScene):
             FRAME_Y_RADIUS*non_eigen.get_end(), 
             color = RED
         )
-        non_eigen_words = TexText("""
+        non_eigen_words = OldTexText("""
             Knocked off
             its own span
         """)
@@ -498,7 +498,7 @@ class EigenvalueNegativeOneHalf(LinearTransformationScene):
         self.add_foreground_mobject(matrix)
 
         vector = self.add_vector([1, 1])
-        words = TexText("Eigenvector with \\\\ eigenvalue $-\\frac{1}{2}$")
+        words = OldTexText("Eigenvector with \\\\ eigenvalue $-\\frac{1}{2}$")
         words.add_background_rectangle()
         words.next_to(vector.get_end(), RIGHT)
         span = Line(
@@ -527,7 +527,7 @@ class EigenvalueNegativeOneHalf(LinearTransformationScene):
         
 class ThreeDRotationTitle(Scene):
     def construct(self):
-        title = TexText("3D Rotation")
+        title = OldTexText("3D Rotation")
         title.scale(2)
         self.play(Write(title))
         self.wait()
@@ -541,8 +541,8 @@ class ThreeDShowRotationWithEigenvector(Scene):
 class EigenvectorToAxisOfRotation(Scene):
     def construct(self):
         words = [
-            TexText("Eigenvector"),
-            TexText("Axis of rotation"),
+            OldTexText("Eigenvector"),
+            OldTexText("Axis of rotation"),
         ]
         for word in words:
             word.scale(2)
@@ -553,14 +553,14 @@ class EigenvectorToAxisOfRotation(Scene):
 
 class EigenvalueOne(Scene):
     def construct(self):
-        text = TexText("Eigenvalue = $1$")
+        text = OldTexText("Eigenvalue = $1$")
         text.set_color(MAROON_B)
         self.play(Write(text))
         self.wait()
 
 class ContrastMatrixUnderstandingWithEigenvalue(TeacherStudentsScene):
     def construct(self):
-        axis_and_rotation = TexText(
+        axis_and_rotation = OldTexText(
             "Rotate", "$30^\\circ$", "around", 
             "$%s$"%matrix_to_tex_string([2, 3, 1])
         )
@@ -624,7 +624,7 @@ class DeduceTransformationFromMatrix(ColumnsToBasisVectors):
     def construct(self):
         self.setup()
         self.move_matrix_columns([[3, 0], [1, 2]])
-        words = TexText("""
+        words = OldTexText("""
             This gives too much weight 
             to our coordinate system
         """)
@@ -659,7 +659,7 @@ class SymbolicEigenvectors(Scene):
         self.bring_in_determinant()
 
     def introduce_terms(self):
-        self.expression = Tex(
+        self.expression = OldTex(
             "A", "\\vec{\\textbf{v}}", "=", 
             "\\lambda", "\\vec{\\textbf{v}}"
         )
@@ -671,15 +671,15 @@ class SymbolicEigenvectors(Scene):
         lamb.set_color(MAROON_B)
 
         A_brace = Brace(A, UP, buff = 0)
-        A_text = TexText("Transformation \\\\ matrix")
+        A_text = OldTexText("Transformation \\\\ matrix")
         A_text.next_to(A_brace, UP)
 
         lamb_brace = Brace(lamb, UP, buff = 0)
-        lamb_text = TexText("Eigenvalue")
+        lamb_text = OldTexText("Eigenvalue")
         lamb_text.set_color(lamb.get_color())
         lamb_text.next_to(lamb_brace, UP, aligned_edge = LEFT)
 
-        v_text = TexText("Eigenvector")
+        v_text = OldTexText("Eigenvector")
         v_text.set_color(vs.get_color())
         v_text.next_to(vs, DOWN, buff = 1.5*LARGE_BUFF)
         v_arrows = VGroup(*[
@@ -734,7 +734,7 @@ class SymbolicEigenvectors(Scene):
         morty.change_mode("speaking")
         bubble = morty.get_bubble(SpeechBubble, width = 5, direction = LEFT)
         VGroup(morty, bubble).to_edge(RIGHT)
-        solve_text = TexText(
+        solve_text = OldTexText(
             "Solve for \\\\",
             "$\\lambda$", "and", "$\\vec{\\textbf{v}}$"
         )
@@ -767,11 +767,11 @@ class SymbolicEigenvectors(Scene):
 
         lamb_copy = lamb.copy()
         scaling_by = VGroup(
-            TexText("Scaling by "), lamb_copy
+            OldTexText("Scaling by "), lamb_copy
         )
         scaling_by.arrange()
-        arrow = Tex("\\Updownarrow")
-        matrix_multiplication = TexText(
+        arrow = OldTex("\\Updownarrow")
+        matrix_multiplication = OldTexText(
             "Matrix multiplication by"
         )
         matrix = Matrix(np.identity(3, dtype = int))
@@ -783,7 +783,7 @@ class SymbolicEigenvectors(Scene):
         corner_group.to_corner(UP+RIGHT)
 
         q_marks = VGroup(*[
-            Tex("?").replace(entry)
+            OldTex("?").replace(entry)
             for entry in matrix.get_entries()
         ])
         q_marks.set_color_by_gradient(X_COLOR, Y_COLOR, Z_COLOR)
@@ -793,14 +793,14 @@ class SymbolicEigenvectors(Scene):
         ])
         diag_entries.save_state()
         for entry in diag_entries:
-            new_lamb = Tex("\\lambda")
+            new_lamb = OldTex("\\lambda")
             new_lamb.move_to(entry)
             new_lamb.set_color(lamb.get_color())
             Transform(entry, new_lamb).update(1)
         new_lamb = lamb.copy()
         new_lamb.next_to(matrix, LEFT)
         id_brace = Brace(matrix)
-        id_text = Tex("I").scale(1.5)
+        id_text = OldTex("I").scale(1.5)
         id_text.next_to(id_brace, DOWN)
 
         self.play(
@@ -839,7 +839,7 @@ class SymbolicEigenvectors(Scene):
         id_text_copy = id_text.copy()
         self.add(id_text_copy)
 
-        l_paren, r_paren = parens = Tex("()").scale(1.5)
+        l_paren, r_paren = parens = OldTex("()").scale(1.5)
         for mob in lamb, id_text, v2:
             mob.target = mob.copy()
         VGroup(
@@ -863,11 +863,11 @@ class SymbolicEigenvectors(Scene):
     def reveal_as_linear_system(self):
         A, v1, equals, lamb_group, v2 = self.expression
         l_paren, lamb, I, r_paren = lamb_group
-        zero = Tex("\\vec{\\textbf{0}}")
+        zero = OldTex("\\vec{\\textbf{0}}")
         zero.scale(1.3)
         zero.next_to(equals, RIGHT)
         zero.shift(SMALL_BUFF*UP/2)
-        minus = Tex("-").scale(1.5)
+        minus = OldTex("-").scale(1.5)
         movers = A, v1, lamb_group, v2
         for mob in movers:
             mob.target = mob.copy()
@@ -894,7 +894,7 @@ class SymbolicEigenvectors(Scene):
         self.wait()
 
         brace = Brace(VGroup(l_paren, r_paren))
-        brace.text = TexText("This matrix looks \\\\ something like")
+        brace.text = OldTexText("This matrix looks \\\\ something like")
         brace.text.next_to(brace, DOWN)
         brace.text.to_edge(LEFT)
         matrix = Matrix([
@@ -918,7 +918,7 @@ class SymbolicEigenvectors(Scene):
         )
         self.wait()
 
-        vect_words = TexText(
+        vect_words = OldTexText(
             "We want a nonzero solution for"
         )
         v_copy = v2.copy().next_to(vect_words)
@@ -936,8 +936,8 @@ class SymbolicEigenvectors(Scene):
         randy.flip()
         randy.look_at(self.expression)
         bubble = randy.get_bubble(SpeechBubble, direction = LEFT, width = 5)
-        words = TexText("We need")
-        equation = Tex(
+        words = OldTexText("We need")
+        equation = OldTex(
             "\\det(A-", "\\lambda", "I)", "=0"
         )
         equation.set_color_by_tex("\\lambda", MAROON_B)
@@ -970,7 +970,7 @@ class NonZeroSolutionsVisually(LinearTransformationScene):
         "v_coords" : [2, -1]
     }
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "(A-", "\\lambda", "I)", "\\vec{\\textbf{v}}",
             "= \\vec{\\textbf{0}}"
         )
@@ -981,7 +981,7 @@ class NonZeroSolutionsVisually(LinearTransformationScene):
         equation.next_to(ORIGIN, DOWN, buff = MED_SMALL_BUFF)
         equation.to_edge(LEFT)
 
-        det_equation = Tex(
+        det_equation = OldTex(
             "\\text{Squishification} \\Rightarrow",
             "\\det", "(A-", "\\lambda", "I", ")", "=0"
         )
@@ -1032,13 +1032,13 @@ class TweakLambda(LinearTransformationScene):
 
 
         brace = Brace(matrix)
-        brace_text = Tex("(A-", "\\lambda", "I)")
+        brace_text = OldTex("(A-", "\\lambda", "I)")
         brace_text.set_color_by_tex("\\lambda", MAROON_B)
         brace_text.next_to(brace, DOWN)
         brace_text.add_background_rectangle()
 
         det_text = get_det_text(matrix)
-        equals = Tex("=").next_to(det_text)
+        equals = OldTex("=").next_to(det_text)
         det = DecimalNumber(np.linalg.det(self.t_matrix))
         det.set_color(YELLOW)
         det.next_to(equals)
@@ -1146,7 +1146,7 @@ class ShowEigenVectorAfterComputing(LinearTransformationScene):
         matrix.shift(self.v_coords[0]*RIGHT)
         self.add_foreground_mobject(matrix)
 
-        v_label = Tex(
+        v_label = OldTex(
             "\\vec{\\textbf{v}}",
             "=",
             "1", 
@@ -1158,7 +1158,7 @@ class ShowEigenVectorAfterComputing(LinearTransformationScene):
         v_label.add_background_rectangle()
 
         v = self.add_vector(self.v_coords)
-        eigenvector = TexText("Eigenvector")
+        eigenvector = OldTexText("Eigenvector")
         eigenvector.add_background_rectangle()
         eigenvector.next_to(ORIGIN, DOWN+RIGHT)
         eigenvector.rotate(v.get_angle())
@@ -1196,7 +1196,7 @@ class LineOfReasoning(Scene):
 
 class IfYouDidntKnowDeterminants(TeacherStudentsScene):
     def construct(self):
-        expression = Tex("\\det(A-", "\\lambda", "I" ")=0")
+        expression = OldTex("\\det(A-", "\\lambda", "I" ")=0")
         expression.set_color_by_tex("\\lambda", MAROON_B)
         expression.scale(1.3)
         self.teacher_says(expression)
@@ -1215,9 +1215,9 @@ class RevisitExampleTransformation(ExampleTranformationScene):
     def construct(self):
         self.introduce_matrix()
 
-        seeking_eigenvalue = TexText("Seeking eigenvalue")
+        seeking_eigenvalue = OldTexText("Seeking eigenvalue")
         seeking_eigenvalue.add_background_rectangle()
-        lamb = Tex("\\lambda")
+        lamb = OldTex("\\lambda")
         lamb.set_color(MAROON_B)
         words = VGroup(seeking_eigenvalue, lamb)
         words.arrange()
@@ -1313,7 +1313,7 @@ class RevisitExampleTransformation(ExampleTranformationScene):
 
     def show_determinant(self, to_fade = None):
         det_text = get_det_text(self.matrix)
-        equals = Tex("=").next_to(det_text)
+        equals = OldTex("=").next_to(det_text)
         three_minus_lamb, two_minus_lamb = diag_entries = [
             entry.copy() for entry in self.diag_entries
         ]
@@ -1321,9 +1321,9 @@ class RevisitExampleTransformation(ExampleTranformationScene):
         zero = self.matrix.get_mob_matrix()[1, 0].copy()
         for entry in diag_entries + [one, zero]:
             entry.target = entry.copy()
-        lp1, rp1, lp2, rp2 = parens = Tex("()()")
-        minus = Tex("-")
-        cdot = Tex("\\cdot")
+        lp1, rp1, lp2, rp2 = parens = OldTex("()()")
+        minus = OldTex("-")
+        cdot = OldTex("\\cdot")
         VGroup(
             lp1, three_minus_lamb.target, rp1,
             lp2, two_minus_lamb.target, rp2,
@@ -1344,12 +1344,12 @@ class RevisitExampleTransformation(ExampleTranformationScene):
         brace_text.target.set_color_by_tex("$\\lambda$", MAROON_B)
         brace_text.target.add_background_rectangle()
 
-        equals_0 = Tex("=0")
+        equals_0 = OldTex("=0")
         equals_0.next_to(parens, RIGHT)
         equals_0.add_background_rectangle()
 
         final_brace = Brace(VGroup(parens, equals_0))
-        final_text = Tex(
+        final_text = OldTex(
             "\\lambda", "=2", "\\text{ or }",
             "\\lambda", "=3"
         )
@@ -1417,7 +1417,7 @@ class RevisitExampleTransformation(ExampleTranformationScene):
     def show_diagonally_altered_transform(self):
         for entry in self.diag_entries:
             lamb = entry[-1]
-            two = Tex("2")
+            two = OldTex("2")
             two.set_color(lamb.get_color())
             two.move_to(lamb)
             self.play(Transform(lamb, two))
@@ -1433,7 +1433,7 @@ class RevisitExampleTransformation(ExampleTranformationScene):
             array.set_height(self.matrix.get_height())
             array.add_to_back(BackgroundRectangle(array))
         xy_array.next_to(self.matrix)
-        equals = Tex("=").next_to(xy_array)
+        equals = OldTex("=").next_to(xy_array)
         equals.add_background_rectangle()
         zero_array.next_to(equals)
         self.play(*list(map(Write, [xy_array, equals, zero_array])))
@@ -1542,19 +1542,19 @@ class SolveRotationEigenvalues(Rotate90Degrees):
             for i in range(2)
         ]
         for entry in diag_entries:
-            minus_lambda = Tex("-\\lambda")
+            minus_lambda = OldTex("-\\lambda")
             minus_lambda.set_color(MAROON_B)
             minus_lambda.move_to(entry)
             self.play(Transform(entry, minus_lambda))
         self.wait()
 
         det_text = get_det_text(self.matrix)
-        equals = Tex("=").next_to(det_text)
+        equals = OldTex("=").next_to(det_text)
         self.play(*list(map(Write, [det_text, equals])))
         self.wait()
-        minus = Tex("-")
+        minus = OldTex("-")
         for entries, sym in (diag_entries, equals), (off_diag_entries, minus):
-            lp1, rp1, lp2, rp2 = parens = Tex("()()")
+            lp1, rp1, lp2, rp2 = parens = OldTex("()()")
             for entry in entries:
                 entry.target = entry.copy()
             group = VGroup(
@@ -1573,7 +1573,7 @@ class SolveRotationEigenvalues(Rotate90Degrees):
             if entries == diag_entries:
                 minus.next_to(parens)
                 self.play(Write(minus))
-        polynomial = Tex(
+        polynomial = OldTex(
             "=", "\\lambda^2", "+1=0"
         )
         polynomial.set_color_by_tex("\\lambda^2", MAROON_B)
@@ -1582,7 +1582,7 @@ class SolveRotationEigenvalues(Rotate90Degrees):
         self.play(Write(polynomial))
         self.wait()
 
-        result = Tex(
+        result = OldTex(
             "\\lambda", "= i", "\\text{ or }",
             "\\lambda", "= -i"
         )
@@ -1592,7 +1592,7 @@ class SolveRotationEigenvalues(Rotate90Degrees):
         self.play(Write(result))
         self.wait()
 
-        interesting_tidbit = TexText("""
+        interesting_tidbit = OldTexText("""
             Interestingly, though, the fact that multiplication by i 
             in the complex plane looks like a 90 degree rotation is 
             related to the fact that i is an eigenvalue of this 
@@ -1622,7 +1622,7 @@ class ShearExample(RevisitExampleTransformation):
         self.plane.fade()
         self.introduce_matrix()
         self.point_out_eigenvectors()
-        lamb = Tex("\\lambda")
+        lamb = OldTex("\\lambda")
         lamb.set_color(MAROON_B)
         lamb.next_to(self.matrix, DOWN)
         self.play(FadeIn(lamb))
@@ -1639,8 +1639,8 @@ class ShearExample(RevisitExampleTransformation):
         ])
         vectors.set_color_by_gradient(YELLOW, X_COLOR)
         words = VGroup(
-            TexText("Eigenvectors"),
-            TexText("with eigenvalue", "1")
+            OldTexText("Eigenvectors"),
+            OldTexText("with eigenvalue", "1")
         )
         for word in words:
             word.set_color_by_tex("1", MAROON_B)
@@ -1653,7 +1653,7 @@ class ShearExample(RevisitExampleTransformation):
 
     def show_determinant(self):
         det_text = get_det_text(self.matrix)
-        equals = Tex("=").next_to(det_text)
+        equals = OldTex("=").next_to(det_text)
         three_minus_lamb, two_minus_lamb = diag_entries = [
             entry.copy() for entry in self.diag_entries
         ]
@@ -1661,9 +1661,9 @@ class ShearExample(RevisitExampleTransformation):
         zero = self.matrix.get_mob_matrix()[1, 0].copy()
         for entry in diag_entries + [one, zero]:
             entry.target = entry.copy()
-        lp1, rp1, lp2, rp2 = parens = Tex("()()")
-        minus = Tex("-")
-        cdot = Tex("\\cdot")
+        lp1, rp1, lp2, rp2 = parens = OldTex("()()")
+        minus = OldTex("-")
+        cdot = OldTex("\\cdot")
         VGroup(
             lp1, three_minus_lamb.target, rp1,
             lp2, two_minus_lamb.target, rp2,
@@ -1684,12 +1684,12 @@ class ShearExample(RevisitExampleTransformation):
         brace_text.target.set_color_by_tex("$\\lambda$", MAROON_B)
         brace_text.target.add_background_rectangle()
 
-        equals_0 = Tex("=0")
+        equals_0 = OldTex("=0")
         equals_0.next_to(parens, RIGHT)
         equals_0.add_background_rectangle()
 
         final_brace = Brace(VGroup(parens, equals_0))
-        final_text = Tex("\\lambda", "=1")
+        final_text = OldTex("\\lambda", "=1")
         final_text.set_color_by_tex("\\lambda", MAROON_B)
         final_text.next_to(final_brace, DOWN)
         lambda_equals_two = VGroup(*final_text[:2]).copy()
@@ -1770,7 +1770,7 @@ class ScalingExample(LinearTransformationScene):
         matrix.add_to_back(BackgroundRectangle(matrix))
         matrix.next_to(ORIGIN, LEFT)
         matrix.to_edge(UP)
-        words = TexText("Scale everything by 2")
+        words = OldTexText("Scale everything by 2")
         words.add_background_rectangle()
         words.next_to(matrix, RIGHT)
         self.add_foreground_mobject(matrix, words)
@@ -1819,7 +1819,7 @@ class BasisVectorsAreEigenvectors(LinearTransformationScene):
         matrix.next_to(ORIGIN, LEFT)
         matrix.to_edge(UP)
 
-        words = TexText(
+        words = OldTexText(
             "What if both basis vectors \\\\",
             "are eigenvectors?"
         )
@@ -1901,7 +1901,7 @@ class DefineDiagonalMatrix(Scene):
             if i != j
         ])
 
-        title = TexText("``Diagonal matrix''")
+        title = OldTexText("``Diagonal matrix''")
         title.to_edge(UP)
 
         self.add(matrix)
@@ -1958,7 +1958,7 @@ class RepeatedMultiplicationInAction(Scene):
             scalar.exp.shift(SMALL_BUFF*RIGHT/2.)
         for new_exp in range(2, 6):
             matrix, new_scalars = self.get_matrix(vector)
-            new_exp_mob = Tex(str(new_exp)).scale(0.7)
+            new_exp_mob = OldTex(str(new_exp)).scale(0.7)
             movers = []
             to_remove = []
             for v_entry, scalar, new_scalar in zip(vector.get_entries(), scalars, new_scalars):
@@ -2007,7 +2007,7 @@ class RepeatedMultilpicationOfMatrices(Scene):
         matrix.set_column_colors(X_COLOR, Y_COLOR)
         matrices = VGroup(*[
             matrix.copy(),
-            Tex("\\dots\\dots"),
+            OldTex("\\dots\\dots"),
             matrix.copy(),
             matrix.copy(),
             matrix.copy(),
@@ -2079,7 +2079,7 @@ class WhatAreTheOddsOfThat(TeacherStudentsScene):
 
 class LastVideo(Scene):
     def construct(self):
-        title = TexText("Last chapter: Change of basis")
+        title = OldTexText("Last chapter: Change of basis")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9, color = BLUE)
         rect.set_height(6)
@@ -2131,8 +2131,8 @@ class ChangeToEigenBasis(ExampleTranformationScene):
         v_vector = v_vectors[-1]
         x_vectors.remove(x_vector)
         v_vectors.remove(v_vector)
-        words = TexText("Eigenvectors span space")
-        new_words = TexText("Use eigenvectors as basis")
+        words = OldTexText("Eigenvectors span space")
+        new_words = OldTexText("Use eigenvectors as basis")
         for text in words, new_words:
             text.add_background_rectangle()
             text.next_to(ORIGIN, DOWN+LEFT, buff = MED_SMALL_BUFF)
@@ -2201,7 +2201,7 @@ class ChangeToEigenBasis(ExampleTranformationScene):
 
         inv_cob = cob_matrix.copy()
         inv_cob.target = inv_cob.copy()
-        neg_1 = Tex("-1")
+        neg_1 = OldTex("-1")
         neg_1.add_background_rectangle()
         inv_cob.target.next_to(
             self.matrix, LEFT, buff = neg_1.get_width()+2*SMALL_BUFF
@@ -2230,7 +2230,7 @@ class ChangeToEigenBasis(ExampleTranformationScene):
         self.add(self.plane.copy().set_color(GREY).set_stroke(width = 2))
         self.apply_transposed_matrix(self.t_matrix)
 
-        equals = Tex("=").next_to(cob_matrix)
+        equals = OldTex("=").next_to(cob_matrix)
         final_matrix = Matrix([[3, 0], [0, 2]])
         final_matrix.add_to_back(BackgroundRectangle(final_matrix))
         for i in range(2):
@@ -2242,7 +2242,7 @@ class ChangeToEigenBasis(ExampleTranformationScene):
         )
         self.wait()
 
-        eigenbasis = TexText("``Eigenbasis''")
+        eigenbasis = OldTexText("``Eigenbasis''")
         eigenbasis.add_background_rectangle()
         eigenbasis.next_to(ORIGIN, DOWN)
         self.play(Write(eigenbasis))
@@ -2256,9 +2256,9 @@ class ChangeToEigenBasis(ExampleTranformationScene):
         )
         bubble.set_fill(BLACK, opacity = 1)
         matrix_copy = self.matrix.copy().scale(0.7)
-        hundred = Tex("100").scale(0.7)
+        hundred = OldTex("100").scale(0.7)
         hundred.next_to(matrix_copy.get_corner(UP+RIGHT), RIGHT)
-        compute = TexText("Compute")
+        compute = OldTexText("Compute")
         compute.next_to(matrix_copy, LEFT, buff = MED_SMALL_BUFF)
         words = VGroup(compute, matrix_copy, hundred)
         bubble.add_content(words)

@@ -192,12 +192,12 @@ class JohannThinksHeIsBetter(Scene):
         template = Square(side_length = 2)
         comparitive_johann.replace(template)
         comparitive_johann.shift(UP+LEFT)
-        greater_than = Tex(">")
+        greater_than = OldTex(">")
         greater_than.next_to(comparitive_johann)
         for guy, name in zip(guys, names)[1:]:
             guy.replace(template)
             guy.next_to(greater_than)
-            name_mob = TexText(name.replace("_", " "))
+            name_mob = OldTexText(name.replace("_", " "))
             name_mob.scale(0.5)
             name_mob.next_to(guy, DOWN)
             guy.name_mob = name_mob
@@ -257,7 +257,7 @@ class NewtonVsJohann(Scene):
             ImageMobject(name, invert = False).scale(0.5)
             for name in ("Newton", "Johann_Bernoulli2")
         ]
-        greater_than = Tex(">")
+        greater_than = OldTex(">")
         newton.next_to(greater_than, RIGHT)
         johann.next_to(greater_than, LEFT)
         self.add(johann, greater_than, newton)
@@ -313,7 +313,7 @@ class MathematiciansOfEurope(Scene):
             man = ImageMobject(name, invert = False)
             if name == "Newton":
                 name = "Isaac_Newton"
-            name_mob = TexText(name.replace("_", " "))
+            name_mob = OldTexText(name.replace("_", " "))
             name_mob.to_corner(UP+LEFT, buff=0.75)
             self.add(name_mob)
             man.set_height(4)
@@ -331,7 +331,7 @@ class OldNewtonIsDispleased(Scene):
         self.add(old_newton)
         self.freeze_background()
 
-        words = TexText("Note the displeasure")
+        words = OldTexText("Note the displeasure")
         words.to_corner(UP+RIGHT)
         face_point = 1.8*UP+0.5*LEFT
         arrow = Arrow(words.get_bottom(), face_point)

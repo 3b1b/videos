@@ -77,7 +77,7 @@ class WhenChangeIsEasier(Scene):
 class AirResistanceBrace(Scene):
     def construct(self):
         brace = Brace(Line(ORIGIN, RIGHT), DOWN)
-        word = TexText("Air resistance")
+        word = OldTexText("Air resistance")
         word.next_to(brace, DOWN)
         self.play(GrowFromCenter(brace), FadeIn(word, UP))
         self.wait()
@@ -87,7 +87,7 @@ class PeriodFormula(Scene):
     def construct(self):
         formula = get_period_formula()
         formula.scale(2)
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.scale(3)
         q_mark.next_to(formula, RIGHT)
         self.add(formula, q_mark)
@@ -112,7 +112,7 @@ class TourOfDifferentialEquations(MovingCameraScene):
         # self.show_words()
 
     def add_title(self):
-        title = TexText(
+        title = OldTexText(
             "A Tourist's Guide \\\\to Differential\\\\Equations"
         )
         title.scale(1.5)
@@ -139,7 +139,7 @@ class TourOfDifferentialEquations(MovingCameraScene):
         line.shift(MED_SMALL_BUFF * LEFT)
         for thumbnail, a in zip(thumbnails, np.linspace(0, 1, n)):
             thumbnail.move_to(line.point_from_proportion(a))
-        dots = Tex("\\dots")
+        dots = OldTex("\\dots")
         dots.next_to(thumbnails[-1], RIGHT)
 
         self.add_phase_space_preview(thumbnails[0])
@@ -180,9 +180,9 @@ class TourOfDifferentialEquations(MovingCameraScene):
 
     def show_words(self):
         words = VGroup(
-            TexText("Generalize"),
-            TexText("Put in context"),
-            TexText("Modify"),
+            OldTexText("Generalize"),
+            OldTexText("Put in context"),
+            OldTexText("Modify"),
         )
         # words.arrange(DOWN, aligned_edge=LEFT, buff=LARGE_BUFF)
         words.scale(1.5)
@@ -190,7 +190,7 @@ class TourOfDifferentialEquations(MovingCameraScene):
         words.add_to_back(VectorizedPoint(words.get_center()))
         words.add(VectorizedPoint(words.get_center()))
 
-        diffEq = TexText("Differential\\\\equations")
+        diffEq = OldTexText("Differential\\\\equations")
         diffEq.scale(1.5)
         diffEq.to_corner(DL, buff=LARGE_BUFF)
 
@@ -228,8 +228,8 @@ class TourOfDifferentialEquations(MovingCameraScene):
             bracket_h_buff=SMALL_BUFF,
             bracket_v_buff=SMALL_BUFF,
         )
-        e = Tex("e")
-        t = Tex("t")
+        e = OldTex("e")
+        t = OldTex("t")
         t.scale(1.5)
         t.next_to(matrix, RIGHT, SMALL_BUFF)
         e.scale(2)
@@ -268,7 +268,7 @@ class TourOfDifferentialEquations(MovingCameraScene):
         )
 
     def add_laplace_symbol(self, thumbnail):
-        mob = Tex(
+        mob = OldTex(
             "\\mathcal{L}\\left\\{f(t)\\right\\}"
         )
         mob.set_width(0.8 * thumbnail.get_width())
@@ -325,7 +325,7 @@ class ShowGravityAcceleration(Scene):
         self.add(gravity_field)
 
     def add_title(self):
-        title = self.title = TexText("Gravitational acceleration")
+        title = self.title = OldTexText("Gravitational acceleration")
         title.scale(1.5)
         title.to_edge(UP)
         title.add_background_rectangle(
@@ -348,7 +348,7 @@ class ShowGravityAcceleration(Scene):
 
     def show_g_value(self):
         title = self.title
-        g_eq = self.g_eq = Tex(
+        g_eq = self.g_eq = OldTex(
             "-9.8", "{\\text{m/s}", "\\over", "\\text{s}}",
             **Lg_formula_config
         )
@@ -428,7 +428,7 @@ class ShowGravityAcceleration(Scene):
             rate_func=squish_rate_func(smooth, 0, 0.1)
         )
 
-        time_label = TexText("Time = ")
+        time_label = OldTexText("Time = ")
         time_label.shift(MED_SMALL_BUFF * LEFT)
         time_tracker = ValueTracker(0)
         time = DecimalNumber(0)
@@ -509,7 +509,7 @@ class ShowGravityAcceleration(Scene):
             for arrow in delta_vects
         ])
         amounts = VGroup(*[
-            TexText("9.8 m/s").scale(0.5).next_to(
+            OldTexText("9.8 m/s").scale(0.5).next_to(
                 brace, RIGHT, SMALL_BUFF
             )
             for brace in braces
@@ -526,7 +526,7 @@ class ShowGravityAcceleration(Scene):
         self.wait()
 
     def show_g_symbol(self):
-        g = Tex("g")
+        g = OldTex("g")
         brace = Brace(self.g_eq[0][2:], UP, buff=SMALL_BUFF)
         g.scale(1.5)
         g.next_to(brace, UP)
@@ -607,7 +607,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
         axes.set_stroke(width=2)
         axes.add_coordinates()
 
-        t_label = Tex("t")
+        t_label = OldTex("t")
         t_label.next_to(axes.x_axis.get_right(), UL)
         axes.add(t_label)
 
@@ -665,7 +665,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
             stroke_width=1,
         ))
 
-        y_label = Tex("y", "(t)")
+        y_label = OldTex("y", "(t)")
         y_label.set_color_by_tex("y", BLUE)
         y_label.add_updater(
             lambda m: m.next_to(
@@ -687,12 +687,12 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
             lambda: get_v_vect().shift(get_ball_point())
         )
         v_brace = always_redraw(lambda: Brace(v_vect, LEFT))
-        dy_dt_label = Tex(
+        dy_dt_label = OldTex(
             "{d", "y", "\\over dt}", "(t)",
         )
         dy_dt_label.scale(0.8)
         dy_dt_label.set_color_by_tex("y", BLUE)
-        y_dot_label = Tex("\\dot y", "(t)")
+        y_dot_label = OldTex("\\dot y", "(t)")
         y_dot_label.set_color_by_tex("\\dot y", RED)
         for label in dy_dt_label, y_dot_label:
             label.add_updater(lambda m: m.next_to(
@@ -726,14 +726,14 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
         ))
         a_brace = Brace(a_vect, RIGHT)
         always(a_brace.next_to, a_vect, RIGHT, SMALL_BUFF)
-        d2y_dt2_label = Tex(
+        d2y_dt2_label = OldTex(
             "d^2", "{y}", "\\over dt}", "(t)"
         )
         d2y_dt2_label.scale(0.8)
         d2y_dt2_label.set_color_by_tex(
             "y", BLUE,
         )
-        y_ddot_label = Tex("\\ddot y", "(t)")
+        y_ddot_label = OldTex("\\ddot y", "(t)")
         y_ddot_label.set_color_by_tex("\\ddot y", YELLOW)
         for label in d2y_dt2_label, y_ddot_label:
             label.add_updater(lambda m: m.next_to(
@@ -862,7 +862,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
         v_graph.shift(-offset)
 
         tex_question, answer1, answer2 = derivs = [
-            Tex(
+            OldTex(
                 "{d", "(", *term, ")", "\\over", "dt}", "(t)",
                 "=", "-g",
                 tex_to_color_map={
@@ -884,7 +884,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
         for deriv in derivs:
             deriv.next_to(equation, DOWN, MED_LARGE_BUFF)
 
-        question = TexText(
+        question = OldTexText(
             "What function has slope $-g$?",
             tex_to_color_map={"$-g$": YELLOW},
         )
@@ -893,11 +893,11 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
         question.add_background_rectangle()
 
         v0_dot = Dot(v_start_point, color=PINK)
-        v0_label = Tex("v_0")
+        v0_label = OldTex("v_0")
         v0_label.set_color(RED)
         v0_label.next_to(v0_dot, UR, buff=0)
 
-        y_dot_equation = Tex(
+        y_dot_equation = OldTex(
             "{\\dot y}", "(t)", "=",
             "-g", "t", "+", "v_0",
             tex_to_color_map={
@@ -956,7 +956,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
             ("-", "(1/2)", "g", "t^2", "+", "v_0", "t", "+", "y_0"),
         ]
         tex_question, answer1, answer2 = derivs = [
-            Tex(
+            OldTex(
                 "{d", "(", *term, ")", "\\over", "dt}", "(t)",
                 "=",
                 "-g", "t", "+", "v_0",
@@ -984,7 +984,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
             deriv.shift_onto_screen()
             deriv.add_background_rectangle_to_submobjects()
 
-        y_equation = Tex(
+        y_equation = OldTex(
             "y", "(t)", "=",
             "-", "(1/2)", "g", "t^2",
             "+", "v_0", "t",
@@ -1070,7 +1070,7 @@ class UniversalGravityLawSymbols(Scene):
         x2_tex = "\\vec{\\textbf{x}}_2"
         a1_tex = "\\vec{\\textbf{a}}_1"
         new_brown = interpolate_color(GREY_B, LIGHT_BROWN, 0.5)
-        law = Tex(
+        law = OldTex(
             "F_1", "=", "m_1", a1_tex, "=",
             "G", "m_1", "m_2",
             "\\left({", x2_tex, "-", x1_tex, "\\over",
@@ -1096,9 +1096,9 @@ class UniversalGravityLawSymbols(Scene):
         )
 
         words = VGroup(
-            TexText("Force on\\\\mass 1"),
-            TexText("Unit vector\\\\towards mass 2"),
-            TexText("Inverse square\\\\law"),
+            OldTexText("Force on\\\\mass 1"),
+            OldTexText("Unit vector\\\\towards mass 2"),
+            OldTexText("Inverse square\\\\law"),
         )
 
         self.add(law)
@@ -1141,11 +1141,11 @@ class UniversalGravityLawSymbols(Scene):
                 v1_tex: RED,
             }
         }
-        x_deriv = Tex(
+        x_deriv = OldTex(
             "{d", x1_tex, "\\over", "dt}", "=", v1_tex, **kw
         )
         x_deriv.to_corner(UL)
-        v_deriv = Tex(
+        v_deriv = OldTex(
             "{d", v1_tex, "\\over", "dt}", "=", **kw
         )
 
@@ -1200,7 +1200,7 @@ class UniversalGravityLawSymbols(Scene):
 class ExampleTypicalODE(TeacherStudentsScene):
     def construct(self):
         examples = VGroup(
-            Tex(
+            OldTex(
                 "{\\dot x}(t) = k{x}(t)",
                 tex_to_color_map={
                     "{\\dot x}": BLUE,
@@ -1208,7 +1208,7 @@ class ExampleTypicalODE(TeacherStudentsScene):
                 },
             ),
             get_ode(),
-            Tex(
+            OldTex(
                 "{\\partial T", "\\over", "\\partial t} = ",
                 "{\\partial^2 T", "\\over", "\\partial x^2}", "+",
                 "{\\partial^2 T", "\\over", "\\partial y^2}", "+",
@@ -1241,11 +1241,11 @@ class ExampleTypicalODE(TeacherStudentsScene):
 
 class ShowDerivativeVideo(Scene):
     def construct(self):
-        title = TexText("Essence of", "Calculus")
+        title = OldTexText("Essence of", "Calculus")
         title.scale(1.5)
         title.to_edge(UP)
 
-        title2 = TexText("Essence of", "Linear Algebra")
+        title2 = OldTexText("Essence of", "Linear Algebra")
         title2.scale(1.5)
         title2.move_to(title, DOWN)
 
@@ -1317,7 +1317,7 @@ class DefineODE(Scene):
         self.graph = graph
 
     def write_differential_equation(self):
-        de_word = TexText("Differential", "Equation")
+        de_word = OldTexText("Differential", "Equation")
         de_word.to_edge(UP, buff=MED_SMALL_BUFF)
 
         equation = get_ode()
@@ -1363,7 +1363,7 @@ class DefineODE(Scene):
         pendulum = self.pendulum
 
         q_marks = VGroup(*[
-            Tex("?").move_to(graph.point_from_proportion(a))
+            OldTex("?").move_to(graph.point_from_proportion(a))
             for a in np.linspace(0, 1, 20)
         ])
         q_marks.set_stroke(width=0, background=True)
@@ -1400,7 +1400,7 @@ class DefineODE(Scene):
             "height": 0.5,
         }
         theta, d_theta, dd_theta = [
-            Tex(
+            OldTex(
                 "{" + s + "\\theta}(t)",
                 **tex_config
             )
@@ -1469,9 +1469,9 @@ class DefineODE(Scene):
         thetas = VGroup(theta, d_theta, dd_theta)
 
         words = VGroup(
-            TexText("= Height").set_color(BLUE),
-            TexText("= Slope").set_color(RED),
-            TexText("= ``Curvature''").set_color(YELLOW),
+            OldTexText("= Height").set_color(BLUE),
+            OldTexText("= Slope").set_color(RED),
+            OldTexText("= ``Curvature''").set_color(YELLOW),
         )
         words.scale(0.75)
         for word, sym in zip(words, thetas):
@@ -1535,7 +1535,7 @@ class DefineODE(Scene):
             stroke_width=5,
         )
 
-        ordinary = TexText("Ordinary")
+        ordinary = OldTexText("Ordinary")
         de_word.generate_target()
         group = VGroup(ordinary, de_word.target)
         group.arrange(RIGHT)
@@ -1588,7 +1588,7 @@ class DefineODE(Scene):
         self.ode_initials = ode_initials
 
     def show_second_order(self):
-        so = TexText("Second order")
+        so = OldTexText("Second order")
         so.scale(1.4)
         ode = self.ode_initials
         ode.generate_target()
@@ -1615,15 +1615,15 @@ class DefineODE(Scene):
         main_example = self.get_main_example()
         tex_config = {"tex_to_color_map": {"{x}": BLUE}}
         example3 = VGroup(
-            TexText("Third order ODE"),
-            Tex(
+            OldTexText("Third order ODE"),
+            OldTex(
                 "\\dddot {x}(t) + \\dot {x}(t)^2 = 0",
                 **tex_config,
             )
         )
         example4 = VGroup(
-            TexText("Fourth order ODE"),
-            Tex(
+            OldTexText("Fourth order ODE"),
+            OldTex(
                 "\\ddddot {x}(t) +",
                 "a\\dddot {x}(t) \\dot {x}(t) + ",
                 "b \\ddot {x}(t) {x}(t)",
@@ -1702,9 +1702,9 @@ class SecondOrderEquationExample(DefineODE):
         )
         axes.center()
         axes.to_edge(DOWN)
-        x_t = Tex("x", "(t)")
+        x_t = OldTex("x", "(t)")
         x_t.set_color_by_tex("x", BLUE)
-        t = Tex("t")
+        t = OldTex("t")
         t.next_to(axes.x_axis.get_right(), UP)
         x_t.next_to(axes.y_axis.get_top(), UP)
 
@@ -1714,10 +1714,10 @@ class SecondOrderEquationExample(DefineODE):
         self.add(axes)
 
     def write_differential_equation(self):
-        de_word = TexText("Differential", "Equation")
+        de_word = OldTexText("Differential", "Equation")
         de_word.scale(1.25)
         de_word.to_edge(UP, buff=MED_SMALL_BUFF)
-        so_word = TexText("Second Order")
+        so_word = OldTexText("Second Order")
         so_word.scale(1.25)
         de_word.generate_target()
         group = VGroup(so_word, de_word.target)
@@ -1728,7 +1728,7 @@ class SecondOrderEquationExample(DefineODE):
         so_line.match_width(so_word)
         so_line.next_to(so_word, DOWN, buff=SMALL_BUFF)
 
-        equation = Tex(
+        equation = OldTex(
             "{\\ddot x}(t)", "=",
             "-\\mu", "{\\dot x}(t)",
             "-", "\\omega", "{x}(t)",
@@ -1770,7 +1770,7 @@ class SecondOrderEquationExample(DefineODE):
             "height": 0.5,
         }
         x, d_x, dd_x = [
-            Tex(
+            OldTex(
                 "{" + s + "x}(t)",
                 **tex_config
             )
@@ -1839,9 +1839,9 @@ class SecondOrderEquationExample(DefineODE):
         xs = VGroup(x, d_x, dd_x)
 
         words = VGroup(
-            TexText("= Height").set_color(BLUE),
-            TexText("= Slope").set_color(RED),
-            TexText("= ``Curvature''").set_color(YELLOW),
+            OldTexText("= Height").set_color(BLUE),
+            OldTexText("= Slope").set_color(RED),
+            OldTexText("= ``Curvature''").set_color(YELLOW),
         )
         words.scale(0.75)
         for word, sym in zip(words, xs):
@@ -1941,10 +1941,10 @@ class ODEvsPDEinFrames(Scene):
         ])
 
         titles = VGroup(
-            # TexText("ODEs"),
-            # TexText("PDEs"),
-            TexText("Ordinary", "Differential", "Equations"),
-            TexText("Partial", "Differential", "Equations"),
+            # OldTexText("ODEs"),
+            # OldTexText("PDEs"),
+            OldTexText("Ordinary", "Differential", "Equations"),
+            OldTexText("Partial", "Differential", "Equations"),
         )
         for title, frame in zip(titles, frames):
             title.arrange(
@@ -1963,7 +1963,7 @@ class ODEvsPDEinFrames(Scene):
         ode.set_width(frames[0].get_width() - MED_LARGE_BUFF)
         ode.next_to(frames[0].get_top(), DOWN)
         ts = ode.get_parts_by_tex("{t}")
-        one_input = TexText("One input")
+        one_input = OldTexText("One input")
         one_input.next_to(frames[0].get_bottom(), UP)
         o_arrows = VGroup(*[
             Arrow(
@@ -1980,7 +1980,7 @@ class ODEvsPDEinFrames(Scene):
         frames[0].add(ode, one_input, o_arrows)
 
         # PDE content
-        pde = Tex(
+        pde = OldTex(
             """
             \\frac{\\partial T}{\\partial t}
             {(x, y, t)} =
@@ -1994,7 +1994,7 @@ class ODEvsPDEinFrames(Scene):
         pde.set_width(frames[1].get_width() - MED_LARGE_BUFF)
         pde.next_to(frames[1].get_top(), DOWN)
         inputs = pde.get_parts_by_tex("{(x, y, t)}")
-        multi_input = TexText("Multiple inputs")
+        multi_input = OldTexText("Multiple inputs")
         multi_input.next_to(frames[1].get_bottom(), UP)
         p_arrows = VGroup(*[
             Arrow(
@@ -2040,7 +2040,7 @@ class ReferencePiCollisionStateSpaces(Scene):
     }
 
     def construct(self):
-        title = TexText("The block collision puzzle")
+        title = OldTexText("The block collision puzzle")
         title.scale(1.5)
         title.to_edge(UP)
         self.add(title)
@@ -2078,7 +2078,7 @@ class XComponentArrows(Scene):
 
 class BreakingSecondOrderIntoTwoFirstOrder(IntroduceVectorField):
     def construct(self):
-        ode = Tex(
+        ode = OldTex(
             "{\\ddot\\theta}", "(t)", "=",
             "-\\mu", "{\\dot\\theta}", "(t)"
             "-(g / L)\\sin\\big(", "{\\theta}", "(t)\\big)",
@@ -2089,8 +2089,8 @@ class BreakingSecondOrderIntoTwoFirstOrder(IntroduceVectorField):
                 # "{t}": WHITE,
             }
         )
-        so_word = TexText("Second order ODE")
-        sys_word = TexText("System of two first order ODEs")
+        so_word = OldTexText("Second order ODE")
+        sys_word = OldTexText("System of two first order ODEs")
 
         system1 = self.get_system("{\\theta}", "{\\dot\\theta}")
         system2 = self.get_system("{\\theta}", "{\\omega}")
@@ -2148,12 +2148,12 @@ class BreakingSecondOrderIntoTwoFirstOrder(IntroduceVectorField):
 
     def get_system(self, tex1, tex2):
         system = VGroup(
-            Tex("d \\over dt"),
+            OldTex("d \\over dt"),
             self.get_vector_symbol(
                 tex1 + "(t)",
                 tex2 + "(t)",
             ),
-            Tex("="),
+            OldTex("="),
             self.get_vector_symbol(
                 tex2 + "(t)",
                 "".join([
@@ -2190,9 +2190,9 @@ class FromODEToVectorField(Scene):
             **matrix_config
         )
         equation = VGroup(
-            Tex("d \\over dt").scale(1.5),
+            OldTex("d \\over dt").scale(1.5),
             vect,
-            Tex("="),
+            OldTex("="),
             d_vect
         )
         equation.scale(0.8)
@@ -2670,7 +2670,7 @@ class LoveExample(PiCreatureScene):
         label = get_heart_var(index)
         label.move_to(x_coord * RIGHT)
         label.to_edge(UP)
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(label, RIGHT, SMALL_BUFF)
         eq.shift(SMALL_BUFF * UP)
         d.next_to(eq, RIGHT, SMALL_BUFF)
@@ -2950,9 +2950,9 @@ class InaccurateComputation(Scene):
         h_line = DashedLine(LEFT_SIDE, RIGHT_SIDE)
         h_line.to_edge(UP, buff=1.5)
         words = VGroup(
-            TexText("Real number"),
-            TexText("IEEE 754\\\\representation"),
-            TexText("Error"),
+            OldTexText("Real number"),
+            OldTexText("IEEE 754\\\\representation"),
+            OldTexText("Error"),
         )
         for i, word in zip([-1, 0, 1], words):
             word.next_to(h_line, UP)
@@ -2968,20 +2968,20 @@ class InaccurateComputation(Scene):
         self.add(h_line, lines[1:-1], words)
 
         numbers = VGroup(
-            Tex("\\pi").scale(2),
-            Tex("e^{\\sqrt{163}\\pi}").scale(1.5),
+            OldTex("\\pi").scale(2),
+            OldTex("e^{\\sqrt{163}\\pi}").scale(1.5),
         )
         numbers.set_color(YELLOW)
         numbers.set_stroke(width=0, background=True)
 
         bit_strings = VGroup(
-            Tex(
+            OldTex(
                 "01000000",
                 "01001001",
                 "00001111",
                 "11011011",
             ),
-            Tex(
+            OldTex(
                 "01011100",
                 "01101001",
                 "00101110",
@@ -2995,10 +2995,10 @@ class InaccurateComputation(Scene):
                     if bit == "0":
                         submob.set_color(GREY_B)
         errors = VGroup(
-            Tex(
+            OldTex(
                 "\\approx 8.7422 \\times 10^{-8}"
             ),
-            Tex(
+            OldTex(
                 "\\approx 5{,}289{,}803{,}032.00",
             ),
         )

@@ -24,19 +24,19 @@ DUAL_CYCLE = [3, 4, 5, 6, 1, 0, 2, 3]
 
 class EulersFormulaWords(Scene):
     def construct(self):
-        self.add(Tex("V-E+F=2"))
+        self.add(OldTex("V-E+F=2"))
 
 class TheTheoremWords(Scene):
     def construct(self):
-        self.add(TexText("The Theorem:"))
+        self.add(OldTexText("The Theorem:"))
 
 class ProofAtLastWords(Scene):
     def construct(self):
-        self.add(TexText("The Proof At Last..."))
+        self.add(OldTexText("The Proof At Last..."))
 
 class DualSpanningTreeWords(Scene):
     def construct(self):
-        self.add(TexText("Spanning trees have duals too!"))
+        self.add(OldTexText("Spanning trees have duals too!"))
 
 class PreferOtherProofDialogue(Scene):
     def construct(self):
@@ -64,7 +64,7 @@ class IllustrateDuality(GraphScene):
         GraphScene.construct(self)
         self.generate_dual_graph()
 
-        self.add(TexText("Duality").to_edge(UP))
+        self.add(OldTexText("Duality").to_edge(UP))
         self.remove(*self.vertices)
         def special_alpha(t):
             if t > 0.5:
@@ -108,11 +108,11 @@ class IntroduceGraph(GraphScene):
             for pair in [(4, 5), (0, 5), (1, 5), (7, 1), (8, 3)]
         ]
 
-        connected, planar, graph = TexText([
+        connected, planar, graph = OldTexText([
             "Connected ", "Planar ", "Graph"
         ]).to_edge(UP).split()
-        not_okay = TexText("Not Okay").set_color("red")
-        planar_explanation = TexText("""
+        not_okay = OldTexText("Not Okay").set_color("red")
+        planar_explanation = OldTexText("""
             (``Planar'' just means we can draw it without
              intersecting lines)
         """, size = "\\small")
@@ -163,7 +163,7 @@ class OldIntroduceGraphs(GraphScene):
         self.clear()
         self.add(*self.edges)
         self.replace_vertices_with(Face().scale(0.4))
-        friends = TexText("Friends").scale(EDGE_ANNOTATION_SCALE_FACTOR)
+        friends = OldTexText("Friends").scale(EDGE_ANNOTATION_SCALE_FACTOR)
         self.annotate_edges(friends.shift((0, friends.get_height()/2, 0)))
         self.play(*[
             CounterclockwiseTransform(vertex, Dot(point))
@@ -179,7 +179,7 @@ class OldIntroduceGraphs(GraphScene):
 
 class PlanarGraphDefinition(Scene):
     def construct(self):
-        Not, quote, planar, end_quote = TexText([
+        Not, quote, planar, end_quote = OldTexText([
             "Not \\\\", "``", "Planar", "''",
             # "no matter how \\\\ hard you try"
         ]).split()
@@ -234,9 +234,9 @@ class TerminologyFromPolyhedra(GraphScene):
         ])
         cube.rotate(-np.pi/3, [0, 0, 1])
         cube.rotate(-np.pi/3, [0, 1, 0])
-        dots_to_vertices = TexText("Dots $\\to$ Vertices").to_corner()
-        lines_to_edges = TexText("Lines $\\to$ Edges").to_corner()
-        regions_to_faces = TexText("Regions $\\to$ Faces").to_corner()
+        dots_to_vertices = OldTexText("Dots $\\to$ Vertices").to_corner()
+        lines_to_edges = OldTexText("Lines $\\to$ Edges").to_corner()
+        regions_to_faces = OldTexText("Regions $\\to$ Faces").to_corner()
         
         self.clear()
         # self.play(TransformAnimations(
@@ -275,7 +275,7 @@ class ThreePiecesOfTerminology(GraphScene):
     def construct(self):
         GraphScene.construct(self)
         terms = cycles, spanning_trees, dual_graphs = [
-            TexText(phrase).shift(y*UP).to_edge()
+            OldTexText(phrase).shift(y*UP).to_edge()
             for phrase, y in [
                 ("Cycles", 3),
                 ("Spanning Trees", 1),
@@ -356,8 +356,8 @@ class PathExamples(GraphScene):
             [(0, 1), (7, 8), (5, 6),],
             [(5, 0), (0, 2), (0, 1)],
         ]
-        valid_path = TexText("Valid \\\\ Path").set_color("green")
-        not_a_path = TexText("Not a \\\\ Path").set_color("red")
+        valid_path = OldTexText("Valid \\\\ Path").set_color("green")
+        not_a_path = OldTexText("Not a \\\\ Path").set_color("red")
         for mob in valid_path, not_a_path:
             mob.to_edge(UP)
         kwargs = {"run_time" : 1.0}
@@ -411,7 +411,7 @@ class IntroduceRandolph(GraphScene):
     def construct(self):
         GraphScene.construct(self)
         randy = Randolph().move_to((-3, 0, 0))
-        name = TexText("Randolph")
+        name = OldTexText("Randolph")
         self.play(Transform(
             randy,
             deepcopy(randy).scale(RANDOLPH_SCALE_FACTOR).move_to(self.get_points()[0]),
@@ -426,13 +426,13 @@ class DefineSpanningTree(GraphScene):
         GraphScene.construct(self)
         randy = Randolph()
         randy.scale(RANDOLPH_SCALE_FACTOR).move_to(self.get_points()[0])
-        dollar_signs = TexText("\\$\\$")
+        dollar_signs = OldTexText("\\$\\$")
         dollar_signs.scale(EDGE_ANNOTATION_SCALE_FACTOR)
         dollar_signs = Mobject(*[
             deepcopy(dollar_signs).shift(edge.get_center())
             for edge in self.edges
         ])
-        unneeded = TexText("unneeded!")
+        unneeded = OldTexText("unneeded!")
         unneeded.scale(EDGE_ANNOTATION_SCALE_FACTOR)
         self.generate_spanning_tree()
         def green_dot_at_index(index):
@@ -487,8 +487,8 @@ class NamingTree(GraphScene):
         branches = self.spanning_tree.split()
         branches_copy = deepcopy(branches)
         treeified_branches = self.treeified_spanning_tree.split()
-        tree = TexText("``Tree''").to_edge(UP)
-        spanning_tree = TexText("``Spanning Tree''").to_edge(UP)
+        tree = OldTexText("``Tree''").to_edge(UP)
+        spanning_tree = OldTexText("``Spanning Tree''").to_edge(UP)
 
         self.add(*branches)
         self.play(
@@ -519,7 +519,7 @@ class DualGraph(GraphScene):
     def construct(self):
         GraphScene.construct(self)
         self.generate_dual_graph()
-        self.add(TexText("Dual Graph").to_edge(UP).shift(2*LEFT))
+        self.add(OldTexText("Dual Graph").to_edge(UP).shift(2*LEFT))
         self.play(*[
             ShowCreation(mob)
             for mob in self.dual_edges + self.dual_vertices
@@ -542,7 +542,7 @@ class FacebookGraph(GraphScene):
         logo.shift(0.2*LEFT + 0.1*UP)
         account.add(logo).center()
         account.shift(0.2*LEFT + 0.1*UP)
-        friends = Tex(
+        friends = OldTex(
             "\\leftarrow \\text{friends} \\rightarrow"
         ).scale(0.5*EDGE_ANNOTATION_SCALE_FACTOR)
 
@@ -589,13 +589,13 @@ class FacebookGraphAsAbstractSet(Scene):
             "\\text{%s}&\\leftrightarrow\\text{%s}"%(names[i],names[j])
             for i, j in friend_pairs
         ] + ["\\vdots"])
-        names_mob = TexText(names_string).shift(3*LEFT)
-        friends_mob = Tex(
+        names_mob = OldTexText(names_string).shift(3*LEFT)
+        friends_mob = OldTex(
             friends_string, size = "\\Large"
         ).shift(3*RIGHT)
-        accounts = TexText("\\textbf{Accounts}")
+        accounts = OldTexText("\\textbf{Accounts}")
         accounts.shift(3*LEFT).to_edge(UP)
-        friendships = TexText("\\textbf{Friendships}")
+        friendships = OldTexText("\\textbf{Friendships}")
         friendships.shift(3*RIGHT).to_edge(UP)
         lines = Mobject(
             Line(UP*FRAME_Y_RADIUS, DOWN*FRAME_Y_RADIUS),
@@ -644,8 +644,8 @@ class ExamplesOfGraphs(GraphScene):
         self.clear()
         self.add(objects, notions, horizontal_line, vertical_line)
         for (obj, notion), height in zip(objects_and_notions, it.count(2, -1)):
-            obj_mob = TexText(obj, size = "\\small").to_edge(LEFT)
-            not_mob = TexText(notion, size = "\\small").to_edge(LEFT)
+            obj_mob = OldTexText(obj, size = "\\small").to_edge(LEFT)
+            not_mob = OldTexText(notion, size = "\\small").to_edge(LEFT)
             not_mob.shift((vert_line_x_val + FRAME_X_RADIUS)*RIGHT)
             obj_mob.shift(height*UP)
             not_mob.shift(height*UP)
@@ -696,9 +696,9 @@ class ExamplesOfGraphs(GraphScene):
     def handle_dual_graph(self, words1, words2):
         words1.set_color("yellow")
         words2.set_color("yellow")
-        connected = TexText("Connected")
+        connected = OldTexText("Connected")
         connected.set_color("lightgreen")
-        not_connected = TexText("Not Connected")
+        not_connected = OldTexText("Not Connected")
         not_connected.set_color("red")
         for mob in connected, not_connected:
             mob.shift(self.get_points()[3] + UP)
@@ -807,7 +807,7 @@ class EdgesAreTheSame(GraphScene):
         ])
         self.wait()
         self.add(
-            TexText("""
+            OldTexText("""
                 (Or at least I would argue they should \\\\
                 be thought of as the same thing.)
             """, size = "\\small").to_edge(UP)
@@ -828,11 +828,11 @@ class ListOfCorrespondances(Scene):
         for corr in correspondances:
             corr[0] += " original graph"
             corr[1] += " dual graph"
-        arrow = Tex("\\leftrightarrow", size = "\\large")
+        arrow = OldTex("\\leftrightarrow", size = "\\large")
         lines = []
         for corr, height in zip(correspondances, it.count(3, -1)):
-            left  = TexText(corr[0], size = "\\small")
-            right = TexText(corr[1], size = "\\small")
+            left  = OldTexText(corr[0], size = "\\small")
+            right = OldTexText(corr[1], size = "\\small")
             this_arrow = deepcopy(arrow)
             for mob in left, right, this_arrow:
                 mob.shift(height*UP)
@@ -906,7 +906,7 @@ class IntroduceMortimer(GraphScene):
         self.generate_regions()
         randy = Randolph().shift(LEFT)
         morty = Mortimer().shift(RIGHT)
-        name = TexText("Mortimer")
+        name = OldTexText("Mortimer")
         name.shift(morty.get_center() + 1.2*UP)
         randy_path = (0, 1, 3)
         morty_path = (-2, -3, -4)
@@ -1020,7 +1020,7 @@ class MortimerCannotTraverseCycle(GraphScene):
         morty = Mortimer().scale(RANDOLPH_SCALE_FACTOR)
         morty.move_to(self.dual_points[dual_cycle[0]])
         time_per_edge = 0.5
-        text = TexText("""
+        text = OldTexText("""
             One of these lines must be included
             in the spanning tree if those two inner
             vertices are to be reached.
@@ -1059,14 +1059,14 @@ class MortimerCannotTraverseCycle(GraphScene):
 
 class TwoPropertiesOfSpanningTree(Scene):
     def construct(self):
-        spanning, tree = TexText(
+        spanning, tree = OldTexText(
             ["Spanning ", "Tree"], 
             size = "\\Huge"
         ).split()
-        spanning_explanation = TexText("""
+        spanning_explanation = OldTexText("""
             Touches every vertex
         """).shift(spanning.get_center() + 2*DOWN)
-        tree_explanation = TexText("""
+        tree_explanation = OldTexText("""
             No Cycles
         """).shift(tree.get_center() + 2*UP)
 
@@ -1097,7 +1097,7 @@ class DualSpanningTree(GraphScene):
         morty.scale(RANDOLPH_SCALE_FACTOR)
         morty.move_to(self.dual_points[0])
         dual_edges = [1, 3, 4, 7, 11, 9, 13]
-        words = TexText("""
+        words = OldTexText("""
             The red edges form a spanning tree of the dual graph!
         """).to_edge(UP)
 
@@ -1111,7 +1111,7 @@ class DualSpanningTree(GraphScene):
 class TreeCountFormula(Scene):
     def construct(self):
         time_per_branch = 0.5
-        text = TexText("""
+        text = OldTexText("""
             In any tree:
             $$E + 1 = V$$
         """)
@@ -1143,7 +1143,7 @@ class TreeCountFormula(Scene):
 
 class FinalSum(Scene):
     def construct(self):
-        lines = Tex([
+        lines = OldTex([
             "(\\text{Number of Randolph's Edges}) + 1 &= V \\\\ \n",
             "(\\text{Number of Mortimer's Edges}) + 1 &= F \\\\ \n",
             " \\Downarrow \\\\", "E","+","2","&=","V","+","F",
@@ -1153,10 +1153,10 @@ class FinalSum(Scene):
             self.wait()
         self.wait()
 
-        symbols = V, minus, E, plus, F, equals, two = Tex(
+        symbols = V, minus, E, plus, F, equals, two = OldTex(
             "V - E + F = 2".split(" ")
         )
-        plus = Tex("+")
+        plus = OldTex("+")
         anims = []
         for mob, index in zip(symbols, [-3, -2, -7, -6, -1, -4, -5]):
             copy = plus if index == -2 else deepcopy(mob)

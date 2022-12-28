@@ -82,7 +82,7 @@ class VennDiagram(InteractiveScene):
             for v1, v2 in zip(hexagon.get_vertices()[:3], hexagon.get_vertices()[3:])
         ))
         hexagon.set_stroke(GREY_A, 2)
-        answer = Tex("1 / 3", font_size=72, color=YELLOW)
+        answer = OldTex("1 / 3", font_size=72, color=YELLOW)
         answer.next_to(question, RIGHT, buff=LARGE_BUFF)
         self.add(hexagon, answer)
         self.wait()

@@ -72,7 +72,7 @@ class PatreonEndScreen(Scene):
         line.move_to(ORIGIN)
 
         # Add thanks
-        thanks = TexText(self.thanks_words)
+        thanks = OldTexText(self.thanks_words)
         thanks.scale(0.9)
         thanks.next_to(black_rect.get_bottom(), UP, SMALL_BUFF)
         thanks.set_color(YELLOW)

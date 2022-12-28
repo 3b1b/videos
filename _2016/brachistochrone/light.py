@@ -56,7 +56,7 @@ class PhotonScene(Scene):
 
 class SimplePhoton(PhotonScene):
     def construct(self):
-        text = TexText("Light")
+        text = OldTexText("Light")
         text.to_edge(UP)
         self.play(ShimmerIn(text))
         self.play(self.photon_run_along_path(
@@ -124,7 +124,7 @@ class PhotonThroughLens(MultipathPhotonScene):
 
 class TransitionToOptics(PhotonThroughLens):
     def construct(self):
-        optics = TexText("Optics")
+        optics = OldTexText("Optics")
         optics.to_edge(UP)
         self.add(optics)
         self.has_started = False
@@ -194,13 +194,13 @@ class PhotonsInWater(MultipathPhotonScene):
 
 class ShowMultiplePathsScene(PhotonScene):
     def construct(self):
-        text = TexText("Which path minimizes travel time?")
+        text = OldTexText("Which path minimizes travel time?")
         text.to_edge(UP)
         self.generate_start_and_end_points()
         point_a = Dot(self.start_point)
         point_b = Dot(self.end_point)
-        A = TexText("A").next_to(point_a, UP)
-        B = TexText("B").next_to(point_b, DOWN)
+        A = OldTexText("A").next_to(point_a, UP)
+        B = OldTexText("B").next_to(point_b, DOWN)
         paths = self.get_paths()
 
         for point, letter in [(point_a, A), (point_b, B)]:
@@ -290,14 +290,14 @@ class ShowMultiplePathsInWater(ShowMultiplePathsScene):
         glass = Region(lambda x, y : y < 0, color = BLUE_E)
         self.generate_start_and_end_points()
         straight = Line(self.start_point, self.end_point)
-        slow = TexText("Slow")
+        slow = OldTexText("Slow")
         slow.rotate(np.arctan(straight.get_slope()))
         slow.shift(straight.get_points()[int(0.7*straight.get_num_points())])
         slow.shift(0.5*DOWN)
-        too_long = TexText("Too long")
+        too_long = OldTexText("Too long")
         too_long.shift(UP)
-        air = TexText("Air").shift(2*UP)
-        water = TexText("Water").shift(2*DOWN)
+        air = OldTexText("Air").shift(2*UP)
+        water = OldTexText("Water").shift(2*DOWN)
 
         self.add(glass)
         self.play(GrowFromCenter(air))
@@ -340,9 +340,9 @@ class ShowMultiplePathsInWater(ShowMultiplePathsScene):
 class StraightLinesFastestInConstantMedium(PhotonScene):
     def construct(self):
         kwargs = {"size" : "\\Large"}
-        left = TexText("Speed of light is constant", **kwargs)
-        arrow = Tex("\\Rightarrow", **kwargs)
-        right = TexText("Staight path is fastest", **kwargs)
+        left = OldTexText("Speed of light is constant", **kwargs)
+        arrow = OldTex("\\Rightarrow", **kwargs)
+        right = OldTexText("Staight path is fastest", **kwargs)
         left.next_to(arrow, LEFT)
         right.next_to(arrow, RIGHT)
         squaggle, line = self.get_paths()        
@@ -391,7 +391,7 @@ class PhtonBendsInWater(PhotonScene, ZoomedScene):
         theta1 = np.arctan(bottom_line.get_slope())
         theta2 = np.arctan(extension.get_slope())
         arc = Arc(theta2-theta1, start_angle = theta1, radius = 2)
-        question_mark = TexText("$\\theta$?")
+        question_mark = OldTexText("$\\theta$?")
         question_mark.shift(arc.get_center()+0.5*DOWN+0.25*RIGHT)
         wave = self.wavify(path2)
         wave.set_color(YELLOW)
@@ -416,7 +416,7 @@ class PhtonBendsInWater(PhotonScene, ZoomedScene):
 class LightIsFasterInAirThanWater(ShowMultiplePathsInWater):
     def construct(self):
         glass = Region(lambda x, y : y < 0, color = BLUE_E)
-        equation = Tex("v_{\\text{air}} > v_{\\text{water}}")
+        equation = OldTex("v_{\\text{air}} > v_{\\text{water}}")
         equation.to_edge(UP)
         path = Line(FRAME_X_RADIUS*LEFT, FRAME_X_RADIUS*RIGHT)
         path1 = path.copy().shift(2*UP)
@@ -449,25 +449,25 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
         h_2.next_to(right_line, RIGHT)
         point_a = Dot(self.start_point)
         point_b = Dot(self.end_point)
-        A = TexText("A").next_to(point_a, UP)
-        B = TexText("B").next_to(point_b, DOWN)
+        A = OldTexText("A").next_to(point_a, UP)
+        B = OldTexText("B").next_to(point_b, DOWN)
 
         x = start_x
         left_brace = Brace(Mobject(Point(left), Point(x)))
         right_brace = Brace(Mobject(Point(x), Point(right)), UP)
-        x_mob = Tex("x")
+        x_mob = OldTex("x")
         x_mob.next_to(left_brace, DOWN)
-        w_minus_x = Tex("w-x")
+        w_minus_x = OldTex("w-x")
         w_minus_x.next_to(right_brace, UP)
         top_line = Line(self.start_point, x)
         bottom_line = Line(x, self.end_point)
-        top_dist = Tex("\\sqrt{h_1^2+x^2}")
+        top_dist = OldTex("\\sqrt{h_1^2+x^2}")
         top_dist.scale(0.5)
         a = 0.3
         n = top_line.get_num_points()
         point = top_line.get_points()[int(a*n)]
         top_dist.next_to(Point(point), RIGHT, buff = 0.3)
-        bottom_dist = Tex("\\sqrt{h_2^2+(w-x)^2}")
+        bottom_dist = OldTex("\\sqrt{h_2^2+(w-x)^2}")
         bottom_dist.scale(0.5)
         n = bottom_line.get_num_points()
         point = bottom_line.get_points()[int((1-a)*n)]
@@ -476,7 +476,7 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
         end_top_line = Line(self.start_point, end_x)
         end_bottom_line = Line(end_x, self.end_point)
         end_brace = Brace(Mobject(Point(left), Point(end_x)))
-        end_x_mob = Tex("x").next_to(end_brace, DOWN)
+        end_x_mob = OldTex("x").next_to(end_brace, DOWN)
 
         axes = Mobject(
             NumberLine(),
@@ -489,8 +489,8 @@ class GeometryOfGlassSituation(ShowMultiplePathsInWater):
         )
         graph.set_color(YELLOW)
         Mobject(axes, graph).scale(0.2).to_corner(UP+RIGHT, buff = 1)
-        axes.add(Tex("x", size = "\\small").next_to(axes, RIGHT))
-        axes.add(TexText("Travel time", size = "\\small").next_to(
+        axes.add(OldTex("x", size = "\\small").next_to(axes, RIGHT))
+        axes.add(OldTexText("Travel time", size = "\\small").next_to(
             axes, UP
         ))
         new_graph = graph.copy()
@@ -626,8 +626,8 @@ class SpringSetup(ShowMultiplePathsInWater):
         self.generate_start_and_end_points()
         point_a = Dot(self.start_point)
         point_b = Dot(self.end_point)
-        A = TexText("A").next_to(point_a, UP)
-        B = TexText("B").next_to(point_b, DOWN)
+        A = OldTexText("A").next_to(point_a, UP)
+        B = OldTexText("B").next_to(point_b, DOWN)
         self.add(glass, point_a, point_b, A, B)
 
     def generate_springs(self, ring):
@@ -640,9 +640,9 @@ class SpringSetup(ShowMultiplePathsInWater):
         ]
         
     def add_rod_and_ring(self, rod, ring):
-        rod_word = TexText("Rod")
+        rod_word = OldTexText("Rod")
         rod_word.next_to(Point(), UP)
-        ring_word = TexText("Ring")
+        ring_word = OldTexText("Ring")
         ring_word.next_to(ring, UP)
         self.wait()
         self.add(rod)
@@ -674,12 +674,12 @@ class SpringSetup(ShowMultiplePathsInWater):
             self.wait()
 
     def add_force_definitions(self):
-        top_force = Tex("F_1 = \\dfrac{1}{v_{\\text{air}}}")
-        bottom_force = Tex("F_2 = \\dfrac{1}{v_{\\text{water}}}")
+        top_force = OldTex("F_1 = \\dfrac{1}{v_{\\text{air}}}")
+        bottom_force = OldTex("F_2 = \\dfrac{1}{v_{\\text{water}}}")
         top_spring, bottom_spring = self.start_springs.split()
         top_force.next_to(top_spring)
         bottom_force.next_to(bottom_spring, DOWN, buff = -0.5)
-        words = TexText("""
+        words = OldTexText("""
             The force in a real spring is 
             proportional to that spring's length
         """)
@@ -725,7 +725,7 @@ class SpringSetup(ShowMultiplePathsInWater):
             arc = Arc(angle, radius = 0.5).rotate(np.pi/2)
             if point is self.end_point:
                 arc.rotate(np.pi)
-            theta = Tex("\\theta_%d"%next(counter))
+            theta = OldTex("\\theta_%d"%next(counter))
             theta.scale(0.5)
             theta.shift(2*arc.get_center())
             arc.shift(ring_center)
@@ -754,7 +754,7 @@ class SpringSetup(ShowMultiplePathsInWater):
         self.wait()
 
     def show_equation(self):
-        equation = Tex([
+        equation = OldTex([
             "\\left(\\dfrac{1}{\\phantom{v_air}}\\right)",
             "\\sin(\\theta_1)", 
             "=", 
@@ -764,7 +764,7 @@ class SpringSetup(ShowMultiplePathsInWater):
         equation.to_corner(UP+RIGHT)
         frac1, sin1, equals, frac2, sin2 = equation.split()
         v_air, v_water = [
-            Tex("v_{\\text{%s}}"%s, size = "\\Large")
+            OldTex("v_{\\text{%s}}"%s, size = "\\Large")
             for s in ("air", "water")
         ]
         v_air.next_to(Point(frac1.get_center()), DOWN)
@@ -772,13 +772,13 @@ class SpringSetup(ShowMultiplePathsInWater):
         frac1.add(v_air)
         frac2.add(v_water)
         f1, f2 = [
-            Tex("F_%d"%d, size = "\\Large") 
+            OldTex("F_%d"%d, size = "\\Large") 
             for d in (1, 2)
         ]
         f1.next_to(sin1, LEFT)
         f2.next_to(equals, RIGHT)
         sin2_start = sin2.copy().next_to(f2, RIGHT)
-        bar1 = Tex("\\dfrac{\\qquad}{\\qquad}")
+        bar1 = OldTex("\\dfrac{\\qquad}{\\qquad}")
         bar2 = bar1.copy()
         bar1.next_to(sin1, DOWN)
         bar2.next_to(sin2, DOWN)        
@@ -786,7 +786,7 @@ class SpringSetup(ShowMultiplePathsInWater):
         v_water_copy = v_water.copy().next_to(bar2, DOWN)
         bars = Mobject(bar1, bar2)
         new_eq = equals.copy().center().shift(bars.get_center())
-        snells = TexText("Snell's Law")
+        snells = OldTexText("Snell's Law")
         snells.set_color(YELLOW)
         snells.shift(new_eq.get_center()[0]*RIGHT)
         snells.shift(UP)
@@ -840,7 +840,7 @@ class WhatGovernsTheSpeedOfLight(PhotonScene, PathSlidingScene):
 
 class WhichPathWouldLightTake(PhotonScene, TryManyPaths):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             ["Which path ", "would \\emph{light} take", "?"]
         )
         words.split()[1].set_color(YELLOW)
@@ -875,7 +875,7 @@ class StateSnellsLaw(PhotonScene):
             if point is point_b:
                 arc.rotate(np.pi)
                 line.reverse_points()
-            theta = Tex("\\theta_%d"%next(counter))
+            theta = OldTex("\\theta_%d"%next(counter))
             theta.scale(0.5)
             theta.shift(2*arc.get_center())
             arc.shift(midpoint)
@@ -889,14 +889,14 @@ class StateSnellsLaw(PhotonScene):
         path = Mobject(*lines).ingest_submobjects()
         glass = Region(lambda x, y : y < 0, color = BLUE_E)
         self.add(glass)
-        equation = Tex([
+        equation = OldTex([
             "\\dfrac{\\sin(\\theta_1)}{v_{\\text{air}}}",
             "=",            
             "\\dfrac{\\sin(\\theta_2)}{v_{\\text{water}}}",
         ])
         equation.to_corner(UP+RIGHT)
         exp1, equals, exp2 = equation.split()
-        snells_law = TexText("Snell's Law:")
+        snells_law = OldTexText("Snell's Law:")
         snells_law.set_color(YELLOW)
         snells_law.to_edge(UP)
 

@@ -82,7 +82,7 @@ class TemperatureGraphScene(SpecialThreeDScene):
         ]
         x_labels = VGroup()
         for tex, val in tex_vals:
-            label = Tex(tex)
+            label = OldTex(tex)
             label.scale(0.5)
             label.next_to(x_axis.n2p(val), DOWN)
             x_labels.add(label)
@@ -95,16 +95,16 @@ class TemperatureGraphScene(SpecialThreeDScene):
         return axes
 
     def add_axes_labels(self, axes):
-        x_label = Tex("x")
+        x_label = OldTex("x")
         x_label.next_to(axes.x_axis.get_end(), RIGHT)
         axes.x_axis.label = x_label
 
-        t_label = TexText("Time")
+        t_label = OldTexText("Time")
         t_label.rotate(90 * DEGREES, OUT)
         t_label.next_to(axes.y_axis.get_end(), UP)
         axes.y_axis.label = t_label
 
-        temp_label = TexText(self.temp_text)
+        temp_label = OldTexText(self.temp_text)
         temp_label.rotate(90 * DEGREES, RIGHT)
         temp_label.next_to(axes.z_axis.get_zenith(), RIGHT)
         axes.z_axis.label = temp_label
@@ -322,15 +322,15 @@ class AddMultipleSolutions(SimpleCosExpGraph):
             axes.surface = surface
 
         self.set_camera_orientation(distance=100)
-        plus = Tex("+").scale(2)
-        equals = Tex("=").scale(2)
+        plus = OldTex("+").scale(2)
+        equals = OldTex("=").scale(2)
         group = VGroup(
             axes1, plus, axes2, equals, axes3,
         )
         group.arrange(RIGHT, buff=SMALL_BUFF)
 
         for axes in all_axes:
-            checkmark = Tex("\\checkmark")
+            checkmark = OldTex("\\checkmark")
             checkmark.set_color(GREEN)
             checkmark.scale(2)
             checkmark.next_to(axes, UP)
@@ -498,13 +498,13 @@ class BreakDownAFunction(SimpleCosExpGraph):
         low_graphs = self.low_graphs
 
         plusses = VGroup(*[
-            Tex("+").next_to(
+            OldTex("+").next_to(
                 axes.x_axis.get_end(),
                 RIGHT, MED_SMALL_BUFF
             )
             for axes in low_axes_group
         ])
-        dots = Tex("\\cdots")
+        dots = OldTex("\\cdots")
         dots.next_to(plusses, RIGHT, MED_SMALL_BUFF)
 
         arrow = Arrow(
@@ -513,7 +513,7 @@ class BreakDownAFunction(SimpleCosExpGraph):
             path_arc=90 * DEGREES,
         )
 
-        top_words = TexText("Arbitrary\\\\function")
+        top_words = OldTexText("Arbitrary\\\\function")
         top_words.next_to(top_axes, LEFT, MED_LARGE_BUFF)
         top_words.set_color(YELLOW)
         top_arrow = Arrow(
@@ -521,7 +521,7 @@ class BreakDownAFunction(SimpleCosExpGraph):
             top_graph.point_from_proportion(0.3)
         )
 
-        low_words = TexText("Sine curves")
+        low_words = OldTexText("Sine curves")
         low_words.set_color(BLUE)
         low_words.next_to(low_axes_group, DOWN, MED_LARGE_BUFF)
 
@@ -581,7 +581,7 @@ class BreakDownAFunction(SimpleCosExpGraph):
         self.play(LaggedStart(*anims2, run_time=2))
         self.wait()
 
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.set_color(GREEN)
         low_checkmarks = VGroup(*[
             checkmark.copy().next_to(
@@ -798,7 +798,7 @@ class OceanOfPossibilities(TemperatureGraphScene):
         # surface_boundary_lines.suspend_updating()
         words = VGroup()
         for line in lines:
-            word = TexText("Boundary")
+            word = OldTexText("Boundary")
             word.set_stroke(BLACK, 3, background=True)
             word.scale(1.5)
             word.match_color(line)
@@ -934,7 +934,7 @@ class AnalyzeSineCurve(TemperatureGraphScene):
         curve.move_to(DR)
         curve.set_width(5)
         curve.set_color(YELLOW)
-        question = TexText("What's so special?")
+        question = OldTexText("What's so special?")
         question.scale(1.5)
         question.to_edge(UP)
         question.shift(2 * LEFT)
@@ -959,7 +959,7 @@ class AnalyzeSineCurve(TemperatureGraphScene):
             axes, lambda x: np.sin(x)
         )
         graph.set_stroke(width=4)
-        graph_label = Tex(
+        graph_label = OldTex(
             "T({x}, 0) = \\sin\\left({x}\\right)",
             tex_to_color_map=self.tex_to_color_map,
         )
@@ -1022,12 +1022,12 @@ class AnalyzeSineCurve(TemperatureGraphScene):
         self.curve_x_tracker = curve_x_tracker
 
     def show_derivatives(self):
-        deriv1 = Tex(
+        deriv1 = OldTex(
             "{\\partial T \\over \\partial {x}}({x}, 0)",
             "= \\cos\\left({x}\\right)",
             tex_to_color_map=self.tex_to_color_map,
         )
-        deriv2 = Tex(
+        deriv2 = OldTex(
             "{\\partial^2 T \\over \\partial {x}^2}({x}, 0)",
             "= -\\sin\\left({x}\\right)",
             tex_to_color_map=self.tex_to_color_map,
@@ -1119,11 +1119,11 @@ class AnalyzeSineCurve(TemperatureGraphScene):
 
         factor = 0.9
 
-        new_label = Tex(
+        new_label = OldTex(
             "T({x}, \\Delta t) = c \\cdot \\sin\\left({x}\\right)",
             tex_to_color_map=self.tex_to_color_map,
         )
-        final_label = Tex(
+        final_label = OldTex(
             "T({x}, {t}) = (\\text{something}) \\cdot \\sin\\left({x}\\right)",
             tex_to_color_map=self.tex_to_color_map,
         )
@@ -1382,7 +1382,7 @@ class SineWaveScaledByExp(TemperatureGraphScene):
         )
         graph.suspend_updating()
 
-        graph_label = Tex("\\sin(x)")
+        graph_label = OldTex("\\sin(x)")
         graph_label.set_color(BLUE)
         graph_label.rotate(90 * DEGREES, RIGHT)
         graph_label.next_to(
@@ -1448,7 +1448,7 @@ class SineWaveScaledByExp(TemperatureGraphScene):
         exp_graph.set_stroke(RED, 3)
         exp_graph.set_shade_in_3d(True)
 
-        exp_label = Tex("e^{-\\alpha t}")
+        exp_label = OldTex("e^{-\\alpha t}")
         exp_label.scale(1.5)
         exp_label.set_color(RED)
         exp_label.rotate(90 * DEGREES, RIGHT)
@@ -1514,7 +1514,7 @@ class BoundaryConditionReference(ShowEvolvingTempGraphWithArrows):
         ])
         boundary_arrows.set_stroke(YELLOW, 10)
 
-        words = TexText(
+        words = OldTexText(
             "Different rules\\\\",
             "at the boundary",
         )
@@ -1571,7 +1571,7 @@ class SimulateRealSineCurve(ShowEvolvingTempGraphWithArrows):
     def add_labels_to_axes(self):
         x_axis = self.axes.x_axis
         x_axis.add(*[
-            Tex(tex).scale(0.5).next_to(
+            OldTex(tex).scale(0.5).next_to(
                 x_axis.n2p(n),
                 DOWN,
                 buff=MED_SMALL_BUFF
@@ -1716,7 +1716,7 @@ class EmphasizeBoundaryPoints(SimulateLinearGraph):
             dot.set_height(0.2)
             dot.set_color(YELLOW)
 
-        words = TexText(
+        words = OldTexText(
             "Different rules\\\\"
             "at the boundary"
         )
@@ -1860,7 +1860,7 @@ class SlopeToHeatFlow(FlatEdgesContinuousEvolution):
         slope_words = VGroup()
         for line in lines:
             slope = line.get_slope()
-            word = TexText(
+            word = OldTexText(
                 "Slope =",
                 "${:.2}$".format(slope)
             )
@@ -1908,7 +1908,7 @@ class SlopeToHeatFlow(FlatEdgesContinuousEvolution):
         ])
 
         flow_words = VGroup(*[
-            TexText("Heat flow").next_to(
+            OldTexText("Heat flow").next_to(
                 point, DOWN
             ).scale(0.8)
             for point in points
@@ -1984,7 +1984,7 @@ class CloserLookAtStraightLine(SimulateLinearGraph):
         self.show_t_gt_0_state()
 
     def show_t_eq_0_state(self):
-        t_eq = Tex("t", "=", "0")
+        t_eq = OldTex("t", "=", "0")
         t_eq.next_to(self.time_label, DOWN)
 
         circles = VGroup(*[
@@ -2008,7 +2008,7 @@ class CloserLookAtStraightLine(SimulateLinearGraph):
         # circles = self.circles
         t_eq = self.t_eq
 
-        t_ineq = Tex("t", ">", "0")
+        t_ineq = OldTex("t", ">", "0")
         t_ineq.move_to(t_eq)
 
         slope_lines = VGroup(*[
@@ -2091,7 +2091,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
     def setup_axes(self):
         axes = self.get_three_d_axes(include_numbers=True)
         axes.x_axis.remove(axes.x_axis.numbers)
-        L = Tex("L")
+        L = OldTex("L")
         L.rotate(90 * DEGREES, RIGHT)
         L.next_to(axes.x_axis.get_end(), IN)
         axes.x_axis.label = L
@@ -2125,7 +2125,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
     def add_sine_wave(self):
         self.initialize_parameter_trackers()
         graph = self.get_graph()
-        sin_label = Tex(
+        sin_label = OldTex(
             "\\sin\\left({x}\\right)",
             **self.tex_mobject_config,
         )
@@ -2151,7 +2151,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         sin_cross.add_updater(
             lambda m: m.move_to(sin_label)
         )
-        cos_label = Tex(
+        cos_label = OldTex(
             "\\cos\\left({x}\\right)",
             **self.tex_mobject_config,
         )
@@ -2181,7 +2181,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
 
     def show_derivatives_of_cos(self):
         cos_label = self.cos_label
-        cos_exp_label = Tex(
+        cos_exp_label = OldTex(
             "\\cos\\left({x}\\right)",
             "e^{-\\alpha {t}}",
             **self.tex_mobject_config
@@ -2192,7 +2192,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
             self.get_ddx_computation_group(
                 label,
                 *[
-                    Tex(
+                    OldTex(
                         s + "\\left({x}\\right)" + exp,
                         **self.tex_mobject_config,
                     )
@@ -2263,7 +2263,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         ddx_exp_group = self.ddx_exp_group
         omega_tracker = self.omega_tracker
 
-        cos_omega = Tex(
+        cos_omega = OldTex(
             "\\cos\\left(",
             "\\omega", "\\cdot", "{x}",
             "\\right)",
@@ -2348,7 +2348,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         ddx_omega_group = self.get_ddx_computation_group(
             cos_omega,
             *[
-                Tex(
+                OldTex(
                     s + "\\left(\\omega \\cdot {x}\\right)",
                     **self.tex_mobject_config,
                 )
@@ -2372,7 +2372,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         cos_omega = self.cos_omega
         ddx_omega_group = self.ddx_omega_group
 
-        cos_exp = Tex(
+        cos_exp = OldTex(
             "\\cos\\left(",
             "\\omega", "\\cdot", "{x}",
             "\\right)",
@@ -2459,7 +2459,7 @@ class ManipulateSinExpSurface(TemperatureGraphScene):
         group.next_to(f, RIGHT)
 
         for arrow in arrows:
-            label = Tex(
+            label = OldTex(
                 "\\partial \\over \\partial {x}",
                 **self.tex_mobject_config,
             )
@@ -2581,7 +2581,7 @@ class ShowHarmonics(SimulateRealSineCurve):
         omega_tracker = self.omega_tracker
         L = TAU
 
-        formula = Tex(
+        formula = OldTex(
             "=", "\\cos\\left(",
             "2(\\pi / L)", "\\cdot", "{x}",
             "\\right)",
@@ -2594,12 +2594,12 @@ class ShowHarmonics(SimulateRealSineCurve):
         )
         omega_part = formula.get_part_by_tex("\\pi")
         omega_brace = Brace(omega_part, DOWN)
-        omega = Tex("\\omega")
+        omega = OldTex("\\omega")
         omega.set_color(MAROON_B)
         omega.next_to(omega_brace, DOWN, SMALL_BUFF)
         formula.remove(omega_part)
 
-        pi_over_L = Tex("(\\pi / L)")
+        pi_over_L = OldTex("(\\pi / L)")
         pi_over_L.move_to(omega_part)
         pi_over_L.match_color(omega)
 
@@ -2631,7 +2631,7 @@ class ShowHarmonics(SimulateRealSineCurve):
             axes.x_axis.n2p(x_tracker.get_value()),
             DOWN,
         ))
-        x_sym = Tex("x")
+        x_sym = OldTex("x")
         x_sym.set_color(GREEN)
         x_sym.add_background_rectangle(buff=SMALL_BUFF)
         x_sym.add_updater(lambda m: m.next_to(tip, UP, SMALL_BUFF))
@@ -2685,7 +2685,7 @@ class ShowHarmonics(SimulateRealSineCurve):
     #
     def add_labels_to_axes(self):
         x_axis = self.axes.x_axis
-        L = Tex("L")
+        L = OldTex("L")
         L.next_to(x_axis.get_end(), DOWN)
         x_axis.add(L)
         x_axis.label = L
@@ -2754,7 +2754,7 @@ class ShowHarmonicSurfaces(ManipulateSinExpSurface):
     #
     def get_formula(self, n_str):
         n_str = "{" + n_str + "}"
-        result = Tex(
+        result = OldTex(
             "\\cos\\left(",
             n_str, "(", "\\pi / L", ")", "{x}"
             "\\right)"
@@ -2812,7 +2812,7 @@ class Thumbnail(ShowHarmonicSurfaces):
             )
             self.add(new_graph)
 
-        words = TexText(
+        words = OldTexText(
             "Sine waves + Linearity + Fourier = Solution"
         )
         words.set_width(FRAME_WIDTH - 1)

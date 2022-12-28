@@ -88,7 +88,7 @@ class CubicFormula(RootCoefScene):
             background_stroke_color=3,
         )
 
-        sqrt_label = Tex(
+        sqrt_label = OldTex(
             "\\delta_1, \\delta_2 = \\sqrt{ \\frac{q^2}{4} + \\frac{p^3}{27}}",
             **kw
         )
@@ -96,8 +96,8 @@ class CubicFormula(RootCoefScene):
         sqrt_label.next_to(sqrt_plane, UP, SMALL_BUFF)
 
         crt_labels = VGroup(
-            Tex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_1}", **kw),
-            Tex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_2}", **kw),
+            OldTex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_1}", **kw),
+            OldTex("\\cdot", "= \\sqrt[3]{-\\frac{q}{2} + \\delta_2}", **kw),
         )
         for label, color in zip(crt_labels, self.crt_dot_colors):
             label[0].scale(4, about_edge=RIGHT)
@@ -106,7 +106,7 @@ class CubicFormula(RootCoefScene):
         crt_labels.arrange(RIGHT, buff=MED_LARGE_BUFF)
         crt_labels.next_to(crt_plane, UP, SMALL_BUFF)
 
-        cf_label = Tex(
+        cf_label = OldTex(
             "\\sqrt[3]{ -\\frac{q}{2} + \\delta_1 } +",
             "\\sqrt[3]{ -\\frac{q}{2} + \\delta_2 }",
             # **kw  # TODO, What the hell is going on here...
@@ -128,7 +128,7 @@ class CubicFormula(RootCoefScene):
         self.cf_label = cf_label
 
     def get_coef_poly(self):
-        return Tex(
+        return OldTex(
             "x^3 + {0}x^2 + {p}x + {q}",
             tex_to_color_map={
                 "{0}": self.coef_color,
@@ -175,7 +175,7 @@ class CubicFormula(RootCoefScene):
 
         # Labels
         self.delta_labels = self.add_dot_labels(
-            VGroup(Tex("\\delta_1"), Tex("\\delta_2")),
+            VGroup(OldTex("\\delta_1"), OldTex("\\delta_2")),
             sqrt_dots
         )
 

@@ -35,7 +35,7 @@ def print_permutation(index_list):
 class PermutationGrid(Scene):
 
     def text_box(self, str):
-        box = TexText(str).scale(0.3)
+        box = OldTexText(str).scale(0.3)
         box.add(SurroundingRectangle(box, stroke_color = GREY_D))
         return box
 

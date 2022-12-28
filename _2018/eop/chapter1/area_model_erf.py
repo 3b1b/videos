@@ -34,10 +34,10 @@ class IllustrateAreaModelErf(GraphScene):
         area = self.area = self.get_area(graph, x_min_1, x_max_1)
 
 
-        pdf_formula = Tex("p(x) = {1\over \sigma\sqrt{2\pi}}e^{-{1\over 2}({x\over\sigma})^2}")
+        pdf_formula = OldTex("p(x) = {1\over \sigma\sqrt{2\pi}}e^{-{1\over 2}({x\over\sigma})^2}")
         pdf_formula.set_color(graph.color)
 
-        cdf_formula = Tex("P(|X| < ", "a", ") = \int", "_{-a}", "^a", "p(x) dx")
+        cdf_formula = OldTex("P(|X| < ", "a", ") = \int", "_{-a}", "^a", "p(x) dx")
         cdf_formula.set_color_by_tex("a", YELLOW)
         cdf_formula.next_to(graph, LEFT, buff = 2)
         pdf_formula.next_to(cdf_formula, UP)
@@ -82,7 +82,7 @@ class IllustrateAreaModelErf(GraphScene):
         def integral_update_func_percent(t):
             return 100 * integral_update_func(t)
             
-        equals_sign = Tex("=").next_to(cdf_formula, buff = MED_LARGE_BUFF)
+        equals_sign = OldTex("=").next_to(cdf_formula, buff = MED_LARGE_BUFF)
 
         cdf_value = DecimalNumber(0, color = graph.color, num_decimal_places = 3)
         cdf_value.next_to(equals_sign)

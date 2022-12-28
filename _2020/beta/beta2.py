@@ -25,7 +25,7 @@ class WeightedCoin(Scene):
 
         rhs = p_label[-1]
         rhs_box = SurroundingRectangle(rhs, color=RED)
-        rhs_label = TexText("Not necessarily")
+        rhs_label = OldTexText("Not necessarily")
         rhs_label.next_to(rhs_box, DOWN, LARGE_BUFF)
         rhs_label.to_edge(RIGHT)
         rhs_label.match_color(rhs_box)
@@ -191,15 +191,15 @@ class WeightedCoin(Scene):
 
         eq_label = VGroup(
             p_label[:4].copy(),
-            Tex("= 0.7"),
+            OldTex("= 0.7"),
         )
         for mob in eq_label:
             mob.set_height(0.4)
         eq_label.arrange(RIGHT, buff=SMALL_BUFF)
         pp_label = VGroup(
-            Tex("P("),
+            OldTex("P("),
             eq_label,
-            Tex(")"),
+            OldTex(")"),
         )
         for mob in pp_label[::2]:
             mob.set_height(0.7)
@@ -236,7 +236,7 @@ class WeightedCoin(Scene):
         self.play(FadeOut(randy))
 
         # Remind what the title is
-        title = TexText(
+        title = OldTexText(
             "Probabilities", "of", "Probabilities"
         )
         title.arrange(DOWN, aligned_edge=LEFT)
@@ -266,7 +266,7 @@ class WeightedCoin(Scene):
 
         # Label h
         brace = Brace(rhs_box, DOWN, buff=SMALL_BUFF)
-        h_label = Tex("h", buff=SMALL_BUFF)
+        h_label = OldTex("h", buff=SMALL_BUFF)
         h_label.set_color(YELLOW)
         h_label.next_to(brace, DOWN)
 
@@ -283,7 +283,7 @@ class WeightedCoin(Scene):
 
 class Eq70(Scene):
     def construct(self):
-        label = Tex("=", "70", "\\%", "?")
+        label = OldTex("=", "70", "\\%", "?")
         fix_percent(label.get_part_by_tex("\\%")[0])
         self.play(FadeIn(label))
         self.wait()
@@ -306,10 +306,10 @@ class ShowInfiniteContinuum(Scene):
         p_label.add(box)
 
         brace = Brace(box, DOWN, buff=SMALL_BUFF)
-        h_label = Tex("h")
+        h_label = OldTex("h")
         h_label.next_to(brace, DOWN)
         h_label.set_color(YELLOW)
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(h_label, RIGHT)
         value = DecimalNumber(0, num_decimal_places=4)
         value.match_height(h_label)
@@ -402,11 +402,11 @@ class ShowInfiniteContinuum(Scene):
 
 class TitleCard(Scene):
     def construct(self):
-        text = TexText("A beginner's guide to\\\\probability density")
+        text = OldTexText("A beginner's guide to\\\\probability density")
         text.scale(2)
         text.to_edge(UP, buff=1.5)
 
-        subtext = TexText("Probabilities of probabilities, ", "part 2")
+        subtext = OldTexText("Probabilities of probabilities, ", "part 2")
         subtext.set_width(FRAME_WIDTH - 3)
         subtext[0].set_color(BLUE)
         subtext.next_to(text, DOWN, LARGE_BUFF)
@@ -418,7 +418,7 @@ class TitleCard(Scene):
 
 class NamePdfs(Scene):
     def construct(self):
-        label = TexText("Probability density\\\\function")
+        label = OldTexText("Probability density\\\\function")
         self.play(Write(label))
         self.wait()
 
@@ -428,7 +428,7 @@ class LabelH(Scene):
         p_label = get_prob_coin_label()
         p_label.scale(1.5)
         brace = Brace(p_label, DOWN)
-        h = Tex("h")
+        h = OldTex("h")
         h.scale(2)
         h.next_to(brace, DOWN)
 
@@ -455,7 +455,7 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
     def construct(self):
         # To get "P(s = .7000001) = ???" type labels
         def get_p_label(value):
-            result = Tex(
+            result = OldTex(
                 # "P(", "{s}", "=", value, "\\%", ")",
                 "P(", "{h}", "=", value, ")",
             )
@@ -479,20 +479,20 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
         gt_zero = VGroup()
         eq_zero = VGroup()
         for label in labels:
-            qm = Tex("=", "\\,???")
+            qm = OldTex("=", "\\,???")
             qm.next_to(label, RIGHT)
             qm[1].set_color(TEAL)
             q_marks.add(qm)
 
-            gt = Tex("> 0")
+            gt = OldTex("> 0")
             gt.next_to(label, RIGHT)
             gt_zero.add(gt)
 
-            eqz = Tex("= 0")
+            eqz = OldTex("= 0")
             eqz.next_to(label, RIGHT)
             eq_zero.add(eqz)
 
-        v_dots = Tex("\\vdots")
+        v_dots = OldTex("\\vdots")
         v_dots.next_to(q_marks[-1][0], DOWN, MED_LARGE_BUFF)
 
         # Animations
@@ -537,7 +537,7 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
 
         # Show sum
         group = VGroup(labels, gt_zero, v_dots)
-        sum_label = Tex(
+        sum_label = OldTex(
             "\\sum_{0 \\le {h} \\le 1}", "P(", "{h}", ")", "=",
             tex_to_color_map={"{h}": YELLOW},
         )
@@ -558,8 +558,8 @@ class TryAssigningProbabilitiesToSpecificValues(Scene):
             morty.change, "confused", sum_label,
         )
 
-        infty = Tex("\\infty")
-        zero = Tex("0")
+        infty = OldTex("\\infty")
+        zero = OldTex("0")
         for mob in [infty, zero]:
             mob.scale(2)
             mob.next_to(sum_label[-1], RIGHT)
@@ -663,13 +663,13 @@ class ProbabilityToContinuousValuesSupplement(Scene):
 class CarFactoryNumbers(Scene):
     def construct(self):
         # Test words
-        denom_words = TexText(
+        denom_words = OldTexText(
             "in a test of 100 cars",
             tex_to_color_map={"100": BLUE},
         )
         denom_words.to_corner(UR)
 
-        numer_words = TexText(
+        numer_words = OldTexText(
             "2 defects found",
             tex_to_color_map={"2": RED}
         )
@@ -685,8 +685,8 @@ class CarFactoryNumbers(Scene):
 
         # Question words
         question = VGroup(
-            TexText("What can you say"),
-            Tex(
+            OldTexText("What can you say"),
+            OldTex(
                 "\\text{about } P(\\text{defect})?",
                 tex_to_color_map={"\\text{defect}": RED}
             )
@@ -718,7 +718,7 @@ class ShowLimitToPdf(Scene):
         dist = scipy.stats.beta(alpha, beta)
         bars = self.get_bars(axes, dist, 0.05)
 
-        axis_prob_label = TexText("Probability")
+        axis_prob_label = OldTexText("Probability")
         axis_prob_label.next_to(axes.y_axis, UP)
         axis_prob_label.to_edge(LEFT)
 
@@ -727,8 +727,8 @@ class ShowLimitToPdf(Scene):
 
         # From individual to ranges
         kw = {"tex_to_color_map": {"h": YELLOW}}
-        eq_label = Tex("P(h = 0.8)", **kw)
-        ineq_label = Tex("P(0.8 < h < 0.85)", **kw)
+        eq_label = OldTex("P(h = 0.8)", **kw)
+        ineq_label = OldTex("P(0.8 < h < 0.85)", **kw)
 
         arrows = VGroup(Vector(DOWN), Vector(DOWN))
         for arrow, x in zip(arrows, [0.8, 0.85]):
@@ -799,7 +799,7 @@ class ShowLimitToPdf(Scene):
             new_bar.stretch(0, 1, about_edge=UP)
             new_bars.add(new_bar)
 
-        prob_label = TexText(
+        prob_label = OldTexText(
             "Height",
             "$\\rightarrow$",
             "Probability",
@@ -808,7 +808,7 @@ class ShowLimitToPdf(Scene):
         prob_label.next_to(bars[10], UL, LARGE_BUFF)
         height_word = prob_label[0]
         height_cross = Cross(height_word)
-        area_word = TexText("Area")
+        area_word = OldTexText("Area")
         area_word.move_to(height_word, UR)
         area_word.set_color(YELLOW)
 
@@ -887,7 +887,7 @@ class ShowLimitToPdf(Scene):
         all_ineq_labels = VGroup(ineq_label)
         for step_size in [0.025, 0.01, 0.005, 0.001]:
             new_bars = self.get_bars(axes, dist, step_size)
-            new_ineq_label = Tex(
+            new_ineq_label = OldTex(
                 "P(0.8 < h < {:.3})".format(0.8 + step_size),
                 tex_to_color_map={"h": YELLOW},
             )
@@ -923,7 +923,7 @@ class ShowLimitToPdf(Scene):
         graph_curve = axes.get_graph(dist.pdf)
         graph_curve.set_stroke([YELLOW, GREEN])
 
-        limit_words = TexText("In the limit...")
+        limit_words = OldTexText("In the limit...")
         limit_words.next_to(
             axes.input_to_graph_point(0.75, graph_curve),
             UP, MED_LARGE_BUFF,
@@ -957,7 +957,7 @@ class ShowLimitToPdf(Scene):
         rhss = VGroup()
         step_sizes = [0.05, 0.025, 0.01, 0.005, 0.001]
         for label, step in zip(all_ineq_labels, step_sizes):
-            eq = Tex("=")
+            eq = OldTex("=")
             decimal = DecimalNumber(
                 dist.cdf(0.8 + step) - dist.cdf(0.8),
                 num_decimal_places=3,
@@ -975,7 +975,7 @@ class ShowLimitToPdf(Scene):
         arrow = Arrow(rhss.get_top(), rhss.get_bottom(), buff=0)
         arrow.next_to(rhss, RIGHT)
         arrow.set_color(YELLOW)
-        to_zero_words = TexText("Individual probabilites\\\\", "go to zero")
+        to_zero_words = OldTexText("Individual probabilites\\\\", "go to zero")
         to_zero_words[1].align_to(to_zero_words[0], LEFT)
         to_zero_words.next_to(arrow, RIGHT, aligned_edge=UP)
 
@@ -1076,7 +1076,7 @@ class ShowLimitToPdf(Scene):
             axes.y_axis.get_top(),
             path_arc=90 * DEGREES,
         )
-        question = TexText("What are the\\\\units here?")
+        question = OldTexText("What are the\\\\units here?")
         question.next_to(arrow.get_start(), DOWN)
 
         self.play(
@@ -1098,7 +1098,7 @@ class ShowLimitToPdf(Scene):
         bars.target[bar_index].set_opacity(0.8)
         bar = bars[bar_index]
 
-        prob_word = TexText("Probability")
+        prob_word = OldTexText("Probability")
         prob_word.rotate(90 * DEGREES)
         prob_word.set_height(0.8 * bar.get_height())
         prob_word.move_to(bar)
@@ -1126,7 +1126,7 @@ class ShowLimitToPdf(Scene):
         self.play(Write(side_label))
         self.wait()
 
-        y_label = TexText("Probability density")
+        y_label = OldTexText("Probability density")
         y_label.next_to(axes.y_axis, UP, aligned_edge=LEFT)
 
         self.play(
@@ -1145,7 +1145,7 @@ class ShowLimitToPdf(Scene):
         )
 
         # Point out total area is 1
-        total_label = TexText("Total area = 1")
+        total_label = OldTexText("Total area = 1")
         total_label.set_height(0.5)
         total_label.next_to(bars, UP, LARGE_BUFF)
 
@@ -1180,8 +1180,8 @@ class ShowLimitToPdf(Scene):
         self.wait()
 
         # Name pdf
-        func_name = TexText("Probability ", "Density ", "Function")
-        initials = TexText("P", "D", "F")
+        func_name = OldTexText("Probability ", "Density ", "Function")
+        initials = OldTexText("P", "D", "F")
         for mob in func_name, initials:
             mob.set_color(YELLOW)
             mob.next_to(axes.input_to_graph_point(0.75, graph_curve), UP)
@@ -1233,20 +1233,20 @@ class ShowLimitToPdf(Scene):
         v_lines.set_stroke(YELLOW, 2)
 
         p_label = VGroup(
-            Tex("P("),
+            OldTex("P("),
             DecimalNumber(min_x),
-            Tex("\\le"),
-            Tex("h", color=YELLOW),
-            Tex("\\le"),
+            OldTex("\\le"),
+            OldTex("h", color=YELLOW),
+            OldTex("\\le"),
             DecimalNumber(max_x),
-            Tex(")")
+            OldTex(")")
         )
         p_label.arrange(RIGHT, buff=0.25)
         VGroup(p_label[0], p_label[-1]).space_out_submobjects(0.92)
         p_label.next_to(v_lines, UP)
 
         rhs = VGroup(
-            Tex("="),
+            OldTex("="),
             area_label.copy()
         )
         rhs.arrange(RIGHT)
@@ -1357,7 +1357,7 @@ class ShowLimitToPdf(Scene):
         )
         axes.center()
 
-        h_label = Tex("h")
+        h_label = OldTex("h")
         h_label.set_color(YELLOW)
         h_label.next_to(axes.x_axis.n2p(1), UR, buff=0.2)
         axes.x_axis.add(h_label)
@@ -1394,7 +1394,7 @@ class ShowLimitToPdf(Scene):
 class FiniteVsContinuum(Scene):
     def construct(self):
         # Title
-        f_title = TexText("Discrete context")
+        f_title = OldTexText("Discrete context")
         f_title.set_height(0.5)
         f_title.to_edge(UP)
         f_underline = Underline(f_title)
@@ -1437,7 +1437,7 @@ class FiniteVsContinuum(Scene):
             self.play(anim)
 
         # Continuum label
-        c_title = TexText("Continuous context")
+        c_title = OldTexText("Continuous context")
         c_title.match_height(f_title)
         c_underline = Underline(c_title)
         c_underline.scale(1.25)
@@ -1450,7 +1450,7 @@ class FiniteVsContinuum(Scene):
         )
 
         # Range sum
-        c_eq = Tex(
+        c_eq = OldTex(
             "P\\big(", "x \\in [0.65, 0.75]", "\\big)",
             "=",
             "\\sum_{x \\in [0.65, 0.75]}",
@@ -1478,14 +1478,14 @@ class FiniteVsContinuum(Scene):
         p_color = YELLOW
 
         # Create mob_set
-        brackets = Tex("\\big\\{\\big\\}")[0]
+        brackets = OldTex("\\big\\{\\big\\}")[0]
         mob_set = VGroup(brackets[0])
         commas = VGroup()
         for mob in mobs:
             mc = mob.copy()
             mc.match_height(mob_set[0])
             mob_copies1.add(mc)
-            comma = Tex(",")
+            comma = OldTex(",")
             commas.add(comma)
             mob_set.add(mc)
             mob_set.add(comma)
@@ -1501,7 +1501,7 @@ class FiniteVsContinuum(Scene):
         # Create individual probabilities
         probs = VGroup()
         for mob in mobs:
-            prob = Tex("P(", "x = ", "00", ")")
+            prob = OldTex("P(", "x = ", "00", ")")
             index = prob.index_of_part_by_tex("00")
             mc = mob.copy()
             mc.replace(prob[index])
@@ -1516,16 +1516,16 @@ class FiniteVsContinuum(Scene):
 
         # Result
         lhs = VGroup(
-            Tex("P\\big(", color=p_color),
-            Tex("x \\in"),
+            OldTex("P\\big(", color=p_color),
+            OldTex("x \\in"),
             mob_set,
-            Tex("\\big)", color=p_color),
+            OldTex("\\big)", color=p_color),
         )
         lhs.arrange(RIGHT, buff=SMALL_BUFF)
-        group = VGroup(lhs, Tex("="))
+        group = VGroup(lhs, OldTex("="))
         for prob in probs:
             group.add(prob)
-            group.add(Tex("+"))
+            group.add(OldTex("+"))
         group.remove(group[-1])
 
         group.arrange(RIGHT, buff=0.2)
@@ -1568,7 +1568,7 @@ class HalfFiniteHalfContinuous(Scene):
                 box.get_corner(vect + RIGHT) + 3 * RIGHT + 1.5 * vect,
                 buff=MED_SMALL_BUFF,
             )
-            label = Tex("50\\%")
+            label = OldTex("50\\%")
             fix_percent(label[0][-1])
             label.set_color(YELLOW)
             label.next_to(
@@ -1675,8 +1675,8 @@ class SumToIntegral(Scene):
     def construct(self):
         # Titles
         titles = VGroup(
-            TexText("Discrete context"),
-            TexText("Continuous context"),
+            OldTexText("Discrete context"),
+            OldTexText("Continuous context"),
         )
         titles.set_height(0.5)
         for title, vect in zip(titles, [LEFT, RIGHT]):
@@ -1702,8 +1702,8 @@ class SumToIntegral(Scene):
 
         # Sum and int
         kw = {"tex_to_color_map": {"S": BLUE}}
-        s_sym = Tex("\\sum", "_{x \\in S} P(x)", **kw)
-        i_sym = Tex("\\int_{S} p(x)", "\\text{d}x", **kw)
+        s_sym = OldTex("\\sum", "_{x \\in S} P(x)", **kw)
+        i_sym = OldTex("\\int_{S} p(x)", "\\text{d}x", **kw)
         syms = VGroup(s_sym, i_sym)
         syms.scale(2)
         for sym, title in zip(syms, titles):
@@ -1766,7 +1766,7 @@ class SumToIntegral(Scene):
             bar.replace(line, stretch=True)
             bars.add(bar)
 
-        addition_formula = Tex(*"1+3+2")
+        addition_formula = OldTex(*"1+3+2")
         addition_formula.space_out_submobjects(2.1)
         addition_formula.next_to(bars, UP)
 
@@ -1833,11 +1833,11 @@ class SumToIntegral(Scene):
 
         r_axes, l_axes = axes_pair
         r_graph, l_graph = graph_pair
-        r_name = TexText("Riemann\\\\Integration")
+        r_name = OldTexText("Riemann\\\\Integration")
         r_name.next_to(r_axes, RIGHT)
-        l_name = TexText("Lebesgue\\\\Integration$^*$")
+        l_name = OldTexText("Lebesgue\\\\Integration$^*$")
         l_name.next_to(l_axes, RIGHT)
-        footnote = TexText("*a bit more complicated than\\\\these bars make it look")
+        footnote = OldTexText("*a bit more complicated than\\\\these bars make it look")
         footnote.match_width(l_name)
         footnote.next_to(l_name, DOWN)
 
@@ -1916,7 +1916,7 @@ class SumToIntegral(Scene):
 
 class MeasureTheoryLeadsTo(Scene):
     def construct(self):
-        words = TexText("Measure Theory")
+        words = OldTexText("Measure Theory")
         words.set_color(RED)
         arrow = Vector(DOWN)
         arrow.next_to(words, DOWN, buff=SMALL_BUFF)
@@ -1972,9 +1972,9 @@ class WhenIWasFirstLearning(TeacherStudentsScene):
 
 class PossibleYetProbabilityZero(Scene):
     def construct(self):
-        poss = TexText("Possible")
-        prob = TexText("Probability = 0")
-        total = TexText("P(dart hits somewhere) = 1")
+        poss = OldTexText("Possible")
+        prob = OldTexText("Probability = 0")
+        total = OldTexText("P(dart hits somewhere) = 1")
         # total[1].next_to(total[0][0], RIGHT)
         words = VGroup(poss, prob, total)
         words.scale(1.5)
@@ -1990,11 +1990,11 @@ class PossibleYetProbabilityZero(Scene):
 
 class TiePossibleToDensity(Scene):
     def construct(self):
-        poss = TexText("Possibility")
-        prob = TexText("Probability", " $>$ 0")
-        dens = TexText("Probability \\emph{density}", " $>$ 0")
+        poss = OldTexText("Possibility")
+        prob = OldTexText("Probability", " $>$ 0")
+        dens = OldTexText("Probability \\emph{density}", " $>$ 0")
         dens[0].set_color(BLUE)
-        implies = Tex("\\Rightarrow")
+        implies = OldTex("\\Rightarrow")
         implies2 = implies.copy()
 
         poss.next_to(implies, LEFT)
@@ -2029,7 +2029,7 @@ class DrawBigRect(Scene):
         rect.set_stroke(RED, 5)
         rect.to_edge(RIGHT)
 
-        words = TexText("Not how to\\\\think about it")
+        words = OldTexText("Not how to\\\\think about it")
         words.set_color(RED)
         words.align_to(rect, LEFT)
         words.to_edge(UP)
@@ -2080,15 +2080,15 @@ class Thumbnail(Scene):
         arrow.get_points()[0] += 0.025 * DR
 
         # Coords
-        coords = Tex("(x, y) = (0.31415\\dots, 0.27182\\dots)")
+        coords = OldTex("(x, y) = (0.31415\\dots, 0.27182\\dots)")
         coords.set_width(5.5)
         coords.set_stroke(BLACK, 10, background=True)
         coords.next_to(axes.get_bottom(), UP, buff=0)
 
         # Words
         words = VGroup(
-            TexText("Probability = 0"),
-            TexText("$\\dots$but still possible"),
+            OldTexText("Probability = 0"),
+            OldTexText("$\\dots$but still possible"),
         )
         for word in words:
             word.set_width(6)

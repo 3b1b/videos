@@ -149,7 +149,7 @@ class SoWeGotNowhere(TeacherStudentsScene):
         )
         self.play_all_student_changes("angry")
         self.wait()
-        text = Tex(
+        text = OldTex(
             "&\\text{Actually,}\\\\",
             "&\\sin\\left({x}\\right)"
             "e^{-\\alpha {t}}\\\\",

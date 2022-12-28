@@ -4,14 +4,14 @@ from _2018.eop.reusable_imports import *
 
 class MillionFlips(Scene):
     def construct(self):
-        title = TexText("1{,}000{,}000 flips")
+        title = OldTexText("1{,}000{,}000 flips")
         title.to_edge(UP)
         self.add(title)
 
         small_wait_time = 1.0 / 15  # Um...
 
-        n_flips_label = TexText("\\# Flips: ")
-        n_heads_label = TexText("\\# Heads: ")
+        n_flips_label = OldTexText("\\# Flips: ")
+        n_heads_label = OldTexText("\\# Heads: ")
         n_flips_count = Integer(0)
         n_heads_count = Integer(0)
         n_heads_label.to_edge(RIGHT, buff=2 * LARGE_BUFF)
@@ -98,7 +98,7 @@ class MillionFlips(Scene):
 
 class PropHeadsWithinThousandth(Scene):
     def construct(self):
-        prob = Tex(
+        prob = OldTex(
             "P(499{,}000 \\le", "\\# \\text{H}", "\\le 501{,}000)",
             "\\approx", "0.9545",
         )
@@ -109,7 +109,7 @@ class PropHeadsWithinThousandth(Scene):
 
 class PropHeadsWithinHundredth(Scene):
     def construct(self):
-        prob = Tex(
+        prob = OldTex(
             "P(490{,}000 \\le", "\\# \\text{H}", "\\le 510{,}000)",
             "\\approx", "0.99999999\\dots",
         )

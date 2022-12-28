@@ -16,7 +16,7 @@ class Chapter0(LinearTransformationScene):
 class Chapter1(Scene):
     def construct(self):
         arrow = Vector(2*UP+RIGHT)
-        vs = TexText("vs.")
+        vs = OldTexText("vs.")
         array = Matrix([1, 2])
         array.set_color(TEAL)
         everyone = VMobject(arrow, vs, array)
@@ -33,7 +33,7 @@ class Chapter2(LinearTransformationScene):
             for y in np.arange(-int(FRAME_Y_RADIUS)+0.5, int(FRAME_Y_RADIUS)+0.5)
         ])
         vectors.set_submobject_colors_by_gradient(PINK, BLUE_E)
-        words = TexText("Span")
+        words = OldTexText("Span")
         words.scale(3)
         words.to_edge(UP)
         words.add_background_rectangle()
@@ -107,14 +107,14 @@ class Chapter10(LinearTransformationScene):
 
     def construct(self):
         v_tex = "\\vec{\\textbf{v}}"
-        eq = Tex("A", v_tex, "=", "\\lambda", v_tex)
+        eq = OldTex("A", v_tex, "=", "\\lambda", v_tex)
         eq.set_color_by_tex(v_tex, YELLOW)
         eq.set_color_by_tex("\\lambda", MAROON_B)
         eq.scale(3)
         eq.add_background_rectangle()
         eq.shift(2*DOWN)        
 
-        title = TexText(
+        title = OldTexText(
             "Eigen", "vectors \\\\",
             "Eigen", "values"
         , arg_separator = "")

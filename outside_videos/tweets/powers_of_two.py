@@ -37,7 +37,7 @@ class PowersOfTwo(Scene):
         self.wait(2)
 
     def get_label(self, n):
-        lhs = MTex("2^{", "10", "} =")
+        lhs = Tex("2^{", "10", "} =")
         exp = Integer(n)
         exp.match_height(lhs[1])
         exp.move_to(lhs[1], LEFT)

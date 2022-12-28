@@ -18,7 +18,7 @@ class IncrementNumber(Succession):
         digest_config(self, kwargs)
         n_iterations = int(self.run_time * self.changes_per_second)
         new_num_mobs = [
-            Tex(str(num)).move_to(num_mob, LEFT)
+            OldTex(str(num)).move_to(num_mob, LEFT)
             for num in range(self.start_num, self.start_num+n_iterations)
         ]
         transforms = [
@@ -38,7 +38,7 @@ class IncrementNumber(Succession):
 
 class IncrementTest(Scene):
     def construct(self):
-        num = Tex("0")
+        num = OldTex("0")
         num.shift(UP)
         self.play(IncrementNumber(num))
         self.wait()
@@ -70,7 +70,7 @@ class Chapter2OpeningQuote(OpeningQuote):
 
 class Introduction(TeacherStudentsScene):
     def construct(self):
-        goals = TexText(
+        goals = OldTexText(
             "Goals: ",
             "1) Learn derivatives", 
             ", 2) Avoid paradoxes.",
@@ -172,7 +172,7 @@ class FathersOfCalculus(Scene):
         "picture_height" : 2.5,
     }
     def construct(self):
-        title = TexText("(A few) Fathers of Calculus")
+        title = OldTexText("(A few) Fathers of Calculus")
         title.to_edge(UP)
         self.add(title)
 
@@ -180,7 +180,7 @@ class FathersOfCalculus(Scene):
         for name in self.names:
             image = ImageMobject(name, invert = False)
             image.set_height(self.picture_height)
-            title = TexText(name)
+            title = OldTexText(name)
             title.scale(0.8)
             title.next_to(image, DOWN)
             image.add(title)
@@ -223,7 +223,7 @@ class IntroduceCar(Scene):
         line = Line(point_A, point_B)
         VGroup(A, B, line).set_color(WHITE)        
         for dot, tex in (A, "A"), (B, "B"):
-            label = Tex(tex).next_to(dot, DOWN)
+            label = OldTex(tex).next_to(dot, DOWN)
             dot.add(label)
 
         car = Car()
@@ -231,7 +231,7 @@ class IntroduceCar(Scene):
         car.move_to(point_A)
         front_line = car.get_front_line()
 
-        time_label = TexText("Time (in seconds):", "0")
+        time_label = OldTexText("Time (in seconds):", "0")
         time_label.shift(2*UP)
 
         distance_brace = Brace(line, UP)
@@ -386,14 +386,14 @@ class GraphCarTrajectory(GraphScene):
         self.play(*list(map(FadeOut, [t_dot, dashed_h, brace, brace_text])))
 
         #Name graph
-        s_of_t = Tex("s(t)")
+        s_of_t = OldTex("s(t)")
         s_of_t.next_to(
             graph.point_from_proportion(1), 
             DOWN+RIGHT,
             buff = SMALL_BUFF
         )
         s = s_of_t[0]
-        d = Tex("d")
+        d = OldTex("d")
         d.move_to(s, DOWN)
         d.set_color(DISTANCE_COLOR)
 
@@ -558,7 +558,7 @@ class ShowSpeedometer(IntroduceCar):
         for index, angle in enumerate(tick_angle_range):
             vect = rotate_vector(RIGHT, angle)
             tick = Line((1-self.tick_length)*vect, vect)
-            label = Tex(str(10*index))
+            label = OldTex(str(10*index))
             label.set_height(self.tick_length)
             label.shift((1+self.tick_length)*vect)
             speedometer.add(tick, label)
@@ -577,7 +577,7 @@ class ShowSpeedometer(IntroduceCar):
 
         speedometer.center_offset = speedometer.get_center()
 
-        speedometer_title = TexText(self.speedometer_title_text)
+        speedometer_title = OldTexText(self.speedometer_title_text)
         speedometer_title.to_corner(UP+LEFT)
         speedometer.next_to(speedometer_title, DOWN)
 
@@ -617,10 +617,10 @@ class VelocityInAMomentMakesNoSense(Scene):
     def construct(self):
         randy = Randolph()
         randy.next_to(ORIGIN, DOWN+LEFT)
-        words = TexText("Velocity in \\\\ a moment")
+        words = OldTexText("Velocity in \\\\ a moment")
         words.next_to(randy, UP+RIGHT)
         randy.look_at(words)
-        q_marks = TexText("???")
+        q_marks = OldTexText("???")
         q_marks.next_to(randy, UP)
 
         self.play(
@@ -652,7 +652,7 @@ class SnapshotOfACar(Scene):
                 0.5*DOWN+0.25*RIGHT
             ]
         ])
-        question = TexText("""
+        question = OldTexText("""
             How fast is
             this car going?
         """)
@@ -709,11 +709,11 @@ class CompareTwoTimes(Scene):
         self.keeper = state1
 
     def show_equation(self):
-        velocity = TexText("Velocity")
-        change_over_change = Tex(
+        velocity = OldTexText("Velocity")
+        change_over_change = OldTex(
             "\\frac{\\text{Change in distance}}{\\text{Change in time}}"
         )
-        formula = Tex(
+        formula = OldTex(
             "\\frac{(%s - %s) \\text{ meters}}{(%s - %s) \\text{ seconds}}"%(
                 str(self.end_distance), str(self.start_distance),
                 str(self.end_time), str(self.start_time),
@@ -733,8 +733,8 @@ class CompareTwoTimes(Scene):
             VGroup(*formula[-1-seconds_len-st_len:-1-seconds_len]),
         ).set_color(TIME_COLOR)
 
-        down_arrow1 = Tex("\\Downarrow")
-        down_arrow2 = Tex("\\Downarrow")
+        down_arrow1 = OldTex("\\Downarrow")
+        down_arrow2 = OldTex("\\Downarrow")
         group = VGroup(
             velocity, down_arrow1, 
             change_over_change, down_arrow2,
@@ -774,7 +774,7 @@ class CompareTwoTimes(Scene):
         )
         distance_label.set_color_by_tex(str(distance), DISTANCE_COLOR)
         brace.add(distance_label)
-        time_label = TexText(
+        time_label = OldTexText(
             "Time:", str(time), "seconds"
         )
         time_label.set_color_by_tex(str(time), TIME_COLOR)
@@ -893,15 +893,15 @@ class SidestepParadox(Scene):
         speedometer = show_speedometer.speedometer
         speedometer.next_to(car, UP)
 
-        title = TexText(
+        title = OldTexText(
             "Instantaneous", "rate of change"
         )
         title.to_edge(UP)
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.replace(title[0], stretch = True)
         cross.set_fill(RED, opacity = 0.8)
 
-        new_words = TexText("over a small time")
+        new_words = OldTexText("over a small time")
         new_words.next_to(title[1], DOWN)
         new_words.set_color(TIME_COLOR)
 
@@ -1038,23 +1038,23 @@ class DsOverDtGraphically(GraphCarTrajectory, ZoomedScene):
             self.wait()
 
         #Show as function
-        frac = Tex("\\frac{ds}{dt}")
+        frac = OldTex("\\frac{ds}{dt}")
         VGroup(*frac[:2]).set_color(DISTANCE_COLOR)
         VGroup(*frac[-2:]).set_color(TIME_COLOR)
         frac.next_to(self.input_to_graph_point(5.25), DOWN+RIGHT)
-        rise_over_run = Tex(
+        rise_over_run = OldTex(
             "=\\frac{\\text{rise}}{\\text{run}}"
         )
         rise_over_run.next_to(frac, RIGHT)
-        of_t = Tex("(t)")
+        of_t = OldTex("(t)")
         of_t.next_to(frac, RIGHT, buff = SMALL_BUFF)
 
-        dt_choice = Tex("dt = 0.01")
+        dt_choice = OldTex("dt = 0.01")
         dt_choice.set_color(TIME_COLOR)
         dt_choice.next_to(of_t, UP, aligned_edge = LEFT, buff = LARGE_BUFF)
 
 
-        full_formula = Tex(
+        full_formula = OldTex(
             "=\\frac{s(t+dt) - s(t)}{dt}"
         )
         full_formula.next_to(of_t)
@@ -1204,10 +1204,10 @@ class DsOverDtGraphically(GraphCarTrajectory, ZoomedScene):
 
 class DefineTrueDerivative(Scene):
     def construct(self):
-        title = TexText("The true derivative")
+        title = OldTexText("The true derivative")
         title.to_edge(UP)
 
-        lhs = Tex("\\frac{ds}{dt}(t) = ")
+        lhs = OldTex("\\frac{ds}{dt}(t) = ")
         VGroup(*lhs[:2]).set_color(DISTANCE_COLOR)
         VGroup(*lhs[3:5]).set_color(TIME_COLOR)
         lhs.shift(3*LEFT+UP)
@@ -1237,7 +1237,7 @@ class DefineTrueDerivative(Scene):
         self.wait()
 
     def get_fraction(self, dt_string):
-        tex_mob = Tex(
+        tex_mob = OldTex(
             "\\frac{s(t + %s) - s(t)}{%s}"%(dt_string, dt_string)
         )
         part_lengths = [
@@ -1299,7 +1299,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
         interim_point = points[1][0]*RIGHT + points[0][1]*UP
         dt_line = Line(points[0], interim_point, color = TIME_COLOR)
         ds_line = Line(interim_point, points[1], color = DISTANCE_COLOR)
-        dt = Tex("dt")
+        dt = OldTex("dt")
         dt.set_color(TIME_COLOR)
         if dt.get_width() > dt_line.get_width():
             dt.scale(
@@ -1307,7 +1307,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
                 about_point = dt.get_top()
             )
         dt.next_to(dt_line, DOWN, buff = SMALL_BUFF)
-        ds = Tex("ds")
+        ds = OldTex("ds")
         ds.set_color(DISTANCE_COLOR)
         if ds.get_height() > ds_line.get_height():
             ds.scale(
@@ -1355,13 +1355,13 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
 
     def add_derivative_definition(self, target_upper_left):
         deriv_frac = self.get_fraction("dt")
-        lhs = Tex("\\frac{ds}{dt}(t)=")
+        lhs = OldTex("\\frac{ds}{dt}(t)=")
         VGroup(*lhs[:2]).set_color(DISTANCE_COLOR)
         VGroup(*lhs[3:5]).set_color(TIME_COLOR)
         lhs.next_to(deriv_frac, LEFT)
         brace, text = self.get_brace_and_text(deriv_frac)
         deriv_def = VGroup(lhs, deriv_frac, brace, text)
-        deriv_word = TexText("Derivative")        
+        deriv_word = OldTexText("Derivative")        
         deriv_word.next_to(deriv_def, UP, buff = MED_LARGE_BUFF)
         deriv_def.add(deriv_word)
         rect = Rectangle(color = WHITE)
@@ -1450,7 +1450,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
 
     def what_this_is_not_saying(self):
         phrases = [
-            TexText(
+            OldTexText(
                 "$dt$", "is", "not", s
             )
             for s in ("``infinitely small''", "0")
@@ -1466,7 +1466,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
         return VGroup(*phrases)
 
     def best_constant_approximation_around_a_point(self):
-        words = TexText("""
+        words = OldTexText("""
             Best constant 
             approximation
             around a point
@@ -1483,7 +1483,7 @@ class SecantLineToTangentLine(GraphCarTrajectory, DefineTrueDerivative):
 
 class UseOfDImpliesApproaching(TeacherStudentsScene):
     def construct(self):
-        statement = TexText("""
+        statement = OldTexText("""
             Using ``$d$''
             announces that
             $dt \\to 0$
@@ -1571,7 +1571,7 @@ class TCubedExample(SecantLineToTangentLine):
                 t, line_kwargs = {"color" : WHITE}
             )
             brace = Brace(v_line, RIGHT)
-            text = Tex("%d^3 = %d"%(t, t**3))
+            text = OldTex("%d^3 = %d"%(t, t**3))
             text.next_to(brace, RIGHT)
             text.shift(0.2*UP)
             group = VGroup(v_line, brace, text)
@@ -1609,7 +1609,7 @@ class TCubedExample(SecantLineToTangentLine):
         ds_dt_group = self.get_ds_dt_group(dt = self.start_dt)
         v_lines = self.get_vertical_lines()
 
-        lhs = Tex("\\frac{ds}{dt}(2) = ")
+        lhs = OldTex("\\frac{ds}{dt}(2) = ")
         lhs.next_to(ds_dt_group, UP+RIGHT, buff = MED_LARGE_BUFF)
         ds = VGroup(*lhs[:2])
         dt = VGroup(*lhs[3:5])
@@ -1620,12 +1620,12 @@ class TCubedExample(SecantLineToTangentLine):
             mob.save_state()
             mob.move_to(mob.target)
 
-        nonzero_size = TexText("Nonzero size...for now")
+        nonzero_size = OldTexText("Nonzero size...for now")
         nonzero_size.set_color(TIME_COLOR)
         nonzero_size.next_to(dt, DOWN+2*RIGHT, buff = LARGE_BUFF)
         arrow = Arrow(nonzero_size, dt)
 
-        rhs = Tex(
+        rhs = OldTex(
             "\\frac{s(2+dt) - s(2)}{dt}"
         )
         rhs.next_to(lhs[-1])
@@ -1638,7 +1638,7 @@ class TCubedExample(SecantLineToTangentLine):
         s_pair = rhs[0], rhs[8]
         lp_pair = rhs[6], rhs[11]
         for s, lp in zip(s_pair, lp_pair):
-            s.target = Tex("3").scale(0.7)
+            s.target = OldTex("3").scale(0.7)
             s.target.move_to(lp.get_corner(UP+RIGHT), LEFT)
 
 
@@ -1714,7 +1714,7 @@ class TCubedExample(SecantLineToTangentLine):
         self.play(FadeOut(morty))
 
     def show_expansion(self):
-        expression = Tex("""
+        expression = OldTex("""
             \\frac{
                 2^3 + 
                 3 (2)^2 dt
@@ -1789,7 +1789,7 @@ class TCubedExample(SecantLineToTangentLine):
             terms[2][-2], # "+3(2)(dt)2+"
             terms[3][-1], # "(dt)3"
         )
-        new_exp = Tex("2").replace(faders[-1], dim_to_match = 1)
+        new_exp = OldTex("2").replace(faders[-1], dim_to_match = 1)
         self.play(
             faders.set_color, BLACK,
             FadeIn(new_exp),
@@ -1864,7 +1864,7 @@ class TCubedExample(SecantLineToTangentLine):
             buff = MED_SMALL_BUFF,
             color = WHITE
         )
-        approach_text = TexText("As $dt \\to 0$")
+        approach_text = OldTexText("As $dt \\to 0$")
         approach_text.next_to(arrow.get_center(), RIGHT)
         VGroup(*approach_text[2:4]).set_color(TIME_COLOR)
         self.play(
@@ -1876,7 +1876,7 @@ class TCubedExample(SecantLineToTangentLine):
 
         #Ephasize slope
         v_line = self.vertical_lines[0]
-        slope_text = TexText("Slope = $12$")
+        slope_text = OldTexText("Slope = $12$")
         slope_text.set_color(VELOCITY_COLOR)
         slope_text.next_to(v_line.get_end(), LEFT)
         self.play(Write(slope_text))
@@ -1898,7 +1898,7 @@ class TCubedExample(SecantLineToTangentLine):
             deriv_term[2]
         ]
         for two in twos:
-            two.target = Tex("t")
+            two.target = OldTex("t")
             two.target.replace(two, dim_to_match = 1)
         self.play(*list(map(MoveToTarget, twos)))
         def update_as_tangent_line(group, alpha):
@@ -1983,19 +1983,19 @@ class ContrastConcreteDtWithLimit(Scene):
         v_line = Line(UP, DOWN).scale(FRAME_Y_RADIUS)
         self.add(v_line)
 
-        l_title = TexText("""
+        l_title = OldTexText("""
             If $dt$ has a
             specific size.
         """)
         VGroup(*l_title[2:4]).set_color(TIME_COLOR)
-        r_title = Tex("dt \\to 0")
+        r_title = OldTex("dt \\to 0")
         VGroup(*r_title[:2]).set_color(TIME_COLOR)
         for title, vect in (l_title, LEFT), (r_title, RIGHT):
             title.to_edge(UP)
             title.shift(FRAME_X_RADIUS*vect/2)
             self.add(title)
 
-        l_formula = Tex("""
+        l_formula = OldTex("""
             \\frac{d(t^3)}{dt} = 
             \\frac{
                 t^3+
@@ -2019,7 +2019,7 @@ class ContrastConcreteDtWithLimit(Scene):
         l_text = l_brace.get_text("Messy")
         l_text.set_color(RED)
 
-        r_formula = Tex(
+        r_formula = OldTex(
             "\\frac{d(t^3)}{dt} = 3t^2"
         )
         VGroup(*r_formula[6:8]).set_color(TIME_COLOR)
@@ -2042,8 +2042,8 @@ class ContrastConcreteDtWithLimit(Scene):
 
 class TimeForAnActualParadox(TeacherStudentsScene):
     def construct(self):
-        words = TexText("``Instantaneous rate of change''")
-        paradoxes = TexText("Paradoxes")
+        words = OldTexText("``Instantaneous rate of change''")
+        paradoxes = OldTexText("Paradoxes")
         arrow = Arrow(ORIGIN, DOWN, buff = 0)
         group = VGroup(words, arrow, paradoxes)
         group.arrange(DOWN)
@@ -2133,7 +2133,7 @@ class ParadoxAtTEquals0(TCubedExample):
         self.car = car
 
     def ask_question(self):
-        question = TexText(
+        question = OldTexText(
             "At time $t=0$,", 
             "is \\\\ the car moving?"
         )
@@ -2155,7 +2155,7 @@ class ParadoxAtTEquals0(TCubedExample):
         self.question = question
 
     def show_derivative_text(self):
-        derivative = Tex(
+        derivative = OldTex(
             "\\frac{ds}{dt}(t) = 3t^2",
             "= 3(0)^2",
             "= 0",
@@ -2318,7 +2318,7 @@ class TinyMovement(ZoomedScene):
             for point in (wheel_point, target_wheel_point)
         ])
         brace = Brace(Line(ORIGIN, RIGHT))
-        distance_label = Tex(self.distance_label)
+        distance_label = OldTex(self.distance_label)
         distance_label.next_to(brace, DOWN)
         distance_label.set_color(DISTANCE_COLOR)
         brace.add(distance_label)
@@ -2329,10 +2329,10 @@ class TinyMovement(ZoomedScene):
         zoom_rect.scale(2)
         zoom_rect.move_to(wheel_point)
 
-        time_label = TexText("Time $t = $")
+        time_label = OldTexText("Time $t = $")
         time_label.next_to(car, UP, buff = LARGE_BUFF)
-        start_time = Tex("0")
-        end_time = Tex(self.time_label)
+        start_time = OldTex("0")
+        end_time = OldTex(self.time_label)
         for time in start_time, end_time:
             time.set_color(TIME_COLOR)
             time.next_to(time_label, RIGHT)
@@ -2368,7 +2368,7 @@ class TinyMovement(ZoomedScene):
     def get_ratio(self, power = 1):
         dt = "0.%s1"%("0"*(power-1))
         ds_dt = "0.%s1"%("0"*(2*power-1))
-        expression = Tex("""
+        expression = OldTex("""
             \\frac{(%s)^3 \\text{ meters}}{%s \\text{ seconds}}
             = %s \\frac{\\text{meters}}{\\text{second}}
         """%(dt, dt, ds_dt))
@@ -2461,7 +2461,7 @@ class Promotion(PiCreatureScene):
     def construct(self):
         aops_logo = AoPSLogo()
         aops_logo.next_to(self.pi_creature, UP+LEFT)
-        url = TexText(
+        url = OldTexText(
             "AoPS.com/", "3blue1brown",
             arg_separator = ""
         )
@@ -2563,7 +2563,7 @@ class Thumbnail(SecantLineToTangentLine):
         self.remove(self.y_axis_label_mob)
         VGroup(*self.get_mobjects()).fade(0.4)
 
-        title = TexText("Derivative paradox")
+        title = OldTexText("Derivative paradox")
         title.set_width(FRAME_WIDTH-1)
         title.to_edge(UP)
         title.add_background_rectangle()
@@ -2574,7 +2574,7 @@ class Thumbnail(SecantLineToTangentLine):
         randy.to_corner(DOWN+LEFT)
         randy.shift(RIGHT)
 
-        deriv = Tex("\\frac{ds}{dt}(t)")
+        deriv = OldTex("\\frac{ds}{dt}(t)")
         VGroup(*deriv[:2]).set_color(DISTANCE_COLOR)
         VGroup(*deriv[3:5]).set_color(TIME_COLOR)
         deriv.scale(3)

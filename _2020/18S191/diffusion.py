@@ -118,7 +118,7 @@ class Diffusion1D(Scene):
 
     def get_time_label(self):
         time_label = VGroup(
-            TexText("Time: "),
+            OldTexText("Time: "),
             Integer(0),
         )
         time_label.arrange(RIGHT, aligned_edge=DOWN)
@@ -212,7 +212,7 @@ class DiffusionDeltaGraphedShowingMean(DiffusionDeltaGraphed):
     def adjust_initial_dot_positions(self, dots, x_unit):
         # Hack, just using this to add something new and updated
         label = VGroup(
-            Tex("\\overline{x^2} = "),
+            OldTex("\\overline{x^2} = "),
             DecimalNumber(0),
         )
         label.arrange(RIGHT)

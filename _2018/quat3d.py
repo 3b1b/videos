@@ -25,9 +25,9 @@ class QuaternionLabel(VGroup):
         )
         self.add(
             decimals[0],
-            decimals[1], Tex("i"),
-            decimals[2], Tex("j"),
-            decimals[3], Tex("k"),
+            decimals[1], OldTex("i"),
+            decimals[2], OldTex("j"),
+            decimals[3], OldTex("k"),
         )
         self.arrange(RIGHT, buff=SMALL_BUFF)
 
@@ -184,8 +184,8 @@ class Introduction(QuaternionHistory):
     }
 
     def construct(self):
-        title_word = TexText("Quaternions:")
-        title_equation = Tex(
+        title_word = OldTexText("Quaternions:")
+        title_equation = OldTex(
             "i^2 = j^2 = k^2 = ijk = -1",
             tex_to_color_map={
                 "i": I_COLOR,
@@ -281,7 +281,7 @@ class WhoCares(TeacherStudentsScene):
 
         # # Show HN
         # hn_quote = quotes[1]
-        # hn_context = TexText("news.ycombinator.com/item?id=17933908")
+        # hn_context = OldTexText("news.ycombinator.com/item?id=17933908")
         # hn_context.scale(0.7)
         # hn_context.to_corner(UL)
 
@@ -396,11 +396,11 @@ class ShowSeveralQuaternionRotations(SpecialThreeDScene):
         left_q_label = QuaternionLabel([1, 0, 0, 0])
         right_q_label = QuaternionLabel([1, 0, 0, 0])
         for label in left_q_label, right_q_label:
-            lp, rp = Tex("()")
+            lp, rp = OldTex("()")
             lp.next_to(label, LEFT, SMALL_BUFF)
             rp.next_to(label, RIGHT, SMALL_BUFF)
             label.add(lp, rp)
-        point_label = Tex(
+        point_label = OldTex(
             *"(xi+yj+zk)",
             tex_to_color_map={
                 "i": I_COLOR,
@@ -418,7 +418,7 @@ class ShowSeveralQuaternionRotations(SpecialThreeDScene):
 
         for label, text in zip(group, ["$q$", "Some 3d point", "$q^{-1}$"]):
             brace = Brace(label, DOWN)
-            text_mob = TexText(text)
+            text_mob = OldTexText(text)
             if text_mob.get_width() > brace.get_width():
                 text_mob.match_width(brace)
             text_mob.next_to(brace, DOWN, buff=SMALL_BUFF)
@@ -507,16 +507,16 @@ class ShowSeveralQuaternionRotations(SpecialThreeDScene):
 
 class PauseAndPlayOverlay(Scene):
     def construct(self):
-        pause = Tex("=").rotate(TAU / 4)
+        pause = OldTex("=").rotate(TAU / 4)
         pause.stretch(2, 0)
         pause.scale(1.5)
         arrow = Vector(RIGHT, color=WHITE)
-        interact = TexText("Interact...")
+        interact = OldTexText("Interact...")
         group = VGroup(pause, arrow, interact)
         group.arrange(RIGHT)
         group.scale(2)
 
-        not_yet = TexText("...well, not yet")
+        not_yet = OldTexText("...well, not yet")
         not_yet.scale(2)
         not_yet.next_to(group, DOWN, MED_LARGE_BUFF)
 
@@ -547,7 +547,7 @@ class RotationMatrix(ShowSeveralQuaternionRotations):
         self.add_basis_vector_labels()
         self.add_axes()
 
-        title = TexText("Rotation matrix")
+        title = OldTexText("Rotation matrix")
         title.scale(1.5)
         title.to_corner(UL)
         self.add_fixed_in_frame_mobjects(title)
@@ -570,7 +570,7 @@ class RotationMatrix(ShowSeveralQuaternionRotations):
             for c in columns
         ])
         labels = VGroup(*[
-            TexText(
+            OldTexText(
                 "Where", tex, "goes",
                 tex_to_color_map={tex: rect.get_color()}
             ).next_to(rect, DOWN)
@@ -621,9 +621,9 @@ class RotationMatrix(ShowSeveralQuaternionRotations):
 
     def add_basis_vector_labels(self):
         labels = VGroup(
-            Tex("\\hat{\\textbf{\\i}}"),
-            Tex("\\hat{\\textbf{\\j}}"),
-            Tex("\\hat{\\textbf{k}}"),
+            OldTex("\\hat{\\textbf{\\i}}"),
+            OldTex("\\hat{\\textbf{\\j}}"),
+            OldTex("\\hat{\\textbf{k}}"),
         )
 
         def generate_updater(arrow):
@@ -664,13 +664,13 @@ class EulerAnglesAndGimbal(ShowSeveralQuaternionRotations):
         self.add(gimbal)
 
     def add_title(self):
-        title = TexText("Euler angles")
+        title = OldTexText("Euler angles")
         title.scale(1.5)
         title.to_corner(UL)
         angle_labels = VGroup(
-            Tex("\\alpha").set_color(YELLOW),
-            Tex("\\beta").set_color(GREEN),
-            Tex("\\gamma").set_color(PINK),
+            OldTex("\\alpha").set_color(YELLOW),
+            OldTex("\\beta").set_color(GREEN),
+            OldTex("\\gamma").set_color(PINK),
         )
         angle_labels.scale(2)
         angle_labels.arrange(RIGHT, buff=MED_LARGE_BUFF)
@@ -679,7 +679,7 @@ class EulerAnglesAndGimbal(ShowSeveralQuaternionRotations):
 
         gl_label = VGroup(
             Arrow(LEFT, RIGHT, color=WHITE),
-            TexText("Gimbal lock").scale(1.5),
+            OldTexText("Gimbal lock").scale(1.5),
         )
         gl_label.arrange(RIGHT)
         gl_label.next_to(title, RIGHT)
@@ -788,7 +788,7 @@ class EulerAnglesAndGimbal(ShowSeveralQuaternionRotations):
 
 class InterpolationFail(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Sometimes interpolating 3d\\\\"
             "orientations is tricky..."
         )
@@ -813,7 +813,7 @@ class QuaternionInterpolation(ShowSeveralQuaternionRotations):
 
 class QuaternionInterpolationScematic(Scene):
     def construct(self):
-        title = TexText("Slice of a hypersphere")
+        title = OldTexText("Slice of a hypersphere")
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         self.add(title)
 
@@ -824,7 +824,7 @@ class QuaternionInterpolationScematic(Scene):
         colors = [YELLOW, PINK, RED]
         q_dots = [Dot(q, color=c) for q, c in zip(qs, colors)]
         q_labels = [
-            Tex("q_{}".format(i + 1)).next_to(
+            OldTex("q_{}".format(i + 1)).next_to(
                 dot, normalize(dot.get_center()), SMALL_BUFF
             ).match_color(dot)
             for i, dot in enumerate(q_dots)
@@ -859,7 +859,7 @@ class QuaternionInterpolationScematic(Scene):
 
 class RememberComplexNumbers(TeacherStudentsScene):
     def construct(self):
-        complex_number = Tex(
+        complex_number = OldTex(
             "\\cos(\\theta) + \\sin(\\theta)i",
             tex_to_color_map={
                 "\\cos(\\theta)": GREEN,
@@ -909,14 +909,14 @@ class ComplexNumberRotation(Scene):
 
         point = plane.coords_to_point(4, 1)
         dot = Dot(point, color=YELLOW)
-        label = Tex("(4, 1)")
+        label = OldTex("(4, 1)")
         label.next_to(dot, UR, buff=0)
         line = DashedLine(origin, point)
         rotated_line = line.copy().rotate(angle, about_point=origin)
         rotated_line.set_color(GREY)
         rotated_dot = dot.copy().rotate(angle, about_point=origin)
         rotated_dot.set_color(YELLOW_E)
-        mystery_label = Tex("(?, ?)")
+        mystery_label = OldTex("(?, ?)")
         mystery_label.next_to(rotated_dot, UR, buff=0)
 
         arc = Arc(
@@ -925,7 +925,7 @@ class ComplexNumberRotation(Scene):
             radius=0.75
         )
         angle_tex = str(int(np.round(angle / DEGREES))) + "^\\circ"
-        angle_label = Tex(angle_tex)
+        angle_label = OldTex(angle_tex)
         angle_label.next_to(
             arc.point_from_proportion(0.3),
             UR, buff=SMALL_BUFF
@@ -974,7 +974,7 @@ class ComplexNumberRotation(Scene):
 
         cos_tex = "\\cos(" + angle_tex + ")"
         sin_tex = "\\sin(" + angle_tex + ")"
-        label = Tex(
+        label = OldTex(
             cos_tex, "+", sin_tex, "i",
             tex_to_color_map={cos_tex: GREEN, sin_tex: RED}
         )
@@ -984,7 +984,7 @@ class ComplexNumberRotation(Scene):
         arrow = Arrow(label.get_bottom(), z_point)
 
         number_label = self.number_label
-        new_number_label = Tex(
+        new_number_label = OldTex(
             "4 + 1i", tex_to_color_map={"4": GREEN, "1": RED}
         )
         new_number_label.move_to(number_label, LEFT)
@@ -1031,7 +1031,7 @@ class ComplexNumberRotation(Scene):
         new_left_z = left_z.copy()
         new_right_z = right_z.copy()
 
-        lp1, rp1, lp2, rp2 = parens = Tex("()()")
+        lp1, rp1, lp2, rp2 = parens = OldTex("()()")
         top_line = VGroup(
             lp1, new_left_z, rp1,
             lp2, new_right_z, rp2,
@@ -1040,7 +1040,7 @@ class ComplexNumberRotation(Scene):
         top_line.set_width(rect.get_width() - 1)
         top_line.next_to(rect.get_top(), DOWN, MED_SMALL_BUFF)
 
-        mid_line = Tex(
+        mid_line = OldTex(
             "\\big(", "4", cos_tex, "-", "1", sin_tex, "\\big)", "+",
             "\\big(", "1", cos_tex, "+", "4", sin_tex, "\\big)", "i",
             tex_to_color_map={
@@ -1054,7 +1054,7 @@ class ComplexNumberRotation(Scene):
         mid_line.next_to(top_line, DOWN, MED_LARGE_BUFF)
 
         new_z = np.exp(angle * complex(0, 1)) * complex(4, 1)
-        low_line = Tex(
+        low_line = OldTex(
             "\\approx",
             str(np.round(new_z.real, 2)), "+",
             str(np.round(new_z.imag, 2)), "i",
@@ -1091,7 +1091,7 @@ class ComplexNumberRotation(Scene):
 
 class ISquaredRule(Scene):
     def construct(self):
-        tex = TexText("Use", "$i^2 = -1$")
+        tex = OldTexText("Use", "$i^2 = -1$")
         tex[1].set_color(RED)
         tex.scale(2)
         self.add(tex)
@@ -1135,7 +1135,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
         line = self.get_dotted_line(vect, 0, 4)
         quat = np.append(0, vect)
 
-        axis_label = TexText("Axis of rotation")
+        axis_label = OldTexText("Axis of rotation")
         axis_label.next_to(line.get_corner(DR), DOWN, MED_LARGE_BUFF)
         axis_label.match_color(line)
 
@@ -1156,12 +1156,12 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
         vect_mob.add_to_back(pieces)
         vect_mob.set_shade_in_3d(True)
 
-        vect_label = Tex(
+        vect_label = OldTex(
             "{:.2f}".format(vect[0]), "i",
             "{:+.2f}".format(vect[1]), "j",
             "{:+.2f}".format(vect[2]), "k",
         )
-        magnitude_label = Tex(
+        magnitude_label = OldTex(
             "x", "^2 + ",
             "y", "^2 + ",
             "z", "^2 = 1",
@@ -1247,7 +1247,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
 
         sphere = always_redraw(get_sphere)
 
-        point_label = Tex(
+        point_label = OldTex(
             "p", "=",
             "{:.2f}".format(point[0]), "i", "+"
             "{:.2f}".format(point[1]), "j", "+"
@@ -1285,7 +1285,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
             run_time=3
         )
 
-        mystery_label = Tex("(?, ?, ?)")
+        mystery_label = OldTex("(?, ?, ?)")
         mystery_label.add_background_rectangle()
         arrow = Vector(0.5 * DR, color=WHITE)
         arrow.next_to(mystery_label, DR, buff=0)
@@ -1296,7 +1296,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
         self.wait(5)
 
     def add_inverse(self):
-        label = Tex(
+        label = OldTex(
             "p", "\\rightarrow",
             "q", "\\cdot", "p", "\\cdot", "q^{-1}",
             tex_to_color_map={"p": PINK}
@@ -1318,17 +1318,17 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
     def get_quaternion_label(self, angle_tex):
         vect_label = self.vect_label.copy()
         vect_label.rotate(TAU / 4, LEFT)
-        vect_label.replace(Tex(vect_label.get_tex()))
+        vect_label.replace(OldTex(vect_label.get_tex()))
         vect_label.add_background_rectangle()
         result = VGroup(
-            Tex("\\big("),
-            Tex("\\text{cos}(", angle_tex, ")"),
-            Tex("+"),
-            Tex("\\text{sin}(", angle_tex, ")"),
-            Tex("("),
+            OldTex("\\big("),
+            OldTex("\\text{cos}(", angle_tex, ")"),
+            OldTex("+"),
+            OldTex("\\text{sin}(", angle_tex, ")"),
+            OldTex("("),
             vect_label,
-            Tex(")"),
-            Tex("\\big)"),
+            OldTex(")"),
+            OldTex("\\big)"),
         )
         for i in 1, 3:
             result[i][1].set_color(YELLOW)
@@ -1339,7 +1339,7 @@ class RuleForQuaternionRotations(EulerAnglesAndGimbal):
 
 class ExpandOutFullProduct(TeacherStudentsScene):
     def construct(self):
-        product = Tex(
+        product = OldTex(
             """
             (w_0 + x_0 i + y_0 j + z_0 k)
             (x_1 i + y_1 j + z_1 k)
@@ -1362,7 +1362,7 @@ class ExpandOutFullProduct(TeacherStudentsScene):
         for brace, tex in zip(braces, ["q", "p", "q^{-1}"]):
             brace.add(brace.get_tex(tex))
 
-        words = TexText("= Rotation of $p$")
+        words = OldTexText("= Rotation of $p$")
         words.next_to(braces, DOWN)
 
         self.play(
@@ -1386,7 +1386,7 @@ class ExpandOutFullProduct(TeacherStudentsScene):
 
 class Link(Scene):
     def construct(self):
-        word = TexText("eater.net/quaternions")
+        word = OldTexText("eater.net/quaternions")
         word.add_background_rectangle()
         rect = SurroundingRectangle(word)
         rect.set_color(BLUE)
@@ -1457,21 +1457,21 @@ class QuaternionsDescribingRotation(EulerAnglesAndGimbal):
                 "{k}": K_COLOR,
             }
         }
-        p_label = Tex(
+        p_label = OldTex(
             "x{i} + y{j} + z{k}", **kwargs
         )
-        arrow = Tex(
+        arrow = OldTex(
             "\\rightarrow"
         )
-        q_label = Tex(
+        q_label = OldTex(
             "\\big(\\cos(%d^\\circ) + \\sin(%d^\\circ)%s \\big)" % (deg, deg, ipl),
             **kwargs
         )
-        inner_p_label = Tex(
+        inner_p_label = OldTex(
             "\\left(x{i} + y{j} + z{k} \\right)",
             **kwargs
         )
-        q_inv_label = Tex(
+        q_inv_label = OldTex(
             "\\big(\\cos(-%d^\\circ) + \\sin(-%d^\\circ)%s \\big)" % (deg, deg, ipl),
             **kwargs
         )

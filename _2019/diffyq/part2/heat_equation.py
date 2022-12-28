@@ -54,7 +54,7 @@ class TwoDBodyWithManyTemperatures(ThreeDScene):
         )
         plate.replace(body)
 
-        plate_words = TexText("Piece of \\\\ metal")
+        plate_words = OldTexText("Piece of \\\\ metal")
         plate_words.scale(2)
         plate_words.set_stroke(BLACK, 2, background=True)
         plate_words.set_color(BLACK)
@@ -81,7 +81,7 @@ class TwoDBodyWithManyTemperatures(ThreeDScene):
 
         get_point = dot.get_center
 
-        lhs = Tex("T = ")
+        lhs = OldTex("T = ")
         lhs.next_to(body, RIGHT, LARGE_BUFF)
 
         decimal = DecimalNumber(
@@ -214,11 +214,11 @@ class BringTwoRodsTogether(Scene):
         clock.to_corner(UR)
         clock.shift(MED_LARGE_BUFF * LEFT)
 
-        time_lhs = TexText("Time: ")
+        time_lhs = OldTexText("Time: ")
         time_label = DecimalNumber(
             0, num_decimal_places=2,
         )
-        time_rhs = TexText("s")
+        time_rhs = OldTexText("s")
         time_group = VGroup(
             time_lhs,
             time_label,
@@ -245,8 +245,8 @@ class BringTwoRodsTogether(Scene):
         rods.center()
 
         labels = VGroup(
-            Tex("90^\\circ"),
-            Tex("10^\\circ"),
+            OldTex("90^\\circ"),
+            OldTex("10^\\circ"),
         )
         for rod, label in zip(rods, labels):
             label.next_to(rod, DOWN)
@@ -602,7 +602,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
     def emphasize_graph(self):
         graph = self.graph
         q_marks = VGroup(*[
-            Tex("?").move_to(
+            OldTex("?").move_to(
                 graph.point_from_proportion(a),
                 UP,
             ).set_stroke(BLACK, 3, background=True)
@@ -620,7 +620,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
 
     def emphasize_rod(self):
         alt_rod = self.get_rod(0, 10, 50)
-        word = TexText("Rod")
+        word = OldTexText("Rod")
         word.scale(2)
         word.next_to(alt_rod, UP, MED_SMALL_BUFF)
 
@@ -646,7 +646,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
         graph = self.graph
         x_axis = axes.x_axis
         x_numbers = x_axis.get_number_mobjects(*range(1, 11))
-        x_axis_label = Tex("x")
+        x_axis_label = OldTex("x")
         x_axis_label.next_to(x_axis.get_right(), UP)
 
         self.play(
@@ -683,8 +683,8 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
             lambda t: t.next_to(get_x_point(), UP)
         )
         x_label = VGroup(
-            Tex("x"),
-            Tex("="),
+            OldTex("x"),
+            OldTex("="),
             DecimalNumber(
                 0,
                 num_decimal_places=3,
@@ -731,7 +731,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
         graph_dot.add_updater(
             lambda m: m.move_to(get_graph_point())
         )
-        t_label = Tex("T(", "x", ")")
+        t_label = OldTex("T(", "x", ")")
         t_label.set_stroke(BLACK, 3, background=True)
         t_label.add_updater(
             lambda m: m.next_to(graph_dot, UR, buff=0)
@@ -762,7 +762,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
     def show_changes_over_time(self):
         graph = self.graph
         t_label = self.t_label
-        new_t_label = Tex("T(", "x", ",", "t", ")")
+        new_t_label = OldTex("T(", "x", ",", "t", ")")
         new_t_label.set_color_by_tex("t", YELLOW)
         new_t_label.match_updaters(t_label)
 
@@ -842,7 +842,7 @@ class TalkThrough1DHeatGraph(ShowEvolvingTempGraphWithArrows, SpecialThreeDScene
             *range(1, t_max + 1),
             direction=UP,
         )
-        time_label = TexText("Time")
+        time_label = OldTexText("Time")
         time_label.scale(1.5)
         time_label.next_to(t_axis, UP)
         t_axis.time_label = time_label
@@ -1071,7 +1071,7 @@ class ContrastXChangesToTChanges(TalkThrough1DHeatGraph):
         plane_copy0 = plane_copy1.copy()
         plane_copy0.stretch(0, 0, about_edge=LEFT)
 
-        words = TexText("2d input\\\\space")
+        words = OldTexText("2d input\\\\space")
         words.scale(2)
         words.move_to(plane.get_center() + SMALL_BUFF * OUT)
 
@@ -1126,8 +1126,8 @@ class ContrastXChangesToTChanges(TalkThrough1DHeatGraph):
         p1 = np.array([p2[0], *p0[1:]])
         dx_line = DashedLine(p0, p1)
         dT_line = DashedLine(p1, p2)
-        dx = Tex("dx")
-        dT = Tex("dT")
+        dx = OldTex("dx")
+        dT = OldTex("dT")
         VGroup(dx, dT).scale(0.7)
         VGroup(dx, dT).rotate(90 * DEGREES, RIGHT)
         dx.next_to(dx_line, IN, SMALL_BUFF)
@@ -1327,11 +1327,11 @@ class ShowDelTermsAsTinyNudges(TransitionToTempVsTime):
         )
         dx_line, dT_line, tan_line = line_group
 
-        del_x = Tex("\\partial x")
+        del_x = OldTex("\\partial x")
         del_x.set_color(GREEN)
         del_x.line = dx_line
         del_x.direction = OUT
-        del_T = Tex("\\partial T")
+        del_T = OldTex("\\partial T")
         del_T.line = dT_line
         del_T.direction = RIGHT
         syms = VGroup(del_T, del_x)
@@ -1395,11 +1395,11 @@ class ShowDelTermsAsTinyNudges(TransitionToTempVsTime):
         )
         dt_line, dT_line, tan_line = line_group
 
-        del_t = Tex("\\partial t")
+        del_t = OldTex("\\partial t")
         del_t.set_color(YELLOW)
         del_t.line = dt_line
         del_t.direction = OUT
-        del_T = Tex("\\partial T")
+        del_T = OldTex("\\partial T")
         del_T.line = dT_line
         del_T.direction = UP
         syms = VGroup(del_T, del_t)
@@ -1530,7 +1530,7 @@ class ShowCurvatureToRateOfChangeIntuition(ShowEvolvingTempGraphWithArrows):
 
         curve_words = VGroup()
         for curve, arrow in zip(curves, arrows):
-            word = TexText("curve")
+            word = OldTexText("curve")
             word.scale(0.7)
             word.next_to(curve, arrow.get_vector()[1] * DOWN, SMALL_BUFF)
             curve_words.add(word)
@@ -1627,7 +1627,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
             )
             rod_pieces.add(piece)
 
-        word = TexText("Discrete version")
+        word = OldTexText("Discrete version")
         word.scale(1.5)
         word.next_to(x_axis, UP)
         word.set_stroke(BLACK, 3, background=True)
@@ -1696,8 +1696,8 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
 
         p1, p2, p3 = rod_pieces[index:index + 3]
         d1, d2, d3 = dots[index:index + 3]
-        point_label = TexText("Point")
-        neighbors_label = TexText("Neighbors")
+        point_label = OldTexText("Point")
+        neighbors_label = OldTexText("Neighbors")
         words = VGroup(point_label, neighbors_label)
         for word in words:
             word.scale(0.7)
@@ -1788,7 +1788,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
 
         x_labels, T_labels = [
             VGroup(*[
-                Tex("{}_{}".format(s, i))
+                OldTex("{}_{}".format(s, i))
                 for i in [1, 2, 3]
             ]).scale(0.8)
             for s in ("x", "T")
@@ -1860,7 +1860,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
             )
             for hl in [hl1, hl3]
         ]))
-        average_label = Tex(
+        average_label = OldTex(
             "{T_1", "+", "T_3", "\\over", "2}"
         )
         average_label.scale(0.5)
@@ -1872,7 +1872,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         average_rect.add_updater(
             lambda m: m.move_to(average_label)
         )
-        average_words = TexText("Neighbor\\\\average")
+        average_words = OldTexText("Neighbor\\\\average")
         average_words.match_width(average_rect)
         average_words.match_color(average_rect)
         average_words.add_updater(
@@ -1918,7 +1918,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         self.wait()
 
         # Show formula
-        formula = Tex(
+        formula = OldTex(
             "\\left(",
             "{T_1", "+", "T_3", "\\over", "2}",
             "-", "T_2",
@@ -1966,7 +1966,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         self.wait(8)
 
         # Show derivative
-        lhs = Tex(
+        lhs = OldTex(
             "{dT_2", "\\over", "dt}", "=", "\\alpha"
         )
         dt = lhs.get_part_by_tex("dt")
@@ -1991,7 +1991,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         rhs = self.rhs
         d1, d2, d3 = self.example_dots
 
-        new_rhs = Tex(
+        new_rhs = OldTex(
             "=",
             "{\\alpha", "\\over", "2}",
             "\\left(",
@@ -2049,11 +2049,11 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         diff2 = new_rhs[T3_index:T3_index + 3]
         brace1 = Brace(diff1, DOWN, buff=SMALL_BUFF)
         brace2 = Brace(diff2, DOWN, buff=SMALL_BUFF)
-        delta_T1 = Tex("\\Delta T_1")
+        delta_T1 = OldTex("\\Delta T_1")
         delta_T1.next_to(brace1, DOWN, SMALL_BUFF)
-        delta_T2 = Tex("\\Delta T_2")
+        delta_T2 = OldTex("\\Delta T_2")
         delta_T2.next_to(brace2, DOWN, SMALL_BUFF)
-        minus = Tex("-")
+        minus = OldTex("-")
         minus.move_to(Line(
             delta_T1.get_right(),
             delta_T2.get_left(),
@@ -2088,7 +2088,7 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
         lil_delta_T2.set_color(RED)
 
         double_difference_brace = Brace(deltas, DOWN)
-        double_difference_words = TexText(
+        double_difference_words = OldTexText(
             "Difference of differences"
         )
         double_difference_words.next_to(
@@ -2150,12 +2150,12 @@ class DiscreteSetup(ShowEvolvingTempGraphWithArrows):
     def write_second_difference(self):
         dd_word = self.double_difference_words
 
-        delta_delta = Tex("\\Delta \\Delta T_1")
+        delta_delta = OldTex("\\Delta \\Delta T_1")
         delta_delta.set_color(MAROON_B)
 
         delta_delta.move_to(dd_word, UP)
 
-        second_difference_word = TexText(
+        second_difference_word = OldTexText(
             "``Second difference''"
         )
         second_difference_word.next_to(delta_delta, DOWN)
@@ -2290,7 +2290,7 @@ class ShowFinitelyManyX(DiscreteSetup):
             for x in self.get_sample_inputs()[1:]
         ]
         x_labels = VGroup(*[
-            Tex("x_{}".format(i)).next_to(
+            OldTex("x_{}".format(i)).next_to(
                 p, DOWN
             )
             for i, p in enumerate(points)
@@ -2373,10 +2373,10 @@ class TransitionToContinuousCase(DiscreteSetup):
         tan_line.set_stroke(width=0)
 
         brace = Brace(dx_line, UP)
-        fixed_distance = TexText("Fixed\\\\distance")
+        fixed_distance = OldTexText("Fixed\\\\distance")
         fixed_distance.scale(0.7)
         fixed_distance.next_to(brace, UP)
-        delta_T = Tex("\\Delta T")
+        delta_T = OldTex("\\Delta T")
         delta_T.move_to(dT_sym, LEFT)
 
         self.play(
@@ -2406,11 +2406,11 @@ class TransitionToContinuousCase(DiscreteSetup):
         )
 
         # Show rate of change
-        to_zero = Tex("\\rightarrow 0")
+        to_zero = OldTex("\\rightarrow 0")
         to_zero.match_height(dT_sym)
         to_zero.next_to(dT_sym, buff=SMALL_BUFF)
 
-        ratio = Tex(
+        ratio = OldTex(
             "{\\partial T", "\\over", "\\partial x}"
         )
         ratio[0].match_style(dT_sym)
@@ -2480,7 +2480,7 @@ class TransitionToContinuousCase(DiscreteSetup):
         deriv = self.deriv
         v_line = self.v_line
 
-        deriv_of_deriv = Tex(
+        deriv_of_deriv = OldTex(
             "{\\partial",
             "\\left(",
             "{\\partial T", "\\over", "\\partial x}",
@@ -2511,11 +2511,11 @@ class TransitionToContinuousCase(DiscreteSetup):
             )
 
         # Write second deriv
-        second_deriv = Tex(
+        second_deriv = OldTex(
             "{\\partial^2 T", "\\over", "\\partial x^2}"
         )
         second_deriv[0].set_color(RED)
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.next_to(deriv_of_deriv, RIGHT)
         second_deriv.next_to(eq, RIGHT)
         second_deriv.align_to(deriv_of_deriv, DOWN)
@@ -2642,8 +2642,8 @@ class TransitionToContinuousCase(DiscreteSetup):
         tan_line = Line(color=WHITE)
         lines = VGroup(dx_line, dT_line, tan_line)
         lines.set_stroke(width=2)
-        dx_sym = Tex(dx_tex)
-        dT_sym = Tex(dT_tex)
+        dx_sym = OldTex(dx_tex)
+        dT_sym = OldTex(dT_tex)
         dT_sym.match_color(dT_line)
         syms = VGroup(dx_sym, dT_sym)
 
@@ -2720,7 +2720,7 @@ class ShowManyVLines(TransitionToContinuousCase):
         x_pointer.set_color(WHITE)
         x_pointer.next_to(axes.c2p(0, 0), DOWN, buff=0)
         x_eq = VGroup(
-            Tex("x="),
+            OldTex("x="),
             DecimalNumber(0)
         )
         x_eq.add_updater(
@@ -2790,10 +2790,10 @@ class ShowNewtonsLawGraph(Scene):
         y_axis.add_numbers(*range(20, 100, 20))
         x_axis.add_numbers(*range(1, 11))
 
-        x_axis.label = TexText("Time")
+        x_axis.label = OldTexText("Time")
         x_axis.label.next_to(x_axis, DOWN, MED_SMALL_BUFF)
 
-        y_axis.label = Tex("\\text{Temperature}")
+        y_axis.label = OldTex("\\text{Temperature}")
         y_axis.label.next_to(y_axis, RIGHT, buff=SMALL_BUFF)
         y_axis.label.align_to(axes, UP)
         for axis in [x_axis, y_axis]:
@@ -2817,13 +2817,13 @@ class ShowNewtonsLawGraph(Scene):
 
         water_arrow = Vector(LEFT, color=WHITE)
         water_arrow.next_to(water_dot, RIGHT, SMALL_BUFF)
-        water_words = TexText(
+        water_words = OldTexText(
             "Initial water\\\\temperature"
         )
         water_words.scale(0.7)
         water_words.next_to(water_arrow, RIGHT)
 
-        room_words = TexText("Room temperature")
+        room_words = OldTexText("Room temperature")
         room_words.scale(0.7)
         room_words.next_to(room_line, DOWN, SMALL_BUFF)
 
@@ -2871,7 +2871,7 @@ class ShowNewtonsLawGraph(Scene):
             )
         )
 
-        delta_T = Tex("\\Delta T")
+        delta_T = OldTex("\\Delta T")
         delta_T.set_color(self.delta_T_color)
         delta_T.add_updater(lambda m: m.next_to(
             brace, RIGHT, SMALL_BUFF
@@ -2900,7 +2900,7 @@ class ShowNewtonsLawGraph(Scene):
     def show_equation(self):
         delta_T = self.delta_T
 
-        equation = Tex(
+        equation = OldTex(
             "{d ({\\Delta T}) \\over dt} = -k \\cdot {\\Delta T}",
             tex_to_color_map={
                 "{\\Delta T}": self.delta_T_color,
@@ -2917,7 +2917,7 @@ class ShowNewtonsLawGraph(Scene):
         prop_to = equation.get_part_by_tex("-k")
         parts = VGroup(deriv, prop_to, delta_T_parts[1])
 
-        words = TexText(
+        words = OldTexText(
             "Rate of change",
             "is proportional to",
             "itself",

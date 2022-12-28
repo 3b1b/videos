@@ -9,7 +9,7 @@ import binascii
 BITCOIN_COLOR = "#f7931a"
 
 def get_cursive_name(name):
-    result = TexText("\\normalfont\\calligra %s"%name)
+    result = OldTexText("\\normalfont\\calligra %s"%name)
     result.set_stroke(width = 0.5)
     return result
 
@@ -18,7 +18,7 @@ def sha256_bit_string(message):
     return bin(int(hexdigest, 16))[2:]
 
 def bit_string_to_mobject(bit_string):
-    line = Tex("0"*32)
+    line = OldTex("0"*32)
     pre_result = VGroup(*[
         line.copy() for row in range(8)
     ])
@@ -29,7 +29,7 @@ def bit_string_to_mobject(bit_string):
 
     for i, (bit, part) in enumerate(zip(bit_string, result)):
         if bit == "1":
-            one = Tex("1")[0]
+            one = OldTex("1")[0]
             one.replace(part, dim_to_match = 1)
             result.submobjects[i] = one
 
@@ -95,7 +95,7 @@ class TenDollarBill(VGroup):
 
         self.add(pi, rect)
         for vect in UP+LEFT, DOWN+RIGHT:
-            ten = Tex("\\$10")
+            ten = OldTex("\\$10")
             ten.set_height(0.25*self.height)
             ten.next_to(self.get_corner(vect), -vect, SMALL_BUFF)
             ten.set_color(GREEN_C)
@@ -113,7 +113,7 @@ class AskQuestion(Scene):
             "What", "does", "it", "mean   ", "to", 
             "have    ", "a", "Bitcoin?"
         ]
-        question = TexText(*strings)
+        question = OldTexText(*strings)
         question.set_color_by_tex("have", YELLOW)
         self.wait()
         for word, part in zip(strings, question):
@@ -131,7 +131,7 @@ class ListOfAttributes(Scene):
     def construct(self):
         logo = BitcoinLogo()
 
-        digital = TexText("Digital")
+        digital = OldTexText("Digital")
         government, bank = buildings = [
             SVGMobject(
                 file_name = "%s_building"%word,
@@ -167,7 +167,7 @@ class UnknownAuthor(Scene):
     def construct(self):
         rect = Rectangle(height = 0.4, width = 2.5)
         rect.shift(2.45*UP)
-        question = TexText("Who is this?")
+        question = OldTexText("Who is this?")
         question.next_to(rect, RIGHT, buff = 1.5)
         arrow = Arrow(question, rect, buff = SMALL_BUFF)
         VGroup(question, arrow, rect).set_color(RED_D)
@@ -186,7 +186,7 @@ class DisectQuestion(TeacherStudentsScene):
         self.isolate_you()
 
     def hold_up_question(self):
-        question = TexText(
+        question = OldTexText(
             "What does it mean to", "have", "a", "Bitcoin?"
         )
         question.set_color_by_tex("have", YELLOW)
@@ -206,7 +206,7 @@ class DisectQuestion(TeacherStudentsScene):
         self.bitcoin_word = question.get_part_by_tex("Bitcoin")
 
     def list_topics(self):
-        topics = TexText(
+        topics = OldTexText(
             "Digital signatures, ",
             "Proof of work, ",
             "Cryptographic hash functions, \\dots"
@@ -229,7 +229,7 @@ class DisectQuestion(TeacherStudentsScene):
         self.pi_creatures = VGroup()
         you = self.students[1]
         rect = FullScreenFadeRectangle()
-        words = TexText("Invent your own")
+        words = OldTexText("Invent your own")
         arrow = Arrow(UP, DOWN)
         arrow.next_to(you, UP)
         words.next_to(arrow, UP)
@@ -246,7 +246,7 @@ class DisectQuestion(TeacherStudentsScene):
 
 class CryptocurrencyEquation(Scene):
     def construct(self):
-        parts = TexText(
+        parts = OldTexText(
             "Ledger", 
             "- Trust",
             "+ Cryptography",
@@ -264,7 +264,7 @@ class CryptocurrencyMarketCaps(ExternallyAnimatedScene):
 
 class ListRecentCurrencies(Scene):
     def construct(self):
-        footnote = TexText("$^*$Listed by market cap")
+        footnote = OldTexText("$^*$Listed by market cap")
         footnote.scale(0.5)
         footnote.to_corner(DOWN+RIGHT)
         self.add(footnote)
@@ -297,7 +297,7 @@ class ListRecentCurrencies(Scene):
                 anims.append(FadeIn(logo))
             anims.append(Write(name, run_time = 2))
             self.play(*anims)
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.next_to(logos, DOWN)
         self.play(LaggedStartMap(FadeIn, dots, run_time = 1))
         self.wait()
@@ -391,7 +391,7 @@ class NoCommentOnSpeculation(TeacherStudentsScene):
             VGroup(mining_graphic, mining_cross).shift,
             FRAME_WIDTH*RIGHT
         )
-        black_words = TexText("Random words\\\\Blah blah")
+        black_words = OldTexText("Random words\\\\Blah blah")
         black_words.set_color(BLACK)
         self.teacher_thinks(black_words)
         self.zoom_in_on_thought_bubble()
@@ -417,7 +417,7 @@ class LedgerScene(PiCreatureScene):
         self.add(self.get_ledger(), self.get_network())
 
     def get_ledger(self):
-        title = TexText("Ledger")
+        title = OldTexText("Ledger")
         rect = Rectangle(
             width = self.ledger_width, 
             height = self.ledger_height
@@ -436,7 +436,7 @@ class LedgerScene(PiCreatureScene):
 
     def add_line_to_ledger(self, string_or_mob):
         if isinstance(string_or_mob, str):
-            mob = TexText(string_or_mob)
+            mob = OldTexText(string_or_mob)
         elif isinstance(string_or_mob, Mobject):
             mob = string_or_mob
         else:
@@ -446,7 +446,7 @@ class LedgerScene(PiCreatureScene):
 
         mob.set_height(self.ledger_line_height)
         if self.enumerate_lines:
-            num = Tex(str(len(items)) + ".")
+            num = OldTex(str(len(items)) + ".")
             num.scale(0.8)
             num.set_color(self.line_number_color)
             num.next_to(mob, LEFT, MED_SMALL_BUFF)
@@ -475,7 +475,7 @@ class LedgerScene(PiCreatureScene):
         ]
         if self.sign_transactions:
             line_tex_parts.append(self.get_signature_tex())
-        line = TexText(*line_tex_parts)
+        line = OldTexText(*line_tex_parts)
         for name in from_name, to_name:
             color = self.get_color_from_name(name)
             line.set_color_by_tex(name.capitalize(), color)
@@ -536,7 +536,7 @@ class LedgerScene(PiCreatureScene):
         names = self.get_names()
         for name, creature in zip(names, creatures):
             setattr(self, name, creature)
-            label = TexText(name.capitalize())
+            label = OldTexText(name.capitalize())
             label.scale(0.75)
             label.next_to(creature, DOWN, SMALL_BUFF)
             creature.label = label
@@ -557,13 +557,13 @@ class LedgerScene(PiCreatureScene):
         return binary + "\\dots"
 
     def get_signature(self, color = BLUE_C):
-        result = Tex(self.get_signature_tex())
+        result = OldTex(self.get_signature_tex())
         result.set_color(color)
         return result
 
     def add_ellipsis(self):
         last_item = self.ledger.content[-1]
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.next_to(last_item.get_left(), DOWN)
         last_item.add(dots)
         self.add(last_item)
@@ -576,7 +576,7 @@ class LayOutPlan(LedgerScene):
 
     def ask_question(self):
         btc = BitcoinLogo()
-        group = VGroup(btc, Tex("= ???"))
+        group = VGroup(btc, OldTex("= ???"))
         group.arrange(RIGHT)
 
         self.play(
@@ -605,7 +605,7 @@ class LayOutPlan(LedgerScene):
             from_name, to_name, amount = payment
             from_pi = getattr(self, from_name.lower())
             to_pi = getattr(self, to_name.lower())
-            cash = Tex("\\$"*(amount/10))
+            cash = OldTex("\\$"*(amount/10))
             cash.scale(0.5)
             cash.move_to(from_pi)
             cash.set_color(GREEN)
@@ -639,15 +639,15 @@ class LayOutPlan(LedgerScene):
 
 class UnderlyingSystemVsUserFacing(Scene):
     def construct(self):
-        underlying = TexText("Underlying \\\\ system")
+        underlying = OldTexText("Underlying \\\\ system")
         underlying.shift(DOWN).to_edge(LEFT)
-        user_facing = TexText("User-facing")
+        user_facing = OldTexText("User-facing")
         user_facing.next_to(underlying, UP, LARGE_BUFF, LEFT)
 
-        protocol = TexText("Bitcoin protocol")
+        protocol = OldTexText("Bitcoin protocol")
         protocol.next_to(underlying, RIGHT, MED_LARGE_BUFF)
         protocol.set_color(BITCOIN_COLOR)
-        banking = TexText("Banking system")
+        banking = OldTexText("Banking system")
         banking.next_to(protocol, RIGHT, MED_LARGE_BUFF)
         banking.set_color(GREEN)
 
@@ -670,7 +670,7 @@ class UnderlyingSystemVsUserFacing(Scene):
 
         btc = BitcoinLogo()
         btc.next_to(phone, UP, MED_LARGE_BUFF)
-        dollar = Tex("\\$")
+        dollar = OldTex("\\$")
         dollar.set_height(1)
         dollar.set_color(GREEN)
         dollar.next_to(card, UP, MED_LARGE_BUFF)
@@ -728,7 +728,7 @@ class IntroduceLedgerSystem(LedgerScene):
         for from_name, to_name, num in self.payments:
             from_pi = getattr(self, from_name.lower())
             to_pi = getattr(self, to_name.lower())
-            cash = Tex("\\$"*(num/10)).set_color(GREEN)
+            cash = OldTex("\\$"*(num/10)).set_color(GREEN)
             cash.set_height(0.5)
             cash.move_to(from_pi)
             self.play(
@@ -767,7 +767,7 @@ class IntroduceLedgerSystem(LedgerScene):
         for name in names:
             amount = accounts[name]
             creature = getattr(self, name)
-            creature.cash = Tex("\\$"*abs(amount/10))
+            creature.cash = OldTex("\\$"*abs(amount/10))
             creature.cash.next_to(creature, UP+LEFT, SMALL_BUFF)
             creature.cash.set_color(GREEN)
             if amount < 0:
@@ -778,7 +778,7 @@ class IntroduceLedgerSystem(LedgerScene):
                 creditors.add(creature)
             if name == "you":
                 verb = verb[:-1]
-            result = TexText(
+            result = OldTexText(
                 verb, "\\$%d"%abs(amount)
             )
             result.set_color_by_tex("Owe", RED)
@@ -828,7 +828,7 @@ class InitialProtocol(Scene):
         self.show_first_two_items()
 
     def add_title(self):
-        title = TexText("Protocol")
+        title = OldTexText("Protocol")
         title.scale(1.5)
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(4)
@@ -849,7 +849,7 @@ class InitialProtocol(Scene):
         self.wait(2)
 
     def get_new_item(self, item_string):
-        item = TexText("$\\cdot$ %s"%item_string)
+        item = OldTexText("$\\cdot$ %s"%item_string)
         if not hasattr(self, "items"):
             self.items = VGroup(item)
             self.items.next_to(self.h_line, DOWN, MED_LARGE_BUFF)
@@ -866,7 +866,7 @@ class AddFraudulentLine(LedgerScene):
         self.alice_reacts()
 
     def anyone_can_add_a_line(self):
-        words = TexText("Anyone can add a line")
+        words = OldTexText("Anyone can add a line")
         words.to_corner(UP+RIGHT)
         words.set_color(YELLOW)
         arrow = Arrow(
@@ -914,7 +914,7 @@ class AddFraudulentLine(LedgerScene):
 
 class AnnounceDigitalSignatures(TeacherStudentsScene):
     def construct(self):
-        words = TexText("Digital \\\\ signatures!")
+        words = OldTexText("Digital \\\\ signatures!")
         words.scale(1.5)
         self.teacher_says(
             words,
@@ -972,7 +972,7 @@ class AskHowDigitalSignaturesArePossible(TeacherStudentsScene):
         signature_copy = signature.copy()
         signature_copy.shift(3*RIGHT)
 
-        bits = Tex("01100001")
+        bits = OldTex("01100001")
         bits.next_to(signature, DOWN)
         bits.shift_onto_screen()
         bits_copy = bits.copy()
@@ -1023,12 +1023,12 @@ class DescribeDigitalSignatures(LedgerScene):
                 pi.flip()
 
     def generate_key_pairs(self):
-        title = TexText("Private", "key /", "Public", "key")
+        title = OldTexText("Private", "key /", "Public", "key")
         title.to_edge(UP)
         private, public = list(map(title.get_part_by_tex, ["Private", "Public"]))
         private.set_color(self.private_color)
         public.set_color(self.public_color)
-        secret = TexText("Secret")
+        secret = OldTexText("Secret")
         secret.move_to(private, RIGHT)
         secret.set_color(self.private_color)
 
@@ -1043,7 +1043,7 @@ class DescribeDigitalSignatures(LedgerScene):
         ]
         public_keys, private_keys = [
             VGroup(*[
-                TexText(key_name+":"," $%s\\dots$"%key)
+                OldTexText(key_name+":"," $%s\\dots$"%key)
                 for key in keys
             ])
             for key_name, keys in [
@@ -1114,7 +1114,7 @@ class DescribeDigitalSignatures(LedgerScene):
         signature_line = lines[0].copy()
         signature_line.set_stroke(width = 2)
         signature_line.next_to(lines, DOWN, LARGE_BUFF)
-        ex = Tex("\\times")
+        ex = OldTex("\\times")
         ex.scale(0.7)
         ex.next_to(signature_line, UP, SMALL_BUFF, LEFT)
         lines.add(ex, signature_line)
@@ -1159,7 +1159,7 @@ class DescribeDigitalSignatures(LedgerScene):
         digital_signatures = VGroup()
         for i, signature in enumerate(self.signatures):
             bits = bin(hash(str(i)))[-8:]
-            digital_signature = Tex(bits + "\\dots")
+            digital_signature = OldTex(bits + "\\dots")
             digital_signature.scale(0.7)
             digital_signature.set_color(signature.get_color())
             digital_signature.move_to(signature, DOWN)
@@ -1195,12 +1195,12 @@ class DescribeDigitalSignatures(LedgerScene):
         self.play(FadeOut(words))
 
     def show_signing_functions(self):
-        sign = TexText(
+        sign = OldTexText(
             "Sign(", "Message", ", ", "sk", ") = ", "Signature",
             arg_separator = ""
         )
         sign.to_corner(UP+RIGHT)
-        verify = TexText(
+        verify = OldTexText(
             "Verify(", "Message", ", ", "Signature", ", ", "pk", ") = ", "T/F",
             arg_separator = ""
         )
@@ -1271,7 +1271,7 @@ class DescribeDigitalSignatures(LedgerScene):
 
 class TryGuessingDigitalSignature(Scene):
     def construct(self):
-        verify = TexText(
+        verify = OldTexText(
             "Verify(", "Message", ", ", 
             "256 bit Signature", ", ", "pk", ")",
             arg_separator = ""
@@ -1283,7 +1283,7 @@ class TryGuessingDigitalSignature(Scene):
         verify.set_color_by_tex("pk", GREEN)
         brace = Brace(signature, UP)
 
-        zeros_row = Tex("0"*32)
+        zeros_row = OldTex("0"*32)
         zeros = VGroup(*[zeros_row.copy() for x in range(8)])
         zeros.arrange(DOWN, buff = SMALL_BUFF)
         zeros.next_to(brace, UP)
@@ -1303,7 +1303,7 @@ class TryGuessingDigitalSignature(Scene):
             binary = bin(n)[2:]
             for i, bit_str in enumerate(reversed(binary)):
                 curr_bit = last_row.submobjects[-i-1]
-                new_bit = Tex(bit_str)
+                new_bit = OldTex(bit_str)
                 new_bit.replace(curr_bit, dim_to_match = 1)
                 last_row.submobjects[-i-1] = new_bit
                 self.remove(curr_bit)
@@ -1312,7 +1312,7 @@ class TryGuessingDigitalSignature(Scene):
 
 class WriteTwoTo256PossibleSignatures(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "$2^{256}$", "possible\\\\", "signatures"
         )
         words.scale(2)
@@ -1322,7 +1322,7 @@ class WriteTwoTo256PossibleSignatures(Scene):
 
 class SupplementVideoWrapper(Scene):
     def construct(self):
-        title = TexText("How secure is 256 bit security?")
+        title = OldTexText("How secure is 256 bit security?")
         title.scale(1.5)
         title.to_edge(UP)
         rect = ScreenRectangle(height = 6)
@@ -1337,7 +1337,7 @@ class FeelConfidentWithVerification(PiCreatureScene):
         self.show_secret_key()
 
     def show_verification(self):
-        verify = TexText(
+        verify = OldTexText(
             "Verify(", "Message", ", ", 
             "256 bit Signature", ", ", "pk", ")",
             arg_separator = ""
@@ -1350,14 +1350,14 @@ class FeelConfidentWithVerification(PiCreatureScene):
         signature.next_to(brace, UP)
         signature.set_color(BLUE_C)
 
-        rhs = TexText("=", "True")
+        rhs = OldTexText("=", "True")
         rhs.set_color_by_tex("True", YELLOW)
         rhs.next_to(verify, RIGHT)
 
         pk = verify.get_part_by_tex("pk")
-        sk = TexText("sk")
+        sk = OldTexText("sk")
         sk.set_color(RED)
-        arrow = Tex("\\Updownarrow")
+        arrow = OldTex("\\Updownarrow")
         arrow.next_to(pk, DOWN)
         sk.next_to(arrow, DOWN)
         sk_group = VGroup(arrow, sk)
@@ -1433,7 +1433,7 @@ class IncludeTransactionNumber(LedgerScene):
 
     def fail_to_sign_new_transaction(self):
         payment = self.add_payment_line_to_ledger("Alice", "Bob", 3000)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(payment, RIGHT)
         cross = Cross(payment)
         payment.save_state()
@@ -1476,7 +1476,7 @@ class IncludeTransactionNumber(LedgerScene):
         new_signatures = VGroup()
         colors = list(Color(BLUE_B).range_to(GREEN_B, len(lines)))
         for i, line in enumerate(lines):
-            number = Tex(str(i))
+            number = OldTex(str(i))
             number.scale(0.7)
             number.set_color(YELLOW)
             number.next_to(line, LEFT)
@@ -1619,7 +1619,7 @@ class LedgerWithInitialBuyIn(SignedLedgerScene):
     def everyone_buys_in(self):
         center = self.network.get_center()
         moneys = VGroup(*[
-            Tex("\\$100")
+            OldTex("\\$100")
             for pi in self.pi_creatures
         ])
         moneys.set_color(GREEN)
@@ -1645,7 +1645,7 @@ class LedgerWithInitialBuyIn(SignedLedgerScene):
     def add_initial_lines(self):
         lines = VGroup()
         for name in self.get_names():
-            new_line = TexText(
+            new_line = OldTexText(
                 name.capitalize(), 
                 "get" if name == "you" else "gets",
                 "\\$100"
@@ -1702,7 +1702,7 @@ class LedgerWithInitialBuyIn(SignedLedgerScene):
         last_rect = rects[-1]
         last_rect.set_stroke(RED, 4)
         rects.remove(last_rect)
-        invalid = TexText("Invalid")
+        invalid = OldTexText("Invalid")
         invalid.set_color(RED)
         invalid.next_to(last_rect, DOWN)
 
@@ -1731,7 +1731,7 @@ class LedgerWithInitialBuyIn(SignedLedgerScene):
         rect = Rectangle(color = WHITE)
         rect.set_fill(BLACK, 0.8)
         rect.stretch_to_fit_height(self.ledger.get_height() - 2*MED_SMALL_BUFF)
-        title = TexText("Charlie's running \\\\ balance")
+        title = OldTexText("Charlie's running \\\\ balance")
         rect.stretch_to_fit_width(title.get_width() + 2*MED_SMALL_BUFF)
         rect.move_to(self.ledger.get_right())
         title.next_to(rect.get_top(), DOWN)
@@ -1768,13 +1768,13 @@ class RemovedConnectionBetweenLedgerAndCash(TeacherStudentsScene):
             height = 2, width = 1.5,
             color = WHITE
         )
-        ledger_name = TexText("Ledger")
+        ledger_name = OldTexText("Ledger")
         ledger_name.set_width(ledger.get_width() - MED_SMALL_BUFF)
         ledger_name.next_to(ledger.get_top(), DOWN)
         ledger.add(ledger_name)
 
-        arrow = Tex("\\leftrightarrow")
-        cash = Tex("\\$\\$\\$")
+        arrow = OldTex("\\leftrightarrow")
+        cash = OldTex("\\$\\$\\$")
         cash.set_color(GREEN)
         arrow.next_to(ledger, RIGHT)
         cash.next_to(arrow, RIGHT)
@@ -1835,7 +1835,7 @@ class RenameToLedgerDollars(LedgerScene):
 
     def jump_in_to_middle(self):
         h_line = self.ledger.content[0]
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.next_to(h_line.get_left(), DOWN)
         h_line.add(dots)
         self.add(h_line)
@@ -1870,13 +1870,13 @@ class RenameToLedgerDollars(LedgerScene):
             amount.remove(dollar_sign)
             amount.add(dollar_sign)
             tex_string = amount.get_tex()
-            ld = TexText(tex_string[2:] + " LD")
+            ld = OldTexText(tex_string[2:] + " LD")
             ld.set_color(YELLOW)
             ld.scale(0.8)
             ld.move_to(amount, LEFT)
             amounts.target.add(ld)
 
-        ledger_dollars = TexText("Ledger Dollars \\\\ ``LD'' ")
+        ledger_dollars = OldTexText("Ledger Dollars \\\\ ``LD'' ")
         ledger_dollars.set_color(YELLOW)
         ledger_dollars.next_to(self.ledger, RIGHT)
 
@@ -1914,7 +1914,7 @@ class ExchangeCashForLedgerDollars(LedgerScene):
 
     def add_title(self):
         self.ledger.shift(DOWN)
-        title = TexText(
+        title = OldTexText(
             "Exchange", "LD", "for", "\\$\\$\\$"
         )
         title.set_color_by_tex("LD", YELLOW)
@@ -1971,7 +1971,7 @@ class BitcoinIsALedger(Scene):
     def add_btc_to_ledger(self):
         logo = BitcoinLogo()
         ledger = self.get_ledger()
-        arrow = Tex("\\Leftrightarrow")
+        arrow = OldTex("\\Leftrightarrow")
         group = VGroup(logo, arrow, ledger)
         group.arrange(RIGHT)
 
@@ -1986,7 +1986,7 @@ class BitcoinIsALedger(Scene):
         self.btc_to_ledger = group
 
     def add_currency_to_tx_history(self):
-        equation = TexText(
+        equation = OldTexText(
             "Currency", "=", "Transaction history"
         )
         equation.set_color_by_tex("Currency", BITCOIN_COLOR)
@@ -2001,7 +2001,7 @@ class BitcoinIsALedger(Scene):
 
     def get_ledger(self):
         rect = Rectangle(height = 2, width = 1.5)
-        title = TexText("Ledger")
+        title = OldTexText("Ledger")
         title.set_width(0.8*rect.get_width())
         title.next_to(rect.get_top(), DOWN, SMALL_BUFF)
 
@@ -2016,7 +2016,7 @@ class BitcoinIsALedger(Scene):
 
 class BigDifferenceBetweenLDAndCryptocurrencies(Scene):
     def construct(self):
-        ld = TexText("LD").scale(1.5).set_color(YELLOW)
+        ld = OldTexText("LD").scale(1.5).set_color(YELLOW)
         btc = BitcoinLogo()
         eth = EthereumLogo()
         ltc = LitecoinLogo()
@@ -2028,8 +2028,8 @@ class BigDifferenceBetweenLDAndCryptocurrencies(Scene):
         for logo, vect in zip(logos, vects):
             logo.move_to(0.75*vect)
 
-        centralized = TexText("Centralized")
-        decentralized = TexText("Decentralized")
+        centralized = OldTexText("Centralized")
+        decentralized = OldTexText("Decentralized")
         words = VGroup(centralized, decentralized)
         words.scale(1.5)
         words.to_edge(UP)
@@ -2104,7 +2104,7 @@ class TransitionToDistributedLedger(DistributedLedgerScene):
         self.ask_about_ledger_consistency()
 
     def ask_where_is_ledger(self):
-        question = TexText("Where", "is", "this?!")
+        question = OldTexText("Where", "is", "this?!")
         question.set_color(RED)
         question.scale(1.5)
         question.next_to(self.ledger, UP)
@@ -2130,7 +2130,7 @@ class TransitionToDistributedLedger(DistributedLedgerScene):
             self.wait()
 
     def ask_who_controls_ledger(self):
-        new_question = TexText("Who", "controls", "this?!")
+        new_question = OldTexText("Who", "controls", "this?!")
         new_question.scale(1.3)
         new_question.move_to(self.question)
         new_question.set_color(RED)
@@ -2164,7 +2164,7 @@ class TransitionToDistributedLedger(DistributedLedgerScene):
         self.wait(2)
 
     def broadcast_transaction(self):
-        payment = TexText(
+        payment = OldTexText(
             "Alice", "pays", "Bob", "100 LD"
         )
         payment.set_color_by_tex("Alice", self.alice.get_color())
@@ -2220,7 +2220,7 @@ class TransitionToDistributedLedger(DistributedLedgerScene):
             ledgers.space_out_submobjects,
         )
 
-        question = TexText("Are these the same?")
+        question = OldTexText("Are these the same?")
         question.scale(1.5)
         question.to_edge(UP)
         arrows = VGroup(*[
@@ -2247,7 +2247,7 @@ class BobDoubtsBroadcastTransaction(DistributedLedgerScene):
         self.pi_creatures.arrange(RIGHT, buff = 5)
 
         for name in "bob", "charlie":
-            label = TexText(name.capitalize())
+            label = OldTexText(name.capitalize())
             pi = getattr(self, name)
             label.next_to(pi, DOWN)
             pi.label = label
@@ -2261,7 +2261,7 @@ class BobDoubtsBroadcastTransaction(DistributedLedgerScene):
         bob, charlie = self.bob, self.charlie
         corner = FRAME_Y_RADIUS*UP + FRAME_X_RADIUS*LEFT
 
-        payment = TexText(
+        payment = OldTexText(
             "Alice", "pays", "Bob", "10 LD"
         )
         payment.set_color_by_tex("Alice", self.alice.get_color())
@@ -2346,7 +2346,7 @@ class AskWhatToAddToProtocol(InitialProtocol):
             "No overspending",
         ] + [""]*6)))
         brace = Brace(VGroup(*items[3:]), LEFT)
-        question = TexText("What to \\\\ add here?")
+        question = OldTexText("What to \\\\ add here?")
         question.set_color(RED)
         question.scale(1.5)
         brace.set_color(RED)
@@ -2368,7 +2368,7 @@ class TrustComputationalWork(DistributedLedgerScene):
         ledger.scale(3)
         ledger[1].scale(2./3)
         ledger.center().to_edge(UP).shift(4*LEFT)
-        plus = Tex("+")
+        plus = OldTex("+")
         plus.next_to(ledger, RIGHT)
 
         self.add(ledger, plus)
@@ -2376,7 +2376,7 @@ class TrustComputationalWork(DistributedLedgerScene):
         self.plus = plus
 
     def show_work(self):
-        zeros = Tex("0"*32)
+        zeros = OldTex("0"*32)
         zeros.next_to(self.plus, RIGHT)
         brace = Brace(zeros, DOWN)
         words = brace.get_text("Computational work")
@@ -2386,7 +2386,7 @@ class TrustComputationalWork(DistributedLedgerScene):
             binary = bin(n)[2:]
             for i, bit_str in enumerate(reversed(binary)):
                 curr_bit = zeros.submobjects[-i-1]
-                new_bit = Tex(bit_str)
+                new_bit = OldTex(bit_str)
                 new_bit.replace(curr_bit, dim_to_match = 1)
                 if bit_str == "1":
                     new_bit.set_color(YELLOW)
@@ -2397,7 +2397,7 @@ class TrustComputationalWork(DistributedLedgerScene):
 
 class TrustComputationalWorkSupplement(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Main tool: ", "Cryptographic hash functions"
         )
         words[1].set_color(YELLOW)
@@ -2407,7 +2407,7 @@ class TrustComputationalWorkSupplement(Scene):
 
 class FraudIsInfeasible(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Fraud", "$\\Leftrightarrow$",
             "Computationally infeasible"
         )
@@ -2420,7 +2420,7 @@ class FraudIsInfeasible(Scene):
 
 class ThisIsWellIntoTheWeeds(TeacherStudentsScene):
     def construct(self):
-        idea = TexText("Proof of work")
+        idea = OldTexText("Proof of work")
         idea.move_to(self.teacher.get_corner(UP+LEFT))
         idea.shift(MED_LARGE_BUFF*UP)
         idea.save_state()
@@ -2478,7 +2478,7 @@ class IntroduceSHA256(Scene):
         ]
         groups = VGroup()
         for message in messages:
-            lhs = TexText(
+            lhs = OldTexText(
                 "SHA256", "(``", message, "'') =",
                 arg_separator = ""
             )
@@ -2507,7 +2507,7 @@ class IntroduceSHA256(Scene):
             (digest_brace, digest_text),
         ]
 
-        looks_random = TexText("Looks random")
+        looks_random = OldTexText("Looks random")
         looks_random.set_color(MAROON_B)
         looks_random.next_to(digest_text, DOWN)
 
@@ -2566,7 +2566,7 @@ class IntroduceSHA256(Scene):
                 self.play(FadeOut(arrow))
         self.wait()
 
-        new_sha_text = TexText(
+        new_sha_text = OldTexText(
             "Cryptographic", "hash function"
         )
         new_sha_text.next_to(sha_brace, UP)
@@ -2588,7 +2588,7 @@ class IntroduceSHA256(Scene):
         arrow.set_color(RED)
         everything = VGroup(*self.get_mobjects())
         arrow.next_to(everything, DOWN)
-        words = TexText("Inverse is infeasible")
+        words = OldTexText("Inverse is infeasible")
         words.set_color(RED)
         words.next_to(arrow, DOWN)
 
@@ -2597,12 +2597,12 @@ class IntroduceSHA256(Scene):
         self.wait()
 
     def issue_challenge(self):
-        desired_output_text = TexText("Desired output")
+        desired_output_text = OldTexText("Desired output")
         desired_output_text.move_to(self.digest_text)
         desired_output_text.set_color(YELLOW)
         new_digest = sha256_tex_mob("Challenge")
         new_digest.replace(self.digest)
-        q_marks = TexText("???")
+        q_marks = OldTexText("???")
         q_marks.move_to(self.message_text)
         q_marks.set_color(BLUE)
 
@@ -2632,7 +2632,7 @@ class IntroduceSHA256(Scene):
         groups = VGroup()
         for x in range(32):
             message = "Guess \\#%d"%x
-            lhs = TexText(
+            lhs = OldTexText(
                 "SHA256(``", message, "'') = ",
                 arg_separator = ""
             )
@@ -2672,8 +2672,8 @@ class ViewingSLLCertificate(ExternallyAnimatedScene):
 
 class SHA256ToProofOfWork(TeacherStudentsScene):
     def construct(self):
-        sha = TexText("SHA256")
-        proof = TexText("Proof of work")
+        sha = OldTexText("SHA256")
+        proof = OldTexText("Proof of work")
         arrow = Arrow(LEFT, RIGHT)
         group = VGroup(sha, arrow, proof)
         group.arrange(RIGHT)
@@ -2714,7 +2714,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
             ]
         ])
 
-        nonce = Tex(str(2**30 + hash("Hey there")%(2**15)))
+        nonce = OldTex(str(2**30 + hash("Hey there")%(2**15)))
         nonce.next_to(ledger, RIGHT, LARGE_BUFF)
         nonce.set_color(GREEN_C)
         nonce_brace = Brace(nonce, DOWN)
@@ -2722,7 +2722,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
         arrow = Arrow(LEFT, RIGHT, buff = 0)
         arrow.next_to(ledger, RIGHT)
         arrow.shift(MED_LARGE_BUFF*DOWN)
-        sha = TexText("SHA256")
+        sha = OldTexText("SHA256")
         sha.next_to(arrow, UP)
         digest = sha256_tex_mob(
             """Man, you're reading this deeply into
@@ -2787,7 +2787,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
         self.zeros_words = zeros_words
 
     def write_probability(self):
-        probability = TexText(
+        probability = OldTexText(
             "Probability: $\\frac{1}{2^{30}}$",
             "$\\approx \\frac{1}{1{,}000{,}000{,}000}$",
         )
@@ -2799,7 +2799,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
         self.wait(2)
 
     def guess_and_check(self):
-        q_mark = Tex("?")
+        q_mark = OldTex("?")
         q_mark.set_color(RED)
         q_mark.next_to(self.zeros_words, RIGHT, SMALL_BUFF)
 
@@ -2808,7 +2808,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
 
         self.play(FadeIn(q_mark))
         for x in range(1, 13):
-            nonce = Tex(str(x))
+            nonce = OldTex(str(x))
             nonce.move_to(self.nonce)
             nonce.set_color(GREEN_C)
             digest = sha256_tex_mob(str(x))
@@ -2834,7 +2834,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
         self.wait()
 
     def name_proof_of_work(self):
-        words = TexText("``Proof of work''")
+        words = OldTexText("``Proof of work''")
         words.next_to(self.nonce, DOWN, LARGE_BUFF)
         words.shift(MED_LARGE_BUFF*RIGHT)
         words.set_color(GREEN)
@@ -2849,7 +2849,7 @@ class IntroduceNonceOnTrasactions(LedgerScene):
 
     def change_ledger(self):
         amount = self.ledger.content[2][-1]
-        new_amount = TexText("300 LD")
+        new_amount = OldTexText("300 LD")
         new_amount.set_height(amount.get_height())
         new_amount.set_color(amount.get_color())
         new_amount.move_to(amount, LEFT)
@@ -2962,7 +2962,7 @@ class IntroduceBlockChain(Scene):
             all_payments.add(*block.payments)
             all_proofs_of_work.add(block.proof_of_work)
 
-        blocks_word = TexText("Blocks")
+        blocks_word = OldTexText("Blocks")
         blocks_word.scale(1.5)
         blocks_word.shift(2*DOWN)
         arrows = VGroup(*[
@@ -3007,7 +3007,7 @@ class IntroduceBlockChain(Scene):
         for block in blocks:
             proofs_of_work.add(block.proof_of_work)
             num_str = str(random.randint(0, 10**12))
-            number = Tex(num_str)
+            number = OldTex(num_str)
             number.set_color(self.proof_of_work_color)
             number.replace(block.proof_of_work, dim_to_match = 1)
             new_proofs_of_work.add(number)
@@ -3017,7 +3017,7 @@ class IntroduceBlockChain(Scene):
             digest.move_to(block).to_edge(DOWN)
             VGroup(*digest[:60]).set_color(YELLOW)
             arrow = Arrow(block, digest)
-            sha = TexText("SHA256")
+            sha = OldTexText("SHA256")
             sha.scale(0.7)
             point = arrow.get_center()
             sha.next_to(point, UP, SMALL_BUFF)
@@ -3099,7 +3099,7 @@ class IntroduceBlockChain(Scene):
     def mess_with_early_block(self):
         blocks = self.blocks
         amount = blocks[0].payments[1][3]
-        new_amount = TexText("400 LD")
+        new_amount = OldTexText("400 LD")
         new_amount.set_height(amount.get_height())
         new_amount.set_color(RED)
         new_amount.move_to(amount, LEFT)
@@ -3150,10 +3150,10 @@ class IntroduceBlockChain(Scene):
             prev_hash.set_color(BLUE)
 
     def write_block_chain(self):
-        ledger = TexText("Ledger")
+        ledger = OldTexText("Ledger")
         ledger.next_to(self.blocks, DOWN, LARGE_BUFF)
         cross = Cross(ledger)
-        block_chain = TexText("``Block Chain''")
+        block_chain = OldTexText("``Block Chain''")
         block_chain.next_to(ledger, DOWN)
 
         self.play(FadeIn(ledger))
@@ -3188,7 +3188,7 @@ class IntroduceBlockChain(Scene):
                 hash("%d %d"%(seed, self.transaction_counter))
                 for seed in range(3)
             ]
-            payment = TexText(
+            payment = OldTexText(
                 self.names[hashes[0]%3],
                 "pays",
                 self.names[hashes[1]%4],
@@ -3197,7 +3197,7 @@ class IntroduceBlockChain(Scene):
             payment.set_color_by_tex("LD", YELLOW)
             for name, color in zip(self.names, self.name_colors):
                 payment.set_color_by_tex(name, color)
-            signature = TexText("$\\langle$ Signature $\\rangle$")
+            signature = OldTexText("$\\langle$ Signature $\\rangle$")
             signature.set_color(payment[0].get_color())
             signature.next_to(payment, DOWN, SMALL_BUFF)
             payment.add(signature)
@@ -3206,18 +3206,18 @@ class IntroduceBlockChain(Scene):
             payment.set_height(factor*rect.get_height())
             payments.add(payment)
             self.transaction_counter += 1
-        payments.add(Tex("\\dots").scale(0.5))
+        payments.add(OldTex("\\dots").scale(0.5))
         payments.arrange(DOWN, buff = MED_SMALL_BUFF)
         payments.next_to(h_line1, DOWN)
 
-        proof_of_work = TexText("Proof of work")
+        proof_of_work = OldTexText("Proof of work")
         proof_of_work.set_color(self.proof_of_work_color)
         proof_of_work.scale(0.8)
         proof_of_work.move_to(
             VGroup(h_line2, VectorizedPoint(rect.get_bottom()))
         )
 
-        prev_hash = TexText("Prev hash")
+        prev_hash = OldTexText("Prev hash")
         prev_hash.scale(0.8)
         prev_hash.set_color(self.prev_hash_color)
         prev_hash.move_to(
@@ -3364,7 +3364,7 @@ class FromBankToDecentralizedSystem(DistributedBlockChainScene):
         self.wait()
 
     def add_crypto_terms(self):
-        terms = TexText(
+        terms = OldTexText(
             "Digital signatures \\\\",
             "Cryptographic hash functions",
         )
@@ -3431,7 +3431,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
         for x in range(self.n_block_creators):
             block_creator = PiCreature(color = GREY)
             block_creator.set_height(self.alice.get_height())
-            label = TexText("Block creator %d"%(x+1))
+            label = OldTexText("Block creator %d"%(x+1))
             label.scale(0.7)
             label.next_to(block_creator, DOWN, SMALL_BUFF)
             block_creator.label = label
@@ -3459,7 +3459,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
         payment_targets = VGroup()
         for from_name, to_name, amount in payment_parts:
             verb = "pay" if from_name == "You" else "pays"
-            payment = TexText(
+            payment = OldTexText(
                 from_name, verb, to_name, "%d LD"%amount
             )
             payment.set_color_by_tex("LD", YELLOW)
@@ -3511,7 +3511,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
         payments.target.set_height(1.5)
         payments.target.move_to(block)
 
-        prev_hash = TexText("Prev hash")
+        prev_hash = OldTexText("Prev hash")
         prev_hash.set_color(BLUE)
         prev_hash.set_height(0.3)
         prev_hash.next_to(block.get_top(), DOWN, MED_SMALL_BUFF)
@@ -3532,7 +3532,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
 
         arrow = Arrow(UP, ORIGIN, buff = 0)
         arrow.next_to(block, DOWN)
-        sha = TexText("SHA256")
+        sha = OldTexText("SHA256")
         sha.scale(0.7)
         sha.next_to(arrow, RIGHT)
         arrow.add(sha)
@@ -3564,7 +3564,7 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
 
     def add_block_reward(self):
         payments = self.payments
-        new_transaction = TexText(
+        new_transaction = OldTexText(
             self.block_creator_labels[0].get_tex(),
             "gets", "10 LD"
         )
@@ -3613,12 +3613,12 @@ class IntroduceBlockCreator(DistributedBlockChainScene):
     def write_miners(self):
         for label in self.block_creator_labels:
             tex = label.get_tex()
-            new_label = TexText("Miner " + tex[-1])
+            new_label = OldTexText("Miner " + tex[-1])
             new_label.set_color(label.get_color())
             new_label.replace(label, dim_to_match = 1)
             self.play(Transform(label, new_label))
         top_payment = self.payments[0]
-        new_top_payment = TexText("Miner 1", "gets", "10 LD")
+        new_top_payment = OldTexText("Miner 1", "gets", "10 LD")
         new_top_payment[0].set_color(GREY_B)
         new_top_payment[-1].set_color(YELLOW)
         new_top_payment.set_height(top_payment.get_height())
@@ -3690,7 +3690,7 @@ class MiningIsALottery(IntroduceBlockCreator):
         miners.arrange(DOWN, buff = LARGE_BUFF)
         miners.to_edge(LEFT)
         for x, miner in enumerate(miners):
-            label = TexText("Miner %d"%(x+1))
+            label = OldTexText("Miner %d"%(x+1))
             label.scale(0.7)
             label.next_to(miner, DOWN, SMALL_BUFF)
             miner.label = label
@@ -3713,7 +3713,7 @@ class MiningIsALottery(IntroduceBlockCreator):
             payments.move_to(block)
             block.add(payments)
 
-            prev_hash = TexText("Prev hash")
+            prev_hash = OldTexText("Prev hash")
             prev_hash.set_color(BLUE)
             prev_hash.set_height(0.2)
             prev_hash.next_to(block.get_top(), DOWN, SMALL_BUFF)
@@ -3731,7 +3731,7 @@ class MiningIsALottery(IntroduceBlockCreator):
         for block in self.blocks:
             arrow = Arrow(LEFT, RIGHT)
             arrow.next_to(block)
-            label = TexText("SHA256")
+            label = OldTexText("SHA256")
             label.scale(0.7)
             label.next_to(arrow, UP, buff = SMALL_BUFF)
             self.add(arrow, label)
@@ -3795,7 +3795,7 @@ class MiningIsALottery(IntroduceBlockCreator):
         lines = VGroup()
 
         miner_name = miner.label.get_tex()
-        top_line = TexText(miner_name, "gets", "10 LD")
+        top_line = OldTexText(miner_name, "gets", "10 LD")
         top_line.set_color_by_tex(miner_name, GREY_B)
         top_line.set_color_by_tex("LD", YELLOW)
         lines.add(top_line)
@@ -3805,7 +3805,7 @@ class MiningIsALottery(IntroduceBlockCreator):
         ]
         for payment in payments:
             lines.add(self.add_payment_line_to_ledger(*payment))
-        lines.add(Tex("\\vdots"))
+        lines.add(OldTex("\\vdots"))
         for line in lines:
             line.set_height(0.5)
         lines.arrange(
@@ -3868,7 +3868,7 @@ class TwoBlockChains(DistributedBlockChainScene):
         block_chains[1].next_to(randy, UP+LEFT)
         block_chains[1].shift_onto_screen()
 
-        conflicting = TexText("Conflicting")
+        conflicting = OldTexText("Conflicting")
         conflicting.to_edge(UP)
         conflicting.set_color(RED)
         arrows = VGroup(*[
@@ -3882,7 +3882,7 @@ class TwoBlockChains(DistributedBlockChainScene):
 
         longer_chain_rect = SurroundingRectangle(block_chains[0])
         longer_chain_rect.set_stroke(GREEN, 8)
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.set_color(GREEN)
         checkmark.next_to(longer_chain_rect, UP)
         checkmark.shift(RIGHT)
@@ -3958,7 +3958,7 @@ class TwoBlockChains(DistributedBlockChainScene):
         block_chains[0].add(arrow_block)
         rect = SurroundingRectangle(block_chains[0])
         rect.set_stroke(GREEN, 8)
-        checkmark = Tex("\\checkmark")
+        checkmark = OldTex("\\checkmark")
         checkmark.next_to(rect, UP)
         checkmark.set_color(GREEN)
 
@@ -3980,10 +3980,10 @@ class TwoBlockChains(DistributedBlockChainScene):
 
 class ReplaceCentralAuthorityWithWork(Scene):
     def construct(self):
-        trust, central = words = TexText("Trust", "central authority")
+        trust, central = words = OldTexText("Trust", "central authority")
         words.scale(1.5)
         cross = Cross(central)
-        work = TexText("computational work")
+        work = OldTexText("computational work")
         work.scale(1.5)
         work.move_to(central, LEFT)
         work.set_color(YELLOW)
@@ -4065,7 +4065,7 @@ class DoubleSpendingAttack(DistributedBlockChainScene):
 
     def dont_send_to_rest_of_network(self):
         bubble = ThoughtBubble()
-        words = TexText("Alice", "never \\\\ paid", "Bob")
+        words = OldTexText("Alice", "never \\\\ paid", "Bob")
         for name in "Alice", "Bob":
             words.set_color_by_tex(name, self.get_color_from_name(name))
         bubble.add_content(words)
@@ -4093,7 +4093,7 @@ class DoubleSpendingAttack(DistributedBlockChainScene):
             ("Proof of work", DOWN, GREEN),
         ]
         for word, vect, color in tuples:
-            mob = TexText(word)
+            mob = OldTexText(word)
             mob.set_color(color)
             mob.set_height(0.07*block.get_height())
             mob.next_to(
@@ -4104,14 +4104,14 @@ class DoubleSpendingAttack(DistributedBlockChainScene):
             attr = word.lower().replace(" ", "_")
             setattr(block, attr, mob)
 
-        payment = TexText("Alice", "pays", "Bob", "100 LD")
+        payment = OldTexText("Alice", "pays", "Bob", "100 LD")
         for name in "Alice", "Bob":
             payment.set_color_by_tex(name, self.get_color_from_name(name))
         payment.set_color_by_tex("LD", YELLOW)
         payments = VGroup(
-            Tex("\\vdots"),
+            OldTex("\\vdots"),
             payment,
-            Tex("\\vdots")
+            OldTex("\\vdots")
         )
         payments.arrange(DOWN)
         payments.set_width(0.9*block.get_width())
@@ -4170,7 +4170,7 @@ class AliceRacesOtherMiners(DoubleSpendingAttack):
         miners.arrange(RIGHT, buff = LARGE_BUFF)
         miners.to_edge(DOWN+LEFT)
         miners.shift(0.5*UP)
-        miners_word = TexText("Miners")
+        miners_word = OldTexText("Miners")
         miners_word.next_to(miners, DOWN)
         self.miners = miners
         self.add(miners_word, miners)
@@ -4187,7 +4187,7 @@ class AliceRacesOtherMiners(DoubleSpendingAttack):
             block.add(transactions)
 
             proof_of_work = self.get_rand_int_mob()
-            prev_hash = TexText("Prev hash").set_color(BLUE)
+            prev_hash = OldTexText("Prev hash").set_color(BLUE)
             for mob, vect in (proof_of_work, DOWN), (prev_hash, UP):
                 mob.set_height(0.1*block.get_height())
                 mob.next_to(
@@ -4368,7 +4368,7 @@ class AliceRacesOtherMiners(DoubleSpendingAttack):
         content.add(transactions)
 
     def get_block_filler(self, block):
-        result = TexText("$\\langle$Transactions$\\rangle$")
+        result = OldTexText("$\\langle$Transactions$\\rangle$")
         result.set_width(0.8*block.get_width())
         result.move_to(block)
         return result
@@ -4421,7 +4421,7 @@ class WhenToTrustANewBlock(DistributedBlockChainScene):
             ("Proof of work", DOWN, GREEN),
         ]
         for word, vect, color in tuples:
-            mob = TexText(word)
+            mob = OldTexText(word)
             mob.set_color(color)
             mob.set_height(0.07*block.get_height())
             mob.next_to(
@@ -4431,7 +4431,7 @@ class WhenToTrustANewBlock(DistributedBlockChainScene):
             block.add(mob)
             attr = word.lower().replace(" ", "_")
             setattr(block, attr, mob)
-        transactions = TexText("$\\langle$Transactions$\\rangle$")
+        transactions = OldTexText("$\\langle$Transactions$\\rangle$")
         transactions.set_width(0.8*block.get_width())
         transactions.move_to(block)
         block.add(transactions)
@@ -4466,7 +4466,7 @@ class WhenToTrustANewBlock(DistributedBlockChainScene):
 
 class MainIdeas(Scene):
     def construct(self):
-        title = TexText("Main ideas")
+        title = OldTexText("Main ideas")
         title.scale(1.5)
         h_line = Line(LEFT, RIGHT)
         h_line.set_width(FRAME_X_RADIUS)
@@ -4474,7 +4474,7 @@ class MainIdeas(Scene):
         VGroup(title, h_line).to_corner(UP+LEFT)
 
         ideas = VGroup(*[
-            TexText("$\\cdot$ " + words)
+            OldTexText("$\\cdot$ " + words)
             for words in [
                 "Digital signatures",
                 "The ledger is the currency",
@@ -4527,7 +4527,7 @@ class VariableProofOfWork(WhenToTrustANewBlock):
 
         arrow = Arrow(LEFT, RIGHT)
         arrow.next_to(block)
-        sha_tex = TexText("SHA256")
+        sha_tex = OldTexText("SHA256")
         sha_tex.scale(0.7)
         sha_tex.next_to(arrow, UP, SMALL_BUFF)
         sha_tex.set_color(YELLOW)
@@ -4561,7 +4561,7 @@ class VariableProofOfWork(WhenToTrustANewBlock):
 
     def change_requirement(self):
         digest = self.digest
-        requirement = TexText(
+        requirement = OldTexText(
             "Must start with \\\\",
             "60", "zeros"
         )
@@ -4606,7 +4606,7 @@ class VariableProofOfWork(WhenToTrustANewBlock):
         new_digest = sha256_tex_mob(str(n_zeros), n_zeros)
         new_digest.move_to(digest)
         VGroup(*new_digest[:n_zeros]).set_color(YELLOW)
-        new_n_zeros_mob = Tex(str(n_zeros))
+        new_n_zeros_mob = OldTex(str(n_zeros))
         new_n_zeros_mob.move_to(n_zeros_mob)
         new_n_zeros_mob.set_color(n_zeros_mob.get_color())
         new_pow = self.get_rand_int_mob()
@@ -4628,7 +4628,7 @@ class VariableProofOfWork(WhenToTrustANewBlock):
 
 class CompareBlockTimes(Scene):
     def construct(self):
-        title = TexText("Average block time")
+        title = OldTexText("Average block time")
         title.scale(1.5)
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT)
@@ -4636,10 +4636,10 @@ class CompareBlockTimes(Scene):
         h_line.next_to(title, DOWN, SMALL_BUFF)
 
         examples = VGroup(
-            TexText("BTC: ", "10 minutes"),
-            TexText("ETH: ", "15 Seconds"),
-            TexText("XRP: ", "3.5 Seconds"),
-            TexText("LTC: ", "2.5 Minutes"),
+            OldTexText("BTC: ", "10 minutes"),
+            OldTexText("ETH: ", "15 Seconds"),
+            OldTexText("XRP: ", "3.5 Seconds"),
+            OldTexText("LTC: ", "2.5 Minutes"),
         )
         examples.arrange(
             DOWN, 
@@ -4686,7 +4686,7 @@ class CompareBlockTimes(Scene):
 
 class BlockRewards(Scene):
     def construct(self):
-        title = TexText("Block rewards")
+        title = OldTexText("Block rewards")
         title.scale(1.5)
         logo = BitcoinLogo()
         logo.set_height(0.75)
@@ -4699,10 +4699,10 @@ class BlockRewards(Scene):
         self.add(title, logo, h_line)
 
         rewards = VGroup(
-            TexText("Jan 2009 - Nov 2012:", "50", "BTC"),
-            TexText("Nov 2012 - Jul 2016:", "25", "BTC"),
-            TexText("Jul 2016 - Feb 2020$^*$:", "12.5", "BTC"),
-            TexText("Feb 2020$^*$ - Sep 2023$^*$:", "6.25", "BTC"),
+            OldTexText("Jan 2009 - Nov 2012:", "50", "BTC"),
+            OldTexText("Nov 2012 - Jul 2016:", "25", "BTC"),
+            OldTexText("Jul 2016 - Feb 2020$^*$:", "12.5", "BTC"),
+            OldTexText("Feb 2020$^*$ - Sep 2023$^*$:", "6.25", "BTC"),
         )
         rewards.arrange(
             DOWN, 
@@ -4713,7 +4713,7 @@ class BlockRewards(Scene):
         for reward in rewards:
             reward[1].set_color(YELLOW)
 
-        footnote = TexText(
+        footnote = OldTexText(
             "$^*$ Extrapolating from the 25 BTC reward period"
         )
         footnote.scale(0.5)
@@ -4732,7 +4732,7 @@ class ShowFirstFewBlocks(ExternallyAnimatedScene):
 
 class ShowGeometricSum(Scene):
     def construct(self):
-        equation = Tex(
+        equation = OldTex(
             "210{,}000", "(", 
             "50", "+", "25", "+", "12.5", "+", 
             "6.25", "+\\cdots", ")", "=", "21{,}000{,}000"
@@ -4753,7 +4753,7 @@ class ShowGeometricSum(Scene):
 class TransactionFeeExample(PiCreatureScene):
     def construct(self):
         alice = self.pi_creature
-        payment = TexText(
+        payment = OldTexText(
             "Alice", "pays", "Bob", "0.42 BTC",
         )
         payment.set_color_by_tex("Alice", BLUE_C)
@@ -4761,11 +4761,11 @@ class TransactionFeeExample(PiCreatureScene):
         payment.set_color_by_tex("BTC", YELLOW)
         payment.move_to(2.5*UP)
 
-        fee = TexText("And leaves", "0.001 BTC", "to the miner")
+        fee = OldTexText("And leaves", "0.001 BTC", "to the miner")
         fee.set_color_by_tex("BTC", YELLOW)
         fee.next_to(payment, DOWN)
 
-        signature = TexText(
+        signature = OldTexText(
             "$\\langle$Alice's digital signature$\\rangle$"
         )
         signature.set_color(BLUE_C)
@@ -4774,7 +4774,7 @@ class TransactionFeeExample(PiCreatureScene):
         group = VGroup(payment, fee, signature)
         rect = SurroundingRectangle(group, color = BLUE_B)
 
-        incentive_words = TexText(
+        incentive_words = OldTexText(
             "Incentivizes miner \\\\ to include"
         )
         incentive_words.next_to(rect, DOWN, buff = 1.5)
@@ -4831,7 +4831,7 @@ class ShowBitcoinBlockSize(LedgerScene):
                 ("Alice", "Charlie", "4.67"),
             ]
         ])
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.next_to(payments, DOWN)
         payments.add(dots)
         payments.to_edge(LEFT)
@@ -4846,7 +4846,7 @@ class ShowBitcoinBlockSize(LedgerScene):
             ("Proof of work", DOWN, GREEN),
         ]
         for word, vect, color in tuples:
-            mob = TexText(word)
+            mob = OldTexText(word)
             mob.set_color(color)
             rect = SurroundingRectangle(
                 mob, color = WHITE, buff = MED_SMALL_BUFF
@@ -4857,7 +4857,7 @@ class ShowBitcoinBlockSize(LedgerScene):
 
         title = VGroup(
             BitcoinLogo(height = 0.75), 
-            TexText("Block").scale(1.5)
+            OldTexText("Block").scale(1.5)
         )
         title.arrange(RIGHT, SMALL_BUFF)
         title.next_to(block, UP)
@@ -4889,8 +4889,8 @@ class ShowBitcoinBlockSize(LedgerScene):
         )
         visa_logo[-1].set_color("#faa61a")
         visa_logo.sort()
-        avg_rate = TexText("Avg: $1{,}700$/second")
-        max_rate = TexText("Max: $>24{,}000$/second")
+        avg_rate = OldTexText("Avg: $1{,}700$/second")
+        max_rate = OldTexText("Max: $>24{,}000$/second")
         rates = VGroup(avg_rate, max_rate)
         rates.scale(0.8)
         rates.arrange(DOWN, aligned_edge = LEFT)
@@ -4906,7 +4906,7 @@ class ShowBitcoinBlockSize(LedgerScene):
 
 class CurrentAverageFees(Scene):
     def construct(self):
-        fees = TexText(
+        fees = OldTexText(
             "Current average fees: ",
             "$\\sim 0.0013$ BTC", 
             "$\\approx$", "\\$3.39"
@@ -4923,7 +4923,7 @@ class HighlightingAFewFees(ExternallyAnimatedScene):
 
 class TopicsNotCovered(TeacherStudentsScene):
     def construct(self):
-        title = TexText("Topics not covered:")
+        title = OldTexText("Topics not covered:")
         title.to_corner(UP+LEFT)
         title.set_color(YELLOW)
         title.save_state()
@@ -5065,9 +5065,9 @@ class ShowManyExchanges(Scene):
 
     def get_currencies(self):
         return [
-            Tex("\\$").set_color(GREEN),
-            Tex("\\$").set_color(GREEN),
-            Tex("\\$").set_color(GREEN),
+            OldTex("\\$").set_color(GREEN),
+            OldTex("\\$").set_color(GREEN),
+            OldTex("\\$").set_color(GREEN),
             SVGMobject(
                 file_name = "euro_symbol",
                 stroke_width = 0,
@@ -5094,8 +5094,8 @@ class ShowLDAndOtherCurrencyExchanges(ShowManyExchanges):
             fill_color = BLUE,
         )
         return [
-            TexText("LD").set_color(YELLOW),
-            TexText("LD").set_color(YELLOW),
+            OldTexText("LD").set_color(YELLOW),
+            OldTexText("LD").set_color(YELLOW),
             euro, euro.copy(),
             SVGMobject(
                 file_name = "yen_symbol",
@@ -5213,7 +5213,7 @@ class Thumbnail(DistributedBlockChainScene):
         "n_blocks" : 4,
     }
     def construct(self):
-        title = TexText("Crypto", "currencies", arg_separator = "")
+        title = OldTexText("Crypto", "currencies", arg_separator = "")
         title.scale(2.5)
         title.to_edge(UP)
         title[0].set_color(YELLOW)
@@ -5225,7 +5225,7 @@ class Thumbnail(DistributedBlockChainScene):
         # )
         # for logo in logos:
         #     logo.set_height(1)
-        # logos.add(Tex("\\dots").scale(2))
+        # logos.add(OldTex("\\dots").scale(2))
         # logos.arrange(RIGHT)
         # logos.next_to(title, RIGHT, LARGE_BUFF)
         # self.add(logos)

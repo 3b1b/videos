@@ -46,7 +46,7 @@ class NumericalMatrixMultiplication(Scene):
                     for c in range(k)
                     for prefix in ["" if c == 0 else "+"]
                 ]
-                mob_matrix[a][b] = Tex(parts, next_to_buff=0.1)
+                mob_matrix[a][b] = OldTex(parts, next_to_buff=0.1)
         return Matrix(mob_matrix)
 
     def add_lines(self, left, right):
@@ -78,7 +78,7 @@ class NumericalMatrixMultiplication(Scene):
         self.show_frame()
 
     def organize_matrices(self, left, right, result):
-        equals = Tex("=")
+        equals = OldTex("=")
         everything = VGroup(left, right, equals, result)
         everything.arrange()
         everything.set_width(FRAME_WIDTH - 1)

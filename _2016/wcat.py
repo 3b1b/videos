@@ -278,7 +278,7 @@ class WhenIWasAKid(TeacherStudentsScene):
     def run_class(self):
         children = self.students
         speaker = self.teacher
-        title = TexText("Topology")
+        title = OldTexText("Topology")
         title.to_edge(UP)
         pi1, pi2, pi3, me = children
 
@@ -415,7 +415,7 @@ class DefineInscribedSquareProblem(ClosedLoopScene):
         self.ask_about_rectangles()
 
     def draw_loop(self):
-        self.title = TexText("Inscribed", "square", "problem")
+        self.title = OldTexText("Inscribed", "square", "problem")
         self.title.to_edge(UP)
 
         #Draw loop
@@ -449,7 +449,7 @@ class DefineInscribedSquareProblem(ClosedLoopScene):
         ellipse.stretch(0.7, 1)
         ellipse.rotate(-np.pi/2)
         ellipse.set_height(4)
-        pi_loop = Tex("\\pi")[0]
+        pi_loop = OldTex("\\pi")[0]
         pi_loop.set_fill(opacity = 0)
         pi_loop.set_stroke(
             color = WHITE,
@@ -506,7 +506,7 @@ class DefineInscribedSquareProblem(ClosedLoopScene):
         morty.next_to(ORIGIN, DOWN)
         morty.to_edge(RIGHT)
 
-        new_title = TexText("Inscribed", "rectangle", "problem")
+        new_title = OldTexText("Inscribed", "rectangle", "problem")
         new_title.set_color_by_tex("rectangle", YELLOW)
         new_title.to_edge(UP)
         rect_dots = self.get_rect_vertex_dots()
@@ -561,7 +561,7 @@ class RectangleProperties(Scene):
             brace.stretch_to_fit_width(line.get_length())
             brace.rotate(line.get_angle())
         a, b, c, d = labels = VGroup(*[
-            Tex(s).next_to(dot, dot.get_center(), buff = SMALL_BUFF)
+            OldTex(s).next_to(dot, dot.get_center(), buff = SMALL_BUFF)
             for s, dot in zip("abcd", vertex_dots)
         ])
         midpoint = Dot(ORIGIN, color = RED)
@@ -604,7 +604,7 @@ class PairOfPairBecomeRectangle(Scene):
         )
         labels = VGroup()
         for dot, char in zip(dots, "acbd"):
-            label = Tex(char)
+            label = OldTex(char)
             y_coord = dot.get_center()[1]
             label.next_to(dot, np.sign(dot.get_center()[1])*UP)
             label.set_color(dot.get_color())
@@ -727,7 +727,7 @@ class DeclareFunction(ClosedLoopScene):
         self.let_dots_wonder(10)
 
     def add_tex(self):
-        tex = Tex("f", "(A, B)", "=", "(x, y, z)")
+        tex = OldTex("f", "(A, B)", "=", "(x, y, z)")
         tex.to_edge(UP)
         tex.shift(LEFT)
 
@@ -750,7 +750,7 @@ class DefinePairTo3dFunction(Scene):
 
 class LabelMidpoint(Scene):
     def construct(self):
-        words = TexText("Midpoint $M$")
+        words = OldTexText("Midpoint $M$")
         words.set_color(RED)
         words.scale(2)
         self.play(Write(words, run_time = 1))
@@ -758,7 +758,7 @@ class LabelMidpoint(Scene):
 
 class LabelDistance(Scene):
     def construct(self):
-        words = TexText("Distance $d$")
+        words = OldTexText("Distance $d$")
         words.set_color(MAROON_B)
         words.scale(2)
         self.play(Write(words, run_time = 1))
@@ -778,7 +778,7 @@ class PointPairApprocahingEachother3D(Scene):
 
 class InputPairToFunction(Scene):
     def construct(self):
-        tex = Tex("f(X, X)", "=X")
+        tex = OldTex("f(X, X)", "=X")
         tex.set_color_by_tex("=X", BLUE)
         tex.scale(2)
         self.play(Write(tex[0]))
@@ -792,7 +792,7 @@ class WigglePairUnderSurface(Scene):
 
 class WriteContinuous(Scene):
     def construct(self):
-        self.play(Write(TexText("Continuous").scale(2)))
+        self.play(Write(OldTexText("Continuous").scale(2)))
         self.wait(2)
 
 class DistinctPairCollisionOnSurface(Scene):
@@ -813,7 +813,7 @@ class PairOfRealsToPlane(Scene):
         dot1, dot2 = dots = VGroup(*[Dot(color = c) for c in colors])
         for dot, number in zip(dots, numbers):
             dot.move_to(number*RIGHT)
-        pair_label = Tex("(", str(r1), ",", str(r2), ")")
+        pair_label = OldTex("(", str(r1), ",", str(r2), ")")
         for number, color in zip(numbers, colors):
             pair_label.set_color_by_tex(str(number), color)
         pair_label.next_to(dots, UP, buff = 2)
@@ -859,7 +859,7 @@ class SeekSurfaceForPairs(ClosedLoopScene):
         self.add_connecting_lines()
 
         arrow = Arrow(LEFT, RIGHT).next_to(self.loop)
-        words = TexText("Some 2d surface")
+        words = OldTexText("Some 2d surface")
         words.next_to(arrow, RIGHT)
 
         anims = [
@@ -888,9 +888,9 @@ class AskAbouPairType(TeacherStudentsScene):
 
 class DefineOrderedPair(ClosedLoopScene):
     def construct(self):
-        title = TexText("Ordered pairs")
+        title = OldTexText("Ordered pairs")
         title.to_edge(UP)
-        subtitle = Tex(
+        subtitle = OldTex(
             "(", "a", ",", "b", ")", 
             "\\ne", 
             "(", "b", ",", "a", ")"
@@ -908,12 +908,12 @@ class DefineOrderedPair(ClosedLoopScene):
         dots = self.dots
         for dot, color, char in zip(dots, colors, "ab"):
             dot.set_color(color)
-            label = Tex(char)
+            label = OldTex(char)
             label.set_color(color)
             label.next_to(dot, RIGHT, buff = SMALL_BUFF)
             dot.label = label
         self.dots[1].label.shift(0.3*UP)
-        first = TexText("First")
+        first = OldTexText("First")
         first.next_to(self.dots[0], UP+2*LEFT, LARGE_BUFF)
         arrow = Arrow(first.get_bottom(), self.dots[0], color = GREEN)
 
@@ -933,9 +933,9 @@ class DefineOrderedPair(ClosedLoopScene):
 
 class DefineUnorderedPair(ClosedLoopScene):
     def construct(self):
-        title = TexText("Unordered pairs")
+        title = OldTexText("Unordered pairs")
         title.to_edge(UP)
-        subtitle = Tex(
+        subtitle = OldTex(
             "\\{a,b\\}",
             "=",
             "\\{b,a\\}",
@@ -1071,9 +1071,9 @@ class RepresentPairInUnitSquare(ClosedLoopScene):
         )
 
         right_words = VGroup(*[
-            TexText("Pair of\\\\ loop points"),
-            Tex("\\Downarrow"),
-            TexText("Point in \\\\ unit square")
+            OldTexText("Pair of\\\\ loop points"),
+            OldTex("\\Downarrow"),
+            OldTexText("Point in \\\\ unit square")
         ])
         right_words.arrange(DOWN)
         right_words.to_edge(RIGHT)
@@ -1235,7 +1235,7 @@ class EdgesOfSquare(Scene):
             group.set_color_by_gradient(YELLOW, PURPLE_B)
         label_groups = [
             VGroup(*[
-                Tex("(%s, %s)"%(a, b)).scale(0.7)
+                OldTex("(%s, %s)"%(a, b)).scale(0.7)
                 for b in alpha_range
             ])
             for a in (0, 1)
@@ -1367,9 +1367,9 @@ class TrivialPairCollision(ClosedLoopScene):
         self.add_dots_at_alphas(0.35, 0.55)
         self.dots.set_color_by_gradient(BLUE, YELLOW)
         a, b = self.dots
-        a_label = Tex("a").next_to(a, RIGHT)
+        a_label = OldTex("a").next_to(a, RIGHT)
         a_label.set_color(a.get_color())
-        b_label = Tex("b").next_to(b, LEFT)
+        b_label = OldTex("b").next_to(b, LEFT)
         b_label.set_color(b.get_color())
         line = Line(
             a.get_corner(DOWN+LEFT),
@@ -1502,9 +1502,9 @@ class FoldUnitSquare(EdgesOfSquare):
                 dot.set_color(color)
                 if color == colors[-1]:
                     s = "(x, y)" if a < b else "(y, x)"
-                    label = Tex(s)
+                    label = OldTex(s)
                 else:
-                    label = Tex("(%.01f, %.01f)"%(a, b))
+                    label = OldTex("(%.01f, %.01f)"%(a, b))
                 vect = UP+RIGHT if a < b else DOWN+RIGHT
                 label.next_to(dot, vect, buff = SMALL_BUFF)
 
@@ -1556,9 +1556,9 @@ class FoldUnitSquare(EdgesOfSquare):
             point = self.get_point_from_coords(x, x)
             dot = Dot(point)
             if x is xs[-1]:
-                label = Tex("(x, x)")
+                label = OldTex("(x, x)")
             else:
-                label = Tex("(%.1f, %.1f)"%(x, x))
+                label = OldTex("(%.1f, %.1f)"%(x, x))
             label.next_to(dot, UP+LEFT, buff = SMALL_BUFF)
             VGroup(dot, label).set_color(RED)
             if old_label is None:
@@ -1783,7 +1783,7 @@ class DrawRightArrow(Scene):
         "tex" : "\\Rightarrow"
     }
     def construct(self):
-        arrow = Tex(self.tex)
+        arrow = OldTex(self.tex)
         arrow.scale(4)
         self.play(Write(arrow))
         self.wait()
@@ -1943,7 +1943,7 @@ class PatreonThanks(Scene):
         morty.next_to(ORIGIN, DOWN)
 
         n_patrons = len(self.specific_patrons)
-        special_thanks = TexText("Special thanks to:")
+        special_thanks = OldTexText("Special thanks to:")
         special_thanks.set_color(YELLOW)
         special_thanks.shift(2*UP)
 
@@ -1988,7 +1988,7 @@ class CreditTWo(Scene):
         headphones.move_to(morty.eyes, aligned_edge = DOWN)
         headphones.shift(0.1*DOWN)
 
-        url = TexText("www.audible.com/3b1b")
+        url = OldTexText("www.audible.com/3b1b")
         url.to_corner(UP+RIGHT, buff = LARGE_BUFF)
 
         self.add(morty)
@@ -2036,10 +2036,10 @@ class CreditThree(Scene):
         domains.next_to(randy, UP, buff = LARGE_BUFF)
         domains.shift_onto_screen()
 
-        promo_code = TexText("Promo code: TOPOLOGY")
+        promo_code = OldTexText("Promo code: TOPOLOGY")
         promo_code.shift(3*RIGHT)
         self.add(promo_code)
-        whois = TexText("Free WHOIS privacy")
+        whois = OldTexText("Free WHOIS privacy")
         whois.next_to(promo_code, DOWN, buff = LARGE_BUFF)
 
         self.play(Blink(randy))
@@ -2100,7 +2100,7 @@ class ThumbnailImage(ClosedLoopScene):
         self.connecting_lines.set_stroke(width = 10)
         self.loop.add(self.connecting_lines, self.dots)
 
-        title = TexText("Unsolved")
+        title = OldTexText("Unsolved")
         title.scale(2.5)
         title.to_edge(UP)
         title.set_color_by_gradient(YELLOW, MAROON_B)

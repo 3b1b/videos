@@ -7,19 +7,19 @@ def get_set_tex(values, max_shown=7, **kwargs):
     if len(values) > max_shown:
         value_mobs = [
             *map(Integer, values[:max_shown - 2]),
-            MTex("\\dots"),
+            Tex("\\dots"),
             Integer(values[-1], group_with_commas=False),
         ]
     else:
         value_mobs = list(map(Integer, values))
 
-    commas = MTex(",").replicate(len(value_mobs) - 1)
+    commas = Tex(",").replicate(len(value_mobs) - 1)
     result = VGroup()
-    result.add(MTex("\\{"))
+    result.add(Tex("\\{"))
     result.add(*it.chain(*zip(value_mobs, commas)))
     if len(value_mobs) > 0:
         result.add(value_mobs[-1].align_to(value_mobs[0], UP))
-    result.add(MTex("\\}"))
+    result.add(Tex("\\}"))
     result.arrange(RIGHT, buff=SMALL_BUFF)
     if len(values) > 0:
         commas.set_y(value_mobs[0].get_y(DOWN))
@@ -86,18 +86,18 @@ def set_tex_transform(set_tex1, set_tex2):
             if len(st.values) > 1:
                 commas.append(st[2:-1:2])
             else:
-                commas.append(MTex(",").set_opacity(0).move_to(st, DOWN))
+                commas.append(Tex(",").set_opacity(0).move_to(st, DOWN))
         comma_animations = TransformFromCopy(*commas)
         anims.append(comma_animations)
     for part in set_tex2:
-        if isinstance(part, MTex) and part.get_tex() == "\\dots":
+        if isinstance(part, Tex) and part.get_tex() == "\\dots":
             anims.append(FadeInFromPoint(part, set_tex1.get_bottom()))
     return AnimationGroup(*anims)
 
 
 def get_sum_wrapper(set_tex):
     wrapper = VGroup(
-        Tex("\\text{sum}\\big(\\big) = ")[0],
+        OldTex("\\text{sum}\\big(\\big) = ")[0],
         Integer(sum(set_tex.values))
     )
     wrapper.set_height(1.25 * set_tex.get_height())
@@ -166,7 +166,7 @@ def subset_sum_generating_function(full_set):
 
 def get_question_title():
     st = "$\\{1, 2, 3, 4, 5, \\dots, 2{,}000\\}$"
-    question = TexText(
+    question = OldTexText(
         f"Find the number of subsets of {st},\\\\"
         " the sum of whose elements is divisible by 5",
         isolate=[st]
@@ -183,7 +183,7 @@ def massive_int(num, n_cols=42, width=7):
     total = VGroup(*(Integer(int(digit)) for digit in str(num)))
     total.arrange_in_grid(h_buff=SMALL_BUFF, v_buff=1.5 * SMALL_BUFF, n_cols=n_cols)
     for n in range(len(total) - 3, -3, -3):
-        comma = MTex(",")
+        comma = Tex(",")
         triplet = total[n:n + 3]
         triplet.arrange_to_fit_width(
             triplet.get_width() - 2 * comma.get_width(),
@@ -323,7 +323,7 @@ class UnreasonableUsefulness(InteractiveScene):
         plane.set_height(5.5)
         plane.to_corner(DL)
         plane.add_coordinate_labels(font_size=20)
-        plane_title = MTex("\\mathds{C}")
+        plane_title = Tex("\\mathds{C}")
         plane_title.next_to(plane.get_corner(UL), UR, SMALL_BUFF)
 
         n, m = 8, 12
@@ -365,7 +365,7 @@ class UnreasonableUsefulness(InteractiveScene):
         self.wait()
 
         # Show zeta
-        zeta_def = MTex(
+        zeta_def = Tex(
             "\\zeta(s) = \\sum_{n = 1}^\\infty {1 \\over n^s}",
             font_size=42,
             tex_to_color_map={"s": YELLOW}
@@ -475,7 +475,7 @@ class AnswerGuess(InteractiveScene):
         # Count total
         title = get_question_title()
 
-        count = VGroup(Text("Total subsets: "), MTex("2^{2{,}000}"))
+        count = VGroup(Text("Total subsets: "), Tex("2^{2{,}000}"))
         count[0].set_color(TEAL)
         count.arrange(RIGHT, buff=MED_SMALL_BUFF, aligned_edge=DOWN)
         count.scale(60 / 48)
@@ -516,7 +516,7 @@ class AnswerGuess(InteractiveScene):
         # Show total digits
         count.generate_target()
         count.target.to_edge(LEFT)
-        eq = MTex("=")
+        eq = Tex("=")
         eq.next_to(count.target, RIGHT).match_y(count[1][0])
 
         total = massive_int(2**2000)
@@ -531,7 +531,7 @@ class AnswerGuess(InteractiveScene):
         )
 
         # Guess 1 / 5
-        guess = VGroup(Text("Guess: "), MTex("\\approx \\frac{1}{5} \\cdot 2^{2{,}000}"))
+        guess = VGroup(Text("Guess: "), Tex("\\approx \\frac{1}{5} \\cdot 2^{2{,}000}"))
         guess[0].set_color(YELLOW)
         guess.arrange(RIGHT)
         guess.next_to(count, RIGHT, buff=2.5)
@@ -710,10 +710,10 @@ class TwoThousandBinaryChoices(InteractiveScene):
             for er in elem_rects
         ))
         dots = VGroup(*(
-            MTex("\\cdot").move_to(midpoint(t1.get_right(), t2.get_left()))
+            Tex("\\cdot").move_to(midpoint(t1.get_right(), t2.get_left()))
             for t1, t2 in zip(twos, twos[1:])
         ))
-        dots.replace_submobject(-1, MTex("\\dots").move_to(dots[-1]))
+        dots.replace_submobject(-1, Tex("\\dots").move_to(dots[-1]))
         dots.add_to_back(VMobject())
 
         choices = Text("choices").match_height(twos)
@@ -765,11 +765,11 @@ class AskAboutGuess(InteractiveScene):
 
         kw = dict(font_size=24)
         line_labels = VGroup(
-            MTex("0", **kw),
-            MTex("2^{1{,}998}", **kw),
-            MTex("2^{1{,}999}", **kw),
-            MTex("3 \\cdot 2^{1{,}998}", **kw),
-            MTex("2^{2{,}000}", **kw),
+            Tex("0", **kw),
+            Tex("2^{1{,}998}", **kw),
+            Tex("2^{1{,}999}", **kw),
+            Tex("3 \\cdot 2^{1{,}998}", **kw),
+            Tex("2^{2{,}000}", **kw),
         )
         for n, label in zip(np.linspace(0, virt_N, 5), line_labels):
             label.next_to(line.n2p(n), DOWN, MED_SMALL_BUFF)
@@ -796,7 +796,7 @@ class AskAboutGuess(InteractiveScene):
         left_arrow = right_arrow.copy()
         left_arrow.set_color(YELLOW)
         left_arrow.next_to(line.n2p(virt_N / 5), UP, buff=0)
-        left_label = TexText("Guess: ", "$\\frac{1}{5} \\cdot 2^{2{,}000}$", font_size=36)
+        left_label = OldTexText("Guess: ", "$\\frac{1}{5} \\cdot 2^{2{,}000}$", font_size=36)
         left_label.next_to(left_arrow, UP)
 
         self.add(right_label)
@@ -932,7 +932,7 @@ class ExampleWith5(InteractiveScene):
         self.play(FadeOut(highlights))
 
         # Contrast with 1/5
-        count = TexText(
+        count = OldTexText(
             "Total subsets:", " $2^5 = $", " $32$"
         )
         count.set_color_by_tex("32", BLUE)
@@ -948,7 +948,7 @@ class ExampleWith5(InteractiveScene):
 
         fifth_arrow = Vector(RIGHT)
         fifth_arrow.next_to(count, RIGHT)
-        fifth = MTex("\\times 1 / 5", font_size=24)
+        fifth = Tex("\\times 1 / 5", font_size=24)
         fifth.next_to(fifth_arrow, UP, buff=SMALL_BUFF)
         fifth_rhs = DecimalNumber(32 / 5, num_decimal_places=1)
         fifth_rhs.next_to(fifth_arrow, RIGHT)
@@ -1087,7 +1087,7 @@ class ExampleWith5(InteractiveScene):
         self.wait()
 
         # Equation
-        equation = MTex("2 \\cdot 2 \\cdot 2 \\cdot 2 \\cdot 2 = 2^5 = 32")
+        equation = Tex("2 \\cdot 2 \\cdot 2 \\cdot 2 \\cdot 2 = 2^5 = 32")
         equation.set_width(4)
         equation.to_corner(UL)
         equation.set_color(YELLOW)
@@ -1205,16 +1205,16 @@ class ExampleWith5(InteractiveScene):
         lower_group = self.lower_group = VGroup(csr, css)
 
         factored_terms = "(1 + x^1)", "(1 + x^2)", "(1 + x^3)", "(1 + x^4)", "(1 + x^5)"
-        factored = MTex("".join(factored_terms), isolate=factored_terms)
+        factored = Tex("".join(factored_terms), isolate=factored_terms)
         expanded_terms = ["1"]
         for n in range(1, 16):
             k = len(css[n])
             expanded_terms.append(str(k) + f"x^{{{n}}}")
-        expanded = MTex("+".join(expanded_terms), isolate=["+", *expanded_terms])
+        expanded = Tex("+".join(expanded_terms), isolate=["+", *expanded_terms])
         expanded.set_width(FRAME_WIDTH - 1)
         factored.next_to(set_tex, DOWN, MED_LARGE_BUFF)
         expanded.next_to(factored, DOWN, MED_LARGE_BUFF)
-        lhs = Tex("p(x) = ")
+        lhs = OldTex("p(x) = ")
         lhs.next_to(factored, LEFT)
 
         self.play(FadeIn(lhs))
@@ -1281,11 +1281,11 @@ class ExampleWith5(InteractiveScene):
             ))
             n = sum(b * k for k, b in zip(range(1, 6), bits))
             if n == 0:
-                new_term = MTex("1", font_size=36)
+                new_term = Tex("1", font_size=36)
                 super_expanded.add(new_term)
             else:
-                new_plus = MTex("+", font_size=36)
-                new_term = MTex(f"x^{{{n}}}", font_size=36)
+                new_plus = Tex("+", font_size=36)
+                new_term = Tex(f"x^{{{n}}}", font_size=36)
                 super_expanded.add(new_plus, new_term)
                 collection_anims.append(FadeOut(new_plus))
             super_expanded.arrange(RIGHT, aligned_edge=DOWN, buff=SMALL_BUFF)
@@ -1330,10 +1330,10 @@ class ExampleWith5(InteractiveScene):
 
     def transition_to_full_generating_function(self, set_tex):
         # Expressions
-        factored = MTex(
+        factored = Tex(
             "f(x) = (1 + x^1)(1 + x^2)(1 + x^3) \\cdots \\left(1 + x^{1{,}999}\\right)\\left(1 + x^{2{,}000}\\right)",
         )
-        expanded = MTex(
+        expanded = Tex(
             "f(x) = 1+x+x^{2}+2 x^{3}+2 x^{4}+ 3x^{5} +\\cdots + x^{2{,}001{,}000}",
             isolate="+",
         )
@@ -1386,7 +1386,7 @@ class ExampleWith5(InteractiveScene):
         self.wait()
 
         # Emphasize scale
-        words = TexText("Imagine collecting $2^{2{,}000}$ terms!")
+        words = OldTexText("Imagine collecting $2^{2{,}000}$ terms!")
         words.set_color(RED)
         words.next_to(h_line, DOWN)
         words.to_edge(RIGHT)
@@ -1410,7 +1410,7 @@ class ExampleWith5(InteractiveScene):
             get_subsets(range(1, n + 1))
         ))
         coef = len(subsets)
-        term = Tex(str(coef), f"x^{{{n}}}", "+", "\\cdots")
+        term = OldTex(str(coef), f"x^{{{n}}}", "+", "\\cdots")
         term[:2].set_color(TEAL)
         term[2:].set_color(WHITE)
         tail = expanded[-11:]
@@ -1518,9 +1518,9 @@ class SpecifyEmptySet(TeacherStudentsScene):
         # Facts
         kw = dict(tex_to_color_map={"\\{\\}": YELLOW})
         facts = VGroup(
-            MTex("\\text{We do count } \\{\\}", **kw),
-            MTex("\\text{sum}(\\{\\}) = 0", **kw),
-            TexText("0 is a multiple of 5", **kw),
+            Tex("\\text{We do count } \\{\\}", **kw),
+            Tex("\\text{sum}(\\{\\}) = 0", **kw),
+            OldTexText("0 is a multiple of 5", **kw),
         )
         facts.next_to(morty.get_corner(UL), UP, MED_LARGE_BUFF)
 
@@ -1659,7 +1659,7 @@ class QuestionPolynomial(InteractiveScene):
     def construct(self):
         # Start
         n_range = list(range(1, 6))
-        poly = MTex(
+        poly = Tex(
             "p(x) = " + "".join(f"(1 + x^{{{n}}})" for n in n_range),
             tex_to_color_map=dict(zip(
                 (f"{{{n}}}" for n in n_range),
@@ -1674,7 +1674,7 @@ class QuestionPolynomial(InteractiveScene):
         questions = VGroup(
             Text("Where does this\ncome from?", font_size=36),
             Text("What do polynomials\nhave to do with anything?", font_size=36),
-            TexText("What is $x$?", font_size=60, color=TEAL).set_backstroke(width=8),
+            OldTexText("What is $x$?", font_size=60, color=TEAL).set_backstroke(width=8),
         )
         pis = VGroup(*(Randolph(color=c, height=2.5) for c in [BLUE_C, BLUE_E, BLUE_D]))
         pis.arrange(RIGHT, buff=LARGE_BUFF)
@@ -1702,7 +1702,7 @@ class QuestionPolynomial(InteractiveScene):
         self.wait()
 
         # x is just a symbol
-        words = TexText("$x$", " is just a symbol")
+        words = OldTexText("$x$", " is just a symbol")
         words.to_edge(UP)
         words[0].set_color(TEAL)
 
@@ -1717,7 +1717,7 @@ class QuestionPolynomial(InteractiveScene):
         self.wait()
 
         # Expansion
-        expansion = MTex("1+x^{1}+x^{2}+2 x^{3}+2 x^{4}+3 x^{5}+3 x^{6}+3 x^{7}+3 x^{8}+3 x^{9}+3 x^{10}+2 x^{11}+2 x^{12}+x^{13}+x^{14}+x^{15}")
+        expansion = Tex("1+x^{1}+x^{2}+2 x^{3}+2 x^{4}+3 x^{5}+3 x^{6}+3 x^{7}+3 x^{8}+3 x^{9}+3 x^{10}+2 x^{11}+2 x^{12}+x^{13}+x^{14}+x^{15}")
         expansion.set_width(FRAME_WIDTH - 1)
         expansion.next_to(poly, DOWN, MED_LARGE_BUFF)
         expansion.set_x(0)
@@ -1738,7 +1738,7 @@ class PolynomialConstruction(InteractiveScene):
             get_set_tex([1]),
         )
         set_group.scale(0.5)
-        curr_poly = MTex("(1 + x^1)")
+        curr_poly = Tex("(1 + x^1)")
         curr_poly[0].set_opacity(0)
         curr_poly[-1].set_opacity(0)
 
@@ -1751,7 +1751,7 @@ class PolynomialConstruction(InteractiveScene):
         for n in range(2, 8):
             cp_l, cp_r = curr_poly.replicate(2)
             sg_l, sg_r = set_group.replicate(2)
-            plus = MTex("+")
+            plus = Tex("+")
             cp_l.next_to(plus, LEFT, LARGE_BUFF)
             cp_r.next_to(plus, RIGHT, LARGE_BUFF)
             sg_l.match_x(cp_l)
@@ -1773,8 +1773,8 @@ class PolynomialConstruction(InteractiveScene):
                 *added_anims
             )
             self.wait()
-            new_term = MTex(f"x^{n}")
-            new_poly = MTex("".join([
+            new_term = Tex(f"x^{n}")
+            new_poly = Tex("".join([
                 f"\\left(1 + x^{k}\\right)"
                 for k in range(1, n + 1)
             ]))
@@ -1853,7 +1853,7 @@ class GeneratingFunctions(InteractiveScene):
 
         # First poly
         degree = 10
-        poly = Tex(
+        poly = OldTex(
             "f(x) = 1+1 x^{1}+1 x^{2}+2 x^{3}+2 x^{4}+"
             "3 x^{5}+4 x^{6}+5x^{7}+6x^{8}+"
             "8x^{9} + 10x^{10} + \\cdots",
@@ -1905,7 +1905,7 @@ class GeneratingFunctions(InteractiveScene):
             self.remove(rect)
 
         # Fibbonacci poly
-        fib_poly = Tex(
+        fib_poly = OldTex(
             "F(x) = 0+1 x^{1}+1 x^{2}+2 x^{3}+3 x^{4}+"
             "5 x^{5}+ 8 x^{6} + 13 x^{7}+21 x^{8}+\\cdots",
             isolate=["=", "+", "x"]
@@ -1935,11 +1935,11 @@ class GeneratingFunctions(InteractiveScene):
         self.wait()
 
         # Show Fibbonaci property
-        prop = MTex("f_{n} = f_{n - 1} + f_{n - 2}")
-        func_prop1 = MTex("F(x) = xF(x) + x^2 F(x) + x")
-        func_prop2 = MTex("F(x) = \\frac{x}{1 - x - x^2}")
+        prop = Tex("f_{n} = f_{n - 1} + f_{n - 2}")
+        func_prop1 = Tex("F(x) = xF(x) + x^2 F(x) + x")
+        func_prop2 = Tex("F(x) = \\frac{x}{1 - x - x^2}")
 
-        arrow = MTex("\\Updownarrow")
+        arrow = Tex("\\Updownarrow")
 
         prop.next_to(fib_poly, DOWN, LARGE_BUFF)
         prop.shift(3 * RIGHT)
@@ -1997,14 +1997,14 @@ class GeneratingFunctions(InteractiveScene):
         func_prop2.target.scale(0.5)
         func_prop2.target.next_to(details_title, DOWN, MED_LARGE_BUFF).align_to(details_box, LEFT).shift(SMALL_BUFF * RIGHT)
 
-        rhs = MTex(
+        rhs = Tex(
             " = {x \\over (1 - \\varphi x)(1 + \\frac{1}{\\varphi} x)}"
             "= {1 / \\sqrt{5} \\over (1 - \\varphi x)} - {1 / \\sqrt{5} \\over (1 + \\frac{1}{\\varphi}x)}",
             font_size=24,
         )
         rhs.next_to(func_prop2.target, RIGHT, SMALL_BUFF, submobject_to_align=rhs[0])
 
-        expansion = MTex(
+        expansion = Tex(
             "\\frac{1}{\\sqrt{5}}\\sum_{n = 0}^\\infty \\varphi^n x^n - "
             "\\frac{1}{\\sqrt{5}}\\sum_{n = 0}^\\infty \\left({-1 \\over \\varphi}\\right)^n x^n",
             font_size=24
@@ -2012,7 +2012,7 @@ class GeneratingFunctions(InteractiveScene):
         expansion.next_to(rhs, DOWN, MED_LARGE_BUFF)
         expansion.match_x(details_box)
 
-        implication = MTex(
+        implication = Tex(
             "\\Rightarrow f_n = {\\varphi^n - (-1 / \\varphi)^n \\over \\sqrt{5}}",
             font_size=24,
         )
@@ -2047,7 +2047,7 @@ class WideGraph(InteractiveScene):
         plane.to_edge(DOWN)
         graph = plane.get_graph(func, (-1, 0.75))
         graph.set_stroke(YELLOW, 2)
-        graph_label = Tex("f(x)")
+        graph_label = OldTex("f(x)")
         graph_label.set_color(YELLOW)
         graph_label.next_to(plane.i2gp(0.73, graph), LEFT)
         graph_label.set_backstroke()
@@ -2085,13 +2085,13 @@ class EvaluationTricks(InteractiveScene):
         self.disable_interaction(plane)
 
         tex_kw = dict(tex_to_color_map={"x": BLUE})
-        factored = MTex("f(x) = (1 + x)(1 + x^2)(1 + x^3) \\cdots (1 + x^{2{,}000})", **tex_kw)
+        factored = Tex("f(x) = (1 + x)(1 + x^2)(1 + x^3) \\cdots (1 + x^{2{,}000})", **tex_kw)
         factored.to_corner(UR)
         expanded = VGroup(
-            MTex("f(x) = ", **tex_kw),
-            MTex("\\sum_{n = 0}^{N} c_n x^n", **tex_kw),
-            # MTex("= 1+x+x^{2}+2 x^{3}+2 x^{4}+ \\cdots", **tex_kw)
-            MTex("= c_0 + c_1 x + c_2 x^{2} + c_3 x^{3} + \\cdots", **tex_kw)
+            Tex("f(x) = ", **tex_kw),
+            Tex("\\sum_{n = 0}^{N} c_n x^n", **tex_kw),
+            # Tex("= 1+x+x^{2}+2 x^{3}+2 x^{4}+ \\cdots", **tex_kw)
+            Tex("= c_0 + c_1 x + c_2 x^{2} + c_3 x^{3} + \\cdots", **tex_kw)
         )
         expanded.arrange(RIGHT, buff=0.2)
         expanded.next_to(factored, DOWN, LARGE_BUFF, LEFT)
@@ -2121,7 +2121,7 @@ class EvaluationTricks(InteractiveScene):
         box = SurroundingRectangle(rhs[1:])
         box.set_stroke(WHITE, 1)
         box.set_fill(GREY_E, 1)
-        q_marks = MTex("?").get_grid(1, 7, buff=0.7)
+        q_marks = Tex("?").get_grid(1, 7, buff=0.7)
         q_marks.move_to(box)
         box.add(q_marks)
 
@@ -2154,11 +2154,11 @@ class EvaluationTricks(InteractiveScene):
         self.wait()
 
         # Plug in 0
-        f0 = MTex("f(0) = 1", tex_to_color_map={"0": BLUE})
+        f0 = Tex("f(0) = 1", tex_to_color_map={"0": BLUE})
         f0[-1].set_opacity(0)
         f0.next_to(expanded, DOWN, LARGE_BUFF, aligned_edge=LEFT)
 
-        c0_rhs = MTex("= c_0")
+        c0_rhs = Tex("= c_0")
         c0_rhs.next_to(f0, RIGHT)
         c0_rhs.shift(0.05 * DOWN)
 
@@ -2174,8 +2174,8 @@ class EvaluationTricks(InteractiveScene):
 
         # Take derivative at 0
         dkw = dict(tex_to_color_map={"0": BLUE})
-        f_prime_0 = MTex("f'(0) = c_1", **dkw)
-        f_prime_n = MTex("\\frac{1}{n!} f^{(n)}(0) = c_n", **dkw)
+        f_prime_0 = Tex("f'(0) = c_1", **dkw)
+        f_prime_n = Tex("\\frac{1}{n!} f^{(n)}(0) = c_n", **dkw)
         f_prime_0.next_to(f0, RIGHT, buff=1.5)
         f_prime_n.next_to(f_prime_0, DOWN, MED_LARGE_BUFF, LEFT)
 
@@ -2197,7 +2197,7 @@ class EvaluationTricks(InteractiveScene):
         self.play(LaggedStartMap(FadeOut, VGroup(f_prime_0, f_prime_n, *crosses)))
 
         # Plug in 1
-        f1 = MTex(
+        f1 = Tex(
             "f({1}) \\,=\\, 2^{2{,}000} \\,=\\, c_0 + c_1 + c_2 + c_3 + \\cdots + c_N",
             tex_to_color_map={
                 "2^{2{,}000}": TEAL,
@@ -2221,7 +2221,7 @@ class EvaluationTricks(InteractiveScene):
 
         # Plug in -1
         fm1 = self.load_mobject("f_of_neg1.mob")
-        # fm1 = MTex(
+        # fm1 = Tex(
         #     "f({-1}) \\,=\\, {0} \\,=\\,"
         #     "c_0 - c_1 + c_2 - c_3 + \\cdots + c_N",
         #     tex_to_color_map={
@@ -2258,7 +2258,7 @@ class EvaluationTricks(InteractiveScene):
         h_line.next_to(f1_group, DOWN, MED_LARGE_BUFF)
         h_line.stretch(1.05, 0, about_edge=LEFT)
 
-        filter_expr = MTex(
+        filter_expr = Tex(
             "{1 \\over 2} \\Big(f({1}) + f({-1})\\Big)"
             "= c_0 + c_2 + c_4 + \\cdots + c_{N}",
             tex_to_color_map={
@@ -2282,15 +2282,15 @@ class EvaluationTricks(InteractiveScene):
         self.wait()
 
         # Clarify goal
-        parens = MTex("()")
-        words = TexText("Some clever\\\\evaluation of $f$", font_size=36)
+        parens = Tex("()")
+        words = OldTexText("Some clever\\\\evaluation of $f$", font_size=36)
         words.set_color(WHITE)
         parens.match_height(words)
         parens[0].next_to(words, LEFT, buff=SMALL_BUFF)
         parens[1].next_to(words, RIGHT, buff=SMALL_BUFF)
         desire = VGroup(
             VGroup(parens, words),
-            MTex("= c_0 + c_5 + c_{10} + \\cdots + c_{N}")
+            Tex("= c_0 + c_5 + c_{10} + \\cdots + c_{N}")
         )
         desire.arrange(RIGHT)
         desire.next_to(expanded, DOWN, 1.0, LEFT)
@@ -2328,8 +2328,8 @@ class EvaluationTricks(InteractiveScene):
         rect.round_corners()
 
         outcomes = VGroup(
-            TexText("$1$ if $\\; 5 \\mid n$", font_size=36, color=GREEN),
-            TexText("$0$ if $\\; 5 \\nmid n$", font_size=36, color=RED_D),
+            OldTexText("$1$ if $\\; 5 \\mid n$", font_size=36, color=GREEN),
+            OldTexText("$0$ if $\\; 5 \\nmid n$", font_size=36, color=RED_D),
         )
         outcomes.arrange(DOWN, buff=0.75, aligned_edge=LEFT)
         outcomes.next_to(new_rhs, RIGHT, 1.5, UP)
@@ -2364,7 +2364,7 @@ class MotivateRootsOfUnity(InteractiveScene):
         for n in n_range:
             pieces.extend([f"c_{{{n}}}", f"x^{{{n}}}", "+"])
         pieces.extend(["\\cdots"])
-        polynomial = Tex("".join(pieces), isolate=pieces)
+        polynomial = OldTex("".join(pieces), isolate=pieces)
         polynomial.to_edge(UP)
 
         exp_parts = VGroup(*(
@@ -2379,7 +2379,7 @@ class MotivateRootsOfUnity(InteractiveScene):
             p.replace("(x)", "x").replace("x", "\\left(-1\\right)")
             for p in pieces
         ]
-        fm1 = Tex("".join(m1_pieces), isolate=pieces)
+        fm1 = OldTex("".join(m1_pieces), isolate=pieces)
         fm1.set_color_by_tex("-1", GREY_B)
         fm1[0].set_color(WHITE)
         fm1[0][2:4].set_color(GREY_B)
@@ -2388,7 +2388,7 @@ class MotivateRootsOfUnity(InteractiveScene):
         fm1_powers = fm1[3::3]
         # fm1_coefs = fm1[2::3]
 
-        short_fm1 = MTex(
+        short_fm1 = Tex(
             "f({-1}) = c_0 - c_1 + c_2 - c_3 + c_4 - c_5 + c_6 - c_7 + c_8 - \\cdots",
             tex_to_color_map={"{-1}": GREY_B}
         )
@@ -2407,7 +2407,7 @@ class MotivateRootsOfUnity(InteractiveScene):
             Transform(polynomial.copy(), fm1, lag_ratio=0.01, run_time=2, remover=True),
             Write(line),
             PiCreatureSays(
-                morty, TexText("Visualize the\\\\rotations", font_size=36),
+                morty, OldTexText("Visualize the\\\\rotations", font_size=36),
                 bubble_config=dict(width=3, height=2)
             ),
         )
@@ -2425,7 +2425,7 @@ class MotivateRootsOfUnity(InteractiveScene):
         vm1 = Arrow(line.n2p(0), line.n2p(-1), buff=0, color=RED)
         vect = v1.copy()
         neg1_powers = [
-            MTex(f"(-1)^{{{n}}}")
+            Tex(f"(-1)^{{{n}}}")
             for n in range(8)
         ]
         for n, neg1_power in enumerate(neg1_powers):
@@ -2585,7 +2585,7 @@ class FifthRootsOfUnity(InteractiveScene):
         self.add(pentagon)
 
         # Add function label
-        function = MTex(
+        function = Tex(
             "f(x) = \\sum_{n = 0}^N c_n x^n",
             tex_to_color_map={"x": BLUE}
         )
@@ -2596,7 +2596,7 @@ class FifthRootsOfUnity(InteractiveScene):
         # Roots of unity
         arc = Arc(0, TAU / 5, radius=0.2, arc_center=plane.get_origin())
         arc.set_stroke(WHITE, 2)
-        arc_label = MTex("2\\pi / 5", font_size=24)
+        arc_label = Tex("2\\pi / 5", font_size=24)
         arc_label.next_to(arc.pfp(0.5), UR, buff=SMALL_BUFF)
         arc_label.set_color(GREY_A)
 
@@ -2606,11 +2606,11 @@ class FifthRootsOfUnity(InteractiveScene):
             font_size=36,
         )
         zeta_labels = VGroup(
-            MTex("\\zeta^0 = 1", **root_kw),
-            MTex("\\zeta", **root_kw),
-            MTex("\\zeta^2", **root_kw),
-            MTex("\\zeta^3", **root_kw),
-            MTex("\\zeta^4", **root_kw),
+            Tex("\\zeta^0 = 1", **root_kw),
+            Tex("\\zeta", **root_kw),
+            Tex("\\zeta^2", **root_kw),
+            Tex("\\zeta^3", **root_kw),
+            Tex("\\zeta^4", **root_kw),
         )
         zeta_labels.set_backstroke(width=4)
         for point, label in zip(root_points, zeta_labels):
@@ -2618,8 +2618,8 @@ class FifthRootsOfUnity(InteractiveScene):
             if point is root_points[0]:
                 vect = UR
             label.next_to(point, vect, buff=SMALL_BUFF)
-        exp_rhs = MTex(" = e^{2\\pi i / 5}", **root_kw)
-        trig_rhs = MTex("= \\cos(72^\\circ) + i\\cdot \\sin(72^\\circ)", **root_kw)
+        exp_rhs = Tex(" = e^{2\\pi i / 5}", **root_kw)
+        trig_rhs = Tex("= \\cos(72^\\circ) + i\\cdot \\sin(72^\\circ)", **root_kw)
         last = zeta_labels[1]
         for rhs in exp_rhs, trig_rhs:
             rhs.set_backstroke(width=4)
@@ -2649,8 +2649,8 @@ class FifthRootsOfUnity(InteractiveScene):
         y_line = Line(plane.n2p(math.cos(TAU / 5)), plane.n2p(np.exp(complex(0, TAU / 5))))
         x_line.set_stroke(RED, 2)
         y_line.set_stroke(PINK, 2)
-        low_cos = MTex("\\cos(72^\\circ)", font_size=24)
-        low_sin = MTex("\\sin(72^\\circ)", font_size=24)
+        low_cos = Tex("\\cos(72^\\circ)", font_size=24)
+        low_sin = Tex("\\sin(72^\\circ)", font_size=24)
         low_cos.next_to(x_line, DOWN, SMALL_BUFF, aligned_edge=LEFT)
         low_cos.shift(SMALL_BUFF * RIGHT)
         low_sin.next_to(y_line, RIGHT, SMALL_BUFF)
@@ -2683,11 +2683,11 @@ class FifthRootsOfUnity(InteractiveScene):
             self.wait()
 
         # Name the roots of unity
-        title = TexText("``Fifth roots of unity''")
+        title = OldTexText("``Fifth roots of unity''")
         title.set_color(YELLOW)
         title.match_y(plane)
         title.match_x(function)
-        equation = Tex("z^5 = 1")
+        equation = OldTex("z^5 = 1")
         equation.set_color(WHITE)
         equation.next_to(title, DOWN)
 
@@ -2707,7 +2707,7 @@ class FifthRootsOfUnity(InteractiveScene):
         )
 
         # Key expression
-        expr = MTex("+".join([f"f(\\zeta^{{{n}}})" for n in range(5)]), **root_kw)
+        expr = Tex("+".join([f"f(\\zeta^{{{n}}})" for n in range(5)]), **root_kw)
         expr.next_to(function, DOWN, LARGE_BUFF)
 
         self.play(
@@ -2719,14 +2719,14 @@ class FifthRootsOfUnity(InteractiveScene):
         # Examples, f(x) = x, f(x) = x^2, etc.
         ex_kw = dict(tex_to_color_map={"{x}": BLUE}, font_size=36)
         example_texts = [
-            MTex(
+            Tex(
                 "\\text{Example: } f({x}) = {x}" + ("^" + str(n) if n > 1 else ""),
                 **ex_kw
             )
             for n in range(1, 6)
         ]
         example_sums = [
-            MTex(
+            Tex(
                 "+".join([f"\\zeta^{{{k * n}}}" for n in range(5)]) + ("=5" if k == 5 else "=0"),
                 **root_kw
             )
@@ -2788,8 +2788,8 @@ class FifthRootsOfUnity(InteractiveScene):
 
         func_kw = dict(tex_to_color_map={"x": BLUE})
         relations = VGroup(
-            MTex("x^n \\rightarrow 0 \\qquad \\text{ if } 5 \\nmid n", **func_kw),
-            MTex("x^n \\rightarrow 5 \\qquad \\text{ if } 5 \\mid n", **func_kw),
+            Tex("x^n \\rightarrow 0 \\qquad \\text{ if } 5 \\nmid n", **func_kw),
+            Tex("x^n \\rightarrow 5 \\qquad \\text{ if } 5 \\mid n", **func_kw),
         )
         relations.arrange(DOWN)
         relations.next_to(brace, DOWN)
@@ -2805,7 +2805,7 @@ class FifthRootsOfUnity(InteractiveScene):
         # Write answer expression
         relation_group = VGroup(expr, brace, relations)
 
-        answer = MTex(
+        answer = Tex(
             "c_0 + c_5 + c_{10} + \\cdots"
             "=\\frac{1}{5}\\sum_{k = 0}^4 f(\\zeta^k)",
             tex_to_color_map={"\\zeta": YELLOW}
@@ -2830,7 +2830,7 @@ class FifthRootsOfUnity(InteractiveScene):
         self.wait()
 
         # Bring back original definition
-        factored = MTex(
+        factored = Tex(
             "f(x) = (1 + x)(1 + x^2)(1 + x^3)(1 + x^4)(1 + x^5)\\cdots\\left(1 + x^{2{,}000}\\right)",
             **func_kw
         )
@@ -2865,7 +2865,7 @@ class FifthRootsOfUnity(InteractiveScene):
         eq_kw = dict(
             tex_to_color_map={"\\zeta": YELLOW, "{z}": GREY_A},
         )
-        f_zeta = MTex(
+        f_zeta = Tex(
             "f(\\zeta) = \\Big("
             "(1+\\zeta)(1+\\zeta^{2})(1+\\zeta^{3})(1+\\zeta^{4})(1+\\zeta^{5})"
             "\\Big)^{400}",
@@ -2901,7 +2901,7 @@ class FifthRootsOfUnity(InteractiveScene):
         # Visualize roots moving
         shift_vect = plane.n2p(1) - plane.n2p(0)
         zp1_labels = VGroup(*(
-            MTex(f"\\zeta^{{{n}}} + 1", **root_kw)
+            Tex(f"\\zeta^{{{n}}} + 1", **root_kw)
             for n in range(5)
         ))
         zp1_labels.match_height(zeta_labels[0])
@@ -2930,17 +2930,17 @@ class FifthRootsOfUnity(InteractiveScene):
         faders = VGroup(lower_group, f_zeta[:6], f_zeta[-4:], factored)
         faders.save_state()
 
-        estimate = MTex(
+        estimate = Tex(
             "= 2 \\cdot L_1^2 \\cdot L_2^2",
             isolate=["= 2", "\\cdot L_1^2", "\\cdot L_2^2"],
             **eq_kw
         )
-        roughly_two = MTex("\\approx 2")
+        roughly_two = Tex("\\approx 2")
         estimate.next_to(plane, RIGHT, buff=1.5, aligned_edge=UP)
         roughly_two.next_to(estimate, DOWN, MED_LARGE_BUFF, LEFT)
 
-        L1_label = MTex("L_1", font_size=24)
-        L2_label = MTex("L_2", font_size=24)
+        L1_label = Tex("L_1", font_size=24)
+        L2_label = Tex("L_2", font_size=24)
         L1_label.next_to(root_lines[1].pfp(0.75), DR, buff=0.05)
         L2_label.next_to(root_lines[2].get_center(), LEFT, SMALL_BUFF)
         VGroup(L1_label, L2_label).set_backstroke()
@@ -3014,7 +3014,7 @@ class FifthRootsOfUnity(InteractiveScene):
             for ss in subsets
         ))
         terms = VGroup(*(
-            MTex(f"\\zeta^{{{sum(ss)}}}")
+            Tex(f"\\zeta^{{{sum(ss)}}}")
             for ss in subsets
         ))
         terms.arrange_in_grid(4, 8, buff=MED_LARGE_BUFF)
@@ -3022,7 +3022,7 @@ class FifthRootsOfUnity(InteractiveScene):
         terms.next_to(plane, RIGHT, LARGE_BUFF, UP)
         for term in terms:
             term[0].set_color(YELLOW)
-            plus = MTex("+", font_size=36)
+            plus = Tex("+", font_size=36)
             plus.next_to(term, RIGHT, buff=(0.15 if term in terms[:25] else 0.05))
             term.add(plus)
         terms[-1].remove(terms[-1][-1])
@@ -3058,7 +3058,7 @@ class FifthRootsOfUnity(InteractiveScene):
             "({-1})^5 - 1 = ({-1} - \\zeta^0)({-1} - \\zeta^1)({-1} - \\zeta^2)({-1} - \\zeta^3)({-1} - \\zeta^4)",
             "2 = (1 + \\zeta^0)(1 + \\zeta^1)(1 + \\zeta^2)(1 + \\zeta^3)(1 + \\zeta^4)",
         ]
-        equations = VGroup(*(MTex(tex, **root_kw) for tex in texs))
+        equations = VGroup(*(Tex(tex, **root_kw) for tex in texs))
         equations[1].set_width(box.get_width() - 0.5)
         equations.arrange(DOWN, buff=0.75)
         equals_x = equations[0].get_part_by_tex("=").get_x()
@@ -3098,8 +3098,8 @@ class FifthRootsOfUnity(InteractiveScene):
             for part in parts
         ))
         values = VGroup(
-            MTex("2^{2{,}000}", font_size=36),
-            *(MTex("2^{400}", font_size=36) for x in range(4))
+            Tex("2^{2{,}000}", font_size=36),
+            *(Tex("2^{400}", font_size=36) for x in range(4))
         )
         for value, arrow in zip(values, arrows):
             value.next_to(arrow, UP, SMALL_BUFF)
@@ -3135,7 +3135,7 @@ class FifthRootsOfUnity(InteractiveScene):
         ans_group.target.shift(1 * LEFT)
         ans_group.target[0].set_stroke(opacity=0)
 
-        f_zeta_rhs = Tex("=2^{400}").set_color(WHITE)
+        f_zeta_rhs = OldTex("=2^{400}").set_color(WHITE)
         f_zeta_rhs.next_to(f_zeta, RIGHT)
 
         self.play(
@@ -3149,7 +3149,7 @@ class FifthRootsOfUnity(InteractiveScene):
         self.wait()
 
         # Final answer
-        final_answer = MTex(
+        final_answer = Tex(
             "= \\frac{1}{5}\\Big("
             "2^{2{,}000} + 4 \\cdot 2^{400}\\Big)"
         )
@@ -3183,7 +3183,7 @@ class FifthRootsOfUnity(InteractiveScene):
         set_tex = get_set_tex(range(1, 6))
         set_tex.next_to(box.get_left(), RIGHT, SMALL_BUFF)
 
-        rhs = MTex(
+        rhs = Tex(
             "\\rightarrow \\frac{1}{5}"
             "\\Big(2^5 + 4 \\cdot 2^1\\Big)"
             "= \\frac{1}{5}(32 + 8)"
@@ -3295,7 +3295,7 @@ class RepeatingPowersOfUnity(InteractiveScene):
         # Labels
         zeta_labels = VGroup()
         for n in range(self.n_steps):
-            label = MTex("\\zeta^2")
+            label = Tex("\\zeta^2")
             label[0].set_color(YELLOW)
             exp = Integer(n)
             exp.match_height(label[1])
@@ -3354,7 +3354,7 @@ class JustifyLinearity(InteractiveScene):
 
         # Discuss complexity
         simple_examples = VGroup(*(
-            MTex(f"f(x) = x^{{{n}}}", tex_to_color_map={"x": BLUE}, font_size=36)
+            Tex(f"f(x) = x^{{{n}}}", tex_to_color_map={"x": BLUE}, font_size=36)
             for n in range(1, 6)
         ))
         simple_examples.arrange(DOWN, aligned_edge=LEFT)
@@ -3374,7 +3374,7 @@ class JustifyLinearity(InteractiveScene):
         self.add(simple_group)
         self.play(
             PiCreatureSays(
-                randy, TexText("But $f$ is more\\\\complicated than that!", font_size=36),
+                randy, OldTexText("But $f$ is more\\\\complicated than that!", font_size=36),
                 bubble_config=dict(width=4, height=2),
                 target_mode="pleading",
             )
@@ -3392,7 +3392,7 @@ class JustifyLinearity(InteractiveScene):
             for poly in zeta_polys
         ))
         lhss.save_state()
-        plusses = MTex("+", font_size=36).replicate(len(lhss) - 1)
+        plusses = Tex("+", font_size=36).replicate(len(lhss) - 1)
         group = VGroup(*it.chain(*zip(lhss, plusses)))
         group.add(lhss[-1])
         group.arrange(RIGHT, buff=MED_SMALL_BUFF)
@@ -3446,12 +3446,12 @@ class JustifyLinearity(InteractiveScene):
             col.set_fill(opacity=1)
 
             if j % 5 == 0:
-                term = MTex(f"5c_{j}", font_size=36)
+                term = Tex(f"5c_{j}", font_size=36)
             else:
-                term = MTex("0", font_size=36)
+                term = Tex("0", font_size=36)
             i1, i2 = lp.sep_indices[j:j + 2]
             term.next_to(VGroup(lp[i1], lp[i2]), DOWN, buff=0.7)
-            plus = MTex("+", font_size=36)
+            plus = Tex("+", font_size=36)
             plus.next_to(lp[i1], DOWN, buff=0.7)
             if j == 0:
                 plus.set_opacity(0)
@@ -3486,7 +3486,7 @@ class JustifyLinearity(InteractiveScene):
         for n in range(1, self.n_terms):
             tex += f"c_{{{n}}}{input_tex}^{{{exp_multiple * n}}} + "
         tex += "\\cdots"
-        result = MTex(
+        result = Tex(
             tex,
             tex_to_color_map={
                 input_tex: color,
@@ -3514,7 +3514,7 @@ class Recap(InteractiveScene):
         # Question
         set_part = "$\\{1,\\dots,2000\\}$"
         kw = dict(font_size=40)
-        question = TexText(
+        question = OldTexText(
             f"Find the number of subsets of {set_part} whose sum is divisible by 5",
             tex_to_color_map={set_part: BLUE},
             **kw
@@ -3528,7 +3528,7 @@ class Recap(InteractiveScene):
         # Polynomial
         factored_tex = "(1 + x)(1 + x^2)(1 + x^3)\\cdots\\big(1 + x^{2{,}000}\\big)"
         rhs_tex = "\\sum_{n = 0}^\\infty c_n x^n"
-        poly = MTex(
+        poly = Tex(
             f"f(x) &= {factored_tex} = {rhs_tex}",
             isolate=[factored_tex, rhs_tex, "c_n", "="],
             **kw,
@@ -3540,7 +3540,7 @@ class Recap(InteractiveScene):
         cn_rect = SurroundingRectangle(cn_part, buff=0.05)
         cn_rect.round_corners()
         cn_rect.set_stroke(TEAL, 2)
-        cn_label = TexText("How many subsets sum to $n$", font_size=30)
+        cn_label = OldTexText("How many subsets sum to $n$", font_size=30)
         cn_label.set_color(TEAL)
         cn_label.next_to(cn_rect, UP, MED_LARGE_BUFF, aligned_edge=LEFT)
         cn_arrow = Arrow(cn_rect.get_top(), cn_label[0][:5], color=TEAL, buff=0.1)
@@ -3555,7 +3555,7 @@ class Recap(InteractiveScene):
         self.wait()
 
         # Evaluation
-        evaluation = MTex(
+        evaluation = Tex(
             "c_{0} + c_{5} + c_{10} + c_{15} + \\cdots = "
             "\\frac{1}{5}\\Big(f(\\zeta^0) + f(\\zeta^1) + f(\\zeta^2) + f(\\zeta^3) + f(\\zeta^4) \\Big)",
             tex_to_color_map={
@@ -3572,7 +3572,7 @@ class Recap(InteractiveScene):
 
         # f(zeta)
         rhs = "\\Big(" + "".join(f"(1 + \\zeta^{n})" for n in range(1, 6)) + "\\Big)^{400}"
-        fz = MTex(
+        fz = Tex(
             f"f(\\zeta) = {rhs}",
             tex_to_color_map={"\\zeta": YELLOW},
             isolate=["f(\\zeta)", "=", rhs],
@@ -3608,7 +3608,7 @@ class ReflectOnGeneratingFunctions(InteractiveScene):
         ]
         seq_mobs = VGroup(*map(Integer, seq))
         seq_mobs.scale(0.9)
-        seq_mobs.add(MTex("\\cdots"))
+        seq_mobs.add(Tex("\\cdots"))
         seq_mobs.arrange(RIGHT, aligned_edge=DOWN)
         seq_mobs.arrange_to_fit_width(FRAME_WIDTH - 1)
         seq_mobs.move_to(UP)
@@ -3630,7 +3630,7 @@ class ReflectOnGeneratingFunctions(InteractiveScene):
             for n, s in enumerate(seq)
         ))
         poly_str += "+ \\cdots"
-        poly = MTex(
+        poly = Tex(
             poly_str,
             tex_to_color_map={"x": BLUE, "+": WHITE},
         )
@@ -3752,7 +3752,7 @@ class GeneratingFunctionForPrimes(InteractiveScene):
         ]
         lines = VGroup()
         for pieces in piece_groups:
-            line = MTex(" + ".join([*pieces, "\\cdots"]), isolate=[*pieces, "+"])
+            line = Tex(" + ".join([*pieces, "\\cdots"]), isolate=[*pieces, "+"])
             line.set_width(FRAME_WIDTH - 1)
             for n, piece in zip(it.count(1), pieces):
                 part = line.select_part(piece)
@@ -3821,8 +3821,8 @@ class GeneratingFunctionForPrimes(InteractiveScene):
         # Von Mangoldt
         vm_name = Text("Von Mangoldt function: ")
         vm_def = VGroup(
-            MTex("\\Lambda(n)= \\log p & \\text { if } n=p^{k} \\text { for some prime } p \\text { and integer } k \\geq 1"),
-            MTex("\\Lambda(n)= 0 & \\text { otherwise }")
+            Tex("\\Lambda(n)= \\log p & \\text { if } n=p^{k} \\text { for some prime } p \\text { and integer } k \\geq 1"),
+            Tex("\\Lambda(n)= 0 & \\text { otherwise }")
         )
         vm_def.arrange(DOWN, aligned_edge=LEFT)
         vm = VGroup(vm_name, vm_def)
@@ -3849,12 +3849,12 @@ class GeneratingFunctionForPrimes(InteractiveScene):
         zeta_series.center()
         zeta_series.set_color(WHITE)
         zeta_brace = Brace(zeta_series, DOWN, buff=SMALL_BUFF)
-        zeta_sym = Tex("\\zeta(s)")
+        zeta_sym = OldTex("\\zeta(s)")
         zeta_sym.next_to(zeta_brace, DOWN)
         zeta_group = VGroup(zeta_series, zeta_brace, zeta_sym)
 
         series_brace = Brace(series, DOWN, buff=SMALL_BUFF)
-        series_label = MTex("-{\\zeta'(s) \\over \\zeta(s)}")
+        series_label = Tex("-{\\zeta'(s) \\over \\zeta(s)}")
         series_label.next_to(series_brace, DOWN)
 
         self.play(FadeIn(zeta_series, DOWN))
@@ -3893,7 +3893,7 @@ class DirichletSeries(InteractiveScene):
         coef_texs = [von_mangoldt_str(n) for n in n_range]
         denom_texs = [f"{{{n}}}^s" for n in n_range]
         series_terms = [f"{{ {coef} \\over  {denom} }}" for coef, denom in zip(coef_texs, denom_texs)]
-        series = MTex(
+        series = Tex(
             " + ".join(series_terms) + "+ \\cdots",
             isolate=["+", *coef_texs, *denom_texs]
         )
@@ -3931,7 +3931,7 @@ class DirichletSeries(InteractiveScene):
             arrows.add(Arrow(number, coef_part, stroke_width=2))
         arrows.set_stroke(GREY_B)
 
-        vm_def = MTex("n \\rightarrow \\log p & \\text { if } n=p^{k} \\text { for some prime } p \\text { and integer } k \\geq 1")
+        vm_def = Tex("n \\rightarrow \\log p & \\text { if } n=p^{k} \\text { for some prime } p \\text { and integer } k \\geq 1")
         vm_def.scale(0.5)
         vm_def.next_to(h_line, DOWN)
         vm_def.to_edge(RIGHT)
@@ -3978,7 +3978,7 @@ class DirichletSeries(InteractiveScene):
         self.wait(2)
 
         # Move everything up
-        func_name = MTex("f(s) = -\\zeta'(s) / \\zeta(s)", font_size=36)
+        func_name = Tex("f(s) = -\\zeta'(s) / \\zeta(s)", font_size=36)
         func_name.next_to(brace, DOWN)
         func_name.set_opacity(0)
 
@@ -4011,7 +4011,7 @@ class DirichletSeries(InteractiveScene):
 
         arrow = Arrow(in_plane.get_right(), out_plane.get_left(), path_arc=-45 * DEGREES)
         arrow.align_to(in_plane, UP).shift(DOWN)
-        f_label = MTex("f(s)", font_size=36)
+        f_label = Tex("f(s)", font_size=36)
         f_label.next_to(arrow.pfp(0.5), DOWN)
 
         in_dot = GlowDot(in_plane.n2p(0.5), color=YELLOW)
@@ -4096,10 +4096,10 @@ class AskAboutComplex(TeacherStudentsScene):
             "{-1}": BLUE,
         })
         fx, f0, f1, fm1 = lines = VGroup(
-            MTex("f(x) = \\sum_{n = 0}^N c_n x^n", **kw),
-            MTex("f({0}) = c_0", **kw),
-            MTex("f({1}) = c_0 + c_1 + c_2 + \\cdots + c_n", **kw),
-            MTex("f({-1}) = c_0 - c_1 + c_2 - \\cdots + c_n", **kw),
+            Tex("f(x) = \\sum_{n = 0}^N c_n x^n", **kw),
+            Tex("f({0}) = c_0", **kw),
+            Tex("f({1}) = c_0 + c_1 + c_2 + \\cdots + c_n", **kw),
+            Tex("f({-1}) = c_0 - c_1 + c_2 - \\cdots + c_n", **kw),
         )
         lines.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         lines.set_height(4)
@@ -4118,14 +4118,14 @@ class AskAboutComplex(TeacherStudentsScene):
         self.wait()
 
         # Blank check
-        new_line = MTex(
+        new_line = Tex(
             "f(\\dots) = \\text{(more information)}",
             tex_to_color_map={"\\dots": BLUE}
         )
         new_line.match_height(lines[-1])
         new_line.next_to(lines[-1], DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
 
-        dots_in_set = MTex(
+        dots_in_set = Tex(
             "x \\in \\mathds{R}",
             isolate=["\\mathds{R}", "\\dots"],
             tex_to_color_map={"x": BLUE},
@@ -4133,7 +4133,7 @@ class AskAboutComplex(TeacherStudentsScene):
         )
         dots_in_set.next_to(morty, UR, MED_LARGE_BUFF).shift_onto_screen()
         set_part = dots_in_set.select_part("\\mathds{R}")
-        C_set = MTex("\\mathds{C}", color=TEAL, font_size=60)
+        C_set = Tex("\\mathds{C}", color=TEAL, font_size=60)
         C_set.move_to(set_part)
 
         self.play(
@@ -4167,7 +4167,7 @@ class AskAboutComplex(TeacherStudentsScene):
 class ReferenceFilter(InteractiveScene):
     def construct(self):
         # Grid
-        c_grid = MTex("c_{10}").get_grid(10, 10, buff=MED_LARGE_BUFF)
+        c_grid = Tex("c_{10}").get_grid(10, 10, buff=MED_LARGE_BUFF)
         c_grid.set_height(FRAME_HEIGHT - 1)
 
         for n, c_mob in zip(it.count(1), c_grid):
@@ -4198,7 +4198,7 @@ class ReferenceFilter(InteractiveScene):
         self.wait()
 
         # Roots of unity (to be overlaid)
-        uc_label = TexText("Values of the form $e^{it}$")
+        uc_label = OldTexText("Values of the form $e^{it}$")
         uc_label.match_y(freq_label, UP)
         uc_label.set_x(-freq_label.get_x())
 
@@ -4532,7 +4532,7 @@ class ConfusedPi(InteractiveScene):
 class HowManyIntotal(TeacherStudentsScene):
     def construct(self):
         self.teacher_says(
-            TexText("How many total\\\\subsets are there?"),
+            OldTexText("How many total\\\\subsets are there?"),
             bubble_config=dict(width=4, height=3),
             added_anims=[self.change_students(
                 "happy", "pondering", "tease",
@@ -4574,7 +4574,7 @@ class IsThereAGeometry(InteractiveScene):
         randy.shift(RIGHT)
 
         self.play(PiCreatureBubbleIntroduction(
-            randy, TexText("Is there a\\\\geometric structure?"),
+            randy, OldTexText("Is there a\\\\geometric structure?"),
             target_mode="pondering",
             look_at=[10, -3, 0],
             bubble_type=ThoughtBubble,
@@ -4599,7 +4599,7 @@ class RotationAnnotation(InteractiveScene):
             CountInFrom(label, 0),
             ShowCreation(arc),
             PiCreatureSays(
-                morty, TexText("Think about\\\\the half turn", font_size=24),
+                morty, OldTexText("Think about\\\\the half turn", font_size=24),
                 look_at=arc,
                 bubble_config=dict(width=2, height=1.5)
             )
@@ -4615,7 +4615,7 @@ class SimpleQuestionTitle(InteractiveScene):
 
 class FinalAnswerTitle(InteractiveScene):
     def construct(self):
-        answer = MTex("\\frac{1}{5}\\big(2^{2{,}000} + 4 \\cdot 2^{400}\\big)")
+        answer = Tex("\\frac{1}{5}\\big(2^{2{,}000} + 4 \\cdot 2^{400}\\big)")
         self.add(answer)
 
 
@@ -4627,8 +4627,8 @@ class ComingUpWrapper(VideoWrapper):
         super().construct()
         self.wait(10)
         kw = self.title_config
-        new_title = TexText("A Complex trick".replace("C", "$\\mathds{C}$"), **kw)
-        parens = TexText("(secretly Fourier)", **kw)
+        new_title = OldTexText("A Complex trick".replace("C", "$\\mathds{C}$"), **kw)
+        parens = OldTexText("(secretly Fourier)", **kw)
         new_title.move_to(self.title_text, DOWN)
         new_title.generate_target()
         group = VGroup(new_title.target, parens)
@@ -4703,7 +4703,7 @@ class NoteToPatrons(InteractiveScene):
 
 class QuestionMorph(InteractiveScene):
     def construct(self):
-        question = TexText(
+        question = OldTexText(
             "How many subsets are there\\\\",
             "with a sum divisible by 5", "?"
         )
@@ -4740,7 +4740,7 @@ class FirstTrick(TeacherStudentsScene):
 
         # Here
         self.student_says(
-            TexText("Huh? What is $x$?"),
+            OldTexText("Huh? What is $x$?"),
             index=2,
             target_mode="confused",
             look_at=self.teacher.eyes,
@@ -4794,7 +4794,7 @@ class MoriaEntrance(InteractiveScene):
 class WaitWhat(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("Wait...can you\\\\explain that?", target_mode="confused"),
+            OldTexText("Wait...can you\\\\explain that?", target_mode="confused"),
             added_anims=[
                 self.teacher.change("guilty"),
                 self.students[0].change("erm", self.screen),
@@ -4812,7 +4812,7 @@ class WaitWhat(TeacherStudentsScene):
 
 class HalfTheTotal(InteractiveScene):
     def construct(self):
-        tex = MTex(
+        tex = Tex(
             "\\frac{1}{2}\\Big( 2^{2{,}000} + {0} \\Big)",
             tex_to_color_map={
                 "2^{2{,}000}": TEAL,
@@ -4828,7 +4828,7 @@ class SquaringZeta(InteractiveScene):
     def construct(self):
         # Magnitude
         kw = dict(tex_to_color_map={"\\zeta": YELLOW})
-        mag = MTex("|\\zeta^2| = |\\zeta|^2 = 1^2 = 1", **kw)
+        mag = Tex("|\\zeta^2| = |\\zeta|^2 = 1^2 = 1", **kw)
         mag.move_to(2 * UR)
 
         self.play(FadeIn(mag[:4]))
@@ -4838,7 +4838,7 @@ class SquaringZeta(InteractiveScene):
         self.wait()
 
         # Explicit
-        exp = MTex(
+        exp = Tex(
             "\\zeta^2 ="
             "\\big(e^{2\\pi i / 5}\\big)^2 ="
             "e^{4\\pi i / 5}",
@@ -4860,7 +4860,7 @@ class FifthRootsOfOneOverlay(InteractiveScene):
             "z^5 &= 1 ",
             "z &= \\sqrt[5]{1}",
         ]
-        tex = Tex("\\\\ ".join(lines), isolate=lines)
+        tex = OldTex("\\\\ ".join(lines), isolate=lines)
 
         self.add(tex[0])
         self.wait()
@@ -4870,11 +4870,11 @@ class FifthRootsOfOneOverlay(InteractiveScene):
 
 class ObviouslyOne(TeacherStudentsScene):
     def construct(self):
-        eq = MTex("z^5 = 1", font_size=72)
+        eq = Tex("z^5 = 1", font_size=72)
         self.teacher_holds_up(eq)
         self.wait()
         self.student_says(
-            TexText("Obviously $z = 1$!"), target_mode="angry",
+            OldTexText("Obviously $z = 1$!"), target_mode="angry",
             bubble_config=dict(direction=RIGHT),
             added_anims=[self.change_students("sassy", "hesitant")]
         )
@@ -4884,7 +4884,7 @@ class ObviouslyOne(TeacherStudentsScene):
 class EqualsZeta3(InteractiveScene):
     def construct(self):
         arrow = Vector(0.5 * DOWN)
-        tex = MTex("\\zeta^3", tex_to_color_map={"\\zeta": YELLOW})
+        tex = Tex("\\zeta^3", tex_to_color_map={"\\zeta": YELLOW})
         tex.next_to(arrow, DOWN)
         self.play(
             GrowArrow(arrow),
@@ -4895,7 +4895,7 @@ class EqualsZeta3(InteractiveScene):
 
 class Roughly2(InteractiveScene):
     def construct(self):
-        self.play(Write(MTex("\\approx 2")))
+        self.play(Write(Tex("\\approx 2")))
         self.wait()
 
 
@@ -4903,8 +4903,8 @@ class EvaluateF1(InteractiveScene):
     def construct(self):
         tex_x = "f(x) = (1 + x)(1 + x^2)(1 + x^3)(1 + x^4)(1 + x^5)\\cdots\\left(1 + x^{2{,}000}\\right)"
         tex_1 = tex_x.replace("x", "{1}")
-        fx = MTex(tex_x, tex_to_color_map={"x": BLUE})
-        f1 = MTex(tex_1, tex_to_color_map={"{1}": GREEN})
+        fx = Tex(tex_x, tex_to_color_map={"x": BLUE})
+        f1 = Tex(tex_1, tex_to_color_map={"{1}": GREEN})
         f1.match_width(fx)
         fx.to_edge(UP)
         f1.next_to(fx, DOWN, MED_LARGE_BUFF)
@@ -4916,7 +4916,7 @@ class EvaluateF1(InteractiveScene):
 
         brace = Brace(f1[5:], DOWN, buff=SMALL_BUFF)
         brace.stretch(0.5, 1, about_edge=UP)
-        ans = MTex("2^{2{,}000}")
+        ans = Tex("2^{2{,}000}")
         ans.next_to(brace, DOWN, SMALL_BUFF)
 
         self.add(fx)
@@ -4935,7 +4935,7 @@ class EvaluateF1(InteractiveScene):
 class CoefPoly(InteractiveScene):
     def construct(self):
         mid_str = "".join((f"c_{{{n}}} x^{{{n}}} + " for n in range(2, 8)))
-        self.add(MTex(
+        self.add(Tex(
             "f(x) = c_0 + c_1 x + " + mid_str + "\\cdots",
             tex_to_color_map={"x": BLUE}
         ).to_edge(UP).shift(DOWN))
@@ -4944,7 +4944,7 @@ class CoefPoly(InteractiveScene):
 class AskAboutTaylorSeries(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("Can we use derivatives\\\\in some way?"),
+            OldTexText("Can we use derivatives\\\\in some way?"),
             bubble_config=dict(width=4, height=3, direction=LEFT),
             index=2,
         )
@@ -4996,7 +4996,7 @@ class ToTheComplexPlane(InteractiveScene):
         label = Text("Complex plane")
         label.to_corner(UL, buff=MED_SMALL_BUFF)
         label.set_backstroke(width=10)
-        poly = MTex(
+        poly = Tex(
             "f(x) = (1 + x)(1 + x^2)\\cdots\\left(1+x^{2{,}000}\\right)",
             tex_to_color_map={"x": YELLOW}
         )
@@ -5033,8 +5033,8 @@ class FocusOnPropertiesNotValues(TeacherStudentsScene):
             tex_to_color_map={"\\zeta": YELLOW}
         )
         words = VGroup(
-            MTex("\\text{Don't worry about the}\\\\ \\text{numerical value of } \\zeta", **kw),
-            MTex("\\text{Focus on properties}\\\\ \\text{of } \\{\\zeta^1, \\zeta^2, \\zeta^3, \\zeta^4\\, \\zeta^5\\}", **kw),
+            Tex("\\text{Don't worry about the}\\\\ \\text{numerical value of } \\zeta", **kw),
+            Tex("\\text{Focus on properties}\\\\ \\text{of } \\{\\zeta^1, \\zeta^2, \\zeta^3, \\zeta^4\\, \\zeta^5\\}", **kw),
         )
         words.move_to(self.hold_up_spot, DOWN).shift_onto_screen()
 
@@ -5083,14 +5083,14 @@ class ConjugatePairFact(InteractiveScene):
         lines.set_stroke(RED, 2)
         lines.add_updater(lambda ls: [line.put_start_and_end_on(plane.n2p(0), dot.get_center()) for line, dot in zip(ls, dots)])
         labels = VGroup(
-            MTex("a + bi", font_size=24).next_to(points[0], UP, SMALL_BUFF),
-            MTex("a - bi", font_size=24).next_to(points[1], DOWN, SMALL_BUFF),
+            Tex("a + bi", font_size=24).next_to(points[0], UP, SMALL_BUFF),
+            Tex("a - bi", font_size=24).next_to(points[1], DOWN, SMALL_BUFF),
         )
 
         # Equation
         lhs = "(a + bi)(a - bi)"
         rhs = "||a + bi|| \\cdot ||a - bi||"
-        eq = MTex(
+        eq = Tex(
             lhs + " = a^2 + b^2 = " + rhs,
             isolate=[lhs, rhs]
         )
@@ -5159,14 +5159,14 @@ class RootOfUnityRearranging(InteractiveScene):
     def construct(self):
         kw = dict(tex_to_color_map={"\\zeta": YELLOW})
         expressions = VGroup(
-            MTex("z^5 = 1", **kw),
-            MTex("z^5 - 1 = 0", **kw),
-            MTex("z^5 - 1 = (z - \\zeta^0)(z - \\zeta^1)(z - \\zeta^2)(z - \\zeta^3)(z - \\zeta^4)", **kw),
+            Tex("z^5 = 1", **kw),
+            Tex("z^5 - 1 = 0", **kw),
+            Tex("z^5 - 1 = (z - \\zeta^0)(z - \\zeta^1)(z - \\zeta^2)(z - \\zeta^3)(z - \\zeta^4)", **kw),
         )
         expressions[:2].scale(1.5, about_edge=UP)
         subtexts = VGroup(
-            MTex("\\text{Solutions: } \\zeta^0,\\, \\zeta^1,\\, \\zeta^2,\\, \\zeta^3,\\, \\zeta^4", **kw),
-            MTex("\\text{Roots: } \\zeta^0,\\, \\zeta^1,\\, \\zeta^2,\\, \\zeta^3,\\, \\zeta^4", **kw),
+            Tex("\\text{Solutions: } \\zeta^0,\\, \\zeta^1,\\, \\zeta^2,\\, \\zeta^3,\\, \\zeta^4", **kw),
+            Tex("\\text{Roots: } \\zeta^0,\\, \\zeta^1,\\, \\zeta^2,\\, \\zeta^3,\\, \\zeta^4", **kw),
         )
         subtexts.next_to(expressions, DOWN, LARGE_BUFF)
 
@@ -5227,7 +5227,7 @@ class RotationalSum(InteractiveScene):
 
         # Add labels
         labels = VGroup(*(
-            TexText(f"sum $\\equiv$ {n}\\\\mod 5", font_size=30)
+            OldTexText(f"sum $\\equiv$ {n}\\\\mod 5", font_size=30)
             for n in range(5)
         ))
         colors = [YELLOW, *color_gradient([BLUE_B, BLUE_D], 4)]
@@ -5314,7 +5314,7 @@ class HighlightAnswerParts(InteractiveScene):
         frac = "\\frac{1}{5}"
         e1 = "2^{2{,}000}"
         e2 = "4 \\cdot 2^{400}"
-        answer = MTex(
+        answer = Tex(
             f"{frac} \\Big({e1} + {e2} \\Big)",
             isolate=[frac, e1, e2],
             font_size=60
@@ -5340,7 +5340,7 @@ class ReferenceZetaPromise(TeacherStudentsScene):
         morty = self.teacher
         ss = self.students
         self.student_says(
-            TexText("Didn't you once promise\\\\a video about $\\zeta(s)$ and primes?"),
+            OldTexText("Didn't you once promise\\\\a video about $\\zeta(s)$ and primes?"),
             target_mode="sassy",
             index=0,
             added_anims=[
@@ -5364,15 +5364,15 @@ class FactorLargeInteger(InteractiveScene):
         p_value = 314159265359
         q_value = 271828182863
         p, q, N = [
-            MTex("{:,}".format(value).replace(",", "{,}"))
+            Tex("{:,}".format(value).replace(",", "{,}"))
             for value in (p_value, q_value, p_value * q_value)
         ]
         p.set_color(TEAL)
         q.set_color(BLUE)
         N.to_edge(UP)
-        eq = MTex("=", font_size=72).rotate(90 * DEGREES)
+        eq = Tex("=", font_size=72).rotate(90 * DEGREES)
         eq.next_to(N, DOWN)
-        prod = VGroup(p, MTex('\\times'), q)
+        prod = VGroup(p, Tex('\\times'), q)
         prod.arrange(RIGHT, buff=MED_SMALL_BUFF)
         prod.next_to(eq, DOWN)
 
@@ -5391,7 +5391,7 @@ class FactorLargeInteger(InteractiveScene):
 
 class WriteDFTMatrix(InteractiveScene):
     def construct(self):
-        matrix = MTex(r"""\frac{1}{\sqrt{N}}\left[\begin{array}{cccccc}
+        matrix = Tex(r"""\frac{1}{\sqrt{N}}\left[\begin{array}{cccccc}
             1 & 1 & 1 & 1 & \cdots & 1 \\
             1 & \zeta & \zeta^{2} & \zeta^{3} & \cdots & \zeta^{N-1} \\
             1 & \zeta^{2} & \zeta^{4} & \zeta^{6} & \cdots & \zeta^{2(N-1)} \\
@@ -5457,7 +5457,7 @@ class Thumbnail(InteractiveScene):
 
         # Question
         st = "$\\big\\{1,\\dots, 2000\\big\\}$"
-        question = TexText(
+        question = OldTexText(
             f"How many subsets of {st}\\\\", "have a sum divisible by 5?",
             tex_to_color_map={st: TEAL}
         )
@@ -5496,7 +5496,7 @@ class AltThumbnail(InteractiveScene):
         shown_sets.set_height(FRAME_HEIGHT - 1)
         shown_sets.center().to_edge(LEFT)
 
-        dots = Tex("\\vdots")
+        dots = OldTex("\\vdots")
         dots.replace(shown_sets[-1], dim_to_match=1)
         shown_sets.replace_submobject(-1, dots)
 

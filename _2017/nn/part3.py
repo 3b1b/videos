@@ -4,7 +4,7 @@ from _2017.nn.part2 import *
 
 class LayOutPlan(Scene):
     def construct(self):
-        title = TexText("Plan")
+        title = OldTexText("Plan")
         title.scale(1.5)
         title.to_edge(UP)
         h_line = Line(LEFT, RIGHT).scale(FRAME_X_RADIUS - 1)
@@ -88,7 +88,7 @@ class InterpretGradientComponents(GradientNudging):
         cost.set_color(RED)
         cost.next_to(arrow, DOWN)
 
-        cost_expression = Tex(
+        cost_expression = OldTex(
             "C(", "w_0, w_1, \\dots, w_{13{,}001}", ")", "="
         )
         for tex in "()":
@@ -123,7 +123,7 @@ class InterpretGradientComponents(GradientNudging):
     def ask_about_high_dimensions(self):
         grad_vect = self.grad_vect
 
-        words = TexText(
+        words = OldTexText(
             "Direction in \\\\ ${13{,}002}$ dimensions?!?")
         words.set_color(YELLOW)
         words.move_to(grad_vect).to_edge(DOWN)
@@ -170,14 +170,14 @@ class InterpretGradientComponents(GradientNudging):
         VGroup(edge1, d1).set_color(YELLOW)
         VGroup(edge2, d2).set_color(MAROON_B)
         new_vect_contents = VGroup(
-            Tex("\\vdots"),
-            d1, Tex("\\vdots"),
-            d2, Tex("\\vdots"),
+            OldTex("\\vdots"),
+            d1, OldTex("\\vdots"),
+            d2, OldTex("\\vdots"),
         )
         new_vect_contents.arrange(DOWN)
         new_vect_contents.move_to(vect_contents)
 
-        new_w_terms = Tex(
+        new_w_terms = OldTex(
             "\\dots", "w_n", "\\dots", "w_k", "\\dots"
         )
         new_w_terms.move_to(w_terms, DOWN)
@@ -241,7 +241,7 @@ class InterpretGradientComponents(GradientNudging):
             term.dot.save_state()
             term.dot.move_to(term)
             term.dot.set_fill(opacity = 0)
-            term.words = TexText("Nudge this weight")
+            term.words = OldTexText("Nudge this weight")
             term.words.scale(0.7)
             term.words.next_to(term.number_line, UP, MED_SMALL_BUFF)
 
@@ -309,7 +309,7 @@ class InterpretGradientComponents(GradientNudging):
         grad_terms.target.set_width(cost_expression.get_width())
         grad_terms.target.next_to(cost_expression, DOWN)
 
-        words = TexText("Nudge weights")
+        words = OldTexText("Nudge weights")
         words.scale(0.8)
         words.next_to(grad_terms.target, DOWN)
 
@@ -351,19 +351,19 @@ class GetLostInNotation(PiCreatureScene):
     def construct(self):
         morty = self.pi_creature
         equations = VGroup(
-            Tex(
+            OldTex(
                 "\\delta", "^L", "=", "\\nabla_a", "C", 
                 "\\odot \\sigma'(", "z", "^L)"
             ),
-            Tex(
+            OldTex(
                 "\\delta", "^l = ((", "w", "^{l+1})^T", 
                 "\\delta", "^{l+1}) \\odot \\sigma'(", "z", "^l)"
             ),
-            Tex(
+            OldTex(
                 "{\\partial", "C", "\\over \\partial", "b", 
                 "_j^l} =", "\\delta", "_j^l"
             ),
-            Tex(
+            OldTex(
                 "{\\partial", "C", " \\over \\partial", 
                 "w", "_{jk}^l} = ", "a", "_k^{l-1}", "\\delta", "_j^l"
             ),
@@ -467,7 +467,7 @@ class ShowAveragingCost(PreviewLearning):
     def show_many_examples(self):
         training_data, validation_data, test_data = load_data_wrapper()
 
-        average_words = TexText("Average over all training examples")
+        average_words = OldTexText("Average over all training examples")
         average_words.next_to(LEFT, RIGHT)
         average_words.to_edge(UP)
         self.add(average_words)
@@ -492,7 +492,7 @@ class ShowAveragingCost(PreviewLearning):
         ))
 
         #Show all, then adjust
-        words = TexText(
+        words = OldTexText(
             "Each step \\\\ uses every \\\\ example\\\\",
             "$\\dots$theoretically",
             alignment = ""
@@ -683,7 +683,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         self.decimals = decimals
 
     def cannot_directly_affect_activations(self):
-        words = TexText("You can only adjust weights and biases")
+        words = OldTexText("You can only adjust weights and biases")
         words.next_to(self.curr_image, RIGHT, MED_SMALL_BUFF, UP)
 
         edges = VGroup(*self.network_mob.edge_groups.family_members_with_points())
@@ -829,7 +829,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         )
 
     def show_activation_formula(self):
-        rhs = Tex(
+        rhs = OldTex(
             "=", "\\sigma(",
             "w_0", "a_0", "+",
             "w_1", "a_1", "+",
@@ -905,9 +905,9 @@ class WalkThroughTwoExample(ShowAveragingCost):
         a_terms = self.a_terms
         b = self.b
         increase_words = VGroup(
-            TexText("Increase", "$b$"),
-            TexText("Increase", "$w_i$"),
-            TexText("Change", "$a_i$"),
+            OldTexText("Increase", "$b$"),
+            OldTexText("Increase", "$w_i$"),
+            OldTexText("Change", "$a_i$"),
         )
         for words in increase_words:
             words.set_color_by_tex_to_color_map({
@@ -951,7 +951,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         bright_edges = edges_to_bright_neurons.copy()
         bright_edges.set_stroke(YELLOW, 4)
 
-        added_words = TexText("in proportion to $a_i$")
+        added_words = OldTexText("in proportion to $a_i$")
         added_words.next_to(
             increase_words[1], DOWN, 
             1.5*SMALL_BUFF, LEFT
@@ -1035,9 +1035,9 @@ class WalkThroughTwoExample(ShowAveragingCost):
             SurroundingRectangle, bright_neurons
         )))
         two_neuron_rect = SurroundingRectangle(two_neuron)
-        seeing_words = TexText("Seeing a 2")
+        seeing_words = OldTexText("Seeing a 2")
         seeing_words.scale(0.8)
-        thinking_words = TexText("Thinking about a 2")
+        thinking_words = OldTexText("Thinking about a 2")
         thinking_words.scale(0.8)
         seeing_words.next_to(neuron_rects, UP)
         thinking_words.next_to(two_neuron_arrow, RIGHT)
@@ -1045,7 +1045,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         morty = Mortimer()
         morty.scale(0.8)
         morty.to_corner(DOWN+RIGHT)
-        words = TexText("""
+        words = OldTexText("""
             ``Neurons that \\\\
             fire together \\\\
             wire together''
@@ -1154,7 +1154,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
             s_edges.alt_position.arrange(DOWN, MED_SMALL_BUFF)
             s_edges.alt_position.to_corner(DOWN+RIGHT, LARGE_BUFF)
 
-        added_words = TexText("in proportion to $w_i$")
+        added_words = OldTexText("in proportion to $w_i$")
         added_words.set_color(self.w_terms.get_color())
         added_words.next_to(
             increase_words[-1], DOWN,
@@ -1226,9 +1226,9 @@ class WalkThroughTwoExample(ShowAveragingCost):
         prev_neurons = self.network_mob.layers[-2].neurons
         rect = SurroundingRectangle(VGroup(arrows, prev_neurons))
 
-        words1 = TexText("No direct influence")
+        words1 = OldTexText("No direct influence")
         words1.next_to(rect, UP)
-        words2 = TexText("Just keeping track")
+        words2 = OldTexText("Just keeping track")
         words2.move_to(words1)
 
         edges = self.network_mob.edge_groups[-2]
@@ -1278,7 +1278,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
             plusses = VGroup()
             new_arrows = VGroup()
             for edge, prev_arrow in zip(neuron.edges_in, prev_neuron_arrows):
-                plus = Tex("+").scale(0.5)
+                plus = OldTex("+").scale(0.5)
                 plus.move_to(prev_arrow)
                 plus.shift(2*SMALL_BUFF*LEFT)
                 new_arrow = self.get_neuron_nudge_arrow(edge)
@@ -1301,7 +1301,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
 
         all_dots_plus = VGroup()
         for arrow in prev_neuron_arrows:
-            dots_plus = Tex("\\cdots +")
+            dots_plus = OldTex("\\cdots +")
             dots_plus.scale(0.5)
             dots_plus.move_to(arrow.get_center(), RIGHT)
             dots_plus.shift(2*SMALL_BUFF*LEFT)
@@ -1321,7 +1321,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
         self.wait(2)
 
         ##
-        words = TexText("Propagate backwards")
+        words = OldTexText("Propagate backwards")
         words.to_edge(UP)
         words.set_color(BLUE)
         target_arrows = prev_neuron_arrows.copy()
@@ -1389,7 +1389,7 @@ class WalkThroughTwoExample(ShowAveragingCost):
 
 class WriteHebbian(Scene):
     def construct(self):
-        words = TexText("Hebbian theory")
+        words = OldTexText("Hebbian theory")
         words.set_width(FRAME_WIDTH - 1)
         words.to_edge(UP)
         self.play(Write(words))
@@ -1397,10 +1397,10 @@ class WriteHebbian(Scene):
 
 class NotANeuroScientist(TeacherStudentsScene):
     def construct(self):
-        quote = TexText("``Neurons that fire together wire together''")
+        quote = OldTexText("``Neurons that fire together wire together''")
         quote.to_edge(UP)
         self.add(quote)
-        asterisks = TexText("***")
+        asterisks = OldTexText("***")
         asterisks.next_to(quote.get_corner(UP+RIGHT), RIGHT, SMALL_BUFF)
         asterisks.set_color(BLUE)
 
@@ -1409,7 +1409,7 @@ class NotANeuroScientist(TeacherStudentsScene):
         self.add(brain)
         double_arrow = DoubleArrow(LEFT, RIGHT)
         double_arrow.next_to(brain, RIGHT)
-        q_marks = TexText("???")
+        q_marks = OldTexText("???")
         q_marks.next_to(double_arrow, UP)
 
         network = NetworkMobject(Network(sizes = [6, 4, 4, 5]))
@@ -1426,7 +1426,7 @@ class NotANeuroScientist(TeacherStudentsScene):
         ))
 
         rect = SurroundingRectangle(group)
-        no_claim_words = TexText("No claims here...")
+        no_claim_words = OldTexText("No claims here...")
         no_claim_words.next_to(rect, UP)
         no_claim_words.set_color(YELLOW)
 
@@ -1435,7 +1435,7 @@ class NotANeuroScientist(TeacherStudentsScene):
         brain_outline.set_stroke(BLUE, 3)
         brain_anim = ShowCreationThenDestruction(brain_outline)
 
-        words = TexText("Definitely not \\\\ a neuroscientist")
+        words = OldTexText("Definitely not \\\\ a neuroscientist")
         words.next_to(self.teacher, UP, buff = 1.5)
         words.shift_onto_screen()
         arrow = Arrow(words.get_bottom(), self.teacher.get_top())
@@ -1570,10 +1570,10 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             self.get_example(t[0], j)
             for t, j in zip(data, it.count(1))
         ])
-        h_dots = Tex("\\dots")
+        h_dots = OldTex("\\dots")
         h_dots.next_to(examples, RIGHT, MED_LARGE_BUFF)
         more_h_dots = VGroup(*[
-            Tex("\\dots").move_to(
+            OldTex("\\dots").move_to(
                 self.get_grid_position(i, self.n_examples)
             )
             for i in range(5)
@@ -1657,7 +1657,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
             arrows.add(arrow)
             averages.add(average)
 
-        words = TexText("Average over \\\\ all training data")
+        words = OldTexText("Average over \\\\ all training data")
         words.scale(0.8)
         words.to_corner(UP+RIGHT)
         arrow_to_averages = Arrow(
@@ -1712,7 +1712,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
 
     def collapse_into_gradient_vector(self):
         averages = self.averages
-        lb, rb = brackets = Tex("[]")
+        lb, rb = brackets = OldTex("[]")
         brackets.scale(2)
         brackets.stretch_to_fit_height(1.2*averages.get_height())
         lb.next_to(averages, LEFT, SMALL_BUFF)
@@ -1721,7 +1721,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
 
         shift_vect = 2*LEFT
 
-        lhs = Tex(
+        lhs = OldTex(
             "-", "\\nabla", "C(",
             "w_1,", "w_2,", "\\dots", "w_{13{,}001}",
             ")", "="
@@ -1731,7 +1731,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
         minus = lhs[0]
         w_terms = lhs.get_parts_by_tex("w_")
         dots_term = lhs.get_part_by_tex("dots")
-        eta = Tex("\\eta")
+        eta = OldTex("\\eta")
         eta.move_to(minus, RIGHT)
         eta.set_color(MAROON_B)
 
@@ -1792,7 +1792,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
 
     def get_requested_change_bubble(self, example_mob):
         change = self.get_random_decimal()
-        words = TexText("Change by")
+        words = OldTexText("Change by")
         change.next_to(words, RIGHT)
         change.save_state()
         content = VGroup(words, change)
@@ -1815,7 +1815,7 @@ class ConstructGradientFromAllTrainingExamples(Scene):
     def get_colored_decimal(self, number):
         result = DecimalNumber(number)
         if result.number > 0:
-            plus = Tex("+")
+            plus = OldTex("+")
             plus.next_to(result, LEFT, SMALL_BUFF)
             result.add_to_back(plus)
             result.set_color(BLUE)
@@ -1847,11 +1847,11 @@ class WatchPreviousScene(TeacherStudentsScene):
 
 class OpenCloseSGD(Scene):
     def construct(self):
-        term = Tex(
+        term = OldTex(
             "\\langle", "\\text{Stochastic gradient descent}",
             "\\rangle"
         )
-        alt_term0 = Tex("\\langle /")
+        alt_term0 = OldTex("\\langle /")
         alt_term0.move_to(term[0], RIGHT)
 
         term.save_state()
@@ -1920,7 +1920,7 @@ class OrganizeDataIntoMiniBatches(Scene):
             for i in range(self.n_rows)
         ])
 
-        mini_batches_words = TexText("``Mini-batches''")
+        mini_batches_words = OldTexText("``Mini-batches''")
         mini_batches_words.to_edge(UP)
         mini_batches_words.set_color(YELLOW)
 
@@ -2018,10 +2018,10 @@ class GradientDescentSteps(ExternallyAnimatedScene):
 class SwimmingInTerms(TeacherStudentsScene):
     def construct(self):
         terms = VGroup(
-            TexText("Cost surface"),
-            TexText("Stochastic gradient descent"),
-            TexText("Mini-batches"),
-            TexText("Backpropagation"),
+            OldTexText("Cost surface"),
+            OldTexText("Stochastic gradient descent"),
+            OldTexText("Mini-batches"),
+            OldTexText("Backpropagation"),
         )
         terms.arrange(DOWN)
         terms.to_edge(UP)
@@ -2043,7 +2043,7 @@ class BackpropCode(ExternallyAnimatedScene):
 
 class BackpropCodeAddOn(PiCreatureScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "The code you'd find \\\\ in Nielsen's book"
         )
         words.to_corner(DOWN+LEFT)
@@ -2082,7 +2082,7 @@ class CannotFollowCode(TeacherStudentsScene):
 
 class EOCWrapper(Scene):
     def construct(self):
-        title = TexText("Essence of calculus")
+        title = OldTexText("Essence of calculus")
         title.to_edge(UP)
         screen = ScreenRectangle(height = 6)
         screen.next_to(title, DOWN)
@@ -2198,7 +2198,7 @@ class SimplestNetworkExample(PreviewLearning):
             layer.neurons[0] 
             for layer in network_mob.layers[1:]
         ])
-        expression = Tex(
+        expression = OldTex(
             "C", "(", 
             "w_1", ",", "b_1", ",",
             "w_2", ",", "b_2", ",",
@@ -2261,7 +2261,7 @@ class SimplestNetworkExample(PreviewLearning):
         superscript_rects = VGroup()
         for neuron, superscript in zip(neurons, superscripts):
             decimal = self.get_neuron_activation_decimal(neuron)
-            label = Tex("a^{(%s)}"%superscript)
+            label = OldTex("a^{(%s)}"%superscript)
             label.next_to(neuron, DOWN, buff = LARGE_BUFF)
             superscript_rect = SurroundingRectangle(VGroup(*label[1:]))
             arrow = Arrow(
@@ -2301,7 +2301,7 @@ class SimplestNetworkExample(PreviewLearning):
             )
             self.wait()
 
-        not_exponents = TexText("Not exponents")
+        not_exponents = OldTexText("Not exponents")
         not_exponents.next_to(superscript_rects, DOWN, MED_LARGE_BUFF)
         not_exponents.set_color(YELLOW)
 
@@ -2327,10 +2327,10 @@ class SimplestNetworkExample(PreviewLearning):
         decimal = self.get_neuron_activation_decimal(neuron)
 
         rect = SurroundingRectangle(neuron)
-        words = TexText("Desired \\\\ output")
+        words = OldTexText("Desired \\\\ output")
         words.next_to(rect, UP)
 
-        y_label = Tex("y")
+        y_label = OldTex("y")
         y_label.next_to(neuron, DOWN, LARGE_BUFF)
         y_label.align_to(self.a_labels, DOWN)
         y_label_arrow = Arrow(
@@ -2364,7 +2364,7 @@ class SimplestNetworkExample(PreviewLearning):
         pre_a = self.a_labels[0].copy()
         pre_y = self.y_label.copy()
 
-        cost_equation = Tex(
+        cost_equation = OldTex(
             "C_0", "(", "\\dots", ")", "=",
             "(", "a^{(L)}", "-", "y", ")", "^2"
         )
@@ -2375,7 +2375,7 @@ class SimplestNetworkExample(PreviewLearning):
         ]
         y.set_color(YELLOW)
 
-        cost_word = TexText("Cost")
+        cost_word = OldTexText("Cost")
         cost_word.next_to(C0[0], LEFT, LARGE_BUFF)
         cost_arrow = Arrow(
             cost_word, C0,
@@ -2383,7 +2383,7 @@ class SimplestNetworkExample(PreviewLearning):
         )
         VGroup(C0, cost_word, cost_arrow).set_color(self.cost_color)
 
-        expression = Tex(
+        expression = OldTex(
             "\\text{For example: }"
             "(", "0.00", "-", "0.00", ")", "^2"
         )
@@ -2428,7 +2428,7 @@ class SimplestNetworkExample(PreviewLearning):
         edge = self.network_mob.edge_groups[-1][0]
         pre_aL, pre_aLm1 = self.a_labels.copy()
 
-        formula = Tex(
+        formula = OldTex(
             "a^{(L)}", "=", "\\sigma", "(",
             "w^{(L)}", "a^{(L-1)}", "+", "b^{(L)}", ")"
         )
@@ -2472,10 +2472,10 @@ class SimplestNetworkExample(PreviewLearning):
             aligned_edge = RIGHT
         )
         terms.target.shift(MED_LARGE_BUFF*RIGHT)
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.next_to(terms.target[0][0], LEFT)
 
-        z_label = Tex("z^{(L)}")
+        z_label = OldTex("z^{(L)}")
         z_label.next_to(equals, LEFT)
         z_label.align_to(terms.target, DOWN)
         z_label.set_color(self.z_color)
@@ -2603,7 +2603,7 @@ class SimplestNetworkExample(PreviewLearning):
                 tex = tex.replace("L-1", "L-2")
             else:
                 tex = tex.replace("L", "L-1")
-            new_term = Tex(tex)
+            new_term = OldTex(tex)
             new_term.set_color(term.get_color())
             new_term.move_to(term)
             new_terms.add(new_term)
@@ -2760,14 +2760,14 @@ class SimplestNetworkExample(PreviewLearning):
             )        
 
         wL_line = Line(wL.dot.get_center(), wL.dot.get_center()+LEFT)
-        del_wL = Tex("\\partial w^{(L)}")
+        del_wL = OldTex("\\partial w^{(L)}")
         del_wL.scale(self.derivative_scale_val)
         del_wL.brace = Brace(wL_line, UP, buff = SMALL_BUFF)
         del_wL.set_color(wL.get_color())
         del_wL.next_to(del_wL.brace, UP, SMALL_BUFF)
 
         C0_line = Line(C0.dot.get_center(), C0.dot.get_center()+MED_SMALL_BUFF*RIGHT)
-        del_C0 = Tex("\\partial C_0")
+        del_C0 = OldTex("\\partial C_0")
         del_C0.scale(self.derivative_scale_val)
         del_C0.brace = Brace(C0_line, UP, buff = SMALL_BUFF)
         del_C0.set_color(C0.get_color())
@@ -2793,7 +2793,7 @@ class SimplestNetworkExample(PreviewLearning):
         shake_dot = self.shake_dot
         wL = self.comp_graph.wL
 
-        dC_dw = Tex(
+        dC_dw = OldTex(
             "{\\partial C_0", "\\over", "\\partial w^{(L)} }"
         )
         dC_dw[0].set_color(del_C0.get_color())
@@ -2804,7 +2804,7 @@ class SimplestNetworkExample(PreviewLearning):
 
         full_rect = SurroundingRectangle(dC_dw)
         full_rect_copy = full_rect.copy()
-        words = TexText("What we want")
+        words = OldTexText("What we want")
         words.next_to(full_rect, RIGHT)
         words.set_color(YELLOW)
 
@@ -2850,13 +2850,13 @@ class SimplestNetworkExample(PreviewLearning):
 
         zL_line = Line(ORIGIN, MED_LARGE_BUFF*LEFT)
         zL_line.shift(zL.dot.get_center())
-        del_zL = Tex("\\partial z^{(L)}")
+        del_zL = OldTex("\\partial z^{(L)}")
         del_zL.set_color(zL.get_color())
         del_zL.brace = Brace(zL_line, DOWN, buff = SMALL_BUFF)
 
         aL_line = Line(ORIGIN, MED_SMALL_BUFF*LEFT)
         aL_line.shift(aL.dot.get_center())
-        del_aL = Tex("\\partial a^{(L)}")
+        del_aL = OldTex("\\partial a^{(L)}")
         del_aL.set_color(aL.get_color())
         del_aL.brace = Brace(aL_line, DOWN, buff = SMALL_BUFF)
 
@@ -2889,19 +2889,19 @@ class SimplestNetworkExample(PreviewLearning):
             for attr in ("del_wL", "del_zL", "del_aL", "del_C0")
         ]
 
-        dz_dw = Tex(
+        dz_dw = OldTex(
             "{\\partial z^{(L)}", "\\over", "\\partial w^{(L)}}"
         )
-        da_dz = Tex(
+        da_dz = OldTex(
             "{\\partial a^{(L)}", "\\over", "\\partial z^{(L)}}"
         )
-        dC_da = Tex(
+        dC_da = OldTex(
             "{\\partial C0}", "\\over", "\\partial a^{(L)}}"
         )
         dz_dw[2].set_color(self.del_wL.get_color())
         VGroup(dz_dw[0], da_dz[2]).set_color(self.z_color)
         dC_da[0].set_color(self.cost_color)
-        equals = Tex("=")
+        equals = OldTex("=")
         group = VGroup(equals, dz_dw, da_dz, dC_da)
         group.arrange(RIGHT, SMALL_BUFF)
         group.scale(self.derivative_scale_val)
@@ -2935,7 +2935,7 @@ class SimplestNetworkExample(PreviewLearning):
         group = VGroup(equation, rect)
         group.generate_target()
         group.target.to_corner(UP+LEFT)
-        words = TexText("Chain rule")
+        words = OldTexText("Chain rule")
         words.set_color(YELLOW)
         words.next_to(group.target, DOWN)
 
@@ -3003,7 +3003,7 @@ class SimplestNetworkExample(PreviewLearning):
         deriv_targets.arrange(DOWN, buff = MED_LARGE_BUFF)
         deriv_targets.next_to(dC_dw, DOWN, LARGE_BUFF)
         for deriv in derivs:
-            deriv.equals = Tex("=")
+            deriv.equals = OldTex("=")
             deriv.equals.next_to(deriv.target, RIGHT)
 
 
@@ -3049,7 +3049,7 @@ class SimplestNetworkExample(PreviewLearning):
             self.decimals[0].copy(),
             self.desired_output_decimal.copy()
         )
-        minus = Tex("-")
+        minus = OldTex("-")
         minus.move_to(moving_decimals)
         minus.scale(0.7)
         minus.set_fill(opacity = 0)
@@ -3088,7 +3088,7 @@ class SimplestNetworkExample(PreviewLearning):
         )
         a_rhs = VGroup(*aL_formula[2:])
         da_dz.rhs = a_rhs.copy()
-        prime = Tex("'")
+        prime = OldTex("'")
         prime.move_to(da_dz.rhs[0].get_corner(UP+RIGHT))
         da_dz.rhs[0].shift(0.5*SMALL_BUFF*LEFT)
         da_dz.rhs.add_to_back(prime)
@@ -3215,7 +3215,7 @@ class SimplestNetworkExample(PreviewLearning):
         rhs_group = VGroup(*[frac.rhs for frac in reversed(fracs)])
 
         chain_rule_equation = self.chain_rule_equation
-        equals = Tex("=")
+        equals = OldTex("=")
         equals.next_to(chain_rule_equation, RIGHT)
 
         rhs_group.generate_target()
@@ -3247,7 +3247,7 @@ class SimplestNetworkExample(PreviewLearning):
 
     def show_average_derivative(self):
         dC0_dw = self.chain_rule_equation[0]
-        full_derivative = Tex(
+        full_derivative = OldTex(
             "{\\partial C", "\\over", "\\partial w^{(L)}}",
             "=", "\\frac{1}{n}", "\\sum_{k=0}^{n-1}",
             "{\\partial C_k", "\\over", "\\partial w^{(L)}}"
@@ -3314,11 +3314,11 @@ class SimplestNetworkExample(PreviewLearning):
         dC_dw = self.dC_dw
         dC_dw.generate_target()
         terms = VGroup(
-            Tex("{\\partial C", "\\over", "\\partial w^{(1)}"),
-            Tex("{\\partial C", "\\over", "\\partial b^{(1)}"),
-            Tex("\\vdots"),
+            OldTex("{\\partial C", "\\over", "\\partial w^{(1)}"),
+            OldTex("{\\partial C", "\\over", "\\partial b^{(1)}"),
+            OldTex("\\vdots"),
             dC_dw.target,
-            Tex("{\\partial C", "\\over", "\\partial b^{(L)}"),
+            OldTex("{\\partial C", "\\over", "\\partial b^{(L)}"),
         )
         for term in terms:
             if isinstance(term, Tex):
@@ -3328,14 +3328,14 @@ class SimplestNetworkExample(PreviewLearning):
                     "partial b" : MAROON_B,
                 })
         terms.arrange(DOWN, buff = MED_LARGE_BUFF)
-        lb, rb = brackets = Tex("[]")
+        lb, rb = brackets = OldTex("[]")
         brackets.scale(3)
         brackets.stretch_to_fit_height(1.1*terms.get_height())
         lb.next_to(terms, LEFT, buff = SMALL_BUFF)
         rb.next_to(terms, RIGHT, buff = SMALL_BUFF)
         vect = VGroup(lb, terms, rb)
         vect.set_height(5)
-        lhs = Tex("\\nabla C", "=")
+        lhs = OldTex("\\nabla C", "=")
         lhs[0].set_color(RED)
         lhs.next_to(vect, LEFT)
         VGroup(lhs, vect).to_corner(DOWN+LEFT, buff = LARGE_BUFF)
@@ -3388,11 +3388,11 @@ class SimplestNetworkExample(PreviewLearning):
         dz_dw_rect = SurroundingRectangle(dz_dw)
 
         del_w = dC0_dw[2]
-        del_b = Tex("\\partial b^{(L)}")
+        del_b = OldTex("\\partial b^{(L)}")
         del_b.set_color(MAROON_B)
         del_b.replace(del_w)
 
-        dz_db = Tex(
+        dz_db = OldTex(
             "{\\partial z^{(L)}", "\\over", "\\partial b^{(L)}}"
         )
         dz_db.set_color_by_tex_to_color_map({
@@ -3401,7 +3401,7 @@ class SimplestNetworkExample(PreviewLearning):
         })
         dz_db.replace(dz_dw)
 
-        one = Tex("1")
+        one = OldTex("1")
         one.move_to(aLm1, RIGHT)
         arrow = Arrow(
             dz_db.get_bottom(),
@@ -3466,10 +3466,10 @@ class SimplestNetworkExample(PreviewLearning):
     def show_derivative_wrt_a(self):
         denom = self.chain_rule_equation[0][2]
         numer = VGroup(*self.chain_rule_equation[0][:2])
-        del_aLm1 = Tex("\\partial a^{(L-1)}")
+        del_aLm1 = OldTex("\\partial a^{(L-1)}")
         del_aLm1.scale(0.8)
         del_aLm1.move_to(denom)
-        dz_daLm1 = Tex(
+        dz_daLm1 = OldTex(
             "{\\partial z^{(L)}", "\\over", "\\partial a^{(L-1)}}"
         )
         dz_daLm1.scale(0.8)
@@ -3564,7 +3564,7 @@ class SimplestNetworkExample(PreviewLearning):
         ###
         neuron = self.network_mob.layers[1].neurons[0]
         decimal = self.get_neuron_activation_decimal(neuron)
-        a_label = Tex("a^{(L-2)}")
+        a_label = OldTex("a^{(L-2)}")
         a_label.replace(self.a_labels[1])
         arrow = self.a_label_arrows[1].copy()
         VGroup(a_label, arrow).shift(
@@ -3695,7 +3695,7 @@ class GeneralFormulas(SimplestNetworkExample):
                 arrow = Arrow(ORIGIN, vect)
                 arrow.next_to(neuron, -vect)
                 arrow.set_fill(WHITE)
-                label = Tex("a^{(%s)}_%d"%(s, i))
+                label = OldTex("a^{(%s)}_%d"%(s, i))
                 label.next_to(arrow, -vect, SMALL_BUFF)
                 rect = SurroundingRectangle(label[-1], buff = 0.5*SMALL_BUFF)
                 decimal = self.get_neuron_activation_decimal(neuron)
@@ -3790,7 +3790,7 @@ class GeneralFormulas(SimplestNetworkExample):
             neuron.decimal = decimal
             neuron.arrow = Arrow(ORIGIN, LEFT, color = WHITE)
             neuron.arrow.next_to(neuron, RIGHT)
-            neuron.label = Tex("y_%d"%i)
+            neuron.label = OldTex("y_%d"%i)
             neuron.label.next_to(neuron.arrow, RIGHT)
             neuron.label.set_color(self.desired_output_color)
 
@@ -3798,7 +3798,7 @@ class GeneralFormulas(SimplestNetworkExample):
             arrows.add(neuron.arrow)
             labels.add(neuron.label)
         rect = SurroundingRectangle(desired_output, buff = 0.5*SMALL_BUFF)
-        words = TexText("Desired output")
+        words = OldTexText("Desired output")
         words.next_to(rect, DOWN)
         VGroup(words, rect).set_color(self.desired_output_color)
 
@@ -3825,7 +3825,7 @@ class GeneralFormulas(SimplestNetworkExample):
         aj = self.chosen_neurons[1].label.copy()
         yj = self.desired_output.neurons[0].label.copy()
 
-        cost_equation = Tex(
+        cost_equation = OldTex(
             "C_0", "=", "\\sum_{j = 0}^{n_L - 1}",
             "(", "a^{(L)}_j", "-", "y_j", ")", "^2"
         )
@@ -3862,7 +3862,7 @@ class GeneralFormulas(SimplestNetworkExample):
         for faded_edge in faded_edges:
             faded_edge.save_state()
 
-        w_label = Tex("w^{(L)}_{jk}")
+        w_label = OldTex("w^{(L)}_{jk}")
         subscripts = VGroup(*w_label[-2:])
         w_label.scale(1.2)
         w_label.add_background_rectangle()
@@ -3902,14 +3902,14 @@ class GeneralFormulas(SimplestNetworkExample):
         self.set_variables_as_attrs(faded_edges, w_label)
 
     def show_values_between_weight_and_cost(self):
-        z_formula = Tex(
+        z_formula = OldTex(
             "z^{(L)}_j", "=", 
             "w^{(L)}_{j0}", "a^{(L-1)}_0", "+",
             "w^{(L)}_{j1}", "a^{(L-1)}_1", "+",
             "w^{(L)}_{j2}", "a^{(L-1)}_2", "+", 
             "b^{(L)}_j"
         )
-        compact_z_formula = Tex(
+        compact_z_formula = OldTex(
             "z^{(L)}_j", "=", 
             "\\cdots", "", "+" 
             "w^{(L)}_{jk}", "a^{(L-1)}_k", "+", 
@@ -3925,7 +3925,7 @@ class GeneralFormulas(SimplestNetworkExample):
         w_part = z_formula.get_parts_by_tex("w^")[1]
         aLm1_part = z_formula.get_parts_by_tex("a^{(L-1)}")[1]
 
-        a_formula = Tex(
+        a_formula = OldTex(
             "a^{(L)}_j", "=", "\\sigma(", "z^{(L)}_j", ")"
         )
         a_formula.set_color_by_tex("z^", self.z_color)
@@ -4176,14 +4176,14 @@ class GeneralFormulas(SimplestNetworkExample):
 
     def replace_subscript(self, label, tex):
         subscript = label[-1]
-        new_subscript = Tex(tex)[0]
+        new_subscript = OldTex(tex)[0]
         new_subscript.replace(subscript, dim_to_match = 1)
         label.remove(subscript)
         label.add(new_subscript)
         return label
 
     def get_chain_rule(self, *tex):
-        chain_rule = Tex(*tex)
+        chain_rule = OldTex(*tex)
         chain_rule.scale(0.8)
         chain_rule.to_corner(UP+LEFT)
         chain_rule.set_color_by_tex_to_color_map({
@@ -4228,7 +4228,7 @@ class LayersOfComplexity(Scene):
         brace = Brace(chain_rule_equations, LEFT)
         arrow = Vector(LEFT, color = RED)
         arrow.next_to(brace, LEFT)
-        gradient = Tex("\\nabla C")
+        gradient = OldTex("\\nabla C")
         gradient.scale(2)
         gradient.set_color(RED)
         gradient.next_to(arrow, LEFT)
@@ -4241,7 +4241,7 @@ class LayersOfComplexity(Scene):
 
 
     def get_chain_rule_equations(self):
-        w_deriv = Tex(
+        w_deriv = OldTex(
             "{\\partial C", "\\over", "\\partial w^{(l)}_{jk}}",
             "=",
             "a^{(l-1)}_k",
@@ -4252,14 +4252,14 @@ class LayersOfComplexity(Scene):
             VGroup(*w_deriv[-3:]),
             buff = 0.5*SMALL_BUFF
         )
-        a_deriv = Tex(
+        a_deriv = OldTex(
             "\\sum_{j = 0}^{n_{l+1} - 1}",
             "w^{(l+1)}_{jk}",
             "\\sigma'(z^{(l+1)}_j)",
             "{\\partial C", "\\over", "\\partial a^{(l+1)}_j}",
         )
-        or_word = TexText("or")
-        last_a_deriv = Tex("2(a^{(L)}_j - y_j)")
+        or_word = OldTexText("or")
+        last_a_deriv = OldTex("2(a^{(L)}_j - y_j)")
 
         a_deriv.next_to(w_deriv, DOWN, LARGE_BUFF)
         or_word.next_to(a_deriv, DOWN)
@@ -4289,18 +4289,18 @@ class SponsorFrame(PiCreatureScene):
         morty = self.pi_creature
         screen = ScreenRectangle(height = 5)
         screen.to_corner(UP+LEFT)
-        url = TexText("http://3b1b.co/crowdflower")
+        url = OldTexText("http://3b1b.co/crowdflower")
         url.move_to(screen, UP+LEFT)
         screen.shift(LARGE_BUFF*DOWN)
         arrow = Arrow(LEFT, RIGHT, color = WHITE)
         arrow.next_to(url, RIGHT)
 
-        t_shirt_words = TexText("Free T-Shirt")
+        t_shirt_words = OldTexText("Free T-Shirt")
         t_shirt_words.scale(1.5)
         t_shirt_words.set_color(YELLOW)
         t_shirt_words.next_to(morty, UP, aligned_edge = RIGHT)
 
-        human_in_the_loop = TexText("Human-in-the-loop approach")
+        human_in_the_loop = OldTexText("Human-in-the-loop approach")
         human_in_the_loop.next_to(screen, DOWN)
 
         self.play(
@@ -4454,7 +4454,7 @@ class Thumbnail(PreviewLearning):
         network_mob.add(arrow)
         self.add(network_mob)
 
-        title = TexText(self.title)
+        title = OldTexText(self.title)
         title.scale(2)
         title.to_edge(UP)
         self.add(title)
@@ -4470,7 +4470,7 @@ class SupplementThumbnail(Thumbnail):
 
         for layer in self.network_mob.layers:
             for neuron in layer.neurons:
-                partial = Tex("\\partial")
+                partial = OldTex("\\partial")
                 partial.move_to(neuron)
                 self.remove(neuron)
                 self.add(partial)

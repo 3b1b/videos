@@ -28,7 +28,7 @@ class HeresTheThing(TeacherStudentsScene):
         )
         self.wait()
         self.teacher_says(
-            TexText("Right, here's\\\\the thing...", font_size=40),
+            OldTexText("Right, here's\\\\the thing...", font_size=40),
             target_mode="hesitant",
             bubble_config=dict(width=3.5, height=2.5),
             run_time=1,
@@ -67,9 +67,9 @@ class Confessions(Scene):
             title.generate_target()
 
         phrases = VGroup(
-            TexText("Bug in the code", font_size=48),
-            TexText("About the opening scene...", font_size=48),
-            TexText("Maybe don't use entropy?", font_size=48),
+            OldTexText("Bug in the code", font_size=48),
+            OldTexText("About the opening scene...", font_size=48),
+            OldTexText("Maybe don't use entropy?", font_size=48),
         )
 
         self.play(LaggedStart(*(
@@ -132,8 +132,8 @@ class HowWordleColoringWorks(WordleScene):
         self.remove(self.grid)
 
         # Add labels
-        guess_label = TexText("Guess $\\rightarrow$")
-        answer_label = TexText("Answer $\\rightarrow$")
+        guess_label = OldTexText("Guess $\\rightarrow$")
+        answer_label = OldTexText("Answer $\\rightarrow$")
         labels = VGroup(guess_label, answer_label)
         for label, row in zip(labels, rows):
             label.next_to(row, LEFT, buff=MED_LARGE_BUFF)
@@ -147,7 +147,7 @@ class HowWordleColoringWorks(WordleScene):
         def get_grey_label(i):
             result = VGroup(
                 Vector(0.5 * UP),
-                TexText("No 2nd `E'"),
+                OldTexText("No 2nd `E'"),
             )
             result.arrange(UP, SMALL_BUFF)
             result.next_to(guess_row[i], UP, SMALL_BUFF)
@@ -456,7 +456,7 @@ class SneakAttackInformationTheory(Scene):
         words.scale(1.25)
         words.arrange(DOWN)
         words.to_corner(UL)
-        ent_formula = Tex("H = \\sum_{x} -p(x)\\log_2\\big(p(x)\\right)")
+        ent_formula = OldTex("H = \\sum_{x} -p(x)\\log_2\\big(p(x)\\right)")
         ent_formula.set_color(TEAL)
         ent_formula.next_to(words, DOWN, LARGE_BUFF)
 
@@ -483,7 +483,7 @@ class SneakAttackInformationTheory(Scene):
 class HowAreYouFindingTheBest(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("What exactly is this\\\\``final analysis''?"),
+            OldTexText("What exactly is this\\\\``final analysis''?"),
             index=0,
         )
         self.play(
@@ -493,7 +493,7 @@ class HowAreYouFindingTheBest(TeacherStudentsScene):
         )
         self.wait(2)
 
-        self.teacher_says(TexText("I'm glad\\\\you asked!"), target_mode="hooray")
+        self.teacher_says(OldTexText("I'm glad\\\\you asked!"), target_mode="hooray")
         self.wait(3)
 
 
@@ -656,9 +656,9 @@ class RankingUpdates(Scene):
         # Titles
         kw = dict(tex_to_color_map={"$E[I]$": TEAL}, font_size=30)
         titles = VGroup(
-            TexText("Highest $E[I]$\\\\(one step)", **kw),
-            TexText("Highest $E[I]$\\\\(two steps)", **kw),
-            TexText("Lowest average\\\\scores", **kw),
+            OldTexText("Highest $E[I]$\\\\(one step)", **kw),
+            OldTexText("Highest $E[I]$\\\\(two steps)", **kw),
+            OldTexText("Lowest average\\\\scores", **kw),
         )
         for x, title in zip(range(-1, 2), titles):
             title.set_x(x * FRAME_WIDTH / 3)
@@ -709,7 +709,7 @@ class RankingUpdates(Scene):
             for word, ent in json.load(fp)[:n_shown]:
                 row = VGroup(
                     Text(word, font="Consolas"),
-                    Tex("\\rightarrow"),
+                    OldTex("\\rightarrow"),
                     DecimalNumber(ent, color=TEAL),
                 )
                 row.arrange(RIGHT)
@@ -721,11 +721,11 @@ class RankingUpdates(Scene):
             for word, ent1, ent2 in json.load(fp)[:n_shown]:
                 row = VGroup(
                     Text(word, font="Consolas"),
-                    Tex("\\rightarrow"),
+                    OldTex("\\rightarrow"),
                     DecimalNumber(ent1, color=TEAL),
-                    Tex("+"),
+                    OldTex("+"),
                     DecimalNumber(ent2, color=TEAL),
-                    Tex("="),
+                    OldTex("="),
                     DecimalNumber(ent1 + ent2, color=TEAL),
                 )
                 row.arrange(RIGHT)
@@ -738,7 +738,7 @@ class RankingUpdates(Scene):
             for word, score, dist in json.load(fp)[:n_shown]:
                 row = VGroup(
                     Text(word, font="Consolas"),
-                    Tex("\\rightarrow"),
+                    OldTex("\\rightarrow"),
                     DecimalNumber(score / len(answers), num_decimal_places=3, color=BLUE),
                 )
                 row.arrange(RIGHT)
@@ -791,7 +791,7 @@ class WeCanDoBetter(Scene):
         morty = Mortimer()
         morty.to_corner(DR)
         self.play(PiCreatureSays(
-            morty, TexText("We can do\\\\better!"),
+            morty, OldTexText("We can do\\\\better!"),
             bubble_config=dict(width=3.5, height=2.5, fill_opacity=0.95),
         ))
         for x in range(2):
@@ -802,14 +802,14 @@ class WeCanDoBetter(Scene):
 class WhydYouHaveToRuinIt(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("Why'd you have to\\\\ruin Wordle!"),
+            OldTexText("Why'd you have to\\\\ruin Wordle!"),
             target_mode="pleading",
             added_anims=[self.teacher.change("guilty")]
         )
         self.play_student_changes("sassy", "angry", "pleading")
         self.wait(3)
         self.teacher_says(
-            TexText("But ``salet'' is probably\\\\not the best for us"),
+            OldTexText("But ``salet'' is probably\\\\not the best for us"),
             added_anims=[self.change_students("confused", "sassy", "hesitant")]
         )
         self.wait(3)
@@ -821,7 +821,7 @@ class ForgetTheBestWord(Scene):
 
         randy = Randolph()
         randy.to_corner(DL)
-        text = TexText("Wait, was it ``slane'',\\\\``salet'' or ``soare''?")
+        text = OldTexText("Wait, was it ``slane'',\\\\``salet'' or ``soare''?")
 
         self.play(PiCreatureBubbleIntroduction(
             randy, text,

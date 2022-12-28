@@ -30,7 +30,7 @@ class LastVideo(TeacherStudentsScene):
             DOWN, buff = MED_LARGE_BUFF,
         )
         known_formulas.set_height(2.5)
-        exp_question = Tex("2^x", ", 7^x, ", "e^x", " ???")
+        exp_question = OldTex("2^x", ", 7^x, ", "e^x", " ???")
 
         last_video_brace = Brace(last_video)
         known_formulas.next_to(last_video_brace, DOWN)
@@ -82,10 +82,10 @@ class DoublingPopulation(PiCreatureScene):
         self.relate_growth_rate_to_pop_size()
 
     def introduce_expression(self):
-        f_x = Tex("f(x)", "=", "2^x")
-        f_t = Tex("f(t)", "=", "2^t")
-        P_t = Tex("P(t)", "=", "2^t")
-        M_t = Tex("M(t)", "=", "2^t")
+        f_x = OldTex("f(x)", "=", "2^x")
+        f_t = OldTex("f(t)", "=", "2^t")
+        P_t = OldTex("P(t)", "=", "2^t")
+        M_t = OldTex("M(t)", "=", "2^t")
         functions = VGroup(f_x, f_t, P_t, M_t)
         for function in functions:
             function.scale(1.2)
@@ -94,7 +94,7 @@ class DoublingPopulation(PiCreatureScene):
             for i, j in (0, 2), (2, 1):
                 function[i][j].set_color(self.time_color)
 
-        t_expression = Tex("t", "=", "\\text{Time (in days)}")
+        t_expression = OldTex("t", "=", "\\text{Time (in days)}")
         t_expression.to_corner(UP+RIGHT)
         t_expression[0].set_color(self.time_color)
 
@@ -167,7 +167,7 @@ class DoublingPopulation(PiCreatureScene):
         self.population_size_descriptor = brace
 
     def ask_about_dM_dt(self):
-        dM_dt_question = Tex("{dM", "\\over dt}", "=", "???")
+        dM_dt_question = OldTex("{dM", "\\over dt}", "=", "???")
         dM, dt, equals, q_marks = dM_dt_question
         dM_dt_question.next_to(self.function, DOWN, buff = LARGE_BUFF)
         dM_dt_question.to_edge(LEFT)
@@ -223,13 +223,13 @@ class DoublingPopulation(PiCreatureScene):
         return rect
 
     def relate_growth_rate_to_pop_size(self):
-        false_deriv = Tex(
+        false_deriv = OldTex(
             "{d(2^t) ", "\\over dt}", "= 2^t"
         )
-        difference_eq = Tex(
+        difference_eq = OldTex(
             "{ {2^{t+1} - 2^t} \\over", "1}", "= 2^t"
         )
-        real_deriv = Tex(
+        real_deriv = OldTex(
             "{ {2^{t+dt} - 2^t} \\over", "dt}", "= \\, ???"
         )
         VGroup(
@@ -267,7 +267,7 @@ class DoublingPopulation(PiCreatureScene):
             expression.brace_text = expression.brace.get_text(*text_args)
 
         time = self.t_expression[-1]
-        new_time = Tex("3")
+        new_time = OldTex("3")
         new_time.move_to(time, LEFT)
 
         fading_creatures = VGroup(*self.get_on_screen_pi_creatures()[8:])
@@ -344,7 +344,7 @@ class DoublingPopulation(PiCreatureScene):
     def reset(self):
         time = self.t_expression[-1]
         faders = [time] + list(self.get_on_screen_pi_creatures())
-        new_time = Tex("0")
+        new_time = OldTex("0")
         new_time.next_to(self.t_expression[-2], RIGHT)
         first_creature = self.get_pi_creatures()[0]
 
@@ -386,7 +386,7 @@ class DoublingPopulation(PiCreatureScene):
 
         time = self.t_expression[-1]
         total_new_creatures = len(on_screen_creatures) + len(new_creatures)
-        new_time = Tex(str(int(np.log2(total_new_creatures))))
+        new_time = OldTex(str(int(np.log2(total_new_creatures))))
         new_time.move_to(time, LEFT)
 
         growing_anims.append(Transform(time, new_time))
@@ -420,7 +420,7 @@ class DoublingPopulation(PiCreatureScene):
 
     def get_from_day_to_day_label(self):
         curr_day = self.get_curr_day()
-        top_words = TexText(
+        top_words = OldTexText(
             "From day", str(curr_day), 
             "to", str(curr_day+1), ":"
         )
@@ -432,7 +432,7 @@ class DoublingPopulation(PiCreatureScene):
         )
         top_words[1].set_color(GREEN)
 
-        bottom_words = Tex(
+        bottom_words = OldTex(
             str(2**curr_day),
             "\\text{ creatures}", "\\over {1 \\text{ day}}"
         )
@@ -508,7 +508,7 @@ class GraphOfTwoToT(GraphScene):
         #Vary value
         threes = VGroup(height_label[1], slope_label[2][1])
         ts = VGroup(*[
-            Tex("t").set_color(YELLOW).scale(0.75).move_to(three)
+            OldTex("t").set_color(YELLOW).scale(0.75).move_to(three)
             for three in threes
         ])
         self.play(Transform(threes, ts))
@@ -550,7 +550,7 @@ class GraphOfTwoToT(GraphScene):
             dx_line_color = GREEN,
             secant_line_color = RED,
         )
-        slope_label = Tex(
+        slope_label = OldTex(
             "\\text{Slope}", "=", 
             "2^%d"%t,
             "(%.7f\\dots)"%np.log(2)
@@ -616,7 +616,7 @@ class FakeDiagram(TeacherStudentsScene):
         background_graph.set_stroke(width = 0.5)
 
         graphs.next_to(self.teacher, UP+LEFT, LARGE_BUFF)
-        two_to_t = Tex("2^t")
+        two_to_t = OldTex("2^t")
         two_to_t.next_to(
             foreground_graph.get_corner(DOWN+RIGHT), UP+LEFT
         )
@@ -634,7 +634,7 @@ class FakeDiagram(TeacherStudentsScene):
         circle.replace(deriv, stretch = True)
         circle.scale(1.5)
 
-        words = TexText("Not a real explanation")
+        words = OldTexText("Not a real explanation")
         words.to_edge(UP)
         arrow = Arrow(words.get_bottom(), two_to_t.get_corner(UP+LEFT))
         arrow.set_color(WHITE)
@@ -699,39 +699,39 @@ class AnalyzeExponentRatio(PiCreatureScene):
     def construct(self):
         base_str = self.base_str
 
-        func_def = Tex("M(", "t", ")", "= ", "%s^"%base_str, "t")
+        func_def = OldTex("M(", "t", ")", "= ", "%s^"%base_str, "t")
         func_def.to_corner(UP+LEFT)
         self.add(func_def)
 
-        ratio = Tex(
+        ratio = OldTex(
             "{ {%s^"%base_str, "{t", "+", "dt}", "-", 
             "%s^"%base_str, "t}",
             "\\over \\,", "dt}"
         )
         ratio.shift(UP+LEFT)
 
-        lhs = Tex("{dM", "\\over \\,", "dt}", "(", "t", ")", "=")
+        lhs = OldTex("{dM", "\\over \\,", "dt}", "(", "t", ")", "=")
         lhs.next_to(ratio, LEFT)
 
 
         two_to_t_plus_dt = VGroup(*ratio[:4])
         two_to_t = VGroup(*ratio[5:7])
-        two_to_t_two_to_dt = Tex(
+        two_to_t_two_to_dt = OldTex(
             "%s^"%base_str, "t", 
             "%s^"%base_str, "{dt}"
         )
         two_to_t_two_to_dt.move_to(two_to_t_plus_dt, DOWN+LEFT)
         exp_prop_brace = Brace(two_to_t_two_to_dt, UP)
 
-        one = Tex("1")
+        one = OldTex("1")
         one.move_to(ratio[5], DOWN)
-        lp, rp = parens = Tex("()")
+        lp, rp = parens = OldTex("()")
         parens.stretch(1.3, 1)
         parens.set_height(ratio.get_height())
         lp.next_to(ratio, LEFT, buff = 0)
         rp.next_to(ratio, RIGHT, buff = 0)
 
-        extracted_two_to_t = Tex("%s^"%base_str, "t")
+        extracted_two_to_t = OldTex("%s^"%base_str, "t")
         extracted_two_to_t.next_to(lp, LEFT, buff = SMALL_BUFF)
 
         expressions = [
@@ -774,7 +774,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
             ]
         ]
         words = VGroup(*[
-            TexText(s, " ideas")
+            OldTexText(s, " ideas")
             for s in ("Additive", "Multiplicative")
         ])
         words[0].move_to(words[1], LEFT)
@@ -835,7 +835,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
         #Ask about dt -> 0
         brace = Brace(VGroup(extracted_two_to_t, ratio), DOWN)
         alt_brace = Brace(parens, DOWN)
-        dt_to_zero = Tex("dt", "\\to 0")
+        dt_to_zero = OldTex("dt", "\\to 0")
         dt_to_zero.set_color_by_tex("dt", GREEN)
         dt_to_zero.next_to(brace, DOWN)
 
@@ -924,7 +924,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
             lhs, extracted_two_to_t, parens, constant
         )
         func_def_rhs = VGroup(*func_def[-2:]).copy()
-        func_lp, func_rp = func_parens = Tex("()")
+        func_lp, func_rp = func_parens = OldTex("()")
         func_parens.set_fill(opacity = 0)
         func_lp.next_to(func_def_rhs[0], LEFT, buff = 0)
         func_rp.next_to(func_lp, RIGHT, buff = func_def_rhs.get_width())
@@ -957,7 +957,7 @@ class AnalyzeExponentRatio(PiCreatureScene):
             output_num = (self.base**dt_num - 1) / dt_num
             output_str = "%.7f\\dots"%output_num
 
-            expression = Tex(
+            expression = OldTex(
                 "{%s^"%self.base_str, "{%s}"%dt_str, "-1", 
                 "\\over \\,", "%s}"%dt_str, 
                 "=", output_str
@@ -1014,10 +1014,10 @@ class CompareTwoConstantToEightConstant(PiCreatureScene):
         )
         derivs.to_edge(LEFT, LARGE_BUFF).shift(UP)
         arrow = Arrow(*[deriv[-2] for deriv in derivs])
-        times_three = Tex("\\times 3")
+        times_three = OldTex("\\times 3")
         times_three.next_to(arrow, RIGHT)
 
-        why = TexText("Why?")
+        why = OldTexText("Why?")
         why.next_to(self.pi_creature, UP, MED_LARGE_BUFF)
 
         self.add(eight_deriv)
@@ -1049,7 +1049,7 @@ class CompareTwoConstantToEightConstant(PiCreatureScene):
     def get_derivative_expression(self, base):
         base_str = str(base)
         const_str = "%.4f\\dots"%np.log(base)
-        result = Tex(
+        result = OldTex(
             "{d(", base_str, "^t", ")", "\\over", "dt}", 
             "=", base_str, "^t", "(", const_str, ")"
         )
@@ -1069,7 +1069,7 @@ class CompareTwoConstantToEightConstant(PiCreatureScene):
 
 class AskAboutConstantOne(TeacherStudentsScene):
     def construct(self):
-        note = Tex(
+        note = OldTex(
             "{ d(a^", "t", ")", "\\over \\,", "dt}", 
             "=", "a^", "t", "(\\text{Some constant})"
         )
@@ -1108,7 +1108,7 @@ class WhyPi(PiCreatureScene):
         ghost_circle.set_stroke(width = 1)
         diam = Line(circle.get_left(), circle.get_right())
         diam.set_color(YELLOW)
-        one = Tex("1")
+        one = OldTex("1")
         one.next_to(diam, UP)
         circum = diam.copy()
         circum.set_color(circle.get_color())
@@ -1116,9 +1116,9 @@ class WhyPi(PiCreatureScene):
         circum.next_to(circle, DOWN, LARGE_BUFF)
         circum.insert_n_curves(circle.get_num_curves()-2)
         circum.make_jagged()
-        pi = Tex("\\pi")
+        pi = OldTex("\\pi")
         pi.next_to(circum, UP)
-        why = TexText("Why?")
+        why = OldTexText("Why?")
         why.next_to(self.pi_creature, UP, MED_LARGE_BUFF)
 
         self.add(ghost_circle, circle, diam, one)
@@ -1178,11 +1178,11 @@ class GraphOfExp(GraphScene):
             for x in self.example_inputs
         ]
         height_labels = [
-            Tex("e^%d"%x).next_to(vl, RIGHT, SMALL_BUFF)
+            OldTex("e^%d"%x).next_to(vl, RIGHT, SMALL_BUFF)
             for vl, x in zip(v_lines, self.example_inputs)
         ]
         slope_labels = [
-            TexText(
+            OldTexText(
                 "Slope = $e^%d$"%x
             ).next_to(vl.get_top(), UP+RIGHT).shift(0.7*RIGHT/x)
            for vl, x in zip(v_lines, self.example_inputs)
@@ -1225,7 +1225,7 @@ class GraphOfExp(GraphScene):
 
 class Chapter4Wrapper(Scene):
     def construct(self):
-        title = TexText("Chapter 4 chain rule intuition")
+        title = OldTexText("Chapter 4 chain rule intuition")
         title.to_edge(UP)
         rect = Rectangle(width = 16, height = 9)
         rect.set_height(1.5*FRAME_Y_RADIUS)
@@ -1237,7 +1237,7 @@ class Chapter4Wrapper(Scene):
 
 class ApplyChainRule(TeacherStudentsScene):
     def construct(self):
-        deriv_equation = Tex(
+        deriv_equation = OldTex(
             "{d(", "e^", "{3", "t}", ")", "\\over", "dt}",
             "=", "3", "e^", "{3", "t}",
         )
@@ -1398,7 +1398,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
         self.exp_c = exp_c
 
     def show_e_to_log_2(self):
-        equation = Tex(
+        equation = OldTex(
             "2", "^t", "= e^", "{\\ln(2)", "t}"
         )
         equation.move_to(self.exp_c)
@@ -1406,7 +1406,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
         non_t_group = VGroup(*equation)
         non_t_group.remove(*t_group)
 
-        log_words = TexText("``$e$ to the ", "\\emph{what}", "equals 2?''")
+        log_words = OldTexText("``$e$ to the ", "\\emph{what}", "equals 2?''")
         log_words.set_color_by_tex("what", BLUE)
         log_words.next_to(equation, UP+LEFT)
         log_words_arrow = Arrow(
@@ -1415,7 +1415,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
             color = BLUE,
         )
 
-        derivative = Tex(
+        derivative = OldTex(
             "\\ln(2)", "2", "^t", "=", "\\ln(2)", "e^", "{\\ln(2)", "t}"
         )
         derivative.move_to(equation)
@@ -1427,7 +1427,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
         derivative_arrow.next_to(
             derivative.get_parts_by_tex("="), UP
         )
-        derivative_symbol = TexText("Derivative")
+        derivative_symbol = OldTexText("Derivative")
         derivative_symbol.next_to(derivative_arrow, RIGHT)
 
         self.play(
@@ -1483,7 +1483,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
 
         student = self.get_students()[1]
         ln = derivative.get_part_by_tex("ln(2)").copy()
-        rhs = Tex("=%s"%self.get_log_str(2))
+        rhs = OldTex("=%s"%self.get_log_str(2))
         self.play(
             ln.next_to, student, UP+LEFT, MED_LARGE_BUFF,
             student.change_mode, "raise_left_hand",
@@ -1497,7 +1497,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
 
     def get_exp_C(self, C):
         C_str = str(C)
-        result = Tex(
+        result = OldTex(
             "{d(", "e^", "{%s"%C_str, "t}", ")", "\\over", "dt}",
             "=", C_str, "e^", "{%s"%C_str, "t}",
         )
@@ -1508,7 +1508,7 @@ class WhyNaturalLogOf2ShowsUp(TeacherStudentsScene):
     def get_a_to_t(self, a):
         a_str = str(a)
         log_str = self.get_log_str(a)
-        result = Tex(
+        result = OldTex(
             "{d(", a_str, "^t", ")", "\\over", "dt}",
             "=", log_str, a_str, "^t"
         )
@@ -1533,13 +1533,13 @@ class CompareWaysToWriteExponentials(GraphScene):
         ]
         graph = graphs[0]
 
-        a_to_t = Tex("a^t")
+        a_to_t = OldTex("a^t")
         a_to_t.move_to(self.coords_to_point(6, 45))
 
-        cross = Tex("\\times")
+        cross = OldTex("\\times")
         cross.set_color(RED)
         cross.replace(a_to_t, stretch = True)
-        e_to_ct = Tex("e^", "{c", "t}")
+        e_to_ct = OldTex("e^", "{c", "t}")
         e_to_ct.set_color_by_tex("c", BLUE)
         e_to_ct.scale(1.5)
         e_to_ct.next_to(a_to_t, DOWN)
@@ -1547,7 +1547,7 @@ class CompareWaysToWriteExponentials(GraphScene):
         equations = VGroup()
         for base in bases:
             log_str =  "%.4f\\dots"%np.log(base)
-            equation = Tex(
+            equation = OldTex(
                 str(base), "^t", "=",
                 "e^", "{(%s)"%log_str, "t}", 
             )
@@ -1581,9 +1581,9 @@ class CompareWaysToWriteExponentials(GraphScene):
 
 class ManyExponentialForms(TeacherStudentsScene):
     def construct(self):
-        lhs = Tex("2", "^t")
+        lhs = OldTex("2", "^t")
         rhs_list = [
-            Tex("=", "%s^"%tex, "{(%.5f\\dots)"%log, "t}")
+            OldTex("=", "%s^"%tex, "{(%.5f\\dots)"%log, "t}")
             for tex, log in [
                 ("e", np.log(2)),
                 ("\\pi", np.log(2)/np.log(np.pi)),
@@ -1665,15 +1665,15 @@ class TemperatureOverTimeOfWarmWater(GraphScene):
             self.coords_to_point(x, self.T_room)
             for x in (self.x_min, self.x_max)
         ])
-        T_room_label = Tex("T_{\\text{room}}")
+        T_room_label = OldTex("T_{\\text{room}}")
         T_room_label.next_to(h_line, LEFT)
 
-        ode = Tex(
+        ode = OldTex(
             "\\frac{d\\Delta T}{dt} = -k \\Delta T"
         )
         ode.to_corner(UP+RIGHT)
 
-        solution = Tex(
+        solution = OldTex(
             "\\Delta T(", "t", ") = e", "^{-k", "t}"
         )
         solution.next_to(ode, DOWN, MED_LARGE_BUFF)
@@ -1681,7 +1681,7 @@ class TemperatureOverTimeOfWarmWater(GraphScene):
         solution.set_color_by_tex("Delta", WHITE)
 
         delta_T_brace = Brace(graph, RIGHT)
-        delta_T_label = Tex("\\Delta T")
+        delta_T_label = OldTex("\\Delta T")
         delta_T_group = VGroup(delta_T_brace, delta_T_label)
         def update_delta_T_group(group):
             brace, label = group
@@ -1724,7 +1724,7 @@ class InvestedMoney(Scene):
     def construct(self):
         # cash_str = "\\$\\$\\$"
         cash_str = "M"
-        equation = Tex(
+        equation = OldTex(
             "{d", cash_str, "\\over", "dt}",
             "=", "(1 + r)", cash_str
         )
@@ -1735,14 +1735,14 @@ class InvestedMoney(Scene):
         arrow = Arrow(LEFT, RIGHT, color = WHITE)
         arrow.next_to(equation)
 
-        solution = Tex(
+        solution = OldTex(
             cash_str, "(", "t", ")", "=", "e^", "{(1+r)", "t}"
         )
         solution.set_color_by_tex("t", YELLOW)
         solution.set_color_by_tex(cash_str, GREEN)
         solution.next_to(arrow, RIGHT)
 
-        cash = Tex("\\$")
+        cash = OldTex("\\$")
         cash_pile = VGroup(*[
             cash.copy().shift(
                 x*(1+MED_SMALL_BUFF)*cash.get_width()*RIGHT +\
@@ -1809,7 +1809,7 @@ class NaturalLog(Scene):
         log_base, exp_base = base.copy(), base.copy()
         log_equals, exp_equals = list(map(Tex, "=="))
 
-        ln = Tex("\\ln(2)")
+        ln = OldTex("\\ln(2)")
         log_base.move_to(ln[-2])        
         ln.remove(ln[-2])
         log_equals.next_to(ln, LEFT)
@@ -1818,7 +1818,7 @@ class NaturalLog(Scene):
             ln, log_constant, log_equals, log_base
         )
 
-        e = Tex("e")
+        e = OldTex("e")
         exp_constant.scale(0.7)
         exp_constant.next_to(e, UP+RIGHT, buff = 0)
         exp_base.next_to(exp_equals, RIGHT)
@@ -1862,7 +1862,7 @@ class NaturalLog(Scene):
         self.wait()
 
     def get_expression(self, base):
-        expression = Tex(
+        expression = OldTex(
             "{d(", "%d^"%base, "t", ")", "\\over \\,", "dt}",
             "=", "%d^"%base, "t", "(%.4f\\dots)"%np.log(base),
         )
@@ -1888,7 +1888,7 @@ class NextVideo(TeacherStudentsScene):
         this_video.save_state()
         this_video.set_color(YELLOW)
 
-        this_tex = Tex(
+        this_tex = OldTex(
             "{d(", "a^t", ") \\over dt} = ", "a^t", "\\ln(a)"
         )
         this_tex[1][1].set_color(YELLOW)
@@ -1993,7 +1993,7 @@ class Thumbnail(GraphOfTwoToT):
         "x_axis_width" : 12,
     }
     def construct(self):
-        derivative = Tex(
+        derivative = OldTex(
             "\\frac{d(a^t)}{dt} =", "a^t \\ln(a)"
         )
         derivative[0][3].set_color(YELLOW)
@@ -2008,7 +2008,7 @@ class Thumbnail(GraphOfTwoToT):
         # brace = Brace(Line(LEFT, RIGHT), UP)
         # brace.set_width(derivative[1].get_width())
         # brace.next_to(derivative[1], UP)
-        # question = TexText("Why?")
+        # question = OldTexText("Why?")
         # question.scale(2.5)
         # question.next_to(brace, UP)
 
@@ -2017,7 +2017,7 @@ class Thumbnail(GraphOfTwoToT):
         # randy.next_to(ORIGIN, LEFT).to_edge(DOWN)
         # randy.change_mode("pondering")
 
-        question = TexText("What is $e\\,$?")
+        question = OldTexText("What is $e\\,$?")
         e = question[-2]
         e.scale(1.2, about_point = e.get_bottom())
         e.set_color(BLUE)

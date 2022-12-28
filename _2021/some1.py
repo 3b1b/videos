@@ -123,7 +123,7 @@ class Featuring(TeacherStudentsScene):
 
         self.add(screen)
 
-        words = TexText("Your work here")
+        words = OldTexText("Your work here")
         words.set_width(screen.get_width() - 1)
         words.move_to(screen)
 
@@ -136,7 +136,7 @@ class Featuring(TeacherStudentsScene):
         self.play(ShowCreation(get_tripple_underline(words)))
         self.wait(5)
         self.student_says(
-            TexText("Anything\\\\else?"),
+            OldTexText("Anything\\\\else?"),
             target_mode="raise_left_hand",
             look_at=self.teacher,
         )
@@ -147,7 +147,7 @@ class Featuring(TeacherStudentsScene):
 class Constraints(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("What are the\\\\constraints?"),
+            OldTexText("What are the\\\\constraints?"),
             added_anims=[self.teacher.change("tease")]
         )
         self.wait(3)
@@ -156,7 +156,7 @@ class Constraints(TeacherStudentsScene):
 class TopicChoice(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("What kind of\\\\topics?"),
+            OldTexText("What kind of\\\\topics?"),
             added_anims=[self.teacher.change("tease")],
             index=1,
         )
@@ -165,7 +165,7 @@ class TopicChoice(TeacherStudentsScene):
 
 class PartialFraction(Scene):
     def construct(self):
-        frac = Tex(
+        frac = OldTex(
             r"\frac{x+9}{(x-3)(x+5)} = \frac{?}{x - 3} + \frac{?}{x + 5}"
         )
         frac.set_width(10)
@@ -200,7 +200,7 @@ class TrigIdentity(Scene):
             return one
 
         def get_tan_label():
-            label = Tex("\\tan(\\theta)")
+            label = OldTex("\\tan(\\theta)")
             label.set_color(RED)
             point = tan_line.get_center()
             label.next_to(point, UP, SMALL_BUFF)
@@ -209,7 +209,7 @@ class TrigIdentity(Scene):
             return label
 
         def get_sec_label():
-            label = Tex("\\sec(\\theta)")
+            label = OldTex("\\sec(\\theta)")
             label.set_color(PINK)
             label.next_to(sec_line, DOWN, SMALL_BUFF)
             label.set_stroke(BLACK, 3, background=True)
@@ -220,10 +220,10 @@ class TrigIdentity(Scene):
         sec_label = always_redraw(get_sec_label)
 
         arc = always_redraw(lambda: Arc(0, get_theta(), radius=0.25))
-        arc_label = Tex("\\theta", font_size=36)
+        arc_label = OldTex("\\theta", font_size=36)
         arc_label.next_to(arc, RIGHT, SMALL_BUFF, DOWN).shift(SMALL_BUFF * UP)
 
-        equation = Tex(
+        equation = OldTex(
             "\\tan^2(\\theta) + 1 = \\sec^2(\\theta)",
             tex_to_color_map={
                 "\\tan": RED,
@@ -299,7 +299,7 @@ class Grey(Scene):
 class ButIHaveNoExperience(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("But I have no\\\\experience!"),
+            OldTexText("But I have no\\\\experience!"),
             index=0,
             target_mode="pleading",
         )
@@ -344,7 +344,7 @@ class ContentAdvice(Scene):
             self.play(Write(point[2:]))
 
         self.wait()
-        gt0 = Tex("> 0")
+        gt0 = OldTex("> 0")
         gt0.next_to(points[1], RIGHT)
         self.play(
             VGroup(points[0], *points[2:]).animate.set_opacity(0.25)
@@ -365,7 +365,7 @@ class LayersOfAbstraction(Scene):
         self.circle_certain_pairs()
 
     def add_title(self):
-        title = TexText("Layers of abstraction")
+        title = OldTexText("Layers of abstraction")
         title.scale(1.5)
         title.to_edge(UP, buff=MED_SMALL_BUFF)
         line = Line(LEFT, RIGHT)
@@ -383,11 +383,11 @@ class LayersOfAbstraction(Scene):
     def show_pairwise_relations(self):
         p1, p2 = [layer.get_left() for layer in self.layers[2:4]]
         down_arrow = Arrow(p2, p1, path_arc=PI)
-        down_words = TexText("``For example''")
+        down_words = OldTexText("``For example''")
         down_words.scale(0.8)
         down_words.next_to(down_arrow, LEFT)
         up_arrow = Arrow(p1, p2, path_arc=-PI)
-        up_words = TexText("``In general''")
+        up_words = OldTexText("``In general''")
         up_words.scale(0.8)
         up_words.next_to(up_arrow, LEFT)
 
@@ -453,23 +453,23 @@ class LayersOfAbstraction(Scene):
 
         # Layer 1: Numbers
         numbers = VGroup(
-            Tex("3"),
-            Tex("3 \\times 4"),
-            Tex("1 / 3"),
+            OldTex("3"),
+            OldTex("3 \\times 4"),
+            OldTex("1 / 3"),
         )
         for number, quantity in zip(numbers, quantities):
             number.move_to(quantity)
 
         # Layer 2: Algebra
         algebra = VGroup(
-            Tex("x^2 - 1 = (x + 1)(x - 1)")
+            OldTex("x^2 - 1 = (x + 1)(x - 1)")
         )
         algebra.set_width(layers.get_width() - MED_LARGE_BUFF)
 
         # Layer 3: Functions
         functions = VGroup(
-            Tex("f(x) = 0"),
-            Tex("\\frac{df}{dx}"),
+            OldTex("f(x) = 0"),
+            OldTex("\\frac{df}{dx}"),
         )
         functions.set_height(layers[0].get_height() - 2 * SMALL_BUFF)
         functions.arrange(RIGHT, buff=LARGE_BUFF)
@@ -481,12 +481,12 @@ class LayersOfAbstraction(Scene):
             "\\textbf{w}": PINK,
         }
         vector_spaces = VGroup(
-            Tex(
+            OldTex(
                 "\\textbf{v} + \\textbf{w} ="
                 "\\textbf{w} + \\textbf{v}",
                 tex_to_color_map=t2c_map,
             ),
-            Tex(
+            OldTex(
                 "s(\\textbf{v} + \\textbf{w}) ="
                 "s\\textbf{v} + s\\textbf{w}",
                 tex_to_color_map=t2c_map,
@@ -505,7 +505,7 @@ class LayersOfAbstraction(Scene):
         vectors.set_stroke(width=2)
         # vector_spaces.add(vectors)
 
-        inner_product = Tex(
+        inner_product = OldTex(
             "\\langle f, g \\rangle ="
             "\\int f(x)g(x)dx"
         )
@@ -522,9 +522,9 @@ class LayersOfAbstraction(Scene):
         )
         arrows.set_stroke(width=2)
         arrow_labels = VGroup(
-            Tex("m_1").next_to(arrows[0], UP, SMALL_BUFF),
-            Tex("m_2").next_to(arrows[1], RIGHT, SMALL_BUFF),
-            Tex("m_2 \\circ m_1").rotate(-np.arctan(1 / 2)).move_to(
+            OldTex("m_1").next_to(arrows[0], UP, SMALL_BUFF),
+            OldTex("m_2").next_to(arrows[1], RIGHT, SMALL_BUFF),
+            OldTex("m_2 \\circ m_1").rotate(-np.arctan(1 / 2)).move_to(
                 arrows[2]
             ).shift(MED_SMALL_BUFF * DL)
         )
@@ -564,7 +564,7 @@ class LayersOfAbstraction(Scene):
 
 class FractionsExample(Scene):
     def construct(self):
-        expr = Tex("{2 \\over 3}", "+", "{1 \\over 5}")
+        expr = OldTex("{2 \\over 3}", "+", "{1 \\over 5}")
         expr.scale(1.5)
         h_line = DashedLine(ORIGIN, FRAME_WIDTH * RIGHT).center()
 
@@ -592,7 +592,7 @@ class FractionsExample(Scene):
 
         pies = VGroup(
             get_pie(2, 3, color=BLUE_C),
-            Tex("+"),
+            OldTex("+"),
             get_pie(1, 5, color=BLUE_D),
         )
         pies.arrange(RIGHT)
@@ -615,7 +615,7 @@ class FractionsExample(Scene):
         self.wait()
 
         # Evaluate bottom
-        bottom_eq = Tex("=")
+        bottom_eq = OldTex("=")
         bottom_eq.move_to(pies[2])
         self.play(
             pies.animate.next_to(bottom_eq, LEFT),
@@ -635,7 +635,7 @@ class FractionsExample(Scene):
         self.wait()
 
         # Evaluate top
-        rhs = Tex(
+        rhs = OldTex(
             "=",
             "{10 \\over 15}",
             "+",
@@ -670,11 +670,11 @@ class FractionsExample(Scene):
 class CalculusStatement(Scene):
     def construct(self):
         statement = VGroup(
-            TexText(
+            OldTexText(
                 "If $f(x)$ has a local maximum or minimum\\\\"
                 "at $x_0$, and $f$ is differentiable at $x_0$, then"
             ),
-            Tex("\\frac{df}{dx}(x_0) = 0.")
+            OldTex("\\frac{df}{dx}(x_0) = 0.")
         )
         statement.arrange(DOWN)
         statement[1].scale(1.5, about_edge=UP).shift(0.25 * DOWN)
@@ -694,10 +694,10 @@ class ExamplesOfFunctions(Scene):
             plane.get_graph(lambda x: -5 * x * np.exp(-x**2 / 2)),
         )
         graph_labels = VGroup(
-            Tex("f(x) = ", "-x^2 - 4x"),
-            Tex("f(x) = ", "x / 3"),
-            Tex("f(x) = ", "x^3 / 3- 2x + 1"),
-            Tex("f(x) = ", "-(5x) e^{-{1 \\over 2} x^2}"),
+            OldTex("f(x) = ", "-x^2 - 4x"),
+            OldTex("f(x) = ", "x / 3"),
+            OldTex("f(x) = ", "x^3 / 3- 2x + 1"),
+            OldTex("f(x) = ", "-(5x) e^{-{1 \\over 2} x^2}"),
         )
         colors = [YELLOW, RED, TEAL, PINK]
         for graph, color, label in zip(graphs, colors, graph_labels):
@@ -805,7 +805,7 @@ class ConcreteToAbstract(Scene):
         self.add(labels)
 
         # Algebra
-        expr = Tex(
+        expr = OldTex(
             "x^2 - y^2 = (x + y)(x - y)",
             tex_to_color_map={"x": BLUE_D, "y": BLUE_B}
         )
@@ -816,16 +816,16 @@ class ConcreteToAbstract(Scene):
 
         # Numbers
         tricks = VGroup(
-            Tex("143 = (12 + 1)(12 - 1) = 13 \\cdot 11"),
-            Tex("3{,}599 = (60 + 1)(60 - 1) = 61 \\cdot 59"),
-            Tex("9{,}991 = (100 + 3)(100 - 3) = 103 \\cdot 97"),
+            OldTex("143 = (12 + 1)(12 - 1) = 13 \\cdot 11"),
+            OldTex("3{,}599 = (60 + 1)(60 - 1) = 61 \\cdot 59"),
+            OldTex("9{,}991 = (100 + 3)(100 - 3) = 103 \\cdot 97"),
         )
         tricks.arrange(DOWN, aligned_edge=LEFT)
         tricks[0].shift((tricks[1][0][5].get_x() - tricks[0][0][3].get_x()) * RIGHT)
         tricks.set_height(FRAME_HEIGHT / 3 - 1)
         tricks.center()
         brace = Brace(tricks, LEFT)
-        words = TexText("Factoring\\\\tricks", font_size=30)
+        words = OldTexText("Factoring\\\\tricks", font_size=30)
         words.set_color(GREY_A)
         words.next_to(brace, LEFT)
         VGroup(tricks, brace, words).to_edge(LEFT, buff=MED_LARGE_BUFF)
@@ -854,7 +854,6 @@ class ConcreteToAbstract(Scene):
 
         self.play(FadeIn(top_words, lag_ratio=0.05))
         self.play(LaggedStartMap(Rotate, up_arrows, angle=PI, axis=RIGHT))
-        up_arrows.refresh_unit_normal()
         self.wait()
 
         new_top_words = Text("If you're learning\n algebra.")
@@ -864,7 +863,6 @@ class ConcreteToAbstract(Scene):
             FadeTransform(top_words, new_top_words),
             LaggedStartMap(Rotate, up_arrows, angle=PI, axis=RIGHT)
         )
-        up_arrows.refresh_unit_normal()
         self.wait()
 
         self.embed()
@@ -900,17 +898,17 @@ class DifferenceOfSquares(Scene):
         new_squares.next_to(arrow, RIGHT)
         new_squares.align_to(squares, UP)
 
-        x1 = Tex(str(x)).set_color(BLUE_D)
+        x1 = OldTex(str(x)).set_color(BLUE_D)
         x2 = x1.copy()
         x1.next_to(squares, UP)
         x2.next_to(squares, LEFT)
-        y1 = Tex(str(y)).set_color(BLUE_B)
+        y1 = OldTex(str(y)).set_color(BLUE_B)
         y2 = y1.copy()
         y1.next_to(squares[-int(np.ceil(y / 2))], RIGHT)
         y2.next_to(squares[-1][-int(np.ceil(y / 2))], DOWN)
 
-        xpy = Tex(str(x), "+", str(y))
-        xmy = Tex(str(x), "-", str(y))
+        xpy = OldTex(str(x), "+", str(y))
+        xmy = OldTex(str(x), "-", str(y))
         for mob in xpy, xmy:
             mob[0].set_color(BLUE)
             mob[2].set_color(BLUE_B)
@@ -954,9 +952,9 @@ class AbstractVectorSpace(Scene):
         kw = {"bracket_h_buff": 0.1}
         columns = VGroup(
             Matrix([["1"], ["1"]], **kw).set_color(BLUE_B),
-            Tex("+"),
+            OldTex("+"),
             Matrix([["-2"], ["3"]], **kw).set_color(BLUE_D),
-            Tex("="),
+            OldTex("="),
             Matrix([["1 - 2"], ["1 + 3"]], **kw).set_color(GREEN),
         )
         columns.arrange(RIGHT, buff=SMALL_BUFF)
@@ -973,7 +971,7 @@ class AbstractVectorSpace(Scene):
         arrows.match_y(columns)
         arrows.match_x(low_title)
 
-        funcs = Tex(
+        funcs = OldTex(
             "(f + g)(x) = f(x) + g(x)",
             tex_to_color_map={"f": BLUE_B, "g": BLUE_D}
         )
@@ -1046,7 +1044,7 @@ class AbstractVectorSpace(Scene):
 
 class Nicheness(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Perceived ", "nicheness",
             " $>$ ",
             "Actual ", "nichness",
@@ -1070,7 +1068,7 @@ class TransitionToProductionQuality(TeacherStudentsScene):
             self.students[2].change("pondering"),
         )
         self.student_says(
-            TexText("What parts of\\\\production quality matter?"),
+            OldTexText("What parts of\\\\production quality matter?"),
             index=1
         )
         self.play(
@@ -1165,7 +1163,7 @@ class Spotlight(Scene):
 
 class BadManimExample(Scene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "Does any of this ",
             "need to be ",
             "animated?\\\\",
@@ -1190,7 +1188,7 @@ class BadManimExample(Scene):
 class WhereCanIEngageWithOthers(TeacherStudentsScene):
     def construct(self):
         self.student_says(
-            TexText("Where can I find\\\\others joining SoME1?"),
+            OldTexText("Where can I find\\\\others joining SoME1?"),
             index=0,
             added_anims=[
                 self.students[1].change("pondering", UL),

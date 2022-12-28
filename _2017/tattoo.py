@@ -49,7 +49,7 @@ class TrigRepresentationsScene(Scene):
             radius = self.arc_radius,
             color = self.theta_color,
         )
-        theta = Tex("\\theta")
+        theta = OldTex("\\theta")
         theta.shift(1.5*arc.point_from_proportion(0.5))
         theta.set_color(self.theta_color)
         theta.set_height(self.theta_height)
@@ -105,7 +105,7 @@ class ReactionsToTattoo(PiCreatureScene):
             "thinking",
             "sassy",
         ]
-        tattoo_on_math = TexText("Tattoo on \\\\ math")
+        tattoo_on_math = OldTexText("Tattoo on \\\\ math")
         tattoo_on_math.to_edge(UP)
         self.wait(2)
         for mode in modes:
@@ -132,9 +132,9 @@ class ReactionsToTattoo(PiCreatureScene):
 class IntroduceCSC(TrigRepresentationsScene):
     def construct(self):
         self.clear()
-        Cam_S_C = TexText("Cam", "S.", "C.")
-        CSC = TexText("C", "S", "C", arg_separator = "")
-        csc_of_theta = TexText("c", "s", "c", "(\\theta)", arg_separator = "")
+        Cam_S_C = OldTexText("Cam", "S.", "C.")
+        CSC = OldTexText("C", "S", "C", arg_separator = "")
+        csc_of_theta = OldTexText("c", "s", "c", "(\\theta)", arg_separator = "")
         csc, of_theta = VGroup(*csc_of_theta[:3]), csc_of_theta[-1]
         of_theta[1].set_color(YELLOW)
         CSC.move_to(csc, DOWN)
@@ -228,7 +228,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         one.rotate(-self.theta_value)
         self.circle.rotate(self.theta_value)
 
-        words = TexText("Corresponding point")
+        words = OldTexText("Corresponding point")
         words.next_to(dot, UP+RIGHT, buff = 1.5*LARGE_BUFF)
         words.shift_onto_screen()
         arrow = Arrow(words.get_bottom(), dot, buff = SMALL_BUFF)
@@ -318,8 +318,8 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
 
         sin_tex = "{\\sin(\\theta)}"
         cos_tex = "{\\cos(\\theta)}"
-        tan_frac = Tex("= \\frac" + sin_tex + cos_tex)
-        cot_frac = Tex("= \\frac" + cos_tex + sin_tex)
+        tan_frac = OldTex("= \\frac" + sin_tex + cos_tex)
+        cot_frac = OldTex("= \\frac" + cos_tex + sin_tex)
         tan_frac.to_corner(UP+LEFT)
         tan_frac.shift(2*RIGHT)
         cot_frac.next_to(tan_frac, DOWN)
@@ -397,9 +397,9 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         sec_line, sec_brace, sec_text = sec_group
         csc_line, csc_brace, csc_text = csc_group
 
-        sec_frac = Tex("= \\frac{1}{\\cos(\\theta)}")
+        sec_frac = OldTex("= \\frac{1}{\\cos(\\theta)}")
         sec_frac.to_corner(UP+LEFT).shift(2*RIGHT)
-        csc_frac = Tex("= \\frac{1}{\\sin(\\theta)}")
+        csc_frac = OldTex("= \\frac{1}{\\sin(\\theta)}")
         csc_frac.next_to(sec_frac, DOWN)
 
         sec_dot, csc_dot = [
@@ -502,20 +502,20 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
             stroke_width = 8,
         )
 
-        opp_over_hyp = Tex(
+        opp_over_hyp = OldTex(
             "\\frac{\\text{Opposite}}{\\text{Hypotenuse}} ="
         )
-        frac1 = Tex("\\frac{\\sin(\\theta)}{1}")
+        frac1 = OldTex("\\frac{\\sin(\\theta)}{1}")
         frac1.next_to(opp_over_hyp)
         frac1[-4].set_color(YELLOW)
-        frac2 = Tex("= \\frac{1}{\\csc(\\theta)}")
+        frac2 = OldTex("= \\frac{1}{\\csc(\\theta)}")
         frac2.next_to(frac1)
         frac2[-2].set_color(YELLOW)
         frac_group = VGroup(opp_over_hyp, frac1, frac2)
         frac_group.set_width(FRAME_X_RADIUS-1)
         frac_group.next_to(ORIGIN, RIGHT).to_edge(UP)
 
-        question = TexText("Why is this $\\theta$?")
+        question = OldTexText("Why is this $\\theta$?")
         question.set_color(YELLOW)
         question.to_corner(UP+RIGHT)
         arrow = Arrow(question.get_bottom(), arc_theta)
@@ -586,8 +586,8 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
 
     def reciprocate(self, frac1, frac2):
         # Not general, meant only for these definitions:
-        # frac1 = Tex("\\frac{\\sin(\\theta)}{1}")
-        # frac2 = Tex("= \\frac{1}{\\csc(\\theta)}")
+        # frac1 = OldTex("\\frac{\\sin(\\theta)}{1}")
+        # frac2 = OldTex("= \\frac{1}{\\csc(\\theta)}")
         num1 = VGroup(*frac1[:6])
         dem1 = frac1[-1]
         num2 = frac2[1]
@@ -681,7 +681,7 @@ class ExplainTrigFunctionDistances(TrigRepresentationsScene, PiCreatureScene):
         brace.rotate(angle)
         brace.shift(line.get_center())
         brace.set_color(line.get_color())
-        text = Tex("\\%s(\\theta)"%func_name)
+        text = OldTex("\\%s(\\theta)"%func_name)
         text.scale(0.75)
         text[-2].set_color(self.theta_color)
         text.add_background_rectangle()
@@ -757,7 +757,7 @@ class RenameAllInTermsOfSine(Scene):
         self.wait()
 
         new_rhs_mobs = [
-            Tex("=\\frac{1}{\\%s(\\theta)}"%s).set_color(color)
+            OldTex("=\\frac{1}{\\%s(\\theta)}"%s).set_color(color)
             for s, color in [
                 ("cos", cos.target_color),
                 ("tan", tan.target_color),
@@ -778,10 +778,10 @@ class RenameAllInTermsOfSine(Scene):
 
 class MisMatchOfCoPrefix(TeacherStudentsScene):
     def construct(self):
-        eq1 = Tex(
+        eq1 = OldTex(
             "\\text{secant}(\\theta) = \\frac{1}{\\text{cosine}(\\theta)}"
         )
-        eq2 = Tex(
+        eq2 = OldTex(
             "\\text{cosecant}(\\theta) = \\frac{1}{\\text{sine}(\\theta)}"
         )
         eq1.to_corner(UP+LEFT)
@@ -818,7 +818,7 @@ class Credit(Scene):
         headphones.move_to(morty.eyes, aligned_edge = DOWN)
         headphones.shift(0.1*DOWN)
 
-        url = TexText("www.audibletrial.com/3blue1brown")
+        url = OldTexText("www.audibletrial.com/3blue1brown")
         url.scale(0.8)
         url.to_corner(UP+RIGHT, buff = LARGE_BUFF)
 

@@ -14,7 +14,7 @@ class Chapter6OpeningQuote(OpeningQuote):
 
 class ThisWasConfusing(TeacherStudentsScene):
     def construct(self):
-        words = TexText("Implicit differentiation")
+        words = OldTexText("Implicit differentiation")
         words.move_to(self.get_teacher().get_corner(UP+LEFT), DOWN+RIGHT)
         words.set_fill(opacity = 0)
 
@@ -76,7 +76,7 @@ class SlopeOfCircleExample(ZoomedScene):
             radius = self.circle_radius*SPACE_UNIT_TO_PLANE_UNIT,
             color = self.circle_color,
         )
-        equation = Tex("x^2 + y^2 = 5^2")
+        equation = OldTex("x^2 + y^2 = 5^2")
         equation.add_background_rectangle()
         equation.next_to(
             circle.point_from_proportion(1./8), 
@@ -104,7 +104,7 @@ class SlopeOfCircleExample(ZoomedScene):
 
         self.play(ShowCreation(dot))
         for line, tex in zip(lines, "5xy"):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.set_color(line.get_color())
             label.add_background_rectangle()
             label.next_to(
@@ -175,11 +175,11 @@ class SlopeOfCircleExample(ZoomedScene):
         line.scale(2)
         line.move_to(point)
 
-        word = TexText("Slope?")
+        word = OldTexText("Slope?")
         word.next_to(line.get_start(), UP, aligned_edge = LEFT)
         word.add_background_rectangle()
 
-        coords = Tex("(%d, %d)"%self.example_point)
+        coords = OldTex("(%d, %d)"%self.example_point)
         coords.add_background_rectangle()
         coords.scale(0.7)
         coords.next_to(point, LEFT)
@@ -250,7 +250,7 @@ class SlopeOfCircleExample(ZoomedScene):
         dy_line.set_color(RED)
         dx_line.set_color(GREEN)
         for line, tex in (dx_line, "dx"), (dy_line, "dy"):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.scale(1./self.zoom_factor)
             next_to_vect = np.round(
                 rotate_vector(DOWN, line.get_angle())
@@ -289,12 +289,12 @@ class SlopeOfCircleExample(ZoomedScene):
 
     def write_slope_as_dy_dx(self):
         slope_word = self.slope_word
-        new_slope_word = TexText("Slope =")
+        new_slope_word = OldTexText("Slope =")
         new_slope_word.add_background_rectangle()
         new_slope_word.next_to(ORIGIN, RIGHT)
         new_slope_word.shift(slope_word.get_center()[1]*UP)
 
-        dy_dx = Tex("\\frac{dy}{dx}")
+        dy_dx = OldTex("\\frac{dy}{dx}")
         VGroup(*dy_dx[:2]).set_color(RED)
         VGroup(*dy_dx[-2:]).set_color(GREEN)
         dy_dx.next_to(new_slope_word, RIGHT)
@@ -350,7 +350,7 @@ class SlopeOfCircleExample(ZoomedScene):
         morty.flip()
         morty.next_to(ORIGIN, LEFT)
         morty.to_edge(DOWN, buff = SMALL_BUFF)
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(morty, UP)
 
         rect = Rectangle(
@@ -362,7 +362,7 @@ class SlopeOfCircleExample(ZoomedScene):
         )
         rect.to_corner(DOWN+RIGHT, buff = 0)
 
-        derivative = Tex("2x\\,dx + 2y\\,dy = 0")
+        derivative = OldTex("2x\\,dx + 2y\\,dy = 0")
         dx = VGroup(*derivative[2:4])
         dy = VGroup(*derivative[7:9])
         dx.set_color(GREEN)
@@ -439,7 +439,7 @@ class SlopeOfCircleExample(ZoomedScene):
 
         #Rearrange
         x, y, eq = np.array(derivative)[[1, 6, 9]]
-        final_form = Tex(
+        final_form = OldTex(
             "\\frac{dy}{dx} = \\frac{-x}{y}"
         )
         new_dy = VGroup(*final_form[:2])
@@ -484,7 +484,7 @@ class SlopeOfCircleExample(ZoomedScene):
 
         frac = self.neg_x_over_y.copy()
         frac.generate_target()
-        eq = Tex("=")
+        eq = OldTex("=")
         eq.add_background_rectangle()
         eq.next_to(dy_dx, RIGHT)
         frac.target.next_to(eq, RIGHT)
@@ -520,10 +520,10 @@ class SlopeOfCircleExample(ZoomedScene):
 
 class NameImplicitDifferentation(TeacherStudentsScene):
     def construct(self):
-        title = TexText("``Implicit differentiation''")
+        title = OldTexText("``Implicit differentiation''")
 
-        equation = Tex("x^2", "+", "y^2", "=", "5^2")
-        derivative = Tex(
+        equation = OldTex("x^2", "+", "y^2", "=", "5^2")
+        derivative = OldTex(
             "2x\\,dx", "+", "2y\\,dy", "=", "0"
         )
         VGroup(*derivative[0][2:]).set_color(GREEN)
@@ -635,7 +635,7 @@ class RelatedRatesExample(ThreeDScene):
         self.ladder = ladder
 
     def write_related_rates(self):
-        words = TexText("Related rates")
+        words = OldTexText("Related rates")
         words.to_corner(UP+RIGHT)
         self.play(Write(words))
         self.wait()
@@ -649,11 +649,11 @@ class RelatedRatesExample(ThreeDScene):
         x_and_y_lines = self.get_x_and_y_lines(ladder)
         x_line, y_line = x_and_y_lines
 
-        y_label = Tex("%dm"%int(self.start_y))
+        y_label = OldTex("%dm"%int(self.start_y))
         y_label.next_to(y_line, LEFT, buff = SMALL_BUFF)
         y_label.set_color(y_line.get_color())
 
-        x_label = Tex("%dm"%int(self.start_x))
+        x_label = OldTex("%dm"%int(self.start_x))
         x_label.next_to(x_line, UP)
         x_label.set_color(x_line.get_color())
 
@@ -682,11 +682,11 @@ class RelatedRatesExample(ThreeDScene):
         down_arrow.shift(y_line.get_start()+MED_SMALL_BUFF*RIGHT)
         left_arrow.shift(x_line.get_start()+SMALL_BUFF*DOWN)
 
-        # speed_label = Tex("1 \\text{m}/\\text{s}")
-        speed_label = Tex("1 \\frac{\\text{m}}{\\text{s}}")
+        # speed_label = OldTex("1 \\text{m}/\\text{s}")
+        speed_label = OldTex("1 \\frac{\\text{m}}{\\text{s}}")
         speed_label.next_to(down_arrow, RIGHT, buff = SMALL_BUFF)
 
-        q_marks = Tex("???")
+        q_marks = OldTex("???")
         q_marks.next_to(left_arrow, DOWN, buff = SMALL_BUFF)
 
 
@@ -741,7 +741,7 @@ class RelatedRatesExample(ThreeDScene):
         self.x_and_y_labels = self.get_x_and_y_labels()
         x_label, y_label = self.x_and_y_labels
 
-        equation = Tex(
+        equation = OldTex(
             "x(t)", "^2", "+", "y(t)", "^2", "=", "5^2"
         )
         equation[0].set_color(GREEN)
@@ -778,7 +778,7 @@ class RelatedRatesExample(ThreeDScene):
         self.equation = equation
 
     def isolate_x_of_t(self):
-        alt_equation = Tex(
+        alt_equation = OldTex(
             "x(t)", "=", "\\big(5^2", "-", "y(t)", "^2 \\big)", "^{1/2}",
         )
         alt_equation[0].set_color(GREEN)
@@ -794,7 +794,7 @@ class RelatedRatesExample(ThreeDScene):
         )
         randy.look_at(alt_equation)
 
-        find_dx_dt = Tex("\\text{Find } \\,", "\\frac{dx}{dt}")
+        find_dx_dt = OldTex("\\text{Find } \\,", "\\frac{dx}{dt}")
         find_dx_dt.next_to(randy, RIGHT, aligned_edge = UP)
         find_dx_dt[1].set_color(GREEN)
 
@@ -839,14 +839,14 @@ class RelatedRatesExample(ThreeDScene):
         function_of_time = brace.get_text(
             "Function of time"
         )
-        constant_words = TexText(
+        constant_words = OldTexText(
             """that happens to
             be constant"""
         )
         constant_words.set_color(YELLOW)
         constant_words.next_to(function_of_time, DOWN)
 
-        derivative = Tex(
+        derivative = OldTex(
             "\\frac{d\\left(x(t)^2 + y(t)^2 \\right)}{dt}"
         )
         derivative.next_to(equation, DOWN, buff = MED_LARGE_BUFF)
@@ -886,7 +886,7 @@ class RelatedRatesExample(ThreeDScene):
         )
 
     def let_dt_pass(self):
-        dt_words = TexText("After", "$dt$", "seconds...")
+        dt_words = OldTexText("After", "$dt$", "seconds...")
         dt_words.to_corner(UP+LEFT)
         dt = dt_words[1]
         dt.set_color(YELLOW)
@@ -949,7 +949,7 @@ class RelatedRatesExample(ThreeDScene):
 
     def take_derivative_of_rhs(self):
         derivative = self.derivative
-        equals_zero = Tex("= 0")
+        equals_zero = OldTex("= 0")
         equals_zero.next_to(derivative)
 
         rhs = self.equation[-1]
@@ -976,7 +976,7 @@ class RelatedRatesExample(ThreeDScene):
         derivative_scaffold, equation = self.derivative
         equals_zero_copy = self.equals_zero.copy()
 
-        lhs_derivative = Tex(
+        lhs_derivative = OldTex(
             "2", "x(t)", "\\frac{dx}{dt}", "+",
             "2", "y(t)", "\\frac{dy}{dt}",
         )
@@ -1057,7 +1057,7 @@ class RelatedRatesExample(ThreeDScene):
         x_label, y_label = self.x_and_y_labels
         num_x_label, num_y_label = self.numerical_x_and_y_labels
 
-        new_lhs_derivative = Tex(
+        new_lhs_derivative = OldTex(
             "2", "(%d)"%int(self.start_x), "\\frac{dx}{dt}", "+",
             "2", "(%d)"%int(self.start_y), "(-1)",
             "= 0"
@@ -1091,7 +1091,7 @@ class RelatedRatesExample(ThreeDScene):
         self.new_lhs_derivative = new_lhs_derivative
 
     def write_final_solution(self):
-        solution = Tex(
+        solution = OldTex(
             "\\frac{dx}{dt} = \\frac{4}{3}"
         )
         for i in 0, 1, -1:
@@ -1172,11 +1172,11 @@ class RelatedRatesExample(ThreeDScene):
     def get_x_and_y_labels(self):
         x_line, y_line = self.x_and_y_lines
 
-        x_label = Tex("x(t)")
+        x_label = OldTex("x(t)")
         x_label.set_color(x_line.get_color())
         x_label.next_to(x_line, DOWN, buff = SMALL_BUFF)
 
-        y_label = Tex("y(t)")
+        y_label = OldTex("y(t)")
         y_label.set_color(y_line.get_color())
         y_label.next_to(y_line, LEFT, buff = SMALL_BUFF)
 
@@ -1277,10 +1277,10 @@ class CompareLadderAndCircle(PiCreatureScene, ThreeDScene):
         )
 
     def show_derivatives(self):
-        equation = Tex(
+        equation = OldTex(
             "x", "^2", "+", "y", "^2", "= 5^2"
         )
-        derivative = Tex(
+        derivative = OldTex(
             "2", "x", "dx", "+", "2", "y", "dy", "=0"
         )
         self.color_equations(equation, derivative)
@@ -1317,10 +1317,10 @@ class CompareLadderAndCircle(PiCreatureScene, ThreeDScene):
         equation = self.equation
         derivative = self.derivative
 
-        time_equation = Tex(
+        time_equation = OldTex(
             "x(t)", "^2", "+", "y(t)", "^2", "= 5^2"
         )
-        time_derivative = Tex(
+        time_derivative = OldTex(
             "2", "x(t)", "\\frac{dx}{dt}", "+", 
             "2", "y(t)", "\\frac{dy}{dt}", "=0"
         )
@@ -1407,7 +1407,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         self.show_tangent_line()
 
     def write_equation(self):
-        equation = Tex("x", "^2", "+", "y", "^2")
+        equation = OldTex("x", "^2", "+", "y", "^2")
         equation.add_background_rectangle()
 
         brace = Brace(equation, UP, buff = SMALL_BUFF)
@@ -1444,7 +1444,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         new_s_expression = self.get_s_expression(*self.example_point)
         new_s_expression.next_to(dot, UP+RIGHT, buff = 0)
         new_s_expression.set_color(self.example_color)
-        equals_25 = Tex("=%d"%int(get_norm(self.example_point)**2))
+        equals_25 = OldTex("=%d"%int(get_norm(self.example_point)**2))
         equals_25.set_color(YELLOW)
         equals_25.next_to(new_s_expression, RIGHT, align_using_submobjects = True)
         equals_25.add_background_rectangle()
@@ -1476,7 +1476,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         s_expression.next_to(point, UP+RIGHT, buff = SMALL_BUFF)
         s_expression.set_color(self.example_color)
         result = coords[0]**2 + coords[1]**2
-        rhs = Tex("=%d"%int(result))
+        rhs = OldTex("=%d"%int(result))
         rhs.add_background_rectangle()
         rhs.set_color(YELLOW)
         rhs.next_to(s_expression, RIGHT, align_using_submobjects = True)
@@ -1490,7 +1490,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
 
     def take_derivative_symbolically(self):
         equation = self.equation
-        derivative = Tex(
+        derivative = OldTex(
             "dS =", "2", "x", "\\,dx", "+", "2", "y", "\\,dy",
         )
         derivative[2].set_color(GREEN)
@@ -1537,7 +1537,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         dx_line = Line(point, interim_point, color = GREEN)
         dy_line = Line(interim_point, new_point, color = RED)
         for line, tex, vect in (dx_line, "dx", UP), (dy_line, "dy", LEFT):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.set_color(line.get_color())
             label.next_to(line, vect, buff = SMALL_BUFF)
             label.add_background_rectangle()
@@ -1605,7 +1605,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         )
 
     def plug_in_example_values(self):
-        deriv_example = Tex(
+        deriv_example = OldTex(
             "dS =", "2", "(3)", "\\,(-0.02)", "+", "2", "(4)", "\\,(-0.01)",
         )
 
@@ -1675,7 +1675,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         dot = self.example_point_dot
         randy = self.randy
 
-        equals_zero = Tex("=0")
+        equals_zero = OldTex("=0")
         equals_zero.set_color(YELLOW)
         equals_zero.add_background_rectangle()
         equals_zero.next_to(self.derivative, RIGHT)
@@ -1713,7 +1713,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         dy_line = Line(point, interim_point, color = RED)
         dx_line = Line(interim_point, new_point, color = GREEN)
 
-        s_label = Tex("S = 25")
+        s_label = OldTex("S = 25")
         s_label.set_color(self.example_color)
         s_label.next_to(
             point, DOWN,
@@ -1733,7 +1733,7 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
         ]
 
         for line, tex, vect in (dy_line, "dy", RIGHT), (dx_line, "dx", UP):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.set_color(line.get_color())
             label.next_to(line, vect)
             label.scale(
@@ -1800,13 +1800,13 @@ class TwoVariableFunctionAndDerivative(SlopeOfCircleExample):
     ############
 
     def get_s_expression(self, x, y):
-        result = Tex("S", "(%s, %s)"%(str(x), str(y)))
+        result = OldTex("S", "(%s, %s)"%(str(x), str(y)))
         result.add_background_rectangle()
         return result
 
 class TryOtherExamples(TeacherStudentsScene):
     def construct(self):
-        formula = Tex("\\sin(x)y^2 = x")
+        formula = OldTex("\\sin(x)y^2 = x")
         formula.next_to(
             self.get_teacher().get_corner(UP+LEFT), UP,
             buff = MED_LARGE_BUFF,
@@ -1850,7 +1850,7 @@ class AlternateExample(ZoomedScene):
         self.manipulate_to_find_dy_dx()
 
     def add_plane(self):
-        formula = Tex("\\sin(x)y^2 = x")
+        formula = OldTex("\\sin(x)y^2 = x")
         formula.to_corner(UP+LEFT)
         formula.add_background_rectangle()
 
@@ -1902,7 +1902,7 @@ class AlternateExample(ZoomedScene):
     def emphasize_meaning_of_points(self):
         graph = self.graphs[4]
         dot = Dot(color = self.example_color)
-        label = Tex("(x, y)")
+        label = OldTex("(x, y)")
         label.add_background_rectangle()
         label.set_color(self.example_color)
 
@@ -1989,7 +1989,7 @@ class AlternateExample(ZoomedScene):
         dx_line = Line(point, interim_point, color = GREEN)
         dy_line = Line(interim_point, new_point, color = RED)
         for line, tex, vect in (dx_line, "dx", DOWN), (dy_line, "dy", LEFT):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.next_to(line, vect, buff = SMALL_BUFF)
             label.set_color(line.get_color())
             label.scale(1./self.zoom_factor, about_point = line.get_center())
@@ -2016,7 +2016,7 @@ class AlternateExample(ZoomedScene):
         formula = self.formula
         lhs, rhs = self.lhs, self.rhs
 
-        word = TexText("Change?")
+        word = OldTexText("Change?")
         word.add_background_rectangle()
         word.next_to(
             Line(lhs.get_center(), rhs.get_center()),
@@ -2044,7 +2044,7 @@ class AlternateExample(ZoomedScene):
         sine_rect = BackgroundRectangle(sine_x)
         y_squared = VGroup(*lhs[6:])
 
-        mnemonic = TexText(
+        mnemonic = OldTexText(
             "``", 
             "Left", " d-Right", " + ",
             "Right",  " d-Left"
@@ -2058,7 +2058,7 @@ class AlternateExample(ZoomedScene):
         mnemonic.next_to(ORIGIN, UP)
         mnemonic.to_edge(LEFT)
 
-        derivative = Tex(
+        derivative = OldTex(
             "\\sin(x)", "(2y\\,dy)", "+", 
             "y^2", "(\\cos(x)\\,dx)",
         )
@@ -2107,7 +2107,7 @@ class AlternateExample(ZoomedScene):
         lhs_brace = self.lhs_brace
         rhs = self.rhs
 
-        equals, dx = equals_dx = Tex("=", "dx")
+        equals, dx = equals_dx = OldTex("=", "dx")
         equals_dx.scale(0.9)
         equals_dx.set_color_by_tex("dx", GREEN)
         equals_dx.add_background_rectangle()
@@ -2196,10 +2196,10 @@ class AlternateExample(ZoomedScene):
 
 class AskAboutNaturalLog(TeacherStudentsScene):
     def construct(self):
-        exp_deriv = Tex("\\frac{d(e^x)}{dx} = e^x")
+        exp_deriv = OldTex("\\frac{d(e^x)}{dx} = e^x")
         for i in 2, 3, 9, 10:
             exp_deriv[i].set_color(BLUE)
-        log_deriv = Tex("\\frac{d(\\ln(x))}{dx} = ???")
+        log_deriv = OldTex("\\frac{d(\\ln(x))}{dx} = ???")
         VGroup(*log_deriv[2:2+5]).set_color(GREEN)
 
         for deriv in exp_deriv, log_deriv:
@@ -2263,7 +2263,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
             x_max = FRAME_X_RADIUS,
             num_steps = 100
         )
-        formula = Tex("y = \\ln(x)")
+        formula = OldTex("y = \\ln(x)")
         formula.next_to(ORIGIN, LEFT, buff = MED_LARGE_BUFF)
         formula.to_edge(UP)
         formula.add_background_rectangle()
@@ -2280,7 +2280,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
         graph = self.graph
 
         dot = Dot(color = self.example_color)
-        label = Tex("(x, y)")
+        label = OldTex("(x, y)")
         label.add_background_rectangle()
         label.set_color(self.example_color)
 
@@ -2339,7 +2339,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
         dy_line = Line(point, interim_point, color = RED)
         dx_line = Line(interim_point, new_point, color = GREEN)
 
-        equation = Tex(
+        equation = OldTex(
             "\\text{Slope} = ",
             "\\frac{dy}{dx} = ",
             "\\frac{d(\\ln(x))}{dx}",
@@ -2376,7 +2376,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
         ln = VGroup(*formula[1][2:4])
         x = formula[1][5]
 
-        new_formula = Tex("e", "^y", "=", "x")
+        new_formula = OldTex("e", "^y", "=", "x")
         e, new_y, new_eq, new_x = new_formula
         new_formula.next_to(
             formula, DOWN, 
@@ -2404,7 +2404,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
     def take_derivative(self):
         new_formula = self.new_formula
         e, y, eq, x = new_formula
-        derivative = Tex("e", "^y", "\\,dy", "=", "dx")
+        derivative = OldTex("e", "^y", "\\,dy", "=", "dx")
         new_e, new_y, dy, new_eq, dx = derivative
         derivative.next_to(new_formula, DOWN, MED_LARGE_BUFF)
         derivative.add_background_rectangle()
@@ -2436,7 +2436,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
         group = VGroup(dot, dx_line, dy_line)
         self.play(group.scale, 1./self.zoom_factor, point)
         for line, tex, vect in (dx_line, "dx", UP), (dy_line, "dy", LEFT):
-            label = Tex(tex)
+            label = OldTex(tex)
             label.add_background_rectangle()
             label.next_to(line, vect, buff = SMALL_BUFF)
             label.set_color(line.get_color())
@@ -2469,7 +2469,7 @@ class DerivativeOfNaturalLog(ZoomedScene):
         ey_group = VGroup(e, y)
         original_rect = self.derivative[0]
 
-        rearranged = Tex(
+        rearranged = OldTex(
             "{dy \\over ", " dx}", "=", "{1 \\over ", "e", "^y}"
         )
         new_dy, new_dx, new_eq, one_over, new_e, new_y = rearranged
@@ -2562,13 +2562,13 @@ class DerivativeOfNaturalLog(ZoomedScene):
 
 class FinalWords(TeacherStudentsScene):
     def construct(self):
-        words = TexText(
+        words = OldTexText(
             "This is a peek into \\\\",
             "Multivariable", "calculus"
         )
         mvc = VGroup(*words[1:])
         words.set_color_by_tex("Multivariable", YELLOW)
-        formula = Tex("f(x, y) = \\sin(x)y^2")
+        formula = OldTex("f(x, y) = \\sin(x)y^2")
         formula.next_to(self.get_teacher().get_corner(UP+LEFT), UP)
 
         self.teacher_says(words)
@@ -2588,7 +2588,7 @@ class FinalWords(TeacherStudentsScene):
         series = VideoSeries()
         series.to_edge(UP)
         video = series[5]
-        lim = Tex("\\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}")
+        lim = OldTex("\\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}")
         self.play(
             FadeOut(mvc),
             FadeOut(formula),

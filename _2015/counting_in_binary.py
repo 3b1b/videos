@@ -77,7 +77,7 @@ COUNT_TO_TIP_POS = {
 }
 
 def finger_tip_power_of_2(finger_no):
-    return Tex(str(2**finger_no)).shift(COUNT_TO_TIP_POS[finger_no])
+    return OldTex(str(2**finger_no)).shift(COUNT_TO_TIP_POS[finger_no])
 
 class Hand(ImageMobject):
     STARTING_BOTTOM_RIGHT = [4.61111111e+00,  -3.98888889e+00, 9.80454690e-16]
@@ -110,7 +110,7 @@ class Hand(ImageMobject):
     #     )
 
 def get_algorithm():
-    return TexText(ALGORITHM_TEXT)
+    return OldTexText(ALGORITHM_TEXT)
 
 def get_finger_colors():
     return list(Color("yellow").range_to("red", 5))
@@ -182,7 +182,7 @@ class ShowCounting(OverHand):
         ]
 
     def get_counting_mob(self, count):
-        mob = Tex(str(count))
+        mob = OldTex(str(count))
         mob.scale(2)
         mob.shift(LEFT)
         mob.to_edge(UP, buff = 0.1)
@@ -195,7 +195,7 @@ class ShowFrameNum(OverHand):
         for frame, count in zip(self.frames, it.count()):
             print(count + "of" + len(self.frames))
             mob = Mobject(*[
-                Tex(char).shift(0.3*x*RIGHT)
+                OldTex(char).shift(0.3*x*RIGHT)
                 for char, x, in zip(str(count), it.count())
             ])
             self.frames[count] = disp.paint_mobject(
@@ -209,7 +209,7 @@ class CountTo1023(Scene):
         lh_map = get_hand_map("left")
         def get_num(count):
             return Mobject(*[
-                Tex(char).shift(0.35*x*RIGHT)
+                OldTex(char).shift(0.35*x*RIGHT)
                 for char, x, in zip(str(count), it.count())
             ]).center().to_edge(UP)
         self.frames = [
@@ -221,7 +221,7 @@ class CountTo1023(Scene):
 
 class Introduction(Scene):
     def construct(self):
-        words = TexText("""
+        words = OldTexText("""
             First, let's see how to count
             to 31 on just one hand...
         """)
@@ -238,10 +238,10 @@ class Introduction(Scene):
 class ShowReadingRule(Scene):
     def construct(self):
         sample_counts = [6, 17, 27, 31]
-        question = TexText("""
+        question = OldTexText("""
             How do you recognize what number a given configuration represents?
         """, size = "\\Huge").scale(0.75).to_corner(UP+LEFT)
-        answer = TexText([
+        answer = OldTexText([
             "Think of each finger as representing a power of 2, ",
             "then add up the numbers represented by the standing fingers."
         ], size = "\\Huge").scale(0.75).to_corner(UP+LEFT).split()
@@ -274,7 +274,7 @@ class ShowReadingRule(Scene):
             count_mobs[1].shift(0.2*DOWN + 0.2*LEFT)
         if num in [6, 17]:
             hand.shift(0.8*LEFT)
-        sum_mobs = Tex(
+        sum_mobs = OldTex(
             " + ".join([str(2**c) for c in counts]).split(" ") + ["=%d"%num]
         ).to_corner(UP+RIGHT).split()
         self.add(hand, *count_mobs)
@@ -294,7 +294,7 @@ class ShowIncrementRule(Scene):
         def to_left(words):
             return "\\begin{flushleft}" + words + "\\end{flushleft}"
         phrases = [
-            TexText(to_left(words), size = "\\Huge").scale(0.75).to_corner(UP+LEFT)
+            OldTexText(to_left(words), size = "\\Huge").scale(0.75).to_corner(UP+LEFT)
             for words in [
             "But while you're counting, you don't need to think about powers of 2.",
             "Can you see the pattern for incrementing?",
@@ -333,7 +333,7 @@ class ShowIncrementRule(Scene):
                 self.frames += [self.frames[-1]]*int(1.0/self.frame_duration)
 
     def get_arrow_set(self, num):
-        arrow = Tex("\\downarrow", size = "\\Huge")
+        arrow = OldTex("\\downarrow", size = "\\Huge")
         arrow.set_color("green")
         arrow.shift(-arrow.get_bottom())
         if num == 12:
@@ -364,17 +364,17 @@ class ShowIncrementRule(Scene):
 
 class MindFindsShortcuts(Scene):
     def construct(self):
-        words1 = TexText("""
+        words1 = OldTexText("""
             Before long, your mind starts to recognize certain
             patterns without needing to perform the addition.
         """, size = "\\Huge").scale(0.75).to_corner(LEFT+UP)
-        words2 = TexText("""
+        words2 = OldTexText("""
             Which makes it faster to recognize other patterns...
         """, size = "\\Huge").scale(0.75).to_corner(LEFT+UP)
 
         hand = Hand(7).scale(0.5).center().shift(DOWN+2*LEFT)
-        sum421 = Tex("4+2+1").shift(DOWN+2*RIGHT)
-        seven = Tex("7").shift(DOWN+6*RIGHT)
+        sum421 = OldTex("4+2+1").shift(DOWN+2*RIGHT)
+        seven = OldTex("7").shift(DOWN+6*RIGHT)
         compound = Mobject(
             Arrow(hand, sum421),
             sum421,
@@ -389,7 +389,7 @@ class MindFindsShortcuts(Scene):
         self.wait()
         self.play(
             Transform(compound, Arrow(hand, seven).set_color("yellow")),
-            ShimmerIn(TexText("Directly recognize").shift(1.5*DOWN+2*RIGHT))
+            ShimmerIn(OldTexText("Directly recognize").shift(1.5*DOWN+2*RIGHT))
         )
         self.wait()
 
@@ -402,10 +402,10 @@ class MindFindsShortcuts(Scene):
         hands[16].shift(LEFT)
         hands[7].shift(3*RIGHT)
         for num in 7, 16:
-            hands[num].add(Tex(str(num)).shift(hands[num].get_top()+0.5*UP))
-        plus = Tex("+").shift(DOWN + RIGHT)
-        equals = Tex("=").shift(DOWN + 2.5*LEFT)
-        equals23 = Tex("=23").shift(DOWN + 5.5*RIGHT)
+            hands[num].add(OldTex(str(num)).shift(hands[num].get_top()+0.5*UP))
+        plus = OldTex("+").shift(DOWN + RIGHT)
+        equals = OldTex("=").shift(DOWN + 2.5*LEFT)
+        equals23 = OldTex("=23").shift(DOWN + 5.5*RIGHT)
 
         self.add(words2, hands[23])
         self.wait()
@@ -430,7 +430,7 @@ class MindFindsShortcuts(Scene):
 class CountingExampleSentence(ShowCounting):
     def construct(self):
         words = "As an example, this is me counting the number of words in this sentence on just one hand!"
-        self.words = TexText(words.split(), size = "\\Huge").scale(0.7).to_corner(UP+LEFT, buff = 0.25).split()
+        self.words = OldTexText(words.split(), size = "\\Huge").scale(0.7).to_corner(UP+LEFT, buff = 0.25).split()
         ShowCounting.construct(self)
 
     def get_counting_mob(self, num):
@@ -439,11 +439,11 @@ class CountingExampleSentence(ShowCounting):
 class FinishCountingExampleSentence(Scene):
     def construct(self):
         words = "As an example, this is me counting the number of words in this sentence on just one hand!"
-        words = TexText(words, size = "\\Huge").scale(0.7).to_corner(UP+LEFT, buff = 0.25)
+        words = OldTexText(words, size = "\\Huge").scale(0.7).to_corner(UP+LEFT, buff = 0.25)
         hand = Hand(18)
-        sixteen = Tex("16").shift([0, 2.25, 0])
-        two = Tex("2").shift([3, 3.65, 0])
-        eightteen = Tex("18").shift([1.5, 2.5, 0])
+        sixteen = OldTex("16").shift([0, 2.25, 0])
+        two = OldTex("2").shift([3, 3.65, 0])
+        eightteen = OldTex("18").shift([1.5, 2.5, 0])
         eightteen.sort_points()
         comp = Mobject(sixteen, two)
         self.add(hand, comp, words)
@@ -453,18 +453,18 @@ class FinishCountingExampleSentence(Scene):
 
 class Question(Scene):
     def construct(self):
-        self.add(TexText("Left to ponder: Why does this rule for incrementing work?"))
+        self.add(OldTexText("Left to ponder: Why does this rule for incrementing work?"))
 
 
 class TwoHandStatement(Scene):
     def construct(self):
-        self.add(TexText(
+        self.add(OldTexText(
             "With 10 fingers, you can count up to $2^{10} - 1 = 1023$..."
         ))
 
 class WithToes(Scene):
     def construct(self):
-        words = TexText([
+        words = OldTexText([
             "If you were dexterous enough to use your toes as well,",
             "you could count to 1,048,575"
         ]).split()

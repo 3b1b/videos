@@ -25,8 +25,8 @@ class LongResistor(Line):
 class Source(VMobject):
     def init_points(self):
         self.add(Circle(color = self.color))
-        self.add(Tex("+").scale(1.5).set_color(GREEN).shift(0.5*UP))
-        self.add(Tex("-").scale(1.5).set_color(RED).shift(0.5*DOWN))
+        self.add(OldTex("+").scale(1.5).set_color(GREEN).shift(0.5*UP))
+        self.add(OldTex("-").scale(1.5).set_color(RED).shift(0.5*DOWN))
         self.set_height(1)        
         self.add(Line(self.get_top(), self.get_top()+UP))
         self.add(Line(self.get_bottom(), self.get_bottom()+DOWN))
@@ -53,7 +53,7 @@ class CircuitReduction(Scene):
         self.add(source)
 
         ohms = dict([
-            (n, Tex("%d\\Omega"%int(n)).scale(0.75))
+            (n, OldTex("%d\\Omega"%int(n)).scale(0.75))
             for n in (1, 2, 3, 4, 6, 12, 1.1, 5, 10.1, 10, 8, 2.1)
         ])
         ohms[1].shift(0.5*pos[1][0]+0.5*pos[2][0]+0.7*UP)
