@@ -51,10 +51,10 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         for n, bar in zip(it.count(2), conv_bars):
             sum_sym = VGroup(
                 top_bars[0].die.copy().scale(0.7),
-                OldTex("+", font_size=16),
+                Tex("+", font_size=16),
                 low_bars[0].die.copy().scale(0.7),
-                OldTex("=", font_size=24).rotate(PI / 2),
-                OldTex(str(n), font_size=24),
+                Tex("=", font_size=24).rotate(PI / 2),
+                Tex(str(n), font_size=24),
             )
             sum_sym[0].remove(sum_sym[0][1])
             sum_sym[2].remove(sum_sym[2][1])
@@ -141,7 +141,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
                 products.arrange(DOWN, buff=MED_LARGE_BUFF)
                 products.next_to(conv_bars, LEFT, MED_LARGE_BUFF)
                 products.to_edge(UP, buff=LARGE_BUFF)
-                plusses = OldTex("+", font_size=36).replicate(len(pairs) - 1)
+                plusses = Tex("+", font_size=36).replicate(len(pairs) - 1)
                 for plus, lp1, lp2 in zip(plusses, products, products[1:]):
                     plus.move_to(VGroup(lp1, lp2))
 
@@ -262,7 +262,7 @@ class ConvolveDiscreteDistributions(InteractiveScene):
         PXY.generate_target()
         lhs = conv_def[:10]
         PXY.target.next_to(lhs, UP, LARGE_BUFF).shift_onto_screen(buff=SMALL_BUFF)
-        eq = OldTex("=").rotate(90 * DEGREES)
+        eq = Tex("=").rotate(90 * DEGREES)
         eq.move_to(midpoint(PXY.target.get_bottom(), lhs.get_top()))
 
         self.play(LaggedStart(
@@ -440,6 +440,7 @@ class Convolutions(InteractiveScene):
     area_line_dx = 0.05
     jagged_product = True
     g_is_rect = False
+    conv_y_stretch_factor = 2.0
 
     def setup(self):
         super().setup()
@@ -562,7 +563,8 @@ class Convolutions(InteractiveScene):
         self.conv_graph_line = graph_line
 
         conv_label = self.conv_label = Tex(self.conv_label_tex, **self.label_config)
-        conv_label.next_to(conv_axes, UP)
+        conv_label.match_x(conv_axes)
+        conv_label.set_y(np.mean([conv_axes.get_y(UP), FRAME_HEIGHT / 2]))
 
         self.add(conv_graph)
         self.add(graph_dot)
@@ -573,12 +575,14 @@ class Convolutions(InteractiveScene):
         all_axes = VGroup(*(Axes(**self.axes_config) for x in range(4)))
         all_axes[:3].arrange(DOWN, buff=0.75)
         all_axes[3].next_to(all_axes[:3], RIGHT, buff=1.5)
-        all_axes[3].y_axis.stretch(2, 1)
+        all_axes[3].y_axis.stretch(
+            self.conv_y_stretch_factor, 1
+        )
         all_axes.to_edge(LEFT)
         all_axes.to_edge(DOWN, buff=0.1)
 
         for i, axes in enumerate(all_axes):
-            x_label = OldTex("x" if i < 3 else "s", font_size=24)
+            x_label = Tex("x" if i < 3 else "s", font_size=24)
             x_label.next_to(axes.x_axis.get_right(), UP, MED_SMALL_BUFF)
             axes.x_label = x_label
             axes.x_axis.add(x_label)
@@ -756,7 +760,7 @@ class ProbConvolutions(Convolutions):
         self.wait()
 
         # Move p_{X + Y}
-        equals = OldTex("=").rotate(PI / 2)
+        equals = Tex("=").rotate(PI / 2)
         equals.next_to(lhs, UP)
 
         self.play(
@@ -971,12 +975,12 @@ class MovingAverageAsConvolution(Convolutions):
         rect.add_updater(lambda m: m.set_x(s_indicator.get_x()))
         rect.add_updater(lambda m: m.set_y(g_axes.get_origin()[1], DOWN))
 
-        area_label = OldTex(R"\text{Area } = 1", font_size=36)
+        area_label = Tex(R"\text{Area } = 1", font_size=36)
         area_label.next_to(rect, UP, MED_LARGE_BUFF)
         area_label.to_edge(LEFT)
         arrow = Arrow(area_label.get_bottom(), rect.get_center())
 
-        avg_label = OldTexText(R"Average value of\\$f(x)$ in the window", font_size=24)
+        avg_label = TexText(R"Average value of\\$f(x)$ in the window", font_size=24)
         avg_label.move_to(area_label, DL)
         shift_value = self.all_axes[2].get_origin() - g_axes.get_origin() + 0.5 * DOWN
         avg_label.shift(shift_value)
@@ -1354,7 +1358,7 @@ class RepeatedConvolution(MovingAverageAsConvolution):
     def get_conv_label(self, n):
         lhs = f"f_{{{n}}}(s)"
         last = f"f_{{{n - 1}}}"
-        result = OldTex(lhs, "=", R"\big[", last, "*", "f_1", R"\big]", "(s)")
+        result = Tex(lhs, "=", R"\big[", last, "*", "f_1", R"\big]", "(s)")
         result.set_height(0.5)
         result.next_to(self.all_axes[3], DOWN, MED_LARGE_BUFF)
         return result
@@ -1445,9 +1449,9 @@ class RectConvolutionsNewNotation(MovingAverages):
         rect_defs[0].next_to(axes1, UP).shift_onto_screen()
 
         conv_labels = VGroup(
-            OldTex(R"\big[\text{rect} * \text{rect}_3\big](x)"),
-            OldTex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5\big](x)"),
-            OldTex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5 * \text{rect}_7 \big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3\big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5\big](x)"),
+            Tex(R"\big[\text{rect} * \text{rect}_3 * \text{rect}_5 * \text{rect}_7 \big](x)"),
         )
         conv_labels.scale(0.75)
         conv_labels.match_x(axes3).match_y(rect_defs)
@@ -1527,36 +1531,36 @@ class RectConvolutionsNewNotation(MovingAverages):
         )
 
     def get_rect_k_def(self, k):
-        return OldTex(Rf"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
+        return Tex(Rf"\text{{rect}}_{{{k}}}(x) := {k} \cdot \text{{rect}}({k}x)")[0]
 
 
 class RectConvolutionFacts(InteractiveScene):
     def construct(self):
         # Equations
         equations = VGroup(
-            OldTex(R"\text{rect}", "(0)", "=", "1.0"),
-            OldTex(
+            Tex(R"\text{rect}", "(0)", "=", "1.0"),
+            Tex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            OldTex(
+            Tex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*",
                 R"\text{rect}_5",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            OldTex(R"\vdots"),
-            OldTex(
+            Tex(R"\vdots"),
+            Tex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*", R"\cdots", "*",
                 R"\text{rect}_{13}",
                 R"\big]", "(0)", "=", "1.0"
             ),
-            OldTex(
+            Tex(
                 R"\big[",
                 R"\text{rect}", "*",
                 R"\text{rect}_3", "*", R"\cdots", "*",
