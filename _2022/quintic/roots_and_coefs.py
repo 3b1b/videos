@@ -284,7 +284,7 @@ class RootCoefScene(Scene):
         "radius": 0.05,
         "stroke_color": BLACK,
         "stroke_width": 3,
-        "draw_stroke_behind_fill": True,
+        "stroke_behind": True,
     }
     include_tracers = True
     include_labels = True
