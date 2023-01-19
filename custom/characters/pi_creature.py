@@ -55,11 +55,6 @@ class PiCreature(SVGMobject):
         height: float = 3,
         flip_at_start: bool = False,
         start_corner: Vect3 | None = None,
-        long_lines: bool = True,
-        path_string_config: dict = dict(
-            long_lines=True,
-            should_subdivide_sharp_curves=False,
-        ),
         **kwargs
     ):
         self.mode = mode
@@ -73,8 +68,6 @@ class PiCreature(SVGMobject):
             stroke_color=stroke_color,
             fill_opacity=fill_opacity,
             height=height,
-            long_lines=long_lines,
-            path_string_config=path_string_config,
             **kwargs
         )
 
