@@ -515,10 +515,11 @@ class Convolutions(InteractiveScene):
             k2 = self.k2_tracker.get_value() if self.g_is_rect else 1
             return self.f(x) * self.g((get_s() - x) * k1) * k2
 
-        fg_graph, pos_graph, neg_graph = (
-            fg_axes.get_graph(lambda x: 0, x_range=(x_min, x_max, self.g_graph_x_step))
-            for x in range(3)
-        )
+        fg_graph = fg_axes.get_graph(lambda x: 0, x_range=(x_min, x_max, self.g_graph_x_step))
+        pos_graph = fg_graph.copy()
+        neg_graph = fg_graph.copy()
+        for graph in f_graph, g_graph, fg_graph, pos_graph, neg_graph:
+            self.disable_interaction(graph)
         fg_graph.set_style(**self.fg_graph_style)
         VGroup(pos_graph, neg_graph).set_stroke(width=0)
         pos_graph.set_fill(BLUE, 0.5)
@@ -535,8 +536,8 @@ class Convolutions(InteractiveScene):
             get_discontinuities=get_discontinuities,
         )
         fg_axes.bind_graph_to_func(fg_graph, prod_func, **kw)
-        fg_axes.bind_graph_to_func(pos_graph, lambda x: max(prod_func(x), 0), **kw)
-        fg_axes.bind_graph_to_func(neg_graph, lambda x: min(prod_func(x), 0), **kw)
+        fg_axes.bind_graph_to_func(pos_graph, lambda x: np.clip(prod_func(x), 0, np.inf), **kw)
+        fg_axes.bind_graph_to_func(neg_graph, lambda x: np.clip(prod_func(x), -np.inf, 0), **kw)
 
         self.prod_graphs = VGroup(fg_graph, pos_graph, neg_graph)
 
@@ -1128,13 +1129,13 @@ class DiagonalSlices(ProbConvolutions):
         self.wait()
 
     def get_slice_shadow(self, t_tracker, u_max=5.0, v_range=(-4.0, 4.0)):
-        xu = self.axes.x_axis.unit_size
-        yu = self.axes.y_axis.unit_size
-        zu = self.axes.z_axis.unit_size
+        xu = self.axes.x_axis.get_unit_size()
+        yu = self.axes.y_axis.get_unit_size()
+        zu = self.axes.z_axis.get_unit_size()
         x0, y0, z0 = self.axes.get_origin()
         t = t_tracker.get_value()
 
-        return Surface(
+        return ParametricSurface(
             uv_func=lambda u, v: [
                 xu * (u - v) / 2 + x0,
                 yu * (u + v) / 2 + y0,
@@ -1155,10 +1156,11 @@ class DiagonalSlices(ProbConvolutions):
         x_min, x_max = self.axes.x_range[:2]
         y_min, y_max = self.axes.y_range[:2]
 
+        dt = 0.1
         if t > 0:
-            x_range = (t - y_max, x_max)
+            x_range = (t - y_max, x_max, dt)
         else:
-            x_range = (x_min, t - y_min)
+            x_range = (x_min, t - y_min, dt)
 
         return ParametricCurve(
             lambda x: self.axes.c2p(x, t - x, self.f(x) * self.g(t - x)),
