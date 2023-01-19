@@ -24,7 +24,7 @@ class Histogram(Group):
         "h_line_style": {
             "stroke_width": 1,
             "stroke_color": GREY_B,
-            # "draw_stroke_behind_fill": True,
+            # "stroke_behind": True,
         },
         "bar_style": {
             "stroke_width": 1,
