@@ -239,7 +239,7 @@ class ODEThumbnail(Scene):
             points.append(points[-1] + dt * func(points[-1]))
 
         line = VMobject()
-        line.set_points_smoothly(points, true_smooth=True)
+        line.set_points_smoothly(points)
         line.set_stroke([WHITE, WHITE, BLACK], width=[5, 1])
         # line.set_stroke((BLUE_C, BLUE_E), width=(10, 1))
 

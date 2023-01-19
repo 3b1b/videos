@@ -2968,7 +2968,7 @@ class ShowJuliaSetPoint(TwoToMillionPoints):
             if self.show_disk:
                 disk.generate_target()
                 disk.target.apply_function(func)
-                disk.target.make_approximately_smooth()
+                disk.target.make_smooth(approx=True)
                 anims.append(MoveToTarget(disk, path_arc=path_arc))
                 if disk.target.get_height() > frame.get_height():
                     anims.extend([
@@ -3170,7 +3170,7 @@ class AboutJuliaDisks(AboutFatouDisks):
         for n in range(5):
             new_disk = disks[-1].copy()
             new_disk.apply_complex_function(lambda z: z**2 + c)
-            new_disk.make_approximately_smooth()
+            new_disk.make_smooth(approx=True)
             disks.add(new_disk)
 
         for disk in disks:

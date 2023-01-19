@@ -453,7 +453,7 @@ class DecomposeAudioSegment(Scene):
 
         # Reconstruct
         approx_wave = graph.copy()  # Cheating
-        approx_wave.set_points_smoothly(graph.get_points()[::150], true_smooth=True)
+        approx_wave.set_points_smoothly(graph.get_points()[::150])
         approx_wave.set_stroke(TEAL, 3, 1.0)
 
         self.play(
