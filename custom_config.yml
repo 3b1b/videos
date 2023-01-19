@@ -23,5 +23,3 @@ window_position: UR
 window_monitor: 0
 full_screen: False
 embed_exception_mode: "Minimal"
-embed_error_sound: True
-
