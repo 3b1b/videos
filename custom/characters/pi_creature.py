@@ -119,10 +119,10 @@ class PiCreature(SVGMobject):
 
             black = Circle(radius=pupil_r, color=BLACK)
             dot = Circle(radius=dot_r, color=WHITE)
+            dot.shift(black.pfp(3 / 8) - dot.pfp(3 / 8))
             pupil = VGroup(black, dot)
             pupil.set_style(fill_opacity=1, stroke_width=0)
             pupil.move_to(ref_pupil)
-            dot.shift(black.pfp(3 / 8) - dot.pfp(3 / 8))
             eye = VGroup(iris, pupil)
             eye.pupil = pupil
             eye.iris = iris
@@ -136,8 +136,8 @@ class PiCreature(SVGMobject):
         if isinstance(mobject, PiCreature):
             self.mode = mobject.get_mode()
 
-    def set_color(self, color):
-        self.body.set_fill(color)
+    def set_color(self, color, recurse=True):
+        self.body.set_fill(color, recurse=recurse)
         return self
 
     def get_color(self):
