@@ -455,6 +455,12 @@ class SimulationWithExpDistribution2Dice(SimulationWithExpDistribution):
         return super().get_brick().set_stroke(width=0)
 
 
+class SimulationWithRandomDistribution(SimulationWithUShapedDistribution):
+    random_seed = 1
+    n_dice = 15
+    distribution = [0.05, 0.17, 0.28, 0.05, 0.18, 0.27]
+
+
 class SimulationWithExpDistribution5Dice(SimulationWithExpDistribution):
     n_dice = 5
     brick_height = 0.15
@@ -467,7 +473,7 @@ class SimulationWithExpDistribution15Dice(SimulationWithExpDistribution):
 # Galton board
 
 class GaltonBoard(InteractiveScene):
-    random_seed = 10
+    random_seed = 1
     pegs_per_row = 15
     n_rows = 5
     spacing = 1.0
@@ -481,7 +487,8 @@ class GaltonBoard(InteractiveScene):
     )
     stack_ratio = 1.0
     fall_factor = 0.6
-    clink_sound = "clink.wav"
+    # clink_sound = "click.wav"
+    clink_sound = "plate.wav"
 
     def setup(self):
         super().setup()
@@ -507,7 +514,7 @@ class GaltonBoard(InteractiveScene):
         self.wait()
 
         # Initial flurry
-        balls = self.drop_n_balls(25, pegs, buckets)
+        balls = self.drop_n_balls(25, pegs, buckets, sound=True)
         self.wait()
         balls.reverse_submobjects()
         self.play(FadeOut(balls, lag_ratio=0.05))
@@ -662,6 +669,7 @@ class GaltonBoard(InteractiveScene):
         self.stack_ratio = 0.125
         np.random.seed(0)
         self.drop_n_balls(250, pegs, buckets, lr_factor=2)
+        self.wait(2)
 
     def get_pegs(self):
         row = VGroup(*(
@@ -843,17 +851,17 @@ class GaltonBoard(InteractiveScene):
             run_time=self.fall_factor * trajectory.get_arc_length()
         )
 
-    def add_single_clink_sound(self, time_offset=0):
+    def add_single_clink_sound(self, time_offset=0, gain=-20):
         self.add_sound(
-            sound_file=self.clink_sound,
+            sound_file=self.clink_sound.replace("click", "click" + str(random.randint(1, 12))),
             time_offset=time_offset,
-            gain=-20,
+            gain=gain,
         )
 
-    def add_falling_clink_sounds(self, trajectory_pieces, time_offset=0):
+    def add_falling_clink_sounds(self, trajectory_pieces, time_offset=0, gain=-20):
         total_len = trajectory_pieces[0].get_arc_length()
         for piece in trajectory_pieces[1:-1]:
-            self.add_single_clink_sound(time_offset + self.fall_factor * total_len)
+            self.add_single_clink_sound(time_offset + self.fall_factor * total_len, gain)
             total_len += piece.get_arc_length()
 
     def drop_n_balls(self, n, pegs, buckets, lr_factor=1, sound=False):
@@ -873,7 +881,7 @@ class GaltonBoard(InteractiveScene):
         if sound:
             start_times = [tup[1] for tup in full_anim.anims_with_timings]
             for time, traj in zip(start_times, trajs):
-                self.add_falling_clink_sounds(traj[1], time + 0.01 * random.random())
+                self.add_falling_clink_sounds(traj[1], time + 0.00 * random.random(), gain=-30)
 
         self.play(full_anim)
 
@@ -978,6 +986,27 @@ class BiggerGaltonBoard(GaltonBoard):
         self.drop_n_balls(self.n_balls, pegs, buckets, lr_factor=2)
         self.wait()
 
+        # Show low bell cuve
+        full_rect = FullScreenFadeRectangle()
+        full_rect.set_fill(BLACK, 0.5)
+        balls = self.mobjects[-1]
+        curve = FunctionGraph(lambda x: gauss_func(x, 0, 1))
+        curve.set_stroke(YELLOW)
+        curve.move_to(balls, DOWN)
+        curve.match_height(balls, stretch=True, about_edge=DOWN)
+        formula = Tex(R"{1 \over \sqrt{2\pi}} e^{-x^2 / 2}", font_size=60)
+        formula.move_to(balls, LEFT)
+        formula.shift(1.25 * LEFT)
+        formula.set_backstroke(width=8)
+
+        self.add(full_rect, balls)
+        self.play(
+            FadeIn(full_rect),
+            ShowCreation(curve, run_time=2),
+            Write(formula)
+        )
+        self.wait()
+
 
 class SingleDropBigGaltonBoard(BiggerGaltonBoard):
     spacing = 0.55
@@ -992,8 +1021,91 @@ class SingleDropBigGaltonBoard(BiggerGaltonBoard):
         # Single ball bouncing, step-by-step
         ball = self.get_ball()
         full_trajectory, pieces = self.random_trajectory(ball, pegs, buckets)
+        self.add_falling_clink_sounds(pieces)
         self.play(self.falling_anim(ball, full_trajectory))
         self.wait()
+
+
+class NotIdenticallyDistributed(GaltonBoard):
+    def construct(self):
+        # Setup
+        pegs = self.get_pegs()
+        buckets = self.get_buckets(pegs)
+        self.add(pegs, buckets)
+
+        # Arrows to show distributions
+        max_arrow_len = 0.5
+
+        def get_peg_arrow(peg, angle, length, color=RED_E):
+            vect = np.array([-math.sin(angle), math.cos(angle), 0])
+            arrow = FillArrow(
+                ORIGIN, length * vect,
+                buff=0,
+                fill_color=color,
+                tip_width_ratio=3,
+                thickness=0.025,
+            )
+            arrow.shift(peg.get_center() + vect * peg.get_radius())
+            arrow.set_fill(opacity=0.8 * length / max_arrow_len)
+            return arrow
+
+        def get_bounce_distribution(peg, sigma=30 * DEGREES):
+            ds = sigma / 2
+            angles = np.arange(-2 * sigma, 2 * sigma + ds, ds)
+            denom = math.sqrt(2 * PI) * sigma
+            arrows = VGroup(*(
+                get_peg_arrow(peg, angle, denom * gauss_func(angle, 0, sigma) * max_arrow_len)
+                for angle in angles
+            ))
+            return arrows
+
+        # Show many distributions
+        all_dists = VGroup(*(
+            get_bounce_distribution(peg)
+            for row in pegs
+            for peg in row
+        ))
+
+        all_dists.set_fill(RED_E, 0.8)
+        self.play(LaggedStart(*(
+            LaggedStartMap(GrowArrow, dist)
+            for dist in all_dists
+        )))
+        self.wait()
+
+        # Zoom in to top one
+        ball = self.get_ball()
+        peg1 = pegs[0][len(pegs[0]) // 2]
+        peg2 = pegs[1][len(pegs[1]) // 2]
+        frame = self.frame
+        peg1_dist = get_bounce_distribution(peg1)
+        peg2_dist = get_bounce_distribution(peg2)
+        peg1_dist.rotate(30 * DEGREES, about_point=peg1.get_center())
+        peg2_dist.rotate(-30 * DEGREES, about_point=peg2.get_center())
+
+        full_trajectory, pieces = self.random_trajectory(ball, pegs, buckets, [0, 1, 0, 0, 0])
+        pieces[0].move_to(peg1.pfp(3 / 8) + ball.get_radius() * UP, DOWN)
+        pieces[1].stretch(0.7, 0)
+        pieces[1].shift(pieces[0].get_end() - pieces[1].get_start())
+        pieces[2].stretch(0.9, 0)
+        pieces[2].stretch(0.97, 1)
+        pieces[2].shift(pieces[1].get_end() - pieces[2].get_start())
+
+        self.play(
+            frame.animate.set_height(3, about_edge=UP),
+            FadeOut(all_dists, lag_ratio=0.01),
+            self.falling_anim(ball, pieces[0]),
+            run_time=2,
+        )
+        self.add(peg1_dist, ball)
+        self.play(LaggedStartMap(FadeIn, peg1_dist))
+        self.wait()
+        self.play(self.falling_anim(ball, pieces[1]), run_time=1)
+        self.play(LaggedStartMap(FadeIn, peg2_dist))
+        self.wait()
+        self.play(self.falling_anim(ball, pieces[2]), run_time=1)
+        self.wait(2)
+
 
 
 # Composite distributions
@@ -1103,8 +1215,9 @@ class DiceSumDistributions(InteractiveScene):
             LaggedStart(*(
                 TransformFromCopy(VGroup(dice[n]), die_groups[n])
                 for n in range(6)
-            )),
+            ), lag_ratio=0.1),
             Write(grid),
+            run_time=3
         )
         self.wait()
 
@@ -1284,7 +1397,7 @@ class DiceSumDistributions(InteractiveScene):
         sd_lines = VGroup(*(sl[:2] for sl in sd_labels))
         self.add(mean_lines, sd_lines)
 
-        # Reallign
+        # Realign
         all_axes = VGroup(*(plot[0] for plot in plots))
         all_bars = VGroup(*(plot[1] for plot in plots))
 
@@ -1564,17 +1677,21 @@ class DiceSumDistributions(InteractiveScene):
         ))
 
         self.play(Write(arrows, lag_ratio=0.01))
+
+        def get_factor(n):
+            return math.sqrt(n)
+
         self.play(
             LaggedStart(*(
                 bars.animate.stretch(
-                    1 / math.sqrt(n), 0,
+                    1 / get_factor(n), 0,
                     about_point=lines.get_center()
-                ).stretch(math.sqrt(n), 1, about_edge=DOWN)
+                ).stretch(get_factor(n), 1, about_edge=DOWN)
                 for n, bars, lines in zip(it.count(2), all_bars[1:], sd_lines)
             )),
             LaggedStart(*(
                 lines.animate.stretch(
-                    1 / math.sqrt(n), 0,
+                    1 / get_factor(n), 0,
                 )
                 for n, lines in zip(it.count(2), sd_lines[1:])
             )),
@@ -1849,7 +1966,7 @@ class ExpDistSumDistributions(DiceSumDistributions):
         )
         self.wait()
 
-        # Quantify mean
+        # Quantify means
         frame.target = frame.generate_target()
         frame.target.set_height(5)
         frame.target.move_to(plots[0], DOWN)
@@ -1860,7 +1977,7 @@ class ExpDistSumDistributions(DiceSumDistributions):
             MoveToTarget(frame),
             FadeOut(sd_lines, lag_ratio=0.1),
             FadeOut(sd_arrows, lag_ratio=0.1),
-            run_time=2
+            run_time=5
         )
         self.play(Write(mu_labels[0]))
         self.wait()
@@ -1889,7 +2006,7 @@ class ExpDistSumDistributions(DiceSumDistributions):
             FadeOut(mu_labels, lag_ratio=0.01),
         )
         self.play(
-            frame.animate.become(frame_around_plot0),
+            frame.animate.become(frame_around_plot0).set_anim_args(run_time=5),
             Write(sigma_labels[0]),
         )
         self.wait()
@@ -1915,6 +2032,7 @@ class ExpDistSumDistributions(DiceSumDistributions):
         # Realign and rescale
         all_axes = VGroup(*(plot[0] for plot in plots))
         all_bars = VGroup(*(plot[1] for plot in plots))
+        all_bars[1].stretch(0.8, 1, about_edge=DOWN)
 
         self.play(FadeOut(all_axes))
         self.realign_distributions(all_bars, labels, mean_lines, sd_lines)
@@ -2111,22 +2229,25 @@ class MeanAndStandardDeviation(InteractiveScene):
         mean_eq.next_to(rhs[0], LEFT, submobject_to_align=mean_eq[-1])
         VGroup(mean_eq, rhs).to_corner(UR)
 
-        self.play(Write(mean_eq[:-1]))
+        mean_eq[-1].set_opacity(0)
+        self.play(Write(mean_eq))
         self.wait()
 
+        # Highlight terms
         highlights = chart.bars.copy()
         highlights.set_stroke(YELLOW, 3)
         highlights.set_fill(opacity=0)
 
-        kw = dict(lag_ratio=0.7, run_time=3)
-        self.play(
-            FadeIn(mean_eq[-1]),
-            LaggedStart(*(
-                ShowCreationThenFadeOut(highlight)
-                for highlight in highlights
-            ), **kw),
-            LaggedStartMap(FadeIn, rhs, **kw)
-        )
+        for highlight, die, part in zip(highlights, chart.dice, rhs):
+            self.play(
+                ShowCreation(highlight),
+                mean_eq[-1].animate.set_opacity(1),
+            )
+            self.play(
+                TransformMatchingShapes(die.copy(), part),
+                FadeOut(highlight),
+                run_time=1
+            )
 
         # Show a few other distributions again
         for dist in dists:
@@ -2212,10 +2333,82 @@ class MeanAndStandardDeviation(InteractiveScene):
         self.play(Write(var_eq[1]))
         self.wait()
 
+        partial_square_opacity_tracker = ValueTracker(0)
+
+        # Show squares
+        partial_square_opacity_tracker.set_value(0.5)
+        new_dist = np.array([10, 2, 1, 3, 4, 13], dtype='float')
+        new_dist /= new_dist.sum()
+        sd_group = VGroup(sd_lines, sd_arrows)
+
+        def get_squares(bars):
+            result = VGroup()
+            for bar in bars:
+                prob = axes.y_axis.p2n(bars[0].get_top())
+                line = Line(bar.get_bottom(), mean_line.get_bottom())
+                square = Square(line.get_width())
+                square.move_to(line, DOWN)
+                square.match_y(bar.get_top(), DOWN)
+                square.set_stroke(RED, 1)
+                square.set_fill(RED, 0.2)
+                p_square = square.copy()
+                p_square.stretch(prob, 1, about_edge=DOWN)
+                p_square.set_opacity(partial_square_opacity_tracker.get_value())
+                result.add(VGroup(square, p_square))
+            return result
+
+        squares = get_squares(bars)
+        globals().update(locals())
+        labels = VGroup(*(Tex(Rf"P({n}) \cdot ({n} - \mu)^2", **tex_kw) for n in range(1, 7)))
+        labels.scale(0.5)
+        for label, square in zip(labels, squares):
+            label.square = square
+            label.add_updater(lambda m: m.set_width(0.7 * m.square.get_width()).next_to(m.square.get_bottom(), UP, SMALL_BUFF))
+
+        label = labels[0]
+        square = squares[0]
+        square[1].set_fill(opacity=0)
+        part1 = label[R"P(1) \cdot"]
+        part2 = label[R"(1 - \mu)^2"]
+        part2.save_state()
+        part2.match_x(squares[0])
+        self.play(
+            FadeOut(sd_group),
+            FadeIn(square, lag_ratio=0.8),
+            FadeIn(part2),
+        )
+        self.wait()
+        self.play(
+            square[1].animate.set_fill(opacity=0.5),
+            FadeIn(part1),
+            Restore(part2),
+        )
+        self.add(label)
+
+        # Show other squares
+        last_group = VGroup(square, label)
+        for new_label, new_square in zip(labels[1:], squares[1:]):
+            new_group = VGroup(new_square, new_label)
+            self.play(FadeOut(last_group), FadeIn(new_group))
+            last_group = new_group
+        self.play(
+            FadeOut(last_group),
+            FadeIn(square), FadeIn(label),
+        )
+        self.wait()
+
+        squares = always_redraw(lambda: get_squares(bars[:1]))
+        self.remove(square)
+        self.add(squares, label)
+
         # Again, toggle between low and  high variance
-        for dist in var_dists:
+        for dist in [var_dists[0], EXP_DISTRIBUTION, var_dists[1]]:
             set_dist(dist, run_time=3)
             self.wait(2)
+
+        sd_group.update()
+        self.play(FadeOut(squares), FadeOut(label), FadeIn(sd_group))
+        self.wait()
 
         # Standard deviation
         sd_equation = Tex(R"\sigma = \sqrt{\text{Var}(X)}", **tex_kw)
@@ -2253,11 +2446,6 @@ class MeanAndStandardDeviation(InteractiveScene):
         for dist in [*dists, *var_dists]:
             set_dist(dist, run_time=2)
             self.wait()
-
-
-class HowVarianceAdds(InteractiveScene):
-    def construct(self):
-        pass
 
 
 # Build up Gaussian
@@ -2427,6 +2615,7 @@ class BuildUpGaussian(InteractiveScene):
         base = alt_base_form.make_number_changable("2.718")
         base_width = base.get_width()
         base.set_color(TEAL)
+        base.edge_to_fix = ORIGIN
         base.add_updater(lambda m: m.set_value(
             np.exp(get_c() * np.log(get_base()))
         ))
@@ -2472,7 +2661,7 @@ class BuildUpGaussian(InteractiveScene):
             )
             base.resume_updating()
             self.wait()
-            for c in [3, 0.5, 1 / math.log(value)]:
+            for c in [3, 0.5, 1]:
                 self.play(c_tracker.animate.set_value(c), run_time=2)
                 self.wait()
 
@@ -2703,6 +2892,50 @@ class BuildUpGaussian(InteractiveScene):
         area_label[R"\sqrt{\pi}"].set_opacity(0)
         self.play(LaggedStartMap(FadeOut, VGroup(area_label, one, note_arrow)))
         self.wait()
+
+        # Show standard form
+        curr_form = sigma_forms[2].copy()
+        self.remove(*sigma_forms)
+        self.add(curr_form)
+        standard_form = Tex(R"{1 \over \sqrt{2\pi}} e^{-{1 \over 2} x^2}", **kw)
+        standard_form[R"{1 \over \sqrt{2\pi}}"].scale(0.7, about_edge=RIGHT)
+        standard_form.move_to(curr_form)
+
+        rect = SurroundingRectangle(standard_form)
+        rect.set_stroke(BLUE, 2)
+        std_words = Text("Standard\nnormal\ndistribution", alignment="LEFT")
+        std_words.match_height(rect)
+        std_words.scale(0.9)
+        std_words.next_to(rect, RIGHT, buff=MED_LARGE_BUFF)
+        std_words.set_color(BLUE)
+
+        self.play(sigma_tracker.animate.set_value(1))
+        self.play(TransformMatchingTex(curr_form, standard_form, run_time=1))
+
+        one_labels = Integer(1).replicate(2)
+        for ol, sl in zip(one_labels, sigma_labels):
+            ol.match_style(sl)
+            ol.move_to(sl)
+            ol.shift(SMALL_BUFF * UP)
+
+        self.play(
+            FadeOut(sigma_labels, 0.1 * UP, lag_ratio=0.1),
+            FadeIn(one_labels, 0.1 * UP, lag_ratio=0.1),
+        )
+        self.wait()
+        self.play(
+            ShowCreation(rect),
+            Write(std_words)
+        )
+        self.wait()
+
+        self.play(
+            FadeOut(rect),
+            FadeOut(std_words),
+            FadeOut(one_labels, 0.2 * DOWN),
+            FadeIn(sigma_labels, 0.2 * DOWN),
+            TransformMatchingTex(standard_form, sigma_forms[2])
+        )
 
         # Add the mean
         final_form = formulas[-1].copy()
@@ -3031,10 +3264,77 @@ class LimitingDistributions(InteractiveScene):
         self.wait()
         self.play(FadeOut(sd_lines))
 
-        # Comment on meaning of bars
+        # Readable meaning
+        full_screen_rect = FullScreenFadeRectangle()
+        full_screen_rect.set_opacity(0.7)
+        top_rect = full_screen_rect.copy().stretch(0.5, 1, about_edge=UP)
+        top_rect.set_fill(BLACK, 0.7)
+        words = Text("Highly readable meaning:")
+        words.next_to(scaled_sum_label, UP, LARGE_BUFF, aligned_edge=LEFT)
+        meaning = TexText(
+            R"How many std devs away from the mean is $X_1 + \cdots + X_{10}$",
+            t2c={"std devs": RED, "mean": PINK, },
+            font_size=40
+        )
+        meaning.move_to(words, LEFT)
+
+        self.add(full_screen_rect, scaled_sum_label)
+        self.play(FadeIn(full_screen_rect))
+        self.wait()
+        self.play(
+            FadeIn(top_rect), FadeIn(words)
+        )
+        self.wait()
+        self.play(
+            words.animate.shift(UP),
+            Write(meaning)
+        )
+        self.wait()
+
+        # Example bar
         bar = ss_plot.bars[9].copy()
         ss_plot.bars.save_state()
-        words = Text("Probility = Area", font_size=36)
+
+        sum_tex = Tex(R"0 = 19")
+        die = DieFace(1, fill_color=BLUE_E)
+        die.dots.set_opacity(0)
+        dice = die.get_grid(2, 5)
+        dice.set_height(0.75)
+        dice.set_stroke(width=1)
+        dice.move_to(sum_tex[0], RIGHT)
+        sum_tex.replace_submobject(0, dice)
+        sum_tex.move_to(bar).to_edge(LEFT)
+
+        arrow = Arrow(sum_tex, bar, buff=0.1)
+
+        ss_plot.bars.set_opacity(0.2)
+        self.play(
+            FadeOut(full_screen_rect),
+            top_rect.animate.set_opacity(1),
+            FadeIn(bar)
+        )
+        self.wait()
+        self.play(
+            FadeIn(sum_tex, lag_ratio=0.2, run_time=2),
+            GrowArrow(arrow),
+        )
+        self.wait()
+        self.play(
+            arrow.animate.become(Vector(0.5 * UP).next_to(bar, DOWN, SMALL_BUFF))
+        )
+        self.wait()
+        self.play(LaggedStart(
+            FadeOut(top_rect),
+            Restore(ss_plot.bars),
+            FadeOut(bar),
+            FadeOut(words),
+            FadeOut(meaning),
+            FadeOut(sum_tex),
+            FadeOut(arrow),
+        ))
+
+        # Comment on meaning of bars
+        words = Text("Probability = Area", font_size=36)
         words.next_to(bar, LEFT, buff=1.5, aligned_edge=UP)
         arrow = Arrow(words.get_right(), bar.get_center())
 
@@ -3170,11 +3470,14 @@ class LimitingDistributions(InteractiveScene):
         )
         self.play(FlashAround(label, run_time=2))
         self.wait()
+
+        random_dists = [normalize(np.random.random(6))**2 for x in range(8)]
         self.change_distribution(
-            [EXP_DISTRIBUTION, *alt_dists],
+            [*random_dists, alt_dists[-1]],
             top_plot,
             ss_plot,
             top_mean_sd_labels, get_N(),
+            run_time=1.5
         )
         self.wait()
 
@@ -3231,15 +3534,21 @@ class LimitingDistributions(InteractiveScene):
         )))
         self.wait()
 
-    def get_top_distribution_plot(self, dist):
+    def get_top_distribution_plot(
+        self,
+        dist,
+        width=5,
+        height=2.5,
+        y_range=(0, 0.5, 0.1)
+    ):
         # Axes and bars
         x_min = self.x_min
 
         axes = Axes(
             (x_min - 1, x_min + len(dist) - 1),
-            self.y_range,
-            width=5,
-            height=2.5
+            y_range,
+            width=width,
+            height=height,
         )
         axes.x_axis.add_numbers(font_size=24, excluding=[0])
         axes.x_axis.numbers.shift(0.5 * axes.x_axis.get_unit_size() * LEFT)
@@ -3348,6 +3657,7 @@ class LimitingDistributions(InteractiveScene):
         xs = (unscaled_xs - n * mu) / (sigma * math.sqrt(n))
 
         bars = ChartBars(axes, sum_dist, xs=xs)
+        bars.shift(0.5 * bars[0].get_width() * LEFT)
         bars.set_submobject_colors_by_gradient(*self.bar_colors)
         bars.set_opacity(self.bar_opacity)
 
@@ -3453,9 +3763,11 @@ class LimitingDistributions(InteractiveScene):
         ss_plot,
         top_mean_sd_labels,
         n,
+        run_time=1,
     ):
         for dist in alt_dists:
             new_top_plot = self.get_top_distribution_plot(dist)
+            new_top_plot.bars.align_to(top_plot.bars, DOWN)
             new_ss_plot = self.get_scaled_sum_plot(dist, n)
             mean, sd = get_mean_and_sd(dist)
             self.play(
@@ -3468,9 +3780,292 @@ class LimitingDistributions(InteractiveScene):
                 ),
                 ChangeDecimalToValue(top_mean_sd_labels[0][-1], mean),
                 ChangeDecimalToValue(top_mean_sd_labels[1][-1], sd),
-            )
+             )
             self.wait()
             self.distribution = dist
+
+
+class HowVarianceAdds(LimitingDistributions):
+    def construct(self):
+        # Define two distributions
+        dist1 = EXP_DISTRIBUTION
+        dist2 = np.convolve(dist1, U_SHAPED_DISTRIBUTION)
+
+        plot1 = self.get_top_distribution_plot(dist1)
+        plot2 = self.get_top_distribution_plot(dist2, y_range=(0, 0.301, 0.1))
+        plot1.to_corner(UL)
+        plot2.to_corner(UR)
+        plot2.bars.set_submobject_colors_by_gradient(TEAL_E, GREEN_D)
+        top_plots = VGroup(plot1, plot2)
+
+        label_kw = dict(
+            font_size=60,
+            t2c={"X": BLUE, "Y": GREEN}
+        )
+        top_labels = VGroup(
+            Tex("X", **label_kw),
+            Tex("Y", **label_kw),
+        )
+        for plot, label in zip(top_plots, top_labels):
+            label.move_to(plot, UR).shift(LEFT)
+
+        h_line = Line(LEFT, RIGHT)
+        h_line.set_width(FRAME_WIDTH)
+        h_line.set_stroke(GREY_A, 1)
+
+        # Define the sum
+        sum_dist = np.convolve(dist1, dist2)
+        sum_plot = self.get_top_distribution_plot(
+            sum_dist,
+            y_range=(0, 0.301, 0.1),
+            width=10
+        )
+        sum_plot.to_corner(DL)
+        sum_plot.bars.set_color_by_gradient(GREEN, YELLOW_E)
+
+        sum_label = Tex("X + Y", **label_kw)
+        sum_label.move_to(sum_plot, UL)
+        sum_label.shift(RIGHT)
+
+        # Define annotations
+        top_annotations1 = VGroup(*(self.get_mu_sigma_annotations(plot1, "", "")))
+        top_annotations2 = VGroup(*(self.get_mu_sigma_annotations(plot2, "", "")))
+        sum_annotations = VGroup(*(self.get_mu_sigma_annotations(sum_plot, "", "")))
+        for annotations in [top_annotations1, top_annotations2, sum_annotations]:
+            annotations[0].set_color(GREY_C)
+            annotations[1].set_color(GREY_A)
+        top_annotations = VGroup(top_annotations1, top_annotations2)
+
+        # Define variance formula
+        var_form = Tex(
+            R"\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y)",
+            **label_kw
+        )
+        var_form.scale(0.75)
+        var_form.next_to(h_line, DOWN)
+        var_form.to_edge(RIGHT, buff=1.0)
+        note = TexText("(Assuming $X$ and $Y$ are independent!)", font_size=36)
+        for key, color in label_kw["t2c"].items():
+            note[key].set_color(color)
+        note.next_to(var_form, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+
+        # Add them all!
+        self.add(h_line)
+        self.play(
+            LaggedStartMap(FadeIn, top_plots, lag_ratio=0.7, run_time=2),
+            LaggedStartMap(FadeIn, top_labels, lag_ratio=0.7, run_time=2),
+            LaggedStartMap(FadeIn, top_annotations, lag_ratio=0.7, run_time=2),
+        )
+
+        self.play(
+            TransformFromCopy(plot1, sum_plot),
+            TransformFromCopy(plot2, sum_plot.copy().fade(1)),
+            TransformFromCopy(top_labels[0], sum_label[:1]),
+            TransformFromCopy(top_labels[1], sum_label[1:]),
+            TransformFromCopy(top_annotations1, sum_annotations),
+            TransformFromCopy(top_annotations2, sum_annotations),
+        )
+
+        # Show variance formulas
+        self.play(LaggedStart(
+            TransformMatchingShapes(
+                sum_label.copy(),
+                var_form[R"\text{Var}(X + Y) = "]
+            ),
+            TransformMatchingShapes(
+                top_labels[0].copy(),
+                var_form[R"\text{Var}(X)"]
+            ),
+            TransformMatchingShapes(
+                top_labels[1].copy(),
+                var_form[R"+ \text{Var}(Y)"]
+            ),
+            FadeIn(note, 0.25 * DOWN),
+            lag_ratio=0.25
+        ))
+        self.wait()
+
+        # Sigma equation
+        sigma_form = Tex(
+            R"\sigma_{X + Y}^2 = \sigma_X^2 + \sigma_Y^2",
+            **label_kw
+        )
+        sigma_form.scale(0.75)
+        sigma_form.move_to(var_form, LEFT)
+
+        self.play(LaggedStart(
+            FadeIn(sigma_form, 0.5 * DOWN),
+            var_form.animate.shift(DOWN),
+            note.animate.shift(DOWN).set_opacity(0.7),
+            lag_ratio=0.2,
+            run_time=2
+        ))
+        self.wait()
+
+        # Add many X_n
+        plot1_group = VGroup(plot1, top_labels[0], top_annotations1)
+        new_top_groups = plot1_group.replicate(4)
+        for n, group in zip([1, 2, 3, "N"], new_top_groups):
+            label = group[1]
+            substr = Tex(str(n))
+            substr.match_color(label)
+            substr.set_height(label.get_height() * 0.5)
+            substr.next_to(label.get_corner(DR), RIGHT, buff=0.05)
+            label.add(substr)
+
+        new_top_groups.scale(0.5)
+        dots = Tex(R"\dots", font_size=90)
+        arranger = VGroup(*new_top_groups[:3], dots, *new_top_groups[3:])
+        arranger.arrange(RIGHT, buff=LARGE_BUFF)
+        arranger.set_width(FRAME_WIDTH - 1)
+        arranger.set_y(2.5)
+
+        sum_dist = dist1
+        for _ in range(6):
+            sum_dist = np.convolve(dist1, sum_dist)
+
+        new_sum_plot = self.get_top_distribution_plot(
+            sum_dist,
+            y_range=(0, 0.2, 0.1),
+            width=10
+        )
+        new_sum_plot.axes.x_axis.remove(new_sum_plot.axes.x_axis.numbers)
+        new_sum_plot.to_corner(DL)
+        new_sum_label = Tex(
+            R"X_1 + \cdots + X_n",
+            t2c={"X_1": BLUE, "X_n": BLUE}
+        )
+        new_sum_label.next_to(new_sum_plot.axes.c2p(0, 0.2), UR)
+
+        rules = VGroup(sigma_form, var_form, note)
+
+        self.play(
+            FadeOut(plot2, RIGHT),
+            FadeOut(top_labels[1], RIGHT),
+            FadeOut(top_annotations2, RIGHT),
+        )
+        self.remove(plot1_group)
+        self.play(
+            FadeTransformPieces(
+                plot1_group.replicate(4),
+                new_top_groups,
+            ),
+            Write(dots),
+            h_line.animate.shift(UP),
+            FadeOut(sum_plot),
+            FadeOut(sum_annotations),
+            FadeOut(sum_label),
+            rules.animate.scale(0.5).next_to(new_sum_plot.axes.c2p(0, 0), UP).to_edge(RIGHT),
+            FadeIn(new_sum_plot),
+            FadeIn(new_sum_label),
+        )
+        self.wait()
+
+        # New variance formula
+        t2c = {"X_1": BLUE, "X_n": BLUE}
+        new_var_form = Tex(
+            # R"Var(X_1 + \cdots + X_n) = Var(X_1) + \cdots + Var(X_n) = n \cdot Var(X_1)",
+            # R"\sigma_{X_1 + \cdots + X_n}^2 = \sigma_{X_1}^2 + \cdots + \sigma_{X_n}^2 = n \cdot \sigma_{X_1}^2",
+            R"\sigma_{X_1 + \cdots + X_n}^2 = n \cdot \sigma_{X_1}^2",
+            t2c=t2c
+        )
+        new_sigma_form = Tex(
+            R"\sigma_{X_1 + \cdots + X_n} = \sqrt{n} \cdot \sigma_{X_1}",
+            t2c=t2c
+        )
+
+        new_var_form.next_to(h_line, DOWN)
+        new_var_form.to_edge(RIGHT, buff=2.5)
+        new_sigma_form.next_to(new_var_form, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+
+        rects = VGroup(
+            SurroundingRectangle(new_var_form[R"\sigma_{X_1 + \cdots + X_n}^2"]),
+            SurroundingRectangle(new_var_form[R"\sigma_{X_1}^2"]),
+        )
+        var_labels = VGroup(
+            Tex(R"\text{Var}(X_1 + \cdots + X_n)", t2c=t2c),
+            Tex(R"\text{Var}(X_1)", t2c=t2c),
+        )
+        for label, rect in zip(var_labels, rects):
+            label.set_max_width(rect.get_width())
+            label.next_to(rect, DOWN)
+            rect.add(label)
+
+        self.play(FadeTransform(new_sum_label.copy(), new_var_form))
+        self.wait()
+
+        # Test
+        self.play(FadeIn(rects[0]))
+        self.wait()
+        self.play(FadeOut(rects[0]), FadeIn(rects[1]))
+        self.wait()
+        self.play(FadeOut(rects[1]))
+        self.wait()
+
+        self.play(TransformMatchingTex(new_var_form.copy(), new_sigma_form))
+        self.play(FlashAround(new_sigma_form[R"\sqrt{n}"], time_width=1.5, run_time=2))
+        self.wait()
+
+
+
+class InfiniteVariance(LimitingDistributions):
+    def construct(self):
+        # Test
+        max_n = 300
+        full_dist = np.array([(1 / n**1.5) for n in range(3, max_n)])
+        old_plot = VGroup()
+
+        var_label = Tex(R"\text{Var}(X) = 0.00", font_size=60)
+        var_label.make_number_changable("0.00")
+        var_label.move_to(2 * UP)
+        var_label["X"].set_color(BLUE)
+        self.add(var_label)
+
+        for n in range(6, len(full_dist)):
+            dist = full_dist[:n] / full_dist[:n].sum()
+            plot = self.get_top_distribution_plot(
+                dist,
+                width=min(n * (5 / 6), 12),
+                height=4,
+                y_range=(0, 0.301, 0.1)
+            )
+            plot.axes.x_axis.remove(plot.axes.x_axis.numbers)
+            plot.axes.x_axis.add_numbers(range(0, n, 10), font_size=16)
+            plot.axes.x_axis.ticks.stretch(0.2, 1)
+            plot.bars.set_height(4, about_edge=DOWN, stretch=True)
+            plot.shift(3 * DOWN + 6 * LEFT - plot.axes.c2p(0, 0))
+            annotations = VGroup(*(self.get_mu_sigma_annotations(plot, "", "")))
+            annotations.stretch(0.75, 1, about_edge=DOWN)
+            annotations.set_opacity((max_n - n) / max_n)
+            plot.add(annotations)
+
+            mu, sigma = get_mean_and_sd(dist)
+            var = sigma**2
+
+            if n < 12:
+                self.play(
+                    FadeOut(old_plot),
+                    FadeIn(plot),
+                    ChangeDecimalToValue(var_label[-1], var),
+                    run_time=0.5
+                )
+                self.wait(0.5)
+            else:
+                self.remove(old_plot)
+                self.add(plot)
+                var_label[-1].set_value(var)
+                self.wait(1 / 30)
+            old_plot = plot
+
+        inf = Tex(R"\infty", font_size=60)
+        inf.move_to(var_label[-1], LEFT)
+        self.remove(var_label[-1])
+        self.add(inf)
+        self.wait()
+
+
+
+
 
 
 class RuleOfThumb(BuildUpGaussian):
@@ -3519,7 +4114,7 @@ class RuleOfThumb(BuildUpGaussian):
 
         self.add(axes, graph)
 
-        # Function for changable area
+        # Function for changeable area
         area = VMobject()
         area.set_stroke(width=0)
         area.set_fill(YELLOW, 0.5)

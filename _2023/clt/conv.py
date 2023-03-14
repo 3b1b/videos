@@ -1,15 +1,18 @@
 from manim_imports_ext import *
 from _2022.convolutions.continuous import *
+from _2023.clt.main import *
 
 # Convolutions
 
 class ConvolveDiscreteDistributions(InteractiveScene):
     long_form = True
+    dist1 = EXP_DISTRIBUTION
+    dist2 = np.array([1.0 / (x + 1)**1.2 for x in range(6)])
 
     def construct(self):
         # Set up two distributions
-        dist1 = np.array([np.exp(-0.25 * (x - 3)**2) for x in range(6)])
-        dist2 = np.array([1.0 / (x + 1)**1.2 for x in range(6)])
+        dist1 = np.array(self.dist1)
+        dist2 = np.array(self.dist2)
         for dist in dist1, dist2:
             dist /= dist.sum()
 
@@ -295,6 +298,11 @@ class ConvolveDiscreteDistributions(InteractiveScene):
             ])
 
         return LaggedStart(*anims, lag_ratio=lag_ratio, run_time=run_time)
+
+
+class ConvolveMatchingDiscreteDistributions(ConvolveDiscreteDistributions):
+    dist1 = EXP_DISTRIBUTION
+    dist2 = EXP_DISTRIBUTION
 
 
 class RepeatedDiscreteConvolutions(InteractiveScene):
