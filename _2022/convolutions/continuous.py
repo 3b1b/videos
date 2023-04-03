@@ -737,9 +737,7 @@ class DiagonalSlices(ProbConvolutions):
             resolution=(201, 201),
             color=BLACK,
             opacity=1,
-            gloss=0,
-            reflectiveness=0,
-            shadow=0,
+            shading=(0, 0, 0),
         )
 
     def get_slice_graph(self, t_tracker, color=WHITE, stroke_width=4):
@@ -763,9 +761,17 @@ class DiagonalSlices(ProbConvolutions):
         )
 
 
+class GaussianSlices(DiagonalSlices):
+    def f(self, x):
+        return np.exp(-x**2)
+
+    def g(self, x):
+        return np.exp(-x**2)
+
+
 class RepeatedConvolution(MovingAverageAsConvolution):
     resolution = 0.01
-    n_iterations = 20
+    n_iterations = 8
     when_to_renormalize = 6
     f_label_tex = "f_1(x)"
     g_label_tex = "f_1(s - x)"

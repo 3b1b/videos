@@ -91,14 +91,31 @@ class BellCurveArea(InteractiveScene):
         self.play(FlashAround(integral["dx"], time_width=1, run_time=1.5))
         self.wait()
 
-        # Thinner rectangles
+        # Show addition
+        rects.set_fill(opacity=0.8)
+        rects.set_stroke(WHITE, 1)
         self.play(
             graph_label.animate.set_height(0.7).next_to(graph.pfp(0.4), UL),
             rects.animate.set_opacity(0.75),
             FadeOut(rect)
         )
+        self.wait()
+        self.play(
+            LaggedStart(*(
+                r.animate.shift(0.25 * UP).set_color(YELLOW).set_anim_args(rate_func=there_and_back)
+                for r in rects
+            ), run_time=5, lag_ratio=0.1),
+            LaggedStart(
+                FlashAround(integral[2:4], time_width=1),
+                FlashAround(integral[1], time_width=1),
+                lag_ratio=0.25,
+                run_time=5,
+            )
+        )
+        self.wait()
 
-        for dx in [0.1, 0.05, 0.025, 0.01]:
+        # Thinner rectangles
+        for dx in [0.1, 0.075, 0.05, 0.03, 0.02, 0.01, 0.005]:
             new_rects = axes.get_riemann_rectangles(graph, dx=dx, colors=colors)
             new_rects.set_stroke(WHITE, 1)
             new_rects.set_fill(opacity=0.7)
@@ -184,6 +201,109 @@ class BellCurveArea(InteractiveScene):
             LaggedStartMap(FadeIn, functions, shift=DOWN, lag_ratio=0.5),
             frame.animate.shift(4 * RIGHT),
             run_time=3
+        )
+        self.wait()
+
+
+class AntiDerivative(InteractiveScene):
+    def construct(self):
+        # Add both planes
+        x_min, x_max = (-3, 3)
+        planes = VGroup(*(
+            NumberPlane(
+                (x_min, x_max), (0, 2),
+                width=5.5, height=2.75,
+                background_line_style=dict(stroke_color=GREY, stroke_width=1, stroke_opacity=1.0),
+                faded_line_ratio=3,
+            )
+            for x in range(2)
+        ))
+        planes.arrange(DOWN, buff=LARGE_BUFF)
+        planes.to_corner(UL)
+        self.add(planes)
+
+        # Titles
+        titles = VGroup(
+            Tex("f(x) = e^{-x^2}", font_size=66),
+            Tex(R"F(x) = \int_0^x e^{-t^2} dt"),
+        )
+        for title, plane in zip(titles, planes):
+            title.next_to(plane, RIGHT)
+
+        ad_word = Text("Antiderivative")
+        ad_word.next_to(titles[1], UP, MED_LARGE_BUFF)
+        VGroup(ad_word, titles[1]).match_y(planes[1])
+
+        self.add(titles)
+        self.add(ad_word)
+
+        # High graph
+        x_tracker = ValueTracker(0)
+        get_x = x_tracker.get_value
+        high_graph = planes[0].get_graph(lambda x: np.exp(-x**2))
+        high_graph.set_stroke(BLUE, 3)
+
+        high_area = high_graph.copy()
+
+        def update_area(area: VMobject):
+            x = get_x()
+            area.become(high_graph)
+            area.set_stroke(width=0)
+            area.set_fill(BLUE, 0.5)
+            area.pointwise_become_partial(
+                high_graph, 0, inverse_interpolate(x_min, x_max, x)
+            )
+            area.add_line_to(planes[0].c2p(x, 0))
+            area.add_line_to(planes[0].c2p(x_min, 0))
+            return area
+
+        high_area.add_updater(update_area)
+
+        self.add(high_graph, high_area)
+
+        # Low graph
+        dist = scipy.stats.norm(0, 1)
+        low_graph = planes[1].get_graph(lambda x: math.sqrt(PI) * dist.cdf(x))
+        low_graph.set_stroke(YELLOW, 2)
+        low_dot = GlowDot()
+        low_dot.add_updater(lambda m: m.move_to(planes[1].i2gp(get_x(), low_graph)))
+
+        low_line = always_redraw(lambda: DashedLine(
+            planes[1].c2p(get_x(), 0), planes[1].i2gp(get_x(), low_graph),
+        ).set_stroke(WHITE, 2))
+
+        self.add(low_graph, low_dot, low_line)
+
+        # Animations
+        for value in [1.5, -2, -1, 1, -0.5, 0.5, 3.0, -1.5]:
+            self.play(x_tracker.animate.set_value(value), run_time=3)
+            self.wait()
+
+
+class UsualFunctionTypes(InteractiveScene):
+    def construct(self):
+        t2c = {"x": YELLOW}
+        functions = VGroup(
+            Tex(R"a_n x^n + \cdots a_1 x + a_0", t2c=t2c),
+            Tex(R"\sin(x), \cos(x), \arctan(x)", t2c=t2c),
+            Tex(R"b^x, \log(x), \cosh(x)", t2c=t2c),
+            Tex(R"\vdots")
+        )
+        functions.arrange(DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        functions.set_height(2.5)
+        functions.to_edge(RIGHT, buff=0.6)
+
+        box = SurroundingRectangle(functions, buff=MED_LARGE_BUFF)
+        box.set_stroke(RED, 2)
+
+        words = Text("Cannot be expressed \n in terms of these:")
+        words.next_to(box, UP)
+        words.set_fill(RED)
+
+        self.play(
+            FadeIn(words, lag_ratio=0.1),
+            FadeIn(box),
+            LaggedStartMap(FadeIn, functions, shift=DOWN, lag_ratio=0.5, run_time=3),
         )
         self.wait()
 
@@ -384,17 +504,17 @@ class CylinderSlices(GaussianIntegral):
             Rotate(bell2d, PI, axis=OUT, about_point=axes.c2p(0, 0, 0)),
             frame.animate.move_to(ORIGIN).reorient(-20, 70),
             Restore(axes),
-            TransformMatchingTex(label2d.copy(), label3d),
+            TransformMatchingTex(label2d.copy(), label3d, time_span=(0, 2)),
             label2d.animate.next_to(label3d, UP, MED_LARGE_BUFF, LEFT),
-            run_time=3
+            run_time=6
         )
         self.wait()
         self.play(
             FadeOut(bell_halves, 0.01 * IN),
             FadeOut(bell2d, 0.1 * IN),
             FadeIn(graph, 0.01 * IN),
-            FadeIn(graph_mesh, 0.01 * IN),
         )
+        self.play(Write(graph_mesh, stroke_width=1, lag_ratio=0.01))
         self.wait()
 
         # Rotate the frame
@@ -448,7 +568,18 @@ class CylinderSlices(GaussianIntegral):
                 Write(label),
             )
 
-        # Show pythagorean equations
+        # Plug in r
+        r_label_rect = SurroundingRectangle(labels[2], buff=SMALL_BUFF)
+        r_label_rect.set_stroke(RED, 2)
+        arrow = Arrow(r_label_rect, axes.c2p(-3, 3, 0) + 3.2 * LEFT + 0.25 * UP, path_arc=45 * DEGREES)
+        arrow.set_stroke(RED)
+
+        self.always_depth_test = False
+        self.play(ShowCreation(r_label_rect))
+        self.play(ShowCreation(arrow))
+        self.wait()
+
+        # Show Pythagorean equations
         r_func = Tex("= e^{-r^2}", t2c={"r": RED})
         r_func.match_height(label2d["= e^{-x^2}"])
         r_func.next_to(label3d, RIGHT, MED_SMALL_BUFF, UP)
@@ -463,13 +594,10 @@ class CylinderSlices(GaussianIntegral):
         pythag.next_to(label3d, DOWN, buff=2.0, aligned_edge=LEFT)
         pythag.fix_in_frame()
 
-        self.play(VShowPassingFlash(
-            SurroundingRectangle(label3d["e^{-(x^2 + y^2)}"]).insert_n_curves(20).fix_in_frame().set_stroke(YELLOW),
-            time_width=1.5,
-            run_time=1,
-        ))
         self.play(
             FadeTransform(label2d["= e^{-x^2}"].copy(), r_func),
+            FadeOut(arrow, scale=0.8, shift=DR + RIGHT),
+            FadeOut(r_label_rect)
         )
         self.wait()
         line_copies = lines.copy()
@@ -497,6 +625,7 @@ class CylinderSlices(GaussianIntegral):
         functions.fix_in_frame()
 
         # Emphasize rotational symmetry
+        self.always_depth_test = True
         x_label, y_label, r_label = labels
         self.play(
             *map(FadeOut, [x_line, y_line, x_label, y_label, pythag])
@@ -657,7 +786,7 @@ class CylinderSlices(GaussianIntegral):
         self.add(area_eq2, circ_word, height_word)
         self.wait()
         self.play(
-            frame.animate.center().reorient(-15, 66).set_height(4).set_anim_args(run_time=3),
+            frame.animate.center().reorient(-15, 66).set_height(4).set_anim_args(run_time=15),
             *map(FadeOut, [rect, rect_side, height_line]),
         )
 
@@ -982,6 +1111,11 @@ class CartesianSlices(GaussianIntegral):
         func_label.rotate(90 * DEGREES, RIGHT)
         func_label.next_to(x_slice_label, OUT, MED_LARGE_BUFF)
 
+        fx0 = Tex(R"e^{-(x^2 + 0^2)} = e^{-x^2}", **tex_kw)
+        fx0.rotate(90 * DEGREES, RIGHT)
+        fx0.next_to(func_label, IN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        fx0["0"].set_color(YELLOW)
+
         self.always_depth_test = False
         self.play(
             *(
@@ -997,6 +1131,10 @@ class CartesianSlices(GaussianIntegral):
 
         self.play(FadeIn(func_label))
         self.wait()
+        self.play(TransformMatchingTex(func_label.copy(), fx0, lag_ratio=0.025))
+        self.wait()
+        self.play(FadeOut(fx0, RIGHT, rate_func=running_start))
+
         self.play(TransformMatchingShapes(func_label.copy(), x_slice_label))
         self.wait()
         self.play(Swap(x_term, y_term, path_arc=0.5 * PI))

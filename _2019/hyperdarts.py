@@ -408,52 +408,6 @@ class HyperdartScene(MovingCameraScene):
         return VGroup(rect, game_over)
 
 
-class Dartboard(VGroup):
-    CONFIG = {
-        "radius": 3,
-        "n_sectors": 20,
-    }
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        n_sectors = self.n_sectors
-        angle = TAU / n_sectors
-
-        segments = VGroup(*[
-            VGroup(*[
-                AnnularSector(
-                    inner_radius=in_r,
-                    outer_radius=out_r,
-                    start_angle=n * angle,
-                    angle=angle,
-                    color=color,
-                )
-                for n, color in zip(
-                    range(n_sectors),
-                    it.cycle(colors)
-                )
-            ])
-            for colors, in_r, out_r in [
-                ([GREY_B, GREY_E], 0, 1),
-                ([GREEN_E, RED_E], 0.5, 0.55),
-                ([GREEN_E, RED_E], 0.95, 1),
-            ]
-        ])
-        segments.rotate(-angle / 2)
-        bullseyes = VGroup(*[
-            Circle(radius=r)
-            for r in [0.07, 0.035]
-        ])
-        bullseyes.set_fill(opacity=1)
-        bullseyes.set_stroke(width=0)
-        bullseyes[0].set_color(GREEN_E)
-        bullseyes[1].set_color(RED_E)
-
-        self.bullseye = bullseyes[1]
-        self.add(*segments, *bullseyes)
-        self.scale(self.radius)
-
-
 # Scenes to overlay on Numerphile
 
 class TableOfContents(Scene):
