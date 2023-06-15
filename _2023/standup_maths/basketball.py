@@ -35,7 +35,8 @@ def get_dots(axes, coords):
 
 def get_bars(axes, coords, resolution=(50, 94)):
     # Test
-    resolution = (10, 20)
+    # resolution = (10, 20)
+    # resolution = (25, 47)
     x_min, x_max = axes.x_range
     y_min, y_max = axes.y_range
 
@@ -45,7 +46,7 @@ def get_bars(axes, coords, resolution=(50, 94)):
     xs = np.linspace(x_min, x_max, resolution[0])
     ys = np.linspace(y_min, y_max, resolution[1])
 
-    factor = 100 / len(int_coords)
+    factor = 200 / len(int_coords)
 
     boxes = VGroup()
     for i, j in it.product(range(len(xs) - 1), range(len(ys) - 1)):
@@ -57,15 +58,16 @@ def get_bars(axes, coords, resolution=(50, 94)):
         box.remove(box[-1])
         box.set_fill(RED, 1)
         box.set_stroke(BLACK, 0.5, 0.5)
-        box.set_width(0.5 * line.get_width(), stretch=True)
-        box.set_height(0.5 * line.get_height(), stretch=True)
+        box.set_width(0.35 * line.get_width(), stretch=True)
+        box.set_height(0.35 * line.get_height(), stretch=True)
         box.set_depth(factor * n_in_range, stretch=True)
         box.move_to(line, IN)
         if n_in_range < 1:
             box.set_opacity(0)
-        boxes.add(*box)
+        boxes.add(box)
 
-    boxes.set_depth(5, stretch=True, about_edge=IN)
+    boxes.set_fill(BLUE_E)
+    boxes.set_stroke(WHITE, 1)
 
     return boxes
 
@@ -101,6 +103,8 @@ class ShotHistory(InteractiveScene, ThreeDScene):
         all_dots = Group()
         all_bars = Group()
         year_range = (1997, 2022)
+        low_point = court_rect.get_bottom() + 0.6 * UP
+
         for year in ProgressDisplay(range(*year_range)):
             try:
                 coords = load_data(year)
@@ -108,17 +112,21 @@ class ShotHistory(InteractiveScene, ThreeDScene):
                 continue
             all_dots.add(get_dots(axes, coords))
             all_bars.add(get_bars(axes, coords))
+            for bar in all_bars[-1]:
+                dist = get_norm(bar.get_nadir() - low_point)
+                if dist < 0.5:
+                    bar.set_opacity(0)
 
         for bars in all_bars:
             bars.sort(lambda p: np.dot(p, frame.get_implied_camera_location()))
 
-        # all_dots.save_state()
-        # all_bars.save_state()
+        all_dots.save_state()
+        all_bars.save_state()
 
-        # # Show all data
-        # self.remove(all_dots, all_bars)
-        # all_dots.restore()
-        # all_bars.restore()
+        # Show all data
+        self.remove(all_dots, all_bars)
+        all_dots.restore()
+        all_bars.restore()
 
         self.play(
             frame.animate.reorient(-100),
@@ -129,3 +137,79 @@ class ShotHistory(InteractiveScene, ThreeDScene):
             ), rate_func=linear),
             run_time=20,
         )
+        self.play(
+            frame.animate.reorient(-65),
+            run_time=10
+        )
+
+        # Reset states
+        all_bars.restore()
+        all_dots.restore()
+        curr_bars = all_bars[-1].copy()
+        curr_dots = all_dots[-1].copy()
+
+        self.remove(*all_bars, *all_dots)
+        self.add(curr_dots, curr_bars)
+
+        # Roll back to 2000
+        def update_dots(dots):
+            dots.set_submobjects(
+                all_dots[int(year_mob.get_value() - year_range[0])]
+            )
+
+        def update_bars(bars):
+            bars.set_submobjects(
+                all_bars[int(year_mob.get_value() - year_range[0])]
+            )
+
+        self.play(
+            UpdateFromFunc(curr_dots, update_dots),
+            UpdateFromFunc(curr_bars, update_bars),
+            ChangeDecimalToValue(year_mob, 2000),
+            self.frame.animate.reorient(-117, 69, 0).move_to([-0.54, -2.5, 0.31]).set_height(5.50),
+            run_time=3,
+        )
+        self.wait(2)
+        self.play(
+            self.frame.animate.reorient(42, 98, 0).move_to([-0.54, -2.5, 0.31]).set_height(5.50),
+            run_time=3,
+        )
+        self.wait()
+        self.play(
+            self.frame.animate.reorient(-29, 95, 0).move_to([-0.57, -2.46, 0.52]).set_height(6.10),
+            run_time=3,
+        )
+
+        # Up to 2010
+        self.play(
+            UpdateFromFunc(curr_dots, update_dots),
+            UpdateFromFunc(curr_bars, update_bars),
+            ChangeDecimalToValue(year_mob, 2010),
+            self.frame.animate.reorient(-159, 84, 0).move_to([-0.41, -2.56, 0.76]).set_height(6.73),
+            run_time=4,
+        )
+        self.play(
+            self.frame.animate.reorient(-232, 84, 0).move_to([-0.41, -2.56, 0.76]).set_height(6.73),
+            run_time=15,
+        )
+        self.frame.reorient(128)
+        self.wait()
+
+        # Up to 2020
+        self.play(
+            UpdateFromFunc(curr_dots, update_dots),
+            UpdateFromFunc(curr_bars, update_bars),
+            ChangeDecimalToValue(year_mob, 2020),
+            self.frame.animate.reorient(0, 31, 0).move_to([-0.37, -2.11, 0.71]).set_height(7.26),
+            run_time=4,
+        )
+        self.wait()
+        self.play(
+            self.frame.animate.reorient(-34, 80, 0).move_to([-0.37, -2.11, 0.71]).set_height(7.26),
+            run_time=5,
+        )
+        self.play(
+            self.frame.animate.reorient(29, 70, 0).move_to([0.43, -1.87, 0.95]).set_height(7.49),
+            run_time=25,
+        )
+        self.wait()
