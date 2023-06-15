@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from manim_imports_ext import *
 
-from _2022.convolutions.continuous import *
+from _2023.convolutions2.continuous import *
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 EXP_DISTRIBUTION = [0.41, 0.25, 0.15, 0.10, 0.06, 0.03]
 U_SHAPED_DISTRIBUTION = [0.3, 0.15, 0.05, 0.05, 0.15, 0.3]
 STEEP_U_SHAPED_DISTRIBUTION = [0.4, 0.075, 0.025, 0.025, 0.075, 0.4]
+
 
 class ChartBars(VGroup):
     def __init__(

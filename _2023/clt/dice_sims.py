@@ -241,7 +241,7 @@ class DiceSimulationAlt4(DiceSimulation):
 class DiceSimulationAlt5(DiceSimulation):
     random_seed = 5
 
-        
+    
 class LargerDiceSimulation(DiceSimulation):
     n_samples = 3000
     brick_height = 0.02
