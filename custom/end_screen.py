@@ -35,7 +35,7 @@ class PatreonEndScreen(Scene):
     randomize_order = False
     capitalize = True
     name_y_spacing = 0.6
-    thanks_words = "Funded by viewers, visit 3b1b.co/support to learn more"
+    thanks_words = "An especially warm thanks to these patrons"
     scroll_time = 20
 
     def construct(self):
