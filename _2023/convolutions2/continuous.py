@@ -176,8 +176,8 @@ class TransitionToContinuousProbability(InteractiveScene):
         v_lines.add_updater(update_v_lines)
 
         bound_labels = Tex("ab")
-        bound_labels[0].add_updater(lambda m: m.next_to(v_lines[0], DOWN))
-        bound_labels[1].add_updater(lambda m: m.next_to(v_lines[1], DOWN))
+        bound_labels[0].add_updater(lambda m: m.move_to(v_lines[0], DOWN).shift(0.5 * DOWN))
+        bound_labels[1].add_updater(lambda m: m.move_to(v_lines[1], DOWN).shift(0.5 * DOWN))
         bound_labels.add_updater(lambda m: m.set_opacity(sub_area_opacity_tracker.get_value()))
 
         prob_label = Tex(R"P(a < x < b) = \text{This area}")
@@ -311,8 +311,10 @@ class CompareFormulas(InteractiveScene):
         cont_formula.match_x(cont_title)
         cont_formula.match_y(disc_formula)
 
-        self.play(Write(disc_formula, run_time=1, lag_ratio=0.025))
-        self.play(FlashAround(disc_formula, time_width=1.5, run_time=2))
+        self.play(
+            FadeIn(disc_formula, run_time=2, lag_ratio=0.1),
+            FlashAround(disc_formula, time_width=1.5, run_time=2),
+        )
         self.wait()
 
         rect = SurroundingRectangle(disc_formula)
@@ -771,7 +773,11 @@ class AddTwoGammaDistributions(RepeatedSamplesFromContinuousDistributions):
         frame = self.frame
         fs_rect = FullScreenRectangle()
         fs_rect.set_stroke(GREY_B, 1)
-        fs_rect.set_fill(opacity=0)
+        fs_rect.set_fill(BLACK, 1)
+        fuller_rect = FullScreenRectangle()
+        fuller_rect.set_fill(GREY_E, 1)
+        fuller_rect.scale(3)
+        self.add(fuller_rect, fs_rect, *self.mobjects)
 
         graph_groups = VGroup(*(
             VGroup(plot[1], label).copy()
@@ -805,6 +811,7 @@ class AddTwoGammaDistributions(RepeatedSamplesFromContinuousDistributions):
 
         self.play(
             frame.animate.set_height(13, about_point = 3 * DOWN),
+            FadeIn(fuller_rect),
             FadeIn(fs_rect),
             MoveToTarget(graph_groups, run_time=2),
             Write(symbols, run_time=2),
@@ -968,6 +975,41 @@ class UniformSamples(RepeatedSamplesFromContinuousDistributions):
 
     def get_pdfs(self):
         return [uniform, uniform]
+
+
+class WedgeAndExpSamples(SampleWedgePlusDoubleLump):
+    def get_axes(self):
+        return VGroup(
+            Axes(
+                (-2, 2), (0, 1, 0.25),
+                width=5.5,
+                height=2,
+            ),
+            Axes(
+                (-2, 5), (0, 1.0, 0.25),
+                width=5.5,
+                height=2,
+            ),
+            Axes(
+                (-3, 6), (0, 1.0, 0.25),
+                width=5.5,
+                height=2,
+            ),
+        )
+
+    def get_random_variables(self):
+        return [
+            scipy.stats.gamma(1),
+            scipy.stats.gamma(3),
+        ]
+
+    def get_samples(self):
+        wedge_sum = np.random.uniform(-0.5, 0.5, 2).sum()
+        exp_value = np.clip(self.random_variables[0].rvs() - 2, -2, 5)
+        return [wedge_sum, exp_value]
+
+    def get_pdfs(self):
+        return [wedge_func, lambda x: self.random_variables[0].pdf(x + 2)]
 
 
 # Sliding window view of convolutions
@@ -1467,7 +1509,7 @@ class ConvolveTwoUniforms(Convolutions):
     jagged_product = True
     jagged_convolution = True
     axes_config = dict(
-        x_range=(-2, 2, 1),
+        x_range=(-2, 2, 0.5),
         y_range=(-1, 1, 1.0),
         width=6,
         height=2,
@@ -1477,12 +1519,16 @@ class ConvolveTwoUniforms(Convolutions):
     conv_y_stretch_factor = 1.0
 
     def construct(self):
+        self.all_axes[0].x_axis.add_numbers(
+            font_size=16, num_decimal_places=1,
+            excluding=[0], buff=0.1,
+        )
         self.g_label.shift(MED_LARGE_BUFF * UP)
         self.fg_label.shift(MED_LARGE_BUFF * UP)
         self.add(self.get_conv_s_indicator())
 
         # Show it all
-        self.wait(40)
+        self.wait(60)
 
     def f(self, x):
         return uniform(x)
@@ -1508,6 +1554,18 @@ class ConvolveUniformWithWedge(Convolutions):
         return uniform(x)
 
 
+class ConvolveTwoNormals(Convolutions):
+    def construct(self):
+        # Play around with it
+        self.wait(20)
+
+    def f(self, x):
+        return gauss_func(x, 0, 0.5)
+
+    def g(self, x):
+        return gauss_func(x, 0, 0.5)
+
+
 class ProbConvolutionControlled(ProbConvolutions):
     t_time_pairs = [(-2.5, 4), (2.5, 10), (-1, 6)]
     initial_t = 0
@@ -1522,12 +1580,38 @@ class ProbConvolutionControlled(ProbConvolutions):
         s_indicator.set_x(g_axes.c2p(self.initial_t, 0)[0])
         for t, time in self.t_time_pairs:
             self.play(set_t(t), run_time=time)
-            self.wait()
 
 
-class ProbConvolutionControlledToMatch3D(ProbConvolutionControlled):
-    t_time_pairs = [(1.5, 4), (-0.5, 8), (1.0, 8)]
-    initial_t = 0.5
+class ProbConvolutionControlledToMatchSlices(ProbConvolutionControlled):
+    t_time_pairs = [(-1.5, 20), (1.5, 20), (-0.5, 20)]
+    initial_t = 2
+
+
+class AltSyncedConvolution(ProbConvolutionControlledToMatchSlices):
+    t_time_pairs = [(1.0, 15), (-1.5, 10), (-3.0, 10), (1.0, 20)]
+    initial_t = -3.0
+
+    def f(self, x):
+        return (x > -2) * np.exp(-2 - x)
+
+    def g(self, x):
+        return wedge_func(x)
+
+
+class ThumbnailGraphs(AltSyncedConvolution):
+    def construct(self):
+        super().construct()
+        s_indicator = self.s_indicator
+        f_axes, g_axes = self.all_axes[:2]
+
+        for axes in [f_axes, g_axes]:
+            axes.set_stroke(width=4)
+            axes.x_axis[1].set_stroke(width=0)
+        for graph in [self.f_graph, self.g_graph, self.prod_graphs]:
+            graph.set_stroke(width=8)
+
+        s = -1.68
+        s_indicator.set_x(g_axes.c2p(s, 0)[0])
 
 
 class AltConvolutions(Convolutions):

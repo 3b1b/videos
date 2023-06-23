@@ -999,9 +999,11 @@ class ConvolveDiscreteDistributions(SumAlongDiagonal):
         )
         conv_def.next_to(sum_bar_group.target, UP, buff=MED_LARGE_BUFF)
 
+        PXY_arg = Tex("(s)", font_size=36)
         PXY.generate_target()
         lhs = conv_def[:10]
         PXY.target.next_to(lhs, UP, LARGE_BUFF).shift_onto_screen(buff=SMALL_BUFF)
+        PXY_arg.next_to(PXY.target, RIGHT, buff=SMALL_BUFF)
         eq = Tex("=").rotate(90 * DEGREES)
         eq.move_to(midpoint(PXY.target.get_bottom(), lhs.get_top()))
 
@@ -1014,6 +1016,7 @@ class ConvolveDiscreteDistributions(SumAlongDiagonal):
         self.play(LaggedStart(
             MoveToTarget(sum_bar_group),
             MoveToTarget(PXY),
+            FadeIn(PXY_arg, UP),
             Write(eq),
             TransformFromCopy(PX, lhs[1:3]),
             TransformFromCopy(PY, lhs[4:6]),
@@ -1074,6 +1077,7 @@ class ConvolveDiscreteDistributions(SumAlongDiagonal):
             MoveToTarget(PXY_copy),
             MoveToTarget(eq),
             MoveToTarget(PXY),
+            Transform(PXY_arg, ex_rhs["(4)"], remover=True),
             conv_def.animate.next_to(eq.target, RIGHT),
             MaintainPositionRelativeTo(question_rhs, conv_def),
             FadeIn(ex_rhs, LEFT),
@@ -1331,9 +1335,9 @@ class ShowConvolutionOfLists(SumAlongDiagonal):
             self.wait()
         self.play(LaggedStartMap(ShowCreation, crosses, lag_ratio=0.1, run_time=1))
         self.play(
-            LaggedStartMap(FadeIn, func_words, shift=DOWN),
+            LaggedStartMap(FadeIn, func_words, shift=0.5 * DOWN, scale=0.5, lag_ratio=0.5),
             list_words.animate.shift(0.5 * DOWN),
-            crosses.animate.shift(0.5 * DOWN),
+            crosses.animate.shift(0.5 * DOWN),n
         )
         self.wait()
 
