@@ -121,7 +121,8 @@ class SumAlongDiagonal(InteractiveScene):
         sum_labels = die_sum_labels()
         sum_bar_group = get_bar_group(
             conv_dist, self.sum_colors, sum_labels,
-            label_buff=MED_SMALL_BUFF
+            number_config=dict(num_decimal_places=3, font_size=30),
+            label_buff=MED_SMALL_BUFF,
         )
         sum_bar_group.to_edge(RIGHT, buff=LARGE_BUFF)
         sum_bar_group.set_y(0)

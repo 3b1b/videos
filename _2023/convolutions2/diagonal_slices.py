@@ -274,11 +274,75 @@ class Introduce3DGraph(InteractiveScene):
 
 
 class DiagonalSlices(Introduce3DGraph):
+    mesh_resolution = (21, 21)
     shadow_opacity = 0.25
     add_shadow = True
+    shadow_bump = 0.01
+    clip_plane_unit_coord = 0.45
+
+    def setup(self):
+        super().setup()
+        plane, axes = self.add_plane_and_axes()
+        self.s_tracker = ValueTracker(-2 * plane.x_range[1])
+        get_s = self.s_tracker.get_value
+        self.add_surface_group(axes, get_s)
+        self.add_slice_graph(get_s)
+
+        self.init_func_name()
+        self.init_line_labels(get_s)
+
+        self.add(self.func_name)
 
     def construct(self):
-        # Add axes
+        # Get some nice local variables
+        frame = self.camera.frame
+        plane = self.plane
+        axes = self.axes
+        s_tracker = self.s_tracker
+        slice_graph = self.slice_graph
+
+        # Initial orientation
+        self.frame.reorient(88, 90, 0).move_to([-0.31, -2.14, 2.16])
+        self.play(frame.animate.reorient(40, 70).move_to(ORIGIN), run_time=10)
+        self.play(
+            s_tracker.animate.set_value(0.5),
+            frame.animate.reorient(0, 0),
+            VFadeIn(self.equation),
+            FadeOut(axes.z_axis),
+            run_time=6,
+        )
+        self.wait()
+
+        # Show x + y = s slice
+        self.play(
+            FadeIn(self.ses_label, 0.5 * DOWN),
+            MoveAlongPath(GlowDot(), slice_graph, run_time=5, remover=True)
+        )
+        self.wait()
+        self.play(
+            self.frame.animate.reorient(-22, 74, 0).move_to([-0.12, -0.16, 0.04]).set_height(5.45),
+            run_time=3
+        )
+        self.wait()
+
+        # Change s
+        self.play(
+            s_tracker.animate.set_value(1.5),
+            self.frame.animate.reorient(-45, 75, 0).move_to([0.18, -0.14, 0.49]).set_height(3.0),
+            run_time=6,
+        )
+        self.play(
+            s_tracker.animate.set_value(-2.0),
+            self.frame.animate.reorient(-5, 66, 0).move_to([-0.03, -0.18, 0.14]).set_height(6.35),
+            run_time=20,
+        )
+        self.play(
+            s_tracker.animate.set_value(2.0),
+            self.frame.animate.reorient(16, 73, 0).move_to([-0.03, -0.18, 0.14]).set_height(6.35),
+            run_time=15,
+        )
+
+    def add_plane_and_axes(self):
         frame = self.camera.frame
         frame.reorient(20, 70)
         plane = self.plane = self.get_plane()
@@ -290,57 +354,82 @@ class DiagonalSlices(Introduce3DGraph):
         self.add(axes, axes.z_axis)
         self.add(plane)
 
-        # Graph
+        self.plane = plane
+        self.axes = axes
+
+        return plane, axes
+
+    def add_surface_group(self, axes, get_s):
+        # Surface
         surface = axes.get_graph(
             lambda x, y: self.f(x) * self.g(y),
             resolution=self.graph_resolution
         )
+        vect = axes.c2p(*2 * [self.clip_plane_unit_coord], 0)  # Why?
+        surface.add_updater(lambda m: m.set_clip_plane(vect, -get_s()))
+        surface.always_sort_to_camera(self.camera)
 
-        surface_mesh = SurfaceMesh(surface, resolution=(21, 21))
+        surface_mesh = SurfaceMesh(surface, resolution=self.mesh_resolution)
         surface_mesh.set_stroke(WHITE, width=1, opacity=0.1)
 
-        func_name = Tex(
-            R"f(x) \cdot g(y)",
-            font_size=42,
-        )
-        func_name.to_corner(UL, buff=0.25)
-        func_name.fix_in_frame()
-        self.func_name = func_name
-
-        self.add(func_name)
-        self.add(surface)
-        self.add(surface_mesh)
-
-        self.surface_group = Group(surface, surface_mesh)
+        surface_group = Group(surface, surface_mesh)
 
         # Add shadow
         if self.add_shadow:
             surface_shadow = surface.copy()
             surface_shadow.set_opacity(self.shadow_opacity)
-            surface_shadow.shift(0.01 * IN)
+            surface_shadow.shift(self.shadow_bump * IN)
             self.add(surface_shadow)
 
-            self.surface_group.add(surface_shadow)
+            surface_group.add(surface_shadow)
 
-        # Slicer
-        t_tracker = ValueTracker(-2 * plane.x_range[1])
-        self.t_tracker = t_tracker
-        get_t = t_tracker.get_value
-        vect = plane.c2p(0.45, 0.45)
+        self.surface_group = surface_group
+        self.add(surface_group)
+        return surface_group
 
-        slice_graph = always_redraw(lambda: self.get_slice_graph(get_t()))
-        surface.clear_updaters()
-        surface.add_updater(lambda m: m.set_clip_plane(vect, -get_t()))
-        surface.always_sort_to_camera(self.camera)
+    def add_slice_graph(
+        self, get_s,
+        stroke_color=WHITE,
+        stroke_width=2,
+        fill_color=TEAL_D,
+        fill_opacity=0.5,
+        dx=0.01
+    ):
+        axes = self.axes
 
-        self.add(slice_graph)
+        def get_points(s):
+            x_min, x_max = axes.x_range[:2]
+            y_min, y_max = axes.y_range[:2]
 
-        self.slice_graph = slice_graph
+            if s > 0:
+                xs = np.arange(s - y_max, x_max, dx)
+            else:
+                xs = np.arange(x_min, s - y_min, dx)
 
-        # Equations
+            return axes.c2p(xs, s - xs, self.f(xs) * self.g(s - xs))
+
+        graph = VMobject()
+        graph.set_flat_stroke(False)
+        graph.set_stroke(stroke_color, stroke_width)
+        graph.set_fill(fill_color, fill_opacity)
+        graph.add_updater(lambda m: m.set_points_as_corners(get_points(get_s())))
+
+        self.add(graph)
+        self.slice_graph = graph
+
+    def init_func_name(self):
+        self.func_name = Tex(
+            R"f(x) \cdot g(y)",
+            font_size=42,
+        )
+        self.func_name.to_corner(UL, buff=0.25)
+        self.func_name.fix_in_frame()
+        return self.func_name
+
+    def init_line_labels(self, get_s):
         equation = Tex("x + y = 0.00")
-        t_label = equation.make_number_changable("0.00")
-        t_label.add_updater(lambda m: m.set_value(get_t()))
+        s_label = equation.make_number_changable("0.00")
+        s_label.add_updater(lambda m: m.set_value(get_s()))
         equation.to_corner(UR)
         equation.fix_in_frame()
 
@@ -351,132 +440,67 @@ class DiagonalSlices(Introduce3DGraph):
         self.equation = equation
         self.ses_label = ses_label
 
-        # Show x + y = s slice
-        self.frame.reorient(88, 90, 0).move_to([-0.31, -2.14, 2.16])
-        self.play(frame.animate.reorient(40, 70).move_to(ORIGIN), run_time=10)
-        self.play(
-            t_tracker.animate.set_value(0.5),
-            frame.animate.reorient(0, 0),
-            VFadeIn(equation),
-            FadeOut(axes.z_axis),
-            run_time=6,
-        )
-        self.wait()
-
-        self.play(
-            FadeIn(ses_label, 0.5 * DOWN),
-            MoveAlongPath(GlowDot(), slice_graph, run_time=5, remover=True)
-        )
-        self.wait()
-        self.play(
-            self.frame.animate.reorient(-22, 74, 0).move_to([-0.12, -0.16, 0.04]).set_height(5.45),
-            run_time=3
-        )
-        self.wait()
-
-        # Change t
-        self.play(
-            t_tracker.animate.set_value(1.5),
-            self.frame.animate.reorient(-45, 75, 0).move_to([0.18, -0.14, 0.49]).set_height(3.0),
-            run_time=6,
-        )
-        self.play(
-            t_tracker.animate.set_value(-2.0),
-            self.frame.animate.reorient(-5, 66, 0).move_to([-0.03, -0.18, 0.14]).set_height(6.35),
-            run_time=20,
-        )
-        self.play(
-            t_tracker.animate.set_value(2.0),
-            self.frame.animate.reorient(16, 73, 0).move_to([-0.03, -0.18, 0.14]).set_height(6.35),
-            run_time=15,
-        )
-
-    def get_slice_graph(self, t, color=WHITE, stroke_width=2, dt=0.01):
-        x_min, x_max = self.axes.x_range[:2]
-        y_min, y_max = self.axes.y_range[:2]
-
-        if t > 0:
-            x_range = (t - y_max, x_max, dt)
-        else:
-            x_range = (x_min, t - y_min, dt)
-
-        return ParametricCurve(
-            lambda x: self.axes.c2p(x, t - x, self.f(x) * self.g(t - x)),
-            x_range,
-            stroke_color=color,
-            stroke_width=stroke_width,
-            fill_color=TEAL_D,
-            fill_opacity=0.5,
-            flat_stroke=False,
-            use_smoothing=False,
-        )
+        return equation, ses_label
 
 
 class SyncedSlices(DiagonalSlices):
-    initial_t = 2
+    initial_s = 2
     add_shadow = False
 
-    def construct(self):
-        # Controlled examples
-        self.skip_animations = True
-        super().construct()
-        self.skip_animations = False
-
-        self.t_tracker.set_value(self.initial_t)
-
+    def setup(self):
+        super().setup()
         self.func_name.set_x(-3)
         self.func_name.align_to(self.equation, UP)
-        VGroup(self.equation, self.ses_label).set_x(2)
+        self.s_tracker.set_value(self.initial_s)
+        self.equation.set_x(2)
+        self.add(self.equation)
 
-        # Test
-        self.show_slices()
-
-    def show_slices(self):
-        t_tracker = self.t_tracker
+    def construct(self):
+        s_tracker = self.s_tracker
         self.play(
-            t_tracker.animate.set_value(-1.5),
+            s_tracker.animate.set_value(-1.5),
             self.frame.animate.reorient(-28, 77, 0).move_to([0.17, -0.28, 0.25]).set_height(5.29),
             run_time=20,
         )
         self.play(
-            t_tracker.animate.set_value(1.5),
+            s_tracker.animate.set_value(1.5),
             self.frame.animate.reorient(-10, 73, 0).move_to([0.15, -0.28, 0.22]).set_height(5.04),
             run_time=20,
         )
         self.play(
-            t_tracker.animate.set_value(-0.5),
+            s_tracker.animate.set_value(-0.5),
             self.frame.animate.reorient(-39, 79, 0).move_to([0.15, -0.28, 0.21]).set_height(5.04),
             run_time=20,
         )
 
 
 class SyncedSlicesExpAndRect(SyncedSlices):
-    initial_t = -3.0
+    initial_s = -3.0
     graph_resolution = (201, 201)
     add_shadow = True
 
-    def show_slices(self):
+    def construct(self):
         # Test
-        t_tracker = self.t_tracker
+        s_tracker = self.s_tracker
         self.frame.reorient(-31, 68, 0).move_to([-1.51, 0.77, 0.22]).set_height(6.35)
 
         self.play(
-            t_tracker.animate.set_value(1.0),
+            s_tracker.animate.set_value(1.0),
             self.frame.animate.reorient(-38, 72, 0).move_to([0.53, -0.5, 0.34]).set_height(6.75),
             run_time=15,
         )
         self.play(
-            t_tracker.animate.set_value(-1.5),
+            s_tracker.animate.set_value(-1.5),
             self.frame.animate.reorient(-45, 80, 0).move_to([-1.75, 0.32, 0.2]).set_height(5.04),
             run_time=10,
         )
         self.play(
-            t_tracker.animate.set_value(-3.0),
+            s_tracker.animate.set_value(-3.0),
             self.frame.animate.reorient(-28, 73, 0).move_to([-1.75, 0.32, 0.2]).set_height(5.04),
             run_time=10,
         )
         self.play(
-            t_tracker.animate.set_value(1.0),
+            s_tracker.animate.set_value(1.0),
             self.frame.animate.reorient(-39, 65, 0).move_to([0.35, -0.53, 0.06]).set_height(6.38),
             run_time=20,
         )
@@ -488,30 +512,44 @@ class SyncedSlicesExpAndRect(SyncedSlices):
         return wedge_func(x)
 
 
+class CleanExpAndRect(SyncedSlicesExpAndRect):
+    def construct(self):
+        self.remove(self.equation, self.func_name)
+
+        s_tracker = self.s_tracker
+        s_tracker.set_value(-1.5)
+
+        surface, mesh, surface_shadow = self.surface_group
+        mesh.make_jagged()
+        surface_shadow.set_opacity(0.5)
+        self.remove(self.surface_group)
+        self.add(surface, surface_shadow, mesh, self.slice_graph)
+
+
 class SyncedSlicesGaussian(SyncedSlices):
     add_shadow = True
 
-    def show_slices(self):
+    def construct(self):
         # Test
         self.func_name.set_x(0)
-        VGroup(self.ses_label, self.equation).to_edge(RIGHT)
+        self.equation.to_edge(RIGHT)
 
-        t_tracker = self.t_tracker
-        t_tracker.set_value(0)
+        s_tracker = self.s_tracker
+        s_tracker.set_value(0)
         self.frame.reorient(0, 53, 0).move_to([0.05, 0.28, -0.23]).set_height(6.70)
 
         self.play(
-            t_tracker.animate.set_value(-2.0),
+            s_tracker.animate.set_value(-2.0),
             self.frame.animate.reorient(-38, 72, 0).move_to([0.53, -0.5, 0.34]).set_height(6.75),
             run_time=8,
         )
         self.play(
-            t_tracker.animate.set_value(1.5),
+            s_tracker.animate.set_value(1.5),
             self.frame.animate.reorient(-7, 61, 0).move_to([0.5, -0.06, 0.4]).set_height(3.85),
             run_time=10,
         )
         self.play(
-            t_tracker.animate.set_value(-1.5),
+            s_tracker.animate.set_value(-1.5),
             self.frame.animate.reorient(-28, 73, 0).move_to([-0.06, -0.56, 0.26]).set_height(5.04),
             run_time=20,
         )
@@ -524,27 +562,23 @@ class SyncedSlicesGaussian(SyncedSlices):
 
 
 class AnalyzeStepAlongDiagonalLine(DiagonalSlices):
-    initial_t = 0.5
+    initial_s = 0.5
     dx = 1 / 8
 
     def construct(self):
         # Setup
-        self.skip_animations = True
-        super().construct()
-        self.skip_animations = False
-
-        t_tracker = self.t_tracker
+        s_tracker = self.s_tracker
         frame = self.frame
         surface, mesh, shadow = self.surface_group
 
-        t_tracker.set_value(self.initial_t)
+        s_tracker.set_value(self.initial_s)
         frame.reorient(-27, 73, 0)
 
         self.slice_graph.update()
         self.slice_graph.clear_updaters()
 
         # Focus on line
-        line = self.plane.get_graph(lambda x: self.initial_t - x)
+        line = self.plane.get_graph(lambda x: self.initial_s - x)
         line.set_stroke(WHITE, 3)
 
         self.play(
@@ -638,7 +672,7 @@ class AnalyzeStepAlongDiagonalLine(DiagonalSlices):
         z_unit = self.axes.z_axis.get_unit_size()
         dx = self.dx
         for x in np.arange(-2, 2, dx):
-            y = self.initial_t - x
+            y = self.initial_s - x
             if not (-2 <= y <= 2):
                 continue
             rect = Rectangle(
@@ -662,7 +696,40 @@ class AnalyzeStepAlongDiagonalLine(DiagonalSlices):
         self.wait()
 
 
-class GaussianSlices(DiagonalSlices):
+class FullGaussianExample(DiagonalSlices):
+    plane_config = dict(
+        x_range=(-3, 3),
+        y_range=(-3, 3),
+        width=8.0,
+        height=8.0,
+    )
+    mesh_resolution = (25, 25)
+    clip_plane_unit_coord = 0.565
+
+    def construct(self):
+        # Variables
+        frame = self.frame
+        axes = self.axes
+        s_tracker = self.s_tracker
+        surface_group = self.surface_group
+        slice_graph = self.slice_graph
+        self.func_name.set_x(0)
+
+        # Emphasize rotational symmetry
+        # frame.add_updater(lambda m: m.set_theta(30 * math.sin(0.1 * self.time) * DEGREES))
+        curve = VMobject()
+        curve.set_stroke(YELLOW, 3)
+        dx = 0.1
+        xs = np.arange(*axes.x_range, dx)
+        curve.set_points_smoothly(axes.c2p(xs, np.zeros(xs.size), self.f(xs)))
+        curve.set_flat_stroke(False)
+
+        self.add(surface_group, curve)
+        self.play(ShowCreation(curve))
+        self.play(Rotate(curve, TAU, about_point=ORIGIN, run_time=7))
+        self.wait()
+
+
     def f(self, x):
         return np.exp(-x**2)
 

@@ -586,6 +586,11 @@ class ShorterRects(TwoRects):
     bottom_buff = 1.5
 
 
+class IndicatingRectangle(InteractiveScene):
+    def construct(self):
+        self.play(FlashAround(Rectangle(9, 3), run_time=2, time_width=1.5, stroke_width=8))
+
+
 class Sqrt2Correction(InteractiveScene):
     def construct(self):
         # Test
@@ -803,7 +808,7 @@ class OrdinaryApproach(InteractiveScene):
         conv_equation = Tex(
             R"""
                 [f * g](s) = \int_{-\infty}^\infty f(x)g(s - x) dx
-                = \int_{-\infty}^\infty \frac{1}{\sigma_1 \sigma_2 2 \pi} e^{-x^2 / 2\sigma_1^2} e^{-(s - x)^2 / 2\sigma_1^2} \; dx
+                = \int_{-\infty}^\infty \frac{1}{\sigma_1 \sigma_2 2 \pi} e^{-x^2 / 2\sigma_1^2} e^{-(s - x)^2 / 2\sigma_2^2} \; dx
             """,
             t2c={"x": BLUE, "s": GREEN},
             font_size=36,
@@ -829,7 +834,7 @@ class OrdinaryApproach(InteractiveScene):
         # Low brace
         low_brace = Brace(rhss[1][1:], DOWN, buff=SMALL_BUFF)
         calc_text = low_brace.get_text(
-            "Requires some tricky calculus,\nbut it's ultimately doable",
+            "Not prohibitively difficult,\nbut a bit clunky",
             font_size=30
         )
         self.play(
