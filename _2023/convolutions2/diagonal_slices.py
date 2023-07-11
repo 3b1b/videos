@@ -301,6 +301,17 @@ class DiagonalSlices(Introduce3DGraph):
         s_tracker = self.s_tracker
         slice_graph = self.slice_graph
 
+        # Insert
+        self.remove(self.equation)
+        axes.z_axis.set_opacity(1)
+        axes.z_axis.set_flat_stroke(True)
+        frame.reorient(80, 70).move_to(ORIGIN),
+        s_tracker.set_value(-5)
+        self.play(
+            frame.animate.reorient(40, 70).move_to(ORIGIN),
+            run_time=20,
+        )
+
         # Initial orientation
         self.frame.reorient(88, 90, 0).move_to([-0.31, -2.14, 2.16])
         self.play(frame.animate.reorient(40, 70).move_to(ORIGIN), run_time=10)
@@ -526,6 +537,18 @@ class CleanExpAndRect(SyncedSlicesExpAndRect):
         self.add(surface, surface_shadow, mesh, self.slice_graph)
 
 
+class SyncedSlicesUniformAndWedge(SyncedSlices):
+    initial_s = -2.0
+    graph_resolution = (201, 201)
+    add_shadow = True
+
+    def f(self, x):
+        return uniform(x)
+
+    def g(self, x):
+        return wedge_func(x)
+
+
 class SyncedSlicesGaussian(SyncedSlices):
     add_shadow = True
 
@@ -696,7 +719,7 @@ class AnalyzeStepAlongDiagonalLine(DiagonalSlices):
         self.wait()
 
 
-class FullGaussianExample(DiagonalSlices):
+class RotationalSymmetryOfGaussian(DiagonalSlices):
     plane_config = dict(
         x_range=(-3, 3),
         y_range=(-3, 3),
@@ -713,25 +736,283 @@ class FullGaussianExample(DiagonalSlices):
         s_tracker = self.s_tracker
         surface_group = self.surface_group
         slice_graph = self.slice_graph
-        self.func_name.set_x(0)
+
+        # Add functions
+        self.add_function_labels()
+
+        # Show slices
+        s_tracker.set_value(1)
+        frame.reorient(-20, 69, 0).move_to(0.5 * OUT)
+        self.play(
+            frame.animate.reorient(20, 69, 0),
+            s_tracker.animate.set_value(-6),
+            run_time=8
+        )
 
         # Emphasize rotational symmetry
-        # frame.add_updater(lambda m: m.set_theta(30 * math.sin(0.1 * self.time) * DEGREES))
         curve = VMobject()
-        curve.set_stroke(YELLOW, 3)
-        dx = 0.1
+        curve.set_stroke(TEAL, 3)
+        dx = 0.05
         xs = np.arange(*axes.x_range, dx)
         curve.set_points_smoothly(axes.c2p(xs, np.zeros(xs.size), self.f(xs)))
         curve.set_flat_stroke(False)
+        curve.make_jagged()
+        curve.apply_depth_test()
+        curve.shift(0.025 * OUT)
+        curves = VGroup(*(
+            curve.copy().rotate(a, about_point=axes.c2p(0, 0, 0))
+            for a in np.linspace(0, PI, 25)
+        ))
+        curves.set_stroke(width=1, opacity=0.5)
 
-        self.add(surface_group, curve)
         self.play(ShowCreation(curve))
-        self.play(Rotate(curve, TAU, about_point=ORIGIN, run_time=7))
+        self.play(
+            Rotate(curve, PI, about_point=ORIGIN),
+            ShowIncreasingSubsets(curves, rate_func=smooth),
+            self.frame.animate.reorient(-20, 69, 0).center(),
+            Rotate(surface_group, PI),
+            run_time=7
+        )
+        self.play(
+            FadeOut(curve, time_span=(0, 2)),
+            FadeOut(curves, time_span=(0, 2)),
+        )
         self.wait()
 
+        # Show r
+        surface, mesh, ghost_surface = surface_group
+        surface_group.generate_target()
+        surface_group.target[0].set_opacity(0.25)
+
+        self.play(
+            MoveToTarget(surface_group),
+            frame.animate.reorient(0, 0).set_height(10).move_to(1.5 * LEFT).set_field_of_view(1 * DEGREES),
+            FadeOut(self.func_names),
+            run_time=4,
+        )
+        self.wait()
+
+        # Explain meaning of r
+        x, y = (1.5, 0.75)
+        dot = Dot(axes.c2p(x, y), fill_color=RED)
+        dot.set_stroke(WHITE, 0.5)
+        coords = Tex("(x, y)", font_size=36)
+        coords.set_backstroke(width=5)
+        coords.next_to(dot, UR, SMALL_BUFF)
+        coords.shift(0.1 * DOWN)
+
+        x_line = Line(axes.get_origin(), axes.c2p(x, 0, 0))
+        y_line = Line(axes.c2p(x, 0, 0), axes.c2p(x, y, 0))
+        r_line = Line(axes.c2p(x, y, 0), axes.get_origin())
+        x_line.set_stroke(BLUE, 3)
+        y_line.set_stroke(YELLOW, 3)
+        r_line.set_stroke(RED, 3)
+        lines = VGroup(x_line, y_line, r_line)
+        labels = VGroup(*map(Tex, "xyr"))
+        for label, line in zip(labels, lines):
+            label.match_color(line)
+            label.scale(0.85)
+            label.next_to(line.get_center(), rotate_vector(line.get_vector(), -90 * DEGREES), SMALL_BUFF)
+
+        self.add(dot, coords)
+        self.play(
+            FadeIn(dot, scale=0.5),
+            FadeIn(coords),
+        )
+        for line, label in zip(lines, labels):
+            self.add(line, label, dot)
+            self.play(
+                ShowCreation(line),
+                Write(label),
+            )
+
+    def add_function_labels(self):
+        kw = dict(t2c={"x": BLUE, "y": YELLOW})
+        func_names = VGroup(
+            Tex("f(x) = e^{-x^2}", **kw),
+            Tex("g(y) = e^{-y^2}", **kw),
+        )
+        func_names.scale(0.75)
+        func_names.arrange(DOWN, buff=MED_LARGE_BUFF)
+        func_names.to_corner(UL)
+        func_names.fix_in_frame()
+        self.func_names = func_names
+
+        self.remove(self.func_name)
+        self.add(func_names)
 
     def f(self, x):
         return np.exp(-x**2)
 
     def g(self, x):
         return np.exp(-x**2)
+
+
+class RotateGaussianSlice(RotationalSymmetryOfGaussian):
+    def construct(self):
+        # Variables
+        frame = self.frame
+        axes = self.axes
+        s_tracker = self.s_tracker
+        surface_group = self.surface_group
+        slice_graph = self.slice_graph
+        self.add_function_labels()
+        self.add(s_tracker)
+
+        # Focus on one slice
+        self.play(
+            frame.animate.reorient(-20, 69, 0), run_time=5
+        )
+        self.play(
+            s_tracker.animate.set_value(1),
+            frame.animate.reorient(0, 55, 0),
+            axes.z_axis.animate.set_opacity(0),
+            run_time=6,
+        )
+        self.remove(axes.z_axis)
+        self.wait()
+        for s in [1.5, 0.5, 1.0]:
+            self.play(s_tracker.animate.set_value(s), run_time=2)
+            self.wait()
+
+        # Label two points
+        s_tracker.set_value(1)
+        s_color = RED
+        s: float = s_tracker.get_value()
+        dots = Group(
+            GlowDot(axes.c2p(s, 0, 0), color=s_color),
+            GlowDot(axes.c2p(0, s, 0), color=s_color),
+        )
+        labels = VGroup()
+        lines = VGroup()
+        for dot, tex in zip(dots, ["(s, 0)", "(0, s)"]):
+            label = Tex(tex, font_size=24)
+            label.next_to(dot, DL, buff=-0.1)
+            label.set_backstroke()
+            labels.add(label)
+            line = Line(axes.get_origin(), dot.get_center())
+            line.set_stroke(s_color, 2)
+            lines.add(line)
+
+        self.play(frame.animate.reorient(0, 25, 0).set_height(6).move_to(UP))
+        for dot, label, line in zip(dots, labels, lines):
+            self.play(
+                FadeInFromPoint(dot, line.get_start()),
+                Write(label),
+                ShowCreation(line),
+            )
+            self.wait()
+
+        # Straight line distance
+        s_tracker.set_value(1)
+        dist_line = Line(axes.get_origin(), axes.c2p(s / 2, s / 2, 0))
+        dist_line.set_stroke(s_color, 2)
+        dist_label = Tex(R"s / \sqrt{2}", font_size=20)
+        dist_label.next_to(dist_line.get_center(), RIGHT, buff=0.05)
+
+        self.play(
+            frame.animate.set_height(5).set_anim_args(run_time=4),
+            LaggedStart(
+                ShowCreation(dist_line),
+                Write(dist_label),
+            ),
+            FadeOut(self.func_names, time_span=(2, 3)),
+        )
+        self.wait()
+        self.play(LaggedStartMap(FadeOut, Group(*dots, *lines, *labels)))
+        self.wait()
+
+        # Rotate
+        surface, mesh, shadow = surface_group
+        shadow.set_opacity(0)
+        surface.clear_updaters()
+        slice_graph.clear_updaters()
+
+        clip_vect = VectorizedPoint(surface.uniforms["clip_plane"][:3])
+        globals().update(locals())
+        surface.add_updater(lambda m: m.set_clip_plane(
+            clip_vect.get_center(), -s_tracker.get_value()
+        ))
+
+        self.play(
+            Rotate(clip_vect, -45 * DEGREES, about_point=ORIGIN),
+            Rotate(slice_graph, -45 * DEGREES, about_point=ORIGIN),
+            Rotate(dist_line, -45 * DEGREES, about_point=ORIGIN),
+            dist_label.animate.next_to(
+                axes.c2p(s / 2 / math.sqrt(2), 0, 0), DOWN, SMALL_BUFF,
+            ),
+            run_time=3
+        )
+
+        # Ambient rotation
+        self.play(
+            frame.animate.reorient(-35, 59, 0).move_to([-0.0, 0.22, 0.4]).set_height(5.94),
+            run_time=8,
+        )
+        self.play(
+            frame.animate.reorient(-8, 62, 0),
+            run_time=15,
+        )
+        self.play(
+            self.frame.animate.reorient(-31, 54, 0),
+            run_time=15,
+        )
+        self.wait()
+
+
+class OscillatingGaussianSlice(RotationalSymmetryOfGaussian):
+    def construct(self):
+        # Variables
+        frame = self.frame
+        axes = self.axes
+        s_tracker = self.s_tracker
+        surface_group = self.surface_group
+        slice_graph = self.slice_graph
+        self.add(s_tracker)
+        self.remove(self.func_name)
+        self.add(self.equation)
+
+        # Change value
+        s_tracker.set_value(-3)
+        frame.reorient(-20, 55, 0)
+        frame.set_height(6)
+        self.play(
+            s_tracker.animate.set_value(3).set_anim_args(rate_func=there_and_back),
+            frame.animate.reorient(20, 60, 0),
+            run_time=24,
+        )
+        self.play(
+            s_tracker.animate.set_value(3).set_anim_args(rate_func=there_and_back),
+            frame.animate.reorient(-20, 55, 0),
+            run_time=24,
+        )
+
+
+class Thumbnail(RotationalSymmetryOfGaussian):
+    def construct(self):
+        # Variables
+        frame = self.frame
+        axes = self.axes
+        s_tracker = self.s_tracker
+        surface_group = self.surface_group
+        slice_graph = self.slice_graph
+        self.add(s_tracker)
+        self.remove(self.func_name)
+        self.remove(self.equation)
+        s_tracker.set_value(0)
+        frame.reorient(0, 47, 0)
+
+        # Better surface
+        surface, mesh, shadow = surface_group
+        shadow.clear_updaters()
+        shadow.set_clip_plane(ORIGIN, 00)
+        shadow.set_opacity(0.5)
+
+        self.add(shadow, surface, mesh, slice_graph)
+
+        # Title
+        title = TexText("It's about symmetry", font_size=90)
+        title.to_edge(UP)
+        title.fix_in_frame()
+        self.add(title)
+

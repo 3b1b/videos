@@ -1796,14 +1796,16 @@ class MovingAverageAsConvolution(Convolutions):
         return rect_func(x)
 
 
-class GaussianConvolution(Convolutions):
+class GaussianConvolution(ProbConvolutionControlled):
     jagged_product = True
+    t_time_pairs = [(-3.0, 4), (3.0, 10), (-1, 10), (1, 5)]
+    conv_y_stretch_factor = 1.0
 
     def f(self, x):
-        return np.exp(-x**2) / np.sqrt(PI)
+        return 1.5 * np.exp(-x**2) / np.sqrt(PI)
 
     def g(self, x):
-        return np.exp(-x**2) / np.sqrt(PI)
+        return 1.5 * np.exp(-x**2) / np.sqrt(PI)
 
 
 class GaussConvolutions(Convolutions):
@@ -2080,6 +2082,38 @@ class RepeatedConvolutionDoubleLump(RepeatedConvolution):
 
     def g(self, x):
         return self.f(x)
+
+
+class RepeatedConvolutionExp(RepeatedConvolutionDoubleLump):
+    pre_rescale_factor = 1.0
+    axes_config = dict(
+        x_range=(-10, 10, 1),
+        y_range=(-1, 1, 1.0),
+        width=6,
+        height=2,
+    )
+
+    def f(self, x):
+        return np.exp(-(x + 1)) * (x > -1)
+
+
+class RepeatedConvolutionGaussian(RepeatedConvolution):
+    g_is_rect = False
+    when_to_renormalize = 1
+    axes_config = dict(
+        x_range=(-7, 7, 1),
+        y_range=(-0.5, 0.5, 0.5),
+        width=6,
+        height=2,
+    )
+    convolution_creation_time = 2
+    pre_rescale_factor = 0.95
+
+    def f(self, x):
+        return gauss_func(x, 0,1)
+
+    def g(self, x):
+        return gauss_func(x, 0, 1)
 
 
 # Old rect material

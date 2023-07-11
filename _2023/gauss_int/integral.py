@@ -1,5 +1,5 @@
 from manim_imports_ext import *
-from _2022.convolutions.continuous import *
+from _2023.convolutions2.continuous import *
 from _2023.clt.main import *
 
 
