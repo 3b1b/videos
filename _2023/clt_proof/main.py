@@ -99,6 +99,25 @@ class AskAboutTheProof(TeacherStudentsScene):
         self.wait(3)
 
 
+class RefinedHypothesis(InteractiveScene):
+    def construct(self):
+        # Setup
+        tex_kw = dict(
+            t2c={"X": BLUE_B}
+        )
+        # Given X, sum depends only on mu and sigma
+
+        # ...
+        # Rescale the sum, ask about the limit
+        # Specify the sense of the limit
+        # Ask about the moments
+        # Rephrase by asking for the MGF of the scaled sum
+        # Rephrase by asking for the CGF of the scaled sum
+        # Show explicity CGF
+        # Turn into explicit MGF
+        pass
+
+
 class LookingBeyondExpectationAndVariance(InteractiveScene):
     def construct(self):
         # Only E[X] and Var(X) matter
@@ -328,11 +347,12 @@ class DefineMGF(InteractiveScene):
 
         x_words, t_words = [
             Text(text, font_size=36)
-            for text in ["Random variable", "New parameter"]
+            for text in ["Random variable", "Some real number"]
         ]
         x_words.next_to(indic_arrow, DOWN, SMALL_BUFF)
         x_words.shift_onto_screen()
         t_words.next_to(indic_arrow.target, DOWN, SMALL_BUFF)
+        t_words.shift_onto_screen()
 
         self.play(Write(mgf_name, run_time=1))
         self.wait()
@@ -423,8 +443,9 @@ class DefineMGF(InteractiveScene):
         self.wait()
 
         # Highlight term by term
-        terms = lines[1][re.compile(r'(?<=\+)(.*?)(?=\+)')]
-        terms.remove(terms[2])
+        terms = VGroup(lines[1]["1"][0])
+        terms.add(*lines[1][re.compile(r'(?<=\+)(.*?)(?=\+)')])
+        terms.remove(terms[-2])
         rects = VGroup(*(SurroundingRectangle(term) for term in terms))
         rects.set_stroke(PINK, 2)
 
@@ -470,7 +491,7 @@ class DirectMGFInterpretation(InteractiveScene):
         self.add(exp_graph)
         self.add(graph_label)
 
-        # Samples
+        # Prepare samples
         samples = np.random.uniform(-2, 2, self.n_samples)
 
         def get_sample_group(samples):
@@ -490,8 +511,8 @@ class DirectMGFInterpretation(InteractiveScene):
             lines.set_stroke(WHITE, 1, 0.7)
 
             kw = dict(radius=0.075, glow_factor=1)
-            x_dots = GlowDots(x_points, color=YELLOW, **kw)
-            y_dots = GlowDots(y_points, color=RED, **kw)
+            x_dots = Group(*(GlowDot(point, color=YELLOW, **kw) for point in x_points))
+            y_dots = Group(*(GlowDot(point, color=RED, **kw) for point in y_points))
 
             sample_group = Group(x_dots, v_lines, h_lines, y_dots)
             return sample_group
@@ -501,18 +522,35 @@ class DirectMGFInterpretation(InteractiveScene):
 
         x_dots, v_lines, h_lines, y_dots = s_group = get_sample_group(samples)
 
+        # Show samples
+        sample_arrows = VGroup(*(
+            Vector(0.5 * DOWN).next_to(dot, UP, buff=0)
+            for dot in x_dots
+        ))
+        sample_arrows.set_color(YELLOW)
+        sample_words = Text("Samples of X")
+        sample_words.next_to(sample_arrows, UP, aligned_edge=LEFT)
+
+        self.play(
+            # FadeIn(sample_words, time_span=(0, 1)),
+            LaggedStartMap(VFadeInThenOut, sample_arrows, lag_ratio=0.1),
+            LaggedStartMap(FadeIn, x_dots, lag_ratio=0.1),
+            run_time=1,
+        )
+        # self.play(FadeOut(sample_words))
+
+        # Show outputs
         Ey_tip = ArrowTip()
         Ey_tip.scale(0.5)
         Ey_tip.add_updater(lambda m: m.move_to(axes.y_axis.n2p(get_Ey()), RIGHT))
         Ey_label = Tex(R"\mathds{E}[e^{tX}]", **kw)
         Ey_label.add_updater(lambda m: m.next_to(Ey_tip, LEFT))
 
-        # Animate lines
         y_dots.save_state()
         y_dots.set_points([l.get_end() for l in v_lines])
-        y_dots.set_radius(0)
+        for dot in y_dots:
+            dot.set_radius(0)
 
-        self.play(ShowCreation(x_dots))
         self.play(ShowCreation(v_lines, lag_ratio=0.3, run_time=2))
         self.wait()
         self.play(
@@ -536,7 +574,7 @@ class DirectMGFInterpretation(InteractiveScene):
         self.wait()
 
         # Move around
-        self.frame.set_height(10)
+        # self.frame.set_height(10)
         s_group.add_updater(lambda m: m.become(get_sample_group(samples)))
         exp_graph.add_updater(lambda g: g.become(get_exp_graph()))
         self.remove(*s_group)
@@ -760,7 +798,8 @@ class ExpandCGF(InteractiveScene):
             stretch=True
         )
 
-        rect = VectorizedPoint(rects[0].get_corner(DL))
+        rect = rects[0].copy()
+        rect.scale(1e-6).move_to(rects[0].get_corner(DL))
         approx = VectorizedPoint(axes.c2p(0, 0))
 
         self.add(approx, top_rect, log_eq, taylor_label)
@@ -768,11 +807,18 @@ class ExpandCGF(InteractiveScene):
         for target_rect, target_approx in zip(rects, approxs):
             self.play(
                 Transform(rect, target_rect),
-                Transform(approx, target_approx),
+                FadeOut(approx),
+                FadeIn(target_approx),
             )
+            approx = target_approx
             self.wait()
         for target_approx in approxs[len(rects):]:
-            self.play(Transform(approx, target_approx))
+            self.play(
+                FadeOut(approx),
+                FadeIn(target_approx),
+                rect.animate.stretch(1.02, 0, about_edge=LEFT),
+            )
+            approx = target_approx
 
         self.wait()
 
