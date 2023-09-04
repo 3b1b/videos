@@ -1,280 +1,5 @@
 from manim_imports_ext import *
-from matplotlib import colormaps
-from _2023.barber_pole.e_field import VectorField
-
-spectral_cmap = colormaps.get_cmap("Spectral")
-
-
-def get_spectral_color(alpha):
-    return Color(rgb=spectral_cmap(alpha)[:3])
-
-
-def get_spectral_colors(n_colors, lower_bound=0, upper_bound=1):
-    return [
-        get_spectral_color(alpha)
-        for alpha in np.linspace(lower_bound, upper_bound, n_colors)
-    ]
-
-
-def get_axes_and_plane(
-    x_range=(0, 24),
-    y_range=(-1, 1),
-    z_range=(-1, 1),
-    x_unit=1,
-    y_unit=2,
-    z_unit=2,
-    origin_point=5 * LEFT,
-    axes_opacity=0.5,
-    plane_line_style=dict(
-        stroke_color=GREY_C,
-        stroke_width=1,
-        stroke_opacity=0.5
-    ),
-):
-    axes = ThreeDAxes(
-        x_range=x_range,
-        y_range=y_range,
-        z_range=z_range,
-        width=x_unit * (x_range[1] - x_range[0]),
-        height=y_unit * (y_range[1] - y_range[0]),
-        depth=z_unit * (z_range[1] - z_range[0]),
-    )
-    axes.shift(origin_point - axes.get_origin())
-    axes.set_opacity(axes_opacity)
-    axes.set_flat_stroke(False)
-    plane = NumberPlane(
-        axes.x_range, axes.y_range,
-        width=axes.x_axis.get_length(),
-        height=axes.y_axis.get_length(),
-        background_line_style=plane_line_style,
-        axis_config=dict(stroke_width=0),
-    )
-    plane.shift(axes.get_origin() - plane.get_origin())
-    plane.set_flat_stroke(False)
-
-    return axes, plane
-
-
-def get_twist(wave_length, distance):
-    # 350 is arbitrary. Change
-    return distance / (wave_length / 350)**2
-
-
-class OscillatingWave(VMobject):
-    def __init__(
-        self,
-        axes,
-        amplitude=0.75,
-        wave_len=0.5,
-        twist_rate=0.0,  # In rotations per unit distance
-        speed=1.0,
-        sample_resolution=0.005,
-        stroke_width=2,
-        offset=ORIGIN,
-        color=None,
-        **kwargs,
-    ):
-        self.axes = axes
-        self.amplitude = amplitude
-        self.wave_len = wave_len
-        self.twist_rate = twist_rate
-        self.speed = speed
-        self.sample_resolution = sample_resolution
-        self.offset = offset
-
-        super().__init__(**kwargs)
-
-        color = color or self.get_default_color(wave_len)
-        self.set_stroke(color, stroke_width)
-        self.set_flat_stroke(False)
-
-        self.time = 0
-
-        self.add_updater(lambda m, dt: m.update_points(dt))
-
-    def update_points(self, dt):
-        self.time += dt
-        xs = np.arange(
-            self.axes.x_axis.x_min,
-            self.axes.x_axis.x_max,
-            self.sample_resolution
-        )
-        self.set_points_as_corners(
-            self.offset + self.wave_func(xs, self.time)
-        )
-
-    def wave_func(self, x, t):
-        phase = TAU * t * self.speed / self.wave_len
-        outs = self.amplitude * np.sin(TAU * x / self.wave_len - phase)
-        twist_angles = x * self.twist_rate * TAU
-        y = np.sin(twist_angles) * outs
-        z = np.cos(twist_angles) * outs
-
-        return self.axes.c2p(x, y, z)
-
-    def get_default_color(self, wave_len):
-        return get_spectral_color(inverse_interpolate(
-            1.5, 0.5, wave_len
-        ))
-
-
-class OscillatingFieldWave(VectorField, OscillatingWave):
-    def __init__(self, axes, *args, **kwargs):
-        pass
-
-
-class MeanWave(VMobject):
-    def __init__(self, waves, **kwargs):
-        self.waves = waves
-        super().__init__(**kwargs)
-        self.set_flat_stroke(False)
-        self.add_updater(lambda m, dt: m.update_points(dt))
-
-    def update_points(self, dt):
-        for wave in self.waves:
-            wave.update_points(dt)
-
-        points = sum(wave.get_points() for wave in self.waves) / len(self.waves)
-        self.set_points(points)
-
-
-class SugarCylinder(Cylinder):
-    def __init__(
-        self, axes, camera,
-        radius=0.5,
-        color=BLUE_A,
-        opacity=0.2,
-        shading=(0.5, 0.5, 0.5),
-        resolution=(51, 101),
-    ):
-        super().__init__(
-            color=color,
-            opacity=opacity,
-            resolution=resolution,
-            shading=shading,
-        )
-        self.set_width(2 * axes.z_axis.get_unit_size() * radius)
-        self.set_depth(axes.x_axis.get_length(), stretch=True)
-        self.rotate(PI / 2, UP)
-        self.move_to(axes.get_origin(), LEFT)
-        # self.set_shading(*shading)
-        self.always_sort_to_camera(camera)
-
-
-class Polarizer(VGroup):
-    def __init__(
-        self, axes,
-        radius=1.0,
-        angle=0,
-        stroke_color=GREY_C,
-        stroke_width=2,
-        fill_color=GREY_C,
-        fill_opacity=0.25,
-        n_lines=14,
-        line_opacity=0.2,
-        arrow_stroke_color=WHITE,
-        arrow_stroke_width=5,
-
-    ):
-        true_radius = radius * axes.z_axis.get_unit_size()
-        circle = Circle(
-            radius=true_radius,
-            stroke_color=stroke_color,
-            stroke_width=stroke_width,
-            fill_color=fill_color,
-            fill_opacity=fill_opacity,
-        )
-
-        lines = VGroup(*(
-            Line(circle.pfp(a), circle.pfp(1 - a))
-            for a in np.arccos(np.linspace(1, -1, n_lines + 2)[1:-1]) / TAU
-        ))
-        lines.set_stroke(WHITE, 1, opacity=line_opacity)
-
-        arrow = Vector(
-            0.5 * true_radius * UP,
-            stroke_color=arrow_stroke_color,
-            stroke_width=arrow_stroke_width,
-        )
-        arrow.move_to(circle.get_top(), DOWN)
-
-        super().__init__(
-            circle, lines, arrow,
-            # So the center works correctly
-            VectorizedPoint(circle.get_bottom() + arrow.get_height() * DOWN),
-        )
-        self.set_flat_stroke(True)
-        self.rotate(PI / 2, RIGHT)
-        self.rotate(PI / 2, IN)
-        self.rotate(angle, RIGHT)
-        self.rotate(1 * DEGREES, UP)
-
-
-class ProbagatingRings(VGroup):
-    def __init__(
-        self, line,
-        n_rings=5,
-        start_width=3,
-        width_decay_rate=0.1,
-        stroke_color=WHITE,
-        growth_rate=2.0,
-        spacing=0.2,
-    ):
-        ring = Circle(radius=1e-3, n_components=101)
-        ring.set_stroke(stroke_color, start_width)
-        ring.apply_matrix(z_to_vector(line.get_vector()))
-        ring.move_to(line)
-        ring.set_flat_stroke(False)
-
-        super().__init__(*ring.replicate(n_rings))
-
-        self.growth_rate = growth_rate
-        self.spacing = spacing
-        self.width_decay_rate = width_decay_rate
-        self.start_width = start_width
-        self.time = 0
-
-        self.add_updater(lambda m, dt: self.update_rings(dt))
-
-    def update_rings(self, dt):
-        if dt == 0:
-            return
-        self.time += dt
-        space = 0
-        for ring in self.submobjects:
-            effective_time = max(self.time - space, 0)
-            target_radius = max(effective_time * self.growth_rate, 1e-3)
-            ring.scale(target_radius / ring.get_radius())
-            space += self.spacing
-            ring.set_stroke(width=np.exp(-self.width_decay_rate * effective_time))
-        return self
-
-
-class TwistedRibbon(ParametricSurface):
-    def __init__(
-        self,
-        axes,
-        amplitude,
-        twist_rate,
-        start_point=(0, 0, 0),
-        color=WHITE,
-        opacity=0.4,
-        resolution=(101, 11),
-    ):
-        super().__init__(
-            lambda u, v: axes.c2p(
-                u,
-                v * amplitude * np.sin(TAU * twist_rate * u),
-                v * amplitude * np.cos(TAU * twist_rate * u)
-            ),
-            u_range=axes.x_range[:2],
-            v_range=(-1, 1),
-            color=color,
-            opacity=opacity,
-            resolution=resolution,
-            prefered_creation_axis=0,
-        )
-        self.shift(axes.c2p(*start_point) - axes.get_origin())
+from _2023.barber_pole.objects import *
 
 
 # Scenes
@@ -283,9 +8,15 @@ class TwistedRibbon(ParametricSurface):
 class SimpleLightBeam(InteractiveScene):
     default_frame_orientation = (-33, 85)
     axes_config = dict()
-    amplitude = 0.5
-    wave_len = 1.0
+    z_amplitude = 0.5
+    wave_len = 2.0
     speed = 1.0
+    color = YELLOW
+    oscillating_field_config = dict(
+        stroke_opacity=0.5,
+        stroke_width=2,
+        tip_width_ratio=1
+    )
 
     def construct(self):
         axes, plane = get_axes_and_plane(**self.axes_config)
@@ -294,10 +25,12 @@ class SimpleLightBeam(InteractiveScene):
         # Introduce wave
         wave = OscillatingWave(
             axes,
-            amplitude=self.amplitude,
+            z_amplitude=self.z_amplitude,
             wave_len=self.wave_len,
-            speed=self.speed
+            speed=self.speed,
+            color=self.color
         )
+        vect_wave = OscillatingFieldWave(axes, wave, **self.oscillating_field_config)
 
         def update_wave(wave):
             st = self.time * self.speed  # Suppressor threshold
@@ -310,13 +43,16 @@ class SimpleLightBeam(InteractiveScene):
             return wave
 
         wave.add_updater(update_wave)
+        vect_wave.add_updater(update_wave)
 
         self.add(wave)
         self.play(
             self.frame.animate.reorient(-98, 77, 0).move_to([-0.87, 0.9, -0.43]),
             run_time=8,
         )
+        self.add(vect_wave, wave)
         self.play(
+            VFadeIn(vect_wave),
             self.frame.animate.reorient(-10, 77, 0).move_to([-0.87, 0.9, -0.43]),
             run_time=4
         )
@@ -358,10 +94,11 @@ class SimpleLightBeam(InteractiveScene):
 
 
 class TwistingLightBeam(SimpleLightBeam):
-    amplitude = 0.5
-    wave_len = 1.0
-    twist_rate = 1 / 36
+    z_amplitude = 0.5
+    wave_len = 2.0
+    twist_rate = 1 / 72
     speed = 1.0
+    color = YELLOW
 
     def construct(self):
         # Axes
@@ -371,10 +108,12 @@ class TwistingLightBeam(SimpleLightBeam):
         # Add wave
         wave = OscillatingWave(
             axes,
-            amplitude=self.amplitude,
+            z_amplitude=self.z_amplitude,
             wave_len=self.wave_len,
-            speed=self.speed
+            speed=self.speed,
+            color=self.color
         )
+        vect_wave = OscillatingFieldWave(axes, wave, **self.oscillating_field_config)
 
         twist_rate_tracker = ValueTracker(0)
 
@@ -384,9 +123,9 @@ class TwistingLightBeam(SimpleLightBeam):
 
         wave.add_updater(update_twist_rate)
 
-        cylinder = SugarCylinder(axes, self.camera, radius=self.amplitude)
+        cylinder = SugarCylinder(axes, self.camera, radius=self.z_amplitude)
 
-        self.add(wave)
+        self.add(vect_wave, wave)
         self.frame.reorient(-41, 77, 0).move_to([-0.87, 0.9, -0.43])
         self.wait(4)
         cylinder.save_state()
@@ -481,10 +220,10 @@ class TwistingLightBeam(SimpleLightBeam):
         def update_rod(rod):
             x = get_x()
             rod.put_start_and_end_on(
-                axes.c2p(x, wave_y, wave_z - length_mult * wave.amplitude),
-                axes.c2p(x, wave_y, wave_z + length_mult * wave.amplitude),
+                axes.c2p(x, wave_y, wave_z - length_mult * wave.z_amplitude),
+                axes.c2p(x, wave_y, wave_z + length_mult * wave.z_amplitude),
             )
-            rod.rotate(-TAU * wave.twist_rate * x, RIGHT)
+            rod.rotate(TAU * wave.twist_rate * x, RIGHT)
             return rod
 
         rod.add_updater(update_rod)
@@ -507,7 +246,7 @@ class TwistingLightBeam(SimpleLightBeam):
         plane.set_fill(BLUE, 0.25)
         plane.set_stroke(width=0)
         circle = Circle(
-            radius=axes.z_axis.get_unit_size() * self.amplitude,
+            radius=axes.z_axis.get_unit_size() * self.z_amplitude,
             n_components=100,
         )
         circle.set_flat_stroke(False)
@@ -538,13 +277,15 @@ class TwistingLightBeam(SimpleLightBeam):
 
 
 class TwistingBlueLightBeam(TwistingLightBeam):
-    wave_len = 0.5
-    twist_rate = 1 / 24
+    wave_len = 1.0
+    twist_rate = 1 / 48
+    color = PURPLE
 
 
 class TwistingRedLightBeam(TwistingLightBeam):
-    wave_len = 1.5
-    twist_rate = 1 / 48
+    wave_len = 3.0
+    twist_rate = 1 / 96
+    color = RED
 
 
 class TwistingWithinCylinder(InteractiveScene):
@@ -604,7 +345,7 @@ class TwistingWithinCylinder(InteractiveScene):
         waves = VGroup(*(
             OscillatingWave(
                 axes,
-                amplitude=0.3,
+                z_amplitude=0.3,
                 wave_len=wave_len,
                 color=line.get_color(),
                 offset=LEFT + line.get_y() * UP
@@ -919,14 +660,14 @@ class TwistingWithinCylinder(InteractiveScene):
 
 
 class InducedWiggleInCylinder(TwistingLightBeam):
-    random_seed = 2
+    random_seed = 3
     cylinder_radius = 0.5
     wave_config = dict(
-        amplitude=0.15,
+        z_amplitude=0.15,
         wave_len=0.5,
         color=get_spectral_color(0.1),
         speed=1.0,
-        twist_rate=1 / 24
+        twist_rate=-1 / 24
     )
 
     def construct(self):
@@ -962,22 +703,33 @@ class InducedWiggleInCylinder(TwistingLightBeam):
             run_time=2,
         )
         max_y = 0.5 * self.cylinder_radius
-        for _ in range(10):
+        line = VMobject()
+        line.set_stroke(RED, 2)
+        line.set_flat_stroke(False)
+        dot = TrueDot(radius=0.05)
+        dot.make_3d()
+        for x in range(10):
             point = axes.c2p(
                 random.uniform(axes.x_axis.x_min, axes.x_axis.x_max),
                 random.uniform(-max_y, -max_y),
                 random.uniform(-max_y, -max_y),
             )
-            dot = TrueDot(point, radius=0.05)
-            dot.make_3d()
-            line = VMobject().set_points_as_corners(
-                [light.get_center(), point, randy.eyes.get_top()]
-            )
-            line.set_stroke(RED, 2)
-            line.set_flat_stroke(False)
+            line_points = [light.get_center(), point, randy.eyes.get_top()]
             self.add(dot, cylinder)
-            self.play(ShowCreation(line))
-            self.play(FadeOut(line), FadeOut(dot))
+            if x == 0:
+                dot.move_to(point)
+                line.set_points_as_corners(line_points)
+                self.play(ShowCreation(line))
+            else:
+                self.play(
+                    line.animate.set_points_as_corners(line_points),
+                    dot.animate.move_to(point),
+                )
+                self.wait()
+        self.play(
+            FadeOut(line),
+            FadeOut(dot),
+        )
 
         # Show slice such that wiggling is in z direction
         x_tracker.set_value(0)
@@ -1009,8 +761,8 @@ class InducedWiggleInCylinder(TwistingLightBeam):
 
         self.play(
             self.frame.animate.reorient(-60, 79, 0).move_to([0.73, -0.59, -0.39]).set_height(9.63),
-            ShowCreation(line_of_sight, time_span=(3, 4)),
-            run_time=8,
+            Write(line_of_sight, time_span=(3, 4), lag_ratio=0),
+            run_time=5,
         )
         self.wait(2)
 
@@ -1038,7 +790,7 @@ class InducedWiggleInCylinder(TwistingLightBeam):
         # Show ribbon
         ribbon = TwistedRibbon(
             axes,
-            amplitude=wave.amplitude,
+            amplitude=wave.z_amplitude,
             twist_rate=wave.twist_rate,
             color=wave.get_color(),
         )
@@ -1075,7 +827,7 @@ class InducedWiggleInCylinder(TwistingLightBeam):
         amp = 0.03
         zs = np.linspace(0.5 - amp, -0.5 + amp, n_waves)
         small_wave_config = dict(self.wave_config)
-        small_wave_config["amplitude"] = amp
+        small_wave_config["z_amplitude"] = amp
 
         waves = VGroup(*(
             OscillatingWave(
@@ -1182,3 +934,362 @@ class InducedWiggleInCylinder(TwistingLightBeam):
         ))
         line.set_flat_stroke(False)
         return line
+
+
+class VectorFieldWiggling(InteractiveScene):
+    default_frame_orientation = (-33, 85)
+
+    def construct(self):
+        # Waves
+        axes, plane = get_axes_and_plane()
+        self.add(axes, plane)
+
+        wave = OscillatingWave(
+            axes,
+            wave_len=3.0,
+            speed=1.5,
+            color=BLUE,
+            z_amplitude=0.5,
+        )
+        vector_wave = OscillatingFieldWave(axes, wave)
+        wave_opacity_tracker = ValueTracker(0)
+        vector_opacity_tracker = ValueTracker(1)
+        wave.add_updater(lambda m: m.set_stroke(opacity=wave_opacity_tracker.get_value()))
+        vector_wave.add_updater(lambda m: m.set_stroke(opacity=vector_opacity_tracker.get_value()))
+
+        self.add(vector_wave, wave)
+
+        # Charges
+        charges = DotCloud(color=RED)
+        charges.to_grid(50, 50)
+        charges.set_radius(0.04)
+        charges.set_height(2 * axes.z_axis.get_length())
+        charges.rotate(PI / 2, RIGHT).rotate(PI / 2, IN)
+        charges.move_to(axes.c2p(-10, 0, 0))
+        charges.make_3d()
+
+        charge_opacity_tracker = ValueTracker(1)
+        charges.add_updater(lambda m: m.set_opacity(charge_opacity_tracker.get_value()))
+        charges.add_updater(lambda m: m.set_z(0.3 * wave.wave_func(0, self.time)[2]))
+
+        self.add(charges, vector_wave, wave)
+
+        # Pan camera
+        self.frame.reorient(-51, 82, 0).move_to([0.23, -0.31, -0.18]).set_height(8.74)
+        self.play(
+            self.frame.animate.reorient(38, 79, 0).move_to([-0.45, -0.7, 0.45]).set_height(7.83),
+            run_time=10,
+        )
+        self.play(
+            self.frame.animate.reorient(17, 78, 0).move_to([-0.3, -0.22, 0.58]).set_height(9.03),
+            wave_opacity_tracker.animate.set_value(1).set_anim_args(time_span=(1, 2)),
+            vector_opacity_tracker.animate.set_value(0.5).set_anim_args(time_span=(1, 2)),
+            run_time=4,
+        )
+        self.play(
+            self.frame.animate.reorient(-29, 84, 0).move_to([0.54, -0.07, 0.02]).set_height(8.52),
+            run_time=8
+        )
+
+        # Highlight x_axis
+        x_line = Line(*axes.x_axis.get_start_and_end())
+        x_line.set_stroke(BLUE, 10)
+
+        self.play(
+            wave_opacity_tracker.animate.set_value(0.25),
+            vector_opacity_tracker.animate.set_value(0.25),
+            charge_opacity_tracker.animate.set_value(0.25),
+        )
+        self.play(
+            ShowCreation(x_line, time_span=(0, 2)),
+            vector_opacity_tracker.animate.set_value(0.5).set_anim_args(time_span=(6, 7)),
+            self.frame.animate.reorient(-47, 78, 0).move_to([0.54, -0.07, 0.02]).set_height(8.52),
+            run_time=15,
+        )
+        self.wait(10)
+
+
+class ClockwiseCircularLight(InteractiveScene):
+    clockwise = True
+    default_frame_orientation = (-20, 70)
+    color = YELLOW
+    x_range = (0, 24)
+    amplitude = 0.5
+
+    def setup(self):
+        super().setup()
+        # Axes
+        axes, plane = get_axes_and_plane(x_range=self.x_range)
+        self.add(axes, plane)
+
+        # Wave
+        wave = OscillatingWave(
+            axes,
+            wave_len=3,
+            speed=0.5,
+            z_amplitude=self.amplitude,
+            y_amplitude=self.amplitude,
+            y_phase=-PI / 2 if self.clockwise else PI / 2,
+            color=self.color,
+        )
+        vect_wave = OscillatingFieldWave(axes, wave)
+        vect_wave.set_stroke(opacity=0.7)
+
+        self.add(wave, vect_wave)
+
+    def construct(self):
+        self.play(
+            self.frame.animate.reorient(73, 82, 0),
+            run_time=5
+        )
+        for pair in [(100, 70), (59, 72), (110, 65), (60, 80)]:
+            self.play(
+                self.frame.animate.reorient(*pair),
+                run_time=12,
+            )
+
+
+class CounterclockwiseCircularLight(ClockwiseCircularLight):
+    clockwise = False
+    color = RED
+
+
+class AltClockwiseCircularLight(ClockwiseCircularLight):
+    x_range = (0, 8)
+    amplitude = 0.4
+
+    def construct(self):
+        self.frame.reorient(69, 81, 0)
+        self.wait(12)
+
+
+class AltCounterclockwiseCircularLight(CounterclockwiseCircularLight):
+    x_range = (0, 8)
+    amplitude = 0.4
+
+    def construct(self):
+        self.frame.reorient(69, 81, 0)
+        self.wait(12)
+
+
+class TransitionTo2D(InteractiveScene):
+    default_frame_orientation = (-20, 70)
+    wave_config = dict(
+        color=BLUE,
+        wave_len=3,
+    )
+
+    def construct(self):
+        # Axes
+        axes, plane = get_axes_and_plane(x_range=(0, 8.01))
+        self.add(axes, plane)
+
+        # Waves
+        wave = OscillatingWave(axes, **self.wave_config)
+        vect_wave = OscillatingFieldWave(axes, wave)
+        wave_opacity_tracker = ValueTracker(1)
+        wave.add_updater(lambda m: m.set_stroke(opacity=wave_opacity_tracker.get_value()))
+        vect_wave.add_updater(lambda m: m.set_stroke(opacity=wave_opacity_tracker.get_value()))
+
+        single_vect = Vector(OUT, stroke_color=wave.get_color(), stroke_width=4)
+        single_vect.set_flat_stroke(False)
+
+        def update_vect(vect):
+            x_max = axes.x_axis.x_max
+            base = axes.c2p(x_max, 0, 0)
+            vect.put_start_and_end_on(base, base + wave.wave_func(x_max, wave.time) * [0, 1, 1])
+
+        single_vect.add_updater(update_vect)
+
+        self.add(wave, vect_wave)
+
+        # Shift perspective
+        self.frame.reorient(69, 81, 0)
+        wave_opacity_tracker.set_value(0.8)
+        self.wait(6)
+        self.play(
+            self.frame.animate.reorient(73, 84, 0),
+            VFadeIn(single_vect, time_span=(2, 3)),
+            wave_opacity_tracker.animate.set_value(0.35).set_anim_args(time_span=(2, 3)),
+            run_time=5,
+        )
+        self.wait()
+        self.play(
+            self.frame.animate.reorient(90, 90, 0),
+            wave_opacity_tracker.animate.set_value(0),
+            run_time=4,
+        )
+        self.wait(4)
+
+
+class TransitionTo2DRightHanded(TransitionTo2D):
+    wave_config = dict(
+        wave_len=3,
+        y_amplitude=0.5,
+        z_amplitude=0.5,
+        y_phase=PI / 2,
+        color=RED,
+    )
+
+
+class TransitionTo2DLeftHanded(TransitionTo2D):
+    wave_config = dict(
+        wave_len=3,
+        y_amplitude=0.5,
+        z_amplitude=0.5,
+        y_phase=-PI / 2,
+        color=YELLOW,
+    )
+
+
+class LinearAsASuperpositionOfCircular(InteractiveScene):
+    rotation_rate = 0.25
+    amplitude = 2.0
+
+    def construct(self):
+        # Set up planes
+        plane_config = dict(
+            background_line_style=dict(stroke_color=GREY, stroke_width=1),
+            faded_line_style=dict(stroke_color=GREY, stroke_width=0.5, stroke_opacity=0.5),
+        )
+        planes = VGroup(
+            ComplexPlane((-1, 1), (-1, 1), **plane_config),
+            ComplexPlane((-1, 1), (-1, 1), **plane_config),
+            ComplexPlane((-2, 2), (-2, 2), **plane_config),
+        )
+        planes[:2].arrange(DOWN, buff=2.0).set_height(FRAME_HEIGHT - 1.5).next_to(ORIGIN, LEFT, 1.0)
+        planes[2].set_height(6).next_to(ORIGIN, RIGHT, 1.0)
+        # planes.arrange(RIGHT, buff=1.5)
+        self.add(planes)
+
+        # Set up trackers
+        phase_trackers = ValueTracker(0).replicate(2)
+        phase1_tracker, phase2_tracker = phase_trackers
+
+        def update_phase(m, dt):
+            m.increment_value(TAU * self.rotation_rate * dt)
+
+        def slow_changer(m, dt):
+            m.increment_value(-0.5 * TAU * self.rotation_rate * dt)
+
+        for tracker in phase_trackers:
+            tracker.add_updater(update_phase)
+
+        self.add(*phase_trackers)
+
+        def get_z1():
+            return 0.5 * self.amplitude * np.exp((PI / 2 + phase1_tracker.get_value()) * 1j)
+
+        def get_z2():
+            return 0.5 * self.amplitude * np.exp((PI / 2 - phase2_tracker.get_value()) * 1j)
+
+        def get_sum():
+            return get_z1() + get_z2()
+
+        # Vectors
+        vects = VGroup(
+            self.get_vector(planes[0], get_z1, color=RED),
+            self.get_vector(planes[1], get_z2, color=YELLOW),
+            self.get_vector(planes[2], get_sum, color=BLUE),
+            self.get_vector(planes[2], get_z1, color=RED),
+            self.get_vector(planes[2], get_sum, get_base=get_z1, color=YELLOW),
+        )
+
+        self.add(*vects)
+
+        # Polarization line
+        pol_line = Line(UP, DOWN)
+        pol_line.set_stroke(YELLOW, 1)
+        pol_line.match_height(planes[2])
+        pol_line.move_to(planes[2])
+
+        def update_pol_line(line):
+            if abs(vects[2].get_length()) > 1e-3:
+                line.set_angle(vects[2].get_angle())
+                line.move_to(planes[2].n2p(0))
+            return line
+
+        pol_line.add_updater(update_pol_line)
+
+        self.add(pol_line, *planes, *vects)
+
+        # Write it as an equation
+        plus = Tex("+", font_size=72)
+        equals = Tex("=", font_size=72)
+        plus.move_to(planes[0:2])
+        # equals.move_to(planes[1:3])
+        equals.move_to(ORIGIN)
+
+        self.add(plus, equals)
+
+        # Slow down annotation
+        arcs = VGroup(
+            Arrow(LEFT, RIGHT, path_arc=-PI, stroke_width=2),
+            Arrow(RIGHT, LEFT, path_arc=-PI, stroke_width=2),
+        )
+        arcs.move_to(planes[0])
+        slow_word = Text("Slow down!")
+        slow_word.next_to(planes[0], DOWN)
+        sucrose = Sucrose(height=1)
+        sucrose.balls.scale_radii(0.25)
+        sucrose.fade(0.5)
+        sucrose.move_to(planes[0])
+        slow_group = Group(slow_word, arcs, sucrose)
+
+        def slow_down():
+            self.play(FadeIn(slow_group, run_time=0.25))
+            phase1_tracker.add_updater(slow_changer)
+            self.wait(0.75)
+            phase1_tracker.remove_updater(slow_changer)
+            self.play(FadeOut(slow_group))
+
+        # Highlight constituent parts
+        back_rects = VGroup(*(BackgroundRectangle(plane) for plane in planes))
+        back_rects.set_fill(opacity=0.5)
+
+        self.wait(8)
+
+        self.add(back_rects[1])
+        VGroup(vects[1], vects[2], vects[4]).set_stroke(opacity=0.25)
+        self.wait(8)
+        self.remove(back_rects[1])
+
+        self.add(back_rects[0])
+        vects.set_stroke(opacity=1)
+        VGroup(vects[0], vects[2]).set_stroke(opacity=0.25)
+        self.wait(8)
+        vects.set_stroke(opacity=1)
+        self.remove(back_rects)
+        self.wait(4)
+
+        # Rotation labels
+        for tracker in phase_trackers:
+            tracker.set_value(0)
+
+        rot_labels = VGroup(*(
+            TexText("Total rotation: 0.00")
+            for _ in range(2)
+        ))
+        for rot_label, plane, tracker in zip(rot_labels, planes, phase_trackers):
+            rot_label.set_height(0.2)
+            rot_label.set_color(GREY_B)
+            rot_label.next_to(plane, UP)
+            dec = rot_label.make_number_changable("0.00", edge_to_fix=LEFT)
+            dec.phase_tracker = tracker
+            dec.add_updater(lambda m: m.set_value(m.phase_tracker.get_value() / TAU))
+
+        self.add(rot_labels)
+
+        # Let it play, occasionally kink
+        self.wait(9)
+        for _ in range(20):
+            slow_down()
+            self.wait(3 * random.random())
+
+    def get_vector(self, plane, get_z, get_base=lambda: 0, color=BLUE):
+        vect = Vector(UP, stroke_color=color)
+        vect.add_updater(lambda m: m.put_start_and_end_on(
+            plane.n2p(get_base()),
+            plane.n2p(get_z())
+        ))
+        return vect

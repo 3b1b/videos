@@ -1,425 +1,5 @@
 from manim_imports_ext import *
-
-
-def acceleration_from_position(pos_func, time, dt=1e-3):
-    p0 = pos_func(time - dt)
-    p1 = pos_func(time)
-    p2 = pos_func(time + dt)
-    return (p0 + p2 - 2 * p1) / dt**2
-
-
-def points_to_particle_info(origin, points, radius):
-    """
-    Given an origin, a set of points, and a radius, this returns:
-
-    1) The unit vectors directed from the origin to each point
-
-    2) The distances from the origin to each point
-
-    3) An adjusted version of those distances where points
-    within a given radius of the origin are considered to
-    be farther away, approaching infinity at the origin.
-    The intent is that when this is used for colomb/lorenz
-    forces, field vectors within a radius of a particle don't
-    blow up
-    """
-    diffs = points - origin
-    norms = np.linalg.norm(diffs, axis=1)[:, np.newaxis]
-    unit_diffs = np.zeros_like(diffs)
-    np.true_divide(diffs, norms, out=unit_diffs, where=(norms > 0))
-
-    adjusted_norms = norms.copy()
-    mask = (0 < norms) & (norms < radius)
-    adjusted_norms[mask] = radius * radius / norms[mask]
-    adjusted_norms[norms == 0] = np.inf
-
-    return unit_diffs, norms, adjusted_norms
-
-
-def colomb_force(points, particle, radius=None):
-    if radius is None:
-        radius = particle.get_radius()
-    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle.get_center(), points, radius)
-    return particle.get_charge() * unit_diffs / adjusted_norms**2
-
-
-def lorentz_force(
-    points,
-    particle,
-    # Takes in time, returns acceleration vector
-    # for the charge at that time. Defaults to
-    # particle.get_past_acceleration
-    acceleration_func=None,
-    radius=None,
-    c=2.0,
-    epsilon0=0.025,
-):
-    if radius is None:
-        radius = particle.get_radius()
-    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle.get_center(), points, radius)
-
-    if acceleration_func is None:
-        acceleration_func = particle.get_past_acceleration
-
-    delays = norms[:, 0] / c
-    if particle.track_position_history:
-        # past_positions = np.array([
-        #     particle.get_past_position(delay)
-        #     for delay in delays
-        # ])
-        past_positions = particle.get_past_position(delays)
-        unit_diffs = normalize_along_axis(points - past_positions, 1)
-    acceleration = acceleration_func(delays)
-    dot_prods = (unit_diffs * acceleration).sum(1)[:, np.newaxis]
-    a_perp = acceleration - dot_prods * unit_diffs
-
-    denom = 4 * PI * epsilon0 * c**2 * adjusted_norms
-    return -particle.get_charge() * a_perp / denom
-
-
-class ChargedParticle(Group):
-    def __init__(
-        self,
-        point=ORIGIN,
-        charge=1.0,
-        color=RED,
-        show_sign=True,
-        sign="+",
-        radius=0.2,
-        rotation=0,
-        sign_stroke_width=2,
-        track_position_history=False,
-        history_size=7200,
-    ):
-        self.charge = charge
-
-        sphere = TrueDot(radius=radius, color=color)
-        sphere.make_3d()
-        sphere.move_to(point)
-        super().__init__(sphere)
-        self.sphere = sphere
-
-        if show_sign:
-            sign = Tex(sign)
-            sign.set_height(radius)
-            sign.rotate(rotation, RIGHT)
-            sign.set_stroke(WHITE, sign_stroke_width)
-            sign.move_to(sphere)
-            self.add(sign)
-            self.sign = sign
-
-        self.track_position_history = track_position_history
-        self.history_size = history_size
-
-        self.init_clock()
-        self.add_updater(lambda m, dt: m.increment_clock(dt))
-
-    def init_clock(self):
-        self.clock = 0
-        self.time_step = 1 / 30  # This will be updated
-        self.recent_positions = np.tile(self.get_center(), 3).reshape((3, 3))
-        if self.track_position_history:
-            self.position_history = np.zeros((self.history_size, 3))
-            self.acceleration_history = np.zeros((self.history_size, 3))
-            self.history_index = -1
-            # self.n_history_changes = 0
-            # self.position_history = []
-            # self.acceleration_history = []
-
-    def increment_clock(self, dt):
-        if dt == 0:
-            return self
-        self.clock += dt
-        self.time_step = dt
-        self.recent_positions[0:2] = self.recent_positions[1:3]
-        self.recent_positions[2] = self.get_center()
-        if self.track_position_history:
-            self.add_to_position_history()
-
-    def add_to_position_history(self):
-        self.history_index += 1
-        hist_size = self.history_size
-        # If overflowing, copy second half of history
-        # lists to the first half, and reset index
-        if self.history_index >= hist_size:
-            for arr in [self.position_history, self.acceleration_history]:
-                arr[:hist_size // 2, :] = arr[hist_size // 2:, :]
-            self.history_index = (hist_size // 2) + 1
-
-        self.position_history[self.history_index] = self.get_center()
-        self.acceleration_history[self.history_index] = self.get_acceleration()
-        return self
-
-    def ignore_last_motion(self):
-        self.recent_positions[:] = self.get_center()
-        return self
-
-    def get_charge(self):
-        return self.charge
-
-    def get_radius(self):
-        return self.sphere.get_radius()
-
-    def get_internal_time(self):
-        return self.clock
-
-    def scale(self, factor, *args, **kwargs):
-        super().scale(factor, *args, **kwargs)
-        self.sphere.set_radius(factor * self.sphere.get_radius())
-        return self
-
-    def get_acceleration(self):
-        p0, p1, p2 = self.recent_positions
-        if (p0 == p1).all() or (p1 == p2).all():
-            # Otherwise, starts and stops have artificially
-            # high acceleration
-            return np.zeros(3)
-        return (p0 + p2 - 2 * p1) / self.time_step**2
-
-    def get_info_from_delays(self, info_arr, delays):
-        if not hasattr(self, "acceleration_history"):
-            raise Exception("track_position_history is not turned on")
-
-        if len(info_arr) == 0:
-            return np.zeros((len(delays), 3))
-
-        pre_indices = self.history_index - delays / self.time_step
-        indices = np.clip(pre_indices, 0, self.history_index).astype(int)
-
-        return info_arr[indices]
-
-    def get_past_acceleration(self, delays):
-        return self.get_info_from_delays(self.acceleration_history, delays)
-
-    def get_past_position(self, delays):
-        return self.get_info_from_delays(self.position_history, delays)
-
-
-class AccelerationVector(Vector):
-    def __init__(
-        self,
-        particle,
-        stroke_color=PINK,
-        stroke_width=4,
-        flat_stroke=False,
-        norm_func=lambda n: np.tanh(n),
-        **kwargs
-    ):
-        self.norm_func = norm_func
-
-        super().__init__(
-            RIGHT,
-            stroke_color=stroke_color,
-            stroke_width=stroke_width,
-            flat_stroke=flat_stroke,
-            **kwargs
-        )
-        self.add_updater(lambda m: m.pin_to_particle(particle))
-
-    def pin_to_particle(self, particle):
-        a_vect = particle.get_acceleration()
-        norm = get_norm(a_vect)
-        if self.norm_func is not None and norm > 0:
-            a_vect = self.norm_func(norm) * a_vect / norm
-        center = particle.get_center()
-        self.put_start_and_end_on(center, center + a_vect)
-
-
-class VectorField(VMobject):
-    def __init__(
-        self,
-        func,
-        color=BLUE,
-        center=ORIGIN,
-        x_density=2.0,
-        y_density=2.0,
-        z_density=2.0,
-        width=14,
-        height=8,
-        depth=0,
-        stroke_width: float = 2,
-        tip_width_ratio: float = 4,
-        tip_len_to_width: float = 0.01,
-        max_vect_len: float | None = None,
-        min_drawn_norm: float = 1e-2,
-        flat_stroke=False,
-        norm_to_opacity_func=None,
-        norm_to_rgb_func=None,
-        **kwargs
-    ):
-        self.func = func
-        self.stroke_width = stroke_width
-        self.tip_width_ratio = tip_width_ratio
-        self.tip_len_to_width = tip_len_to_width
-        self.min_drawn_norm = min_drawn_norm
-        self.norm_to_opacity_func = norm_to_opacity_func
-        self.norm_to_rgb_func = norm_to_rgb_func
-
-        if max_vect_len is not None:
-            self.max_vect_len = max_vect_len
-        else:
-            densities = np.array([x_density, y_density, z_density])
-            dims = np.array([width, height, depth])
-            self.max_vect_len = 1.0 / densities[dims > 0].mean()
-
-        self.init_sample_points(
-            center, width, height, depth,
-            x_density, y_density, z_density
-        )
-        self.init_base_stroke_width_array(len(self.sample_points))
-
-        super().__init__(
-            stroke_color=color,
-            flat_stroke=flat_stroke,
-            **kwargs
-        )
-
-        n_samples = len(self.sample_points)
-        self.set_points(np.zeros((8 * n_samples - 1, 3)))
-        self.set_stroke(width=stroke_width)
-        self.update_vectors()
-
-    def init_sample_points(
-        self,
-        center: np.ndarray,
-        width: float,
-        height: float,
-        depth: float,
-        x_density: float,
-        y_density: float,
-        z_density: float
-    ):
-        to_corner = np.array([width / 2, height / 2, depth / 2])
-        spacings = 1.0 / np.array([x_density, y_density, z_density])
-        to_corner = spacings * (to_corner / spacings).astype(int)
-        lower_corner = center - to_corner
-        upper_corner = center + to_corner + spacings
-        self.sample_points = cartesian_product(*(
-            np.arange(low, high, space)
-            for low, high, space in zip(lower_corner, upper_corner, spacings)
-        ))
-
-    def init_base_stroke_width_array(self, n_sample_points):
-        arr = np.ones(8 * n_sample_points - 1)
-        arr[4::8] = self.tip_width_ratio
-        arr[5::8] = self.tip_width_ratio * 0.5
-        arr[6::8] = 0
-        arr[7::8] = 0
-        self.base_stroke_width_array = arr
-
-    def set_stroke(self, color=None, width=None, opacity=None, background=None, recurse=True):
-        super().set_stroke(color, None, opacity, background, recurse)
-        if width is not None:
-            self.set_stroke_width(float(width))
-        return self
-
-    def set_stroke_width(self, width: float):
-        if self.get_num_points() > 0:
-            self.get_stroke_widths()[:] = width * self.base_stroke_width_array
-            self.stroke_width = width
-        return self
-
-    def update_vectors(self):
-        tip_width = self.tip_width_ratio * self.stroke_width
-        tip_len = self.tip_len_to_width * tip_width
-        samples = self.sample_points
-
-        # Get raw outputs and lengths
-        outputs = self.func(samples)
-        norms = np.linalg.norm(outputs, axis=1)[:, np.newaxis]
-
-        # How long should the arrows be drawn?
-        max_len = self.max_vect_len
-        if max_len < np.inf:
-            drawn_norms = max_len * np.tanh(norms / max_len)
-        else:
-            drawn_norms = norms
-
-        # What's the distance from the base of an arrow to
-        # the base of its head?
-        dist_to_head_base = np.clip(drawn_norms - tip_len, 0, np.inf)
-
-        # Set all points
-        unit_outputs = np.zeros_like(outputs)
-        np.true_divide(outputs, norms, out=unit_outputs, where=(norms > self.min_drawn_norm))
-
-        points = self.get_points()
-        points[0::8] = samples
-        points[2::8] = samples + dist_to_head_base * unit_outputs
-        points[4::8] = points[2::8]
-        points[6::8] = samples + drawn_norms * unit_outputs
-        for i in (1, 3, 5):
-            points[i::8] = 0.5 * (points[i - 1::8] + points[i + 1::8])
-        points[7::8] = points[6:-1:8]
-
-        # Adjust stroke widths
-        width_arr = self.stroke_width * self.base_stroke_width_array
-        width_scalars = np.clip(drawn_norms / tip_len, 0, 1)
-        width_scalars = np.repeat(width_scalars, 8)[:-1]
-        self.get_stroke_widths()[:] = width_scalars * width_arr
-
-        # Potentially adjust opacity and color
-        if self.norm_to_opacity_func is not None:
-            self.get_stroke_opacities()[:] = self.norm_to_opacity_func(
-                np.repeat(norms, 8)[:-1]
-            )
-        if self.norm_to_rgb_func is not None:
-            self.get_stroke_colors()
-            self.data['stroke_rgba'][:, :3] = self.norm_to_rgb_func(
-                np.repeat(norms, 8)[:-1]
-            )
-
-        self.note_changed_data()
-        return self
-
-
-class ChargeBasedVectorField(VectorField):
-    default_color = BLUE
-
-    def __init__(self, *charges, **kwargs):
-        self.charges = charges
-        super().__init__(
-            self.get_forces,
-            color=kwargs.pop("color", self.default_color),
-            **kwargs
-        )
-        self.add_updater(lambda m: m.update_vectors())
-
-    def get_forces(self, points):
-        # To be implemented in subclasses
-        return np.zeros_like(points)
-
-
-class ColombField(ChargeBasedVectorField):
-    default_color = YELLOW
-
-    def get_forces(self, points):
-        return sum(
-            colomb_force(points, charge)
-            for charge in self.charges
-        )
-
-
-class LorentzField(ChargeBasedVectorField):
-    def __init__(
-        self, *charges,
-        radius_of_suppression=None,
-        c=2.0,
-        **kwargs
-    ):
-        self.radius_of_suppression = radius_of_suppression
-        self.c = c
-        super().__init__(*charges, **kwargs)
-
-    def get_forces(self, points):
-        return sum(
-            lorentz_force(
-                points, charge,
-                radius=self.radius_of_suppression,
-                c=self.c
-            )
-            for charge in self.charges
-        )
+from _2023.barber_pole.objects import *
 
 
 # Scenes
@@ -427,12 +7,12 @@ class LorentzField(ChargeBasedVectorField):
 
 class TestFields(InteractiveScene):
     def construct(self):
-        # Test colomb field
+        # Test coulomb field
         particles = ChargedParticle(rotation=0).replicate(1)
         particles.arrange(DOWN)
         particles.move_to(6 * LEFT)
 
-        field = ColombField(*particles)
+        field = CoulombField(*particles)
 
         self.add(field, particles)
         self.play(particles.animate.move_to(0.2 * UP), run_time=3)
@@ -507,19 +87,19 @@ class IntroduceEField(InteractiveScene):
         self.wait()
 
         # Show force arrows
-        def show_colomb_force(arrow, charge1, charge2):
+        def show_coulomb_force(arrow, charge1, charge2):
             root = charge2.get_center()
-            vect = 4 * colomb_force(
+            vect = 4 * coulomb_force(
                 charge2.get_center()[np.newaxis, :],
                 charge1
             )[0]
             arrow.put_start_and_end_on(root, root + vect)
 
-        colomb_vects = Vector(RIGHT, stroke_width=5, stroke_color=YELLOW).replicate(2)
-        colomb_vects[0].add_updater(lambda a: show_colomb_force(a, *charges))
-        colomb_vects[1].add_updater(lambda a: show_colomb_force(a, *charges[::-1]))
+        coulomb_vects = Vector(RIGHT, stroke_width=5, stroke_color=YELLOW).replicate(2)
+        coulomb_vects[0].add_updater(lambda a: show_coulomb_force(a, *charges))
+        coulomb_vects[1].add_updater(lambda a: show_coulomb_force(a, *charges[::-1]))
 
-        self.add(*colomb_vects, *charges)
+        self.add(*coulomb_vects, *charges)
         self.play(
             FadeOut(question, time_span=(0, 1)),
             FadeOut(arrows, time_span=(0, 1)),
@@ -536,8 +116,8 @@ class IntroduceEField(InteractiveScene):
             word.set_width(min(0.5 * arrow.get_width(), fw_width))
             word.next_to(arrow, UP, buff=0.2)
 
-        force_words[0].add_updater(lambda w: place_force_word_on_arrow(w, colomb_vects[0]))
-        force_words[1].add_updater(lambda w: place_force_word_on_arrow(w, colomb_vects[1]))
+        force_words[0].add_updater(lambda w: place_force_word_on_arrow(w, coulomb_vects[0]))
+        force_words[1].add_updater(lambda w: place_force_word_on_arrow(w, coulomb_vects[1]))
 
         self.play(LaggedStartMap(FadeIn, force_words, run_time=1, lag_ratio=0.5))
         self.add(force_words, charges)
@@ -593,29 +173,29 @@ class IntroduceEField(InteractiveScene):
             )
             self.wait()
 
-        # Write Colomb's law
-        colombs_law = Tex(R"""
+        # Write Coulomb's law
+        coulombs_law = Tex(R"""
             F = {q_1 q_2 \over 4 \pi \epsilon_0} \cdot \frac{1}{r^2}
         """)
-        colombs_law_title = TexText("Colomb's law")
-        colombs_law_title.move_to(axes, UP)
-        colombs_law.next_to(colombs_law_title, DOWN, buff=0.75)
+        coulombs_law_title = TexText("Coulomb's law")
+        coulombs_law_title.move_to(axes, UP)
+        coulombs_law.next_to(coulombs_law_title, DOWN, buff=0.75)
 
-        rect = SurroundingRectangle(colombs_law["q_1 q_2"])
+        rect = SurroundingRectangle(coulombs_law["q_1 q_2"])
         rect.set_stroke(YELLOW, 2)
         rect.set_fill(YELLOW, 0.25)
 
         self.play(
-            FadeIn(colombs_law_title),
-            FadeIn(colombs_law, UP),
+            FadeIn(coulombs_law_title),
+            FadeIn(coulombs_law, UP),
         )
         self.wait()
-        self.add(rect, colombs_law)
+        self.add(rect, coulombs_law)
         self.play(FadeIn(rect))
         self.wait()
-        self.play(rect.animate.surround(colombs_law[R"4 \pi \epsilon_0"]))
+        self.play(rect.animate.surround(coulombs_law[R"4 \pi \epsilon_0"]))
         self.wait()
-        self.play(rect.animate.surround(colombs_law[R"\frac{1}{r^2}"]))
+        self.play(rect.animate.surround(coulombs_law[R"\frac{1}{r^2}"]))
         self.wait()
         self.play(charges[1].animate.next_to(charges[0], RIGHT, buff=3.0), run_time=3)
         self.play(FadeOut(rect))
@@ -625,10 +205,10 @@ class IntroduceEField(InteractiveScene):
         d_line.clear_updaters()
         self.play(
             frame.animate.center(),
-            VGroup(colombs_law, colombs_law_title).animate.to_corner(UL),
+            VGroup(coulombs_law, coulombs_law_title).animate.to_corner(UL),
             LaggedStartMap(FadeOut, Group(
                 axes, graph, graph_dot, d_line, d_label,
-                force_words, colomb_vects
+                force_words, coulomb_vects
             )),
             charges[0].animate.center(),
             FadeOut(charges[1]),
@@ -636,33 +216,33 @@ class IntroduceEField(InteractiveScene):
         )
         self.wait()
 
-        # Show Colomb's law vector field
-        colombs_law.add_background_rectangle()
-        colombs_law_title.add_background_rectangle()
-        field = ColombField(charges[0], x_density=3.0, y_density=3.0)
+        # Show Coulomb's law vector field
+        coulombs_law.add_background_rectangle()
+        coulombs_law_title.add_background_rectangle()
+        field = CoulombField(charges[0], x_density=3.0, y_density=3.0)
         dots = DotCloud(field.sample_points, radius=0.025, color=RED)
         dots.make_3d()
 
-        self.add(dots, colombs_law_title, colombs_law)
+        self.add(dots, coulombs_law_title, coulombs_law)
         self.play(ShowCreation(dots))
         self.wait()
-        self.add(field, colombs_law_title, colombs_law)
+        self.add(field, coulombs_law_title, coulombs_law)
         self.play(FadeIn(field))
         for vect in [2 * RIGHT, 4 * LEFT, 2 * RIGHT]:
             self.play(charges[0].animate.shift(vect).set_anim_args(path_arc=PI, run_time=3))
         self.wait()
 
         # Electric field
-        e_colombs_law = Tex(R"""
+        e_coulombs_law = Tex(R"""
             \vec{E}(\vec{r}) = {q \over 4 \pi \epsilon_0}
             \cdot \frac{1}{||\vec{r}||^2}
             \cdot \frac{\vec{r}}{||\vec{r}||}
         """)
-        e_colombs_law.move_to(colombs_law, LEFT)
-        ebr = BackgroundRectangle(e_colombs_law)
+        e_coulombs_law.move_to(coulombs_law, LEFT)
+        ebr = BackgroundRectangle(e_coulombs_law)
         r_vect = Vector(2 * RIGHT + UP)
         r_vect.set_stroke(GREEN)
-        r_label = e_colombs_law[R"\vec{r}"][0].copy()
+        r_label = e_coulombs_law[R"\vec{r}"][0].copy()
         r_label.next_to(r_vect.get_center(), UP, buff=0.1)
         r_label.set_backstroke(BLACK, 20)
 
@@ -682,42 +262,58 @@ class IntroduceEField(InteractiveScene):
         )
         e_words.set_backstroke(BLACK, 20)
         e_words.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
-        e_words.next_to(e_colombs_law, DOWN, buff=0.5)
+        e_words.next_to(e_coulombs_law, DOWN, buff=0.5)
         e_words.to_edge(LEFT, buff=MED_SMALL_BUFF)
 
-        rect.surround(e_colombs_law[R"\vec{E}"])
+        rect.surround(e_coulombs_law[R"\vec{E}"])
         rect.scale(0.9, about_edge=DR)
 
         self.play(
-            FadeOut(colombs_law, UP),
+            FadeOut(coulombs_law, UP),
             FadeIn(ebr, UP),
-            FadeIn(e_colombs_law, UP),
+            FadeIn(e_coulombs_law, UP),
         )
         self.wait()
-        self.add(ebr, rect, e_colombs_law)
+        self.add(ebr, rect, e_coulombs_law)
         self.play(FadeIn(rect))
         self.play(Write(e_words, stroke_color=BLACK))
         self.wait()
         self.play(
             FadeOut(e_words),
-            rect.animate.surround(e_colombs_law[R"(\vec{r})"][0], buff=0)
+            rect.animate.surround(e_coulombs_law[R"(\vec{r})"][0], buff=0)
         )
         self.add(r_vect, charges[0])
         self.play(
             field.animate.set_stroke(opacity=0.4),
-            FadeTransform(e_colombs_law[R"\vec{r}"][0].copy(), r_label),
+            FadeTransform(e_coulombs_law[R"\vec{r}"][0].copy(), r_label),
             ShowCreation(r_vect),
         )
         self.wait()
         self.play(
-            rect.animate.surround(e_colombs_law[R"\frac{\vec{r}}{||\vec{r}||}"])
+            rect.animate.surround(e_coulombs_law[R"\frac{\vec{r}}{||\vec{r}||}"])
+        )
+        self.wait()
+
+        # Example E vect
+        e_vect = r_vect.copy()
+        e_vect.scale(0.25)
+        e_vect.set_stroke(BLUE)
+        e_vect.shift(r_vect.get_end() - e_vect.get_start())
+        e_vect_label = Tex(R"\vec{E}", font_size=36)
+        e_vect_label.set_backstroke(BLACK, 5)
+        e_vect_label.next_to(e_vect.get_center(), UL, buff=0.1).shift(0.05 * UR)
+
+        self.play(
+            TransformFromCopy(r_vect, e_vect, path_arc=PI / 2),
+            FadeTransform(e_coulombs_law[:2].copy(), e_vect_label),
+            run_time=2
         )
         self.wait()
 
         # Not the full story!
         words = Text("Not the full story!", font_size=60)
         arrow = Vector(LEFT)
-        arrow.next_to(colombs_law_title, RIGHT)
+        arrow.next_to(coulombs_law_title, RIGHT)
         arrow.set_color(RED)
         words.set_color(RED)
         words.set_backstroke(BLACK, 20)
@@ -725,9 +321,9 @@ class IntroduceEField(InteractiveScene):
         charges[1].move_to(20 * RIGHT)
 
         self.remove(field)
-        new_field = ColombField(*charges, x_density=3.0, y_density=3.0)
-        new_field.set_stroke(opacity=float(field.get_stroke_opacity()))
-        self.add(new_field)
+        field = CoulombField(*charges, x_density=3.0, y_density=3.0)
+        field.set_stroke(opacity=float(field.get_stroke_opacity()))
+        self.add(field)
 
         self.play(
             FadeIn(words, lag_ratio=0.1),
@@ -735,13 +331,16 @@ class IntroduceEField(InteractiveScene):
             FadeOut(rect),
             FadeOut(r_vect),
             FadeOut(r_label),
+            FadeOut(e_vect),
+            FadeOut(e_vect_label),
         )
         self.wait()
         self.play(
             LaggedStartMap(FadeOut, Group(
-                ebr, dots, colombs_law_title, e_colombs_law,
+                dots, coulombs_law_title, e_coulombs_law,
                 words, arrow,
             )),
+            FadeOut(ebr),
             charges[0].animate.to_edge(LEFT, buff=1.0),
             charges[1].animate.to_edge(RIGHT, buff=1.0),
             run_time=3,
@@ -753,30 +352,36 @@ class IntroduceEField(InteractiveScene):
         tmp_charges[1].add_updater(lambda m: m.move_to(charges[1]))
         for charge in tmp_charges:
             charge.ignore_last_motion()
-        lorentz_field = LorentzField(
+        lorentz_field = ColoumbPlusLorentzField(
             *tmp_charges,
             x_density=6.0,
             y_density=6.0,
             norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 0.75)
         )
+        self.remove(field)
         self.add(lorentz_field, *tmp_charges)
 
-        influence_ring = self.get_influence_ring(charges[0].get_center())
-
-        self.add(influence_ring, charges)
+        influence_ring0 = self.get_influence_ring(charges[0].get_center()).set_stroke(opacity=0)
+        influence_ring1 = self.get_influence_ring(charges[1].get_center()).set_stroke(opacity=0)
+        dist = get_norm(charges[1].get_center() - charges[0].get_center())
         wiggle_kwargs = dict(
             rate_func=lambda t: wiggle(t, 3),
             run_time=1.5,
             suspend_mobject_updating=False,
         )
+
+        self.add(influence_ring0, charges)
         self.play(charges[0].animate.shift(UP).set_anim_args(**wiggle_kwargs))
-        dist = get_norm(charges[1].get_center() - charges[0].get_center())
-        self.wait_until(lambda: influence_ring.get_radius() > dist, max_time=dist / 2.0)
-        self.play(charges[1].animate.shift(0.25 * DOWN).set_anim_args(**wiggle_kwargs))
-        self.wait(4)
+        self.wait_until(lambda: influence_ring0.get_radius() > dist, max_time=dist / 2.0)
+
+        self.add(influence_ring1)
+        self.play(charges[1].animate.shift(0.5 * DOWN).set_anim_args(**wiggle_kwargs))
+        self.wait_until(lambda: influence_ring1.get_radius() > dist, max_time=dist / 2.0)
+        self.play(charges[0].animate.shift(0.25 * UP).set_anim_args(**wiggle_kwargs))
+        self.wait(6)
         self.play(
-            FadeOut(influence_ring),
-            FadeOut(new_field),
+            FadeOut(influence_ring0),
+            FadeOut(influence_ring1),
             FadeOut(lorentz_field)
         )
         self.remove(tmp_charges)
@@ -1065,16 +670,31 @@ class IntroduceEField(InteractiveScene):
         self.remove(charges[0])
         self.add(field, a_vect, charge, new_lorentz)
         charge.ignore_last_motion()
+
+        # Have some fun with the charge
         wiggle_kwargs = dict(
             rate_func=lambda t: wiggle(t, 3),
             run_time=3.0,
             suspend_mobject_updating=False,
         )
+        lemniscate = ParametricCurve(
+            lambda t: np.sin(t)**2 * (np.cos(t) * RIGHT + np.sin(t) * UP),
+            t_range=(0, TAU, TAU / 200)
+        )
+
         self.play(
             charge.animate.shift(0.4 * UP).set_anim_args(**wiggle_kwargs),
         )
-        self.wait(8)
+        self.wait(3)
+        self.play(
+            MoveAlongPath(charge, lemniscate, run_time=6)
+        )
+        self.wait(3)
+        for point in [2 * RIGHT, ORIGIN]:
+            self.play(charge.animate.move_to(point).set_anim_args(path_arc=PI, run_time=5, suspend_mobject_updating=False))
+        self.wait(5)
 
+        # Set it oscillating
         charge.init_clock()
         charge.ignore_last_motion()
         charge.add_updater(lambda m: m.move_to(
@@ -1097,6 +717,70 @@ class IntroduceEField(InteractiveScene):
 
         ring.add_updater(update_ring)
         return ring
+
+
+class TestForMithuna(InteractiveScene):
+    def construct(self):
+        # Setup
+        n_rows = 10
+        n_cols = 16
+        n_charges = n_rows * n_cols
+        charges = Group(*(
+            ChargedParticle(
+                track_position_history=True,
+                charge=10 / n_charges,
+                radius=0.1,
+                show_sign=False,
+            )
+            for _ in range(n_charges)
+        ))
+        charges.arrange_in_grid(n_rows, n_cols, buff=0.5)
+        charges.center()
+        self.add(charges)
+
+        columns = Group(*(charges[i::n_cols] for i in range(n_cols)))
+
+        field = LorentzField(
+            *charges,
+            stroke_width=3,
+            x_density=4.0,
+            y_density=4.0,
+            radius_of_suppression=0.1,
+            # max_vect_len=np.inf,
+            max_vect_len=None,
+            norm_to_opacity_func=lambda n: np.clip(1.5 * n, 0, 0.7),
+        )
+        self.add(field)
+
+        c_dot = GlowDot().get_grid(1, 100, buff=0.5)
+        c_dot.move_to(charges)
+        c_dot.add_updater(lambda m, dt: m.shift(field.c * dt * RIGHT))
+
+        self.wait(0.1)
+        # self.add(c_dot)
+        self.play(LaggedStart(
+            *(
+                col.animate.shift(0.5 * UP).set_anim_args(
+                    rate_func=lambda t: wiggle(t, 6),
+                    suspend_mobject_updating=False,
+                    run_time=8,
+                )
+                for col in columns
+            ),
+            lag_ratio=1 / n_cols
+        ))
+        self.wait(5)
+
+        # # Rotate
+        # self.play(
+        #     Rotate(
+        #         charges,
+        #         TAU,
+        #         # rate_func=wiggle,
+        #         suspend_mobject_updating=False,
+        #         run_time=5,
+        #     )
+        # )
 
 
 class ShowTheEffectsOfOscillatingCharge(InteractiveScene):
@@ -1391,6 +1075,64 @@ class ChargeOnZAxis(ShowTheEffectsOfOscillatingCharge):
         self.play(self.frame.animate.reorient(24, 66, 0), run_time=10)
 
 
+class Introduce3dMovements(ChargeOnZAxis):
+    axes_config = dict(
+        axis_config=dict(stroke_opacity=0.7),
+        x_range=(-5, 5),
+        y_range=(-5, 5),
+        z_range=(-3, 3),
+    )
+
+    def construct(self):
+        charge = self.particles[0]
+        self.remove(self.particles)
+        self.add(charge)
+
+        # Test
+        kw = dict(suspend_mobject_updating=False)
+        frame = self.frame
+        frame.reorient(-13, 71, 0).move_to([-0.24, 0.12, 0.04]).set_height(4.88)
+
+        self.play(
+            Rotate(charge, TAU, axis=UP, about_point=RIGHT, **kw),
+            self.frame.animate.reorient(-17, 71, 0).move_to([-0.12, 0.17, 0.27]).set_height(7.16),
+            run_time=6,
+        )
+        self.play(
+            self.frame.animate.reorient(-20, 69, 0).set_height(8).center(),
+            Rotate(charge, TAU, axis=OUT, about_point=RIGHT, **kw),
+            run_time=6,
+        )
+        self.wait(4)
+        self.play(
+            charge.animate.shift(0.2 * (UP + OUT)).set_anim_args(rate_func=lambda t: wiggle(t, 6), **kw),
+            self.frame.animate.reorient(20, 71, 0).move_to([0.31, 0.54, -0.3]).set_height(8.22),
+            run_time=8,
+        )
+        self.play(
+            charge.animate.shift(3 * DOWN).set_anim_args(rate_func=there_and_back, **kw),
+            self.frame.animate.reorient(-21, 64, 0).move_to([0.31, 0.54, -0.3]).set_height(8.22),
+            run_time=9,
+        )
+        self.wait(4)
+
+
+class Introduce3dMovements3DVects(Introduce3dMovements):
+    field_config = dict(
+        max_vect_len=0.25,
+        stroke_opacity=0.7,
+        radius_of_suppression=1.0,
+        width=20,
+        height=20,
+        depth=8,
+        x_density=4.0,
+        y_density=4.0,
+        z_density=1.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(n, 0, 0.6)
+    )
+
+
 class RowOfCharges(ChargeOnZAxis):
     n_charges = 17
     particle_buff = 0.25
@@ -1415,6 +1157,7 @@ class RowOfCharges(ChargeOnZAxis):
         norm_to_opacity_func=lambda n: np.clip(1.5 * n, 0, 0.8)
     )
     show_acceleration_vector = False
+
     def construct(self):
         # Test
         self.play(self.frame.animate.reorient(-7, 62, 0).set_height(16), run_time=12)
@@ -1452,6 +1195,14 @@ class RowOfChargesMoreCharges(RowOfCharges):
         c=2.0,
         norm_to_opacity_func=lambda n: np.clip(1.5 * n, 0, 0.8)
     )
+
+
+class AltRowOfCharges(RowOfCharges):
+    def construct(self):
+        # Test
+        self.play(self.frame.animate.reorient(-4, 82, 0).move_to([3.12, -0.06, 1.0]).set_height(5.23), run_time=12)
+        self.play(self.frame.animate.reorient(-20, 69, 0).set_height(8.00), run_time=12)
+        self.play(self.frame.animate.reorient(-13, 78, 0).move_to([4.32, -0.91, 0.42]).set_height(5.27), run_time=12)
 
 
 class RowOfChargesXAxis(RowOfCharges):
@@ -1535,6 +1286,10 @@ class RowOfChargesXAxisMoreCharges(RowOfChargesXAxis):
         self.wait(12)  # Let the field form
 
 
+class RowOfChargesWiggleOnY(RowOfCharges):
+    direction = UP
+
+
 class WavesIn3D(ChargeOnZAxis):
     field_config = dict(
         max_vect_len=0.5,
@@ -1557,8 +1312,8 @@ class WiggleHereWiggleThere(IntroduceEField):
             ChargedParticle(track_position_history=True)
             for _ in range(2)
         ))
-        charges[0].to_edge(LEFT)
-        charges[1].to_edge(RIGHT)
+        charges[0].to_edge(LEFT, buff=2.0)
+        charges[1].to_edge(RIGHT, buff=2.0)
         dist = get_norm(charges[0].get_center() - charges[1].get_center())
         for charge in charges:
             charge.ignore_last_motion()
@@ -1573,20 +1328,304 @@ class WiggleHereWiggleThere(IntroduceEField):
         self.add(*charges)
 
         # Wiggles
-        ring1 = self.get_influence_ring(charges[0].get_center())
-        self.add(ring1)
         wiggle_kwargs = dict(
             rate_func=lambda t: wiggle(t, 3),
             run_time=1.5,
             suspend_mobject_updating=False,
         )
-        self.play(charges[0].animate.shift(UP).set_anim_args(**wiggle_kwargs))
-        self.wait_until(lambda: ring1.get_radius() > dist, max_time=dist / 2.0)
 
-        ring2 = self.get_influence_ring(charges[1].get_center())
-        self.add(ring2)
-        self.play(charges[1].animate.shift(0.5 * DOWN).set_anim_args(**wiggle_kwargs))
-        self.wait_until(lambda: ring2.get_radius() > dist, max_time=dist / 2.0)
+        def wiggle_charge(charge, vect):
+            ring = self.get_influence_ring(charge.get_center())
+            ring.set_stroke(opacity=2 * get_norm(vect))
+            self.add(ring)
+            self.play(charge.animate.shift(vect).set_anim_args(**wiggle_kwargs))
+            self.wait_until(lambda: ring.get_radius() > dist, max_time=dist / 2.0)
 
-        self.play(charges[0].animate.shift(0.25 * UP).set_anim_args(**wiggle_kwargs))
+        for n, charge in zip(range(6), it.cycle((charges))):
+            wiggle_charge(charge, UP * (-1)**n / 2**n)
+
+
+class ScatteringOfPolarizedBeam(InteractiveScene):
+    def construct(self):
+        pass
+
+
+class CircularPolarization1D(ShowTheEffectsOfOscillatingCharge):
+    default_frame_orientation = (-20, 70)
+    amplitude = 0.2
+    field_config = dict(
+        max_vect_len=1.0,
+        stroke_opacity=0.85,
+        radius_of_suppression=0.4,
+        height=0,
+        width=30,
+        x_density=5.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(2 * n, 0, 0.8)
+    )
+    particle_config = dict(
+        track_position_history=True,
+        radius=0.15,
+        show_sign=False,
+    )
+
+    def construct(self):
+        # Setup
+        frame = Square()
+        frame.set_stroke(WHITE, 2)
+        frame.set_fill(WHITE, 0.25)
+        frame.rotate(PI / 2, UP)
+        frame.move_to(self.axes.c2p(3, 0, 0))
+        frame.set_flat_stroke(False)
+
+        field = self.field
+        field_opacity_tracker = ValueTracker(1)
+        field.add_updater(lambda m: m.set_stroke(opacity=field_opacity_tracker.get_value()))
+
+        lone_vect_config = dict(self.field_config)
+        lone_vect_config["width"] = 0
+        lone_vect_config["stroke_width"] = 3
+        lone_vect = LorentzField(self.particles[0], **lone_vect_config)
+        lone_vect.sample_points = np.array([frame.get_center()])
+
+        # Pan
+        self.play(
+            self.frame.animate.reorient(81, 86, 0),
+            run_time=12,
+        )
+        self.add(lone_vect)
+        self.play(
+            FadeIn(frame),
+            field_opacity_tracker.animate.set_value(0.25),
+            self.frame.animate.reorient(41, 76, 0),
+            run_time=5,
+        )
+        self.play(
+            self.frame.animate.reorient(79, 70, 0),
+            run_time=12,
+        )
+        self.play(
+            field_opacity_tracker.animate.set_value(0.15),
+            self.frame.animate.reorient(97, 84, 0),
+            run_time=12
+        )
+        self.play(
+            field_opacity_tracker.animate.set_value(0.35),
+            self.frame.animate.reorient(59, 73, 0),
+            run_time=12,
+        )
+
+    def oscillation_function(self, time):
+        angle = TAU * self.frequency * time
+        return self.amplitude * np.array([-0, np.sin(angle), np.cos(angle)])
+
+
+class PIPHelper(InteractiveScene):
+    def construct(self):
+        frame = Square(side_length=3)
+        frame.set_stroke(WHITE, 4)
+        frame.set_fill(WHITE, 0.25)
+        frame.to_corner(UR)
+
+        vect = Vector(RIGHT, stroke_color=BLUE)
+        vect.shift(frame.get_center())
+        self.add(frame)
+        self.play(
+            Rotating(vect, -15 * TAU, about_point=frame.get_center()),
+            run_time=30,
+            rate_func=linear,
+        )
+
+
+class CircularPolarization2D(CircularPolarization1D):
+    field_config = dict(
+        max_vect_len=0.35,
+        stroke_opacity=0.85,
+        radius_of_suppression=0.5,
+        height=30,
+        width=30,
+        x_density=4.0,
+        y_density=4.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(2 * n, 0, 0.8)
+    )
+
+    def construct(self):
+        # Test
+        self.play(
+            self.frame.animate.reorient(79, 78, 0),
+            run_time=12,
+        )
+        self.play(
+            self.frame.animate.reorient(-83, 80, 0),
+            run_time=24,
+        )
+        self.play(
+            self.frame.animate.reorient(17, 62, 0),
+            run_time=18
+        )
+
+
+class RandomRicochet(InteractiveScene):
+    default_frame_orientation = (-36, 70)
+
+    def construct(self):
+        # Setup
+        frame = self.frame
+        plane, axes = self.get_plane_and_axes()
+        self.add(plane, axes)
+
+        # Light and Ball
+        ball = TrueDot(radius=0.1)
+        ball.make_3d()
+        ball.set_color(RED)
+
+        light = GlowDot(radius=2)
+        light.move_to(5 * DOWN)
+        self.add(light, ball)
+
+        # Beams
+        n_beams = 15
+        beams = VGroup()
+        for _ in range(n_beams):
+            point = 5 * normalize(np.random.uniform(-5, 5, 3))
+            beam = VMobject().set_points_as_corners([
+                light.get_center(), ball.get_center(), point
+            ])
+            beam.set_stroke(YELLOW, 5)
+            beam.set_flat_stroke(False)
+            beam.insert_n_curves(100)
+            beams.add(beam)
+
+        frame.reorient(-36, 70, 0) 
+        frame.clear_updaters()
+        frame.add_updater(lambda m, dt: m.increment_theta(dt * 3 * DEGREES))
+        for beam in beams:
+            self.play(
+                VShowPassingFlash(
+                    beam,
+                    time_width=0.3,
+                    run_time=1.5
+                )
+            )
+
+    def get_plane_and_axes(self):
+        axes = ThreeDAxes(axis_config=dict(tick_size=0))
+        axes.set_stroke(opacity=0.5)
+        plane = NumberPlane(
+            x_range=axes.x_range,
+            y_range=axes.y_range,
+            background_line_style=dict(
+                stroke_color=GREY_B,
+                stroke_width=1.0,
+                stroke_opacity=0.5,
+            )
+        )
+        plane.axes.set_opacity(0)
+        return plane, axes
+
+
+class PolarizedScattering(RandomRicochet):
+    field_config = dict(
+        width=20,
+        height=20,
+        x_density=5.0,
+        y_density=5.0,
+        stroke_color=BLUE,
+        norm_to_opacity_func=lambda n: np.clip(n, 0, 0.75)
+    )
+
+    def construct(self):
+        # Setup
+        frame = self.frame
+        plane, axes = self.get_plane_and_axes()
+        self.add(plane, axes)
+
+        # Wave
+        wave = OscillatingWave(
+            axes,
+            wave_len=2.0,
+            color=YELLOW
+        )
+        vects = OscillatingFieldWave(axes, wave)
+        wave.set_stroke(opacity=0)
+        vects_opacity_tracker = ValueTracker(0.75)
+        vects.add_updater(lambda m: m.set_stroke(opacity=vects_opacity_tracker.get_value()))
+
+        self.add(wave, vects)
+
+        # Charge
+        charge = ChargedParticle(show_sign=False, radius=0.1, track_position_history=True)
+        charge.add_updater(lambda m: m.move_to(
+            -0.5 * wave.wave_func(0, self.time)
+        ))
+        a_vect = AccelerationVector(
+            charge,
+            norm_func=lambda n: 0.5 * np.tanh(n)
+        )
+
+        self.add(a_vect, charge)
         self.wait(6)
+
+        # Result field
+        charge.charge = 1.0
+        field = LorentzField(charge, **self.field_config)
+        field_opacity_multiple = ValueTracker(1)
+
+        def update_field(f):
+            mult = field_opacity_multiple.get_value()
+            f.set_stroke(opacity=mult * f.get_stroke_opacities())
+            return f
+
+        field.add_updater(update_field)
+
+        charge.ignore_last_motion()
+        self.add(field, vects)
+        self.play(
+            self.frame.animate.reorient(15, 70, 0),
+            run_time=12
+        )
+
+        # Show propagation
+        rings = ProbagatingRings(axes.z_axis, n_rings=5, spacing=0.4)
+        direction_vectors = VGroup(*(
+            Arrow(v, 3 * v) for v in compass_directions(8)
+        ))
+
+        self.add(rings)
+        self.play(
+            LaggedStartMap(GrowArrow, direction_vectors, lag_ratio=0.1),
+            field_opacity_multiple.animate.set_value(0.5),
+            vects_opacity_tracker.animate.set_value(0.25),
+        )
+        self.play(
+            self.frame.animate.reorient(-32, 73, 0),
+            run_time=8,
+        )
+        self.play(VFadeOut(rings))
+
+        # More vertical direction
+        direction_vectors.generate_target()
+        for dv in direction_vectors.target:
+            dv.scale(0.5)
+            dv.shift(-0.5 * dv.get_start())
+            dv.rotate(
+                70 * DEGREES, axis=cross(dv.get_vector(), OUT),
+                about_point=ORIGIN
+            )
+
+        self.play(MoveToTarget(direction_vectors, run_time=2))
+        self.play(FadeOut(direction_vectors))
+        self.wait(6)
+
+
+class PolarizedScatteringYZ(PolarizedScattering):
+    field_config = dict(
+        width=0,
+        height=20,
+        depth=20,
+        x_density=5.0,
+        y_density=5.0,
+        stroke_color=BLUE,
+        norm_to_opacity_func=lambda n: np.clip(n, 0, 1.0)
+    )
