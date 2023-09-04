@@ -35,7 +35,10 @@ class PatreonEndScreen(Scene):
     randomize_order = False
     capitalize = True
     name_y_spacing = 0.6
-    thanks_words = "An especially warm thanks to these patrons | 3b1b.co/support"
+    thanks_words = """
+        Instead of sponsor messages, these lessons are supported
+        directly by viewers, such as those below | 3b1b.co/support
+    """
     scroll_time = 20
 
     def construct(self):
@@ -65,7 +68,7 @@ class PatreonEndScreen(Scene):
             stroke_width=3,
             stroke_color=BLACK,
             width=FRAME_WIDTH,
-            height=0.6 * FRAME_HEIGHT,
+            height=FRAME_HEIGHT,
         )
         black_rect.to_edge(UP, buff=0)
         line = DashedLine(FRAME_X_RADIUS * LEFT, FRAME_X_RADIUS * RIGHT)
@@ -73,14 +76,15 @@ class PatreonEndScreen(Scene):
 
         # Add thanks
         thanks = Text(self.thanks_words)
-        thanks.scale(0.9)
-        thanks.next_to(black_rect.get_bottom(), UP, SMALL_BUFF)
+        thanks.scale(0.8)
+        thanks.next_to(line, DOWN, buff=MED_SMALL_BUFF)
         thanks.set_color(YELLOW)
         underline = Line(LEFT, RIGHT)
         underline.match_width(thanks)
         underline.scale(1.1)
         underline.next_to(thanks, DOWN, SMALL_BUFF)
         thanks.add(underline)
+        black_rect.match_y(underline, DOWN)
 
         # Build name list
         names = self.get_names()
