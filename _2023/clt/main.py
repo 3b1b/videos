@@ -3506,8 +3506,11 @@ class Thumbnail(LimitingDistributions):
             axis.remove(axis.numbers)
             for tick in axis.ticks:
                 tick.scale(0.5)
+        ss_plot.axes.y_axis.set_opacity(0)
         ss_plot.scale(2)
-        ss_plot.bars.set_submobject_colors_by_gradient(*3 * [BLUE_D], *3 * [GREEN_C])
+        ss_plot.bars.set_submobject_colors_by_gradient(
+            *3 * [BLUE], *3 * [YELLOW]
+        )
         ss_plot.shift(2 * DOWN - ss_plot.axes.c2p(0, 0))
         ss_plot.to_edge(DOWN)
         self.add(ss_plot)
@@ -3537,10 +3540,10 @@ class Thumbnail(LimitingDistributions):
                 tp.get_bottom(),
                 ss_plot.bars.get_top() + vect,
                 buff=0.3,
-                stroke_width=7,
+                stroke_width=10,
                 stroke_color=YELLOW
             )
-            for tp, vect in zip(top_plots, np.linspace(LEFT, RIGHT, len(top_plots)))
+            for tp, vect in zip(top_plots, np.linspace(2 * LEFT, 2 * RIGHT, len(top_plots)))
         ))
 
         self.add(top_plots)
@@ -3551,7 +3554,7 @@ class Thumbnail(LimitingDistributions):
         words.move_to(ss_plot.axes.c2p(0, 0.03), DOWN).to_edge(LEFT)
         words.set_x(0)
         words.set_backstroke()
-        self.add(words)
+        # self.add(words)
 
         # Formula
         form = Tex(R"{1 \over \sqrt{2\pi}} e^{-x^2 / 2}", font_size=90)
