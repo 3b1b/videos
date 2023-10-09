@@ -2,6 +2,44 @@ from manim_imports_ext import *
 from _2023.barber_pole.objects import *
 
 
+class WaveIntoMedium(TimeVaryingVectorField):
+    def __init__(
+        self,
+        interface_origin=ORIGIN,
+        interface_normal=DR,
+        prop_direction=RIGHT,
+        index=1.5,
+        c=2.0,
+        frequency=0.25,
+        amplitude=1.0,
+        x_density=5.0,
+        y_density=5.0,
+        width=15.0,
+        height=15.0,
+        norm_to_opacity_func=lambda n: np.tanh(n),
+        **kwargs
+    ):
+        def time_func(points, time):
+            k = frequency / c
+            phase = TAU * (k * np.dot(points, prop_direction.T) - frequency * time)
+            kickback = np.dot(points - interface_origin, interface_normal.T)
+            kickback[kickback < 0] = 0
+            phase += kickback * (index - 1) * c
+            return amplitude * np.outer(np.cos(phase)**2, OUT)
+
+        super().__init__(
+            time_func,
+            x_density=x_density,
+            y_density=y_density,
+            width=width,
+            height=height,
+            norm_to_opacity_func=norm_to_opacity_func,
+            **kwargs
+        )
+
+
+# Scenes
+
 class SpeedInMediumFastPart(InteractiveScene):
     wave_config = dict(
         z_amplitude=0,
@@ -142,3 +180,98 @@ class DensePhaseKickBacks100(PhaseKickBacks):
         stroke_opacity=0.7,
     )
     layer_add_on_run_time = 10
+
+
+class WavesIntoAngledMedium(InteractiveScene):
+    default_frame_orientation = (0, 62)
+
+    def construct(self):
+        # Add setup
+        interface_origin = ORIGIN
+        interface_normal = np.array([1, -0.2, 0.0])
+        prop_direction = RIGHT
+        index = 3.0
+        substance = VCube(side_length=1.0)
+        substance.stretch(10, 0)
+        substance.stretch(15, 1)
+        substance.stretch(5, 2)
+        substance.set_fill(BLUE, 0.2)
+        substance.move_to(interface_origin, LEFT)
+        substance.rotate(angle_of_vector(interface_normal), about_point=interface_origin)
+
+        self.add(substance)
+
+        # Wave
+        wave = WaveIntoMedium(
+            interface_origin=interface_origin,
+            interface_normal=interface_normal,
+            prop_direction=prop_direction,
+            index=index,
+            amplitude=0.5,
+            c=1.0,
+            # norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1)**10,
+            max_vect_len=np.inf,
+            norm_to_opacity_func=lambda n: np.abs(2 * n)**2,
+        )
+        self.add(wave)
+        self.wait(20)
+
+
+class ResponsiveCharge(InteractiveScene):
+    def construct(self):
+        # Driving chrage
+        charge1 = ChargedParticle(charge=0.25)
+        charge1.add_spring_force(k=10)
+        charge1.move_to(0.3 * DOWN)
+
+        # Responsive charge
+        k = 20
+        charge2 = ChargedParticle(charge=1.0, radius=0.1, show_sign=False)
+        charge2.move_to(2.5 * RIGHT)
+        # charge2.add_field_force(field)
+        charge2.add_spring_force(k=k)
+        charge2.add_force(lambda p: wave.wave_func(p[0], wave.time) * [0, 1, 1])
+        # charge2.fix_x()
+        self.add(charge2)
+
+        # E field
+        # field_type = ColoumbPlusLorentzField
+        field_type = LorentzField
+        field = field_type(
+            charge1, charge2,
+            x_density=4.0,
+            y_density=4.0,
+            norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1),
+            c=1.0,
+        )
+        self.add(field)
+
+        # Pure wave
+        axes = ThreeDAxes()
+        wave = OscillatingWave(axes, y_amplitude=1.0, z_amplitude=0.0, wave_len=2.0)
+        field_wave = OscillatingFieldWave(axes, wave)
+        wave.set_stroke(opacity=0.5)
+
+
+        self.add(axes, wave, field_wave)
+
+        # omega = (wave.speed / wave.wave_len) * TAU
+        # omega_0 = math.sqrt(k / charge2.mass)
+        # v0 = omega / (omega_0**2 - omega**2)
+        # charge2.velocity = v0 * UP
+
+        self.wait(20)
+
+        # Plane
+        plane = NumberPlane()
+        plane.fade(0.5)
+        self.add(plane)
+
+        # Test wiggle
+        self.play(
+            charge1.animate.shift(UP).set_anim_args(
+                rate_func=wiggle,
+                run_time=3,
+            )
+        )
+        self.wait(4)

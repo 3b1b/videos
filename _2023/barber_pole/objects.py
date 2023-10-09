@@ -1,10 +1,20 @@
+from __future__ import annotations
+
 from manim_imports_ext import *
 from matplotlib import colormaps
+
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable
+    from manimlib.typing import Vect3
 
 
 spectral_cmap = colormaps.get_cmap("Spectral")
 
 # Helper functions
+
 
 def get_spectral_color(alpha):
     return Color(rgb=spectral_cmap(alpha)[:3])
@@ -68,7 +78,7 @@ def acceleration_from_position(pos_func, time, dt=1e-3):
     return (p0 + p2 - 2 * p1) / dt**2
 
 
-def points_to_particle_info(origin, points, radius):
+def points_to_particle_info(particle, points, radius=None, c=2.0):
     """
     Given an origin, a set of points, and a radius, this returns:
 
@@ -83,7 +93,16 @@ def points_to_particle_info(origin, points, radius):
     forces, field vectors within a radius of a particle don't
     blow up
     """
-    diffs = points - origin
+    if radius is None:
+        radius = particle.get_radius()
+
+    if particle.track_position_history:
+        approx_delays = np.linalg.norm(points - particle.get_center(), axis=1) / c
+        centers = particle.get_past_position(approx_delays)
+    else:
+        centers = particle.get_center()
+
+    diffs = points - centers
     norms = np.linalg.norm(diffs, axis=1)[:, np.newaxis]
     unit_diffs = np.zeros_like(diffs)
     np.true_divide(diffs, norms, out=unit_diffs, where=(norms > 0))
@@ -97,39 +116,21 @@ def points_to_particle_info(origin, points, radius):
 
 
 def coulomb_force(points, particle, radius=None):
-    if radius is None:
-        radius = particle.get_radius()
-    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle.get_center(), points, radius)
+    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle, points, radius)
     return particle.get_charge() * unit_diffs / adjusted_norms**2
 
 
 def lorentz_force(
     points,
     particle,
-    # Takes in time, returns acceleration vector
-    # for the charge at that time. Defaults to
-    # particle.get_past_acceleration
-    acceleration_func=None,
     radius=None,
     c=2.0,
     epsilon0=0.025,
 ):
-    if radius is None:
-        radius = particle.get_radius()
-    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle.get_center(), points, radius)
-
-    if acceleration_func is None:
-        acceleration_func = particle.get_past_acceleration
-
+    unit_diffs, norms, adjusted_norms = points_to_particle_info(particle, points, radius, c)
     delays = norms[:, 0] / c
-    if particle.track_position_history:
-        # past_positions = np.array([
-        #     particle.get_past_position(delay)
-        #     for delay in delays
-        # ])
-        past_positions = particle.get_past_position(delays)
-        unit_diffs = normalize_along_axis(points - past_positions, 1)
-    acceleration = acceleration_func(delays)
+
+    acceleration = particle.get_past_acceleration(delays)
     dot_prods = (unit_diffs * acceleration).sum(1)[:, np.newaxis]
     a_perp = acceleration - dot_prods * unit_diffs
 
@@ -367,22 +368,32 @@ class ChargedParticle(Group):
         self,
         point=ORIGIN,
         charge=1.0,
+        mass=1.0,
         color=RED,
         show_sign=True,
         sign="+",
         radius=0.2,
         rotation=0,
         sign_stroke_width=2,
-        track_position_history=False,
+        track_position_history=True,
         history_size=7200,
+        euler_steps_per_frame=10,
     ):
         self.charge = charge
+        self.mass = mass
 
         sphere = TrueDot(radius=radius, color=color)
         sphere.make_3d()
         sphere.move_to(point)
-        super().__init__(sphere)
         self.sphere = sphere
+
+        self.track_position_history = track_position_history
+        self.history_size = history_size
+        self.velocity = np.zeros(3)  # Only used if force are added
+        self.euler_steps_per_frame = euler_steps_per_frame
+        self.init_clock(point)
+
+        super().__init__(sphere)
 
         if show_sign:
             sign = Tex(sign)
@@ -393,28 +404,28 @@ class ChargedParticle(Group):
             self.add(sign)
             self.sign = sign
 
-        self.track_position_history = track_position_history
-        self.history_size = history_size
+    # Related to updaters
 
-        self.init_clock()
-        self.add_updater(lambda m, dt: m.increment_clock(dt))
+    def update(self, dt: float = 0, recurse: bool = True):
+        super().update(dt, recurse)
+        # Do this instead of adding an updater, because
+        # otherwise all animations require the
+        # suspend_mobject_updating=false flag
+        self.increment_clock(dt)
 
-    def init_clock(self):
-        self.clock = 0
+    def init_clock(self, start_point):
+        self.time = 0
         self.time_step = 1 / 30  # This will be updated
-        self.recent_positions = np.tile(self.get_center(), 3).reshape((3, 3))
+        self.recent_positions = np.tile(start_point, 3).reshape((3, 3))
         if self.track_position_history:
             self.position_history = np.zeros((self.history_size, 3))
             self.acceleration_history = np.zeros((self.history_size, 3))
             self.history_index = -1
-            # self.n_history_changes = 0
-            # self.position_history = []
-            # self.acceleration_history = []
 
     def increment_clock(self, dt):
         if dt == 0:
             return self
-        self.clock += dt
+        self.time += dt
         self.time_step = dt
         self.recent_positions[0:2] = self.recent_positions[1:3]
         self.recent_positions[2] = self.get_center()
@@ -439,6 +450,36 @@ class ChargedParticle(Group):
         self.recent_positions[:] = self.get_center()
         return self
 
+    def add_force(self, force_func: Callable[[Vect3], Vect3]):
+        espf = self.euler_steps_per_frame
+
+        def update_from_force(particle, dt):
+            if dt == 0:
+                return
+            for _ in range(espf):
+                acc = force_func(particle.get_center()) / self.mass
+                self.velocity += acc * dt / espf
+                self.shift(self.velocity * dt / espf)
+
+        self.add_updater(update_from_force)
+        return self
+
+    def add_spring_force(self, k=1.0, center=None):
+        center = center if center is not None else self.get_center().copy()
+        self.add_force(lambda p: k * (center - p))
+        return self
+
+    def add_field_force(self, field):
+        charge = self.get_charge()
+        self.add_force(lambda p: charge * field.get_forces([p])[0])
+        return self
+
+    def fix_x(self):
+        x = self.get_x()
+        self.add_updater(lambda m: m.set_x(x))
+
+    # Getters
+
     def get_charge(self):
         return self.charge
 
@@ -446,7 +487,7 @@ class ChargedParticle(Group):
         return self.sphere.get_radius()
 
     def get_internal_time(self):
-        return self.clock
+        return self.time
 
     def scale(self, factor, *args, **kwargs):
         super().scale(factor, *args, **kwargs)
@@ -679,7 +720,7 @@ class ChargeBasedVectorField(VectorField):
     default_color = BLUE
 
     def __init__(self, *charges, **kwargs):
-        self.charges = charges
+        self.charges = list(charges)
         super().__init__(
             self.get_forces,
             color=kwargs.pop("color", self.default_color),
