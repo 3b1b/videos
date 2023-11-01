@@ -5,6 +5,7 @@
 # FadeOut
 
 from manimlib.animation.fading import FadeIn, FadeOut
+from manimlib.constants import UP, DOWN
 
 
 class FadeInFromDown(FadeIn):
