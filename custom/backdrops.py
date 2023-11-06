@@ -10,6 +10,7 @@ from manimlib.mobject.changing import AnimatedBoundary
 from manimlib.mobject.svg.tex_mobject import TexText
 from manimlib.animation.creation import Write
 
+
 class Spotlight(Scene):
     title = ""
     title_font_size = 60
