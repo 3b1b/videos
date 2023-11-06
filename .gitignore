@@ -117,6 +117,8 @@ env.bak/
 venv.bak/
 pythonenv*
 
+pyrightconfig.json 
+
 # Spyder project settings
 .spyderproject
 .spyproject
