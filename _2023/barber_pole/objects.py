@@ -176,21 +176,29 @@ class OscillatingWave(VMobject):
         self.set_flat_stroke(False)
 
         self.time = 0
+        self.clock_is_stopped = False
 
         self.add_updater(lambda m, dt: m.update_points(dt))
 
     def update_points(self, dt):
-        self.time += dt
+        if not self.clock_is_stopped:
+            self.time += dt
         xs = np.arange(
             self.axes.x_axis.x_min,
             self.axes.x_axis.x_max,
             self.sample_resolution
         )
         self.set_points_as_corners(
-            self.offset + self.wave_func(xs, self.time)
+            self.offset + self.xt_to_point(xs, self.time)
         )
 
-    def wave_func(self, x, t):
+    def stop_clock(self):
+        self.clock_is_stopped = True
+
+    def start_clock(self):
+        self.clock_is_stopped = False
+
+    def xt_to_yz(self, x, t):
         phase = TAU * t * self.speed / self.wave_len
         y_outs = self.y_amplitude * np.sin(TAU * x / self.wave_len - phase - self.y_phase)
         z_outs = self.z_amplitude * np.sin(TAU * x / self.wave_len - phase - self.z_phase)
@@ -198,6 +206,10 @@ class OscillatingWave(VMobject):
         y = np.cos(twist_angles) * y_outs - np.sin(twist_angles) * z_outs
         z = np.sin(twist_angles) * y_outs + np.cos(twist_angles) * z_outs
 
+        return y, z
+
+    def xt_to_point(self, x, t):
+        y, z = self.xt_to_yz(x, t)
         return self.axes.c2p(x, y, z)
 
     def get_default_color(self, wave_len):
@@ -589,7 +601,7 @@ class VectorField(VMobject):
             dims = np.array([width, height, depth])
             self.max_vect_len = 1.0 / densities[dims > 0].mean()
 
-        self.sample_points = self.init_sample_points(
+        self.sample_points = self.get_sample_points(
             center, width, height, depth,
             x_density, y_density, z_density
         )
@@ -606,7 +618,7 @@ class VectorField(VMobject):
         self.set_stroke(width=stroke_width)
         self.update_vectors()
 
-    def init_sample_points(
+    def get_sample_points(
         self,
         center: np.ndarray,
         width: float,
@@ -780,30 +792,55 @@ class ColoumbPlusLorentzField(LorentzField):
         )
 
 
-class OscillatingFieldWave(TimeVaryingVectorField):
+class GraphAsVectorField(VectorField):
     def __init__(
-        self, axes, wave,
+        self,
+        axes: Axes | ThreeDAxes,
+        # Maps x to y, or x to (y, z)
+        graph_func: Callable[[VectN], VectN] | Callable[[VectN], Tuple[VectN, VectN]],
         x_density=10.0,
         max_vect_len=np.inf,
-        **kwargs
+        **kwargs,
     ):
-        self.axes = axes
-        self.wave = wave
         self.sample_xs = np.arange(axes.x_axis.x_min, axes.x_axis.x_max, 1.0 / x_density)
+        self.axes = axes
 
-        def func(points, time):
-            wave_points = wave.wave_func(self.sample_xs, time)
-            wave_points[:, 0] = 0
-            return wave_points
+        def vector_func(points):
+            output = graph_func(self.sample_xs)
+            if isinstance(axes, ThreeDAxes):
+                graph_points = axes.c2p(self.sample_xs, *output)
+            else:
+                graph_points = axes.c2p(self.sample_xs, output)
+            base_points = axes.x_axis.n2p(self.sample_xs)
+            return graph_points - base_points
 
         super().__init__(
-            time_func=func,
+            func=vector_func,
             max_vect_len=max_vect_len,
-            stroke_color=wave.get_color(),
+            **kwargs
+        )
+        always(self.update_vectors)
+
+    def reset_sample_points(self):
+        self.sample_points = self.get_sample_points()
+
+    def get_sample_points(self, *args, **kwargs):
+        # Override super class and ignore all length/density information
+        return self.axes.x_axis.n2p(self.sample_xs)
+
+
+class OscillatingFieldWave(GraphAsVectorField):
+    def __init__(self, axes, wave, **kwargs):
+        self.wave = wave
+        if "stroke_color" not in kwargs:
+            kwargs["stroke_color"] = wave.get_color()
+        super().__init__(
+            axes=axes,
+            graph_func=lambda x: wave.xt_to_yz(x, wave.time),
             **kwargs
         )
 
-    def init_sample_points(self, *args, **kwargs):
+    def get_sample_points(self, *args, **kwargs):
         # Override super class and ignore all length/density information
         return self.wave.offset + self.axes.x_axis.n2p(self.sample_xs)
 
