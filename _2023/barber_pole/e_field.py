@@ -1592,7 +1592,7 @@ class PolarizedScattering(RandomRicochet):
         # Charge
         charge = ChargedParticle(show_sign=False, radius=0.1, track_position_history=True)
         charge.add_updater(lambda m: m.move_to(
-            -0.5 * wave.wave_func(0, self.time)
+            -0.5 * wave.xt_to_point(0, self.time)
         ))
         a_vect = AccelerationVector(
             charge,
