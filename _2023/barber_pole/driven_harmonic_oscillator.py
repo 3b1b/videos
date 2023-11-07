@@ -16,10 +16,13 @@ class HarmonicOscillator(TrueDot):
         three_d=True,
         **kwargs
     ):
-        self.k = k / mass
+        self.k = k
+        self.mass = mass
         self.damping = damping
         self.velocity = initial_velocity
         self.center_of_attraction = center
+        self.external_forces = []
+
         super().__init__(
             radius=radius,
             color=color,
@@ -31,7 +34,7 @@ class HarmonicOscillator(TrueDot):
         self.add_updater(lambda m, dt: self.update_position(dt))
 
     def update_position(self, dt):
-        time_step = 0.01
+        time_step = 1 / 300
         n_divisions = max(int(dt / time_step), 1)
         true_step = dt / n_divisions
         for _ in range(n_divisions):
@@ -40,7 +43,10 @@ class HarmonicOscillator(TrueDot):
 
     def get_acceleration(self):
         rel_x = self.get_center() - self.center_of_attraction
-        return -self.k * rel_x - self.damping * self.velocity
+        result = -self.k * rel_x / self.mass - self.damping * self.velocity
+        for force in self.external_forces:
+            result += force() / self.mass
+        return result
 
     def reset_velocity(self):
         self.velocity = 0
@@ -50,10 +56,19 @@ class HarmonicOscillator(TrueDot):
 
     def set_k(self, k):
         self.k = k
+        return self
 
     def suspend_updating(self):
         super().suspend_updating()
         self.reset_velocity()
+
+    def set_external_forces(self, funcs):
+        self.external_forces = list(funcs)
+        return self
+
+    def add_external_force(self, func):
+        self.external_forces.append(func)
+        return self
 
 
 class Spring(VMobject):
@@ -169,6 +184,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
             Spring(sho, sho.get_center() + (spacing - small_radius) * vect)
             for vect in compass_directions(4)
         ))
+        sho.add_updater(lambda m: springs.update())
 
         self.add(cover, springs, sho)
         self.play(
@@ -198,23 +214,27 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.play(sho.animate.move_to(0.75 * UP + 0.5 * LEFT))
 
         # Set up Hooke's law
-        sho.set_damping(0.005)
-        sho.set_k(4.0)
+        t2c = {
+            R"\vec{\textbf{x}}(t)": RED,
+            R"\vec{\textbf{F}}(t)": YELLOW,
+            R"\vec{\textbf{a}}(t)": YELLOW,
+            R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t) ": YELLOW,
+            R"\omega_r": PINK,
+            R"\omega_l": TEAL,
+        }
 
         x_vect = Arrow(
             axes.c2p(0, 0), sho.get_center(),
             stroke_width=5, stroke_color=RED, buff=0
         )
 
-        equation = Tex(
-            R"\vec{\textbf{F}}(t) = -k \vec{\textbf{x}}(t)",
-            t2c={R"\vec{\textbf{F}}(t)": YELLOW, R"\vec{\textbf{x}}(t)": RED}
-        )
-        equation.to_corner(UL)
+        equation = Tex(R"\vec{\textbf{F}}(t) = -k \vec{\textbf{x}}(t)", t2c=t2c)
+        equation.move_to(axes.c2p(0.5, 0.5), LEFT)
 
         x_label = equation[R"\vec{\textbf{x}}(t)"]
+        x_label.set_backstroke(BLACK, 5)
         x_label.save_state()
-        x_label.next_to(x_vect.pfp(0.45), UR, SMALL_BUFF)
+        x_label.next_to(x_vect, RIGHT, 0.05, DOWN)
 
         self.play(
             GrowArrow(x_vect),
@@ -229,9 +249,10 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.add(equation)
 
         # Show force vector
+        sho.set_damping(0.005)
         F_vect = Vector(stroke_color=YELLOW)
 
-        def update_F_vect(F_vect, vect_scale=0.2):
+        def update_F_vect(F_vect, vect_scale=0.04):
             center = sho.get_center()
             acc = sho.get_acceleration()
             F_vect.put_start_and_end_on(center, center + vect_scale * acc)
@@ -243,34 +264,27 @@ class DrivenHarmonicOscillator(InteractiveScene):
             ReplacementTransform(x_vect, F_vect, path_arc=PI),
         )
         self.wait()
+        self.play(sho.animate.move_to(0.25 * UL))
+        self.wait()
+        self.play(sho.animate.move_to(0.75 * UL))
+        self.wait()
         sho.resume_updating()
-        self.wait(8)
+        self.wait(6)
 
         # Show graphical solution
         up_shift = 1.5 * UP
-        plot_rect = Rectangle(10, 2)
-        plot_rect.set_fill(GREY_E, 1)
-        plot_rect.set_stroke(WHITE, 1)
-        plot_rect.to_corner(UR, buff=0.1)
-        plot_rect.shift(up_shift)
+        plot_rect, plot_axes, plot = self.get_plot_group(
+            lambda: np.sign(sho.get_center()[1]) * get_norm(sho.get_center()),
+        )
+        plot_group1 = VGroup(plot_rect, plot_axes, plot)
+        plot_group1.to_corner(UR, buff=0.1)
+        plot_group1.shift(up_shift)
 
-        plot_axes = Axes((0, 12), (-1, 1), width=9, height=1.75)
-        plot_axes.move_to(plot_rect)
-        y_axis_label = Tex(R"x(t)", font_size=20)
-        y_axis_label.match_color(x_label.family_members_with_points()[0])
-        y_axis_label.next_to(plot_axes.y_axis.get_top(), RIGHT)
-        t_axis_label = Tex("t", font_size=24)
-        t_axis_label.next_to(plot_axes.x_axis.get_right(), DOWN)
-
-        plot_axes.add(t_axis_label, y_axis_label)
-        plot = DynamicPlot(plot_axes, lambda: np.sign(sho.get_center()[1]) * get_norm(sho.get_center()))
-
-        plot_group = VGroup(plot_rect, plot_axes, plot)
-
-        self.add(*plot_group)
+        plot.reset()
+        self.add(*plot_group1)
         self.play(
             frame.animate.shift(up_shift),
-            equation.animate.match_y(plot_rect),
+            equation.animate.to_corner(UL).match_y(plot_rect),
             FadeIn(plot_rect),
             FadeIn(plot_axes),
             FadeOut(charges),
@@ -282,18 +296,13 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.play(sho.animate.center(), run_time=2)
 
         # Show the equation for the solution
-        tex_kw = dict(t2c={
-            R"\vec{\textbf{x}}(t)": RED,
-            R"\vec{\textbf{a}}(t)": YELLOW,
-            R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t) ": YELLOW,
-            R"\omega_0": PINK,
-        })
+        tex_kw = dict(t2c=t2c)
         equations = VGroup(equation)
         equations.add(
             Tex(R"m \vec{\textbf{a}}(t) = -k \vec{\textbf{x}}(t)", **tex_kw),
             Tex(R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t) = -{k \over m} \vec{\textbf{x}}(t)", **tex_kw),
             Tex(R"\vec{\textbf{x}}(t) = \vec{\textbf{x}}_0 \cos( \sqrt{k \over m} \cdot t)", **tex_kw),
-            Tex(R"\vec{\textbf{x}}(t) = \vec{\textbf{x}}_0 \cos(\omega_0 t)", **tex_kw),
+            Tex(R"\vec{\textbf{x}}(t) = \vec{\textbf{x}}_0 \cos(\omega_r t)", **tex_kw),
         )
         eq1, eq2, eq3, eq4, eq5 = equations
 
@@ -311,7 +320,8 @@ class DrivenHarmonicOscillator(InteractiveScene):
             TransformMatchingTex(
                 eq1_copy, eq2,
                 matched_pairs=[
-                    (eq1_copy[R"\vec{\textbf{F}}(t)"], eq2[R"\vec{\textbf{a}}(t)"])
+                    (eq1_copy[R"\vec{\textbf{F}}(t)"], eq2[R"\vec{\textbf{a}}(t)"]),
+                    (eq1_copy[R"= -k \vec{\textbf{x}}(t)"], eq2[R"= -k \vec{\textbf{x}}(t)"]),
                 ],
                 run_time=1
             ),
@@ -321,10 +331,10 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.play(
             TransformMatchingTex(
                 eq2, eq3,
-                matched_pairs=[(
-                    eq2[R"\vec{\textbf{a}}(t)"],
-                    eq3[R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t)"],
-                )],
+                matched_pairs=[
+                    (eq2[R"\vec{\textbf{a}}(t)"], eq3[R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t)"]),
+                    (eq2[R"k"], eq3["k"]),
+                ],
                 path_arc=PI / 4,
             )
         )
@@ -369,24 +379,28 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.play(ReplacementTransform(x0_rect, sqrt_km_rect))
         self.wait(6)
         plot.reset()
-        sho.set_k(16)
+        original_k = sho.k
+        sho.set_k(4 * original_k)
         self.play(
             ReplacementTransform(sqrt_km_rect, k_rect),
             GrowArrow(k_rect.arrow)
         )
         self.wait(5)
-        sho.set_k(4)
+        sho.set_k(0.5 * original_k)
         self.play(
             ReplacementTransform(k_rect, m_rect),
             FadeOut(k_rect.arrow),
             GrowArrow(m_rect.arrow),
         )
         self.wait(5)
+        sho.set_k(original_k)
 
         # Define omega_0
-        omega0_eq = Tex(R"\omega_0 = \sqrt{k / m}")
-        omega0_eq[R"\omega_0"].set_color(PINK)
+        omega0_eq = Tex(R"\omega_r = \sqrt{k / m}")
+        omega0_eq[R"\omega_r"].set_color(PINK)
         omega0_eq.next_to(eq5, DOWN, buff=1.25)
+        omega0_name = TexText("``Resonant frequency''", font_size=36)
+        omega0_name.next_to(omega0_eq, DOWN)
 
         plot.reset()
         self.play(
@@ -395,10 +409,12 @@ class DrivenHarmonicOscillator(InteractiveScene):
         )
         self.play(
             TransformFromCopy(sqrt_km, omega0_eq[R"\sqrt{k / m}"]),
-            Write(omega0_eq[R"\omega_0 = "]),
+            Write(omega0_eq[R"\omega_r = "]),
             TransformMatchingTex(eq4, eq5),
         )
-        self.wait(10)
+        self.wait(2)
+        self.play(FadeIn(omega0_name))
+        self.wait(12)
 
         # Clean up solution
         corner_box = Rectangle(width=3, height=plot_rect.get_height())
@@ -417,57 +433,434 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.play(
             FadeIn(corner_box),
             MoveToTarget(free_solution),
-            *map(FadeOut, [eq3, implies[1]]),
+            *map(FadeOut, [eq3, implies[1], omega0_name]),
             sho.animate.center(),
         )
         corner_box.push_self_into_submobjects()
         corner_box.add(free_solution)
         self.wait()
         self.play(
-            FadeOut(plot_group),
+            FadeOut(plot_group1),
             frame.animate.shift(-up_shift),
             corner_box.animate.shift(-up_shift),
             run_time=2
         )
         corner_box.fix_in_frame()
 
-        # Add a driving force (E field)
-        omega = 2.0
+        # Write new equation with driving force
+        free_label = Text("No external\nforces", font_size=36)
+        free_label.next_to(corner_box, DOWN)
+        t2c[R"\vec{\textbf{E}}_0"] = BLUE_D
+
+        driven_eq = Tex(
+            R"""
+                \vec{\textbf{F}}(t) =
+                - k \vec{\textbf{x}}(t)
+                + \vec{\textbf{E}}_0 q \cos(\omega_l t)
+            """,
+            t2c=t2c
+        )
+        driven_eq.to_edge(UP)
+        driven_eq.set_x(FRAME_WIDTH / 4)
+
+        external_force = driven_eq[R"\vec{\textbf{E}}_0 q \cos(\omega_l t)"]
+        external_force_rect = SurroundingRectangle(external_force, buff=SMALL_BUFF)
+        external_force_rect.set_stroke(TEAL, 2)
+        external_force_label = Text("Force from a\nlight wave", font_size=36)
+        external_force_label.next_to(external_force_rect, DOWN)
+
+        self.play(FadeIn(free_label, lag_ratio=0.1))
+        self.wait()
+        self.play(TransformMatchingTex(eq1.copy(), driven_eq))
+        self.play(
+            ShowCreation(external_force_rect),
+            FadeIn(external_force_label, lag_ratio=0.1),
+        )
+
+        driven_eq_group = VGroup(
+            BackgroundRectangle(driven_eq, buff=0.5).set_fill(BLACK, 0.9),
+            BackgroundRectangle(external_force_label, buff=0.5).set_fill(BLACK, 0.9),
+            driven_eq, external_force_rect,
+            external_force_label
+        )
+        driven_eq_group.fix_in_frame()
+        self.add(driven_eq_group)
+
+        # Add a oscillating E field
+        omega_tracker = ValueTracker(2.0)
         F_max = 0.5
         wave_number = 2.0
+        axes.set_flat_stroke(False)
 
         def time_func(points, time):
+            omega = omega_tracker.get_value()
             result = np.zeros(points.shape)
             result[:, 1] = F_max * np.cos(wave_number * points[:, 2] - omega * time)
             return result
 
         field_config = dict(
             stroke_color=TEAL,
-            stroke_width=2,
+            stroke_width=3,
             stroke_opacity=0.5,
+            max_vect_len=1.0,
+            x_density=1.0,
+            y_density=1.0,
         )
-        planar_field = TimeVaryingVectorField(time_func, **field_config)
+        planar_field = TimeVaryingVectorField(
+            time_func,
+            **field_config
+        )
         z_axis_field = TimeVaryingVectorField(
             time_func,
             height=0, width=0, depth=16,
             z_density=5,
             **field_config
         )
-
-        self.add(z_axis_field, corner_box)
-        self.play(
-            frame.animate.reorient(-90, -80, 90).set_focal_distance(10),
-            VFadeIn(z_axis_field, time_span=(0, 1)),
-            run_time=3,
+        full_field = TimeVaryingVectorField(
+            time_func,
+            depth=16,
+            z_density=5,
+            height=5,
+            width=5,
+            norm_to_opacity_func=lambda n: n,
+            **field_config,
         )
-        self.wait(3)
 
-        self.play(VFadeIn(z_axis_field))
-        self.wait(6)
+        z_axis_field.set_stroke(opacity=1)
+        full_field_opacity_mult = ValueTracker(0)
 
+        globals().update(locals())
+        def udpate_full_field_opacity(ff):
+            ff.data["stroke_rgba"][:, 3] *= full_field_opacity_mult.get_value()
 
+        full_field.add_updater(udpate_full_field_opacity)
 
+        sho.set_k(8)
+        sho.set_damping(1)
+        sho.set_external_forces([
+            lambda: 3 * planar_field.func(np.array([ORIGIN]))[0]
+        ])
+        sho.center()
+        sho.reset_velocity()
+        sho.resume_updating()
+        self.add(planar_field, corner_box, driven_eq_group)
+        self.play(
+            VFadeIn(planar_field),
+            FadeOut(corner_box, time_span=(0, 1)),
+            FadeOut(free_label, time_span=(0, 1)),
+        )
+        self.wait(12)
+
+        # Gather clean oscillations for B roll later
+        self.remove(driven_eq_group)
+        self.wait(30)
+        self.add(driven_eq_group)
+
+        # Change perspective a bunch
+        full_field.time = planar_field.time
+        frame.set_focal_distance(10)
+        self.add(full_field)
+        self.play(
+            frame.animate.reorient(-100, 80, 90).set_height(10),
+            full_field_opacity_mult.animate.set_value(1).set_anim_args(time_span=(2, 4)),
+            VFadeOut(planar_field, time_span=(2, 4), remover=False),
+            run_time=4,
+        )
+        planar_field.set_stroke(opacity=0)
+        self.play(
+            frame.animate.reorient(-100, 100, 90),
+            run_time=6
+        )
+        z_axis_field.time = full_field.time
+        self.play(
+            full_field_opacity_mult.animate.set_value(0),
+            VFadeIn(z_axis_field),
+            run_time=2
+        )
+        self.remove(full_field)
+        self.play(
+            frame.animate.reorient(-100, 80, 90),
+            run_time=6
+        )
+        planar_field.set_stroke(opacity=0.5)
+        self.play(
+            frame.animate.reorient(-90, 0, 90).set_focal_distance(100).set_height(8),
+            VFadeOut(z_axis_field),
+            VFadeIn(planar_field),
+            run_time=4
+        )
+        self.wait(4)
 
         # Show graphical solution
-        # Show equation for the solution (Work it out on paper?)
-        pass
+        up_shift = UP
+        driven_eq_group.unfix_from_frame()
+        plot_rect, plot_axes, plot = self.get_plot_group(
+            lambda: 2 * sho.get_y(),
+            width=FRAME_WIDTH - 1,
+            max_t=20
+        )
+        plot_group2 = VGroup(plot_rect, plot_axes, plot)
+        plot_group2.to_edge(UP, buff=SMALL_BUFF).shift(up_shift)
+
+        plot_box1, plot_box2 = plot_boxes = Rectangle().replicate(2)
+        plot_boxes.match_height(plot_rect)
+        plot_boxes.set_stroke(width=0)
+        plot_boxes.set_fill(opacity=0.25)
+        plot_boxes.set_submobject_colors_by_gradient(GREY_BROWN, TEAL)
+        for box, width, x in zip(plot_boxes, (5, 15.5), (0, 5)):
+            box.set_width(width * plot_axes.x_axis.get_unit_size(), stretch=True)
+            box.move_to(plot_axes.c2p(x, 0), LEFT)
+
+        sho.suspend_updating()
+        self.play(
+            frame.animate.shift(up_shift),
+            FadeIn(plot_rect),
+            FadeIn(plot_axes),
+            driven_eq_group.animate.shift(1.0 * DOWN),
+            sho.animate.center(),
+            VFadeOut(planar_field, time_span=(0, 1)),
+            run_time=2,
+        )
+        self.wait()
+
+        planar_field.time = 0
+        sho.resume_updating()
+        plot.reset()
+        self.add(planar_field, driven_eq_group, plot_rect, plot_axes, plot)
+        self.play(VFadeIn(planar_field))
+        self.wait(5)
+        self.play(FadeIn(plot_box1))
+        self.wait(4)
+        self.play(FadeIn(plot_box2))
+        self.wait(9)
+        plot.suspend_updating()
+        self.wait(3)
+
+        # Compare with the previous plot
+        self.play(
+            VFadeOut(axes),
+            VFadeOut(planar_field),
+            FadeOut(sho),
+            VFadeOut(springs),
+        )
+
+        down_shift = 2.5 * DOWN
+        plot_group2.add(*plot_boxes)
+        plot_group1.next_to(plot_group2, UP, aligned_edge=LEFT).shift(down_shift)
+        top_axes = plot_group1[1]
+        VGroup(top_axes.x_axis, plot_group1[2]).stretch(
+            plot_axes.x_axis.get_unit_size() / top_axes.x_axis.get_unit_size(),
+            0, about_edge=LEFT
+        )
+        top_axes[-2].match_x(top_axes.x_axis.get_right())
+
+        corner_box.unfix_from_frame()
+        corner_box.next_to(plot_group1, RIGHT)
+        self.remove(*driven_eq_group[:2])
+        self.play(
+            FadeIn(plot_group1),
+            FadeIn(corner_box),
+            plot_group2.animate.shift(down_shift),
+            driven_eq.animate.shift(down_shift),
+            FadeOut(driven_eq_group[-2:], down_shift),
+            run_time=3
+        )
+        self.wait()
+
+        # Emphasize different frequencies
+        omega0_eq_copy = omega0_eq.copy()
+        omega_copy = driven_eq[R"\omega_l"].copy()
+
+        self.play(
+            omega0_eq_copy.animate.set_height(0.4).move_to(plot_group1, UR).shift(SMALL_BUFF * DL)
+        )
+        self.wait()
+        self.play(
+            omega_copy.animate.move_to(plot_axes.c2p(14, 0.8))
+        )
+        self.wait()
+
+        # Show equation for the solution
+        driven_eq.target = driven_eq.generate_target()
+        driven_eq.target.to_edge(LEFT, buff=MED_SMALL_BUFF)
+        driven_eq.target.shift(0.5 * DOWN)
+        implies = Tex(R"\Rightarrow", font_size=72)
+        implies.next_to(driven_eq.target, RIGHT, MED_LARGE_BUFF)
+
+        solution = Tex(
+            R"""
+                \vec{\textbf{x}}(t) = 
+                \frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}
+                \cos(\omega_l t)
+            """,
+            t2c=t2c
+        )
+        solution.next_to(implies, RIGHT, MED_LARGE_BUFF)
+        implies.match_y(solution)
+
+        self.play(
+            MoveToTarget(driven_eq),
+            FadeIn(implies, LEFT),
+            FadeIn(solution, RIGHT),
+        )
+        self.wait()
+
+        # Comment on the equation
+        full_rect = SurroundingRectangle(solution)
+        amp_rect = SurroundingRectangle(solution[R"\frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}"])
+        E_rect = SurroundingRectangle(solution[R"\vec{\textbf{E}}_0"])
+        freq_diff_rect = SurroundingRectangle(
+            solution[R"\omega_r^2-\omega_l^2"],
+            buff=0.05
+        )
+        steady_state_rect = plot_box2.copy().set_fill(opacity=0)
+        VGroup(
+            full_rect, amp_rect, E_rect,
+            freq_diff_rect, steady_state_rect
+        ).set_stroke(YELLOW, 2)
+
+        self.play(ShowCreation(full_rect))
+        self.wait()
+        self.play(TransformFromCopy(full_rect, steady_state_rect))
+        self.wait()
+        self.play(
+            ReplacementTransform(full_rect, amp_rect),
+            FadeOut(steady_state_rect),
+        )
+        self.wait()
+        self.play(ReplacementTransform(amp_rect, E_rect))
+        self.wait()
+        self.play(ReplacementTransform(E_rect, freq_diff_rect))
+        self.wait()
+
+        # Reintroduce oscillator
+        plot_group2.add(omega_copy)
+        plot_group2.target = plot_group2.generate_target()
+        plot_group2.target.shift(1.75 * UP)
+
+        top_rect = plot_rect.copy()
+        top_rect.set_fill(BLACK, 1).set_stroke(width=0)
+        top_rect.next_to(plot_group2.target, UP, buff=0)
+
+        to_fade = VGroup(
+            plot_group1, omega0_eq_copy, corner_box,
+            driven_eq, implies,
+        )
+
+        self.add(planar_field, springs, top_rect, plot_group2, solution, freq_diff_rect)
+        self.add(to_fade)
+        planar_field.set_stroke(opacity=0)
+        planar_field.suspend_updating()
+        sho.center()
+        sho.suspend_updating()
+
+        self.play(
+            frame.animate.shift(UP),
+            solution.animate.move_to(top_rect),
+            MaintainPositionRelativeTo(freq_diff_rect, solution),
+            MoveToTarget(plot_group2),
+            FadeOut(to_fade, UP),
+            FadeIn(sho),
+            VFadeIn(springs),
+            VFadeIn(planar_field),
+            run_time=2,
+        )
+
+        # Show strong resonance
+        close_freq_words = Tex(R"\text{If } \omega_l \approx \omega_r", t2c=t2c)
+        close_freq_words.next_to(plot_rect, DOWN, aligned_edge=LEFT)
+
+        self.add(*plot_group2)
+        self.play(LaggedStart(
+            FadeOut(plot_boxes),
+            FadeOut(plot),
+            FadeOut(omega_copy),
+            FadeIn(close_freq_words),
+            Transform(
+                freq_diff_rect,
+                SurroundingRectangle(close_freq_words).set_stroke(width=0),
+                remover=True
+            ),
+            *(
+                TransformFromCopy(solution[tex][0], close_freq_words[tex][0])
+                for tex in [R"\omega_r", R"\omega_l"]
+            )
+        ))
+        self.wait()
+        self.play(
+            plot_axes.y_axis.animate.stretch(0.5, 1),
+            plot_axes[-1].animate.shift(0.2 * DOWN + 0.4 * LEFT)
+        )
+
+        sho.set_k(16)
+        sho.set_damping(0.25)
+        sho.center()
+        sho.reset_velocity()
+        omega_tracker.set_value(4)
+        planar_field.set_stroke(opacity=1)
+        plot.reset()
+        plot.resume_updating()
+        sho.resume_updating()
+        planar_field.resume_updating()
+        self.add(plot)
+        self.play(VFadeIn(planar_field))
+        self.wait(19)
+
+        # Out of sync frequencies
+        half = Tex(R"0.5")
+        omega_r = close_freq_words[R"\omega_r"][0]
+        half.move_to(omega_r, LEFT)
+        half.align_to(omega_r[0], DOWN)
+
+        sho.suspend_updating()
+        plot.suspend_updating()
+        self.play(
+            sho.animate.center(),
+            planar_field.animate.set_opacity(0),
+            FadeOut(plot),
+        )
+
+        self.play(
+            Write(half),
+            omega_r.animate.shift((half.get_width() + 0.05) * RIGHT)
+        )
+        close_freq_words.add(half)
+        self.add(BackgroundRectangle(close_freq_words).set_fill(BLACK, 1), close_freq_words)
+        self.play(FlashAround(VGroup(close_freq_words, half)))
+        self.wait()
+
+        plot.reset()
+        plot.resume_updating()
+        omega_tracker.set_value(2)
+        sho.set_damping(0.25)
+        sho.resume_updating()
+        planar_field.set_stroke(opacity=1)
+        self.add(plot)
+        self.play(VFadeIn(planar_field))
+        self.wait(19)
+        plot.reset()
+        self.wait(20)
+
+    def get_plot_group(
+        self,
+        func,
+        width=10.0,
+        height=2.0,
+        max_t=12.0,
+    ):
+        plot_rect = Rectangle(width, height)
+        plot_rect.set_fill(GREY_E, 1)
+        plot_rect.set_stroke(WHITE, 1)
+
+        plot_axes = Axes((0, max_t), (-1, 1), width=width - 1, height=height - 0.25)
+        plot_axes.move_to(plot_rect)
+        y_axis_label = Tex(R"x(t)", font_size=20)
+        y_axis_label.set_color(RED)
+        y_axis_label.next_to(plot_axes.y_axis.get_top(), RIGHT)
+        t_axis_label = Tex("t", font_size=24)
+        t_axis_label.next_to(plot_axes.x_axis.get_right(), DOWN)
+
+        plot_axes.add(t_axis_label, y_axis_label)
+        plot = DynamicPlot(plot_axes, func)
+
+        return plot_rect, plot_axes, plot
