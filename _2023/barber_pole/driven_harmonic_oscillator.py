@@ -1,5 +1,7 @@
 from operator import eq
 from _2023.barber_pole.objects import TimeVaryingVectorField
+from _2023.barber_pole.objects import Carbonate
+from _2023.barber_pole.objects import Calcite
 from manim_imports_ext import *
 
 
@@ -41,9 +43,12 @@ class HarmonicOscillator(TrueDot):
             self.velocity += self.get_acceleration() * true_step
             self.shift(self.velocity * true_step)
 
+    def get_displacement(self):
+        return self.get_center() - self.center_of_attraction
+
     def get_acceleration(self):
-        rel_x = self.get_center() - self.center_of_attraction
-        result = -self.k * rel_x / self.mass - self.damping * self.velocity
+        disp = self.get_displacement()
+        result = -self.k * disp / self.mass - self.damping * self.velocity
         for force in self.external_forces:
             result += force() / self.mass
         return result
@@ -74,6 +79,7 @@ class HarmonicOscillator(TrueDot):
 class Spring(VMobject):
     def __init__(
         self, mobject, base_point,
+        edge=ORIGIN,
         stroke_color=GREY,
         stroke_width=2,
         twist_rate=8.0,
@@ -107,10 +113,10 @@ class Spring(VMobject):
         width = self.get_width()
         self.add_updater(lambda m: m.set_points(reference_points))
         self.add_updater(lambda m: m.stretch(
-            get_norm(base_point - mobject.get_center()) / width, 0
+            get_norm(base_point - mobject.get_edge_center(edge)) / width, 0
         ))
         self.add_updater(lambda m: m.put_start_and_end_on(
-            base_point, mobject.get_center()
+            base_point, mobject.get_edge_center(edge)
         ))
 
     def get_length(self):
@@ -153,19 +159,23 @@ class DrivenHarmonicOscillator(InteractiveScene):
     def construct(self):
         # Zoom in on a plane of charges
         frame = self.frame
-        frame.reorient(-90, 70, 90)
+        frame.reorient(-90, 80, 90)
 
+        zoom_out_radius = 0.035
         radius = 0.2
-        charges = DotCloud(color=BLUE_D, radius=radius)
-        charges.to_grid(11, 11)
+        charges = DotCloud(color=BLUE_D, radius=zoom_out_radius)
+        charges.to_grid(31, 31)
+        charges.set_height(3)
+        charges.set_radius(zoom_out_radius)
         charges.make_3d()
 
         self.add(charges)
         in_shift = 0.01 * IN
+        charges_target_height = 59
         self.play(
-            frame.animate.reorient(-90, 0, 90).set_focal_distance(100),
-            charges.animate.scale(4).set_radius(radius).shift(in_shift),
-            run_time=4,
+            frame.animate.reorient(-90, 0, 90).center().set_focal_distance(100).set_anim_args(time_span=(0, 4)),
+            charges.animate.center().set_height(charges_target_height).set_radius(radius).shift(in_shift),
+            run_time=6,
         )
         frame.reorient(0, 0, 0)
 
@@ -207,6 +217,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
         # Add coordiante plane
         axes = Axes(axis_config=dict(tick_size=0.05))
         axes.set_stroke(width=1, opacity=1)
+        axes.set_flat_stroke(False)
         axes.scale(spacing)
         self.add(axes, springs, sho)
         self.play(FadeIn(axes))
@@ -216,6 +227,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
         # Set up Hooke's law
         t2c = {
             R"\vec{\textbf{x}}(t)": RED,
+            R"\vec{\textbf{v}}(t)": PINK,
             R"\vec{\textbf{F}}(t)": YELLOW,
             R"\vec{\textbf{a}}(t)": YELLOW,
             R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t) ": YELLOW,
@@ -223,10 +235,10 @@ class DrivenHarmonicOscillator(InteractiveScene):
             R"\omega_l": TEAL,
         }
 
-        x_vect = Arrow(
+        x_vect = always_redraw(lambda: Arrow(
             axes.c2p(0, 0), sho.get_center(),
             stroke_width=5, stroke_color=RED, buff=0
-        )
+        ))
 
         equation = Tex(R"\vec{\textbf{F}}(t) = -k \vec{\textbf{x}}(t)", t2c=t2c)
         equation.move_to(axes.c2p(0.5, 0.5), LEFT)
@@ -241,6 +253,8 @@ class DrivenHarmonicOscillator(InteractiveScene):
             springs.animate.set_stroke(opacity=0.35)
         )
         self.play(Write(x_label))
+        self.wait()
+        self.play(sho.animate.move_to(DR), rate_func=there_and_back, run_time=3)
         self.wait()
         self.play(
             Write(equation[R"\vec{\textbf{F}}(t) = -k "]),
@@ -259,6 +273,8 @@ class DrivenHarmonicOscillator(InteractiveScene):
 
         F_vect.add_updater(update_F_vect)
 
+        initial_position = 0.75 * UL
+
         self.play(
             FlashAround(equation[R"\vec{\textbf{F}}"]),
             ReplacementTransform(x_vect, F_vect, path_arc=PI),
@@ -266,7 +282,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.wait()
         self.play(sho.animate.move_to(0.25 * UL))
         self.wait()
-        self.play(sho.animate.move_to(0.75 * UL))
+        self.play(sho.animate.move_to(initial_position))
         self.wait()
         sho.resume_updating()
         self.wait(6)
@@ -280,6 +296,8 @@ class DrivenHarmonicOscillator(InteractiveScene):
         plot_group1.to_corner(UR, buff=0.1)
         plot_group1.shift(up_shift)
 
+        sho.move_to(initial_position)
+        sho.reset_velocity()
         plot.reset()
         self.add(*plot_group1)
         self.play(
@@ -290,7 +308,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
             FadeOut(charges),
             run_time=2
         )
-        self.wait(10)
+        self.wait(15)
         plot.suspend_updating()
         sho.suspend_updating()
         self.play(sho.animate.center(), run_time=2)
@@ -307,13 +325,14 @@ class DrivenHarmonicOscillator(InteractiveScene):
         eq1, eq2, eq3, eq4, eq5 = equations
 
         eq2.next_to(eq1, DOWN, LARGE_BUFF)
-        eq3.move_to(eq2).align_to(eq1, LEFT)
+        eq3.next_to(eq2, DOWN, LARGE_BUFF, aligned_edge=LEFT)
         eq4.next_to(eq2, DOWN, buff=0.75, aligned_edge=LEFT)
         eq5.move_to(eq4, LEFT)
 
         implies = Tex(R"\Downarrow").replicate(2)
         implies[0].move_to(VGroup(eq1, eq2))
-        implies[1].move_to(VGroup(eq3, eq4))
+        implies[1].move_to(VGroup(eq2, eq3))
+        implies[1].match_x(implies[0])
 
         eq1_copy = eq1.copy()
         self.play(
@@ -328,32 +347,79 @@ class DrivenHarmonicOscillator(InteractiveScene):
             FadeIn(implies[0], 0.5 * DOWN)
         )
         self.wait()
+        eq2_copy = eq2.copy()
         self.play(
             TransformMatchingTex(
-                eq2, eq3,
+                eq2_copy, eq3,
                 matched_pairs=[
-                    (eq2[R"\vec{\textbf{a}}(t)"], eq3[R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t)"]),
-                    (eq2[R"k"], eq3["k"]),
+                    (eq2_copy[R"\vec{\textbf{a}}(t)"], eq3[R"\frac{d^2 \vec{\textbf{x}}}{dt^2}(t)"]),
+                    (eq2_copy[R"k"], eq3["k"]),
                 ],
                 path_arc=PI / 4,
-            )
+            ),
+            FadeIn(implies[1])
         )
         self.wait()
         self.play(
-            FadeIn(eq4, DOWN),
-            FadeIn(implies[1], 0.5 * DOWN),
+            eq3.animate.move_to(eq2).align_to(eq1, LEFT),
+            FadeOut(eq2),
+            FadeOut(implies[1]),
         )
-        self.wait()
 
-        # Highlight initial position
-        x0_rect = SurroundingRectangle(eq4[R"\vec{\textbf{x}}_0"], buff=0.05)
+        # Show solution for a given initial condition
+        initial_position = 0.5 * UR
+        x0 = eq4[R"\vec{\textbf{x}}_0"]
+        cos_part = eq4[R"\cos( \sqrt{k \over m} \cdot t)"]
+        x0_copy = x0.copy()
+        x0_copy.next_to(0.5 * initial_position, UL, buff=0.05)
+        x0_copy.set_color(RED)
+        x0_copy.set_backstroke(BLACK, 4)
+        ic_label = Text("Initial condition")
+        ic_label.next_to(initial_position, UR, MED_LARGE_BUFF)
+
+        x0_rect = SurroundingRectangle(x0, buff=0.05)
         x0_rect.set_stroke(TEAL, 2)
 
         self.remove(F_vect)
-        self.play(ShowCreation(x0_rect))
+        self.add(x_vect)
         self.play(
-            sho.animate.shift(0.5 * UR),
+            FadeIn(ic_label),
+            sho.animate.move_to(initial_position)
+        )
+        self.play(FadeIn(x0_copy, DOWN))
+        self.wait()
+
+        self.play(
+            TransformFromCopy(x0_copy, x0),
+            Write(implies[1]),
+            *(
+                TransformFromCopy(eq3[tex], eq4[tex])
+                for tex in ["=", R"\vec{\textbf{x}}(t)"]
+            )
+        )
+        self.play(
+            FadeIn(cos_part, lag_ratio=0.1),
+        )
+        self.play(
+            FlashAround(cos_part, color=RED, run_time=3, time_width=1.5),
+        )
+        self.wait()
+        self.play(
+            FadeTransform(ic_label, x0_rect)
+        )
+        self.play(
+            plot.animate.stretch(0.5, 1),
+            sho.animate.move_to(0.5 * initial_position),
+            x0_copy.animate.next_to(0.25 * initial_position, UL, SMALL_BUFF),
+            rate_func=there_and_back_with_pause,
+            run_time=6,
+        )
+
+        # Reset
+        self.play(
             FadeOut(plot),
+            FadeOut(x0_copy),
+            FadeOut(x_vect),
             run_time=2
         )
         self.wait()
@@ -362,7 +428,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         plot.reset()
         plot.resume_updating()
         self.add(plot)
-        self.wait(6)
 
         # Describe frequency terms
         sqrt_km = eq4[R"\sqrt{k \over m}"]
@@ -377,22 +442,29 @@ class DrivenHarmonicOscillator(InteractiveScene):
             rect.arrow.next_to(rect, RIGHT, buff=SMALL_BUFF)
 
         self.play(ReplacementTransform(x0_rect, sqrt_km_rect))
-        self.wait(6)
+        self.wait(10)
         plot.reset()
         original_k = sho.k
         sho.set_k(4 * original_k)
+        sho.move_to(initial_position)
+        sho.reset_velocity()
         self.play(
             ReplacementTransform(sqrt_km_rect, k_rect),
             GrowArrow(k_rect.arrow)
         )
+        initial_position = sho.get_center()
         self.wait(5)
+        globals().update(locals())
+        self.wait_until(lambda: get_norm(sho.get_center() - initial_position) < 0.05)
         sho.set_k(0.5 * original_k)
+        sho.move_to(initial_position)
+        sho.reset_velocity()
         self.play(
             ReplacementTransform(k_rect, m_rect),
             FadeOut(k_rect.arrow),
             GrowArrow(m_rect.arrow),
         )
-        self.wait(5)
+        self.wait(8)
         sho.set_k(original_k)
 
         # Define omega_0
@@ -468,14 +540,11 @@ class DrivenHarmonicOscillator(InteractiveScene):
         external_force_rect.set_stroke(TEAL, 2)
         external_force_label = Text("Force from a\nlight wave", font_size=36)
         external_force_label.next_to(external_force_rect, DOWN)
+        external_force_label.set_backstroke(BLACK, 7)
 
         self.play(FadeIn(free_label, lag_ratio=0.1))
         self.wait()
         self.play(TransformMatchingTex(eq1.copy(), driven_eq))
-        self.play(
-            ShowCreation(external_force_rect),
-            FadeIn(external_force_label, lag_ratio=0.1),
-        )
 
         driven_eq_group = VGroup(
             BackgroundRectangle(driven_eq, buff=0.5).set_fill(BLACK, 0.9),
@@ -556,17 +625,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.wait(30)
         self.add(driven_eq_group)
 
-        # Change perspective a bunch
-        full_field.time = planar_field.time
-        frame.set_focal_distance(10)
-        self.add(full_field)
-        self.play(
-            frame.animate.reorient(-100, 80, 90).set_height(10),
-            full_field_opacity_mult.animate.set_value(1).set_anim_args(time_span=(2, 4)),
-            VFadeOut(planar_field, time_span=(2, 4), remover=False),
-            run_time=4,
-        )
-        planar_field.set_stroke(opacity=0)
         self.play(
             frame.animate.reorient(-100, 100, 90),
             run_time=6
@@ -590,6 +648,45 @@ class DrivenHarmonicOscillator(InteractiveScene):
             run_time=4
         )
         self.wait(4)
+
+        # Change perspective a bunch
+        full_field.time = planar_field.time
+        frame.set_focal_distance(10)
+        self.add(full_field)
+        self.play(
+            frame.animate.reorient(-100, 80, 90).set_height(10),
+            full_field_opacity_mult.animate.set_value(1).set_anim_args(time_span=(2, 4)),
+            VFadeOut(planar_field, time_span=(2, 4), remover=False),
+            run_time=4,
+        )
+        planar_field.set_stroke(opacity=0)
+
+        self.remove(driven_eq_group)
+        full_field_opacity_mult.set_value(0)
+        frame.to_default_state().reorient(-90, 0, 90)
+        self.play(
+            full_field_opacity_mult.animate.set_value(1).set_anim_args(time_span=(1, 4)),
+            frame.animate.reorient(-95, 60, 90).set_height(10),
+            run_time=4,
+        )
+        self.play(
+            frame.animate.reorient(-100, 110, 90),
+            run_time=12
+        )
+        self.play(
+            frame.animate.reorient(-120, 80, 95),
+            run_time=10
+        )
+        planar_field.time = full_field.time
+        planar_field.set_stroke(opacity=1)
+        self.play(
+            frame.animate.reorient(-90, 0, 90).set_height(8),
+            full_field_opacity_mult.animate.set_value(0).set_anim_args(time_span=(8, 10)),
+            VFadeIn(planar_field, time_span=(8, 10)),
+            run_time=12
+        )
+        self.add(driven_eq_group)
+        self.wait(5)
 
         # Show graphical solution
         up_shift = UP
@@ -709,10 +806,12 @@ class DrivenHarmonicOscillator(InteractiveScene):
         full_rect = SurroundingRectangle(solution)
         amp_rect = SurroundingRectangle(solution[R"\frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}"])
         E_rect = SurroundingRectangle(solution[R"\vec{\textbf{E}}_0"])
+        q_rect = SurroundingRectangle(solution[6])
         freq_diff_rect = SurroundingRectangle(
             solution[R"\omega_r^2-\omega_l^2"],
             buff=0.05
         )
+        lil_rects = VGroup(amp_rect, E_rect, q_rect, freq_diff_rect)
         steady_state_rect = plot_box2.copy().set_fill(opacity=0)
         VGroup(
             full_rect, amp_rect, E_rect,
@@ -728,10 +827,9 @@ class DrivenHarmonicOscillator(InteractiveScene):
             FadeOut(steady_state_rect),
         )
         self.wait()
-        self.play(ReplacementTransform(amp_rect, E_rect))
-        self.wait()
-        self.play(ReplacementTransform(E_rect, freq_diff_rect))
-        self.wait()
+        for r1, r2 in zip(lil_rects, lil_rects[1:]):
+            self.play(ReplacementTransform(r1, r2))
+            self.wait()
 
         # Reintroduce oscillator
         plot_group2.add(omega_copy)
@@ -788,8 +886,8 @@ class DrivenHarmonicOscillator(InteractiveScene):
         ))
         self.wait()
         self.play(
-            plot_axes.y_axis.animate.stretch(0.5, 1),
-            plot_axes[-1].animate.shift(0.2 * DOWN + 0.4 * LEFT)
+            plot_axes.y_axis.animate.stretch(0.75, 1),
+            plot_axes[-1].animate.shift(0.1 * DOWN + 0.4 * LEFT)
         )
 
         sho.set_k(16)
@@ -804,7 +902,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
         planar_field.resume_updating()
         self.add(plot)
         self.play(VFadeIn(planar_field))
-        self.wait(19)
+        self.wait(30)
 
         # Out of sync frequencies
         half = Tex(R"0.5")
@@ -841,6 +939,51 @@ class DrivenHarmonicOscillator(InteractiveScene):
         plot.reset()
         self.wait(20)
 
+    def scrap(self):
+        # For clean driven_eq
+        self.clear()
+        self.add(driven_eq)
+        self.play(
+            ShowCreation(external_force_rect),
+            FadeIn(external_force_label, lag_ratio=0.1),
+        )
+        ###
+
+        # Show damping (Right after show force vector)
+        damp_term = Tex(R"- \mu \vec{\textbf{v}}(t)", t2c=t2c)
+        damp_term.next_to(equation, RIGHT, SMALL_BUFF)
+        damp_rect = SurroundingRectangle(damp_term)
+        damp_rect.set_stroke(PINK, 2)
+        damp_arrow = Vector(DOWN).next_to(damp_rect, UP)
+        damp_arrow.match_color(damp_rect)
+
+        up_shift = 1.5 * UP
+        plot_rect, plot_axes, plot = self.get_plot_group(
+            lambda: np.sign(sho.get_center()[1]) * get_norm(sho.get_center()),
+            width=14,
+            max_t=20,
+        )
+        plot_group1 = VGroup(plot_rect, plot_axes, plot)
+        plot_group1.to_corner(UR, buff=0.1)
+        plot_group1.shift(up_shift)
+
+        sho.move_to(initial_position)
+        sho.reset_velocity()
+        plot.reset()
+        self.add(*plot_group1)
+        frame.shift(up_shift)
+        self.add(
+            plot_rect, plot_axes, plot
+        )
+
+        self.wait(3)
+        sho.set_damping(0.5)
+        self.play(Write(damp_term))
+        self.play(ShowCreation(damp_rect), GrowArrow(damp_arrow))
+        self.wait(17)
+        ###
+
+
     def get_plot_group(
         self,
         func,
@@ -864,3 +1007,123 @@ class DrivenHarmonicOscillator(InteractiveScene):
         plot = DynamicPlot(plot_axes, func)
 
         return plot_rect, plot_axes, plot
+
+
+class JigglesInCalcite(InteractiveScene):
+    polarization_direction = 1
+
+    def construct(self):
+        # Set up crystal
+        calcite = Calcite(height=8)
+        calcite.center()
+
+        index = 118
+        calcium_center = calcite.balls.get_points()[index]
+        radii = calcite.balls.get_radii()
+        radii[index] = 0
+        calcite.balls.set_radii(radii)
+
+        calcium = HarmonicOscillator(center=calcium_center)
+        calcium.set_radius(np.max(radii))
+        calcium.set_color(GREEN)
+        calcium.set_glow_factor(calcite.balls.get_glow_factor())
+        calcium.move_to(calcium_center)
+
+        self.add(calcite, calcium)
+
+        # Initial panning
+        frame = self.frame
+        frame.reorient(12, 64, 0).move_to([0.21, -0.18, -0.77]).set_height(9)
+        self.play(
+            frame.animate.reorient(1, 84, 0).move_to([-0.08, -0.16, -0.53]).set_height(9),
+            run_time=3
+        )
+        self.wait()
+
+        # Add springs
+        spring_length = 2.5
+        springs = VGroup(
+            *(
+                Spring(
+                    calcium,
+                    calcium.get_center() + spring_length * (v_vect + 0.2 * h_vect),
+                    edge=v_vect
+                )
+                for v_vect in [UP, DOWN]
+                for h_vect in [LEFT, ORIGIN, RIGHT]
+            ),
+            *(
+                Spring(
+                    calcium,
+                    calcium.get_center() + spring_length * h_vect,
+                    edge=h_vect
+                )
+                for h_vect in [LEFT, RIGHT]
+            )
+        )
+        springs.set_stroke(opacity=0.7)
+        self.play(
+            VFadeIn(springs),
+            calcium.animate.shift(RIGHT),
+            calcite.balls.animate.set_opacity(0.1),
+            frame.animate.reorient(-2, 25, 0).move_to(calcium).set_height(6),
+            run_time=2,
+        )
+
+        # Show two resonant frequencies
+        def wait_until_centered():
+            disp = calcium.get_displacement()
+            self.wait_until(lambda: np.dot(calcium.get_displacement(), disp) <= 0)
+            calcium.move_to(calcium_center)
+            calcium.reset_velocity()
+
+        for vect, k in [(RIGHT, 5), (UP, 30)]:
+            self.play(calcium.animate.move_to(calcium_center + vect), run_time=0.5)
+            calcium.reset_velocity()
+            calcium.set_k(k)
+            self.wait(6)
+            wait_until_centered()
+
+        # Shine in light
+        omega = -4.0
+        F_max = 1.0
+        wave_number = 2.0
+
+        def time_func(points, time):
+            result = np.zeros(points.shape)
+            result[:, self.polarization_direction] = F_max * np.cos(wave_number * points[:, 2] - omega * time)
+            return result
+
+        field_config = dict(
+            stroke_color=TEAL,
+            stroke_width=3,
+            stroke_opacity=0.5,
+            max_vect_len=1.0,
+            x_density=1.0,
+            y_density=1.0,
+            center=calcium_center,
+        )
+        z_axis_field = TimeVaryingVectorField(
+            time_func,
+            height=0, width=0, depth=16,
+            z_density=5,
+            **field_config
+        )
+
+        z_axis_field.set_stroke(opacity=0.5)
+
+        calcium.set_k([5, 30][self.polarization_direction])
+        calcium.set_damping(1)
+        calcium.set_external_forces([
+            lambda: 3 * z_axis_field.func(np.array([calcium_center]))[0]
+        ])
+
+        self.play(
+            VFadeIn(z_axis_field),
+            frame.animate.reorient(108, 46, -102).move_to(calcium).set_height(12),
+            run_time=3
+        )
+        self.wait(25)
+
+class JigglesInCalciteY(JigglesInCalcite):
+    polarization_direction = 0

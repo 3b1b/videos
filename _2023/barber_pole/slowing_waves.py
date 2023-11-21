@@ -23,6 +23,7 @@ class SlicedWave(Group):
         layer_xs,
         phase_kick_back=0,
         layer_height=4.0,
+        damping_per_layer=1.0,
         wave_config = dict(),
         vect_wave_style=dict(),
         layer_style=dict(),
@@ -37,6 +38,10 @@ class SlicedWave(Group):
         self.vect_wave = OscillatingFieldWave(axes, self.wave, **vwave_kw)
         self.phase_kick_trackers = [
             ValueTracker(phase_kick_back)
+            for x in layer_xs
+        ]
+        self.absorbtion_trackers = [
+            ValueTracker(damping_per_layer)
             for x in layer_xs
         ]
         self.layers = VGroup()
@@ -55,13 +60,18 @@ class SlicedWave(Group):
             *self.phase_kick_trackers
         )
 
+    def set_layer_xs(self, xs):
+        self.layer_xs = xs
+
     def xt_to_yz(self, x, t):
         phase = np.ones_like(x)
         phase *= TAU * t * self.wave.speed / self.wave.wave_len
-        for layer_x, pkt in zip(self.layer_xs, self.phase_kick_trackers):
+        amplitudes = self.wave.y_amplitude * np.ones_like(x)
+        for layer_x, pkt, at in zip(self.layer_xs, self.phase_kick_trackers, self.absorbtion_trackers):
             phase[x > layer_x] += pkt.get_value()
+            amplitudes[x > layer_x] *= at.get_value()
 
-        y = self.wave.y_amplitude * np.sin(TAU * x / self.wave.wave_len - phase)
+        y = amplitudes * np.sin(TAU * x / self.wave.wave_len - phase)
         return y, np.zeros_like(x)
 
 
@@ -77,6 +87,7 @@ class SpeedInMediumFastPart(InteractiveScene):
     medium_opacity = 0.35
     add_label = True
     run_time = 30
+    material_label = "Glass"
 
     def construct(self):
         # Basic wave
@@ -104,7 +115,7 @@ class SpeedInMediumFastPart(InteractiveScene):
         self.add(rect)
 
         if self.add_label:
-            label = Text("Water", font_size=60)
+            label = Text(self.material_label, font_size=60)
             label.next_to(rect.get_top(), DOWN)
             self.add(label)
 
@@ -188,6 +199,7 @@ class PhaseKickBacks(SpeedInMediumFastPart):
     wave_config = dict()
     vect_wave_style = dict()
     layer_add_on_run_time = 5
+    damping_per_layer = 1.0
 
     def get_axes(self):
         axes = ThreeDAxes(**self.axes_config)
@@ -205,6 +217,7 @@ class PhaseKickBacks(SpeedInMediumFastPart):
             vect_wave_style=self.vect_wave_style,
             layer_style=self.line_style,
             phase_kick_back=self.kick_back_value,
+            damping_per_layer=self.damping_per_layer,
         )
 
     def setup(self):
@@ -219,7 +232,7 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
     # n_layers_skipped = 8
     layer_xs = np.arange(0, FRAME_WIDTH / 2, FRAME_WIDTH / 2**(11))
     kick_back_value = -0.025
-    n_layers_skipped = 128
+    n_layers_skipped = 64
 
     exagerated_phase_kick = -0.8
 
@@ -245,14 +258,27 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         layers = sliced_wave.layers
         pkts = sliced_wave.phase_kick_trackers
 
-        # Revert to one single layer
+        # Show layers
         block_label = Text("Material (e.g. glass)")
         block_label.next_to(layers, UP, aligned_edge=LEFT)
-        layer_label = Text("Thin layer of material")
-        layer_label.next_to(layers[0], UP, buff=0.75)
 
         self.add(block_label)
-        self.wait(5)
+        self.wait(4)
+        rect = BackgroundRectangle(sliced_wave)
+        rect.set_fill(BLACK, 0.9)
+        self.add(sliced_wave, rect, layers)
+        self.play(
+            layers.animate.arrange(RIGHT, buff=0.3).move_to(ORIGIN, LEFT).set_stroke(width=2, opacity=1),
+            FadeIn(rect),
+            rate_func=there_and_back_with_pause,
+            run_time=6,
+        )
+        self.remove(rect)
+        self.wait(3)
+
+        # Revert to one single layer
+        layer_label = Text("Thin layer of material")
+        layer_label.next_to(layers[0], UP, buff=0.75)
 
         kw = dict(run_time=5, lag_ratio=0.01)
         self.play(
@@ -386,7 +412,7 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
 
         # Change phase kick
         self.play(FlashAround(pk_label))
-        for value in [-0.01, 2 * self.exagerated_phase_kick]:
+        for value in [-0.01, self.exagerated_phase_kick]:
             phase_kick = value
             globals().update(locals())
             self.play(
@@ -395,9 +421,10 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
                     pkt.animate.set_value(phase_kick)
                     for pkt in pkts[::nls]
                 ),
-                run_time=2
+                run_time=4
             )
-            self.wait(4)
+            self.wait(2)
+        self.wait(2)
 
         # Number of layers label
         n_shown_layers = len(layers[::nls])
@@ -468,10 +495,63 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
                 pkt.animate.set_value(phase_kick)
                 for pkt in pkts[::nls]
             ))
-            self.wait(3 if nls >= 16 else 1)
+            self.wait(3 if nls >= 32 else 1)
 
         # Wait
         self.wait(10)
+
+
+class SlowedAndAbsorbed(RevertToOneLayerAtATime):
+    layer_xs = np.arange(-FRAME_WIDTH / 3, FRAME_WIDTH / 3, FRAME_WIDTH / 2**(8))
+    kick_back_value = -0.2
+    damping_per_layer = 1 - 2e-2
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001,
+    )
+    line_style = dict(
+        stroke_color=BLUE_B,
+        stroke_width=1.5,
+        stroke_opacity=0.5,
+    )
+
+    def construct(self):
+        # Objects
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        pkts = sliced_wave.phase_kick_trackers
+        ats = sliced_wave.absorbtion_trackers
+
+        # Show labels
+        label = Text("Wave gets slowed and absorbed")
+        label.next_to(layers, UP)
+        abs_words = label["and absorbed"]
+
+        for pkt in pkts:
+            pkt.set_value(0)
+        for at in ats:
+            at.set_value(1)
+
+        self.play(
+            FadeIn(label, time_span=(0, 2)),
+            FlashAround(abs_words, color=PINK, time_span=(2, 4)),
+            abs_words.animate.set_color(PINK).set_anim_args(time_span=(2, 4)),
+            LaggedStart(*(
+                pkt.animate.set_value(self.kick_back_value)
+                for pkt in pkts
+            )),
+            LaggedStart(*(
+                at.animate.set_value(self.damping_per_layer)
+                for at in ats
+            )),
+            LaggedStart(*(
+                FadeIn(layer, scale=0.8)
+                for layer in layers
+            )),
+            run_time=5,
+        )
+        self.wait(20)
 
 
 class DissolveLayers(PhaseKickBacks):

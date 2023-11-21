@@ -936,7 +936,7 @@ class InducedWiggleInCylinder(TwistingLightBeam):
         return line
 
 
-class VectorFieldWiggling(InteractiveScene):
+class VectorFieldWigglingNew(InteractiveScene):
     default_frame_orientation = (-33, 85)
 
     def construct(self):
@@ -975,20 +975,16 @@ class VectorFieldWiggling(InteractiveScene):
         self.add(charges, vector_wave, wave)
 
         # Pan camera
-        self.frame.reorient(-51, 82, 0).move_to([0.23, -0.31, -0.18]).set_height(8.74)
+        self.frame.reorient(47, 69, 0).move_to([-8.68, -7.06, 2.29]).set_height(5.44)
         self.play(
-            self.frame.animate.reorient(38, 79, 0).move_to([-0.45, -0.7, 0.45]).set_height(7.83),
+            self.frame.animate.reorient(-33, 83, 0).move_to([-0.75, -1.84, 0.38]).set_height(8.00),
             run_time=10,
         )
         self.play(
-            self.frame.animate.reorient(17, 78, 0).move_to([-0.3, -0.22, 0.58]).set_height(9.03),
+            self.frame.animate.reorient(-27, 80, 0).move_to([-0.09, -0.42, -0.1]).set_height(9.03),
             wave_opacity_tracker.animate.set_value(1).set_anim_args(time_span=(1, 2)),
             vector_opacity_tracker.animate.set_value(0.5).set_anim_args(time_span=(1, 2)),
             run_time=4,
-        )
-        self.play(
-            self.frame.animate.reorient(-29, 84, 0).move_to([0.54, -0.07, 0.02]).set_height(8.52),
-            run_time=8
         )
 
         # Highlight x_axis
@@ -1001,12 +997,40 @@ class VectorFieldWiggling(InteractiveScene):
             charge_opacity_tracker.animate.set_value(0.25),
         )
         self.play(
-            ShowCreation(x_line, time_span=(0, 2)),
-            vector_opacity_tracker.animate.set_value(0.5).set_anim_args(time_span=(6, 7)),
-            self.frame.animate.reorient(-47, 78, 0).move_to([0.54, -0.07, 0.02]).set_height(8.52),
-            run_time=15,
+            ShowCreation(x_line, run_time=2),
         )
-        self.wait(10)
+        self.wait(5)
+
+        # Show 3d wave
+        wave_3d = VGroup()
+        origin = axes.get_origin()
+        for y in np.linspace(-1, 1, 5):
+            for z in np.linspace(-1, 1, 5):
+                vects = OscillatingFieldWave(
+                    axes, wave,
+                    max_vect_len=0.5,
+                    norm_to_opacity_func=lambda n: 0.75 * np.arctan(n),
+                )
+                vects.y = y
+                vects.z = z
+                vects.add_updater(lambda m: m.shift(axes.c2p(0, m.y, m.z) - origin))
+                wave_3d.add(vects)
+
+        self.wait(2)
+        wave_opacity_tracker.set_value(0)
+        self.remove(vector_wave)
+        self.remove(x_line)
+        self.add(wave_3d)
+        self.wait(2)
+
+        self.play(
+            self.frame.animate.reorient(22, 69, 0).move_to([0.41, -0.67, -0.1]).set_height(10.31),
+            run_time=8
+        )
+        self.play(
+            self.frame.animate.reorient(-48, 68, 0).move_to([0.41, -0.67, -0.1]),
+            run_time=10
+        )
 
 
 class ClockwiseCircularLight(InteractiveScene):
