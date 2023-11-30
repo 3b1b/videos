@@ -1952,12 +1952,15 @@ class OneOfManyCharges(InteractiveScene):
         dots.set_radius(0.05)
         dots.make_3d(0.1)
 
-        dot_centers = self.dot_centers = dots.get_points().copy()
+        self.dot_center_refs = dots.copy()
+        self.dot_center_refs.set_opacity(0)
+        self.dot_center_refs.set_radius(0)
 
         def update_dots(dots):
-            dots.set_points(
-                dot_centers + self.dot_amplitude_factor * plane_wave.func(dot_centers)
-            )
+            centers = self.dot_center_refs.get_points()
+            offsets =  plane_wave.func(centers)
+            offsets *= self.dot_amplitude_factor
+            dots.set_points(centers + offsets)
 
         dots.add_updater(update_dots)
 
@@ -2019,28 +2022,94 @@ class OneOfManyCharges(InteractiveScene):
         )
 
 
-class OneOfManyCharges0(OneOfManyCharges):
-    charge_index = -1
+class AlternateCompositeChargesInPlane(OneOfManyCharges):
+    dots_dims = (11, 10, 10)
+    dots_shape = (6, 4, 4)
+    random_seed = 2
 
+    def construct(self):
+        # Objects
+        frame = self.frame
+        plane_wave = self.plane_wave
+        dots = self.dots
+        dots.set_radius(0.075)
+        dots.opacity_multiplier.set_value(1)
 
-class OneOfManyCharges2(OneOfManyCharges):
-    charge_index = 2732
+        # Some panning
+        frame.reorient(-17, 76, 0)
+        self.play(
+            frame.animate.reorient(16, 77, 0),
+            run_time=12
+        )
 
+        # Reorient
+        self.play(
+            dots.animate.set_height(0, stretch=True),
+            self.dot_center_refs.animate.set_height(0, stretch=True),
+            frame.animate.reorient(0, 90).set_height(6),
+            self.axes.y_axis.animate.set_stroke(opacity=0),
+            plane_wave.opacity_multiplier.animate.set_value(0.5),
+            run_time=2,
+        )
+        self.wait(2)
+        self.play(
+            dots.opacity_multiplier.animate.set_value(0.25),
+            plane_wave.opacity_multiplier.animate.set_value(0.0),
+        )
+        self.wait()
 
-class OneOfManyCharges3(OneOfManyCharges):
-    charge_index = 1653
+        # Add charges
+        w, h, d = self.dots_dims
+        indices = np.arange(0, w * h * d, w)
+        charge = ChargedParticle(
+            color=BLUE,
+            radius=dots.get_radius(),
+            show_sign=False,
+        )
+        charges = charge.replicate(len(indices))
+        charges.apply_depth_test(False)
+        for charge, index in zip(charges, indices):
+            charge.index = index
+            charge.add_updater(lambda m: m.move_to(dots.get_points()[m.index] + 0.01 * DOWN))
+        
+        charges.shuffle()
 
+        charges[0].update()
+        charges[0].ignore_last_motion()
+        charge_field = LorentzField(
+            charges[0],
+            radius_of_suppression=0.2,
+            **self.charge_field_config
+        )
+        self.add(charges[0])
+        self.add(charge_field)
+        self.wait(3)
 
-class OneOfManyCharges4(OneOfManyCharges):
-    charge_index = 3264
+        start_time = float(self.time)
+        for n, charge in enumerate(charges[1:]):
+            charge.update()
+            charge.ignore_last_motion()
 
+            if n < 2:
+                time = 3
+            if n < 5:
+                time = 2
+            elif n < 15:
+                time = 1
+            else:
+                time = 0.2
 
-class OneOfManyCharges5(OneOfManyCharges):
-    charge_index = 1033
+            charge_field.charges.append(charge)
+            n_charges = len(charge_field.charges)
+            alpha = inverse_interpolate(start_time, start_time + 30, self.time)
+            q_per_particle = interpolate(1, 0.5, alpha)
+            for c2 in charge_field.charges:
+                c2.charge = q_per_particle
 
+            self.add(charge)
+            self.wait(time)
 
-class OneOfManyCharges6(OneOfManyCharges):
-    charge_index = 4373
+        self.wait(30)
 
 
 class FullCompositeEffect(OneOfManyCharges):
@@ -2128,3 +2197,63 @@ class ManyParallelPropagations(OneOfManyCharges):
                 if ring.get_stroke_width() < 0.01:
                     self.remove(ring)
         self.wait(5)
+
+
+class ResponsiveCharge(InteractiveScene):
+    def construct(self):
+        # Driving chrage
+        charge1 = ChargedParticle(charge=0.25)
+        charge1.add_spring_force(k=10)
+        charge1.move_to(0.3 * DOWN)
+
+        # Responsive charge
+        k = 20
+        charge2 = ChargedParticle(charge=1.0, radius=0.1, show_sign=False)
+        charge2.move_to(2.5 * RIGHT)
+        # charge2.add_field_force(field)
+        charge2.add_spring_force(k=k)
+        charge2.add_force(lambda p: wave.xt_to_point(p[0], wave.time) * [0, 1, 1])
+        # charge2.fix_x()
+        self.add(charge2)
+
+        # E field
+        # field_type = ColoumbPlusLorentzField
+        field_type = LorentzField
+        field = field_type(
+            charge1, charge2,
+            x_density=4.0,
+            y_density=4.0,
+            norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1),
+            c=1.0,
+        )
+        self.add(field)
+
+        # Pure wave
+        axes = ThreeDAxes()
+        wave = OscillatingWave(axes, y_amplitude=1.0, z_amplitude=0.0, wave_len=2.0)
+        field_wave = OscillatingFieldWave(axes, wave)
+        wave.set_stroke(opacity=0.5)
+
+
+        self.add(axes, wave, field_wave)
+
+        # omega = (wave.speed / wave.wave_len) * TAU
+        # omega_0 = math.sqrt(k / charge2.mass)
+        # v0 = omega / (omega_0**2 - omega**2)
+        # charge2.velocity = v0 * UP
+
+        self.wait(20)
+
+        # Plane
+        plane = NumberPlane()
+        plane.fade(0.5)
+        self.add(plane)
+
+        # Test wiggle
+        self.play(
+            charge1.animate.shift(UP).set_anim_args(
+                rate_func=wiggle,
+                run_time=3,
+            )
+        )
+        self.wait(4)

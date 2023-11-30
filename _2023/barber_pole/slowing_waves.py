@@ -227,9 +227,6 @@ class PhaseKickBacks(SpeedInMediumFastPart):
 
 
 class RevertToOneLayerAtATime(PhaseKickBacks):
-    # layer_xs = np.arange(-0, 7.5, 0.11)
-    # kick_back_value = -0.25
-    # n_layers_skipped = 8
     layer_xs = np.arange(0, FRAME_WIDTH / 2, FRAME_WIDTH / 2**(11))
     kick_back_value = -0.025
     n_layers_skipped = 64
@@ -258,43 +255,56 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         layers = sliced_wave.layers
         pkts = sliced_wave.phase_kick_trackers
 
-        # Show layers
+        # Add label
         block_label = Text("Material (e.g. glass)")
         block_label.next_to(layers, UP, aligned_edge=LEFT)
 
+        for pkt in pkts:
+            pkt.set_value(-0.015)
+
+        self.wait(5)
+        self.play(Write(block_label["Material"], run_time=1))
+        self.play(FadeIn(block_label["(e.g. glass)"], 0.25 * UP))
         self.add(block_label)
-        self.wait(4)
+        self.wait(2)
+
+        # Show layers
+        layers.save_state()
+
         rect = BackgroundRectangle(sliced_wave)
         rect.set_fill(BLACK, 0.9)
         self.add(sliced_wave, rect, layers)
         self.play(
             layers.animate.arrange(RIGHT, buff=0.3).move_to(ORIGIN, LEFT).set_stroke(width=2, opacity=1),
             FadeIn(rect),
-            rate_func=there_and_back_with_pause,
-            run_time=6,
+            *(pkt.animate.set_value(0) for pkt in pkts),
+            run_time=2,
         )
-        self.remove(rect)
         self.wait(3)
 
         # Revert to one single layer
+        left_layers = VGroup()
+        for layer in layers:
+            if layer.get_x() < FRAME_WIDTH / 2:
+                left_layers.add(layer)
+        self.remove(layers)
+        self.add(left_layers)
+
         layer_label = Text("Thin layer of material")
         layer_label.next_to(layers[0], UP, buff=0.75)
 
-        kw = dict(run_time=5, lag_ratio=0.01)
+        kw = dict(run_time=5, lag_ratio=0.1)
         self.play(
             LaggedStart(*(
-                layer.animate().set_stroke(width=5, opacity=0).set_height(5)
-                for layer in layers[:0:-1]
-            ), **kw),
-            LaggedStart(*(
-                pkt.animate.set_value(0)
-                for pkt in pkts[:0:-1]
+                layer.animate().set_stroke(opacity=0).shift(DOWN)
+                for layer in left_layers[:0:-1]
             ), **kw),
             layers[0].animate.set_stroke(width=2, opacity=1).set_height(5).set_anim_args(time_span=(4, 5)),
             FadeTransform(
                 block_label, layer_label,
                 time_span=(4, 5)
             ),
+            FadeOut(rect, time_span=(3, 5)),
         )
         self.wait(4)
 
@@ -501,6 +511,12 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         self.wait(10)
 
 
+class SimplerRevertToOneLayerAtATime(RevertToOneLayerAtATime):
+    layer_xs = np.arange(-0, 7.5, 0.11)
+    kick_back_value = -0.25
+    n_layers_skipped = 8
+
+
 class SlowedAndAbsorbed(RevertToOneLayerAtATime):
     layer_xs = np.arange(-FRAME_WIDTH / 3, FRAME_WIDTH / 3, FRAME_WIDTH / 2**(8))
     kick_back_value = -0.2
@@ -528,6 +544,18 @@ class SlowedAndAbsorbed(RevertToOneLayerAtATime):
         label.next_to(layers, UP)
         abs_words = label["and absorbed"]
 
+        mu_label = Tex(R"\mu").set_color(PINK)
+        mu_line = NumberLine((0, 1, 0.2), width=1.0, tick_size=0.05)
+        mu_line.rotate(PI / 2)
+        mu_line.to_corner(UR)
+        mu_indicator = Triangle(start_angle=0)
+        mu_indicator.set_width(0.15)
+        mu_indicator.set_fill(PINK, 1)
+        mu_indicator.set_stroke(width=0)
+        mu_tracker = ValueTracker(1)
+        mu_indicator.add_updater(lambda m: m.move_to(mu_line.n2p(mu_tracker.get_value()), RIGHT))
+        mu_label.add_updater(lambda m: m.next_to(mu_indicator, LEFT, buff=0.1))
+
         for pkt in pkts:
             pkt.set_value(0)
         for at in ats:
@@ -537,6 +565,9 @@ class SlowedAndAbsorbed(RevertToOneLayerAtATime):
             FadeIn(label, time_span=(0, 2)),
             FlashAround(abs_words, color=PINK, time_span=(2, 4)),
             abs_words.animate.set_color(PINK).set_anim_args(time_span=(2, 4)),
+            FadeIn(mu_line),
+            FadeIn(mu_indicator),
+            FadeIn(mu_label),
             LaggedStart(*(
                 pkt.animate.set_value(self.kick_back_value)
                 for pkt in pkts
@@ -551,7 +582,16 @@ class SlowedAndAbsorbed(RevertToOneLayerAtATime):
             )),
             run_time=5,
         )
-        self.wait(20)
+
+        # Play with mu
+        for mu in [0.1, 1.0]:
+            self.play(
+                mu_tracker.animate.set_value(mu),
+                *(at.animate.set_value(1 - mu * 2e-2) for at in ats),
+                run_time=3,
+            )
+
+        self.wait(17)
 
 
 class DissolveLayers(PhaseKickBacks):
@@ -710,61 +750,132 @@ class DensePhaseKickBacks100(PhaseKickBackAddInLayers):
     layer_add_on_run_time = 10
 
 
-class ResponsiveCharge(InteractiveScene):
+class FastWave(PhaseKickBacks):
+    layer_xs = np.arange(-3, 3, 0.01)
+    kick_back_value = 0.01
+    line_style = dict(
+        stroke_width=1,
+        stroke_opacity=0.35,
+        stroke_color=BLUE_D
+    )
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001
+    )
+
     def construct(self):
-        # Driving chrage
-        charge1 = ChargedParticle(charge=0.25)
-        charge1.add_spring_force(k=10)
-        charge1.move_to(0.3 * DOWN)
-
-        # Responsive charge
-        k = 20
-        charge2 = ChargedParticle(charge=1.0, radius=0.1, show_sign=False)
-        charge2.move_to(2.5 * RIGHT)
-        # charge2.add_field_force(field)
-        charge2.add_spring_force(k=k)
-        charge2.add_force(lambda p: wave.xt_to_point(p[0], wave.time) * [0, 1, 1])
-        # charge2.fix_x()
-        self.add(charge2)
-
-        # E field
-        # field_type = ColoumbPlusLorentzField
-        field_type = LorentzField
-        field = field_type(
-            charge1, charge2,
-            x_density=4.0,
-            y_density=4.0,
-            norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1),
-            c=1.0,
-        )
-        self.add(field)
-
-        # Pure wave
-        axes = ThreeDAxes()
-        wave = OscillatingWave(axes, y_amplitude=1.0, z_amplitude=0.0, wave_len=2.0)
-        field_wave = OscillatingFieldWave(axes, wave)
-        wave.set_stroke(opacity=0.5)
-
-
-        self.add(axes, wave, field_wave)
-
-        # omega = (wave.speed / wave.wave_len) * TAU
-        # omega_0 = math.sqrt(k / charge2.mass)
-        # v0 = omega / (omega_0**2 - omega**2)
-        # charge2.velocity = v0 * UP
-
+        # Test
         self.wait(20)
 
-        # Plane
-        plane = NumberPlane()
-        plane.fade(0.5)
-        self.add(plane)
 
-        # Test wiggle
+class KickForward(PhaseKickBacks):
+    layer_xs = np.arange(0, 8, 0.25)
+    kick_back_value = 0.25
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=2,
+        stroke_opacity=0.75,
+    )
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001
+    )
+    time_per_layer = 0.25
+
+    def construct(self):
+        # Objects
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        layers.stretch(1.2, 1)
+        pkts = sliced_wave.phase_kick_trackers
+
+        # Just show one layer
+        layer_label = Text("Thin layer of material")
+        layer_label.next_to(layers[0], UP, buff=0.75)
+
+        for pkt in pkts:
+            pkt.set_value(0)
+
+        self.wait(1 - (wave.time % 1))
+        wave.stop_clock()
+        self.remove(layers)
         self.play(
-            charge1.animate.shift(UP).set_anim_args(
-                rate_func=wiggle,
-                run_time=3,
-            )
+            ShowCreation(layers[0]),
+            FadeIn(layer_label, lag_ratio=0.1),
         )
-        self.wait(4)
+        self.wait()
+
+        # Kick back then forth
+        kick_back = VGroup(
+            Vector(LEFT, stroke_width=6),
+            Text("Kick back\nthe phase", font_size=36),
+        )
+        kick_back.set_color(RED)
+        kick_forward = VGroup(
+            Vector(RIGHT, stroke_width=6),
+            Text(
+                "Kick forward\nthe phase", font_size=36,
+                t2s={"forward": ITALIC}
+            ),
+        )
+        kick_forward.set_color(GREEN)
+
+        for label in [kick_back, kick_forward]:
+            label.arrange(RIGHT)
+            label.next_to(wave, UP)
+            label.align_to(layers[0], LEFT).shift(MED_SMALL_BUFF * RIGHT)
+
+        self.play(
+            pkts[0].animate.set_value(-0.75),
+            FadeIn(kick_back, LEFT),
+        )
+        self.wait()
+        self.play(FadeOut(kick_back))
+        self.play(
+            pkts[0].animate.set_value(self.kick_back_value),
+            FadeIn(kick_forward, RIGHT),
+        )
+        self.wait()
+        self.play(FadeOut(layer_label))
+
+        # Add other layers
+        wave.start_clock()
+        remaining_layers = layers[1:]
+        self.play(
+            ShowIncreasingSubsets(remaining_layers, rate_func=linear),
+            UpdateFromFunc(
+                kick_forward,
+                lambda m: m.align_to(remaining_layers.get_right(), LEFT).shift(MED_SMALL_BUFF * RIGHT),
+            ),
+            LaggedStart(*(
+                pkt.animate.set_value(self.kick_back_value)
+                for pkt in pkts[1:]
+            ), lag_ratio=1),
+            run_time = len(remaining_layers) * self.time_per_layer
+        )
+
+        # Wait
+        self.wait(20)
+
+
+class DenserKickForward(KickForward):  # Run at 9
+    layer_xs = np.arange(0, 8, 0.1)
+    kick_back_value = 0.1
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=1.5,
+        stroke_opacity=0.75,
+    )
+    time_per_layer = 0.1
+
+
+class DensestKickForward(DenserKickForward):
+    layer_xs = np.arange(0, 8, 0.025)
+    kick_back_value = 0.025
+    time_per_layer = 0.025
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=1.0,
+        stroke_opacity=0.65,
+    )

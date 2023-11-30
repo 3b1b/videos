@@ -957,7 +957,7 @@ class VectorFieldWigglingNew(InteractiveScene):
         wave.add_updater(lambda m: m.set_stroke(opacity=wave_opacity_tracker.get_value()))
         vector_wave.add_updater(lambda m: m.set_stroke(opacity=vector_opacity_tracker.get_value()))
 
-        self.add(vector_wave, wave)
+        self.add(wave, vector_wave)
 
         # Charges
         charges = DotCloud(color=RED)
@@ -972,7 +972,7 @@ class VectorFieldWigglingNew(InteractiveScene):
         charges.add_updater(lambda m: m.set_opacity(charge_opacity_tracker.get_value()))
         charges.add_updater(lambda m: m.set_z(0.3 * wave.xt_to_point(0, self.time)[2]))
 
-        self.add(charges, vector_wave, wave)
+        self.add(charges, wave, vector_wave)
 
         # Pan camera
         self.frame.reorient(47, 69, 0).move_to([-8.68, -7.06, 2.29]).set_height(5.44)

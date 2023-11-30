@@ -82,7 +82,8 @@ class WavesByOpacity(ScalarFieldByOpacity):
 
 
 class SnellsLaw(InteractiveScene):
-    index = 1.5
+    # index = 1.5
+    index = 1.0
 
     def construct(self):
         # Setup key objects
@@ -155,7 +156,6 @@ class SnellsLaw(InteractiveScene):
 
         # Vary the angle for a bit
         self.remove(arc2, theta2_label, ineq)
-        medium.set_fill(WHITE, 0.6)
 
         beam.set_stroke(opacity=1, width=2)
         for width in np.linspace(2, 10.0, 40):
@@ -174,6 +174,7 @@ class SnellsLaw(InteractiveScene):
         tank.move_to(beam.pfp(0.25))
 
         self.play(FadeOut(angle_labels))
+        self.frame.set_height(4)
         self.play(
             tank.animate.move_to(beam.pfp(0.49)).set_anim_args(rate_func=linear, run_time=6),
             VFadeIn(tank),
@@ -502,7 +503,6 @@ class LineGame(InteractiveScene):
             line_color=GREEN,
             dot_color=YELLOW
         ))
-        low_lines.suspend_updating()
 
         top_spacing_label = self.get_spacing_label(top_lines[1], R"\lambda_1")
         low_spacing_label = self.get_spacing_label(low_lines[1], R"\lambda_2")
@@ -515,12 +515,24 @@ class LineGame(InteractiveScene):
         self.highlight_intersection_points(top_lines, PINK, LEFT)
         self.wait()
 
+        # Reposition lower lines
+        key_angle = -19.9 * DEGREES
+        dial.rotate(key_angle)
+        low_lines.update()
+        low_spacing_label.rotate(key_angle, about_point=ORIGIN)
         top_lines.save_state()
         self.play(
             top_lines.animate.fade(0.8),
             FadeIn(low_lines, lag_ratio=0.1),
         )
         self.play(Write(low_spacing_label))
+        self.wait()
+        dial.set_stroke(opacity=0)
+        self.play(
+            Rotate(dial, -key_angle, run_time=2, remover=True),
+            Rotate(low_spacing_label, -key_angle, run_time=2, about_point=ORIGIN),
+        )
+        dial.set_stroke(opacity=1)
         self.wait()
         self.highlight_intersection_points(low_lines, YELLOW, RIGHT)
         self.play(Restore(top_lines))
@@ -676,7 +688,8 @@ class Prism(InteractiveScene):
         def get_beams(light_in):
             return self.get_beams(
                 min_index=1.3,
-                max_index=1.4,
+                # max_index=1.4,
+                max_index=1.45,
                 n_beams=200,
                 in_beam=light_in,
                 in_edge=in_edge,
@@ -705,7 +718,7 @@ class Prism(InteractiveScene):
         for vect, alpha in zip([5 * DOWN, 3 * DOWN, 4 * DOWN], [0.3, 0.3, 0.5]):
             self.play(
                 in_beam.animate.put_start_and_end_on(left_side + vect, in_edge.pfp(alpha)),
-                run_time=5
+                # run_time=5
             )
 
         # Back to 2d

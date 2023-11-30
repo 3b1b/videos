@@ -31,6 +31,98 @@ class HoldUpAlbumCover(TeacherStudentsScene):
         )
         self.wait(2)
 
+        # Enlarge album
+        full_rect = FullScreenRectangle()
+        full_rect.set_fill(BLACK, 1)
+        prism_image = ImageMobject("True-prism")
+        true_prism = Group(
+            SurroundingRectangle(prism_image, buff=0).set_stroke(WHITE, 10),
+            prism_image
+        )
+
+        album.save_state()
+        album.target = album.generate_target()
+        album.target.set_height(5.5)
+        album.target.next_to(ORIGIN, RIGHT, buff=0.5)
+        true_prism.match_height(album.target).scale(0.98)
+        true_prism.next_to(ORIGIN, LEFT, buff=0.5)
+
+        titles = VGroup(
+            Text("Genuine simulation"),
+            Text("Pink Floyd"),
+        )
+        for title, mob in zip(titles, [true_prism, album.target]):
+            title.move_to(mob)
+            title.to_edge(UP, buff=0.5)
+
+
+        self.add(full_rect, album, true_prism)
+
+        self.play(
+            FadeIn(full_rect),
+            MoveToTarget(album),
+            FadeInFromPoint(true_prism, album.get_center()),
+            run_time=2,
+        )
+        self.remove(self.pi_creatures)
+        self.play(FadeIn(titles))
+        self.wait()
+
+        # Why is this white
+        white_point = np.array([3.25, 0.62, 0])
+        red_arrow = Arrow(white_point + UL, white_point, buff=0.1, stroke_width=7)
+        red_arrow.set_color(RED)
+        why_white = Text("Why is this white?!")
+        why_white.next_to(red_arrow, UP, SMALL_BUFF)
+        why_white.match_x(album)
+        why_white.set_color(RED)
+
+        self.play(
+            FadeIn(why_white, lag_ratio=0.1),
+            GrowArrow(red_arrow),
+        )
+        self.wait()
+
+        # Discrete
+        roygbiv = Text("ROYGBV")
+        roygbiv.rotate(-10 * DEGREES)
+        roygbiv.move_to(white_point).shift(1.5 * RIGHT + 0.25 * UP)
+        rainbow = VGroup(*(
+            Arc(PI, -PI, radius=radius, stroke_width=10)
+            for radius in np.linspace(1.5, 2.0, 6)
+        ))
+        rainbow.reverse_submobjects()
+        rainbow.move_to(album, DOWN).shift(0.05 * UP)
+        for mob in roygbiv, rainbow:
+            mob.set_submobject_colors_by_gradient(
+                RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE
+            )
+
+        self.play(
+            FadeIn(roygbiv, lag_ratio=0.5),
+            ShowCreation(rainbow, lag_ratio=0.5),
+            run_time=4
+        )
+        self.wait()
+
+        # Return
+        self.play(LaggedStartMap(
+            FadeOut, Group(
+                why_white, red_arrow,
+                roygbiv, rainbow,
+                true_prism, *titles,
+            ),
+            shift=DOWN,
+            scale=0.5,
+            lag_ratio=0.1
+        ))
+        self.add(self.pi_creatures, full_rect, album)
+        self.play(
+            Restore(album),
+            FadeOut(full_rect),
+        )
+        self.wait()
+
         # Ask question
         question = Text("Why exactly does\nthis work?")
         question.move_to(album, UP)
@@ -97,6 +189,59 @@ class DefineIndexOfRefraction(InteractiveScene):
         self.wait()
         self.play(Write(name), GrowArrow(arrow))
         self.wait()
+
+
+class LightDoesntHaveTreads(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        stds = self.students
+        self.play(
+            stds[0].change("confused", self.screen),
+            stds[1].change("erm", self.screen),
+            stds[2].says("But, light doesn't\nhave treads...", mode="sassy", bubble_direction=LEFT),
+            self.teacher.change("guilty"),
+        )
+        self.wait(4)
+
+
+class LookAtScrolling(InteractiveScene):
+    random_seed = 1
+
+    def construct(self):
+        morty = Mortimer()
+        morty.set_height(3)
+        morty.to_edge(RIGHT)
+
+        self.play(morty.change("pondering", 3 * DOWN))
+        for _ in range(4):
+            self.play(morty.change(
+                random.choice(["tease", "pondering"]),
+                3 * UP
+            ))
+            if random.random() < 0.3:
+                self.play(Blink(morty))
+            else:
+                self.wait()
+            self.play(morty.animate.look_at(3 * DOWN))
+            if random.random() < 0.3:
+                self.play(Blink(morty))
+            else:
+                self.wait()
+
+
+class WhySlowAtAll(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        stds = self.students
+        self.play(
+            stds[0].change("pondering", self.screen),
+            stds[1].says("Why would light\nslow down at all?", mode="confused", bubble_direction=LEFT, look_at=self.screen),
+            stds[2].change("erm", self.screen),
+            self.teacher.change("tease"),
+        )
+        self.wait(2)
+        self.play(self.change_students("hesitant", "maybe", "pondering", look_at=self.screen))
+        self.wait(3)
 
 
 class TankAnnotations(InteractiveScene):
@@ -248,6 +393,57 @@ class SnellComparrisonBackdrop(InteractiveScene):
         self.add(rects)
 
 
+class KeyPoints(InteractiveScene):
+    def construct(self):
+        key_points = VGroup(
+            Text("Key point #1: Phase kicks"),
+            Text("Key point #2: Layer oscillations"),
+            Text("Key point #3: Resonance"),
+        )
+        key_points.set_submobject_colors_by_gradient(BLUE, TEAL, YELLOW)
+        key_points.scale(1.25)
+        key_points.to_edge(UP, buff=0.25)
+        key_points.set_backstroke(BLACK, 4)
+        key_points.to_edge(UP)
+
+        self.add(key_points[0])
+        self.wait()
+        for kp1, kp2 in zip(key_points, key_points[1:]):
+            self.play(
+                FadeOut(kp1, 0.5 * UP),
+                FadeIn(kp2, 0.5 * UP),
+            )
+            self.wait()
+
+
+class AsideOnWaveTerminology(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        title = Text("Wave terminology", font_size=60)
+        title.to_corner(UR)
+        title.to_edge(UP, buff=0.25)
+        title.add(Underline(title))
+        title.set_color(YELLOW)
+        terms = VGroup(
+            Text("Phase"),
+            Text("Frequency"),
+            Text("Wave number"),
+            Text("Amplitude"),
+        )
+        terms.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        terms.next_to(title, DOWN)
+        terms.shift(0.5 * LEFT)
+
+        self.add(title, terms)
+
+        self.play(
+            self.teacher.change("raise_right_hand", terms),
+            self.change_students("pondering", "tease", "hesitant", look_at=terms),
+            LaggedStartMap(FadeIn, terms, shift=0.25 * DOWN, lag_ratio=0.5),
+        )
+        self.wait(3)
+
+
 class NewQuestion(InteractiveScene):
     def construct(self):
         # Questions
@@ -345,6 +541,103 @@ class HoldUpLastVideo(TeacherStudentsScene):
         self.wait(4)
 
 
+class WhyDoesAddingCauseAShift(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        morty = self.teacher
+        stds = self.students
+
+        self.play(
+            stds[2].says("But, why?", look_at=morty.eyes, mode="raise_left_hand", bubble_direction=LEFT),
+            self.change_students("pondering", "pondering", look_at=self.screen),
+            morty.change("guilty", self.screen),
+        )
+        self.wait()
+        self.play(stds[2].change("confused", self.screen))
+        self.wait(2)
+        self.play(morty.change("tease", stds[2].eyes))
+        self.wait()
+        self.play(
+            morty.change("raise_right_hand", 3 * UR),
+            stds[2].debubble(look_at=3 * UR),
+            self.change_students("erm", "hesitant", look_at=3 * UR)
+        )
+        self.wait(3)
+
+
+class AnnoateWaveSumPhaseShift(InteractiveScene):
+    def construct(self):
+        image = ImageMobject("WaveSumPhaseShift")
+        image.set_height(FRAME_HEIGHT).center()
+        # self.add(image)
+
+        # Test
+        wave_len = 4.0
+        point1 = (-1.31, 2.33, 0)
+        point2 = (-2.3, 0, 0)
+
+        line = DashedLine(UP, DOWN)
+        lines1 = line.get_grid(1, 6, h_buff=wave_len / 2)
+        lines1.set_height(1.0, stretch=True)
+        lines1.set_stroke(YELLOW, 3)
+        lines1.move_to(point1 + wave_len * LEFT / 2, LEFT)
+
+        lines2 = lines1.copy()
+        lines2.move_to(point2 + wave_len * LEFT / 2, LEFT)
+
+        arrow = Arrow(
+            lines2[1].get_top(),
+            lines1[1].get_bottom(),
+            buff=0.2
+        )
+        label = TexText(R"$90^\circ$ behind")
+        label.next_to(arrow.get_center(), RIGHT)
+
+        self.play(LaggedStartMap(ShowCreation, lines2, lag_ratio=0, run_time=0.5))
+        self.wait()
+        self.play(
+            TransformFromCopy(lines2, lines1),
+            GrowArrow(arrow),
+            FadeIn(label, lag_ratio=0.1),
+        )
+        self.wait()
+
+
+class PreviewQuarterBehindReason(InteractiveScene):
+    def construct(self):
+        # Plane
+        plane = ComplexPlane(
+            (-3, 3), (-3, 3),
+            background_line_style=dict(stroke_width=2, stroke_color=BLUE),
+            faded_line_style=dict(stroke_width=1, stroke_opacity=0.3, stroke_color=BLUE),
+        )
+        plane.set_height(7)
+        self.add(plane)
+
+        # Add little vectors
+        z1 = 1 + complex(-4e-3, -0.05)
+        amp = 0.08
+        zs = np.array([amp * z1**n for n in range(1000)])
+        vects = VGroup(*(
+            Vector(plane.n2p(z), stroke_width=2)
+            for z in zs
+        ))
+        vects.set_submobject_colors_by_gradient(YELLOW, RED)
+        for v1, v2 in zip(vects, vects[1:]):
+            v2.shift(v1.get_end() - v2.get_start())
+
+        big_vect = Vector(stroke_width=5)
+        big_vect.add_updater(lambda m: m.put_start_and_end_on(
+            plane.n2p(0), vects[-1].get_end() if len(vects) > 0 else plane.n2p(amp)
+        ))
+
+        self.add(big_vect)
+        self.play(
+            ShowIncreasingSubsets(vects, rate_func=linear, run_time=8)
+        )
+        self.wait()
+
+
 class ElectronLabel(InteractiveScene):
     def construct(self):
         # Test
@@ -376,7 +669,6 @@ class IsThatTrue(TeacherStudentsScene):
         self.wait(2)
 
         # Answer
-        label = TexText("``Linear restoring force''")
         self.play(
             morty.says(TexText(
                 R"For small $\vec{\textbf{x}}$, \\ accurate enough",
@@ -386,13 +678,45 @@ class IsThatTrue(TeacherStudentsScene):
             law.animate.to_edge(UP),
         )
         self.wait()
+
+        # Name restoring force
+        label = TexText("``Linear restoring force''")
         label.next_to(law, DOWN)
         self.play(
-            FadeIn(label, lag_ratio=0.1),
+            FadeInFromPoint(label, morty.get_corner(UL)),
             self.change_students(look_at=label),
-            morty.animate.look_at(label),
+            morty.debubble("raise_right_hand", look_at=label),
+            stds[1].debubble("pondering", look_at=label),
         )
-        self.wait(3)
+        self.wait(2)
+
+        # True law
+        group = VGroup(law, label)
+        true_law = Tex(
+            R"""
+            \text{True force: }
+            F = -k x + c_2 x^2 + c_3 x^3 + c_4 x^4 + \cdots
+            """,
+            t2c={"F": YELLOW, "x": RED},
+            font_size=60
+        )
+        true_law.move_to(UP)
+        rect = SurroundingRectangle(true_law["F = -k x"], buff=0.25)
+        rect.set_stroke(BLUE, 1)
+
+        self.play(
+            group.animate.set_height(1).to_corner(UR),
+            FadeIn(true_law, lag_ratio=0.1, run_time=2),
+            morty.change("hesitant"),
+            self.change_students("pondering", "pondering", "pondering", look_at=true_law)
+        )
+        self.wait(2)
+        self.play(
+            ShowCreation(rect),
+            true_law[R" + c_2 x^2 + c_3 x^3 + c_4 x^4 + \cdots"].animate.set_opacity(0.2),
+            morty.change("tease"),
+        )
+        self.wait(2)
 
 
 class VelocityZero(InteractiveScene):
@@ -794,7 +1118,7 @@ class GuessSteadyState(InteractiveScene):
         self.wait()
 
         # Answer
-        amp_tex = R"\frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}"
+        amp_tex = R"\frac{q \vec{\textbf{E}}_0}{m\left(\omega_r^2-\omega_l^2\right)}"
         solution = Tex(
             fR"\vec{{\textbf{{x}}}}(t) = {amp_tex} \cos(\omega_l t)",
             t2c=EQUATION_T2C
@@ -889,3 +1213,134 @@ class QuestionsFromPatrons(InteractiveScene):
                 FadeOut(background),
             )
 
+
+class MissingDetails(InteractiveScene):
+    def construct(self):
+        # Test
+        title = Text("Details I skipped:", font_size=72)
+        title.to_edge(UP)
+        title.add(Underline(title))
+        title.set_color(BLUE)
+
+        details = BulletedList(
+            "There will be many resonant frequencies",
+            "Our force law should include a damping term",
+            "Why the wave produced by a plane of charges is a \\\\" + \
+            "quarter-cycle out of phase with the incoming light",
+            "Everything related to the magnetic field",
+            "Whether accounting for quantum effects makes a difference",
+        )
+        details.next_to(title, DOWN, buff=0.5)
+        details.set_fill(border_width=0)
+
+        self.add(title)
+        self.play(LaggedStartMap(FadeIn, details, shift=0.5 * DOWN, lag_ratio=0.35, run_time=3))
+        self.wait()
+        self.play(details.animate.fade_all_but(1))
+        self.wait()
+
+
+class ArrowOverInldexHalf(InteractiveScene):
+    speed = 1.0
+    index = 0.68
+    bounds = (-3, 3)
+
+    def construct(self):
+        arrow = Vector(0.5 * DOWN)
+        arrow.next_to(UP, UP)
+        arrow.to_edge(LEFT, buff=0)
+        x_min, x_max = self.bounds
+
+        def update_arrow(arr, dt):
+            step = dt * self.speed
+            if x_min < arr.get_x() < x_max:
+                step /= self.index
+            arr.shift(step * RIGHT)
+
+        arrow.add_updater(update_arrow)
+        self.add(arrow)
+        self.wait_until(lambda: arrow.get_x() > FRAME_WIDTH / 2 + 2 * arrow.get_width())
+
+
+class SteadyStateSolutionCircledAmplitude(InteractiveScene):
+    def construct(self):
+        equation = Tex(
+            R"""
+                \vec{\textbf{x}}(t) = 
+                \cos(\omega_l t) \cdot
+                \frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}
+            """,
+            t2c=EQUATION_T2C
+        )
+        equation.set_backstroke(BLACK, 5)
+
+        rect = SurroundingRectangle(equation[R"\frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}"])
+        rect.set_stroke(TEAL)
+
+        self.add(equation)
+        self.play(ShowCreation(rect))
+        self.wait()
+
+
+class LimitToContinuity(InteractiveScene):
+    def construct(self):
+        arrow = Arrow(3 * UP, 3 * DOWN, buff=0, stroke_width=10, stroke_color=YELLOW)
+        words = Text("Continuous in\nthe limit", font_size=60)
+        words.next_to(arrow, RIGHT, buff=0.5)
+        self.play(
+            GrowArrow(arrow),
+            FadeIn(words),
+        )
+        self.wait()
+
+
+class KickForwardOrBackCondition(InteractiveScene):
+    def construct(self):
+        # Test
+        words = VGroup(
+            TexText("If this $< 0$"),
+            TexText("Index $< 1$", font_size=60),
+        )
+        arrow = Vector(2.5 * RIGHT)
+        arrow.next_to(LEFT, RIGHT)
+        arrow.set_y(2.0)
+        arrow.set_stroke(TEAL, 6)
+        rect = Rectangle(2, 1)
+        rect.next_to(arrow, LEFT, MED_LARGE_BUFF)
+        words[0].next_to(rect, UP, MED_SMALL_BUFF)
+        words[1].match_y(arrow)
+        words[1].set_x(FRAME_WIDTH / 4)
+
+        self.play(Write(words[0]))
+        self.play(
+            GrowArrow(arrow),
+            FadeIn(words[1], RIGHT)
+        )
+        self.wait()
+
+
+class LookAround(InteractiveScene):
+    def construct(self):
+        # Test
+        circle = Circle(radius=2)
+        circle.stretch(1.5, 0)
+        arrows = VGroup(*(
+            Arrow(v, 2 * v, buff=0, stroke_width=8, stroke_color=GREY_B)
+            for alpha in np.arange(0, 1, 1 / 12)
+            for v in [circle.pfp(alpha)]
+        ))
+        words1 = Text("Look\naround", font_size=90)
+        words2 = Text("Most things\nare opaque", font_size=72)
+
+        self.add(words1)
+        self.play(LaggedStartMap(GrowArrow, arrows, lag_ratio=0.2))
+        self.wait()
+        self.play(FadeTransform(words1, words2))
+        self.wait()
+
+
+class EndScreen(PatreonEndScreen):
+    title_text = ""
+    thanks_words = """
+        Special thanks to these supporters, visit 3b1b.co/support to join.
+    """

@@ -96,10 +96,10 @@ class Spring(VMobject):
                 radius * math.sin(TAU * t),
                 t / twist_rate
             ],
-            t_range=(0, n_twists, 0.05)
+            t_range=(0, n_twists, 0.01)
         )
         helix.rotate(PI / 2, UP)
-        helix.make_jagged()
+        # helix.make_jagged()
 
         self.start_new_path(helix.get_start() + lead_length * LEFT)
         self.add_line_to(helix.get_start())
@@ -787,7 +787,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
         solution = Tex(
             R"""
                 \vec{\textbf{x}}(t) = 
-                \frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}
+                \frac{q \vec{\textbf{E}}_0}{m\left(\omega_r^2-\omega_l^2\right)}
                 \cos(\omega_l t)
             """,
             t2c=t2c
@@ -804,7 +804,7 @@ class DrivenHarmonicOscillator(InteractiveScene):
 
         # Comment on the equation
         full_rect = SurroundingRectangle(solution)
-        amp_rect = SurroundingRectangle(solution[R"\frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}"])
+        amp_rect = SurroundingRectangle(solution[R"\frac{q \vec{\textbf{E}}_0}{m\left(\omega_r^2-\omega_l^2\right)}"])
         E_rect = SurroundingRectangle(solution[R"\vec{\textbf{E}}_0"])
         q_rect = SurroundingRectangle(solution[6])
         freq_diff_rect = SurroundingRectangle(
@@ -940,6 +940,16 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.wait(20)
 
     def scrap(self):
+        ## Line 281, used for thumbnail ##
+        self.remove(axes)
+        self.remove(equation)
+        self.add(sho)
+        springs.set_stroke(GREY_B, 4, 1) 
+        sho.shift(0.5 * LEFT)
+        F_vect.set_stroke(width=10)
+        self.frame.set_height(5)
+        ############
+
         # For clean driven_eq
         self.clear()
         self.add(driven_eq)
@@ -1124,6 +1134,7 @@ class JigglesInCalcite(InteractiveScene):
             run_time=3
         )
         self.wait(25)
+
 
 class JigglesInCalciteY(JigglesInCalcite):
     polarization_direction = 0
