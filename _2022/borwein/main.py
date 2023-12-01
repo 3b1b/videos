@@ -1826,3 +1826,18 @@ class MultiplyBigNumbers(InteractiveScene):
         )
         self.play(Write(check))
         self.wait()
+
+
+class Graph15Case(ShowIntegrals):
+    def construct(self):
+        # Test
+        axes = self.get_axes(
+            x_range=(-3 * PI, 3 * PI, PI),
+            y_range=(0, 1),
+            width=1.0 * FRAME_WIDTH,
+        )
+        graph = axes.get_graph(lambda x: multi_sinc(x, 8))
+        graph.set_stroke(width=1)
+        area = self.get_area(axes, graph, dx=0.005 * PI)
+        area.set_fill(opacity=0.9)
+        self.add(axes, area, graph)

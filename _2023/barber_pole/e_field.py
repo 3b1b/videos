@@ -812,6 +812,7 @@ class ShowTheEffectsOfOscillatingCharge(InteractiveScene):
         c=2.0,
         norm_to_opacity_func=lambda n: np.clip(2 * n, 0, 0.8)
     )
+    field_class = LorentzField
 
     def setup(self):
         super().setup()
@@ -856,7 +857,7 @@ class ShowTheEffectsOfOscillatingCharge(InteractiveScene):
         return Group(ChargedParticle(**self.particle_config))
 
     def add_field(self, particles):
-        self.field = LorentzField(*particles, **self.field_config)
+        self.field = self.field_class(*particles, **self.field_config)
         self.add(self.field, particles)
 
     def add_acceleration_vectors(self, particles):
@@ -1103,14 +1104,14 @@ class Introduce3dMovements(ChargeOnZAxis):
             Rotate(charge, TAU, axis=OUT, about_point=RIGHT, **kw),
             run_time=6,
         )
-        self.wait(4)
+        # self.wait(4)
         self.play(
-            charge.animate.shift(0.2 * (UP + OUT)).set_anim_args(rate_func=lambda t: wiggle(t, 6), **kw),
+            charge.animate.shift(0.8 * (UP + OUT)).set_anim_args(rate_func=lambda t: wiggle(t, 6), **kw),
             self.frame.animate.reorient(20, 71, 0).move_to([0.31, 0.54, -0.3]).set_height(8.22),
             run_time=8,
         )
         self.play(
-            charge.animate.shift(3 * DOWN).set_anim_args(rate_func=there_and_back, **kw),
+            charge.animate.shift(4 * DOWN).set_anim_args(rate_func=there_and_back, **kw),
             self.frame.animate.reorient(-21, 64, 0).move_to([0.31, 0.54, -0.3]).set_height(8.22),
             run_time=9,
         )
@@ -1130,6 +1131,40 @@ class Introduce3dMovements3DVects(Introduce3dMovements):
         z_density=1.0,
         c=2.0,
         norm_to_opacity_func=lambda n: np.clip(n, 0, 0.6)
+    )
+
+
+class CoulombLorentzExample(Introduce3dMovements):
+    field_class = ColoumbPlusLorentzField
+    field_config = dict(
+        max_vect_len=0.3,
+        stroke_opacity=0.7,
+        radius_of_suppression=1.0,
+        width=40,
+        height=40,
+        depth=0,
+        x_density=4.0,
+        y_density=4.0,
+        z_density=1.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(n, 0, 0.8)
+    )
+
+
+class CoulombLorentzExample3D(Introduce3dMovements3DVects):
+    field_class = ColoumbPlusLorentzField
+    field_config = dict(
+        max_vect_len=0.35,
+        stroke_opacity=0.7,
+        radius_of_suppression=1.0,
+        width=10,
+        height=10,
+        depth=8,
+        x_density=2.0,
+        y_density=2.0,
+        z_density=2.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(n, 0, 0.75)
     )
 
 
@@ -1557,7 +1592,7 @@ class PolarizedScattering(RandomRicochet):
         # Charge
         charge = ChargedParticle(show_sign=False, radius=0.1, track_position_history=True)
         charge.add_updater(lambda m: m.move_to(
-            -0.5 * wave.wave_func(0, self.time)
+            -0.5 * wave.xt_to_point(0, self.time)
         ))
         a_vect = AccelerationVector(
             charge,

@@ -250,3 +250,48 @@ class ODEThumbnail(Scene):
 
         self.add(line_fuzz)
         self.add(line)
+
+
+class PrimeSpirals(InteractiveScene):
+    def construct(self):
+        N = 10000
+        primes = np.array(list(sympy.primerange(0, 10000)))
+        points = np.array([
+            primes * np.cos(primes),
+            primes * np.sin(primes),
+            np.zeros(len(primes))
+        ]).T
+        dots = DotCloud(points)
+        dots.set_width(15, about_point=ORIGIN)
+        dots.make_3d()
+        dots.set_color(TEAL)
+        dots.set_radii(np.linspace(0.02, 0.1, len(primes)))
+        self.add(dots)
+
+
+class EGraph(InteractiveScene):
+    def construct(self):
+        # Test
+        axes = Axes((-4, 4), (0, 20, 2), width=14, height=5.5)
+        axes.center().to_edge(DOWN)
+        axes.set_stroke(width=3)
+        graph = axes.get_graph(np.exp)
+        graph.set_stroke(YELLOW, 10)
+        self.add(axes, graph)
+
+        equation = Tex("e = 2.71828...", t2c={"e": BLUE})
+        equation["e"].match_height(equation, about_edge=DR)
+        equation.set_width(10)
+        equation.to_edge(UP)
+        self.add(equation)
+
+        qmarks = Text("??", font_size=200)
+        qmarks.move_to(DOWN).to_edge(LEFT, buff=1.0)
+        arrow = Arrow(
+            qmarks.get_corner(UR), equation["2."].get_corner(DL),
+            stroke_width=10, stroke_color=WHITE
+        )
+        VGroup(qmarks, arrow).set_color(TEAL)
+        self.add(qmarks, arrow)
+
+

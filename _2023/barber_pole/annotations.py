@@ -1271,15 +1271,15 @@ class BigPlus(InteractiveScene):
 class CurvyCurvyArrow(InteractiveScene):
     def construct(self):
         # Test
+        kw = dict(path_arc=-PI, buff=0.2, stroke_width=30, tip_width_ratio=4)
         arrows = VGroup(
-            Line(DOWN, UP, path_arc=-PI, buff=0.2).add_tip(),
-            Line(UP, DOWN, path_arc=-PI, buff=0.2).add_tip(),
+            Arrow(DOWN, UP, **kw),
+            Arrow(UP, DOWN, **kw),
         )
-        arrows.rotate(PI / 2, RIGHT)
-        arrows.set_flat_stroke(False)
-        arrows.insert_n_curves(100)
         arrows.set_color(WHITE)
-        self.frame.reorient(73, 87, 0)
+        arrows.set_height(5)
+        self.frame.reorient(-9, 75, 90)
+        self.frame.set_field_of_view(1 * DEGREES)
         self.add(arrows)
 
 

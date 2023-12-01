@@ -366,11 +366,15 @@ class AltThumbnail(Scene):
                     box.set_fill(BLUE_E)
         grouped_blocks.to_edge(RIGHT, LARGE_BUFF)
 
-        VGroup(group, grouped_blocks).arrange(RIGHT, buff=1.5).to_edge(DOWN, LARGE_BUFF)
+        all_blocks = VGroup(group, grouped_blocks)
+        all_blocks.arrange(RIGHT, buff=1.0).to_edge(DOWN, LARGE_BUFF)
+        all_blocks.set_height(6).center()
 
         self.add(group)
         self.add(grouped_blocks)
+        return
 
+        #
         title = Text("Hamming codes", font_size=72)
         title.to_edge(UP)
         shadow = VGroup()
@@ -407,7 +411,8 @@ class AltThumbnail(Scene):
         background = VGroup(*(random.choice(choices).copy() for x in range(n * k)))
         background.arrange_in_grid(n, k)
         background.set_height(FRAME_HEIGHT)
-        background.set_opacity(0.2)
+        background.set_opacity(0.25)
+        background.set_fill(border_width=0)
         return background
 
 
@@ -4840,20 +4845,26 @@ class Thumbnail2(AltThumbnail):
     def construct(self):
         self.add(self.get_background())
 
-        code = ImageMobject("HammingCodeOneLine")
+        # Test
+
+        # code = ImageMobject("HammingCodeOneLine")
+        code = Code("""
+            reduce(
+                lambda x, y: x^y,
+                (i for (i, bit) in enumerate(block) if bit)
+            )
+        """, alignment="LEFT")
         code.set_width(FRAME_WIDTH - 3)
         br = SurroundingRectangle(code, buff=MED_SMALL_BUFF)
         br.set_fill(BLACK, 1)
         br.set_stroke(GREY_B, 2)
         code = Group(br, code)
-        code.set_width(FRAME_WIDTH - 2)
-        code.to_edge(DOWN, buff=LARGE_BUFF)
+        code.set_width(10)
+        code.to_edge(DOWN)
         self.add(code)
 
-        words = OldTexText("Hamming codes, part 2", "\\\\the elegance")
-        words[1].set_color(BLUE)
-        words.set_height(2.0)
-        words.to_edge(UP)
+        words = Text("One line", font_size=90)
+        words.next_to(code, UP)
         words.set_stroke(BLACK, 20, background=True)
 
         self.add(words)

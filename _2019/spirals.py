@@ -55,7 +55,7 @@ def read_in_primes(max_N=None):
     return primes[primes <= max_N]
 
 
-class SpiralScene(MovingCameraScene):
+class SpiralScene(Scene):
     CONFIG = {
         "axes_config": {
             "axis_config": {
@@ -323,7 +323,7 @@ class PrimesAndPi(Scene):
         self.wait()
 
 
-class RefresherOnPolarCoordinates(MovingCameraScene):
+class RefresherOnPolarCoordinates(Scene):
     CONFIG = {
         "x_color": GREEN,
         "y_color": RED,
@@ -1967,7 +1967,7 @@ class IntroduceResidueClassTerminology(Scene):
         self.wait(6)
 
 
-class SimpleLongDivision(MovingCameraScene):
+class SimpleLongDivision(Scene):
     CONFIG = {
         "camera_config": {
             "background_color": GREY_E
@@ -3950,7 +3950,7 @@ class BucketPrimesBy9(BucketPrimesByLastDigit):
         pass
 
 
-class DirichletIn1837(MovingCameraScene):
+class DirichletIn1837(Scene):
     def construct(self):
         # Add timeline
         dates = list(range(1780, 2030, 10))

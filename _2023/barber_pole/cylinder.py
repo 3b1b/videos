@@ -235,7 +235,7 @@ class TwistingLightBeam(SimpleLightBeam):
         ball.set_color(wave.get_color())
 
         def update_ball(ball):
-            ball.move_to(wave.offset + wave.wave_func(get_x(), wave.time))
+            ball.move_to(wave.offset + wave.xt_to_point(get_x(), wave.time))
             return ball
 
         ball.add_updater(update_ball)
@@ -970,7 +970,7 @@ class VectorFieldWiggling(InteractiveScene):
 
         charge_opacity_tracker = ValueTracker(1)
         charges.add_updater(lambda m: m.set_opacity(charge_opacity_tracker.get_value()))
-        charges.add_updater(lambda m: m.set_z(0.3 * wave.wave_func(0, self.time)[2]))
+        charges.add_updater(lambda m: m.set_z(0.3 * wave.xt_to_point(0, self.time)[2]))
 
         self.add(charges, vector_wave, wave)
 
@@ -1097,7 +1097,7 @@ class TransitionTo2D(InteractiveScene):
         def update_vect(vect):
             x_max = axes.x_axis.x_max
             base = axes.c2p(x_max, 0, 0)
-            vect.put_start_and_end_on(base, base + wave.wave_func(x_max, wave.time) * [0, 1, 1])
+            vect.put_start_and_end_on(base, base + wave.xt_to_point(x_max, wave.time) * [0, 1, 1])
 
         single_vect.add_updater(update_vect)
 
