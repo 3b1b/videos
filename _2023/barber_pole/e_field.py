@@ -1050,6 +1050,45 @@ class ShowTheEffectsOfOscillatingCharge(InteractiveScene):
         self.wait(20)
 
 
+class SendingLittlePulses(ShowTheEffectsOfOscillatingCharge):
+    axes_config = dict(
+        axis_config=dict(stroke_opacity=0.7),
+        x_range=(0, 10),
+        y_range=(-3, 3),
+        z_range=(-1, 1),
+    )
+    field_config = dict(
+        max_vect_len=0.25,
+        stroke_opacity=0.75,
+        radius_of_suppression=1.0,
+        height=10,
+        x_density=4.0,
+        y_density=4.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(1.5 * n, 0, 0.8)
+    )
+
+    def add_axis_labels(self, axes):
+        pass
+
+    def construct(self):
+        # Setup
+        self.axes.z_axis.set_stroke(opacity=0)
+        self.axes.y_axis[-1]
+        particle = self.particles[0]
+        particle.clear_updaters()
+
+        # Test
+        for _ in range(10):
+            shake_size = 0.5 + random.random()
+            self.play(
+                particle.animate.shift(0.06 * shake_size * UP),
+                rate_func=lambda t: wiggle(t, 2), run_time=(shake_size),
+            )
+            self.wait(random.choice([1, 2]))
+        self.wait(4)
+
+
 class OscillateOnYOneDField(ShowTheEffectsOfOscillatingCharge):
     origin = 5 * LEFT
     axes_config = dict(

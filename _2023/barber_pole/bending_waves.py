@@ -473,7 +473,49 @@ class AngledMediumSingleFront(AngledMedium):
 
 class AngledMediumAnnotations(InteractiveScene):
     def construct(self):
-        plane = NumberPlane()
+        # Set up the lane
+        h_lines = Line(LEFT, RIGHT).replicate(3)
+        h_lines.set_width(0.7 * FRAME_WIDTH)
+        h_lines.arrange(DOWN, buff=0.5)
+        h_lines.move_to(ORIGIN, RIGHT)
+
+        index = WavesIntoAngledMedium.index
+        angle = math.asin(math.sin(45 * DEGREES) / index)
+        diag_lines = h_lines.copy()
+        for line1, line2 in zip(h_lines, diag_lines):
+            line2.move_to(line1.get_end(), LEFT)
+            line2.rotate(-angle, about_point=line1.get_end())
+
+        lane_points = [
+            h_lines[0].get_left(),
+            h_lines[0].get_right(),
+            diag_lines[0].get_end(),
+            diag_lines[2].get_end(),
+            h_lines[2].get_right(),
+            h_lines[2].get_left(),
+        ]
+
+        fade_rect = FullScreenFadeRectangle()
+        fade_rect.scale(1.5)
+        fade_rect.start_new_path(lane_points[-1])
+        for point in lane_points:
+            fade_rect.add_line_to(point)
+
+        fade_rect.set_fill(BLACK, 0.8)
+
+        beam = h_lines[1].copy()
+        beam.add_line_to(diag_lines[1].get_end())
+        beam.set_stroke(YELLOW, 1.5)
+        beam.insert_n_curves(100)
+
+        self.play(
+            FadeIn(fade_rect),
+        )
+        self.play(
+            ShowCreation(beam, run_time=3),
+            VShowPassingFlash(beam.copy().set_stroke(width=5), run_time=3)
+        )
+        self.wait()
 
 
 class LineGame(InteractiveScene):
@@ -702,6 +744,13 @@ class Prism(InteractiveScene):
             ShowCreation(in_beam, time_span=(0, 1.0)),
             rate_func=linear
         )
+
+        # Show x-ray
+        x_ray = self.get_beams(0.8, 0.8, 1, in_beam, in_edge, out_edge)
+        x_ray.set_stroke(PINK, 8)
+
+        self.add(x_ray, in_beam)
+        self.remove(x_ray)
 
         # Transition to 3d
         self.play(

@@ -657,7 +657,6 @@ class PlayWithIndex(RevertToOneLayerAtATime):
 class RedLight(RevertToOneLayerAtATime):
     wave_config = dict(
         color=RED,
-        stroke_width=6,
         sample_resolution=0.001,
         wave_len=4.0,
     )
@@ -669,21 +668,20 @@ class RedLight(RevertToOneLayerAtATime):
         wave = sliced_wave.wave
         layers = sliced_wave.layers
         pkts = sliced_wave.phase_kick_trackers
-        sliced_wave.update()
         sliced_wave.clear_updaters()
 
+        self.remove(layers)
         self.add(self.sliced_wave)
-        self.remove(sliced_wave.layers)
 
 
 class XRay(RedLight):
     wave_config = dict(
-        color=YELLOW,
-        stroke_width=6,
+    self.embed()
+        color=BLUE,
         sample_resolution=0.001,
         wave_len=1.0,
     )
-    kick_back_value = 0.02
+    kick_back_value = 0.005
 
 
 class DissolveLayers(PhaseKickBacks):

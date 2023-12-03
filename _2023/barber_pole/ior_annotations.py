@@ -12,6 +12,15 @@ EQUATION_T2C = {
     R"\omega_l": TEAL,
 }
 
+def get_bordered_thumbnail(path, height=3, stroke_width=3):
+    image = ImageMobject(path)
+    thumbnail = Group(
+        SurroundingRectangle(image, buff=0).set_stroke(WHITE, stroke_width),
+        image,
+    )
+    thumbnail.set_height(height)
+    return thumbnail
+
 
 class HoldUpAlbumCover(TeacherStudentsScene):
     background_color = interpolate_color(GREY_E, BLACK, 0.5)
@@ -1065,12 +1074,39 @@ class HighlightExpression(InteractiveScene):
 
 class Amplitude(InteractiveScene):
     def construct(self):
+        # Show equation with annotations
         equation = Tex(R"""
             \text{Layer wiggle amplitude} = 
             \frac{q ||\vec{\textbf{E}}_0||}{m\left(\omega_r^2-\omega_l^2\right)}
         """, t2c=EQUATION_T2C)
         equation.to_corner(UL)
+
+        lf_rect = SurroundingRectangle(equation[R"\omega_l"])
+        rf_rect = SurroundingRectangle(equation[R"\omega_r"])
+
+        lf_words = Text("Light frequency", font_size=36)
+        rf_words = Text("Resonant frequency", font_size=36)
+        lf_words.next_to(lf_rect, DOWN)
+        rf_words.next_to(rf_rect, DOWN)
+
+        VGroup(lf_rect, rf_rect).set_stroke(width=2)
+        VGroup(lf_rect, lf_words).set_color(EQUATION_T2C[R"\omega_l"])
+        VGroup(rf_rect, rf_words).set_color(EQUATION_T2C[R"\omega_r"])
+
         self.add(equation)
+        self.wait()
+        self.play(
+            ShowCreation(lf_rect),
+            FadeIn(lf_words, 0.5 * DOWN),
+        )
+        self.wait()
+        self.play(
+            ReplacementTransform(lf_rect, rf_rect),
+            FadeTransform(lf_words, rf_words),
+        )
+        self.wait()
+        self.play(FadeOut(rf_rect), FadeOut(rf_words))
+        self.wait()
 
 
 class GuessSteadyState(InteractiveScene):
@@ -1173,24 +1209,40 @@ class WhyIsThisTrue(TeacherStudentsScene):
 class QuestionsFromPatrons(InteractiveScene):
     def construct(self):
         # Questions
-        questions = BulletedList(
-            "What causes birefringence?",
-            "What's going on with the barber pole?",
-            "How can the index of refraction be < 1?",
-            buff=LARGE_BUFF
-        )
-        questions.to_edge(LEFT)
-        questions.center()
-        title = Text("Questions", font_size=72)
-        title.add(Underline(title, stretch_factor=1.5))
+        title = Text("Viewer questions about the index of refraction", font_size=60)
         title.to_edge(UP)
+        title.add(Underline(title))
         title.set_color(BLUE)
+
+        questions = BulletedList(
+            "Why does slowing imply bending?",
+            "What's going on with birefringence?",
+            "What's end of the barber pole explanation?",
+            "How can the index of refraction be lower than 1?",
+            buff=0.75
+        )
+        questions.next_to(title, DOWN, buff=1.0)
 
         self.play(
             FadeIn(title, lag_ratio=0.1),
             LaggedStartMap(FadeIn, questions, shift=0.5 * DOWN, lag_ratio=0.25)
         )
         self.wait()
+
+        # Higlight last three
+        last_three = questions[1:]
+        highlight_rect = SurroundingRectangle(last_three, buff=0.25)
+        highlight_rect.set_stroke(YELLOW, 2)
+        grey_rect = highlight_rect.copy().set_stroke(width=0).set_fill(GREY_E, 1)
+        back_rect = FullScreenRectangle().set_fill(BLACK, 0.9)
+        self.add(back_rect, grey_rect, highlight_rect, last_three)
+        self.play(
+            FadeIn(back_rect),
+            FadeIn(grey_rect),
+            DrawBorderThenFill(highlight_rect)
+        )
+        self.wait()
+        self.play(FadeOut(back_rect), FadeOut(grey_rect), FadeOut(highlight_rect))
 
         # Each question
         background = FullScreenRectangle()
@@ -1212,6 +1264,84 @@ class QuestionsFromPatrons(InteractiveScene):
                 Restore(question),
                 FadeOut(background),
             )
+
+
+class HoldUpMainVideo(TeacherStudentsScene):
+    def construct(self):
+        # Show previous video
+        thumbnail = get_bordered_thumbnail("/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2023/barber_pole/Thumbnails/PrismThumbnail2.png")
+        thumbnail.move_to(self.hold_up_spot, DOWN)
+
+        morty = self.teacher
+        self.play(
+            morty.change("raise_left_hand"),
+            FadeIn(thumbnail, UP),
+            self.change_students("happy", "guilty", "erm", look_at=thumbnail),
+        )
+        self.wait(2)
+
+        # Key points
+        key_points = VGroup(
+            Text("Key point #1: Phase kicks"),
+            Text("Key point #2: Layer oscillations"),
+            Text("Key point #3: Resonance"),
+        )
+        key_points.scale(1.25)
+        key_points.set_backstroke(BLACK, 4)
+        key_points.to_edge(UP)
+        key_points[0].set_fill(BLUE)
+        key_points[0].save_state()
+        key_points.set_fill(WHITE)
+        key_points.scale(0.7)
+        key_points.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        key_points.set_y(2).to_edge(RIGHT)
+        thumbnail.generate_target()
+        thumbnail.target.next_to(key_points, LEFT, buff=0.75)
+
+        self.play(
+            MoveToTarget(thumbnail),
+            morty.change("raise_right_hand", key_points),
+            self.change_students("pondering", "hesitant", "pondering", look_at=thumbnail.target),
+            LaggedStartMap(FadeIn, key_points, shift=0.5 * LEFT, lag_ratio=0.5)
+        )
+        self.wait(2)
+        self.play(
+            Restore(key_points[0]),
+            LaggedStartMap(FadeOut, key_points[1:], shift=DOWN),
+            LaggedStartMap(FadeOut, self.pi_creatures, shift=DOWN),
+            FadeOut(thumbnail, scale=0.5, shift=DOWN),
+        )
+        self.wait()
+
+
+class HoldUpBarberPoleVideos(HoldUpMainVideo):
+    def construct(self):
+        # Show thumbnails
+        folder = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2023/barber_pole/Thumbnails/"
+        thumbnails = Group(*(
+            get_bordered_thumbnail(os.path.join(folder, name), stroke_width=2)
+            for name in ["CleanThumbnail", "Part2Thumbnail6"]
+        ))
+        thumbnails.arrange(RIGHT, buff=1.0)
+        thumbnails.set_height(2.5)
+        thumbnails.move_to(self.hold_up_spot, DR)
+
+        morty = self.teacher
+        self.play(
+            morty.change("raise_right_hand", thumbnails),
+            LaggedStartMap(FadeIn, thumbnails, shift=0.5 * UP, lag_ratio=0.5),
+            self.change_students("maybe", "erm", "happy", look_at=thumbnails),
+        )
+        self.wait()
+        self.play(
+            self.change_students("confused", "maybe"),
+            morty.animate.look_at(self.students)
+        )
+        self.wait()
+        self.play(
+            self.students[2].change("tease", thumbnails)
+        )
+        self.wait(2)
 
 
 class MissingDetails(InteractiveScene):
@@ -1296,20 +1426,19 @@ class LimitToContinuity(InteractiveScene):
 
 class KickForwardOrBackCondition(InteractiveScene):
     def construct(self):
-        # Test
+        # First statement
         words = VGroup(
             TexText("If this $< 0$"),
-            TexText("Index $< 1$", font_size=60),
+            TexText("Refractive Index $< 1$", font_size=48),
         )
-        arrow = Vector(2.5 * RIGHT)
-        arrow.next_to(LEFT, RIGHT)
-        arrow.set_y(2.0)
-        arrow.set_stroke(TEAL, 6)
         rect = Rectangle(2, 1)
-        rect.next_to(arrow, LEFT, MED_LARGE_BUFF)
+        rect.next_to(LEFT, LEFT, buff=MED_LARGE_BUFF).set_y(1.9)
         words[0].next_to(rect, UP, MED_SMALL_BUFF)
-        words[1].match_y(arrow)
+        words[1].set_y(1.5)
         words[1].set_x(FRAME_WIDTH / 4)
+
+        arrow = Arrow(words[0].get_right(), words[1].get_left())
+        arrow.set_stroke(YELLOW, 6)
 
         self.play(Write(words[0]))
         self.play(
@@ -1317,6 +1446,58 @@ class KickForwardOrBackCondition(InteractiveScene):
             FadeIn(words[1], RIGHT)
         )
         self.wait()
+
+        # Freq reference
+        freq_ineq = Tex(R"\text{If } \omega_l > \omega_r", t2c=EQUATION_T2C)
+        freq_ineq.move_to(words[0])
+
+        lf_rect = SurroundingRectangle(freq_ineq[R"\omega_l"])
+        rf_rect = SurroundingRectangle(freq_ineq[R"\omega_r"])
+
+        lf_words = Text("Light frequency", font_size=36)
+        rf_words = Text("Resonant frequency", font_size=36)
+        lf_words.next_to(lf_rect, UP)
+        rf_words.next_to(rf_rect, UP)
+
+        VGroup(lf_rect, rf_rect).set_stroke(width=2)
+        VGroup(lf_rect, lf_words).set_color(EQUATION_T2C[R"\omega_l"])
+        VGroup(rf_rect, rf_words).set_color(EQUATION_T2C[R"\omega_r"])
+
+        words[0].generate_target()
+        words[0].target.next_to(rect, RIGHT, SMALL_BUFF)
+
+        self.play(
+            # MoveToTarget(words[0]),
+            # arrow.animate.put_start_and_end_on(
+            #     words[0].target.get_right() + SMALL_BUFF * RIGHT,
+            #     arrow.get_end(),
+            # ),
+            FadeOut(words[0], 0.5 * UP),
+            FadeIn(freq_ineq, 0.5 * UP),
+        )
+        self.wait()
+        self.play(
+            FadeIn(lf_rect),
+            FadeIn(lf_words, shift=0.25 * UP),
+        )
+        self.wait()
+        self.play(
+            ReplacementTransform(lf_rect, rf_rect),
+            FadeTransform(lf_words, rf_words),
+        )
+        self.wait()
+        self.play(FadeOut(rf_words), FadeOut(rf_rect))
+        self.wait()
+
+
+class ThisReallyDoesHappen(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.teacher.says("This really\ndoes happen!", mode="surprised"),
+        )
+        self.play(self.change_students("sassy", "confused", "pleading", look_at=self.screen))
+        self.wait(4)
 
 
 class LookAround(InteractiveScene):
@@ -1339,8 +1520,48 @@ class LookAround(InteractiveScene):
         self.wait()
 
 
-class EndScreen(PatreonEndScreen):
-    title_text = ""
-    thanks_words = """
-        Special thanks to these supporters, visit 3b1b.co/support to join.
-    """
+class CausalInfluence(InteractiveScene):
+    def construct(self):
+        words = TexText(R"No causal influence can \\ propagate faster than $c$", font_size=72)
+        c = words["$c$"]
+        c.set_color(YELLOW)
+        rect = SurroundingRectangle(c)
+        arrow = Vector(UP)
+        arrow.set_color(YELLOW)
+        arrow.next_to(rect, DOWN)
+
+        self.add(words)
+        self.wait()
+        self.play(
+            GrowArrow(arrow),
+            ShowCreation(rect),
+            FlashAround(c),
+        )
+        self.wait()
+
+
+class RightLeftArrow(InteractiveScene):
+    def construct(self):
+        vect = Vector(DOWN)
+        vect.to_edge(RIGHT)
+        self.play(vect.animate.to_edge(LEFT), run_time=24, rate_func=linear)
+
+
+class SameRotationRate(InteractiveScene):
+    def construct(self):
+        # Test
+        words = Text("Same rate\nof rotation", font_size=60)
+        words.to_edge(RIGHT)
+        arrows = VGroup(*(
+            Arrow(words.get_corner(corner), y * UP + 1.25 * RIGHT, buff=0.2)
+            for y, corner in zip([2.75, 0, -2.75], [UL, LEFT, DL])
+        ))
+        self.play(
+            Write(words),
+            LaggedStartMap(GrowArrow, arrows)
+        )
+        self.wait()
+
+
+class IOREndScreen(PatreonEndScreen):
+    pass

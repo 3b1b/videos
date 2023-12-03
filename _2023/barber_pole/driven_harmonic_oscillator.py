@@ -1,7 +1,6 @@
-from operator import eq
 from _2023.barber_pole.objects import TimeVaryingVectorField
-from _2023.barber_pole.objects import Carbonate
 from _2023.barber_pole.objects import Calcite
+from _2023.barber_pole.objects import Sucrose
 from manim_imports_ext import *
 
 
@@ -993,7 +992,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         self.wait(17)
         ###
 
-
     def get_plot_group(
         self,
         func,
@@ -1138,3 +1136,54 @@ class JigglesInCalcite(InteractiveScene):
 
 class JigglesInCalciteY(JigglesInCalcite):
     polarization_direction = 0
+
+
+class SpiralPaths(InteractiveScene):
+    default_frame_orientation = (-30, 70)
+    color = RED
+    sign = 1
+
+    def construct(self):
+        # Sucrose
+        sucrose = Sucrose()
+        sucrose.rotate(PI / 2)
+        sucrose.set_height(7)
+        sucrose.set_opacity(0.2)
+        self.add(sucrose)
+
+        # Frame motion
+        frame = self.frame
+        frame.add_updater(lambda t: t.reorient(-30 * math.sin(0.1 * self.time)))
+
+        # Spiral
+        helix = ParametricCurve(
+            lambda t: [
+                math.cos(self.sign * t),
+                math.sin(self.sign * t),
+                0.25 * t
+            ],
+            t_range=(-TAU, TAU, 0.01)
+        )
+        line = Line(helix.get_end(), helix.get_start())
+        spiral = VGroup(helix, line)
+        spiral.rotate(PI / 2, LEFT, about_point=ORIGIN)
+        spiral.set_height(5, stretch=True)
+        spiral.center()
+        spiral.set_stroke(self.color, 1)
+        spiral.set_flat_stroke(False)
+
+        self.add(spiral)
+
+        charge = Group(
+            GlowDot(color=self.color),
+            TrueDot(color=self.color, radius=0.15),
+        )
+        self.add(charge)
+        for _ in range(5):
+            self.play(MoveAlongPath(charge, helix, run_time=3))
+            self.play(MoveAlongPath(charge, line, run_time=2))
+
+
+class SpiralPathsLeftHanded(SpiralPaths):
+    sign = -1
+    color = YELLOW
