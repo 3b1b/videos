@@ -747,9 +747,11 @@ class Prism(InteractiveScene):
 
         # Show x-ray
         x_ray = self.get_beams(0.8, 0.8, 1, in_beam, in_edge, out_edge)
-        x_ray.set_stroke(PINK, 8)
+        x_ray.set_stroke("#FF00D5", 8)
 
         self.add(x_ray, in_beam)
+        self.play(ShowCreation(x_ray, run_time=2))
+        self.wait()
         self.remove(x_ray)
 
         # Transition to 3d

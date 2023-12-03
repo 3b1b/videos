@@ -1216,8 +1216,8 @@ class QuestionsFromPatrons(InteractiveScene):
 
         questions = BulletedList(
             "Why does slowing imply bending?",
-            "What's going on with birefringence?",
-            "What's end of the barber pole explanation?",
+            "What causes birefringence?",
+            "What's the end of the barber pole explanation?",
             "How can the index of refraction be lower than 1?",
             buff=0.75
         )
