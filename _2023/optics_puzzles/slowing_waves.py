@@ -671,8 +671,15 @@ class RedLight(RevertToOneLayerAtATime):
         pkts = sliced_wave.phase_kick_trackers
         sliced_wave.update()
         sliced_wave.clear_updaters()
+        sliced_wave.vect_wave.set_stroke(opacity=1)
+        sliced_wave.wave.make_jagged()
+
+        new_wave = VMobject()
+        new_wave.set_points_smoothly(sliced_wave.wave.get_anchors()[0::5])
+        new_wave.match_style(sliced_wave.wave)
 
         self.add(self.sliced_wave)
+        self.add(new_wave)
         self.remove(sliced_wave.layers)
 
 
