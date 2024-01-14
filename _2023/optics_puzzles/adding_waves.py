@@ -2,6 +2,105 @@ from manim_imports_ext import *
 from _2023.barber_pole.objects import *
 
 
+class WhiteLightAsASum(InteractiveScene):
+    def construct(self):
+        # Initial orientation
+        frame = self.frame
+        frame.reorient(0, 90)
+
+        # Create axes
+        n_colors = 15
+        axes_width = 9.0
+        x_max = 8
+        spectral_axes = VGroup(*(
+            ThreeDAxes((0, x_max), (-1, 1), (-1, 1))
+            for _ in range(n_colors)
+        ))
+        spectral_axes.set_width(axes_width)
+        spectral_axes.arrange(UP, buff=0.05)
+
+        white_axes = ThreeDAxes((0, x_max), (-1, 1), (-1, 1))
+        white_axes.set_width(axes_width)
+        white_axes.shift(2 * DOWN)
+        spectral_axes.next_to(white_axes, UP)
+
+        all_axes = [white_axes, *spectral_axes]
+        for axes in all_axes:
+            axes.y_axis.set_opacity(0)
+
+        for axes in spectral_axes:
+            axes.z_axis.stretch(0.5, 2)
+
+        white_axes.z_axis.stretch(1.5, 2)
+
+        # Create individual waves
+        white_parts = VGroup()
+        spectral_waves = VGroup()
+        alphas = np.linspace(0.0, 1.0, n_colors)
+        for alpha, s_axes in zip(alphas, spectral_axes):
+            wave_len = interpolate(1.0, 2.0, alpha)
+            for axes, group in [(s_axes, spectral_waves), (white_axes, white_parts)]:
+                wave = OscillatingWave(
+                    axes,
+                    y_amplitude=0,
+                    z_amplitude=1,
+                    wave_len=wave_len,
+                    color=get_spectral_color(1 - alpha)
+                )
+                group.add(wave)
+
+        # Show white wave
+        white_wave = MeanWave(white_parts)
+        white_wave.set_stroke(width=1)
+        white_vects = OscillatingFieldWave(white_axes, white_wave, tip_width_ratio=3)
+    
+        self.add(white_axes, white_wave, white_vects)
+        self.wait(5)
+
+        # Show spectral parts
+        symbols = Tex("=" + "+" * (n_colors - 1))
+        symbols.scale(2)
+        symbols.rotate(90 * DEGREES)
+        for symbol, a1, a2 in zip(symbols, all_axes, all_axes[1:]):
+            symbol.move_to(VGroup(a1, a2))
+
+        spectral_vect_waves = VGroup()
+        for sa, sw in zip(spectral_axes, spectral_waves):
+            vwave = OscillatingFieldWave(sa, sw, tip_width_ratio=3)
+            sw.set_stroke(width=1)
+            spectral_vect_waves.add(vwave)
+
+        self.play(
+            frame.animate.reorient(50, 65, 0).move_to([0.6, 2.9, -0.16]).set_height(11).set_anim_args(run_time=3),
+            LaggedStartMap(FadeIn, spectral_axes),
+            LaggedStartMap(VFadeIn, spectral_waves),
+            LaggedStartMap(VFadeIn, spectral_vect_waves),
+            LaggedStartMap(FadeIn, symbols),
+        )
+        self.play(
+            self.frame.animate.reorient(19, 65, 0).move_to([0.6, 2.9, -0.16]).set_height(11.00),
+            run_time=8
+        )
+        return
+
+        # Scrap
+        arrows = VGroup(*(
+            Arrow(
+                sa.get_left(),
+                interpolate(white_axes.get_corner(UR), white_axes.get_corner(DR), alpha),
+                buff=0.3,
+                stroke_color=wave.get_color()
+            )
+            for sa, wave, alpha in zip(
+                spectral_axes,
+                spectral_waves,
+                np.linspace(0, 1, n_colors),
+            )
+        ))
+
+        pass
+
+
 class AddTwoSineWaves(InteractiveScene):
     def construct(self):
         # Setup axes
@@ -629,7 +728,6 @@ class AddTwoSineWaves(InteractiveScene):
                 self.change_wave_parameter(wave_group, parameter, value)
 
 
-
 class AddTwoRotatingVectors(InteractiveScene):
     def construct(self):
         pass
@@ -715,28 +813,78 @@ class WavePlusLayerInfluence(InteractiveScene):
         wave2_group = VGroup(wave2, vect_wave2)
         wave3_group = VGroup(wave3, vect_wave3)
 
-        # Charges
-        charges = DotCloud(color=BLUE)
-        charges.to_grid(30, 15)
-        charges.make_3d()
-        charges.set_shape(3, 3)
-        charges.set_radius(0.035)
-        charges.set_opacity(0.5)
-        charges.rotate(90 * DEGREES, UP)
-        charges.sort_points(lambda p: np.dot(p, OUT + UP))
-        charges.add_updater(lambda m: m.move_to(mid_axes.c2p(
-            0, 0.2 * wave1.xt_to_yz(0, wave1.time)[0], 0,
-        )))
+        # Layers of charges
+        layer_xs = np.arange(0, 6, 0.25)
+        layers = Group()
+        for x in layer_xs:
+            charges = DotCloud(color=BLUE)
+            charges.to_grid(31, 15)
+            charges.make_3d()
+            charges.set_shape(3, 3)
+            charges.set_radius(0.035)
+            charges.set_opacity(0.5)
+            charges.rotate(90 * DEGREES, UP)
+            charges.sort_points(lambda p: np.dot(p, OUT + UP))
+            charges.x = x
+            charges.amplitude_tracker = ValueTracker(0)
+            charges.add_updater(lambda m: m.move_to(mid_axes.c2p(
+                m.x, m.amplitude_tracker.get_value() * wave1.xt_to_yz(m.x, wave1.time)[0], 0,
+            )))
+            layers.add(charges)
 
-        # Show initial wave, then add charges
+        # Glass
+        glass = VCube()
+        glass.set_fill(opacity=0.25)
+        glass.deactivate_depth_test()                                                              
+        glass.set_shading(0.5, 0.5, 0)
+        buff = 0.1
+        glass.set_shape(*(
+            dim + buff
+            for dim in layers.get_shape()
+        ))
+        glass.move_to(layers, LEFT)
+        glass.sort(lambda p: -p[0])
+        glass.set_stroke(WHITE, 0.5, 0.5)
+
+        # Show initial wave, then add layers
+        frame = self.frame
+        frame.reorient(-135, 20, 135)
+
         self.add(top_axes)
         self.add(wave1, vect_wave1)
-        self.wait(3)
+        self.wait(2)
         self.play(
-            FadeIn(charges, suspend_mobject_updating=False),
-            self.frame.animate.reorient(-90, -20, 90).set_anim_args(run_time=3)
+            Write(glass, time_span=(0, 2)),
+            frame.animate.reorient(-110, 10, 110).set_anim_args(run_time=4),
         )
-        self.wait(5)
+        self.play(
+            LaggedStart(*(
+                layer.amplitude_tracker.animate.set_value(0.1)
+                for layer in layers
+            ), lag_ratio=0, time_span=(0, 2)),
+            LaggedStart(*(
+                FadeIn(layer, suspend_mobject_updating=False)
+                for layer in layers
+            ), lag_ratio=0, time_span=(0, 2)),
+        )
+        self.play(
+            self.frame.animate.reorient(-90, -40, 90),
+            FadeOut(glass),
+            run_time=9
+        )
+        self.wait(3)
+
+        # Go back to just one layer
+        self.play(
+            LaggedStart(*(
+                FadeOut(charges, suspend_mobject_updating=False)
+                for charges in layers[1:]
+            ), run_time=5, lag_ratio=0.25),
+            layers[0].amplitude_tracker.animate.set_value(0.2),
+            self.frame.animate.reorient(-90, -20, 90),
+            run_time=5
+        )
+        self.wait(3)
 
         # Add the second order wave, then separate
         self.play(
@@ -768,7 +916,7 @@ class WavePlusLayerInfluence(InteractiveScene):
             VFadeIn(wave3_group),
             Write(labels[2]),
         )
-        self.wait(4)
+        self.wait(12)
 
         # Comment on reflected light
         reflection_label = VGroup(
@@ -803,7 +951,7 @@ class WavePlusLayerInfluence(InteractiveScene):
             ),
             run_time=2
         )
-        self.wait(8)
+        self.wait(9)
 
         # Compare
         wave1.stop_clock()
@@ -829,7 +977,7 @@ class WavePlusLayerInfluence(InteractiveScene):
 
         line = Line(find_peak(wave3), find_peak(wave1_copy))
         shift_arrow = Vector(
-            line.get_length() * LEFT * 3,
+            line.get_length() * LEFT * 2,
             stroke_width=3,
             max_tip_length_to_length_ratio=10,
         )
@@ -844,35 +992,28 @@ class WavePlusLayerInfluence(InteractiveScene):
         self.wait()
 
         # Play with different strengths
-        scale_arrows = VGroup(Vector(0.5 * UP), Vector(0.5 * DOWN))
-        scale_arrows.arrange(DOWN, buff=1.0)
-        scale_arrows.move_to(mid_axes.c2p(2, 0))
-        scale_arrows.save_state()
-        scale_arrows.stretch(0.5, 1)
-        scale_arrows.set_opacity(0)
+        net_stretch = 1.0
+        for stretch_factor in [3.0, 0.5, 2.0, 0.5, 1.0]:
+            stretch = stretch_factor / net_stretch
+            net_stretch = stretch_factor
 
-        self.play(
-            Restore(scale_arrows),
-            wave2_scale_tracker.animate.set_value(0.5),
-            shift_arrow.animate.stretch(1.5, 0, about_edge=RIGHT),
-        )
-        self.play(FadeOut(scale_arrows))
-        self.wait()
+            scale_arrows = VGroup(Vector(0.5 * UP), Vector(0.5 * DOWN))
+            scale_arrows.arrange(DOWN if stretch > 1 else UP, buff=1.0)
+            scale_arrows.move_to(mid_axes.c2p(2, 0))
+            scale_arrows.set_stroke(opacity=1)
+            scale_arrows.save_state()
+            scale_arrows.stretch(0.5 if stretch > 1 else 1.5, 1)
+            scale_arrows.set_stroke(opacity=0)
+            globals().update(locals())
 
-        for arrow in scale_arrows:
-            arrow.rotate(PI)
+            self.play(
+                Restore(scale_arrows),
+                wave2_scale_tracker.animate.set_value(stretch * wave2_scale_tracker.get_value()),
+                shift_arrow.animate.stretch(stretch, 0, about_edge=RIGHT),
+            )
+            self.play(FadeOut(scale_arrows))
+            self.wait()
 
-        scale_arrows.save_state()        
-        scale_arrows.stretch(1.5, 1)
-        scale_arrows.set_opacity(0)
-
-        self.play(
-            Restore(scale_arrows),
-            wave2_scale_tracker.animate.set_value(0.1),
-            shift_arrow.animate.stretch(0.25, 0, about_edge=RIGHT),
-        )
-        self.play(FadeOut(scale_arrows))
-        self.wait()
         self.play(
             wave2_scale_tracker.animate.set_value(0.2),
             FadeOut(wave1_copy),
@@ -883,3 +1024,86 @@ class WavePlusLayerInfluence(InteractiveScene):
         # Restart
         wave1.start_clock()
         self.wait(8)
+
+
+class Pulse(InteractiveScene):
+    def construct(self):
+        # Setup axes
+        n_parts = 10
+        x_max = 4
+        left_axes_group = VGroup(*(
+            Axes(
+                (0, x_max), (-1, 1),
+                width=0.5 * FRAME_WIDTH - 2,
+                height=1,
+                num_sampled_graph_points_per_tick=20,
+            )
+            for _ in range(n_parts)
+        ))
+        left_axes_group.arrange(DOWN, buff=0.75)
+        left_axes_group.set_height(FRAME_HEIGHT - 1)
+        left_axes_group.to_edge(LEFT)
+
+        right_axes = Axes((0, x_max), (-1, 1), width=0.5 * FRAME_WIDTH - 1, height=3)
+        right_axes.to_edge(RIGHT)
+
+        brace = Brace(left_axes_group, RIGHT, buff=0.5)
+        arrow = Arrow(brace, right_axes)
+        sigma = Tex(R"\Sigma", font_size=72).next_to(arrow, UP)
+
+        self.add(left_axes_group)
+        self.add(right_axes)
+        self.add(brace, arrow, sigma)
+
+        # Graphs
+        f0 = 6
+        sigma = 2
+        frequencies = np.linspace(0, 2 * f0, n_parts + 1)[1:]
+        weights = 0.25 * np.exp(-0.5 * ((frequencies - f0) / sigma) ** 2)
+        speeds = np.linspace(8, 10, n_parts)
+        time_tracker = ValueTracker(0)
+        colors = color_gradient([BLUE, YELLOW], n_parts)
+
+        left_graphs = VGroup(*(
+            self.create_graph(axes, freq, speed, color, time_tracker)
+            for axes, freq, speed, color in zip(
+                left_axes_group,
+                frequencies,
+                speeds,
+                colors,
+            )
+        ))
+
+        def sum_func(x):
+            time = time_tracker.get_value()
+            return sum(
+                weight * self.wave_func(x, freq, speed, time)
+                for weight, freq, speed in zip(weights, frequencies, speeds)
+            )
+
+        sum_graph = right_axes.get_graph(sum_func, bind=True)
+        sum_graph.set_stroke(TEAL, 3)
+
+        self.add(left_graphs)
+        self.add(sum_graph)
+
+        final_time = 20.0
+        time_tracker.set_value(0)
+        self.play(
+            time_tracker.animate.increment_value(final_time),
+            rate_func=linear,
+            run_time=final_time,
+        )
+
+
+    def wave_func(self, x, freq, speed, time):
+        return np.cos(freq * x - speed * time)
+
+    def create_graph(self, axes, freq, speed, color, time_tracker):
+        return axes.get_graph(
+            lambda x: self.wave_func(x, freq, speed, time_tracker.get_value()),
+            stroke_color=color,
+            stroke_width=2,
+            bind=True
+        )
+

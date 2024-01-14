@@ -119,12 +119,13 @@ class Timeline(InteractiveScene):
 
         arrows = VGroup(
             Vector(3 * LEFT),
-            Text("No one can\nanswer", font_size=36).set_color(YELLOW),
+            Text("No one can\nanswer", font_size=60).set_color(YELLOW),
             Vector(3 * RIGHT)
         )
         arrows.arrange(RIGHT)
         arrows.set_width(get_norm(timeline.n2p(2000) - timeline.n2p(-300)))
         arrows.next_to(v_line, RIGHT)
+        arrows.shift(0.5 * UP)
 
         # self.add(question)
         self.add(arrows)
@@ -132,21 +133,61 @@ class Timeline(InteractiveScene):
 
 class InfinitePrimes(InteractiveScene):
     def construct(self):
-        n_max = 44
+        # Test
+        n_max = 150
         primes = list(sympy.primerange(2, n_max))
         prime_mobs = VGroup(*map(Integer, primes))
-        prime_mobs.arrange(RIGHT, buff=MED_LARGE_BUFF)
-        prime_mobs.to_edge(LEFT)
-        dots = Tex(R"\dots")
-        dots.next_to(prime_mobs, RIGHT)
-        arrow = Vector(RIGHT)
-        arrow.next_to(dots, RIGHT)
-        infinite = Text("Infinite", font_size=72)
-        infinite.next_to(arrow, DOWN, buff=0.75).shift_onto_screen()
-        infinite.set_color(YELLOW)
+        prime_mobs.set_height(1.5)
+        prime_mobs.use_winding_fill(False)
 
-        self.add(prime_mobs, dots, arrow)
-        # self.add(infinite)
+        def update_opacity(prime):
+            # alpha = inverse_interpolate(10, 0, prime.get_y())
+            alpha = inverse_interpolate(-20, 0, prime.get_z())
+            prime.set_fill(opacity=alpha)
+
+        for n, prime in enumerate(prime_mobs):
+            # prime.rotate(88 * DEGREES, RIGHT)
+            prime.set_height(1.5 * 0.95**n)
+            prime.move_to(3 * n * IN)
+            prime.add_updater(update_opacity)
+
+        rect = FullScreenRectangle()
+        rect.set_fill(BLACK, 1)
+        rect.fix_in_frame()
+
+        self.frame.reorient(-70, -30, 70)
+        self.frame.set_focal_distance(5)
+
+        self.add(prime_mobs)
+        self.play(
+            prime_mobs.animate.shift(70 * OUT),
+            FadeIn(rect, time_span=(10, 12)),
+            run_time=12,
+            rate_func=rush_into,
+        )
+
+    def old_attempt(self):
+        # Old attempt
+        point = UL
+        height = 2
+        shift = 0.75 * np.array([1, -1.2, 0])
+        scale = 1.0
+        opacity = 1.0
+
+        scale_factor = 0.65
+        shift_scale_factor = 0.7
+        opacity_scale_factor = 0.9
+
+        for n, mob in enumerate(prime_mobs):
+            mob.set_height(height * scale_factor**n)
+            mob.move_to(point + sum(
+                shift * shift_scale_factor**k
+                for k in range(n)
+            ))
+            mob.set_fill(opacity=opacity * opacity_scale_factor**n)
+
+        prime_mobs.submobjects.reverse()
+        self.add(prime_mobs)
 
 
 class ThoughtBubble(InteractiveScene):
@@ -160,55 +201,117 @@ class ThoughtBubble(InteractiveScene):
 class EuclidProof(InteractiveScene):
     def construct(self):
         # Suppose finite
-        prime_sequence = Tex(R"p_1, p_2, \dots , p_n")
-        prime_sequence.move_to(3 * LEFT + 2 * UP)
-        brace = Brace(prime_sequence, UP)
-        brace_text = brace.get_text("All primes, suppose finite")
-        brace_text.set_color(YELLOW)
+        prime_sequence = Tex(R"2, 3, 5, \dots , p_n", font_size=72)
+        prime_sequence.move_to(UP + LEFT)
+        last = prime_sequence["p_n"]
+        finite_words = Text("All primes (suppose finite)", font_size=60)
+        finite_words.next_to(last, UR).shift(0.2 * UP)
+        sequence_rect = SurroundingRectangle(prime_sequence)
+        sequence_rect.set_stroke(YELLOW, 2)
+        sequence_rect.set_stroke(YELLOW, 2)
+        finite_words.next_to(sequence_rect, UP)
+        finite_words.shift(RIGHT * (sequence_rect.get_x() - finite_words["All primes"].get_x()))
+
+        last_arrow = Arrow(
+            finite_words["prime"].get_corner(DL),
+            last,
+            path_arc=-PI / 3,
+            buff=0.1
+        )
+        VGroup(finite_words, sequence_rect).set_color(YELLOW)
 
         self.add(prime_sequence)
-        self.add(brace)
-        self.add(brace_text)
+        self.add(finite_words)
+        self.add(sequence_rect)
 
         # Multiply, add 1, factor
-        product = VGroup(*(
-            prime_sequence[tex][0].copy()
-            for tex in ["p_1", "p_2", R"\dots", "p_n"]
-        ))
-        product.target = product.generate_target()
-        product.target.arrange(RIGHT, buff=SMALL_BUFF)
-        product.target.next_to(prime_sequence, DOWN, buff=LARGE_BUFF)
-        plus_one = Tex("+1")
-        plus_one.next_to(product.target, RIGHT, SMALL_BUFF)
+        product = Tex(R"N = 2 \cdot 3 \cdot 5 \cdots p_n", font_size=72)
+        product.next_to(prime_sequence, DOWN, LARGE_BUFF)
+
+        plus_one = Tex("+1", font_size=72)
+        plus_one.next_to(product, RIGHT, 0.2)
         plus_one.shift(0.05 * UP)
+        N_mob = VGroup(product, plus_one)
+        N_mob.match_x(prime_sequence)
 
-        factor = Text("primeFactors()")
-        factor.set_color(GREY_A)
-        factor[:-1].next_to(product.target, LEFT, buff=SMALL_BUFF)
-        factor[-1:].next_to(plus_one, RIGHT, buff=SMALL_BUFF)
-        factor_rhs = Tex(R" = q_1 \cdots q_k")
-        factor_rhs.next_to(factor[-1], RIGHT)
-        factor_rhs[1:].set_color(RED)
-
-        self.play(MoveToTarget(product))
+        psc = prime_sequence.copy()
+        self.play(
+            TransformMatchingTex(
+                psc,
+                product,
+                matched_pairs=[
+                    (psc[","], product[R"\cdot"]),
+                    (psc[R"\dots"], product[R"\cdots"]),
+                ],
+                run_time=1
+            )
+        )
         self.play(Write(plus_one))
         self.wait()
-        self.play(FadeIn(factor, UP))
-        self.play(FadeIn(factor_rhs))
-        self.wait(2)
 
-        # Contradiction
-        rect = SurroundingRectangle(factor_rhs[1:3], buff=0.05)
-        rect.set_stroke(WHITE, 2)
-        words = TexText(R"Cannot be any of $p_i$", font_size=42)
-        words.next_to(rect, DOWN, aligned_edge=LEFT)
-        words.set_color(RED)
+        # Factor
+        N_rect = SurroundingRectangle(
+            VGroup(product[2:], plus_one)
+        )
+        factor_arrow = Vector(DL)
+        factor_arrow.next_to(N_rect, DOWN)
+        factor_word = Text("Prime factors", font_size=60)
+        factor_word.next_to(factor_arrow, RIGHT, buff=0)
+
+        VGroup(N_rect, factor_arrow, factor_word).set_color(TEAL)
+
+        factor_eq = Tex(R"N = q_1 \cdots q_k", font_size=72)
+        factor_eq[R"q_1 \cdots q_k"].set_color(RED)
+        factor_eq.next_to(product, DOWN, buff=1.5, aligned_edge=LEFT)
 
         self.play(
-            ShowCreation(rect),
-            FadeIn(words, 0.25 * DOWN)
+            FadeTransformPieces(product.copy(), factor_eq),
+            FadeIn(N_rect),
+            GrowArrow(factor_arrow),
+            FadeIn(factor_word, 0.5 * DOWN),
+        )
+        self.wait(3)
+
+        # Contradiction
+        q_rect = SurroundingRectangle(factor_eq["q_1"], buff=0.1)
+        q_rect.set_stroke(WHITE, 3)
+        q_words = TexText(R"Cannot be in $\{2, 3, 5, \dots, p_n\}$", font_size=60)
+        q_words.next_to(q_rect, UP, aligned_edge=LEFT)
+        q_words.match_color(factor_eq[2])
+        rect = SurroundingRectangle(Group(*(
+            mob
+            for mob in self.mobjects
+            if isinstance(mob, StringMobject)
+        )), buff=0.5)
+        rect.set_stroke(WHITE, 3)
+        rect.shift(0.35 * DOWN)
+        rect.set_fill(RED, 0.1)
+        cont_word = Text("Contradiction!", font_size=90)
+        cont_word.next_to(rect, UP, buff=0.5, aligned_edge=RIGHT)
+        cont_word.set_color(WHITE)
+
+        self.play(
+            Transform(N_rect, q_rect),
+            FadeTransformPieces(factor_word, q_words),
+            FadeOut(factor_arrow),
+        )
+        self.wait(4)
+        self.play(
+            FadeIn(rect),
+            FadeIn(cont_word, 0.5 * UP),
         )
         self.wait()
+
+    def infinite(self):
+        # Interlude to show infinite
+        inf_sequence = Tex(R"2, 3, 5, 7, 11, \dots", font_size=72)
+        inf_sequence.move_to(prime_sequence, LEFT)
+        inf_arrow = Vector(RIGHT)
+        inf_arrow.next_to(inf_sequence, RIGHT, SMALL_BUFF)
+        inf_words = Text("Infinite", font_size=60)
+        inf_words.next_to(inf_arrow, DOWN, aligned_edge=LEFT)
+
+        self.add(inf_sequence, inf_arrow, inf_words)
 
 
 class PrimeDensityHistogram(InteractiveScene):
@@ -263,24 +366,90 @@ class PrimesNearMillion(InteractiveScene):
     def construct(self):
         # Add line
         T = int(1e6)
-        radius = 500
-        labeled_numbers = list(range(T - radius, T + radius, 10))
+        radius = 800
+        spacing = 50
+        labeled_numbers = list(range(T - radius, T + radius, spacing))
         number_line = NumberLine(
             (T - radius, T + radius),
-            tick_size=0.03,
-            numbers_with_elongated_ticks=labeled_numbers,
+            width=250,
+            tick_size=0.075,
         )
-        number_line.ticks[::10].stretch(1.5, 1)
-        number_line.stretch(0.2, 0)
-        number_line.add_numbers(labeled_numbers)
+        number_line.ticks[::spacing // 5].stretch(2, 1)
+        # number_line.stretch(0.2, 0)
+        number_line.add_numbers(labeled_numbers, font_size=48, buff=0.5)
         self.add(number_line)
 
         # Primes
         primes = np.array(list(sympy.primerange(T - radius, T + radius)))
         dots = GlowDots(number_line.n2p(primes))
-        dots.set_radius(0.3)
+        dots.set_glow_factor(2)
+        dots.set_radius(0.35)
         self.add(dots)
 
+        # Highlight twins
+        arcs = VGroup()
+        for p1, p2 in zip(primes, primes[1:]):
+            if p1 + 2 == p2:
+                arc = Line(
+                    number_line.n2p(p1),
+                    number_line.n2p(p2),
+                    path_arc=-PI
+                )
+                arc.set_stroke(YELLOW, 3)
+                plus_2 = Tex("+2", font_size=24)
+                plus_2.set_fill(YELLOW)
+                plus_2.next_to(arc, UP, SMALL_BUFF)
+                arcs.add(arc, plus_2)
+
+        # Pan
+        line_group = Group(number_line, dots, arcs)
+        line_group.shift(1.5 * DOWN + -number_line.n2p(1e6))
+        line_group.add_updater(lambda m, dt: m.shift(2 * dt * LEFT))
+        self.add(line_group)
+
+        # Words
+        t2c = {"T": BLUE}
+        kw = dict(font_size=90, t2c=t2c)
+        words = TexText("How dense are primes?", **kw)
+        lhs = TexText("Prime density near $T$", **kw)
+        approx = Tex(R"\approx", **kw)
+        approx.rotate(PI / 2)
+        rhs = Tex(R"1 / \ln(T)", **kw)
+        group = VGroup(lhs, approx, rhs)
+        group.arrange(DOWN, buff=0.5)
+        group.to_edge(UP)
+        words.move_to(lhs)
+
+        example = TexText("(e.g. $T = 1{,}000{,}000$)", font_size=60, t2c=t2c)
+        example.next_to(lhs, DOWN, LARGE_BUFF)
+        arrow = Arrow(
+            lhs["T"].get_bottom(),
+            example.get_right(),
+            stroke_width=8,
+            stroke_color=BLUE,
+            path_arc=-PI / 2,
+            buff=0.2,
+        )
+
+        self.add(words)
+        self.wait(13)
+        self.play(
+            FadeTransform(words, lhs, run_time=1),
+            ShowCreation(arrow),
+            FadeIn(example, time_span=(1, 2)),
+        )
+        self.wait(5)
+        self.play(
+            FadeOut(arrow),
+            FadeOut(example),
+            Write(approx),
+            FadeIn(rhs[:-2], DOWN),
+            FadeIn(rhs[-1], DOWN),
+            TransformFromCopy(lhs["T"], rhs["T"]),
+        )
+        self.wait(45)
+
+    def old_zooming(self):
         sf = 0.1
         self.play(
             number_line.animate.scale(sf, about_point=ORIGIN),
@@ -301,8 +470,69 @@ class PrimesNearMillion(InteractiveScene):
         )
 
 
+class PrimePanning(InteractiveScene):
+    def construct(self):
+        # (A bit too much copy paste from above)
+        N_max = 500
+        number_line = NumberLine(
+            (0, N_max),
+            unit_size=0.5,
+            tick_size=0.075,
+        )
+        number_line.ticks[::10].stretch(2, 1)
+        number_line.add_numbers(range(0, N_max), font_size=20, buff=0.2)
+        number_line.move_to(2 * LEFT, LEFT)
+        self.add(number_line)
+
+        # Primes
+        primes = np.array(list(sympy.primerange(0, N_max)))
+        dots = GlowDots(number_line.n2p(primes))
+        dots.set_glow_factor(2)
+        dots.set_radius(0.35)
+        self.add(dots)
+
+        # Pan
+        frame = self.frame
+        frame.set_height(4)
+        frame.add_updater(lambda m, dt: m.shift(1.5 * dt * RIGHT))
+        self.wait(90)
+
+
+
+
 class DensityFormula(InteractiveScene):
     def construct(self):
+        # Formula
+        t2c = {
+            "T": BLUE,
+        }
+        kw = dict(t2c=t2c, font_size=90)
+        lhs = TexText("Prime density near $T$", **kw)
+        approx = Tex(R"\approx", **kw)
+        approx.rotate(PI / 2)
+        rhs = Tex(R"1 / \ln(T)", **kw)
+        group = VGroup(lhs, approx, rhs)
+        group.arrange(DOWN, buff=0.5)
+        group.to_edge(UP)
+
+        example = TexText("(e.g. $T = 1{,}000{,}000$)", font_size=60, t2c=t2c)
+        example.next_to(lhs, DOWN, LARGE_BUFF)
+        arrow = Arrow(
+            lhs["T"].get_bottom(),
+            example.get_right(),
+            stroke_width=8,
+            stroke_color=BLUE,
+            path_arc=-PI / 2,
+            buff=0.2,
+        )
+
+        self.add(lhs, example, arrow)
+        self.wait()
+
+        self.remove(example, arrow)
+        self.add(approx, rhs)
+
+    def old_mess(self):
         # Formula
         kw = dict(t2c={
             "T": BLUE,
@@ -343,105 +573,168 @@ class GapsInPrimes(InteractiveScene):
 
 class CrankEmail(InteractiveScene):
     def construct(self):
+        # Background
+        rect = FullScreenRectangle(fill_color=WHITE, fill_opacity=1)
+        rect.scale(2)
+        rect.stretch(10, 1, about_edge=UP)
+        self.add(rect)
+
+        frame = self.frame
+        frame.set_height(9)
+        frame.to_edge(UP, buff=0)
+
         # Rows of numbers
-        numbers1 = list(range(1, 60))
+        numbers1 = list(range(1, 100))
         numbers2 = list(filter(lambda m: m % 2 != 0, numbers1))
         numbers3 = list(filter(lambda m: m % 3 != 0, numbers2))
 
         arrays = VGroup(
-            self.create_array(numbers1, 2, BLUE_D),
-            self.create_array(numbers2, 3, GREEN_D),
-            self.create_array(numbers3, 5, RED_D),
+            self.create_array(numbers1[:30], 2, BLUE_D),
+            self.create_array(numbers2[:30], 3, GREEN_D),
+            self.create_array(numbers3[:20], 5, RED_D),
         )
 
         arrays.arrange(DOWN, buff=1.0, aligned_edge=LEFT)
         arrays.to_corner(UL)
 
         # Paragraphs
-        self.add(
-            FullScreenRectangle(fill_color=WHITE, fill_opacity=1).scale(3)
-        )
-
-        kw = dict(alignment="LEFT", font_size=36, fill_color=BLACK, font="Roboto")
+        kw = dict(alignment="LEFT", font_size=48, fill_color=BLACK, font="Roboto")
         paragraphs = VGroup(
             Text("""
                 Dear sir,
 
-                I have found a most marvelous proof for the infinitude of twin primes,
-                and I was hoping you could help to review it and offer me advice on
-                next steps for publication.
+                I found a marvelous proof for that twin
+                primes are infinite. Please, I need help
+                having this work published.
 
-                We begin our study of primes with a deceptively simple procedure. List
-                all natural numbers, and start by reducing each of them modulo 2
+                The proof procedes by analyzing the
+                following procedure for generating primes.
+                List all natural numbers, and start by
+                reducing each of them modulo 2:
             """, **kw),
             arrays[0],
             Text("""
-                From here, remove all numbers which have reduced to 0 in this step,
-                and reduce what remains by  3.
+                Remove numbers which have reduced
+                to 0, reduce what remains modulo 3:
             """, **kw),
             arrays[1],
             Text("""
-                Likewise, remove all numbers which have reduced to 0 in the last step,
-                and reduce what remains by 5.
+                Again, remove numbers which have reduced
+                to 0, reduce what remains modulo 5:
             """, **kw),
             arrays[2],
         )
 
         paragraphs.arrange(DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
-        paragraphs.to_corner(UL)
+        paragraphs.shift(paragraphs[0].get_x() * LEFT)
+        paragraphs.to_edge(UP, buff=0.2)
 
-        self.add(paragraphs[:2])
-        self.animate_reduction(arrays[0])
+        self.add(paragraphs)
+        for array in arrays:
+            for grid in array:
+                self.remove(grid[1])
 
-        # Next steps
-        frame = self.frame
-        for i, modulus in [(1, 2), (2, 3)]:
-            arrays[i][1].set_opacity(0)
-            crosses = VGroup(*(
-                Cross(mob).scale(1.5)
-                for mob in arrays[i - 1][0][1::modulus]
+        # Fill in grid, slide frame
+        self.anticipate_frame_to_y(-6, run_time=3)
+        for grid in arrays[0]:
+            self.animate_reduction(grid)
+
+        self.cross_out_the_zeros(arrays[0])
+        self.wait(0.5)
+        self.play(frame.animate.set_y(-12))
+
+        for n, grid in enumerate(arrays[1]):
+            self.animate_reduction(grid)
+            if n == 0:
+                self.anticipate_frame_to_y(-15, run_time=2)
+
+        self.anticipate_frame_to_y(-22, run_time=2)
+        self.cross_out_the_zeros(arrays[1])
+        self.wait(2)
+
+        for grid in arrays[2]:
+            self.animate_reduction(grid)
+        self.cross_out_the_zeros(arrays[2])
+
+    def create_array(
+        self,
+        numbers,
+        modulus,
+        color=BLUE,
+        height=0.85,
+        spacing=10,
+        buff=0.75,
+        width=10,
+    ):
+        result = VGroup()
+        row1_content = numbers
+        row2_content = [n % modulus for n in numbers]
+        row1_title = "Numbers: "
+        row2_title = f"Mod {modulus}:"
+        n = 0
+        while n < len(row1_content):
+            result.add(self.create_table(
+                row1_title, row2_title,
+                row1_content[n:n + spacing],
+                row2_content[n:n + spacing],
+                color=color,
+                height=height,
             ))
+            n += spacing
+            row1_title = ""
+            row2_title = ""
+        result.arrange(DOWN, buff=buff, aligned_edge=RIGHT)
+        result.set_width(width)
+        return result
 
-            self.play(
-                frame.animate.align_to(arrays[i], DOWN).shift(DOWN),
-                FadeIn(crosses, lag_ratio=0.2),
-                FadeIn(paragraphs[2 * i]),
-                FadeIn(arrays[i]),
-                run_time=2,
-            )
-            arrays[i][1].set_opacity(1)
-            self.animate_reduction(arrays[i])
+    def create_table(
+        self,
+        row1_title,
+        row2_title,
+        row1_content,
+        row2_content,
+        x_spacing=0.6,
+        font_size=36,
+        color=BLUE,
+        height=0.85
+    ):
+        # Numbers
+        row1_mobs, row2_mobs = (
+            VGroup(*(
+                Integer(n, font_size=font_size)
+                for n in content
+            ))
+            for content in [row1_content, row2_content]
+        )
+        for x, mob in enumerate(row1_mobs):
+            mob.set_x(x_spacing * x)
+        row1_mobs.to_edge(LEFT)
+        row1_mobs.set_fill(BLACK)
 
-        # End
+        row2_mobs.set_color(color)
+        for m1, m2 in zip(row1_mobs, row2_mobs):
+            m2.set_max_width(0.5 * x_spacing)
+            m2.next_to(m1, DOWN, 0.5)
 
-    def create_array(self, numbers, modulus, color=BLUE, height=0.85):
-        number_mobs = VGroup(*map(Integer, numbers))
-        number_mobs.arrange(RIGHT, buff=0.5)
-        number_mobs.to_edge(LEFT)
-        number_mobs.set_fill(BLACK),
-        reductions = VGroup(*(
-            Integer(number % modulus).next_to(mob, DOWN, 0.5)
-            for number, mob in zip(numbers, number_mobs)
-        ))
-        reductions.set_color(color)
-        grid = VGroup(number_mobs, reductions)
+        grid = VGroup(row1_mobs, row2_mobs)
 
-        top_label = Text("Numbers: ", fill_color=BLACK)
-        low_label = Text(f"Mod {modulus}: ")
-        top_label.next_to(number_mobs, LEFT, buff=0.5)
-        low_label.next_to(reductions, LEFT, buff=0.5)
-        low_label.set_color(color)
+        # Titles
+        row1_label = Text(row1_title, font_size=font_size)
+        row2_label = Text(row2_title, font_size=font_size)
+        row1_label.set_color(BLACK)
+        row1_label.next_to(row1_mobs, LEFT, buff=0.5)
+        row2_label.next_to(row2_mobs, LEFT, buff=0.5)
+        row2_label.set_color(color)
+        grid.add(row1_label, row2_label)
 
-        grid.add(top_label, low_label)
-
+        # Grid lines
         h_line = Line(ORIGIN, grid.get_width() * RIGHT)
-
         h_line.move_to(grid, LEFT)
         v_lines = VGroup(*(
             Line(grid.get_height() * UP, ORIGIN).set_x(
-                0.5 * (number_mobs[i].get_right()[0] + number_mobs[i + 1].get_left()[0])
+                0.5 * (row1_mobs[i].get_right()[0] + row1_mobs[i + 1].get_left()[0])
             ).align_to(grid, UP)
-            for i in range(len(number_mobs) - 1)
+            for i in range(len(row1_mobs) - 1)
         ))
         v_lines.set_stroke(BLACK, width=1)
         h_line.set_stroke(BLACK, width=1)
@@ -451,8 +744,7 @@ class CrankEmail(InteractiveScene):
 
         return grid
 
-    def animate_reduction(self, array, beat_time=0.2):
-        # Test
+    def animate_reduction(self, array, beat_time=0.17):
         reductions = array[1]
         self.remove(reductions)
         self.wait(0.1)
@@ -466,25 +758,47 @@ class CrankEmail(InteractiveScene):
                 self.wait(beat_time)
         self.add(array)
 
+    def cross_out_the_zeros(self, array):
+        crosses = VGroup()
+        rects = VGroup()
+        for grid in array:
+            for m1, m2 in zip(grid[0], grid[1]):
+                if m2.get_value() == 0:
+                    crosses.add(Cross(m1).scale(1.5))
+                    rect = SurroundingRectangle(VGroup(m1, m2))
+                    rect.set_fill(RED, 0.2)
+                    rect.set_stroke(width=0)
+                    rects.add(rect)
+        self.play(
+            ShowCreation(crosses, lag_ratio=0),
+            FadeIn(rects, lag_ratio=0.1)
+        )
+
+    def anticipate_frame_to_y(self, y, run_time=3):
+        turn_animation_into_updater(
+            ApplyMethod(self.frame.set_y, y, run_time=run_time)
+        )
+
 
 class SieveOfEratosthenes(InteractiveScene):
+    grid_shape = (10, 10)
+    n_iterations = 10
+    rect_buff = 0.1
+
     def construct(self):
         # Initialize grid
-        grid = Square().get_grid(10, 10, buff=0)
+        grid = Square().get_grid(*self.grid_shape, buff=0)
         grid.set_height(FRAME_HEIGHT - 1)
         grid.set_stroke(width=1)
-        number_mobs = VGroup(*(
-            Integer(i).set_height(0.3 * box.get_height()).move_to(box)
-            for i, box in zip(it.count(1), grid)
-        ))
+        number_mobs = self.get_number_mobs(grid)
+        number_mobs[0].set_opacity(0)
 
         self.add(grid, number_mobs)
 
         # Run the sieve
         modulus = 2
         numbers = list(range(2, len(grid) + 1))
-        for n in range(10):
-            globals().update(locals())
+        for n in range(self.n_iterations):
             numbers = list(filter(lambda n: n % modulus != 0, numbers))
             to_remove = VGroup(*(
                 mob
@@ -492,7 +806,7 @@ class SieveOfEratosthenes(InteractiveScene):
                 if mob.get_value() % modulus == 0
             ))
             rects = VGroup(*(
-                SurroundingRectangle(tr, buff=0.1)
+                SurroundingRectangle(tr, buff=self.rect_buff)
                 for tr in to_remove
                 if tr.get_fill_opacity() > 0.5
             ))
@@ -512,3 +826,22 @@ class SieveOfEratosthenes(InteractiveScene):
                 FadeOut(rects)
             )
             modulus = numbers[0]
+
+    def get_number_mobs(self, grid):
+        return VGroup(*(
+            Integer(i).set_height(0.3 * box.get_height()).move_to(box)
+            for i, box in zip(it.count(1), grid)
+        ))
+
+
+class GiantSieve(SieveOfEratosthenes):
+    grid_shape = (25, 25)
+    n_iterations = 30
+    rect_buff = 0.02
+
+    # def get_number_mobs(self, grid):
+    #     radius = grid[0].get_width() / 4
+    #     return VGroup(*(
+    #         Dot(radius=radius).move_to(box)
+    #         for box in grid
+    #     ))

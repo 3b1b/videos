@@ -81,7 +81,10 @@ class WavesByOpacity(ScalarFieldByOpacity):
 # Scenes
 
 
-class SimpleSnellsLaw(InteractiveScene):
+class SnellsLaw(InteractiveScene):
+    # index = 1.5
+    index = 1.0
+
     def construct(self):
         # Setup key objects
         medium = FullScreenRectangle()
@@ -89,22 +92,8 @@ class SimpleSnellsLaw(InteractiveScene):
         medium.stretch(0.5, 1, about_edge=DOWN)
 
         hit_point = medium.get_top()
-
-        theta1 = 40 * DEGREES
-        theta2 = 25 * DEGREES
-
-        in_beam = Line(
-            hit_point + 0.6 * FRAME_HEIGHT * rotate_vector(UP, theta1) / math.cos(theta1),
-            hit_point,
-        )
-        out_beam = Line(
-            hit_point,
-            hit_point + 0.6 * FRAME_HEIGHT * rotate_vector(DOWN, theta2) / math.cos(theta2),
-        )
-        beams = VGroup(in_beam, out_beam)
-        beams.set_stroke(YELLOW, 3)
-        full_beam = in_beam.copy()
-        full_beam.append_vectorized_mobject(out_beam)
+        angle_tracker = ValueTracker(40 * DEGREES)
+        beam = self.get_beam(angle_tracker, hit_point)
 
         glow = GlowDot(color=YELLOW)
 
@@ -113,57 +102,94 @@ class SimpleSnellsLaw(InteractiveScene):
         # Shine in
         anim_kw = dict(run_time=3, rate_func=linear)
         self.play(
-            ShowCreation(full_beam, **anim_kw),
-            UpdateFromFunc(glow, lambda m: m.move_to(full_beam.get_end()))
+            ShowCreation(beam, **anim_kw),
+            UpdateFromFunc(glow, lambda m: m.move_to(beam.get_end()))
         )
         self.wait()
+
+        # Add angle labels
+        normal_line = Line(2 * UP, 2 * DOWN)
+        normal_line.move_to(hit_point)
+        normal_line.set_stroke(WHITE, 1)
+
+        def get_theta1():
+            return angle_tracker.get_value()
+
+        def get_theta2():
+            return np.arcsin(np.sin(get_theta1()) / self.index)
+
+        arc_kw = dict(radius=0.8, stroke_width=1)
+        arc1 = always_redraw(lambda: Arc(90 * DEGREES, get_theta1(), **arc_kw))
+        arc2 = always_redraw(lambda: Arc(-90 * DEGREES, get_theta2(), **arc_kw))
+        theta1_label = Tex(R"\theta_1")
+        theta1_label.arc = arc1
+        theta2_label = Tex(R"\theta_2")
+        theta2_label.arc = arc2
+
+        def update_theta_label(label):
+            point = label.arc.pfp(0.2)
+            vect = normalize(point - hit_point)
+            label.set_height(min(0.4, max(1.0 * label.arc.get_width(), 1e-2)))
+            label.next_to(point, vect, buff=SMALL_BUFF)
+
+        theta1_label.add_updater(update_theta_label)
+        theta2_label.add_updater(update_theta_label)
+
+        ineq = Tex(R"\theta_1 > \theta_2")
+        ineq.move_to(FRAME_WIDTH * RIGHT / 4 + 3 * UP)
+
+        self.play(
+            LaggedStart(
+                ShowCreation(normal_line),
+                ShowCreation(arc1),
+                ShowCreation(arc2),
+                Write(theta1_label),
+                Write(theta2_label),
+                lag_ratio=0.1,
+                run_time=1
+            ),
+            FadeIn(ineq, UP)
+        )
+        self.wait()
+
+        angle_labels = VGroup(normal_line, arc1, arc2, theta1_label, theta2_label)
+
+        # Vary the angle for a bit
+        self.remove(arc2, theta2_label, ineq)
+
+        beam.set_stroke(opacity=1, width=2)
+        for width in np.linspace(2, 10.0, 40):
+            beam_copy = beam.copy()
+            beam_copy.set_stroke(width=width, opacity=0.2 / (width)**1.4)
+            self.add(beam_copy)
+
+        for angle in [70 * DEGREES, -50 * DEGREES, 40 * DEGREES]:
+            self.play(angle_tracker.animate.set_value(angle), run_time=5)
 
         # Tank analogy
         tank = SVGMobject("tank")
         tank.set_fill(WHITE)
         tank.rotate(-16 * DEGREES)
         tank.set_height(1)
-        tank.move_to(in_beam)
+        tank.move_to(beam.pfp(0.25))
 
+        self.play(FadeOut(angle_labels))
+        self.frame.set_height(4)
         self.play(
-            tank.animate.move_to(in_beam.pfp(0.9)).set_anim_args(rate_func=linear, run_time=3),
+            tank.animate.move_to(beam.pfp(0.49)).set_anim_args(rate_func=linear, run_time=6),
             VFadeIn(tank),
+            self.frame.animate.set_height(4).set_anim_args(time_span=(4, 6))
         )
         self.play(
-            tank.animate.rotate(theta2 - theta1).move_to(hit_point + 0.3 * UP + 0.1 * LEFT),
+            tank.animate.rotate(get_theta2() - get_theta1()).move_to(hit_point + 0.3 * UP + 0.1 * LEFT),
             rate_func=linear,
             run_time=1.5,
         )
         self.play(
-            tank.animate.move_to(out_beam.pfp(0.5)).set_anim_args(rate_func=linear, run_time=8),
-            VFadeOut(tank, time_span=(7, 8))
+            tank.animate.move_to(beam.pfp(0.65)).set_anim_args(rate_func=linear, run_time=8),
+            VFadeOut(tank, time_span=(7, 8)),
+            self.frame.animate.set_height(8).set_anim_args(time_span=(6, 8))
         )
-        self.wait()
-
-        # Describe angles
-        normal_line = Line(2 * UP, 2 * DOWN)
-        normal_line.move_to(hit_point)
-        normal_line.set_stroke(WHITE, 3)
-
-        arc_kw = dict(radius=0.8, stroke_width=3)
-        arc1 = Arc(90 * DEGREES, theta1, **arc_kw)
-        arc2 = Arc(-90 * DEGREES, theta2, **arc_kw)
-        theta1_label = Tex(R"\theta_1")
-        theta2_label = Tex(R"\theta_2")
-        for label, arc in [(theta1_label, arc1), (theta2_label, arc2)]:
-            point = arc.pfp(0.2)
-            vect = normalize(point - hit_point)
-            label.next_to(point, vect, buff=SMALL_BUFF)
-
-        self.play(LaggedStart(
-            ShowCreation(normal_line),
-            ShowCreation(arc1),
-            Write(theta1_label),
-            ShowCreation(arc2),
-            Write(theta2_label),
-            lag_ratio=0.3,
-            run_time=2
-        ))
         self.wait()
 
         # Write Snell's law
@@ -173,10 +199,15 @@ class SimpleSnellsLaw(InteractiveScene):
         group.arrange(DOWN, buff=0.75)
         group.to_corner(UR)
 
+        self.play(FadeIn(angle_labels))
         self.play(
             Write(title),
-            FlashUnder(title, run_time=2)
+            FlashUnder(title, run_time=2),
+            FadeOut(ineq[">"]),
+            Transform(ineq[R"\theta_1"], law[R"\theta_1"]),
+            Transform(ineq[R"\theta_2"], law[R"\theta_2"]),
         )
+        self.play(FadeIn(law))
         self.wait()
         tl1_copy = theta1_label.copy()
         tl2_copy = theta2_label.copy()
@@ -189,7 +220,13 @@ class SimpleSnellsLaw(InteractiveScene):
         self.remove(tl1_copy, tl2_copy)
         self.wait()
 
+        # Vary the angle again
+        for angle in [70 * DEGREES, 20 * DEGREES, 40 * DEGREES]:
+            self.play(angle_tracker.animate.set_value(angle), run_time=3)
+
         # Show speeds
+        in_beam = Line(beam.get_start(), hit_point)
+        out_beam = Line(hit_point, beam.get_end())
         in_beam.set_length(8, about_point=hit_point)
 
         def get_dot_anim():
@@ -208,6 +245,22 @@ class SimpleSnellsLaw(InteractiveScene):
             lag_ratio=0.02,
             run_time=20,
         ))
+
+    def get_beam(self, angle_tracker, hit_point, stroke_color=YELLOW, stroke_width=3):
+        result = Line()
+        result.set_stroke(stroke_color, stroke_width)
+
+        def update_beam(beam):
+            theta1 = angle_tracker.get_value()
+            theta2 = np.arcsin(np.sin(theta1) / self.index)
+            beam.set_points_as_corners([
+                hit_point + 0.6 * FRAME_HEIGHT * rotate_vector(UP, theta1) / math.cos(theta1),
+                hit_point,
+                hit_point + 0.6 * FRAME_HEIGHT * rotate_vector(DOWN, theta2) / math.cos(theta2),
+            ])
+
+        result.add_updater(update_beam)
+        return result
 
 
 class WavesIntoAngledMedium(InteractiveScene):
@@ -288,9 +341,13 @@ class TransitionToOverheadView(WavesIntoAngledMedium):
         plane.axes.set_stroke(width=1)
         plane.fade(0.5)
 
-        frame.reorient(0, 90).set_height(6)
         self.add(plane, medium, wave_1d)
+        frame.reorient(-37, 61, 0)
 
+        self.play(
+            frame.animate.reorient(0, 90).set_height(6),
+            run_time=5,
+        )
         self.wait(10)
 
         # Highlight wave length
@@ -416,7 +473,49 @@ class AngledMediumSingleFront(AngledMedium):
 
 class AngledMediumAnnotations(InteractiveScene):
     def construct(self):
-        plane = NumberPlane()
+        # Set up the lane
+        h_lines = Line(LEFT, RIGHT).replicate(3)
+        h_lines.set_width(0.7 * FRAME_WIDTH)
+        h_lines.arrange(DOWN, buff=0.5)
+        h_lines.move_to(ORIGIN, RIGHT)
+
+        index = WavesIntoAngledMedium.index
+        angle = math.asin(math.sin(45 * DEGREES) / index)
+        diag_lines = h_lines.copy()
+        for line1, line2 in zip(h_lines, diag_lines):
+            line2.move_to(line1.get_end(), LEFT)
+            line2.rotate(-angle, about_point=line1.get_end())
+
+        lane_points = [
+            h_lines[0].get_left(),
+            h_lines[0].get_right(),
+            diag_lines[0].get_end(),
+            diag_lines[2].get_end(),
+            h_lines[2].get_right(),
+            h_lines[2].get_left(),
+        ]
+
+        fade_rect = FullScreenFadeRectangle()
+        fade_rect.scale(1.5)
+        fade_rect.start_new_path(lane_points[-1])
+        for point in lane_points:
+            fade_rect.add_line_to(point)
+
+        fade_rect.set_fill(BLACK, 0.8)
+
+        beam = h_lines[1].copy()
+        beam.add_line_to(diag_lines[1].get_end())
+        beam.set_stroke(YELLOW, 1.5)
+        beam.insert_n_curves(100)
+
+        self.play(
+            FadeIn(fade_rect),
+        )
+        self.play(
+            ShowCreation(beam, run_time=3),
+            VShowPassingFlash(beam.copy().set_stroke(width=5), run_time=3)
+        )
+        self.wait()
 
 
 class LineGame(InteractiveScene):
@@ -446,7 +545,6 @@ class LineGame(InteractiveScene):
             line_color=GREEN,
             dot_color=YELLOW
         ))
-        low_lines.suspend_updating()
 
         top_spacing_label = self.get_spacing_label(top_lines[1], R"\lambda_1")
         low_spacing_label = self.get_spacing_label(low_lines[1], R"\lambda_2")
@@ -456,9 +554,14 @@ class LineGame(InteractiveScene):
         self.play(FadeIn(top_lines, lag_ratio=0.1))
         self.play(Write(top_spacing_label))
         self.wait()
-        self.highlight_intersection_points(top_lines, PINK)
+        self.highlight_intersection_points(top_lines, PINK, LEFT)
         self.wait()
 
+        # Reposition lower lines
+        key_angle = -19.9 * DEGREES
+        dial.rotate(key_angle)
+        low_lines.update()
+        low_spacing_label.rotate(key_angle, about_point=ORIGIN)
         top_lines.save_state()
         self.play(
             top_lines.animate.fade(0.8),
@@ -466,7 +569,14 @@ class LineGame(InteractiveScene):
         )
         self.play(Write(low_spacing_label))
         self.wait()
-        self.highlight_intersection_points(low_lines, YELLOW)
+        dial.set_stroke(opacity=0)
+        self.play(
+            Rotate(dial, -key_angle, run_time=2, remover=True),
+            Rotate(low_spacing_label, -key_angle, run_time=2, about_point=ORIGIN),
+        )
+        dial.set_stroke(opacity=1)
+        self.wait()
+        self.highlight_intersection_points(low_lines, YELLOW, RIGHT)
         self.play(Restore(top_lines))
 
         # Rotate lower lines
@@ -571,36 +681,57 @@ class LineGame(InteractiveScene):
         label.set_fill(border_width=0.5)
         return result
 
-    def highlight_intersection_points(self, line_group, color):
+    def highlight_intersection_points(self, line_group, color, arrow_direction=LEFT):
+        points = VGroup(*(p for p in line_group[0] if -4 < p.get_y() < 4))
+        arrows = VGroup(*(
+            Vector(arrow_direction).next_to(point, -arrow_direction, SMALL_BUFF)
+            for point in points
+        ))
+        arrows.set_color(color)
+        self.play(LaggedStartMap(GrowArrow, arrows, lag_ratio=0.25))
         self.play(
             LaggedStartMap(Indicate, line_group[0], scale_factor=2, color=color, lag_ratio=0.2),
             LaggedStartMap(FlashAround, line_group[0], buff=0.2, color=color, lag_ratio=0.2),
-            run_time=8,
+            run_time=4,
         )
+        self.play(FadeOut(arrows))
 
 
 class Prism(InteractiveScene):
     def construct(self):
-        # Add prism
-        prism = Triangle()
-        prism.set_height(4)
-        prism.set_stroke(WHITE, 1)
-        prism.set_fill(BLUE, 0.2)
+        # Add flat
+        flat_prism = Triangle()
+        flat_prism.set_height(4)
+        flat_prism.set_stroke(WHITE, 1)
+        flat_prism.set_fill(BLUE, 0.2)
 
-        verts = prism.get_vertices()
+        prism = Prismify(flat_prism, depth=5)
+        prism.set_fill(BLUE_D, 0.25, border_width=0)
+        prism.set_stroke(WHITE, 0)
+        prism.sort(lambda p: -p[2])
+        prism.apply_depth_test()
+        prism.deactivate_depth_test()
+        prism.set_shading(0.5, 0.5, 0)
+
+        verts = flat_prism.get_vertices()
         in_edge = Line(verts[0], verts[1])
         out_edge = Line(verts[0], verts[2])
 
-        self.add(prism)
+        self.add(flat_prism)
 
         # Beams of light
-        in_beam = Line(LEFT_SIDE, in_edge.get_center())
+        frame = self.frame
+        self.camera.light_source.move_to((-10, -10, 10))
+
+        left_side = 10 * LEFT
+        in_beam = Line(left_side, in_edge.get_center())
         in_beam.set_stroke(WHITE, 3)
 
         def get_beams(light_in):
             return self.get_beams(
                 min_index=1.3,
-                max_index=1.4,
+                # max_index=1.4,
+                max_index=1.45,
                 n_beams=200,
                 in_beam=light_in,
                 in_edge=in_edge,
@@ -613,15 +744,49 @@ class Prism(InteractiveScene):
             ShowCreation(in_beam, time_span=(0, 1.0)),
             rate_func=linear
         )
-        for vect, alpha in zip([DOWN, 2 * UP, ORIGIN], [0.3, 0.3, 0.5]):
+
+        # Show x-ray
+        x_ray = self.get_beams(0.8, 0.8, 1, in_beam, in_edge, out_edge)
+        x_ray.set_stroke("#FF00D5", 8)
+
+        self.add(x_ray, in_beam)
+        self.play(ShowCreation(x_ray, run_time=2))
+        self.wait()
+        self.remove(x_ray)
+
+        # Transition to 3d
+        self.play(
+            FadeOut(flat_prism),
+            FadeIn(prism),
+            frame.animate.reorient(-90, 35, 90).set_height(15).move_to(RIGHT + 4 * DOWN),
+            run_time=4,
+        )
+        turn_animation_into_updater(
+            ApplyMethod(frame.reorient, -90, 10, 90, run_time=15)
+        )
+
+        # for vect, alpha in zip([DOWN, 2 * UP, ORIGIN], [0.3, 0.3, 0.5]):
+        for vect, alpha in zip([5 * DOWN, 3 * DOWN, 4 * DOWN], [0.3, 0.3, 0.5]):
             self.play(
-                in_beam.animate.put_start_and_end_on(LEFT_SIDE + vect, in_edge.pfp(alpha)),
-                run_time=5
+                in_beam.animate.put_start_and_end_on(left_side + vect, in_edge.pfp(alpha)),
+                # run_time=5
             )
+
+        # Back to 2d
+        frame.clear_updaters()
+        self.play(
+            frame.animate.reorient(0, 0, 0).set_height(8),
+            in_beam.animate.put_start_and_end_on(left_side + 2 * DOWN, in_edge.get_center()),
+            FadeOut(prism, time_span=(1, 2)),
+            FadeIn(flat_prism, time_span=(1, 2)),
+            run_time=2,
+        )
+
         self.wait()
 
     def get_beams(self, min_index, max_index, n_beams, in_beam, in_edge: Line, out_edge: Line):
-        indices = np.linspace(min_index, max_index, n_beams)
+        alphas = np.linspace(0, 1, n_beams)**1.5
+        indices = interpolate(min_index, max_index, alphas)
 
         normal1 = rotate_vector(normalize(in_edge.get_vector()), PI / 2)
         normal2 = rotate_vector(normalize(out_edge.get_vector()), PI / 2)
@@ -650,15 +815,15 @@ class Prism(InteractiveScene):
 
         beams = VGroup(*(
             VMobject().set_points_as_corners([
-                in_point - 0.5 * FRAME_WIDTH * vect1,
+                in_point - 1.0 * FRAME_WIDTH * vect1,
                 in_point,
                 out_point,
-                out_point + 0.75 * FRAME_WIDTH * vect3
+                out_point + 3.0 * FRAME_WIDTH * vect3
             ])
             for out_point, vect3 in zip(out_points, vect3s)
         ))
 
         for alpha, beam in zip(np.linspace(0, 1, n_beams), beams):
-            beam.set_stroke(get_spectral_color(alpha), 0.5, opacity=1)
+            beam.set_stroke(get_spectral_color(alpha), 1, opacity=0.8)
 
         return beams

@@ -2,6 +2,24 @@ from manim_imports_ext import *
 from _2023.barber_pole.objects import *
 
 
+
+def get_influence_ring(center_point, color=WHITE, speed=2.0, max_width=3.0, width_decay_exp=0.5):
+    ring = Circle()
+    ring.set_stroke(color)
+    ring.move_to(center_point)
+    ring.time = 0
+
+    def update_ring(ring, dt):
+        ring.time += dt
+        radius = ring.time * speed
+        ring.set_width(max(2 * radius, 1e-3))
+        ring.set_stroke(width=max_width / (1 + radius)**width_decay_exp)
+        return ring
+
+    ring.add_updater(update_ring)
+    return ring
+
+
 # Scenes
 
 
@@ -703,20 +721,177 @@ class IntroduceEField(InteractiveScene):
         self.wait(30)
 
     def get_influence_ring(self, center_point, color=WHITE, speed=2.0, max_width=3.0, width_decay_exp=0.5):
-        ring = Circle()
-        ring.set_stroke(color)
-        ring.move_to(center_point)
-        ring.time = 0
+        return get_influence_ring(center_point, color, speed, max_width, width_decay_exp)
 
-        def update_ring(ring, dt):
-            ring.time += dt
-            radius = ring.time * speed
-            ring.set_width(max(2 * radius, 1e-3))
-            ring.set_stroke(width=max_width / (1 + radius)**width_decay_exp)
-            return ring
 
-        ring.add_updater(update_ring)
-        return ring
+class AltEFieldIntroduction(IntroduceEField):
+    def construct(self):
+        # Title
+        title1 = TexText(R"Light $\rightarrow$ Wave in the Electromagnetic field")
+        title2 = TexText(R"Electric field")
+        title2.scale(1.5)
+        VGroup(title1, title2).to_edge(UP)
+
+        self.add(title1)
+        self.wait()
+        self.play(
+            TransformMatchingStrings(title1, title2)
+        )
+        title2.add_to_back(BackgroundRectangle(title2))
+
+        # Add field
+        density = 4.0
+        charges = Group(
+            ChargedParticle(ORIGIN, 1),
+            ChargedParticle(3 * UL, -1, color=BLUE, sign="-"),
+            ChargedParticle([3, -2, 0], 2),
+            ChargedParticle([5, 1, 0], -2, color=BLUE, sign="-"),
+        )
+        field_config = dict(
+            x_density=density,
+            y_density=density,
+            width=2 * FRAME_WIDTH,
+        )        
+        c_field = CoulombField(*charges, **field_config)
+        c_field_opacity_tracker = ValueTracker(0)
+        c_field.add_updater(lambda m: m.set_stroke(opacity=c_field_opacity_tracker.get_value()))
+        points = DotCloud(c_field.sample_points, radius=0.02)
+        points.make_3d()
+        points.set_color(BLUE)
+        points.move_to(0.01 * IN)
+
+        self.add(points, charges, title2)
+        self.play(
+            ShowCreation(points),
+            FadeIn(charges),
+        )
+        self.add(points, c_field, charges, title2)
+        self.play(
+            charges[0].animate.shift(0.0001 * UP).set_anim_args(rate_func=there_and_back),
+            c_field_opacity_tracker.animate.set_value(1),
+        )
+        self.wait()
+
+        # Show example charge
+        for charge in charges:
+            charge.save_state()
+            charge.target = charge.generate_target()
+            charge.target.fade(0.5)
+            charge.target.scale(1e-3)
+
+        hyp_charge = ChargedParticle(sign="+1")
+        hyp_charge.move_to(UR)
+        vect = Vector(stroke_color=YELLOW)
+        vect.charge = hyp_charge
+        vect.field = c_field
+        glow = GlowDot(hyp_charge.get_center(), color=RED, radius=0.5)
+        hyp_charge.add_to_back(glow)
+
+        hyp_words = Text("Hypothetical\nunit charge", font_size=24)
+        hyp_words.set_backstroke(BLACK, 5)
+        hyp_words.charge = hyp_charge
+        hyp_words.add_updater(lambda m: m.next_to(m.charge, buff=-SMALL_BUFF))
+
+        def update_vect(vect):
+            p = vect.charge.get_center()
+            vect.put_start_and_end_on(p, p + vect.field.func([p])[0])
+            return vect
+
+        vect.add_updater(update_vect)
+
+        self.play(
+            *map(MoveToTarget, charges),
+            c_field_opacity_tracker.animate.set_value(0.5),
+            VFadeIn(vect),
+            FadeIn(hyp_charge),
+            FadeIn(hyp_words),
+        )
+        for point in [UL, (-3, 2, 0), (2, -3, 0)]:
+            self.play(hyp_charge.animate.move_to(point + 0.05 * OUT), run_time=5)
+
+        # Emphasize coulombenss
+        c1 = charges[0]
+        c2 = ChargedParticle((FRAME_WIDTH - 2) * RIGHT)
+        c1.charge = c2.charge = 0.5
+        l_field = ColoumbPlusLorentzField(
+            c1, c2,
+            norm_to_opacity_func=lambda n: np.arctan(n),
+            **field_config
+        )
+        self.play(
+            FadeOut(points),
+            ReplacementTransform(c_field, l_field),
+            Restore(c1),
+            FadeOut(hyp_charge),
+            FadeOut(hyp_words),
+            FadeOut(vect),
+            *(
+                c.animate.move_to(10 * c.get_center())
+                for c in charges[1:]
+            ),
+        )
+        self.add(l_field, charges[0], title2)
+        self.wait()
+
+        hyp_charge.next_to(charges[0], RIGHT, buff=0.5)
+        vect.field = l_field
+        self.play(
+            VFadeIn(vect),
+            FadeIn(hyp_charge),
+        )
+        self.play(
+            hyp_charge.animate.next_to(charges[0], LEFT, buff=0.5).set_anim_args(path_arc=PI),
+            run_time=8,
+        )
+        self.play(
+            FadeOut(hyp_charge),
+            FadeOut(vect),
+            FadeOut(title2),
+        )
+
+        # Shake the charge
+        def wiggle_charge(charge, direction, run_time=2):
+            return charge.animate.shift(direction).set_anim_args(
+                rate_func=lambda t: wiggle(t, 3),
+                run_time=run_time,
+                suspend_mobject_updating=False,
+            )
+
+        self.play(wiggle_charge(c1, 0.5 * UP))
+        self.wait(5)
+
+        # Indicate speed
+        ring = self.get_influence_ring(c1.get_center())
+        speed_words = Text("Speed = c", font_size=36)
+        speed_words.set_backstroke(BLACK, 5)
+        speed_words.ring = ring
+        speed_words.add_updater(lambda m: m.next_to(m.ring.get_right(), LEFT, SMALL_BUFF))
+        self.add(ring, speed_words)
+        self.play(
+            wiggle_charge(c1, 0.5 * UP),
+            VFadeIn(speed_words)
+        )
+        self.wait(5)
+
+        # Show second charge
+        self.add(c2)
+        self.play(
+            self.frame.animate.move_to(Group(c1, c2)),
+            run_time=3
+        )
+
+        amp = 0.5
+        for sign in [1, -1, 1, -1]:
+            q1, q2 = (c1, c2) if sign > 0 else (c2, c1)
+            ring = self.get_influence_ring(q1.get_center())
+            ring.set_stroke(opacity=0)
+            dist = get_norm(q1.get_center() - q2.get_center())
+            self.add(ring)
+            self.play(wiggle_charge(q1, sign * amp * UP))
+            globals().update(locals())
+            self.wait_until(lambda: ring.get_radius() > dist)
+            amp *= 0.4
+        self.wait(4)
 
 
 class TestForMithuna(InteractiveScene):
@@ -873,6 +1048,45 @@ class ShowTheEffectsOfOscillatingCharge(InteractiveScene):
     def construct(self):
         # Test
         self.wait(20)
+
+
+class SendingLittlePulses(ShowTheEffectsOfOscillatingCharge):
+    axes_config = dict(
+        axis_config=dict(stroke_opacity=0.7),
+        x_range=(0, 10),
+        y_range=(-3, 3),
+        z_range=(-1, 1),
+    )
+    field_config = dict(
+        max_vect_len=0.25,
+        stroke_opacity=0.75,
+        radius_of_suppression=1.0,
+        height=10,
+        x_density=4.0,
+        y_density=4.0,
+        c=2.0,
+        norm_to_opacity_func=lambda n: np.clip(1.5 * n, 0, 0.8)
+    )
+
+    def add_axis_labels(self, axes):
+        pass
+
+    def construct(self):
+        # Setup
+        self.axes.z_axis.set_stroke(opacity=0)
+        self.axes.y_axis[-1]
+        particle = self.particles[0]
+        particle.clear_updaters()
+
+        # Test
+        for _ in range(10):
+            shake_size = 0.5 + random.random()
+            self.play(
+                particle.animate.shift(0.06 * shake_size * UP),
+                rate_func=lambda t: wiggle(t, 2), run_time=(shake_size),
+            )
+            self.wait(random.choice([1, 2]))
+        self.wait(4)
 
 
 class OscillateOnYOneDField(ShowTheEffectsOfOscillatingCharge):
@@ -1076,6 +1290,14 @@ class ChargeOnZAxis(ShowTheEffectsOfOscillatingCharge):
         self.play(self.frame.animate.reorient(24, 66, 0), run_time=10)
 
 
+class ThreeCharges(ChargeOnZAxis):
+    def get_particles(self):
+        return Group(*(
+            ChargedParticle(**self.particle_config)
+            for n in range(3)
+        )).arrange(UP, buff=2)
+
+
 class Introduce3dMovements(ChargeOnZAxis):
     axes_config = dict(
         axis_config=dict(stroke_opacity=0.7),
@@ -1204,6 +1426,34 @@ class RowOfCharges(ChargeOnZAxis):
             ChargedParticle(**self.particle_config)
             for n in range(self.n_charges)
         )).arrange(UP, buff=self.particle_buff)
+
+
+class PlaneOfCharges(RowOfCharges):
+    n_rows = 20
+    n_cols = 20
+    particle_buff = 0.1
+    grid_height = 6
+
+    particle_config = dict(
+        rotation=PI / 2,
+        track_position_history=True,
+        radius=0.05,
+        show_sign=False,
+        charge=2.0 / 400.0,
+    )
+
+    def get_particles(self):
+        result = Group(*(
+            ChargedParticle(**self.particle_config)
+            for _ in range(self.n_rows * self.n_cols)
+        ))
+        result.arrange_in_grid(
+            self.n_rows, self.n_cols,
+            buff=self.particle_buff
+        )
+        result.set_width(self.grid_height)
+        result.rotate(PI / 2, UP)
+        return result
 
 
 class RowOfChargesMoreCharges(RowOfCharges):
@@ -1664,3 +1914,385 @@ class PolarizedScatteringYZ(PolarizedScattering):
         stroke_color=BLUE,
         norm_to_opacity_func=lambda n: np.clip(n, 0, 1.0)
     )
+
+
+class OneOfManyCharges(InteractiveScene):
+    speed = 1.5
+    wave_len = 3
+    default_frame_orientation=(0, 70, 0)
+    dot_amplitude_factor = 0.2
+    plane_wave_field_config = dict(
+        x_density=4.0,
+        y_density=0.5,
+        z_density=1.0,
+        width=28,
+        height=0,
+        depth=12,
+        tip_width_ratio=3,
+        stroke_color=TEAL,
+        stroke_width=3,
+        stroke_opacity=0.5,
+        norm_to_opacity_func=(lambda n: 2 * n),
+        max_vect_len=1.0
+    )
+    plane_wave_amlpitude = 0.5
+    charge_field_config = dict(
+        x_density=4.0,
+        y_density=4.0,
+        z_density=4.0,
+        width=28,
+        height=0,
+        depth=16,
+        tip_width_ratio=3,
+        stroke_color=BLUE,
+        stroke_width=3,
+        norm_to_opacity_func=(lambda n: np.tanh(n)),
+    )
+    charge_index = 3155
+
+    dots_dims = (11, 20, 20)
+    dots_shape = (6, 4, 4)
+
+    def setup(self):
+        super().setup()
+
+        # Axes
+        self.axes = ThreeDAxes()
+        self.add(self.axes)
+
+        # Add incoming wave
+        omega = TAU * self.speed / self.wave_len
+        k = TAU / self.wave_len
+        amplitude = 0.5
+
+        def plane_wave_func(points, t):
+            return self.plane_wave_amlpitude * np.outer(
+                np.cos(k * np.dot(points, RIGHT) - omega * t),
+                OUT
+            )
+
+        plane_wave = TimeVaryingVectorField(
+            plane_wave_func,
+            **self.plane_wave_field_config
+        )
+
+        plane_wave.opacity_multiplier = ValueTracker(1)
+        plane_wave.add_updater(lambda m: m.set_stroke(opacity=m.opacity_multiplier.get_value() * m.get_stroke_opacities()))
+
+        self.plane_wave_func = plane_wave_func
+        self.plane_wave = plane_wave
+        self.add(plane_wave)
+
+        # Add 3d grid of charges
+        dots = DotCloud(color=BLUE)
+        dots.to_grid(*self.dots_dims, height=None)
+        dots.set_radius(0)
+        dots.set_shape(*self.dots_shape)
+        dots.set_radius(0.05)
+        dots.make_3d(0.1)
+
+        self.dot_center_refs = dots.copy()
+        self.dot_center_refs.set_opacity(0)
+        self.dot_center_refs.set_radius(0)
+
+        def update_dots(dots):
+            centers = self.dot_center_refs.get_points()
+            offsets =  plane_wave.func(centers)
+            offsets *= self.dot_amplitude_factor
+            dots.set_points(centers + offsets)
+
+        dots.add_updater(update_dots)
+
+        dots.opacity_multiplier = ValueTracker(0.75)
+        dots.add_updater(lambda m: m.set_opacity(m.opacity_multiplier.get_value()))
+
+        self.dots = dots
+        self.add(dots)
+
+
+    def construct(self):
+        # Pan a little to start
+        frame = self.frame
+        self.play(
+            frame.animate.reorient(25, 72, 0),
+            run_time=4
+        )
+
+        # Create field based on the charges
+        if self.charge_index > 0:
+            charge = ChargedParticle(
+                charge=-5,
+                color=BLUE,
+                show_sign=False,
+                radius=0.1
+            )
+            charge.add_updater(lambda m: m.move_to(self.dots.get_points()[self.charge_index]))
+            charge.update()
+            charge.ignore_last_motion()
+            charge_field = LorentzField(
+                charge,
+                center=charge.get_y() * UP,
+                radius_of_suppression=0.2,
+                **self.charge_field_config
+            )
+            # acc_vect = AccelerationVector(charge)
+            acc_vect = VectorizedPoint()
+
+            self.add(charge_field, acc_vect, charge, self.dots)
+            self.play(
+                self.plane_wave.opacity_multiplier.animate.set_value(0),
+                self.dots.opacity_multiplier.animate.set_value(0.1),
+                FadeIn(charge, suspend_mobject_updating=False),
+                VFadeIn(acc_vect),
+                run_time=2,
+            )
+        else:
+            self.play(
+                self.dots.opacity_multiplier.animate.set_value(0.2),
+                run_time=2
+            )
+        self.play(
+            frame.animate.reorient(25, 72, 0),
+            run_time=8
+        )
+        self.play(
+            frame.animate.reorient(-25, 72, 0),
+            run_time=8
+        )
+
+
+class AlternateCompositeChargesInPlane(OneOfManyCharges):
+    dots_dims = (11, 10, 10)
+    dots_shape = (6, 4, 4)
+    random_seed = 2
+
+    def construct(self):
+        # Objects
+        frame = self.frame
+        plane_wave = self.plane_wave
+        dots = self.dots
+        dots.set_radius(0.075)
+        dots.opacity_multiplier.set_value(1)
+
+        # Some panning
+        frame.reorient(-17, 76, 0)
+        self.play(
+            frame.animate.reorient(16, 77, 0),
+            run_time=12
+        )
+
+        # Reorient
+        self.play(
+            dots.animate.set_height(0, stretch=True),
+            self.dot_center_refs.animate.set_height(0, stretch=True),
+            frame.animate.reorient(0, 90).set_height(6),
+            self.axes.y_axis.animate.set_stroke(opacity=0),
+            plane_wave.opacity_multiplier.animate.set_value(0.5),
+            run_time=2,
+        )
+        self.wait(2)
+        self.play(
+            dots.opacity_multiplier.animate.set_value(0.25),
+            plane_wave.opacity_multiplier.animate.set_value(0.0),
+        )
+        self.wait()
+
+        # Add charges
+        w, h, d = self.dots_dims
+        indices = np.arange(0, w * h * d, w)
+        charge = ChargedParticle(
+            color=BLUE,
+            radius=dots.get_radius(),
+            show_sign=False,
+        )
+        charges = charge.replicate(len(indices))
+        charges.apply_depth_test(False)
+        for charge, index in zip(charges, indices):
+            charge.index = index
+            charge.add_updater(lambda m: m.move_to(dots.get_points()[m.index] + 0.01 * DOWN))
+        
+        charges.shuffle()
+
+        charges[0].update()
+        charges[0].ignore_last_motion()
+        charge_field = LorentzField(
+            charges[0],
+            radius_of_suppression=0.2,
+            **self.charge_field_config
+        )
+        self.add(charges[0])
+        self.add(charge_field)
+        self.wait(3)
+
+        start_time = float(self.time)
+        for n, charge in enumerate(charges[1:]):
+            charge.update()
+            charge.ignore_last_motion()
+
+            if n < 2:
+                time = 3
+            if n < 5:
+                time = 2
+            elif n < 15:
+                time = 1
+            else:
+                time = 0.2
+
+            charge_field.charges.append(charge)
+            n_charges = len(charge_field.charges)
+            alpha = inverse_interpolate(start_time, start_time + 30, self.time)
+            q_per_particle = interpolate(1, 0.5, alpha)
+            for c2 in charge_field.charges:
+                c2.charge = q_per_particle
+
+            self.add(charge)
+            self.wait(time)
+
+        self.wait(30)
+
+
+class FullCompositeEffect(OneOfManyCharges):
+    default_frame_orientation = (-25, 72, 0)
+    dot_amplitude_factor = 0.1
+    index = 1.75
+
+    def construct(self):
+        frame = self.frame
+        dots = self.dots
+        plane_wave = self.plane_wave
+
+        min_x = dots.get_x(LEFT)
+        max_x = dots.get_x(RIGHT)
+
+        def new_pw_func(points, time):
+            adj_points = points.copy()
+            to_left = np.clip(adj_points[:, 0] - min_x, 0, np.inf)
+            to_right = np.clip(adj_points[:, 0] - max_x, 0, np.inf)
+            adj_points[:, 0] += (self.index - 1) * to_left - (self.index - 1) * to_right
+            return self.plane_wave_func(adj_points, time)
+
+        new_wave = TimeVaryingVectorField(
+            new_pw_func,
+            stroke_color=YELLOW,
+            x_density=10,
+            z_density=1,
+            width=14,
+            height=0,
+            depth=0,
+            max_vect_len=np.inf,
+            norm_to_opacity_func=lambda n: 2 * n,
+        )
+
+        new_wave.opacity_multiplier = ValueTracker(0)
+        new_wave.add_updater(lambda m: m.set_stroke(opacity=m.get_stroke_opacities() * m.opacity_multiplier.get_value()))
+
+        # Test
+        self.add(new_wave)
+        self.play(
+            frame.animate.reorient(0, 90, 0).set_height(8).set_focal_distance(100),
+            dots.opacity_multiplier.animate.set_value(0.75),
+            plane_wave.opacity_multiplier.animate.set_value(0),
+            new_wave.opacity_multiplier.animate.set_value(1),
+            VFadeIn(new_wave),
+            run_time=5
+        )
+        self.wait(15)
+
+
+class FullCompositeEffectIndexLessThanOne(FullCompositeEffect):
+    index = 0.7
+
+
+class ManyParallelPropagations(OneOfManyCharges):
+    dots_dims = (11, 20, 20)
+    dots_shape = (6, 0, 4)
+
+    def construct(self):
+        # Test
+        dots = self.dots
+        plane_wave = self.plane_wave
+        self.axes.y_axis.set_opacity(0)
+
+        frame = self.frame
+        frame.reorient(0, 90, 0)
+        frame.set_focal_distance(10)
+
+        dots.set_radius(0.05)
+        dots.opacity_multiplier.set_value(1)
+        plane_wave.opacity_multiplier.set_value(0)
+
+        rings = []
+        for _ in range(10):
+            min_x, min_y, min_z = self.dot_centers[0]
+            max_x, max_y, max_z = self.dot_centers[-1]
+            for x in np.linspace(min_x, max_x, 6):
+                for z in np.linspace(min_z, max_z, 10):
+                    ring = get_influence_ring([x, 0, z], speed=self.speed, max_width=1, width_decay_exp=2)
+                    ring.rotate(PI / 2, RIGHT)
+                    rings.append(ring)
+                    self.add(ring)
+            self.wait()
+            for ring in rings:
+                if ring.get_stroke_width() < 0.01:
+                    self.remove(ring)
+        self.wait(5)
+
+
+class ResponsiveCharge(InteractiveScene):
+    def construct(self):
+        # Driving chrage
+        charge1 = ChargedParticle(charge=0.25)
+        charge1.add_spring_force(k=10)
+        charge1.move_to(0.3 * DOWN)
+
+        # Responsive charge
+        k = 20
+        charge2 = ChargedParticle(charge=1.0, radius=0.1, show_sign=False)
+        charge2.move_to(2.5 * RIGHT)
+        # charge2.add_field_force(field)
+        charge2.add_spring_force(k=k)
+        charge2.add_force(lambda p: wave.xt_to_point(p[0], wave.time) * [0, 1, 1])
+        # charge2.fix_x()
+        self.add(charge2)
+
+        # E field
+        # field_type = ColoumbPlusLorentzField
+        field_type = LorentzField
+        field = field_type(
+            charge1, charge2,
+            x_density=4.0,
+            y_density=4.0,
+            norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1),
+            c=1.0,
+        )
+        self.add(field)
+
+        # Pure wave
+        axes = ThreeDAxes()
+        wave = OscillatingWave(axes, y_amplitude=1.0, z_amplitude=0.0, wave_len=2.0)
+        field_wave = OscillatingFieldWave(axes, wave)
+        wave.set_stroke(opacity=0.5)
+
+
+        self.add(axes, wave, field_wave)
+
+        # omega = (wave.speed / wave.wave_len) * TAU
+        # omega_0 = math.sqrt(k / charge2.mass)
+        # v0 = omega / (omega_0**2 - omega**2)
+        # charge2.velocity = v0 * UP
+
+        self.wait(20)
+
+        # Plane
+        plane = NumberPlane()
+        plane.fade(0.5)
+        self.add(plane)
+
+        # Test wiggle
+        self.play(
+            charge1.animate.shift(UP).set_anim_args(
+                rate_func=wiggle,
+                run_time=3,
+            )
+        )
+        self.wait(4)

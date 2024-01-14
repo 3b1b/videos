@@ -23,6 +23,7 @@ class SlicedWave(Group):
         layer_xs,
         phase_kick_back=0,
         layer_height=4.0,
+        damping_per_layer=1.0,
         wave_config = dict(),
         vect_wave_style=dict(),
         layer_style=dict(),
@@ -37,6 +38,10 @@ class SlicedWave(Group):
         self.vect_wave = OscillatingFieldWave(axes, self.wave, **vwave_kw)
         self.phase_kick_trackers = [
             ValueTracker(phase_kick_back)
+            for x in layer_xs
+        ]
+        self.absorbtion_trackers = [
+            ValueTracker(damping_per_layer)
             for x in layer_xs
         ]
         self.layers = VGroup()
@@ -55,13 +60,18 @@ class SlicedWave(Group):
             *self.phase_kick_trackers
         )
 
+    def set_layer_xs(self, xs):
+        self.layer_xs = xs
+
     def xt_to_yz(self, x, t):
         phase = np.ones_like(x)
         phase *= TAU * t * self.wave.speed / self.wave.wave_len
-        for layer_x, pkt in zip(self.layer_xs, self.phase_kick_trackers):
+        amplitudes = self.wave.y_amplitude * np.ones_like(x)
+        for layer_x, pkt, at in zip(self.layer_xs, self.phase_kick_trackers, self.absorbtion_trackers):
             phase[x > layer_x] += pkt.get_value()
+            amplitudes[x > layer_x] *= at.get_value()
 
-        y = self.wave.y_amplitude * np.sin(TAU * x / self.wave.wave_len - phase)
+        y = amplitudes * np.sin(TAU * x / self.wave.wave_len - phase)
         return y, np.zeros_like(x)
 
 
@@ -77,6 +87,7 @@ class SpeedInMediumFastPart(InteractiveScene):
     medium_opacity = 0.35
     add_label = True
     run_time = 30
+    material_label = "Glass"
 
     def construct(self):
         # Basic wave
@@ -104,7 +115,7 @@ class SpeedInMediumFastPart(InteractiveScene):
         self.add(rect)
 
         if self.add_label:
-            label = Text("Water", font_size=60)
+            label = Text(self.material_label, font_size=60)
             label.next_to(rect.get_top(), DOWN)
             self.add(label)
 
@@ -124,11 +135,15 @@ class VectorOverMedia(InteractiveScene):
         vect.to_edge(LEFT, buff=0)
 
         def update_vect(v, dt):
-            speed = 1.5 if v.get_x() < 0 else 1.0
+            # speed = 1.5 if v.get_x() < 0 else 1.0
+            speed = 1.33 if v.get_x() < 0 else 1.33 / 1.5
             v.shift(dt * RIGHT * speed)
 
         vect.add_updater(update_vect)
+        word = Text("Phase velocity")
+        word.add_updater(lambda m: m.next_to(vect, UP))
         self.add(vect)
+        self.add(word)
         self.wait(13)
 
 
@@ -188,6 +203,7 @@ class PhaseKickBacks(SpeedInMediumFastPart):
     wave_config = dict()
     vect_wave_style = dict()
     layer_add_on_run_time = 5
+    damping_per_layer = 1.0
 
     def get_axes(self):
         axes = ThreeDAxes(**self.axes_config)
@@ -205,6 +221,7 @@ class PhaseKickBacks(SpeedInMediumFastPart):
             vect_wave_style=self.vect_wave_style,
             layer_style=self.line_style,
             phase_kick_back=self.kick_back_value,
+            damping_per_layer=self.damping_per_layer,
         )
 
     def setup(self):
@@ -214,12 +231,9 @@ class PhaseKickBacks(SpeedInMediumFastPart):
 
 
 class RevertToOneLayerAtATime(PhaseKickBacks):
-    # layer_xs = np.arange(-0, 7.5, 0.11)
-    # kick_back_value = -0.25
-    # n_layers_skipped = 8
     layer_xs = np.arange(0, FRAME_WIDTH / 2, FRAME_WIDTH / 2**(11))
     kick_back_value = -0.025
-    n_layers_skipped = 128
+    n_layers_skipped = 64
 
     exagerated_phase_kick = -0.8
 
@@ -245,30 +259,56 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         layers = sliced_wave.layers
         pkts = sliced_wave.phase_kick_trackers
 
-        # Revert to one single layer
+        # Add label
         block_label = Text("Material (e.g. glass)")
         block_label.next_to(layers, UP, aligned_edge=LEFT)
+
+        for pkt in pkts:
+            pkt.set_value(-0.015)
+
+        self.wait(5)
+        self.play(Write(block_label["Material"], run_time=1))
+        self.play(FadeIn(block_label["(e.g. glass)"], 0.25 * UP))
+        self.add(block_label)
+        self.wait(2)
+
+        # Show layers
+        layers.save_state()
+
+        rect = BackgroundRectangle(sliced_wave)
+        rect.set_fill(BLACK, 0.9)
+        self.add(sliced_wave, rect, layers)
+        self.play(
+            layers.animate.arrange(RIGHT, buff=0.3).move_to(ORIGIN, LEFT).set_stroke(width=2, opacity=1),
+            FadeIn(rect),
+            *(pkt.animate.set_value(0) for pkt in pkts),
+            run_time=2,
+        )
+        self.wait(3)
+
+        # Revert to one single layer
+        left_layers = VGroup()
+        for layer in layers:
+            if layer.get_x() < FRAME_WIDTH / 2:
+                left_layers.add(layer)
+        self.remove(layers)
+        self.add(left_layers)
+
         layer_label = Text("Thin layer of material")
         layer_label.next_to(layers[0], UP, buff=0.75)
 
-        self.add(block_label)
-        self.wait(5)
-
-        kw = dict(run_time=5, lag_ratio=0.01)
+        kw = dict(run_time=5, lag_ratio=0.1)
         self.play(
             LaggedStart(*(
-                layer.animate().set_stroke(width=5, opacity=0).set_height(5)
-                for layer in layers[:0:-1]
-            ), **kw),
-            LaggedStart(*(
-                pkt.animate.set_value(0)
-                for pkt in pkts[:0:-1]
+                layer.animate().set_stroke(opacity=0).shift(DOWN)
+                for layer in left_layers[:0:-1]
             ), **kw),
             layers[0].animate.set_stroke(width=2, opacity=1).set_height(5).set_anim_args(time_span=(4, 5)),
             FadeTransform(
                 block_label, layer_label,
                 time_span=(4, 5)
             ),
+            FadeOut(rect, time_span=(3, 5)),
         )
         self.wait(4)
 
@@ -386,7 +426,7 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
 
         # Change phase kick
         self.play(FlashAround(pk_label))
-        for value in [-0.01, 2 * self.exagerated_phase_kick]:
+        for value in [-0.01, self.exagerated_phase_kick]:
             phase_kick = value
             globals().update(locals())
             self.play(
@@ -395,9 +435,10 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
                     pkt.animate.set_value(phase_kick)
                     for pkt in pkts[::nls]
                 ),
-                run_time=2
+                run_time=4
             )
-            self.wait(4)
+            self.wait(2)
+        self.wait(2)
 
         # Number of layers label
         n_shown_layers = len(layers[::nls])
@@ -468,10 +509,188 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
                 pkt.animate.set_value(phase_kick)
                 for pkt in pkts[::nls]
             ))
-            self.wait(3 if nls >= 16 else 1)
+            self.wait(3 if nls >= 32 else 1)
 
         # Wait
         self.wait(10)
+
+
+class SimplerRevertToOneLayerAtATime(RevertToOneLayerAtATime):
+    layer_xs = np.arange(-0, 7.5, 0.11)
+    kick_back_value = -0.25
+    n_layers_skipped = 8
+
+
+class SlowedAndAbsorbed(RevertToOneLayerAtATime):
+    layer_xs = np.arange(-FRAME_WIDTH / 3, FRAME_WIDTH / 3, FRAME_WIDTH / 2**(8))
+    kick_back_value = -0.2
+    damping_per_layer = 1 - 2e-2
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001,
+    )
+    line_style = dict(
+        stroke_color=BLUE_B,
+        stroke_width=1.5,
+        stroke_opacity=0.5,
+    )
+
+    def construct(self):
+        # Objects
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        pkts = sliced_wave.phase_kick_trackers
+        ats = sliced_wave.absorbtion_trackers
+
+        # Show labels
+        label = Text("Wave gets slowed and absorbed")
+        label.next_to(layers, UP)
+        abs_words = label["and absorbed"]
+
+        mu_label = Tex(R"\mu").set_color(PINK)
+        mu_line = NumberLine((0, 1, 0.2), width=1.0, tick_size=0.05)
+        mu_line.rotate(PI / 2)
+        mu_line.to_corner(UR)
+        mu_indicator = Triangle(start_angle=0)
+        mu_indicator.set_width(0.15)
+        mu_indicator.set_fill(PINK, 1)
+        mu_indicator.set_stroke(width=0)
+        mu_tracker = ValueTracker(1)
+        mu_indicator.add_updater(lambda m: m.move_to(mu_line.n2p(mu_tracker.get_value()), RIGHT))
+        mu_label.add_updater(lambda m: m.next_to(mu_indicator, LEFT, buff=0.1))
+
+        for pkt in pkts:
+            pkt.set_value(0)
+        for at in ats:
+            at.set_value(1)
+
+        self.play(
+            FadeIn(label, time_span=(0, 2)),
+            FlashAround(abs_words, color=PINK, time_span=(2, 4)),
+            abs_words.animate.set_color(PINK).set_anim_args(time_span=(2, 4)),
+            FadeIn(mu_line),
+            FadeIn(mu_indicator),
+            FadeIn(mu_label),
+            LaggedStart(*(
+                pkt.animate.set_value(self.kick_back_value)
+                for pkt in pkts
+            )),
+            LaggedStart(*(
+                at.animate.set_value(self.damping_per_layer)
+                for at in ats
+            )),
+            LaggedStart(*(
+                FadeIn(layer, scale=0.8)
+                for layer in layers
+            )),
+            run_time=5,
+        )
+
+        # Play with mu
+        for mu in [0.1, 1.0]:
+            self.play(
+                mu_tracker.animate.set_value(mu),
+                *(at.animate.set_value(1 - mu * 2e-2) for at in ats),
+                run_time=3,
+            )
+
+        self.wait(17)
+
+
+class PlayWithIndex(RevertToOneLayerAtATime):
+    layer_xs = np.arange(-FRAME_WIDTH / 4, FRAME_WIDTH / 4, FRAME_WIDTH / 2**(10))
+
+    def construct(self):
+        # Objects
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        layers.set_stroke(BLUE, 1, 0.5)
+        pkts = sliced_wave.phase_kick_trackers
+
+        global_pk = ValueTracker(self.kick_back_value)
+        for pkt in pkts:
+            pkt.add_updater(lambda m: m.set_value(global_pk.get_value()))
+
+        def get_index():
+            return 1 - 20 * global_pk.get_value()
+
+        # equation label
+        equation = Tex(
+            R"""
+                \text{Index of refraction } = 
+                {\small \text{Speed in a vacuum} \over \text{Speed in medium}}
+                = 1.00
+            """,
+            t2c={
+                 R"\text{Speed in a vacuum}": YELLOW,
+                 R"\text{Speed in medium}": BLUE,
+            }
+        )
+        equation.next_to(layers, UP)
+        rhs = equation.make_number_changable("1.00")
+
+        rhs.add_updater(lambda m: m.set_value(get_index()))
+
+        arrow = Arrow(rhs.get_bottom(), layers.get_corner(UR) + 1.0 * DL)
+
+        self.add(equation)
+        self.add(arrow)
+
+        # Speed label
+        speed_label = Tex(R"\text{Speed} = c / 1.00")
+        speed_factor = speed_label.make_number_changable("1.00")
+        speed_factor.add_updater(lambda m: m.set_value(get_index()))
+        speed_label.next_to(layers.get_bottom(), UP)
+
+        self.add(speed_label)
+
+        # Change value
+        self.wait(3)
+        for value in [0, 0.02]:
+            self.play(global_pk.animate.set_value(value), run_time=2)
+            self.wait(3)
+        self.wait(10)
+
+
+class RedLight(RevertToOneLayerAtATime):
+    wave_config = dict(
+        color=RED,
+        stroke_width=6,
+        sample_resolution=0.001,
+        wave_len=4.0,
+    )
+    kick_back_value = -0.005
+
+    def construct(self):
+        # Test
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        pkts = sliced_wave.phase_kick_trackers
+        sliced_wave.update()
+        sliced_wave.clear_updaters()
+        sliced_wave.vect_wave.set_stroke(opacity=1)
+        sliced_wave.wave.make_jagged()
+
+        new_wave = VMobject()
+        new_wave.set_points_smoothly(sliced_wave.wave.get_anchors()[0::5])
+        new_wave.match_style(sliced_wave.wave)
+
+        self.add(self.sliced_wave)
+        self.add(new_wave)
+        self.remove(sliced_wave.layers)
+
+
+class XRay(RedLight):
+    wave_config = dict(
+        color=YELLOW,
+        stroke_width=6,
+        sample_resolution=0.001,
+        wave_len=1.0,
+    )
+    kick_back_value = 0.02
 
 
 class DissolveLayers(PhaseKickBacks):
@@ -630,61 +849,132 @@ class DensePhaseKickBacks100(PhaseKickBackAddInLayers):
     layer_add_on_run_time = 10
 
 
-class ResponsiveCharge(InteractiveScene):
+class FastWave(PhaseKickBacks):
+    layer_xs = np.arange(-3, 3, 0.01)
+    kick_back_value = 0.01
+    line_style = dict(
+        stroke_width=1,
+        stroke_opacity=0.35,
+        stroke_color=BLUE_D
+    )
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001
+    )
+
     def construct(self):
-        # Driving chrage
-        charge1 = ChargedParticle(charge=0.25)
-        charge1.add_spring_force(k=10)
-        charge1.move_to(0.3 * DOWN)
-
-        # Responsive charge
-        k = 20
-        charge2 = ChargedParticle(charge=1.0, radius=0.1, show_sign=False)
-        charge2.move_to(2.5 * RIGHT)
-        # charge2.add_field_force(field)
-        charge2.add_spring_force(k=k)
-        charge2.add_force(lambda p: wave.xt_to_point(p[0], wave.time) * [0, 1, 1])
-        # charge2.fix_x()
-        self.add(charge2)
-
-        # E field
-        # field_type = ColoumbPlusLorentzField
-        field_type = LorentzField
-        field = field_type(
-            charge1, charge2,
-            x_density=4.0,
-            y_density=4.0,
-            norm_to_opacity_func=lambda n: np.clip(0.5 * n, 0, 1),
-            c=1.0,
-        )
-        self.add(field)
-
-        # Pure wave
-        axes = ThreeDAxes()
-        wave = OscillatingWave(axes, y_amplitude=1.0, z_amplitude=0.0, wave_len=2.0)
-        field_wave = OscillatingFieldWave(axes, wave)
-        wave.set_stroke(opacity=0.5)
-
-
-        self.add(axes, wave, field_wave)
-
-        # omega = (wave.speed / wave.wave_len) * TAU
-        # omega_0 = math.sqrt(k / charge2.mass)
-        # v0 = omega / (omega_0**2 - omega**2)
-        # charge2.velocity = v0 * UP
-
+        # Test
         self.wait(20)
 
-        # Plane
-        plane = NumberPlane()
-        plane.fade(0.5)
-        self.add(plane)
 
-        # Test wiggle
+class KickForward(PhaseKickBacks):
+    layer_xs = np.arange(0, 8, 0.25)
+    kick_back_value = 0.25
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=2,
+        stroke_opacity=0.75,
+    )
+    wave_config = dict(
+        color=YELLOW,
+        sample_resolution=0.001
+    )
+    time_per_layer = 0.25
+
+    def construct(self):
+        # Objects
+        sliced_wave = self.sliced_wave
+        wave = sliced_wave.wave
+        layers = sliced_wave.layers
+        layers.stretch(1.2, 1)
+        pkts = sliced_wave.phase_kick_trackers
+
+        # Just show one layer
+        layer_label = Text("Thin layer of material")
+        layer_label.next_to(layers[0], UP, buff=0.75)
+
+        for pkt in pkts:
+            pkt.set_value(0)
+
+        self.wait(1 - (wave.time % 1))
+        wave.stop_clock()
+        self.remove(layers)
         self.play(
-            charge1.animate.shift(UP).set_anim_args(
-                rate_func=wiggle,
-                run_time=3,
-            )
+            ShowCreation(layers[0]),
+            FadeIn(layer_label, lag_ratio=0.1),
         )
-        self.wait(4)
+        self.wait()
+
+        # Kick back then forth
+        kick_back = VGroup(
+            Vector(LEFT, stroke_width=6),
+            Text("Kick back\nthe phase", font_size=36),
+        )
+        kick_back.set_color(RED)
+        kick_forward = VGroup(
+            Vector(RIGHT, stroke_width=6),
+            Text(
+                "Kick forward\nthe phase", font_size=36,
+                t2s={"forward": ITALIC}
+            ),
+        )
+        kick_forward.set_color(GREEN)
+
+        for label in [kick_back, kick_forward]:
+            label.arrange(RIGHT)
+            label.next_to(wave, UP)
+            label.align_to(layers[0], LEFT).shift(MED_SMALL_BUFF * RIGHT)
+
+        self.play(
+            pkts[0].animate.set_value(-0.75),
+            FadeIn(kick_back, LEFT),
+        )
+        self.wait()
+        self.play(FadeOut(kick_back))
+        self.play(
+            pkts[0].animate.set_value(self.kick_back_value),
+            FadeIn(kick_forward, RIGHT),
+        )
+        self.wait()
+        self.play(FadeOut(layer_label))
+
+        # Add other layers
+        wave.start_clock()
+        remaining_layers = layers[1:]
+        self.play(
+            ShowIncreasingSubsets(remaining_layers, rate_func=linear),
+            UpdateFromFunc(
+                kick_forward,
+                lambda m: m.align_to(remaining_layers.get_right(), LEFT).shift(MED_SMALL_BUFF * RIGHT),
+            ),
+            LaggedStart(*(
+                pkt.animate.set_value(self.kick_back_value)
+                for pkt in pkts[1:]
+            ), lag_ratio=1),
+            run_time = len(remaining_layers) * self.time_per_layer
+        )
+
+        # Wait
+        self.wait(20)
+
+
+class DenserKickForward(KickForward):  # Run at 9
+    layer_xs = np.arange(0, 8, 0.1)
+    kick_back_value = 0.1
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=1.5,
+        stroke_opacity=0.75,
+    )
+    time_per_layer = 0.1
+
+
+class DensestKickForward(DenserKickForward):
+    layer_xs = np.arange(0, 8, 0.025)
+    kick_back_value = 0.025
+    time_per_layer = 0.025
+    line_style = dict(
+        stroke_color=BLUE,
+        stroke_width=1.0,
+        stroke_opacity=0.65,
+    )
