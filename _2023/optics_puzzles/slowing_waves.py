@@ -1,5 +1,8 @@
 from manim_imports_ext import *
-from _2023.barber_pole.objects import *
+from _2023.optics_puzzles
+optics_puzzles
+optics_puzzles
+optics_puzzles.objects import *
 
 
 class SlicedWave(Group):
