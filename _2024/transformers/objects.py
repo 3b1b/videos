@@ -84,9 +84,10 @@ def matrix_row_vector_product(scene, row, vector, entry, to_fade):
         ShowIncreasingSubsets(row_rects),
         ShowIncreasingSubsets(vect_rects),
         UpdateFromAlphaFunc(entry, lambda m, a: m.set_value(
-            partial_values[min(int(a * n_values), n_values - 1)]
+            partial_values[min(int(np.round(a * n_values)), n_values - 1)]
         )),
         FadeOut(to_fade),
+        rate_func=linear,
     )
 
     return VGroup(row_rects, vect_rects)
