@@ -578,7 +578,7 @@ class ShowInfiniteSum(FourierSeriesIllustraiton):
             x_min=0,
             x_max=1,
             tick_frequency=0.1,
-            numbers_with_elongated_ticks=[0, 0.5, 1],
+            big_tick_numbers=[0, 0.5, 1],
             unit_size=8,
             # line_to_number_buff=0.4,
         )

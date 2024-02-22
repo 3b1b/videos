@@ -303,7 +303,7 @@ class SineWave(Scene):
             axis_config={
                 "tick_frequency": 0.5,
                 "include_tip": False,
-                "numbers_with_elongated_ticks": [-1, 1],
+                "big_tick_numbers": [-1, 1],
                 "tick_size": 0.05,
                 "unit_size": radius,
             },

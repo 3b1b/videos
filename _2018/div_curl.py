@@ -4269,7 +4269,7 @@ class ThoughtsOnAds(Scene):
             color=GREY_B,
             x_min=0,
             x_max=12,
-            numbers_with_elongated_ticks=[]
+            big_tick_numbers=[]
         )
         line.move_to(DOWN)
 

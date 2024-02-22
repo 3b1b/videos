@@ -16,7 +16,7 @@ def get_time_line():
         tick_frequency = 10,
         leftmost_tick = 1720,
         number_at_center = 1870,
-        numbers_with_elongated_ticks = list(range(1700, 2100, 100))
+        big_tick_numbers = list(range(1700, 2100, 100))
     )
     time_line.sort_points(lambda p : p[0])        
     time_line.set_color_by_gradient(

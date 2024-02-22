@@ -1687,7 +1687,7 @@ class DotProductWithGenderDirection(InteractiveScene):
         x_range = self.x_range
         number_line = NumberLine(
             x_range,
-            numbers_with_elongated_ticks=list(np.arange(*x_range[:2])),
+            big_tick_numbers=list(np.arange(*x_range[:2])),
             tick_size=0.05,
             longer_tick_multiple=2.5,
             width=12

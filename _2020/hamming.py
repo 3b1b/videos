@@ -964,7 +964,7 @@ class TimeLine(Scene):
         decades = list(range(1920, 2030, 10))
         timeline = NumberLine(
             (decades[0], decades[-1], 2),
-            numbers_with_elongated_ticks=decades,
+            big_tick_numbers=decades,
             width=13
         )
         timeline.add_numbers(

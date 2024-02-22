@@ -181,7 +181,7 @@ class Introduce1DFunctionCase(Scene):
             x_axis_config = {
                 "unit_size" : 3,
                 "tick_frequency" : 0.25,
-                "numbers_with_elongated_ticks" : list(range(-1, 4))
+                "big_tick_numbers" : list(range(-1, 4))
             },
             y_min = -2, y_max = 4.5,
         )

@@ -72,7 +72,7 @@ class TimeLine(Scene):
             number_at_center = 1800,
             unit_length_to_spatial_width = FRAME_X_RADIUS/100,
             tick_frequency = 10,
-            numbers_with_elongated_ticks = centuries
+            big_tick_numbers = centuries
         )
         timeline.add_numbers(*centuries)
         centers = [
@@ -278,7 +278,7 @@ class SolutionsToTheBrachistochrone(Scene):
             )
             for r in r_range
         ])
-        nl = NumberLine(numbers_with_elongated_ticks = [])
+        nl = NumberLine(big_tick_numbers = [])
         x_axis = nl.copy().shift(3*UP)
         y_axis = nl.copy().rotate(np.pi/2).shift(6*LEFT)
         t_axis = nl.copy().shift(2*DOWN)

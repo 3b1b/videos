@@ -1325,7 +1325,7 @@ class MakeTwoJewelCaseContinuous(IntroduceStolenNecklaceProblem):
         interval = UnitInterval(
             tick_frequency = 1./sum(self.num_per_jewel),
             tick_size = 0.2,
-            numbers_with_elongated_ticks = [],
+            big_tick_numbers = [],
         )
         interval.stretch_to_fit_width(self.necklace.get_width())
         interval.move_to(self.necklace)
@@ -1674,7 +1674,7 @@ class ChoicesInNecklaceCutting(ReconfigurableScene):
         interval = UnitInterval(
             tick_frequency = 1./sum(num_per_color),
             tick_size = 0.2,
-            numbers_with_elongated_ticks = [],
+            big_tick_numbers = [],
         )
         interval.stretch_to_fit_width(width)
         interval.shift(self.necklace_center)

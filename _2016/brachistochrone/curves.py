@@ -378,7 +378,7 @@ class MinimalPotentialEnergy(Scene):
         vert_axis.shift(horiz_radius*LEFT)
         horiz_axis = NumberLine(
             numerical_radius = 5,
-            numbers_with_elongated_ticks = []
+            big_tick_numbers = []
         )
         axes = Mobject(horiz_axis, vert_axis)
         graph = FunctionGraph(

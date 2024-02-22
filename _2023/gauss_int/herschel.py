@@ -1121,7 +1121,7 @@ class VariableC(InteractiveScene):
         get_c = c_tracker.get_value
 
         c_interval = NumberLine(
-            (-1, 1, 0.25), width=3, tick_size=0.05, numbers_with_elongated_ticks=[-1, 0, 1],
+            (-1, 1, 0.25), width=3, tick_size=0.05, big_tick_numbers=[-1, 0, 1],
         )
         c_interval.set_stroke(WHITE, 1)
         c_interval.add_numbers([-1, 0, 1], num_decimal_places=1, font_size=16)

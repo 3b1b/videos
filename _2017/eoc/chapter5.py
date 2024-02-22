@@ -1292,7 +1292,7 @@ class ChainRuleIntuition(ThreeLinesChainRule):
                 "x_min" : 0,
                 "x_max" : 3,
                 "numbers_to_show" : list(range(4)),
-                "numbers_with_elongated_ticks" : list(range(4)),
+                "big_tick_numbers" : list(range(4)),
                 "tick_frequency" : 1,
             },
             {
@@ -1303,7 +1303,7 @@ class ChainRuleIntuition(ThreeLinesChainRule):
                 "x_min" : 0,
                 "x_max" : 3,
                 "numbers_to_show" : list(range(0, 4)),
-                "numbers_with_elongated_ticks" : list(range(4)),
+                "big_tick_numbers" : list(range(4)),
                 "tick_frequency" : 1,
             },
             {
@@ -1314,7 +1314,7 @@ class ChainRuleIntuition(ThreeLinesChainRule):
                 "x_min" : 0,
                 "x_max" : 10,
                 "numbers_to_show" : list(range(0, 11, 3)),
-                "numbers_with_elongated_ticks" : list(range(11)),
+                "big_tick_numbers" : list(range(11)),
                 "tick_frequency" : 1,
             },
         ],

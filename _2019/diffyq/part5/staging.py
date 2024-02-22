@@ -149,7 +149,7 @@ class IntroducePhysicalModel(IntroductionOfExp):
             "x_min": 0,
             "x_max": 100,
             "unit_size": 1.5,
-            "numbers_with_elongated_ticks": [0],
+            "big_tick_numbers": [0],
             "numbers_to_show": list(range(0, 15)),
             "label_direction": UP,
         },

@@ -1309,7 +1309,7 @@ class IntroduceProductAsArea(ReconfigurableScene):
             x_max = self.slider_x_max,
             unit_size = float(self.slider_width)/self.slider_x_max,
             color = GREY,
-            numbers_with_elongated_ticks = numbers,
+            big_tick_numbers = numbers,
             tick_frequency = 0.25,
         )
         line.add_numbers(*numbers)
@@ -1521,7 +1521,7 @@ class ThreeLinesChainRule(ReconfigurableScene):
                 "x_min" : 0,
                 "x_max" : 3,
                 "numbers_to_show" : list(range(4)),
-                "numbers_with_elongated_ticks" : list(range(4)),
+                "big_tick_numbers" : list(range(4)),
                 "tick_frequency" : 0.25,
             },
             {
@@ -1532,7 +1532,7 @@ class ThreeLinesChainRule(ReconfigurableScene):
                 "x_min" : 0,
                 "x_max" : 10,
                 "numbers_to_show" : list(range(0, 11)),
-                "numbers_with_elongated_ticks" : list(range(0, 11, 1)),
+                "big_tick_numbers" : list(range(0, 11, 1)),
                 "tick_frequency" : 0.25,
             },
             {
@@ -1543,7 +1543,7 @@ class ThreeLinesChainRule(ReconfigurableScene):
                 "x_min" : -2,
                 "x_max" : 2,
                 "numbers_to_show" : list(range(-2, 3)),
-                "numbers_with_elongated_ticks" : list(range(-2, 3)),
+                "big_tick_numbers" : list(range(-2, 3)),
                 "tick_frequency" : 0.25,
             },
         ],

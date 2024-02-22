@@ -3958,7 +3958,7 @@ class DirichletIn1837(Scene):
             x_min=1700,
             x_max=2020,
             tick_frequency=1,
-            numbers_with_elongated_ticks=dates,
+            big_tick_numbers=dates,
             unit_size=0.2,
             stroke_color=GREY,
             stroke_width=2,
@@ -4343,7 +4343,7 @@ class HighlightTwinPrimes(Scene):
             x_min=0,
             x_max=max_x,
             unit_size=0.5,
-            numbers_with_elongated_ticks=range(10, max_x, 10),
+            big_tick_numbers=range(10, max_x, 10),
         )
         line.move_to(2.5 * DOWN + 7 * LEFT, LEFT)
         line.add_numbers(*range(10, max_x, 10))

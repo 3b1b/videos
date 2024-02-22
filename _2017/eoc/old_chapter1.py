@@ -1393,7 +1393,7 @@ class DerivativeAsTangentLine(ZoomedScene):
             unit_size = 2,
             tick_frequency = 0.25,
             leftmost_tick = -0.25,
-            numbers_with_elongated_ticks = [0, 1, 2, 3, 4],
+            big_tick_numbers = [0, 1, 2, 3, 4],
             color = GREY
         )
         x_axis.shift(2.5*DOWN)
@@ -1410,7 +1410,7 @@ class DerivativeAsTangentLine(ZoomedScene):
             tick_frequency = 2.5,
             leftmost_tick = 0,
             longer_tick_multiple = -2,
-            numbers_with_elongated_ticks = [0, 5, 10, 15, 20],
+            big_tick_numbers = [0, 5, 10, 15, 20],
             color = GREY
         )
         y_axis.shift(x_axis.number_to_point(0)-y_axis.number_to_point(0))

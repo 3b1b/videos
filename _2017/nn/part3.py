@@ -227,7 +227,7 @@ class InterpretGradientComponents(GradientNudging):
             x_min = -1,
             x_max = 1,
             tick_frequency = 0.25,
-            numbers_with_elongated_ticks = [],
+            big_tick_numbers = [],
             color = WHITE
         )
         for term in wn, wk, cost:

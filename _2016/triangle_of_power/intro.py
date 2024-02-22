@@ -174,7 +174,7 @@ class Notation(Scene):
                 x_min = 0,
                 x_max = 1.01,
                 tick_frequency = 1./n,
-                numbers_with_elongated_ticks = [],
+                big_tick_numbers = [],
                 color = WHITE
             )
             little_line = Line(

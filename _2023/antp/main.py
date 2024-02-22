@@ -327,7 +327,7 @@ class PrimeDensityHistogram(InteractiveScene):
             height=6,
             x_axis_config=dict(
                 tick_size=0.03,
-                numbers_with_elongated_ticks=labeled_xs,
+                big_tick_numbers=labeled_xs,
                 longer_tick_multiple=3,
             )
         )

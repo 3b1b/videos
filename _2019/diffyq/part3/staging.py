@@ -413,7 +413,7 @@ class FourierSeriesOfLineIllustration(FourierSeriesIllustraiton):
             "y_axis_config": {
                 "unit_size": 2,
                 "tick_frequency": 0.25,
-                "numbers_with_elongated_ticks": [-1, 1],
+                "big_tick_numbers": [-1, 1],
             }
         }
     }
@@ -696,7 +696,7 @@ class InvestmentGrowth(Scene):
             x_axis_config={
                 "unit_size": 0.3,
                 "tick_size": 0.05,
-                "numbers_with_elongated_ticks": range(
+                "big_tick_numbers": range(
                     0, self.total_time, 5
                 )
             }

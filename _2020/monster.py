@@ -4303,7 +4303,7 @@ class MonstrousMoonshine(Scene):
         decades = list(range(1970, 2030, 10))
         timeline = NumberLine(
             (decades[0], decades[-1], 1),
-            numbers_with_elongated_ticks=decades,
+            big_tick_numbers=decades,
             tick_size=0.075,
             width=13,
         )
