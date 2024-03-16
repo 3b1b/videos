@@ -807,7 +807,7 @@ class WavePlusLayerInfluence(InteractiveScene):
             **field_kw
         )
         for vect_wave in [vect_wave1, vect_wave2, vect_wave3]:
-            vect_wave.add_updater(lambda m: m.reset_sample_points(), index=0)
+            vect_wave.insert_updater(lambda m: m.reset_sample_points(), index=0)
 
         wave1_group = VGroup(wave1, vect_wave1)
         wave2_group = VGroup(wave2, vect_wave2)

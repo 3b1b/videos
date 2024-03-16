@@ -5320,7 +5320,7 @@ class RuleOfQuaternionMultiplication(HypersphereStereographicProjection):
         self.play(*map(ShowCreation, arrows))
         self.wait()
         self.set_quat([0, 0, 1, 0], run_time=1)
-        q_tracker.add_updater(set_q_to_mj, index=0)
+        q_tracker.insert_updater(set_q_to_mj, index=0)
         self.add(self.circle_1i)
         self.play(
             m_tracker.set_value, [0, 1, 0, 0],
