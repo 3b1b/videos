@@ -3,11 +3,7 @@ import tiktoken
 from pathlib import Path
 
 from manim_imports_ext import *
-from _2024.transformers.objects import *
-
-
-DATA_DIR = Path(get_output_dir(), "2024/transformers/data/")
-WORD_FILE = Path(DATA_DIR, "OWL3_Dictionary.txt")
+from _2024.transformers.helpers import *
 
 
 def get_token_encoding():
@@ -103,13 +99,13 @@ def get_word_to_vec_model(model_name="glove-wiki-gigaword-50"):
     return model
 
 
-class LyingAboutTokens(InteractiveScene):
+class LyingAboutTokens2(InteractiveScene):
     def construct(self):
         # Mention next word prediction task
         phrase = Text("The goal of our model is to predict the next word")
 
-        words = break_into_words(phrase)
-        rects = get_piece_rectangles(words, leading_spaces=False, h_buff=0.05)
+        words = break_into_tokens(phrase)
+        rects = get_piece_rectangles(words, leading_spaces=True, h_buff=0)
 
         words.remove(words[-1])
         q_marks = Text("???")
@@ -147,10 +143,10 @@ class LyingAboutTokens(InteractiveScene):
 
         # Show words into vectors
         vectors = VGroup(*(
-            NumericEmbedding(length=5)
+            NumericEmbedding(length=8)
             for word in words
         ))
-        vectors.arrange(RIGHT, buff=0.5 * vectors[0].get_width())
+        vectors.arrange(RIGHT, buff=1.0 * vectors[0].get_width())
         vectors.set_width(12)
         vectors.to_edge(DOWN, buff=1.0)
         vectors.to_edge(LEFT, buff=0.5)
@@ -179,8 +175,8 @@ class LyingAboutTokens(InteractiveScene):
         # Setup titles
         h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
         title1, title2 = titles = VGroup(
-            Text("A Small Lie", font_size=72).to_edge(UP),
-            Text("True Truth", font_size=72).next_to(h_line, DOWN),
+            Text("The Truth", font_size=72).to_edge(UP),
+            Text("A Convenient Lie", font_size=72).next_to(h_line, DOWN),
         )
         h_line.set_stroke(WHITE, 2)
         h_line.next_to(titles[1], UP)
@@ -189,17 +185,17 @@ class LyingAboutTokens(InteractiveScene):
 
         # Show the lie
         phrase1, phrase2 = phrases = VGroup(
-            Text("We'll pretend that text is cleanly broken into distinct words"),
-            Text("The true subdivision (known fancifully as tokenization) looks different"),
+            Text("This process (known fancifully as tokenization) frequently subdivides words"),
+            Text("It's nice to sometimes pretend tokens are words"),
         )
         for phrase, title in zip(phrases, titles):
             phrase.set_width(FRAME_WIDTH - 1)
             phrase.next_to(title, DOWN, buff=1.0)
 
-        words = break_into_words(phrase1)
-        tokens = break_into_tokens(phrase2)
-        word_rects = get_piece_rectangles(words, hue_range=(0.5, 0.6))
+        tokens = break_into_tokens(phrase1)
+        words = break_into_words(phrase2)
         token_rects = get_piece_rectangles(tokens, hue_range=(0.1, 0.2), leading_spaces=True, h_buff=0.0)
+        word_rects = get_piece_rectangles(words, hue_range=(0.5, 0.6))
 
         self.play(
             FadeOut(blocks),
@@ -208,19 +204,6 @@ class LyingAboutTokens(InteractiveScene):
             FadeOut(vectors),
             ShowCreation(h_line),
             FadeIn(title1, lag_ratio=0.1),
-            FadeIn(words),
-        )
-        self.add(word_rects, words)
-        self.play(
-            LaggedStartMap(FadeIn, word_rects),
-            LaggedStart(*(
-                word.animate.set_color(rect.get_color())
-                for word, rect in zip(words, word_rects)
-            ))
-        )
-        self.wait()
-        self.play(
-            FadeIn(title2, lag_ratio=0.1),
             FadeIn(tokens),
         )
         self.add(token_rects, tokens)
@@ -232,15 +215,110 @@ class LyingAboutTokens(InteractiveScene):
             ))
         )
         self.wait()
+        self.play(
+            FadeIn(title2, lag_ratio=0.1),
+            FadeIn(words),
+        )
+        self.add(word_rects, words)
+        self.play(
+            LaggedStartMap(FadeIn, word_rects),
+            LaggedStart(*(
+                token.animate.set_color(rect.get_color())
+                for token, rect in zip(words, word_rects)
+            ))
+        )
+        self.wait()
 
         # Analyze tokenization
-        brace = Brace(token_rects[10], buff=0.05)
+        brace = Brace(token_rects[8], buff=0.05)
 
         self.play(GrowFromCenter(brace))
         self.wait()
-        for index in [6, 7, 5, 3, 9, 11]:
+        for index in [2, 4, 5, 7, 8, 9, 11, 12]:
             self.play(brace.animate.become(Brace(token_rects[index], buff=0.05)))
             self.wait()
+
+
+class DiscussTokenization(InteractiveScene):
+    def construct(self):
+        pass
+
+
+class ImageTokens(InteractiveScene):
+    n_divisions = 52
+
+    def construct(self):
+        # Add image
+        image = ImageMobject("SmallFluffCreature")  # Change
+        image.set_height(5)
+        self.add(image)
+
+        # Add pixels
+        pixels = create_pixels(image, pixel_width=image.get_width() / self.n_divisions)
+        big_pixels = create_pixels(image, pixel_width=image.get_width() / (self.n_divisions / 4))
+
+        patches = big_pixels.copy().set_fill(opacity=0)
+        p_points = np.array([p.get_center() for p in pixels])
+        bp_points = np.array([bp.get_center() for bp in big_pixels])
+
+        for pixel in pixels:
+            dists = np.linalg.norm(bp_points - pixel.get_center(), axis=1)
+            patches[np.argmin(dists)].add(pixel)
+
+        # Anim test
+        self.play(FadeIn(patches))
+        self.remove(image)
+        self.play(patches.animate.space_out_submobjects(2.0).scale(0.75))
+        self.wait()
+        self.play(LaggedStart(
+            (patch.animate.set_stroke(TEAL, 3).set_anim_args(rate_func=there_and_back)
+            for patch in patches),
+            lag_ratio=5.0 / len(patches),
+        ))
+        self.wait()
+
+
+class SoundTokens(InteractiveScene):
+    def construct(self):
+        # Add wave form
+        n_lines = 100
+        wave_form = Line(UP, DOWN).replicate(n_lines)
+        wave_form.arrange(RIGHT)
+        wave_form.arrange_to_fit_width(5)
+        wave_form.next_to(ORIGIN, RIGHT)
+
+        def func(x):
+            x *= 1.7
+            return sum([
+                math.sin(x),
+                0.5 * math.sin(2 * x),
+                0.3 * math.sin(3 * x),
+                0.2 * math.sin(4 * x),
+                0.1 * math.sin(5 * x),
+                0.15 * math.sin(6 * x),
+            ])
+
+        for line in wave_form:
+            line.set_height(abs(func(line.get_x())))
+
+        wave_form.center()
+        self.add(wave_form)
+
+        # Subdivide
+        step = 5
+        chunks = VGroup(wave_form[i:i + step] for i in range(0, len(wave_form), step))
+
+        self.add(chunks)
+        self.wait()
+        self.play(chunks.animate.space_out_submobjects(2.0).scale(0.75))
+        self.play(LaggedStart(
+            (chunk.animate.set_stroke(TEAL, 3).scale(1.5).set_anim_args(rate_func=there_and_back)
+            for chunk in chunks),
+            lag_ratio=2.0 / len(chunks),
+            run_time=2
+        ))
+        self.wait()
+
 
 
 class IntroduceEmbeddingMatrix(InteractiveScene):
@@ -336,7 +414,8 @@ class IntroduceEmbeddingMatrix(InteractiveScene):
 
         # Show a few columns
         last_rect = VMobject()
-        for index in [9, -7, 7, -5, -6]:
+        # for index in [9, -7, 7, -5, -6]:
+        for index in range(len(columns)):
             for group in shown_words, columns:
                 group.target = group.generate_target()
                 group.target.set_opacity(0.2)
@@ -373,12 +452,13 @@ class IntroduceEmbeddingMatrix(InteractiveScene):
             if entry not in matrix.ellipses
         ))
         rects.set_stroke(WHITE, 1)
-        for x in range(3):
+        for x in range(1):
             self.play(
                 RandomizeMatrixEntries(matrix, lag_ratio=0.01),
                 LaggedStartMap(VShowPassingFlash, rects, lag_ratio=0.01, time_width=1.5),
                 run_time=2,
             )
+        data_modifying_matrix(self, matrix)
         self.wait()
 
         # Highlight just one word
@@ -967,10 +1047,12 @@ class LearningEmbeddings(Word2VecScene):
             ))
             labels.add(label)
 
-        for vect, label in zip(word_vects, labels):
-            self.add(vect)
-            self.play(FadeIn(label, scale=1.2, run_time=0.2))
-            self.wait(0.1 * len(label) - 0.2)
+        self.play(
+            LaggedStartMap(GrowArrow, word_vects, lag_ratio=0.2),
+            LaggedStartMap(FadeIn, labels, lag_ratio=0.2),
+            run_time=4
+        )
+        self.wait()
 
         # Tweak and tune weights
         turn_animation_into_updater(
@@ -1068,10 +1150,13 @@ class KingQueenExample(Word2VecScene):
             FadeInFromPoint(woman.label, man.get_center()),
             GrowArrow(man),
             FadeInFromPoint(man.label, man.get_center()),
-            GrowArrow(diff, time_span=(2, 3)),
-            frame.animate.reorient(0, 0, 0, (2.04, 2.06, 0.38), 4.76).set_anim_args(run_time=3)
+            frame.animate.reorient(0, 0, 0, (2.04, 2.06, 0.38), 4.76).set_anim_args(run_time=6)
         )
-        self.play(frame.animate.reorient(-179, 19, 179, (2.49, 1.96, 0.4), 4.76), run_time=5)
+        self.play(
+            GrowArrow(diff, time_span=(1, 3)),
+            frame.animate.reorient(-179, 19, 179, (2.49, 1.96, 0.4), 4.76),
+            run_time=5
+        )
 
         # Show king and fake queen
         self.add(top_rect, *equation)
@@ -1199,6 +1284,22 @@ class KingQueenExample(Word2VecScene):
             last_equation = new_equation
             last_group = VGroup(vect1, vect2, vect1.label, vect2.label, diff_copy)
         self.wait(4)
+
+        # Flash in direction
+        vect = diff.get_vector()
+        color = YELLOW
+        lines = Line(ORIGIN, 2 * normalize(vect)).replicate(200)
+        lines.insert_n_curves(20)
+        lines.set_stroke(color, 3)
+        for line in lines:
+            line.move_to(np.random.uniform(-3, 3, 3))
+        self.play(
+            LaggedStartMap(
+                VShowPassingFlash, lines,
+                lag_ratio=1 / len(lines),
+                run_time=4
+            )
+        )
 
     def get_equation1(self, word1, word2, word3, word4, colors=None):
         equation = TexText(
@@ -1373,6 +1474,38 @@ class SushiBratwurstExample(HitlerMussoliniExample):
         return basis
 
 
+class PluralityDirection(Word2VecScene):
+    def construct(self):
+        self.add_plane()
+        self.axes.x_axis.set_stroke(opacity=0)
+        self.axes.y_axis.set_stroke(opacity=0)
+
+        # Test
+        self.frame.reorient(-21, 77, 0, (1.97, -0.73, 0.54), 3.67)
+        self.frame.add_updater(lambda m, dt: m.increment_theta(dt * DEGREES))
+        words = ["cat", "cats"]
+        all_coords = 2 * np.array([self.basis @ self.model[word] for word in words])
+        colors = [BLUE, RED]
+        cat, cats = [
+            self.get_labeled_vector(
+                word,
+                coords=coords,
+                color=color,
+                buff=0.05,
+            )
+            for word, color, coords in zip(words, colors, all_coords)
+        ]
+        diff = Arrow(cat.get_end(), cats.get_end(), buff=0)
+        diff.set_color(YELLOW)
+
+        self.add(cat, cats)
+        self.add(cat.label, cats.label)
+
+        self.wait(5)
+        self.play(ShowCreation(diff))
+        self.wait(10)
+
+
 class ShowNearestNeighbors(Word2VecScene):
     seed_word = "tower"
     color = YELLOW
@@ -1380,6 +1513,7 @@ class ShowNearestNeighbors(Word2VecScene):
     frame_height = 4
     frame_center = (2.18, 0.09, 0.72)
     frame_orientation = (-21, 87, 0)
+    wait_time_per_example = 0.5
 
     def construct(self):
         # Setup
@@ -1395,9 +1529,13 @@ class ShowNearestNeighbors(Word2VecScene):
         self.add(seed_group)
 
         # Add neighbors
-        nearest_words = find_nearest_words(self.model, self.model[word], self.n_shown + 1)[1:]
+        nearest_words = self.get_nearest_words(word)
         neighbors = VGroup(*(
-            self.get_labeled_vector(word, color=WHITE)
+            self.get_labeled_vector(
+                word,
+                # coords=seed_vect.get_end() + np.random.uniform(-0.5, 0.5, 3),
+                color=WHITE
+            )
             for word in nearest_words
         ))
         for neighbor in neighbors:
@@ -1436,10 +1574,13 @@ class ShowNearestNeighbors(Word2VecScene):
                 FadeIn(faded_last_neighbor),
             )
             last_neighbor = neighbor
-            self.wait(0.5)
+            self.wait(self.wait_time_per_example)
         self.play(last_neighbor.animate.set_opacity(0.2))
 
         self.wait(10)
+
+    def get_nearest_words(self, word):
+        return find_nearest_words(self.model, self.model[word], self.n_shown + 1)[1:]
 
     def animate_in_neighbors(self, neighbors):
         # Old
@@ -1477,6 +1618,15 @@ class ShowNearestNeighborsToNavy(ShowNearestNeighbors):
 class ShowNearestNeighborsToJump(ShowNearestNeighbors):
     seed_word = "jump"
     color = BLUE
+    wait_time_per_example = 1.0
+    frame_center = (2.18, -2.0, 0.0)
+    random_seed = 1
+
+    def add_plane(self):
+        return VGroup()
+
+    def get_nearest_words(self, word):
+        return ["hop", "skip", "leap", "bound", "bounce", "drop", "vault"]
 
 
 class DotProducts(InteractiveScene):
@@ -1804,6 +1954,7 @@ class DotProductWithPluralityDirection(DotProductWithGenderDirection):
     words = [
         "octopus", "octopi",
         "puppy", "puppies",
+        "student", "students",
         "one", "two", "three", "four",
         "single", "multiple",
     ]
@@ -1928,17 +2079,17 @@ class RicherEmbedding(InteractiveScene):
         self.play(
             GrowArrow(vect1),
             FadeIn(label1, 0.5 * DOWN),
-            frame.animate.reorient(2, -16, 0, (0.6, -0.04, 0.02), 6.01).set_anim_args(run_time=3),
+            frame.animate.reorient(2, -16, 0, (0.6, -0.04, 0.02), 6.01).set_anim_args(run_time=8),
         )
         self.play(
             GrowArrow(vect2),
             FadeIn(label2, 0.5 * DOWN),
-            frame.animate.reorient(35, -23, 0, (0.6, -0.04, 0.02), 6.01).set_anim_args(run_time=2),
+            frame.animate.reorient(35, -23, 0, (0.6, -0.04, 0.02), 6.01).set_anim_args(run_time=5),
         )
         self.play(
             GrowArrow(vect3),
             FadeIn(label3, 0.5 * DOWN),
-            frame.animate.reorient(20, -29, 0, (0.61, 0.01, 0.0), 6.10).set_anim_args(run_time=3),
+            frame.animate.reorient(20, -29, 0, (0.61, 0.01, 0.0), 6.10).set_anim_args(run_time=5),
         )
         self.play(
             frame.animate.reorient(-19, -25, 0, (0.61, 0.01, 0.0), 6.10),
@@ -1959,477 +2110,3 @@ class RicherEmbedding(InteractiveScene):
 
         result = VGroup(vect, text)
         return result
-
-
-class SoftmaxBreakdown(InteractiveScene):
-    def construct(self):
-        # Show example probability distribution
-        word_strs = ['Dumbledore', 'Flitwick', 'Mcgonagall', 'Quirrell', 'Snape', 'Sprout', 'Trelawney']
-        words = VGroup(*(Text(word_str, font_size=30) for word_str in word_strs))
-        values = np.array([-0.8, -5.0, 0.5, 1.5, 3.4, -2.3, 2.5])
-        prob_values = softmax(values)
-        chart = BarChart(prob_values, width=10)
-        chart.bars.set_stroke(width=1)
-
-        probs = VGroup(*(DecimalNumber(pv) for pv in prob_values))
-        probs.arrange(DOWN, buff=0.25)
-        probs.generate_target()
-        for prob, bar in zip(probs.target, chart.bars):
-            prob.scale(0.5)
-            prob.next_to(bar, UP)
-
-        for word, bar in zip(words, chart.bars):
-            word.scale(0.75)
-            height = word.get_height()
-            word.move_to(bar.get_bottom(), LEFT)
-            word.rotate(-45 * DEGREES, about_point=bar.get_bottom())
-            word.shift(height * DOWN)
-
-        chart.save_state()
-        for bar in chart.bars:
-            bar.stretch(0, 1, about_edge=DOWN)
-        chart.set_opacity(0)
-
-        self.play(LaggedStartMap(FadeIn, probs, shift=0.25 * DOWN, lag_ratio=0.3))
-        self.wait()
-        self.play(
-            Restore(chart, lag_ratio=0.1),
-            MoveToTarget(probs),
-        )
-        self.wait()
-        self.play(
-            LaggedStartMap(FadeIn, words),
-        )
-        self.wait()
-
-        # Show constraint between 0 and 1
-        index = 3
-        bar = chart.bars[index]
-        bar.save_state()
-        prob = probs[index]
-        prob.bar = bar
-        max_height = chart.y_axis.get_y(UP) - chart.x_axis.get_y()
-        prob.add_updater(lambda p: p.set_value(p.bar.get_height() / max_height))
-        prob.add_updater(lambda p: p.match_height(probs[1]))
-        prob.add_updater(lambda p: p.next_to(p.bar, UP))
-
-        one_line = DashedLine(*chart.x_axis.get_start_and_end())
-        one_line.set_stroke(RED, 2)
-        one_line.align_to(chart.y_axis, UP)
-
-        self.play(
-            FadeIn(one_line, time_span=(0, 1)),
-            bar.animate.set_height(max_height, about_edge=DOWN, stretch=True),
-            run_time=2,
-        )
-        self.play(
-            bar.animate.set_height(1e-4, about_edge=DOWN, stretch=True),
-            run_time=2,
-        )
-        self.play(Restore(bar))
-        self.wait()
-        prob.clear_updaters()
-
-        # Show sum
-        prob_copies = probs.copy()
-        prob_copies.scale(1.5)
-        prob_copies.arrange(RIGHT, buff=1.0)
-        prob_copies.to_edge(UP)
-        prob_copies.shift(LEFT)
-        plusses = VGroup(*(
-            Tex("+").move_to(VGroup(p1, p2))
-            for p1, p2 in zip(prob_copies, prob_copies[1:])
-        ))
-        equals = Tex("=").next_to(prob_copies, RIGHT)
-        rhs = DecimalNumber(1.00)
-        rhs.next_to(equals, RIGHT)
-
-        self.play(
-            TransformFromCopy(probs, prob_copies),
-            Write(plusses),
-            Write(equals),
-            FadeOut(one_line),
-        )
-        self.play(
-            LaggedStart(*(
-                FadeTransform(pc.copy(), rhs)
-                for pc in prob_copies
-            ), lag_ratio=0.07)
-        )
-        self.wait()
-
-        sum_group = VGroup(*prob_copies, *plusses, equals, rhs)
-        chart_group = VGroup(chart, probs, words)
-
-        # Show example matrix vector output
-        n = len(words)
-        vector = NumericEmbedding(length=n, ellipses_index=None)
-        in_values = np.array([e.get_value() for e in vector.elements])
-        rows = []
-        for value in values:
-            row = np.random.uniform(-1, 1, len(in_values))
-            row *= value / np.dot(row, in_values)
-            rows.append(row)
-        matrix_values = np.array(rows)
-
-        matrix = WeightMatrix(
-            values=matrix_values,
-            ellipses_row=None,
-            ellipses_col=None,
-            num_decimal_places=2,
-        )
-        for mob in matrix, vector:
-            mob.set_height(4)
-        vector.to_edge(UP).set_x(2.5)
-        matrix.next_to(vector, LEFT)
-
-        self.play(LaggedStart(
-            chart_group.animate.scale(0.35).to_corner(DL),
-            FadeOut(sum_group, UP),
-            FadeIn(matrix, UP),
-            FadeIn(vector, UP),
-        ))
-        eq, rhs = show_matrix_vector_product(self, matrix, vector, x_max=9)
-        self.wait()
-
-        # Comment on output
-        rhs_rect = SurroundingRectangle(rhs)
-        rhs_words = Text("Not at all a\nprobability distribution!")
-        rhs_words.next_to(rhs_rect, DOWN)
-
-        neg_rects = VGroup(*(
-            SurroundingRectangle(entry)
-            for entry in rhs.get_entries()
-            if entry.get_value() < 0
-        ))
-        gt1_rects = VGroup(*(
-            SurroundingRectangle(entry)
-            for entry in rhs.get_entries()
-            if entry.get_value() > 1
-        ))
-        VGroup(rhs_rect, neg_rects).set_stroke(RED, 4)
-        gt1_rects.set_stroke(BLUE, 4)
-
-        for rect in (*neg_rects, *gt1_rects):
-            neg = rect in neg_rects
-            rect.word = Text("Negative" if neg else "> 1", font_size=36)
-            rect.word.match_color(rect)
-            rect.word.next_to(rhs, RIGHT)
-            rect.word.match_y(rect)
-        neg_words = VGroup(*(r.word for r in neg_rects))
-        gt1_words = VGroup(*(r.word for r in gt1_rects))
-
-        sum_arrow = Vector(DOWN).next_to(rhs, DOWN)
-        sum_sym = Tex(R"\sum", font_size=36).next_to(sum_arrow, LEFT)
-        sum_num = DecimalNumber(sum(e.get_value() for e in rhs.get_entries()))
-        sum_num.next_to(sum_arrow, DOWN)
-
-        self.play(
-            ShowCreation(rhs_rect),
-            FadeIn(rhs_words),
-        )
-        self.wait()
-        self.play(
-            ReplacementTransform(VGroup(rhs_rect), neg_rects),
-            LaggedStart(*(FadeIn(rect.word, 0.5 * RIGHT) for rect in neg_rects)),
-        )
-        self.wait()
-        self.play(
-            ReplacementTransform(neg_rects, gt1_rects),
-            FadeTransformPieces(neg_words, gt1_words),
-        )
-        self.wait()
-        self.play(
-            LaggedStart(
-                FadeOut(rhs_words),
-                FadeOut(gt1_rects),
-                FadeOut(gt1_words),
-            ),
-            GrowArrow(sum_arrow),
-            FadeIn(sum_num, DOWN),
-            FadeIn(sum_sym),
-        )
-        self.wait()
-        self.play(*map(FadeOut, [sum_arrow, sum_sym, sum_num]))
-
-        # Preview softmax application
-        rhs.generate_target()
-        rhs.target.to_edge(LEFT, buff=1.5)
-        rhs.target.set_y(0)
-
-        softmax_box = Rectangle(width=5, height=6.5)
-        softmax_box.set_stroke(BLUE, 2)
-        softmax_box.set_fill(BLUE_E, 0.5)
-        in_arrow, out_arrow = Vector(RIGHT).replicate(2)
-        in_arrow.next_to(rhs.target, RIGHT)
-        softmax_box.next_to(in_arrow, RIGHT)
-        out_arrow.next_to(softmax_box, RIGHT)
-
-        softmax_label = Text("softmax", font_size=60)
-        softmax_label.move_to(softmax_box)
-
-        rhs_values = np.array([e.get_value() for e in rhs.get_entries()])
-        dist = softmax(rhs_values)
-        output = DecimalMatrix(dist.reshape((dist.shape[0], 1)))
-        output.match_height(rhs)
-        output.next_to(out_arrow, RIGHT)
-
-        bars = chart.bars.copy()
-        for bar, entry in zip(bars, output.get_entries()):
-            bar.rotate(-PI / 2)
-            bar.stretch(2, 0)
-            bar.next_to(output)
-            bar.match_y(entry)
-
-        self.play(LaggedStart(
-            FadeOut(matrix, 2 * LEFT),
-            FadeOut(vector, 3 * LEFT),
-            FadeOut(eq, 3.5 * LEFT),
-            FadeOut(chart_group, DL),
-            GrowArrow(in_arrow),
-            FadeIn(softmax_box, RIGHT),
-            FadeIn(softmax_label, RIGHT),
-            MoveToTarget(rhs),
-            GrowArrow(out_arrow),
-            FadeIn(output, RIGHT),
-            TransformFromCopy(chart.bars, bars),
-        ), lag_ratio=0.2, run_time=2)
-        self.wait()
-
-        # Highlight larger and smaller parts
-        rhs_entries = rhs.get_entries()
-        changer = VGroup(rhs_entries, output.get_entries(), bars)
-        changer.save_state()
-        for index in range(4, 0, -1):
-            changer.target = changer.saved_state.copy()
-            changer.target.set_fill(border_width=0)
-            for group in changer.target:
-                for j, elem in enumerate(group):
-                    if j != index:
-                        elem.fade(0.8)
-            self.play(MoveToTarget(changer))
-            self.wait()
-        self.play(Restore(changer))
-        self.remove(changer)
-        self.add(rhs, output, bars)
-        self.wait()
-
-        # Swap out for variables
-        variables = VGroup(*(
-            Tex(f"x_{{{n}}}", font_size=48).move_to(elem)
-            for n, elem in enumerate(rhs_entries, start=1)
-        ))
-
-        self.remove(rhs_entries)
-        self.play(
-            LaggedStart(*(
-                TransformFromCopy(entry, variable, path_arc=PI / 2)
-                for entry, variable in zip(rhs_entries, variables)
-            ), lag_ratio=0.1, run_time=1.0)
-        )
-        self.wait()
-
-        # Exponentiate each part
-        exp_parts = VGroup(*(
-            Tex(f"e^{{{var.get_tex()}}}", font_size=48).move_to(var)
-            for var in variables
-        ))
-        exp_parts.align_to(softmax_box, LEFT)
-        exp_parts.shift(0.75 * RIGHT)
-        exp_parts.space_out_submobjects(1.5)
-
-        self.play(
-            softmax_label.animate.next_to(softmax_box, UP, buff=0.15),
-            LaggedStart(*(
-                TransformMatchingStrings(var.copy(), exp_part)
-                for var, exp_part in zip(variables, exp_parts)
-            ), run_time=1, lag_ratio=0.01)
-        )
-        self.wait()
-
-        # Compute the sum
-        exp_sum = Tex(R"\sum_{n=0}^{N-1} e^{x_{n}}", font_size=42)
-        exp_sum[R"e^{x_{n}}"].scale(1.5, about_edge=LEFT)
-        exp_sum.next_to(softmax_box.get_right(), LEFT, buff=0.75)
-
-        globals().update(locals())
-        lines = VGroup(*(Line(exp_part.get_right(), exp_sum.get_left(), buff=0.1) for exp_part in exp_parts))
-        lines.set_stroke(TEAL, 2)
-
-        self.play(
-            LaggedStart(*(
-                FadeTransform(exp_part.copy(), exp_sum)
-                for exp_part in exp_parts
-            ), lag_ratio=0.01),
-            LaggedStartMap(ShowCreation, lines, lag_ratio=0.01),
-            run_time=1
-        )
-        self.wait()
-        self.play(FadeOut(lines))
-
-        # Divide each part by the sum
-        lil_denoms = VGroup()
-        for exp_part in exp_parts:
-            slash = Tex("/").match_height(exp_sum)
-            slash.next_to(exp_sum, LEFT, buff=0)
-            denom = VGroup(slash, exp_sum).copy()
-            denom.set_height(exp_part.get_height() * 1.5)
-            denom.next_to(exp_part, RIGHT, buff=0)
-            lil_denoms.add(denom)
-        lil_denoms.align_to(softmax_box.get_center(), LEFT)
-
-        lines = VGroup(*(Line(exp_sum.get_left(), denom.get_center()) for denom in lil_denoms))
-        lines.set_stroke(TEAL, 1)
-
-        self.remove(exp_sum)
-        self.play(
-            exp_parts.animate.next_to(lil_denoms, LEFT, buff=0),
-            LaggedStart(*(
-                FadeTransform(exp_sum.copy(), denom)
-                for denom in lil_denoms
-            ), lag_ratio=0.01),
-        )
-        self.wait()
-
-        # Resize box
-        sm_terms = VGroup(*(
-            VGroup(exp_part, denom)
-            for exp_part, denom in zip(exp_parts, lil_denoms)
-        ))
-        sm_terms.generate_target()
-
-        target_height = 5.0
-        full_output = Group(output, bars)
-        full_output.generate_target()
-        full_output.target.set_height(target_height, about_edge=RIGHT)
-        full_output.target.shift(1.5 * LEFT)
-        equals = Tex("=")
-        equals.next_to(full_output.target, LEFT)
-
-        softmax_box.generate_target()
-        softmax_box.target.set_width(3.0, stretch=True)
-        VGroup(softmax_box.target, sm_terms.target).set_height(target_height + 0.5).next_to(equals, LEFT)
-
-        rhs.generate_target()
-        rhs_entries.become(variables)
-        self.remove(variables)
-        rhs.target.set_height(target_height)
-        rhs.target.next_to(softmax_box.target, LEFT, buff=1.5)
-
-        self.play(
-            softmax_label.animate.next_to(softmax_box.target, UP),
-            MoveToTarget(softmax_box),
-            MoveToTarget(sm_terms),
-            MoveToTarget(full_output),
-            MoveToTarget(rhs),
-            FadeTransform(out_arrow, equals),
-            in_arrow.animate.become(
-                Arrow(rhs.target, softmax_box.target).match_style(in_arrow)
-            ),
-        )
-        self.wait()
-
-        # Set up updaters
-        output_entries = output.get_entries()
-        bar_width_ratio = bars.get_width() / max(o.get_value() for o in output_entries)
-        temp_tracker = ValueTracker(1)
-
-        def update_outs(output_entries):
-            inputs = [entry.get_value() for entry in rhs_entries]
-            outputs = softmax(inputs, temp_tracker.get_value())
-            for entry, output in zip(output_entries, outputs):
-                entry.set_value(output)
-
-        def update_bars(bars):
-            for bar, entry in zip(bars, output_entries):
-                width = max(bar_width_ratio * entry.get_value(), 1e-3)
-                bar.set_width(width, about_edge=LEFT, stretch=True)
-
-        output_entries.add_updater(update_outs)
-        bars.add_updater(update_bars)
-
-        self.add(bars, output_entries)
-
-        # Tweak values
-        for index, value in [(6, 4.0), (4, 4.2), (1, 0.0), (0, 6.0), (4, 9.9)]:
-            entry = rhs_entries[index]
-            rect = SurroundingRectangle(entry)
-            rect.set_stroke(BLUE if value > entry.get_value() else RED, 3)
-            self.play(
-                ChangeDecimalToValue(entry, value),
-                FadeIn(rect, time_span=(0, 1)),
-                run_time=2
-            )
-            self.play(FadeOut(rect))
-
-        # Add temperature
-        frame = self.frame
-        temp_color = RED
-        new_title = Text("softmax with temperature")
-        new_title["temperature"].set_color(temp_color)
-        get_t = temp_tracker.get_value
-        t_line = NumberLine(
-            (0, 10, 0.2),
-            tick_size=0.025,
-            big_tick_spacing=1,
-            longer_tick_multiple=2.0,
-            width=4
-        )
-        t_line.set_stroke(width=1.5)
-        t_line.next_to(softmax_box, UP)
-        t_tri = ArrowTip(angle=-90 * DEGREES)
-        t_tri.set_color(temp_color)
-        t_tri.set_height(0.2)
-        t_label = Tex("T = 0.00", font_size=36)
-        t_label.rhs = t_label.make_number_changable("0.00")
-        t_label["T"].set_color(temp_color)
-        globals().update(locals())
-        t_tri.add_updater(lambda m: m.move_to(t_line.n2p(get_t()), DOWN))
-        t_label.add_updater(lambda m: m.rhs.set_value(get_t()))
-        t_label.add_updater(lambda m: m.next_to(t_tri, UP, buff=0.1, aligned_edge=LEFT))
-
-        new_title.next_to(t_label, UP, buff=0.5).match_x(softmax_box)
-
-        self.play(
-            frame.animate.move_to(0.75 * UP),
-            TransformMatchingStrings(softmax_label, new_title),
-            FadeIn(t_line),
-            FadeIn(t_tri),
-            FadeIn(t_label),
-            run_time=1
-        )
-
-        # Change formula
-        template = Tex(R"e^{x_{0} / T} / \sum_{n=0}^{N - 1} e^{x_n / T}")
-        template["T"].set_color(temp_color)
-        template["/"][1].scale(1.9, about_edge=LEFT)
-        template[R"\sum_{n=0}^{N - 1}"][0].scale(0.7, about_edge=RIGHT)
-        index_part = template.make_number_changable("0")
-
-        new_sm_terms = VGroup()
-        all_Ts = VGroup()
-        for n, term in enumerate(sm_terms, start=1):
-            template.replace(term, dim_to_match=1)
-            index_part.set_value(n)
-            new_term = template.copy()
-            all_Ts.add(*new_term["T"])
-            new_sm_terms.add(new_term)
-
-        self.play(
-            LaggedStart(*(
-                FadeTransform(old_term, new_term)
-                for old_term, new_term in zip(sm_terms, new_sm_terms)
-            )),
-            LaggedStart(*(
-                TransformFromCopy(t_label[0], t_mob[0])
-                for t_mob in all_Ts
-            )),
-        )
-        self.wait()
-
-        # Oscilate between values
-        self.play(temp_tracker.animate.set_value(3), run_time=3)
-        self.wait()
-        self.play(temp_tracker.animate.set_value(10), run_time=3)
-        self.wait()
-

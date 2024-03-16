@@ -1,19 +1,28 @@
+import torch
 from manim_imports_ext import *
-from _2024.transformers.objects import *
+from _2024.transformers.helpers import *
 from _2024.transformers.embedding import *
 
 
 class HighLevelNetworkFlow(InteractiveScene):
-    example_text = "The goal of our model is to predict the next word"
+    example_text = "To date, the cleverest thinker of all time was blank"
+    use_words = False
     possible_next_tokens = [
-        ("word", 3),
-        ("token", 2.8),
-        ("piece", 0),
-        ("term", -2),
-        ("phrase", -2),
-        ("character", -3),
-        ("thing", -5),
+        (" the", 0.0882),
+        (" probably", 0.0437),
+        (" John", 0.0404),
+        (" Sir", 0.0366),
+        (" Albert", 0.0363),
+        (" Ber", 0.0331),
+        (" a", 0.029),
+        (" Isaac", 0.0201),
+        (" undoubtedly", 0.0158),
+        (" arguably", 0.0133),
+        (" Im", 0.0116),
+        (" Einstein", 0.0113),
+        (" Ludwig", 0.0104),
     ]
+    hide_block_labels = False
 
     def setup(self):
         super().setup()
@@ -148,15 +157,23 @@ class HighLevelNetworkFlow(InteractiveScene):
         block = Group(body, title)
         block.body = body
         block.title = title
+        if self.hide_block_labels:
+            title.set_opacity(0)
 
         return block
 
-    def show_initial_text_embedding(self, word_scale_factor=0.7, bump_first=False):
+    def show_initial_text_embedding(self, word_scale_factor=0.6, bump_first=False):
         # Mention next word prediction task
         phrase = Text(self.example_text)
         phrase.set_max_width(FRAME_WIDTH - 1)
-        words = break_into_words(phrase)
-        rects = get_piece_rectangles(words, leading_spaces=False, h_buff=0.05)
+        if self.use_words:
+            words = break_into_words(phrase)
+            rects = get_piece_rectangles(words)
+        else:
+            words = break_into_tokens(phrase)
+            rects = get_piece_rectangles(
+                words, leading_spaces=True, h_buff=0
+            )
 
         words.remove(words[-1])
         q_marks = Text("???")
@@ -191,6 +208,19 @@ class HighLevelNetworkFlow(InteractiveScene):
             FadeOut(arrow)
         )
         self.wait()
+
+        # Label the tokens
+        token_label = Text("Tokens", font_size=72)
+        token_label.to_edge(UP)
+        arrows = VGroup(
+            Arrow(token_label.get_bottom(), rect.get_top()).match_color(rect)
+            for rect in rects[:-1]
+        )
+
+        self.play(FadeIn(token_label, UP))
+        self.play(LaggedStartMap(VFadeInThenOut, arrows, lag_ratio=0.25, run_time=4))
+        self.play(FadeOut(token_label, DOWN))
+
 
         # Show words into vectors
         layer = self.get_embedding_array(
@@ -284,26 +314,30 @@ class HighLevelNetworkFlow(InteractiveScene):
         self.layers.add(new_layer)
 
     def play_simple_attention_animation(self, layer, run_time=5):
-        arcs = VGroup()
-        for e1, e2 in it.product(layer.embeddings, layer.embeddings):
-            sign = (-1)**int(e2.get_x() > e1.get_x())
-            arcs.add(Line(
-                e1.get_top(), e2.get_top(),
-                path_arc=sign * PI / 2,
-                stroke_color=random_bright_color(hue_range=(0.1, 0.3)),
-                stroke_width=5 * random.random()**2,
-            ))
+        arc_groups = VGroup()
+        for e1 in layer.embeddings:
+            arc_group = VGroup()
+            for e2 in layer.embeddings:
+                sign = (-1)**int(e2.get_x() < e1.get_x())
+                arc_group.add(Line(
+                    e2.get_top(), e1.get_top(), 
+                    path_arc=sign * PI / 3,
+                    stroke_color=random_bright_color(hue_range=(0.1, 0.3)),
+                    stroke_width=5 * random.random()**5,
+                ))
+            arc_group.shuffle()
+            arc_groups.add(arc_group)
 
-        arcs.shuffle()
         self.play(
-            LaggedStartMap(
-                VShowPassingFlash, arcs, time_width=2,
-                lag_ratio=0.5 / len(arcs)
-            ),
-            LaggedStartMap(
-                RandomizeMatrixEntries, layer.embeddings,
-            ),
-            run_time=run_time,
+            LaggedStart(*(
+                AnimationGroup(
+                    LaggedStartMap(VShowPassingFlash, arc_group.copy(), time_width=2, lag_ratio=0.05),
+                    LaggedStartMap(ShowCreationThenFadeOut, arc_group, lag_ratio=0.05),
+                )
+                for arc_group in arc_groups
+            ), lag_ratio=0.25),
+            LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.5),
+            run_time=run_time
         )
         self.add(layer)
 
@@ -521,23 +555,26 @@ class HighLevelNetworkFlow(InteractiveScene):
 
     def show_unembedding(self):
         # Unembedding
+        label_font_size = 30
         layer = self.layers[-1]
         last_embedding = layer.embeddings[-1]
         rect = SurroundingRectangle(last_embedding)
         rect.set_stroke(YELLOW, 3)
 
-        words, logits = zip(*self.possible_next_tokens)
-        dist = softmax(logits)
+        words, dist = zip(*self.possible_next_tokens)
         bars = BarChart(dist).bars
         bars.rotate(-90 * DEGREES)
         bars.next_to(layer, RIGHT, buff=6.0)
         bars.set_y(2)
         for bar, word, value in zip(bars, words, dist):
             percentage = DecimalNumber(
-                100 * value, num_decimal_places=2, unit="%"
+                100 * value,
+                num_decimal_places=2,
+                unit="%",
+                font_size=label_font_size,
             )
             percentage.next_to(bar, RIGHT)
-            text = Text(word)
+            text = Text(word, font_size=label_font_size)
             text.next_to(bar, LEFT)
             bar.push_self_into_submobjects()
             bar.add(text, percentage)
@@ -574,17 +611,22 @@ class HighLevelNetworkFlow(InteractiveScene):
 
 class SimplifiedFlow(HighLevelNetworkFlow):
     example_text = "Word vectors will be updated to encode more than mere words"
+    attention_anim_run_time = 1.0
+    orientation = (-55, -19, 0)
+    target_frame_x = -2
 
     def construct(self):
         self.show_initial_text_embedding(word_scale_factor=0.6)
         self.show_simple_flow(np.linspace(-2, -8, 5))
 
-    def show_simple_flow(self, x_range, orientation=(-55, -19, 0)):
+    def show_simple_flow(self, x_range, orientation=None):
+        if orientation is None:
+            orientation = self.orientation
         for x in x_range:
             self.progress_through_attention_block(
                 target_orientation=orientation,
-                target_frame_x=-2,
-                attention_anim_run_time=1,
+                target_frame_x=self.target_frame_x,
+                attention_anim_run_time=self.attention_anim_run_time,
             )
             self.progress_through_mlp_block(
                 sideview_orientation=orientation,
@@ -592,8 +634,18 @@ class SimplifiedFlow(HighLevelNetworkFlow):
             )
 
 
+class SimplifiedFlowAlternateAngle(SimplifiedFlow):
+    example_text = "The goal of the network is to predict the next token"
+    attention_anim_run_time = 1.0
+    orientation = (-10, -20, 0)
+    target_frame_x = 0
+    hide_block_labels = True
+
+
 class MentionContextSizeAndUnembedding(SimplifiedFlow):
     example_text = "Harry Potter was a highly unusual boy ... least favourite teacher, Professor Snape"
+    attention_anim_run_time = 5.0
+    use_words = True
 
     def construct(self):
         # Initial flow
@@ -816,7 +868,7 @@ class MentionContextSizeAndUnembedding(SimplifiedFlow):
         matrix.set_height(6)
         matrix.next_to(vector, UP, aligned_edge=RIGHT, buff=1.0)
         matrix.shift(LEFT)
-        rect = SurroundingRectangle(vector, buff=0.1)
+        last_vector_rect = rect = SurroundingRectangle(vector, buff=0.1)
         rect.set_stroke(YELLOW, 3)
         vector.generate_target()
         vector.target.next_to(matrix, RIGHT)
@@ -936,12 +988,27 @@ class MentionContextSizeAndUnembedding(SimplifiedFlow):
             last_rect = rect
         self.play(FadeOut(last_rect))
         self.wait()
+
+        # Move back
         self.play(
             FadeOut(question_arrows, lag_ratio=0.1),
             FadeOut(question, lag_ratio=0.1),
             frame.animate.reorient(0, 1, 0, (4.27, 3.46, 29.83), 12.86),
             run_time=2,
         )
+        # self.play(
+        #     LaggedStartMap(FadeOut, VGroup(
+        #         *question_arrows, question,
+        #         matrix, vector, eq, rhs,
+        #         big_rect, softmax_arrow, prob_group, words, softmax_label,
+        #         last_vector_rect, last_vect_arrow,
+        #     )),
+        #     FadeOut(question_arrows, lag_ratio=0.1),
+        #     FadeOut(question, lag_ratio=0.1),
+        #     frame.animate.reorient(-2, 0, 0, (2.72, 1.82, 29.44), 10.31),
+        #     run_time=2,
+        # )
+        self.wait()
 
         # Name the unembedding matrix
         matrix_rect = SurroundingRectangle(matrix, buff=0.1)
@@ -1025,4 +1092,77 @@ class MentionContextSizeAndUnembedding(SimplifiedFlow):
         self.play(
             FadeTransform(top_equation[1:4].copy(), top_equation[-1])
         )
+        self.wait()
+
+
+class TextPassageIntro(InteractiveScene):
+    example_text = MentionContextSizeAndUnembedding.example_text
+
+    def construct(self):
+        # Read in passage
+        passage_str = Path(DATA_DIR, "harry_potter_3.txt").read_text()
+        passage_str = passage_str.replace("\n", "\n\\\\")
+        passage = TexText(passage_str, alignment="", additional_preamble=R"\tiny")
+        passage.set_height(FRAME_HEIGHT - 1)
+        passage[-len("Snape"):].set_opacity(0)
+
+        # Initial surroundings
+        frame = self.frame
+        lh, rh = (1176, 1540)
+        section = passage[lh:rh].copy()
+        section.save_state()
+        section.set_width(FRAME_WIDTH - 1)
+        section.center()
+
+        word_lh, word_rh = (150, 155)
+        word = section[word_lh:word_rh].copy()
+        word.save_state()
+        word.set_height(0.75).center()
+
+        self.play(Write(word))
+        self.wait()
+        self.play(
+            Restore(word, time_span=(0, 0.5), remover=True),
+            ShowIncreasingSubsets(section),
+            run_time=1
+        )
+        self.play(ContextAnimation(word, section))
+        self.wait()
+        self.play(
+            Restore(section, remover=True),
+            ShowIncreasingSubsets(VGroup(*passage[:lh], *passage[rh:]))
+        )
+        self.add(passage)
+        self.play(ContextAnimation(
+            passage[lh:rh][word_lh:word_rh],
+            VGroup(
+                *passage[0:11],
+                *passage[211:217],
+                # *passage[2366:2374],
+            ),
+            lag_ratio=0.01
+        ))
+        self.wait()
+
+        # Compress
+        start, end = self.example_text.split(" ... ")
+        short_text = Text(self.example_text)
+        short_text["Snape"].set_opacity(0)
+        short_text.set_max_width(FRAME_WIDTH - 1)
+        dots = short_text["..."][0]
+
+        lh, rh = (31, 2474)
+        self.play(
+            FadeTransformPieces(
+                passage[:lh],
+                short_text[start][0],
+            ),
+            ReplacementTransform(passage[lh:rh], dots),
+            FadeTransformPieces(
+                passage[rh:],
+                short_text[end][0],
+            ),
+            run_time=3
+        )
+        self.add(short_text)
         self.wait()
