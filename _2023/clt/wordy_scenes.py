@@ -879,7 +879,7 @@ class ExampleQuestion(TeacherStudentsScene):
 
         sum_label = TexText("Sum = 100")
         sum_label.next_to(dice, UP)
-        num = sum_label.make_number_changable("100")
+        num = sum_label.make_number_changeable("100")
         n_tracker = ValueTracker(0)
         num.add_updater(lambda m: m.set_value(sum(die_values[:int(n_tracker.get_value())])))
 
@@ -978,7 +978,7 @@ class ExampleQuestionNoPiCreatures(InteractiveScene):
 
         sum_label = TexText("Sum = 100", font_size=60)
         sum_label.next_to(dice, RIGHT, buff=LARGE_BUFF)
-        num = sum_label.make_number_changable("100")
+        num = sum_label.make_number_changeable("100")
         num.add_updater(lambda m: m.set_value(sum(
             die.value for die in dice
         )))
@@ -1013,7 +1013,7 @@ class AverageDiceValues(InteractiveScene):
     def construct(self):
         # Test
         avg_label = TexText("Average value = 0.00")
-        avg_label.make_number_changable("0.00")
+        avg_label.make_number_changeable("0.00")
         avg_label.next_to(ORIGIN, RIGHT)
         avg_label.set_y(FRAME_HEIGHT / 4)
         self.add(avg_label)

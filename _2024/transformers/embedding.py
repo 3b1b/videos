@@ -1695,7 +1695,7 @@ class DotProducts(InteractiveScene):
         # Add right hand side
         rhs = Tex("= +0.00", font_size=60)
         rhs.next_to(vect_coords, RIGHT)
-        result = rhs.make_number_changable("+0.00", include_sign=True)
+        result = rhs.make_number_changeable("+0.00", include_sign=True)
         result.add_updater(lambda m: m.set_value(get_dot_product()))
 
         self.add(rhs)

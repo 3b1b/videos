@@ -439,7 +439,7 @@ class DiagonalSlices(Introduce3DGraph):
 
     def init_line_labels(self, get_s):
         equation = Tex("x + y = 0.00")
-        s_label = equation.make_number_changable("0.00")
+        s_label = equation.make_number_changeable("0.00")
         s_label.add_updater(lambda m: m.set_value(get_s()))
         equation.to_corner(UR)
         equation.fix_in_frame()

@@ -113,7 +113,7 @@ class DiceSimulation(InteractiveScene):
         label = TexText(R"\# Sums = 0", font_size=36)
         label.set_fill(GREY_B)
         label.to_edge(LEFT)
-        label.count = label.make_number_changable("0")
+        label.count = label.make_number_changeable("0")
         label.count.edge_to_fix = LEFT
 
         self.add(label)
@@ -148,7 +148,7 @@ class DiceSimulation(InteractiveScene):
 
         # Sum label
         sum_label = TexText(f"Sum = 0")
-        sum_label.count = sum_label.make_number_changable(0)
+        sum_label.count = sum_label.make_number_changeable(0)
         sum_label.next_to(dice, DOWN, buff=MED_LARGE_BUFF)
         sum_label.count.set_value(get_sum())
 

@@ -159,7 +159,7 @@ class AttentionPatterns(InteractiveScene):
 
         # Collapse vectors
         template = Tex(R"\vec{\textbf{E}}_{0}")
-        dec = template.make_number_changable(0)
+        dec = template.make_number_changeable(0)
         vect_syms = VGroup()
         for n, rect in enumerate(all_rects, start=1):
             dec.set_value(n)

@@ -883,8 +883,8 @@ class PremiseOfML(InteractiveScene):
         lhs = VGroup(matrix, vector)
         small_mat_product = Tex(R"W_{10} v_{11}")
         small_mat_product[R"W_{10}"].set_color(BLUE)
-        w_index = small_mat_product.make_number_changable("10")
-        v_index = small_mat_product.make_number_changable("11")
+        w_index = small_mat_product.make_number_changeable("10")
+        v_index = small_mat_product.make_number_changeable("11")
         small_mat_products = VGroup()
         n_rows, n_cols = 16, 8
         for n in range(n_rows * n_cols):
@@ -2271,7 +2271,7 @@ class SoftmaxBreakdown(InteractiveScene):
         t_tri.set_color(temp_color)
         t_tri.set_height(0.2)
         t_label = Tex("T = 0.00", font_size=36)
-        t_label.rhs = t_label.make_number_changable("0.00")
+        t_label.rhs = t_label.make_number_changeable("0.00")
         t_label["T"].set_color(temp_color)
         globals().update(locals())
         t_tri.add_updater(lambda m: m.move_to(t_line.n2p(get_t()), DOWN))
@@ -2295,7 +2295,7 @@ class SoftmaxBreakdown(InteractiveScene):
         template["T"].set_color(temp_color)
         template["/"][1].scale(1.9, about_edge=LEFT)
         template[R"\sum_{n=0}^{N - 1}"][0].scale(0.7, about_edge=RIGHT)
-        index_part = template.make_number_changable("0")
+        index_part = template.make_number_changeable("0")
 
         new_sm_terms = VGroup()
         all_Ts = VGroup()

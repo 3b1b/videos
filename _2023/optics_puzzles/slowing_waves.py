@@ -334,7 +334,7 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         # Show the phase kick
         form1 = Tex(R"A\sin(kx)")
         form2 = Tex(R"A\sin(kx + 1.00)")
-        pk_decimal: DecimalNumber = form2.make_number_changable("1.00")
+        pk_decimal: DecimalNumber = form2.make_number_changeable("1.00")
         pk_decimal.set_value(-phase_kick)
         pk_decimal.set_color(RED)
 
@@ -445,7 +445,7 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         n_layers_label = TexText(f"Num. layers = {n_shown_layers}", font_size=36)
         n_layers_label.set_color(GREY_B)
         n_layers_label.next_to(pk_label, UP, MED_LARGE_BUFF, LEFT)
-        nl_decimal = n_layers_label.make_number_changable(n_shown_layers)
+        nl_decimal = n_layers_label.make_number_changeable(n_shown_layers)
         nl_decimal.set_color(BLUE)
 
         self.play(FadeIn(n_layers_label, UP))
@@ -629,7 +629,7 @@ class PlayWithIndex(RevertToOneLayerAtATime):
             }
         )
         equation.next_to(layers, UP)
-        rhs = equation.make_number_changable("1.00")
+        rhs = equation.make_number_changeable("1.00")
 
         rhs.add_updater(lambda m: m.set_value(get_index()))
 
@@ -640,7 +640,7 @@ class PlayWithIndex(RevertToOneLayerAtATime):
 
         # Speed label
         speed_label = Tex(R"\text{Speed} = c / 1.00")
-        speed_factor = speed_label.make_number_changable("1.00")
+        speed_factor = speed_label.make_number_changeable("1.00")
         speed_factor.add_updater(lambda m: m.set_value(get_index()))
         speed_label.next_to(layers.get_bottom(), UP)
 
