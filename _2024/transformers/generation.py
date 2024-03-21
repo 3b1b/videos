@@ -1,3 +1,4 @@
+from transformers.models.videomae import image_processing_videomae
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 
@@ -52,13 +53,14 @@ def gpt3_predict_next_token(text, n_shown=10, random_seed=0):
         n=1,
         temperature=1.0,
         user=str(random_seed),
-        # Retrieve more than are shown
-        logprobs=50
+        logprobs=50  # I think this is actually set to a max of 20?
     )
     top_logprob_dict = response.choices[0]["logprobs"]["top_logprobs"][0]
     tokens, logprobs = zip(*top_logprob_dict.items())
     probs = np.exp(logprobs)
-    return tokens[:n_shown], probs[:n_shown]
+    indices = np.argsort(-probs)
+    shown_tokens = [tokens[i] for i in indices[:n_shown]]
+    return shown_tokens, probs[indices[:n_shown]]
 
 
 def clean_text(text):
@@ -333,9 +335,11 @@ class SimpleAutogregression(InteractiveScene):
 
     #
 
-    def predict_next_token(self, text):
+    def predict_next_token(self, text, n_shown=None):
+        if n_shown is None:
+            n_shown = self.n_shown_predictions
+
         result = None
-        n_shown = self.n_shown_predictions
         if self.model == "gpt3":
             try:
                 result = gpt3_predict_next_token(
@@ -440,26 +444,46 @@ class GPT3OnLearningSimpler(QuickRegressionGPT3):
     n_predictions = 300
     time_per_prediction = 0.2
     random_seed = 313
+    model = "gpt3"
+    min_y = -3
+    up_shift = 5 * UP
+    show_dist = False
 
     def construct(self):
         # Test
         cur_str = self.seed_text
         text_mob = VGroup()
         for n in range(self.n_predictions):
-            self.remove(text_mob)
-            words, probs = self.predict_next_token(cur_str)
-            probs = probs / probs.sum()
-            index = np.random.choice(np.arange(len(words)), p=probs)
+            self.clear()
+            words, probs = self.predict_next_token(cur_str, n_shown=20)
+            index = np.random.choice(np.arange(len(words)), p=(probs / probs.sum()))
             new_word = words[index]
             cur_str += new_word
             text_mob = self.string_to_mob(cur_str)
+
+            # Color seed
             if self.color_seed:
                 text_mob[:len(self.seed_text.replace(" ", ""))].set_color(BLUE)
+
+            # Add to text, shift if necessary
             text_mob[new_word.strip()][-1].set_color(YELLOW)
-            if text_mob.get_bottom()[1] < -3:
-                text_mob.shift(5 * UP)
-                self.text_corner += 5 * UP
+            if text_mob.get_bottom()[1] < self.min_y:
+                text_mob.shift(self.up_shift)
+                self.text_corner += self.up_shift
             self.add(text_mob)
+
+            # Add the distribution
+            if self.show_dist:
+                dist = self.get_distribution(
+                    words[:self.n_shown_predictions],
+                    probs[:self.n_shown_predictions],
+                    buff=0
+                )
+                dist.set_height(4)
+                dist.to_edge(DOWN)
+                rect = SurroundingRectangle(dist[min(index, len(dist) - 1)])
+                self.add(dist, rect)
+
             self.wait(self.time_per_prediction)
 
 
@@ -467,6 +491,38 @@ class GPT3OnLongPassages(GPT3OnLearningSimpler):
     seed_text = "Writing long passages seems to involve more foresight and planning than what single-word prediction"
     n_predictions = 100
     color_seed = False
+
+
+class LowTempExample(GPT3OnLearningSimpler):
+    seed_text = "Once upon a time, there was a"
+    model = "gpt3"
+    min_y = 1
+    up_shift = 2 * UP
+    show_dist = True
+    temp = 0
+    n_predictions = 200
+    time_per_prediction = 0.25
+
+    def predict_next_token(self, text, n_shown=None):
+        words, probs = super().predict_next_token(text, n_shown)
+        if self.temp == 0:
+            probs = np.zeros_like(probs)
+            probs[0] = 1
+        else:
+            probs = probs**(1 / self.temp)
+            probs /= probs.sum()
+        return words, probs
+
+
+class HighTempExample(LowTempExample):
+    temp = 5
+    model = "gpt3"
+
+
+class MidTempExample(LowTempExample):
+    seed_text = "If you could see the underlying probability distributions a large language model uses when generating text, then"
+    temp = 1
+    model = "gpt3"
 
 
 class ChatBotPrompt(SimpleAutogregression):
@@ -651,10 +707,7 @@ class TextToImage(VoiceToTextExample):
         staring back at the camera with an exotic scene
         in the background.
     """
-
-    def construct(self):
-        # Test
-        pass
+    image_name = "PiCreatureDalle3_5"
 
     def get_clean_prompt(self):
         return clean_text(self.prompt)
@@ -663,7 +716,7 @@ class TextToImage(VoiceToTextExample):
         return get_paragraph(self.get_clean_prompt().split(" "), line_len=25)
 
     def get_output(self):
-        return ImageMobject("PiCreatureDalle3_13")
+        return ImageMobject(self.image_name)
 
     def generate_output(self):
         # Test
@@ -674,6 +727,8 @@ class TextToImage(VoiceToTextExample):
             territory, staring back at the camera with an exotic scene
             in the background.
         """
+
+        self.prompt = "abstract depiction of furry fluffiness"
 
         openai.api_key = os.getenv('OPENAI_KEY')
         prompt = self.get_clean_prompt()
@@ -687,7 +742,14 @@ class TextToImage(VoiceToTextExample):
         )
 
         image_url = response.data[0].url
+        print(prompt)
         print(image_url)
+
+        response = openai.Image.create_variation(
+          image=open("/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/images/raster/PiCreatureDalle3_17.png", "rb"),
+          n=1,
+          size="1024x1024"
+        )
 
 
 class TranslationExample(VoiceToTextExample):
@@ -827,3 +889,28 @@ class ManyParallelPredictions(SimpleAutogregression):
         result = VGroup(prefix, brace, dist)
 
         return result
+
+
+class PeekUnderTheHood(SimpleAutogregression):
+    def construct(self):
+        # Add parts
+        text_mob, next_word_line, machine = self.init_text_and_machine()
+        self.remove(text_mob, next_word_line)
+
+        # Zoom in
+        blocks, label, arrow = machine
+        blocks.target = blocks.generate_target()
+        blocks.target.rotate(-5 * DEGREES, UP)
+        blocks.target.rotate(-10 * DEGREES, RIGHT)
+        blocks.target.rotate(40 * DEGREES, UP)
+        blocks.target.set_height(5)
+        # blocks.target.arrange(OUT)
+        blocks.target.center()
+        blocks.target[5:].set_opacity(0.1)
+
+        self.play(
+            MoveToTarget(blocks, run_time=3),
+            FadeOut(arrow, RIGHT),
+            FadeOut(label, 2 * OUT),
+        )
+        self.wait()

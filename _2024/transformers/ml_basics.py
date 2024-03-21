@@ -1,4 +1,3 @@
-from os import wait
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 
@@ -74,6 +73,12 @@ class MLWithinDeepL(InteractiveScene):
         dl_box.target = dl_box.generate_target()
         blank_boxes = dl_box.box.replicate(2)
         inner_boxes = VGroup(*blank_boxes, dl_box.target)
+        reg_drawing = self.get_regression_drawing()
+        bayes_net = self.get_bayes_net_drawing()
+        for drawing, box in zip([reg_drawing, bayes_net], blank_boxes):
+            drawing.set_height(0.8 * box.get_height())
+            drawing.move_to(box)
+            box.add(drawing)
         inner_boxes.set_height(3.5)
         inner_boxes.arrange(RIGHT)
         inner_boxes.set_max_width(ml_box.get_width() - 0.5)
@@ -83,7 +88,7 @@ class MLWithinDeepL(InteractiveScene):
         self.play(
             FadeIn(ml_box),
             MoveToTarget(dl_box),
-            FadeIn(blank_boxes, scale=2.0, lag_ratio=0.5),
+            LaggedStartMap(FadeIn, blank_boxes, scale=2.0, lag_ratio=0.5)
         )
         self.wait()
 
@@ -232,6 +237,60 @@ class MLWithinDeepL(InteractiveScene):
         result.box = box
         result.title = title
         return result
+
+    def get_regression_drawing(self):
+        axes = Axes((-1, 10), (-1, 10))
+        m = 0.5
+        y0 = 2
+        line = axes.get_graph(lambda x: y0 + m * x)
+        line.set_stroke(YELLOW, 2)
+        dots = VGroup(
+            Dot(axes.c2p(x, y0 + m * x + np.random.normal()))
+            for x in np.random.uniform(0, 10, 15)
+        )
+
+        reg_drawing = VGroup(axes, dots, line)
+        return reg_drawing
+
+    def get_bayes_net_drawing(self):
+        radius = MED_SMALL_BUFF
+        node = Circle(radius=radius)
+        node.set_stroke(GREY_B, 2)
+        node.shift(2 * DOWN)
+        nodes = VGroup(
+            node.copy().shift(x * RIGHT + y * UP)
+            for x, y in [
+                (-1, 0),  
+                (1, 0),
+                (-2, 2),
+                (0, 2),
+                (2, 2),
+                (-2, 4),
+                (0, 4),
+            ]
+        )
+        edge_index_pairs = [
+            (2, 0),
+            (3, 0),
+            (3, 1),
+            (4, 1),
+            (5, 2),
+            (6, 3),
+        ]
+        edges = VGroup()
+        for i1, i2 in edge_index_pairs:
+            n1, n2 = nodes[i1], nodes[i2]
+            edge = Arrow(
+                n1.get_center(), 
+                n2.get_center(),
+                buff=radius,
+                color=WHITE,
+                stroke_width=3
+            )
+            edges.add(edge)
+
+        network = VGroup(nodes, edges)
+        return network
 
 
 class ShowCross(InteractiveScene):
@@ -428,6 +487,7 @@ class PremiseOfML(InteractiveScene):
         )
 
         # Create pixels
+        image = in_data
         pixels = create_pixels(in_data)
 
         # Show input array
@@ -1620,6 +1680,8 @@ class DistinguishWeightsAndData(InteractiveScene):
         v_line = Line(UP, DOWN).set_height(4.5)
         v_line.to_edge(UP, buff=0)
         v_line.set_stroke(GREY_A, 2)
+
+        self.add(titles)
 
         # Set up matrices
         matrices = VGroup(

@@ -119,6 +119,100 @@ class GPTInitials(InteractiveScene):
         self.wait()
 
 
+class DifferentUsesOfModel(InteractiveScene):
+    def construct(self):
+        # Set up sentences
+        sentences = VGroup(
+            Text("A machine learning model ..."),
+            Text("A fashion model ..."),
+        )
+        images = Group(
+            NeuralNetwork([8, 6, 6, 8]),
+            ImageMobject("Zoolander"),
+        )
+        for sent, image, sign in zip(sentences, images, [-1, 1]):
+            sent.set_y(-2)
+            sent.set_x(sign * FRAME_WIDTH / 4)
+            image.set_width(4)
+            image.next_to(sent, UP, buff=0.5)
+        images[0].match_y(images[1])
+        sentences[0]["model"].set_color(BLUE)
+        sentences[1]["model"].set_color(YELLOW)
+
+        # Put word in context
+        word = Text("model", font_size=72)
+        word.to_edge(UP, buff=0.25)
+
+        self.play(FadeIn(word, UP))
+        self.wait()
+        self.play(
+            FadeTransform(word.copy(), sentences[0]["model"]),
+            LaggedStart(
+                Write(sentences[0]),
+                Write(images[0], lag_ratio=0.01, stroke_width=0.5),
+                lag_ratio=0.5,
+                run_time=2
+            )
+        )
+        self.wait()
+        self.play(
+            FadeTransform(word.copy(), sentences[1]["model"]),
+            LaggedStart(
+                Write(sentences[1]),
+                FadeIn(images[1], shift=0.5 * UP, scale=1.25),
+                lag_ratio=0.2,
+                run_time=2
+            )
+        )
+        self.wait()
+
+        # Show relevance
+        s0, s1 = sentences
+        path_arc = -0.65 * PI
+        left_arrows = VGroup(
+            Arrow(
+                s0[word].get_top(),
+                s0["model"].get_top(),
+                path_arc=path_arc
+            )
+            for word in ["machine", "learning"]
+        )
+        right_arrow = Arrow(
+            s1["fashion"].get_top(),
+            s1["model"].get_top(),
+            path_arc=path_arc
+        )
+        left_arrows[0].set_stroke(TEAL, opacity=0.9)
+        left_arrows[1].set_stroke(TEAL_D, opacity=0.75)
+        right_arrow.set_stroke(TEAL_C, opacity=0.8)
+
+        self.play(
+            LaggedStartMap(ShowCreation, left_arrows, lag_ratio=0.5),
+            self.frame.animate.move_to(DOWN),
+            images.animate.shift(UP),
+        )
+        self.play(ShowCreation(right_arrow))
+        self.wait()
+
+        # Show word vectors
+        words = VGroup(
+            *(s0[word] for word in s0.get_text().split(" ")[:-1]),
+            *(s1[word] for word in s1.get_text().split(" ")[:-1]),
+        )
+        vectors = VGroup(
+            NumericEmbedding().set_height(2).next_to(word, DOWN, buff=0.2)
+            for word in words
+        )
+
+        self.play(
+            LaggedStartMap(FadeIn, vectors, shift=0.25 * DOWN, lag_ratio=0.25, run_time=3)
+        )
+        self.play(
+            LaggedStartMap(RandomizeMatrixEntries, vectors)
+        )
+        self.wait()
+
+
 class BigMatrixMultiplication(InteractiveScene):
     mat_dims = (12, 12)
 
@@ -137,6 +231,97 @@ class BigMatrixMultiplication(InteractiveScene):
         self.add(matrix)
         self.add(vector)
         show_matrix_vector_product(self, matrix, vector)
+        self.wait()
+
+
+class LongListOFQuestions(InteractiveScene):
+    def construct(self):
+        # Add word and vector
+        word = Text("Queen")
+        arrow = Vector(0.75 * RIGHT)
+        vector = NumericEmbedding(length=12)
+        vector.set_height(5)
+        word_group = VGroup(word, arrow, vector)
+        word_group.arrange(RIGHT, buff=0.15)
+        word_group.to_edge(LEFT, buff=2.0)
+
+        self.add(word_group)
+
+        # Add neurons and questions
+        questions = VGroup(map(Text, [
+            "Is it English?",
+            "Is it a noun?",
+            "Does it refer to a person?",
+            "Is it an amount?",
+            "Is the tone assertive",
+            "Is it a piece of a bigger word?",
+            "Is it part of a quote?",
+            "Is it part of a lie?",
+        ]))
+        questions.scale(0.75)
+        n_questions = len(questions)
+        neurons = VGroup(Circle(radius=0.2) for n in range(n_questions))
+        neurons.add(Tex(R"\vdots", font_size=72))
+        neurons.arrange_in_grid(n_questions, 1, buff_ratio=0.5)
+        neurons.set_height(6)
+        neurons.set_stroke(WHITE, 1)
+        neurons.next_to(vector, RIGHT, buff=3.0)
+        values = [0.9, 0.8, 0.85, 0.1, 0.5, 0.05, 0.2, 0.02]
+        for neuron, question, value in zip(neurons, questions, values):
+            neuron.set_fill(WHITE, value)
+            question.next_to(neuron, RIGHT)
+
+        # Add connections
+        connections = VGroup(
+            VGroup(
+                Line(
+                    elem.get_right(), neuron.get_center(),
+                    buff=neuron.get_width() / 2
+                ).set_stroke(
+                    color=value_to_color(random.uniform(-10, 10)),
+                    width=2 * random.random()
+                )
+                for elem in vector.get_entries()
+            )
+            for neuron in neurons[:-1]
+        )
+
+        # Animate
+        lag_ratio = 0.3
+        self.play(
+            LaggedStart(
+                (ShowCreation(line_group, lag_ratio=0)
+                for line_group in connections),
+                lag_ratio=lag_ratio,
+            ),
+            LaggedStartMap(FadeIn, neurons, lag_ratio=lag_ratio),
+            LaggedStartMap(FadeIn, questions, lag_ratio=lag_ratio),
+            run_time=4
+        )
+        self.wait()
+
+
+class ChatBotIcon(InteractiveScene):
+    def construct(self):
+        # Add bot
+        bot = SVGMobject("ChatBot")
+        bot.set_fill(GREY_B)
+        bot[0].set_stroke(WHITE, 3)
+        bot.set_height(3)
+        bot.to_edge(RIGHT)
+
+        arrow = Vector(
+            1.5 * RIGHT,
+            max_tip_length_to_length_ratio=0.4,
+            max_width_to_length_ratio=9.0,
+        )
+        arrow.set_stroke(width=20)
+        arrow.next_to(bot, LEFT).match_y(bot[0])
+
+        self.play(
+            ShowCreation(arrow),
+            Write(bot),
+        )
         self.wait()
 
 
@@ -331,6 +516,19 @@ class GamePlan(InteractiveScene):
         return result
 
 
+class SkipAhead(TeacherStudentsScene):
+    def construct(self):
+        self.remove(self.background)
+        morty = self.teacher
+        self.play(
+            morty.change("hesitant", self.students),
+            self.change_students("confused", "pondering", "pondering", look_at=self.screen),
+        )
+        self.wait(2)
+        self.play(self.change_students("confused", "tease", "well", look_at=morty.eyes))
+        self.wait(5)
+
+
 class SeaOfNumbersUnderlay(TeacherStudentsScene):
     def construct(self):
         # Test
@@ -367,6 +565,31 @@ class SeaOfNumbersUnderlay(TeacherStudentsScene):
             self.change_students("tease", "thinking", "pondering", look_at=5 * RIGHT + 3 * UP)
         )
         self.wait(8)
+
+
+class ConfusionAtScreen(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.teacher.change("well"),
+            self.change_students("maybe", "confused", "concentrating", look_at=self.screen)
+        )
+        self.wait(2)
+        self.play(
+            self.teacher.change("tease"),
+            self.change_students("hesitant", "plain", "erm", look_at=self.teacher.eyes)
+        )
+        self.wait(3)
+
+
+class HoldUpExample(TeacherStudentsScene):
+    def construct(self):
+        self.background.set_fill(opacity=0.0)
+        self.teacher.body.insert_n_curves(100)
+        self.play(
+            self.teacher.change("raise_right_hand"),
+            self.change_students("happy", "hooray", "well", look_at=4 * UR)
+        )
+        self.wait(5)
 
 
 class ReactToWordVectors(InteractiveScene):
@@ -484,3 +707,24 @@ class NetworkEndAnnotation(InteractiveScene):
             self.wait()
         self.play(FadeOut(rect))
 
+
+class LowTempHighTempContrast(InteractiveScene):
+    def construct(self):
+        # Test
+        titles = VGroup(
+            Text("Temp = 0", font_size=72).set_x(-FRAME_WIDTH / 4),
+            Text("Temp = 5", font_size=72).set_x(FRAME_WIDTH / 4),
+        )
+        titles.to_edge(UP, buff=0.25)
+        h_line = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
+        h_line.next_to(titles, DOWN, buff=0.1)
+        v_line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        lines = VGroup(h_line, v_line)
+        lines.set_stroke(GREY_B, 2)
+
+        self.play(
+            LaggedStartMap(FadeIn, titles, shift=0.25 * UP, lag_ratio=0.25),
+            LaggedStartMap(Write, lines, lag_ratio=0.5),
+            run_time=1
+        )
+        self.wait()

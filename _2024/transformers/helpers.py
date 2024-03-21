@@ -20,6 +20,7 @@ def get_paragraph(words, line_len=40, font_size=48):
     """
     Handle word wrapping
     """
+    words = list(map(str.strip, words))
     word_lens = list(map(len, words))
     lines = []
     lh, rh = 0, 0
@@ -344,13 +345,16 @@ class ContextAnimation(LaggedStart):
         min_stroke_width=0,
         max_stroke_width=5,
         lag_ratio=None,
+        strengths=None,
         run_time=3,
         fix_in_frame=False,
         path_arc=PI / 2,
         **kwargs,
     ):
         arcs = VGroup()
-        for source in sources:
+        if strengths is None:
+            strengths = np.random.random(len(sources))**2
+        for source, strength in zip(sources, strengths):
             sign = direction[1] * (-1)**int(source.get_x() < target.get_x())
             arcs.add(Line(
                 source.get_edge_center(direction),
@@ -360,7 +364,7 @@ class ContextAnimation(LaggedStart):
                 stroke_width=interpolate(
                     min_stroke_width,
                     max_stroke_width,
-                    random.random()**2,
+                    strength,
                 )
             ))
         if fix_in_frame:
@@ -516,20 +520,6 @@ class RandomizeMatrixEntries(Animation):
             sub_alpha = self.get_sub_alpha(alpha, index, len(self.entries))
             entry.set_value(interpolate(start, target, sub_alpha))
         self.matrix.reset_entry_colors()
-
-
-class Test(InteractiveScene):
-    def construct(self):
-        # Test
-        matrix = WeightMatrix(
-            shape=(10, 10),
-            ellipses_row=-2,
-            ellipses_col=-2,
-        )
-        matrix.set_width(12)
-        self.add(matrix)
-
-        self.play(RandomizeMatrixEntries(matrix, lag_ratio=0.02))
 
 
 class EmbeddingSequence(MobjectMatrix):
