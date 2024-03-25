@@ -664,7 +664,7 @@ class RootCoefScene(Scene):
 
     def on_mouse_release(self, point, button, mods):
         super().on_mouse_release(point, button, mods)
-        if self.root_dots.has_updaters or self.coef_dots.has_updaters:
+        if self.root_dots.has_updaters() or self.coef_dots.has_updaters():
             # End the interaction where a dot is tied to the mouse
             self.root_dots.clear_updaters()
             self.coef_dots.clear_updaters()

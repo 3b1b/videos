@@ -21,7 +21,7 @@ class Banner(Scene):
     pi_height = 1.25
     pi_bottom = 0.25 * DOWN
     use_date = False
-    message = None
+    message = "Animated Math"
     date = "Sunday, February 3rd"
     message_height = 0.4
     add_supporter_note = False
@@ -34,7 +34,12 @@ class Banner(Scene):
             (-7, 7), (-5, 5),
             height=10 * 1.5,
             width=14 * 1.5,
-            axis_config={"stroke_color": BLUE_A},
+            axis_config=dict(stroke_color=BLUE_A),
+            faded_line_style=dict(
+                stroke_width=0.5,
+                stroke_opacity=0.35,
+                stroke_color=BLUE,
+            ),
             faded_line_ratio=4,
         )
         for line in plane.family_members_with_points():

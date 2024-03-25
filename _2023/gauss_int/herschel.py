@@ -406,8 +406,8 @@ class ManyDifferentFs(InteractiveScene):
 class VariableInputs(InteractiveScene):
     def construct(self):
         equation = Tex(R"f(\sqrt{(1.00)^2 + (0.00)^2}) = f(1.00)f(0.00)")
-        xs = equation.make_number_changable("1.00", replace_all=True)
-        ys = equation.make_number_changable("0.00", replace_all=True)
+        xs = equation.make_number_changeable("1.00", replace_all=True)
+        ys = equation.make_number_changeable("0.00", replace_all=True)
 
         xs.set_color(BLUE)
         ys.set_color(YELLOW)
@@ -448,8 +448,8 @@ class RationalNumbers(InteractiveScene):
         line_groups = VGroup(*(VGroup() for n in range(max_n - 2)))
         labels = VGroup()
         frac_template = Tex(R"1 \over 2")
-        frac_template.make_number_changable("1")
-        frac_template.make_number_changable("2")
+        frac_template.make_number_changeable("1")
+        frac_template.make_number_changeable("2")
 
         for pair in pairs:
             k, n = pair
@@ -1121,7 +1121,7 @@ class VariableC(InteractiveScene):
         get_c = c_tracker.get_value
 
         c_interval = NumberLine(
-            (-1, 1, 0.25), width=3, tick_size=0.05, numbers_with_elongated_ticks=[-1, 0, 1],
+            (-1, 1, 0.25), width=3, tick_size=0.05, big_tick_numbers=[-1, 0, 1],
         )
         c_interval.set_stroke(WHITE, 1)
         c_interval.add_numbers([-1, 0, 1], num_decimal_places=1, font_size=16)
@@ -1131,7 +1131,7 @@ class VariableC(InteractiveScene):
         c_tip.add_updater(lambda m: m.move_to(c_interval.n2p(get_c()), DOWN))
 
         c_label = Tex("c = 1.00", t2c={"c": RED}, font_size=36)
-        c_label.make_number_changable("1.00")
+        c_label.make_number_changeable("1.00")
         c_label[-1].scale(0.8, about_edge=LEFT)
         c_label.add_updater(lambda m: m[-1].set_value(get_c()))
         c_label.add_updater(lambda m: m.next_to(c_tip, UP, aligned_edge=LEFT))

@@ -1450,7 +1450,7 @@ class RealNewtonsMethod(Scene):
             "longer_tick_multiple": 2.0,
             "tick_offset": 0,
             # Change name
-            "numbers_with_elongated_ticks": list(range(-2, 3)),
+            "big_tick_numbers": list(range(-2, 3)),
             "include_tip": False,
         }
     }
@@ -1940,7 +1940,7 @@ class FasterNewtonExample(RealNewtonsMethod):
             "longer_tick_multiple": 2.0,
             "tick_offset": 0,
             # Change name
-            "numbers_with_elongated_ticks": list(range(-2, 3)),
+            "big_tick_numbers": list(range(-2, 3)),
             "include_tip": False,
         }
     }
@@ -2172,7 +2172,7 @@ class HistoryWithNewton(Scene):
             (*time_range, 1),
             tick_size=0.025,
             longer_tick_multiple=4,
-            numbers_with_elongated_ticks=range(*time_range, 10),
+            big_tick_numbers=range(*time_range, 10),
         )
         timeline.stretch(0.2 / timeline.get_unit_size(), 0)
         timeline_center = 2 * DOWN

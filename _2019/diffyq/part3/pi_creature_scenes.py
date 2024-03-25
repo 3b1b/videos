@@ -61,7 +61,7 @@ class InFouriersShoes(PiCreatureScene, WriteHeatEquationTemplate):
             tick_size=0.05,
             longer_tick_multiple=4,
             unit_size=0.2,
-            numbers_with_elongated_ticks=decades,
+            big_tick_numbers=decades,
             numbers_to_show=decades,
             decimal_number_config={
                 "group_with_commas": False,

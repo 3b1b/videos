@@ -267,7 +267,7 @@ class ComputationalNetwork(MovingCameraScene):
             x_min=0,
             x_max=32,
             include_numbers=True,
-            numbers_with_elongated_ticks=[0, 16, 32],
+            big_tick_numbers=[0, 16, 32],
             numbers_to_show=[0, 16, 32],
             tick_frequency=1,
             tick_size=0.05,

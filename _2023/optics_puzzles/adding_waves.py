@@ -1,5 +1,5 @@
 from manim_imports_ext import *
-from _2023.barber_pole.objects import *
+from _2023.optics_puzzles.objects import *
 
 
 class WhiteLightAsASum(InteractiveScene):
@@ -220,8 +220,8 @@ class AddTwoSineWaves(InteractiveScene):
         # Show lower function label
         sum_sine = Tex(R"= 1.00\sin(\omega t +2.00)", t2c={R"\omega": GOLD}, font_size=36)
         sum_sine.next_to(wave3_label, RIGHT, SMALL_BUFF)
-        sum_A = sum_sine.make_number_changable("1.00")
-        sum_phi = sum_sine.make_number_changable("+2.00", include_sign=True)
+        sum_A = sum_sine.make_number_changeable("1.00")
+        sum_phi = sum_sine.make_number_changeable("+2.00", include_sign=True)
         sum_A.set_color(RED)
         sum_phi.set_color(PINK)
         sum_parameters = VGroup(sum_A, sum_phi)
@@ -581,7 +581,7 @@ class AddTwoSineWaves(InteractiveScene):
         labels.next_to(axes, LEFT, MED_LARGE_BUFF)
         for label, tracker in zip(labels, trackers):
             label.tracker = tracker
-            label.value = label.make_number_changable("1.00")
+            label.value = label.make_number_changeable("1.00")
             label.add_updater(lambda m: m.value.set_value(m.tracker.get_value()))
 
         name_label = Tex(
@@ -807,7 +807,7 @@ class WavePlusLayerInfluence(InteractiveScene):
             **field_kw
         )
         for vect_wave in [vect_wave1, vect_wave2, vect_wave3]:
-            vect_wave.add_updater(lambda m: m.reset_sample_points(), index=0)
+            vect_wave.insert_updater(lambda m: m.reset_sample_points(), index=0)
 
         wave1_group = VGroup(wave1, vect_wave1)
         wave2_group = VGroup(wave2, vect_wave2)

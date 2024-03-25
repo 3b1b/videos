@@ -90,7 +90,7 @@ class LineToPlaneFunction(Scene):
             tick_frequency = 1,
             number_at_center = 6,
             numerical_radius = 6,
-            numbers_with_elongated_ticks = [0, 12],
+            big_tick_numbers = [0, 12],
             density = 3*DEFAULT_POINT_DENSITY_1D
         )
         line.to_edge(LEFT)
@@ -218,7 +218,7 @@ class PlaneToLineFunction(Scene):
             tick_frequency = 1,
             number_at_center = 6,
             numerical_radius = 6,
-            numbers_with_elongated_ticks = [0, 12],
+            big_tick_numbers = [0, 12],
         ).to_edge(RIGHT)
         line.add_numbers()
         plane = half_plane().to_edge(LEFT, buff = 0)

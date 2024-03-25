@@ -93,7 +93,7 @@ class ShotHistory(InteractiveScene, ThreeDScene):
 
         # Year label
         year_label = TexText("Year: 2000", font_size=72)
-        year_mob = year_label.make_number_changable("2000", group_with_commas=False)
+        year_mob = year_label.make_number_changeable("2000", group_with_commas=False)
         year_label.fix_in_frame()
         year_label.to_edge(UP)
         self.add(year_label)

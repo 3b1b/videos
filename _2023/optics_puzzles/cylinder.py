@@ -1,5 +1,5 @@
 from manim_imports_ext import *
-from _2023.barber_pole.objects import *
+from _2023.optics_puzzles.objects import *
 
 
 # Scenes
@@ -259,7 +259,7 @@ class TwistingLightBeam(SimpleLightBeam):
     def get_plane_label(self, axes, plane, font_size=24, color=GREY_B):
         x_label = Tex("x = 0.00", font_size=font_size)
         x_label.set_fill(color)
-        x_label.value_mob = x_label.make_number_changable("0.00")
+        x_label.value_mob = x_label.make_number_changeable("0.00")
         x_label.rotate(PI / 2, RIGHT)
         x_label.rotate(PI / 2, IN)
 
@@ -1298,7 +1298,7 @@ class LinearAsASuperpositionOfCircular(InteractiveScene):
             rot_label.set_height(0.2)
             rot_label.set_color(GREY_B)
             rot_label.next_to(plane, UP)
-            dec = rot_label.make_number_changable("0.00", edge_to_fix=LEFT)
+            dec = rot_label.make_number_changeable("0.00", edge_to_fix=LEFT)
             dec.phase_tracker = tracker
             dec.add_updater(lambda m: m.set_value(m.phase_tracker.get_value() / TAU))
 

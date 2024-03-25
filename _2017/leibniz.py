@@ -2188,7 +2188,7 @@ class FactorizationPattern(Scene):
             x_max = 36,
             unit_size = 0.4,
             numbers_to_show = list(range(0, 33, 4)),
-            numbers_with_elongated_ticks = list(range(0, 33, 4)),
+            big_tick_numbers = list(range(0, 33, 4)),
         )
         line.shift(2*DOWN)
         line.to_edge(LEFT)

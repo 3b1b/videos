@@ -1082,7 +1082,7 @@ class CartesianSlices(GaussianIntegral):
         )
         get_y = y_tracker.get_value
         x_slice_label = Tex("0.00 e^{-x^2}", **tex_kw)
-        coef = x_slice_label.make_number_changable("0.00")
+        coef = x_slice_label.make_number_changeable("0.00")
         coef.set_color(YELLOW)
         coef.add_updater(lambda m: m.set_value(math.exp(-get_y()**2)).rotate(90 * DEGREES, RIGHT))
 
@@ -1148,7 +1148,7 @@ class CartesianSlices(GaussianIntegral):
         def get_area_label():
             area_label = TexText(R"Area = $0.00 \cdot C$", font_size=30)
             area_label["C"].set_color(RED)
-            num = area_label.make_number_changable("0.00")
+            num = area_label.make_number_changeable("0.00")
             num.set_value(coef.get_value())
             area_label.rotate(90 * DEGREES, RIGHT)
             area_label.move_to(interpolate(x_slice.get_zenith(), x_slice.get_nadir(), 0.66))

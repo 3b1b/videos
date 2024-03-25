@@ -659,13 +659,13 @@ class SlowlyRotateIHat(LinearTransformationScene):
 class DeterminantGraphForRotatingIHat(Scene):
     def construct(self):
         t_axis = NumberLine(
-            numbers_with_elongated_ticks = [],
+            big_tick_numbers = [],
             x_min = 0,
             x_max = 10,
             color = WHITE,
         )
         det_axis = NumberLine(
-            numbers_with_elongated_ticks = [],
+            big_tick_numbers = [],
             x_min = -2,
             x_max = 2,
             color = WHITE

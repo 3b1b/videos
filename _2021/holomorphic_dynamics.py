@@ -637,7 +637,7 @@ class ShowFatouAndJulia(Scene):
             (*time_range, 1),
             tick_size=0.025,
             longer_tick_multiple=4,
-            numbers_with_elongated_ticks=range(*time_range, 10),
+            big_tick_numbers=range(*time_range, 10),
         )
         timeline.stretch(0.25, 0)
         timeline.add_numbers(

@@ -484,7 +484,7 @@ class DirectMGFInterpretation(InteractiveScene):
         )
         graph_label.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         graph_label.to_corner(UR).shift(3 * LEFT)
-        value = graph_label[1].make_number_changable("1.00")
+        value = graph_label[1].make_number_changeable("1.00")
         value.add_updater(lambda m: m.set_value(get_t()))
 
         self.add(axes)

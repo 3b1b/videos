@@ -72,7 +72,7 @@ class GraphScene(Scene):
             unit_size=self.space_unit_to_x,
             tick_frequency=self.x_tick_frequency,
             leftmost_tick=self.x_leftmost_tick,
-            numbers_with_elongated_ticks=self.x_labeled_nums,
+            big_tick_numbers=self.x_labeled_nums,
             color=self.axes_color
         )
         x_axis.shift(self.graph_origin - x_axis.number_to_point(0))
@@ -103,7 +103,7 @@ class GraphScene(Scene):
             unit_size=self.space_unit_to_y,
             tick_frequency=self.y_tick_frequency,
             leftmost_tick=self.y_bottom_tick,
-            numbers_with_elongated_ticks=self.y_labeled_nums,
+            big_tick_numbers=self.y_labeled_nums,
             color=self.axes_color,
             line_to_number_vect=LEFT,
             label_direction=LEFT,

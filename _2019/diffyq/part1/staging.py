@@ -582,7 +582,7 @@ class SimpleProjectileEquation(ShowGravityAcceleration):
             "y_max": 35,
             "y_axis_config": {
                 "unit_size": 0.1,
-                "numbers_with_elongated_ticks": range(
+                "big_tick_numbers": range(
                     -30, 35, 10
                 ),
                 "tick_size": 0.05,

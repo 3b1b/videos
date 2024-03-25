@@ -1,5 +1,5 @@
 from manim_imports_ext import *
-from _2023.barber_pole.objects import *
+from _2023.optics_puzzles.objects import *
 
 
 class AnnotateDemo(InteractiveScene):
@@ -575,8 +575,8 @@ class StrengthInDifferentDirectionsWithDecimal(InteractiveScene):
 
         def get_cos_tex():
             cos_tex = Tex(R"\cos(10^\circ) = 0.00", font_size=36)
-            cos_tex.make_number_changable("10", edge_to_fix=RIGHT).set_value(line.get_angle() / DEGREES)
-            cos_tex.make_number_changable("0.00").set_value(math.cos(line.get_angle()))
+            cos_tex.make_number_changeable("10", edge_to_fix=RIGHT).set_value(line.get_angle() / DEGREES)
+            cos_tex.make_number_changeable("0.00").set_value(math.cos(line.get_angle()))
             cos_tex.rotate(line.get_angle())
             cos_tex.move_to(weak_words[-len(cos_temp_text) + 1:])
             cos_tex.set_backstroke(BLACK, 10)

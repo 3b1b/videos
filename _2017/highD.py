@@ -15,7 +15,7 @@ class Slider(NumberLine):
         "center_value" : 0,
         "number_scale_val" : 0.75,
         "label_scale_val" : 1,
-        "numbers_with_elongated_ticks" : [],
+        "big_tick_numbers" : [],
         "line_to_number_vect" : LEFT,
         "line_to_number_buff" : MED_LARGE_BUFF,
         "dial_radius" : 0.1,
@@ -976,7 +976,7 @@ class Introduce4DSliders(SliderScene):
     CONFIG = {
         "slider_config" : {
             "include_real_estate_ticks" : False,
-            "numbers_with_elongated_ticks" : [-1, 0, 1],
+            "big_tick_numbers" : [-1, 0, 1],
             "tick_frequency" : 0.25,
             "tick_size" : 0.05,
             "dial_color" : YELLOW,
@@ -1306,7 +1306,7 @@ class ThreeDCase(TwoDimensionalCase):
         "n_sliders" : 3,
         "slider_config" : {
             "include_real_estate_ticks" : True,
-            "numbers_with_elongated_ticks" : [],
+            "big_tick_numbers" : [],
             "tick_frequency" : 1,
             "tick_size" : 0.1,
         },
@@ -1901,7 +1901,7 @@ class TwoDBoxWithSliders(TwoDimensionalCase):
         "slider_config" : {
             "include_real_estate_ticks" : True,
             "tick_frequency" : 1,
-            "numbers_with_elongated_ticks" : [],
+            "big_tick_numbers" : [],
             "tick_size" : 0.1,
             "dial_color" : YELLOW,
             "x_min" : -2,

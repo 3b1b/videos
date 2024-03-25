@@ -757,7 +757,7 @@ class AskAboutGuess(InteractiveScene):
             (0, virt_N, 1),
             tick_size=0.02,
             longer_tick_multiple=4,
-            numbers_with_elongated_ticks=range(0, virt_N + virt_N // 8, virt_N // 8),
+            big_tick_numbers=range(0, virt_N + virt_N // 8, virt_N // 8),
             width=FRAME_WIDTH - 2
         )
 

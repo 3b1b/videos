@@ -281,12 +281,12 @@ class SumAlongDiagonal(InteractiveScene):
         prod_rhs = Tex("= (0.00)(0.00)")
         num_rhs = Tex("= 0.000")
 
-        value1, value2 = prod_rhs.make_number_changable("0.00", replace_all=True)
+        value1, value2 = prod_rhs.make_number_changeable("0.00", replace_all=True)
         value1.set_value(dist1[i0 - 1]).set_color(BLUE)
         value2.set_value(dist2[j0 - 1]).set_color(RED)
         prod_rhs.next_to(p_label[1], DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
 
-        pair_prob = num_rhs.make_number_changable("0.000")
+        pair_prob = num_rhs.make_number_changeable("0.000")
         pair_prob.set_value(dist1[i0 - 1] * dist2[j0 - 1])
         num_rhs.next_to(prod_rhs, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
 

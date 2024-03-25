@@ -164,7 +164,7 @@ class ExplainNChoose2(InteractiveScene):
 
         for i, j in it.combinations(indices, 2):
             label = pair_label_template.copy()
-            values = label.make_number_changable("0", replace_all=True)
+            values = label.make_number_changeable("0", replace_all=True)
             values[0].set_value(i + 1)
             values[1].set_value(j + 1)
             label.next_to(last_label, DOWN)
@@ -222,7 +222,7 @@ class ExplainNChoose2(InteractiveScene):
             for pair in pair_labels
         ))
         rhs = Tex("= 0")
-        rhs_num = rhs.make_number_changable("0")
+        rhs_num = rhs.make_number_changeable("0")
         rhs.next_to(nc2, RIGHT)
 
         nc2[1].set_opacity(0)
@@ -484,7 +484,7 @@ class CountIntersections(ExplainNChoose2):
 
         # Show the count
         rhs = Tex("= 0")
-        rhs_num = rhs.make_number_changable("0")
+        rhs_num = rhs.make_number_changeable("0")
         rhs.next_to(nc4, RIGHT)
 
         quad_rects = VGroup(*(
@@ -539,7 +539,7 @@ class CountIntersections(ExplainNChoose2):
 
         for sub_indices in it.combinations(indices, 4):
             label = quad_label_template.copy()
-            values = label.make_number_changable("0", replace_all=True)
+            values = label.make_number_changeable("0", replace_all=True)
             for value, i in zip(values, sub_indices):
                 value.set_value(i + 1)
             label.next_to(last_label, DOWN)

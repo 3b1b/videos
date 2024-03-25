@@ -716,7 +716,7 @@ class SampleTwoNormals(RepeatedSamplesFromContinuousDistributions):
             Tex(R"\text{Std. Dev.} = 0.0", **kw),
         )
         for label, value in zip(labels, [mean, sigma]):
-            number = label.make_number_changable("0.0")
+            number = label.make_number_changeable("0.0")
             number.set_value(value)
 
         labels.arrange(DOWN, aligned_edge=LEFT)

@@ -797,7 +797,7 @@ class FourierMachineScene(Scene):
             "x_axis_config" : {
                 "unit_size" : 3,
                 "tick_frequency" : 0.25,
-                "numbers_with_elongated_ticks" : [1, 2, 3],
+                "big_tick_numbers" : [1, 2, 3],
             },
             "y_min" : 0,
             "y_max" : 2,
@@ -3570,7 +3570,7 @@ class SummarizeTheFullTransform(DrawFrequencyPlot):
             "x_axis_config" : {
                 "unit_size" : 1.2,
                 "tick_frequency" : 0.5,
-                # "numbers_with_elongated_ticks" : range(0, 10, 2),
+                # "big_tick_numbers" : range(0, 10, 2),
                 # "numbers_to_show" : range(0, 10, 2),
             }
         },

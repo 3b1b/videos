@@ -1388,7 +1388,7 @@ class ShiftSetupByOne(IntervalScene):
         new_interval = UnitInterval(
             number_at_center = 1.5,
             leftmost_tick = 1,
-            numbers_with_elongated_ticks = [1, 2],
+            big_tick_numbers = [1, 2],
         )
         new_interval.add_numbers(1, 2)
         side_shift_val = self.number_line.number_to_point(1)

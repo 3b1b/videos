@@ -651,7 +651,7 @@ class ValueSlider(NumberLine):
         "x_min": 0,
         "x_max": 1,
         "tick_frequency": 0.1,
-        "numbers_with_elongated_ticks": [],
+        "big_tick_numbers": [],
         "numbers_to_show": np.linspace(0, 1, 6),
         "decimal_number_config": {
             "num_decimal_places": 1,
@@ -959,7 +959,7 @@ class DelayedSocialDistancing(RunSimpleSimulation):
             x_min=0,
             x_max=2,
             tick_frequency=0.5,
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
             numbers_to_show=range(3),
             decimal_number_config={
                 "num_decimal_places": 0,
@@ -1058,7 +1058,7 @@ class ReduceInfectionDuration(LargerCity):
             x_min=0,
             x_max=5,
             tick_frequency=1,
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
             numbers_to_show=range(6),
             decimal_number_config={
                 "num_decimal_places": 0,
@@ -1094,7 +1094,7 @@ class SimpleTravel(RunSimpleSimulation):
             x_min=0,
             x_max=0.02,
             tick_frequency=0.005,
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
             numbers_to_show=np.arange(0, 0.03, 0.01),
             decimal_number_config={
                 "num_decimal_places": 2,
@@ -1561,7 +1561,7 @@ class CentralMarketLessFrequent(CentralMarketVeryFrequentLargePopulationDelayedS
             x_min=0,
             x_max=0.05,
             tick_frequency=0.01,
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
             numbers_to_show=np.arange(0, 0.06, 0.01),
             decimal_number_config={
                 "num_decimal_places": 2,
@@ -1623,7 +1623,7 @@ class CentralMarketTransitionToLowerInfection(CentralMarketLessFrequent):
             x_min=0,
             x_max=0.2,
             tick_frequency=0.05,
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
             numbers_to_show=np.arange(0, 0.25, 0.05),
             decimal_number_config={
                 "num_decimal_places": 2,

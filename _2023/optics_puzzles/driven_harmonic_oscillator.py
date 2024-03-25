@@ -1,6 +1,6 @@
-from _2023.barber_pole.objects import TimeVaryingVectorField
-from _2023.barber_pole.objects import Calcite
-from _2023.barber_pole.objects import Sucrose
+from _2023.optics_puzzles.objects import TimeVaryingVectorField
+from _2023.optics_puzzles.objects import Calcite
+from _2023.optics_puzzles.objects import Sucrose
 from manim_imports_ext import *
 
 

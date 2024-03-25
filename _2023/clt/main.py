@@ -282,7 +282,7 @@ class DiceSumDistributions(InteractiveScene):
         prob_labels = VGroup()
         for column in columns:
             label = Tex("1 / 36")
-            numer = label.make_number_changable("1")
+            numer = label.make_number_changeable("1")
             numer.edge_to_fix = RIGHT
             numer.set_value(len(column))
             label.next_to(column, UP, SMALL_BUFF)
@@ -510,7 +510,7 @@ class DiceSumDistributions(InteractiveScene):
             terms = die.replicate(min(n, 5))
         else:
             term = Tex("X_0")
-            term.make_number_changable("0")
+            term.make_number_changeable("0")
             terms = term.replicate(min(n, 5))
             for i, term in enumerate(terms):
                 term[1].set_value(i + 1)
@@ -1200,7 +1200,7 @@ class MeanAndStandardDeviation(InteractiveScene):
         mean_line.set_stroke(PINK, 3)
         mean_line.add_updater(lambda m: m.move_to(axes.c2p(get_mu() - 0.5, 0), DOWN))
         mu_label = Tex(R"\mu = 1.00", **tex_kw)
-        mu_number = mu_label.make_number_changable("1.00")
+        mu_number = mu_label.make_number_changeable("1.00")
         mu_number.add_updater(lambda m: m.set_value(get_mu()))
         mu_number.scale(0.75, about_edge=LEFT)
         mu_label.add_updater(lambda m: m.next_to(mean_line, UP))
@@ -1635,7 +1635,7 @@ class BuildUpGaussian(InteractiveScene):
 
         alt_base_form = Tex(R"=(2.718)^{-x^2}", **kw)
         alt_base_form.next_to(rhs, RIGHT)
-        base = alt_base_form.make_number_changable("2.718")
+        base = alt_base_form.make_number_changeable("2.718")
         base_width = base.get_width()
         base.set_color(TEAL)
         base.edge_to_fix = ORIGIN
@@ -2031,7 +2031,7 @@ class BuildUpGaussian(InteractiveScene):
 
     def get_variable_display(self, name, color, value_range):
         eq = Tex(f"{name} = 1.00", t2c={name: color})
-        number = eq.make_number_changable("1.00")
+        number = eq.make_number_changeable("1.00")
 
         tracker = ValueTracker(1)
         get_value = tracker.get_value
@@ -2659,7 +2659,7 @@ class LimitingDistributions(InteractiveScene):
             sum_label.scale(0.8)
 
         if isinstance(n, int) and n_str in sum_label.get_string():
-            n_parts = sum_label.make_number_changable(n_str, replace_all=True)
+            n_parts = sum_label.make_number_changeable(n_str, replace_all=True)
             for part in n_parts:
                 part.set_value(n)
 
@@ -2773,7 +2773,7 @@ class LimitingDistributions(InteractiveScene):
         values = [mean, sd]
         colors = [PINK, RED]
         for label, value, color in zip(labels, values, colors):
-            num = label.make_number_changable("0.00")
+            num = label.make_number_changeable("0.00")
             num.set_value(value)
             num.set_color(color)
 
@@ -3038,7 +3038,7 @@ class InfiniteVariance(LimitingDistributions):
         old_plot = VGroup()
 
         var_label = Tex(R"\text{Var}(X) = 0.00", font_size=60)
-        var_label.make_number_changable("0.00")
+        var_label.make_number_changeable("0.00")
         var_label.move_to(2 * UP)
         var_label["X"].set_color(BLUE)
         self.add(var_label)
@@ -3159,7 +3159,7 @@ class RuleOfThumb(BuildUpGaussian):
         # Area decimal
         area_label = TexText("Area = 0.000", font_size=40)
         area_label.set_backstroke(width=8)
-        num = area_label.make_number_changable("0.000")
+        num = area_label.make_number_changeable("0.000")
         from scipy.stats import norm
 
         def get_area():

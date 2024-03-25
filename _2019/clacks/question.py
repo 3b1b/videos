@@ -891,7 +891,7 @@ class PiComputingAlgorithmsAxes(Scene):
             y_max=5,
             axis_config={
                 "tick_frequency": 100,
-                "numbers_with_elongated_ticks": [],
+                "big_tick_numbers": [],
             }
         )
 

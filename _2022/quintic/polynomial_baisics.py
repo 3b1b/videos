@@ -1510,7 +1510,7 @@ class StudySqrt(RadicalScene):
         decimal = DecimalNumber()
         decimal.replace(result[2], dim_to_match=1)
         result.replace_submobject(2, decimal)
-        result.add_updater(lambda m: m.assemble_family())
+        result.add_updater(lambda m: m.note_changed_family())
         result.add_updater(lambda m: m[-1].set_color(color))
         result.add_updater(lambda m: m[-1].set_value(get_theta() / TAU))
         return result

@@ -2879,11 +2879,11 @@ class IntroduceDeBroglie(Scene):
             x_min = 1900,
             x_max = 1935,
             tick_frequency = 1,
-            numbers_with_elongated_ticks = list(range(1900, 1941, 10)),
+            big_tick_numbers = list(range(1900, 1941, 10)),
             color = BLUE_D
         )
         time_line.stretch_to_fit_width(FRAME_WIDTH - picture.get_width() - 2)
-        time_line.add_numbers(*time_line.numbers_with_elongated_ticks)
+        time_line.add_numbers(*time_line.big_tick_numbers)
         time_line.next_to(picture, RIGHT, MED_LARGE_BUFF, DOWN)
 
         year_to_words = {
@@ -3754,7 +3754,7 @@ class FourierTransformOfWaveFunction(Scene):
             x_axis_config = {
                 "unit_size" : 4,
                 "tick_frequency" : 0.25,
-                "numbers_with_elongated_ticks" : [1, 2]
+                "big_tick_numbers" : [1, 2]
             },
             y_min = -0.15,
             y_max = 0.15,

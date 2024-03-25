@@ -19,7 +19,8 @@ style:
   background_color: "#000000"
 camera_resolutions:
   default_resolution: "4k"
+fps: 30
 window_position: UR
 window_monitor: 0
 full_screen: False
-embed_exception_mode: "Minimal"
+embed_exception_mode: "Plain"

@@ -1066,7 +1066,7 @@ class RescaleToLogarithmic(IntroducePlot):
                 axes.x_axis.n2p(1) -
                 axes.x_axis.n2p(0)
             ),
-            numbers_with_elongated_ticks=[],
+            big_tick_numbers=[],
         )
         extended_x_axis.move_to(axes.x_axis.get_right(), LEFT)
         self.play(

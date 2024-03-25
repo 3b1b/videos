@@ -92,7 +92,7 @@ class Introduction(Scene):
             x_max=2,
             unit_size=5,
             tick_frequency=0.25,
-            numbers_with_elongated_ticks=[0, 1, 2],
+            big_tick_numbers=[0, 1, 2],
             color=GREY_B,
         )
         number_line.add_numbers()
@@ -766,7 +766,7 @@ class ShowProduct(Scene):
             y_max=y_max + 0.25,
             y_axis_config={
                 "unit_size": unit_size,
-                "numbers_with_elongated_ticks": list(range(1, y_max + 1)),
+                "big_tick_numbers": list(range(1, y_max + 1)),
                 "tick_size": 0.05,
             },
         )

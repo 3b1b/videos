@@ -443,7 +443,7 @@ class DefineForRealS(PiCreatureScene):
             x_min = 0,
             x_max = 3,
             tick_frequency = 0.25,
-            numbers_with_elongated_ticks = list(range(4)),
+            big_tick_numbers = list(range(4)),
             unit_size = 3,
         )
         number_line.add_numbers()
@@ -847,7 +847,7 @@ class FromRealToComplex(ComplexTransformationScene):
         number_line = NumberLine(
             unit_size = 2,
             tick_frequency = 0.5,
-            numbers_with_elongated_ticks = list(range(-2, 3))
+            big_tick_numbers = list(range(-2, 3))
         )
         number_line.add_numbers()
         input_dot = Dot(number_line.number_to_point(2))

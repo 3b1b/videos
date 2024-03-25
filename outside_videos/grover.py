@@ -90,7 +90,7 @@ class QBitDiagram(InteractiveScene):
             Rf"P(\text{{Measure a }}{bit}) = (0.00)^2 = 0.00",
             font_size=36
         )
-        numbers = label.make_number_changable("0.00", replace_all=True)
+        numbers = label.make_number_changeable("0.00", replace_all=True)
         for number in numbers:
             number.edge_to_fix = ORIGIN
         width = numbers[0].get_width()
