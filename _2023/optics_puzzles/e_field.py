@@ -149,7 +149,7 @@ class IntroduceEField(InteractiveScene):
         d_label = Tex("r = 0.00", font_size=36)
         d_label.next_to(d_line, DOWN, buff=0.35)
         d_label.add_updater(lambda m: m.match_x(d_line))
-        dist_decimal = d_label.make_number_changeable("0.00")
+        dist_decimal = d_label.make_number_changable("0.00")
 
         def get_d():
             return get_norm(charges[0].get_center() - charges[1].get_center())
