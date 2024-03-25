@@ -460,9 +460,10 @@ class GamePlan(InteractiveScene):
         prev_thumbnails.set_width(FRAME_WIDTH - 2)
         prev_thumbnails.move_to(2 * UP)
 
-        new_thumbnails = Group(  # TODO, give these images
-            Rectangle().set_stroke(width=0).set_fill(BLACK, 1)
-            for vid in tr_vids
+        tn_dir = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/Thumbnails/"
+        new_thumbnails = Group(
+            ImageMobject(os.path.join(tn_dir, f"Chapter{n}"))
+            for n in range(5, 8)
         )
         for tn1, tn2 in zip(prev_thumbnails, new_thumbnails):
             tn2.replace(tn1, stretch=True)
@@ -565,6 +566,37 @@ class SeaOfNumbersUnderlay(TeacherStudentsScene):
             self.change_students("tease", "thinking", "pondering", look_at=5 * RIGHT + 3 * UP)
         )
         self.wait(8)
+
+
+class Outdated(TeacherStudentsScene):
+    def construct(self):
+        # Add label
+        text = Text("GPT-3", font="Consolas", font_size=72)
+        openai_logo = SVGMobject("OpenAI.svg")
+        openai_logo.set_fill(WHITE)
+        openai_logo.set_height(2.0 * text.get_height())
+        gpt3_label = VGroup(openai_logo, text)
+        gpt3_label.arrange(RIGHT)
+        gpt3_label.scale(0.75)
+        param_count = Text("175B Parameters")
+        param_count.set_color(BLUE)
+        param_count.next_to(gpt3_label, DOWN, aligned_edge=LEFT)
+        gpt3_label.add(param_count)
+
+        gpt3_label.move_to(self.hold_up_spot, DOWN)
+
+        morty = self.teacher
+        morty.body.insert_n_curves(100)
+
+        self.play(
+            morty.change("raise_right_hand"),
+            FadeIn(gpt3_label, UP),
+        )
+        self.play(self.change_students("raise_left_hand", "hesitant", "sassy"))
+        self.play(
+            self.students[0].says(TexText("Isn't that outdated?"))
+        )
+        self.wait(3)
 
 
 class ConfusionAtScreen(TeacherStudentsScene):

@@ -1681,8 +1681,6 @@ class DistinguishWeightsAndData(InteractiveScene):
         v_line.to_edge(UP, buff=0)
         v_line.set_stroke(GREY_A, 2)
 
-        self.add(titles)
-
         # Set up matrices
         matrices = VGroup(
             WeightMatrix(

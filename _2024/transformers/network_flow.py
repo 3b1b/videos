@@ -23,6 +23,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         (" Ludwig", 0.0104),
     ]
     hide_block_labels = False
+    block_to_title_direction = UP
 
     def setup(self):
         super().setup()
@@ -153,7 +154,7 @@ class HighLevelNetworkFlow(InteractiveScene):
 
         title = Text(title, font_size=title_font_size)
         title.set_backstroke(BLACK, title_backstroke_width)
-        title.next_to(body, UP, buff=0.1)
+        title.next_to(body, self.block_to_title_direction, buff=0.1)
         block = Group(body, title)
         block.body = body
         block.title = title
@@ -220,7 +221,6 @@ class HighLevelNetworkFlow(InteractiveScene):
         self.play(FadeIn(token_label, UP))
         self.play(LaggedStartMap(VFadeInThenOut, arrows, lag_ratio=0.25, run_time=4))
         self.play(FadeOut(token_label, DOWN))
-
 
         # Show words into vectors
         layer = self.get_embedding_array(
@@ -1165,4 +1165,169 @@ class TextPassageIntro(InteractiveScene):
             run_time=3
         )
         self.add(short_text)
+        self.wait()
+
+
+class MoleExample1(HighLevelNetworkFlow):
+    block_to_title_direction = LEFT
+    highlighted_group_index = 1
+
+    def construct(self):
+        # Show three phrases
+        phrase_strs = [
+            "American shrew mole",
+            "One mole of carbon dioxide",
+            "Take a biopsy of the mole",
+        ]
+        phrases = VGroup(map(Text, phrase_strs))
+        phrases.arrange(DOWN, buff=2.0)
+        phrases.move_to(0.25 * DOWN)
+
+        self.play(Write(phrases[0]), run_time=1)
+        self.wait()
+        for i in [1, 2]:
+            self.play(
+                Transform(phrases[i - 1]["mole"].copy(), phrases[i]["mole"].copy(), remover=True),
+                FadeIn(phrases[i], lag_ratio=0.1)
+            )
+            self.wait()
+
+        # Add mole images
+        images = Group(
+            ImageMobject("ShrewMole").set_height(1),
+            Tex(R"6.02 \times 10^{23}").set_color(TEAL),
+            ImageMobject("LipMole").set_height(1),
+        )
+        braces = VGroup()
+        mole_words = VGroup()
+        for image, phrase in zip(images, phrases):
+            mole_word = phrase["mole"][0]
+            brace = Brace(mole_word, UP, SMALL_BUFF)
+            image.next_to(brace, UP, SMALL_BUFF)
+            braces.add(brace)
+            mole_words.add(mole_word)
+
+        self.play(
+            LaggedStartMap(GrowFromCenter, braces, lag_ratio=0.5),
+            LaggedStartMap(FadeIn, images, shift=UP, lag_ratio=0.5),
+            mole_words.animate.set_color(YELLOW).set_anim_args(lag_ratio=0.1),
+        )
+        self.wait()
+
+        # Subdivide
+        word_groups = VGroup()
+        for phrase in phrases:
+            words = break_into_words(phrase.copy())
+            rects = get_piece_rectangles(
+                words, leading_spaces=False, h_buff=0.05
+            )
+            word_group = VGroup(VGroup(*pair) for pair in zip(rects, words))
+            word_groups.add(word_group)
+
+        self.play(
+            FadeIn(word_groups),
+            LaggedStartMap(FadeOut, braces, shift=0.25 * DOWN, lag_ratio=0.25),
+            LaggedStartMap(FadeOut, images, shift=0.25 * DOWN, lag_ratio=0.25),
+            run_time=1
+        )
+        self.remove(phrases)
+        self.wait()
+
+        # Divide into three regions
+        for group, sign in zip(word_groups, [-1, 0, 1]):
+            group.target = group.generate_target()
+            group.target.scale(0.75)
+            group.target.set_x(sign * FRAME_WIDTH / 3)
+            group.target.to_edge(UP)
+
+        v_lines = Line(UP, DOWN).replicate(2)
+        v_lines.set_height(FRAME_HEIGHT)
+        v_lines.arrange(RIGHT, buff=FRAME_WIDTH / 3)
+        v_lines.center()
+        v_lines.set_stroke(GREY_B, 1)
+
+        self.play(
+            LaggedStartMap(MoveToTarget, word_groups),
+            ShowCreation(v_lines, lag_ratio=0.5, time_span=(1, 2))
+        )
+
+        # Show vector embeddings
+        embs = VGroup()
+        arrows = VGroup()
+        seed_array = np.random.uniform(0, 10, 7)
+        for group in word_groups:
+            for word in group:
+                arrow = Vector(0.5 * DOWN)
+                arrow.next_to(word, DOWN, SMALL_BUFF)
+                size = sum(len(m.get_points()) for m in  word.family_members_with_points())
+                values = (seed_array * size % 10)
+                emb = NumericEmbedding(values=values)
+                emb.set_height(2)
+                emb.next_to(arrow, DOWN, SMALL_BUFF)
+
+                arrows.add(arrow)
+                embs.add(emb)
+        mole_indices = [2, 4, 13]
+        non_mole_indices = [n for n in range(len(embs)) if n not in mole_indices]
+
+        mole_vect_rects = VGroup(
+            SurroundingRectangle(embs[index])
+            for index in mole_indices
+        )
+        mole_vect_rects.set_stroke(YELLOW, 2)
+
+        globals().update(locals())
+        self.play(
+            LaggedStartMap(GrowArrow, arrows),
+            LaggedStartMap(FadeIn, embs, shift=0.25 * DOWN),
+        )
+        self.wait()
+        self.play(
+            LaggedStartMap(ShowCreation, mole_vect_rects),
+            VGroup(arrows[j] for j in non_mole_indices).animate.set_fill(opacity=0.5),
+            VGroup(embs[j] for j in non_mole_indices).animate.set_fill(opacity=0.5),
+        )
+        self.wait()
+        self.play(
+            FadeOut(mole_vect_rects)
+        )
+
+        # Prepare to pass through an attention block
+        wg_lens = [len(wg) for wg in word_groups]
+        indices = [0, *np.cumsum(wg_lens)]
+        full_groups = VGroup(
+            VGroup(wg, arrows[i:j], embs[i:j])
+            for wg, i, j in zip(word_groups, indices, indices[1:])
+        )
+        highlighted_group = full_groups[self.highlighted_group_index]
+        fade_groups = [fg for n, fg in enumerate(full_groups) if n != self.highlighted_group_index]
+        highlighted_group.target = highlighted_group.generate_target()
+        highlighted_group.target.scale(1.5, about_edge=UP)
+        highlighted_group.target.space_out_submobjects(1.1)
+        highlighted_group.target.center()
+        highlighted_group.target[2].set_fill(opacity=1)
+
+        globals().update(locals())
+        self.play(
+            FadeOut(v_lines, time_span=(0, 1)),
+            MoveToTarget(highlighted_group, lag_ratio=5e-4),
+            *(
+                FadeOut(
+                    fg,
+                    shift=fg.get_center() - highlighted_group.get_center() + 2 * DOWN,
+                    lag_ratio=1e-3
+                )
+                for fg in  fade_groups
+            ),
+            run_time=2
+        )
+        self.wait()
+
+        # Pass through attention
+        layer = VGroup(highlighted_group[2])
+        layer.embeddings = highlighted_group[2]
+        self.layers.set_submobjects([])
+        self.layers.add(layer)
+
+        self.progress_through_attention_block(target_frame_x=-2)
         self.wait()
