@@ -2008,7 +2008,7 @@ class AddTwoThetaManyTimes(Scene):
         return result
 
     def show_example(self):
-        equation = self.get_changable_equation(0.01, n_decimal_places=2)
+        equation = self.get_changeable_equation(0.01, n_decimal_places=2)
         expression, brace, question = self.central_question_group
         N_mob, dot_theta_eq, rhs, comp_pi = equation
 
@@ -2032,7 +2032,7 @@ class AddTwoThetaManyTimes(Scene):
         self.play(ShowCreationThenFadeAround(N_mob))
 
     #
-    def get_changable_equation(self, value, tex_string=None, n_decimal_places=10):
+    def get_changeable_equation(self, value, tex_string=None, n_decimal_places=10):
         int_mob = Integer(1)
         int_mob.set_color(BLUE)
         formatter = "({:0." + str(n_decimal_places) + "f})"
@@ -2404,11 +2404,11 @@ class CentralQuestionFor1e2(AddTwoThetaManyTimes):
         question.center().to_edge(UP)
         self.add(question)
 
-        b10_equation = self.get_changable_equation(
+        b10_equation = self.get_changeable_equation(
             10**(-exp), n_decimal_places=exp
         )
         b10_equation.next_to(question, DOWN, buff=1.5)
-        arctan_equation = self.get_changable_equation(
+        arctan_equation = self.get_changeable_equation(
             np.arctan(10**(-exp)), n_decimal_places=10,
         )
         arctan_equation.next_to(b10_equation, DOWN, MED_LARGE_BUFF)
