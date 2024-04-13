@@ -266,15 +266,17 @@ class HighLevelNetworkFlow(InteractiveScene):
 
     def progress_through_attention_block(
         self,
+        depth=2.0,
         target_orientation=(-40, -15, 0),
         target_frame_height=14,
         target_frame_x=-2,
         target_frame_y=0,
         attention_anim_run_time=5,
+        label_text="Attention"
     ):
         layer = self.layers[-1]
         layer.save_state()
-        block = self.get_block(layer, title="Attention")
+        block = self.get_block(layer, title=label_text, depth=depth)
         z_diff = block.get_z() - layer.get_z()
         block_opacity = block.body[0].get_opacity()
         block.body[0].set_opacity(0)
@@ -309,6 +311,25 @@ class HighLevelNetworkFlow(InteractiveScene):
             Restore(layer),
         )
         self.add(block, new_layer)
+
+        # # Highlight example
+        # highlight = new_layer[0][3].copy()
+        # highlight.set_backstroke(BLACK, 3)
+        # highlight.set_fill(border_width=1)
+        # rect = SurroundingRectangle(highlight)
+        # rect.set_stroke(TEAL, 3)
+
+        # self.add(block.body, new_layer, block.title),
+        # self.play(LaggedStart(
+        #     self.frame.animate.reorient(-27, -6, 0, (-2.47, 0.33, 3.49), 10.23),
+        #     block.body.animate.set_color(BLACK).set_shading(0.1, 0.1, 0.5),
+        #     block.title.animate.set_opacity(0.75),
+        #     new_layer.animate.fade(0.75).set_stroke(width=0),
+        #     FadeIn(highlight),
+        #     ShowCreation(rect),
+        #     run_time=3
+        # ))
+        # self.wait()
 
         self.blocks.add(block)
         self.layers.add(new_layer)
@@ -352,6 +373,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         sideview_orientation=(-60, -5, 0),
         final_orientation=(-51, -18, 0),
         show_one_by_one=False,
+        label_text="Multilayer\nPerceptron",
     ):
         # MLP Test
         layer = self.layers[-1]
@@ -360,7 +382,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             depth=depth,
             buff=buff,
             size_buff=1.0,
-            title="Multilayer\nPerceptron",
+            title=label_text,
             title_font_size=72,
         )
 
@@ -614,14 +636,18 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     attention_anim_run_time = 1.0
     orientation = (-55, -19, 0)
     target_frame_x = -2
+    x_range = np.linspace(-2, -8, 5)
 
     def construct(self):
+        # Test
+        self.camera.light_source.set_z(60)
         self.show_initial_text_embedding(word_scale_factor=0.6)
-        self.show_simple_flow(np.linspace(-2, -8, 5))
+        self.show_simple_flow(self.x_range)
 
     def show_simple_flow(self, x_range, orientation=None):
         if orientation is None:
             orientation = self.orientation
+        self.frame.add_updater(lambda f: f.set_height(FRAME_HEIGHT + 0.15 * self.time))
         for x in x_range:
             self.progress_through_attention_block(
                 target_orientation=orientation,
@@ -634,12 +660,27 @@ class SimplifiedFlow(HighLevelNetworkFlow):
             )
 
 
+class AltIntro(HighLevelNetworkFlow):
+    example_text = "Four score and seven years ago our fathers"
+
+    def construct(self):
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+
+
 class SimplifiedFlowAlternateAngle(SimplifiedFlow):
     example_text = "The goal of the network is to predict the next token"
     attention_anim_run_time = 1.0
     orientation = (-10, -20, 0)
     target_frame_x = 0
     hide_block_labels = True
+
+
+class LongerFlowLongerAttention(SimplifiedFlow):
+    example_text = "The goal of the network is to predict the next token"
+    attention_anim_run_time = 3.0
+    target_frame_x = 0
+    hide_block_labels = True
+    x_range = np.linspace(-2, -12, 7)
 
 
 class MentionContextSizeAndUnembedding(SimplifiedFlow):
@@ -1166,6 +1207,38 @@ class TextPassageIntro(InteractiveScene):
         )
         self.add(short_text)
         self.wait()
+
+
+class ThumbnailBase(HighLevelNetworkFlow):
+    block_to_title_direction = LEFT
+    def construct(self):
+        # Add blocks
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+        for x in range(4):
+            self.progress_through_attention_block(
+                depth=1.5,
+                label_text="Att"
+            )
+            self.progress_through_mlp_block(
+                depth=2.0,
+                label_text="MLP"
+            )
+        self.frame.reorient(-45, -10, 0, (-2.9, 0.95, 24.44), 14.34)
+
+        # Fade title
+        for n, block in enumerate(self.blocks):
+            block.title.set_opacity(0)
+            block.body.set_opacity(0.5)
+        self.remove(*self.layers[:-1])
+
+        self.mention_repetitions()
+        self.rep_label[0].apply_depth_test()
+        self.rep_label[1:].set_opacity(0)
+        self.add(self.blocks)
+
+    example_text = "The initials GPT stand for Generative Pre-trained Transformer"
+
+
 
 
 class MoleExample1(HighLevelNetworkFlow):
