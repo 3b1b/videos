@@ -99,6 +99,9 @@ def get_word_to_vec_model(model_name="glove-wiki-gigaword-50"):
     return model
 
 
+# For chapter 1
+
+
 class LyingAboutTokens2(InteractiveScene):
     def construct(self):
         # Mention next word prediction task
@@ -186,7 +189,8 @@ class LyingAboutTokens2(InteractiveScene):
         # Show the lie
         phrase1, phrase2 = phrases = VGroup(
             Text("This process (known fancifully as tokenization) frequently subdivides words"),
-            Text("It's nice to sometimes pretend tokens are words"),
+            # Text("It's nice to sometimes pretend tokens are words"),
+            Text("Let's pretend that tokens are always simply words"),
         )
         for phrase, title in zip(phrases, titles):
             phrase.set_width(FRAME_WIDTH - 1)
@@ -318,7 +322,6 @@ class SoundTokens(InteractiveScene):
             run_time=2
         ))
         self.wait()
-
 
 
 class IntroduceEmbeddingMatrix(InteractiveScene):
@@ -603,6 +606,7 @@ class Word2VecScene(InteractiveScene):
         height=8,
         depth=6.4,
     )
+    label_rotation = PI / 2
     # embedding_model = "word2vec-google-news-300"
     embedding_model = "glove-wiki-gigaword-50"
 
@@ -668,6 +672,7 @@ class Word2VecScene(InteractiveScene):
             label_text=word if func_name is None else f"{func_name}({word})",
             buff=0,
             direction=direction,
+            label_rotation=self.label_rotation,
             **label_config,
         )
 
@@ -1094,7 +1099,7 @@ class KingQueenExample(Word2VecScene):
         frame = self.frame
         self.add_plane()
         self.plane.rotate(90 * DEGREES, LEFT)
-        frame.reorient(-178, 9, 178, (1.72, 0.91, 0.73), 6.80)
+        frame.reorient(-178, 9, 178, (1.72, -3, 0.73), 6.0)
 
         # Initial word vectors
         words = ["man", "woman", "king", "queen"]
@@ -1366,7 +1371,7 @@ class HitlerMussoliniExample(KingQueenExample):
     def construct(self):
         # Set up
         frame = self.frame
-        frame.move_to(1.5 * OUT)
+        frame.move_to(1.0 * UP)
         frame.add_updater(lambda f, dt: f.increment_theta(dt * 1 * DEGREES))
         axes = self.axes
 
@@ -1459,8 +1464,8 @@ class HitlerMussoliniExample(KingQueenExample):
 
 
 class SushiBratwurstExample(HitlerMussoliniExample):
-    words = ["Sushi", "Japan", "Germany", "Bratwurst"]
-    colors = [WHITE, "#BC002D", "#FFCC00", interpolate_color(GREY_BROWN, WHITE, 0.25)]
+    words = ["Sushi", "Germany", "Japan", "Bratwurst"]
+    colors = [WHITE, "#FFCC00", "#BC002D", interpolate_color(GREY_BROWN, WHITE, 0.25)]
     interpolation_factor = -0.1
     default_frame_orientation = (-17, 80, 0)
     second_frame_orientation = (-24, 75, 0)
@@ -1473,6 +1478,64 @@ class SushiBratwurstExample(HitlerMussoliniExample):
         basis[2] /= 3
         return basis
 
+
+class SizeDirection(Word2VecScene):
+    def construct(self):
+        # To illustrate "You could imagine many other directions in this space corresponding to semantic meaning"
+
+        # Set up axes
+        axes = self.axes
+        frame = self.frame
+        self.basis *= 1.5
+
+        # Add vectors
+        frame.reorient(35, 80, 0)
+        colors = [BLUE_B, BLUE_C, BLUE_D]
+        word_lists = [
+            ["micrometer", "millimeter", "meter"],
+            ["microgram", "milligram", "gram"],
+            ["microliter", "milliliter", "liter"],
+        ]
+        vect_groups = VGroup(
+            VGroup(
+                self.get_labeled_vector(word, color=color, func_name=None)
+                for word, color in zip(word_list, colors)
+            )
+            for word_list in word_lists
+        )
+
+        over_arrow = Arrow(2 * LEFT, 2 * RIGHT).shift(UP)
+        over_arrow.set_stroke(YELLOW, width=10)
+        over_words = Text("Size", font_size=72)
+        over_words.set_color(YELLOW)
+        over_words.set_backstroke(BLACK, 5)
+        over_words.next_to(over_arrow, UP)
+        annotation = VGroup(over_arrow, over_words)
+        annotation.shift(LEFT)
+        annotation.fix_in_frame()
+
+        for vect_group in vect_groups:
+            vect_group.labels = VGroup()
+            for vect in vect_group:
+                vect.label.rotate(45 * DEGREES, OUT)
+                vect.label.next_to(vect.get_end(), normalize(vect.get_vector()), SMALL_BUFF)
+                vect_group.labels.add(vect.label)
+
+        self.play(
+            frame.animate.reorient(49, 87, 0),
+            LaggedStartMap(FadeIn, vect_groups[0], lag_ratio=0.25),
+            LaggedStartMap(FadeIn, vect_groups[0].labels, lag_ratio=0.25),
+            FadeIn(annotation, lag_ratio=0.1, time_span=(2, 3)),
+            run_time=3
+        )
+        self.wait()
+        for i in [0, 1]:
+            self.play(
+                ReplacementTransform(vect_groups[i], vect_groups[i + 1]),
+                ReplacementTransform(vect_groups[i].labels, vect_groups[i + 1].labels),
+            )
+            self.wait()
+        
 
 class PluralityDirection(Word2VecScene):
     def construct(self):
@@ -1790,28 +1853,27 @@ class DotProducts(InteractiveScene):
         dual_rotate(75, -95, run_time=8)
 
 
-class DotProductWithGenderDirection(InteractiveScene):
-    vec_tex = R"\vec{\text{gen}}"
-    ref_words = ["man", "woman"]
-    words = [
-        "mother", "father",
-        "aunt", "uncle",
-        "sister", "brother",
-        "mama", "papa",
+class DotProductWithPluralDirection(InteractiveScene):
+    vec_tex = R"\vec{\text{plur}}"
+    ref_words = ["cat", "cats"]
+    word_groups = [
+        ["puppy", "puppies"],
+        ["octopus", "octopi", "octopuses", "octopodes"],
+        ["student", "students"],
+        ["one", "two", "three", "four"],
     ]
-    x_range = (-5, 7 + 1e-4, 0.25)
+    x_range = (-4, 4 + 1e-4, 0.25)
     colors = [BLUE, RED]
-    number_line_y = -1.5
-    threshold = 1.0
+    threshold = -1.0
 
     def construct(self):
         # Initialize equation
         self.model = get_word_to_vec_model()
-        words = self.words
-        eq_lhs = self.get_equation_lhs(words[0])
+        word_groups = self.word_groups
+        words = list(it.chain(*word_groups))
 
-        # Write gender equation
-        gen_lhs = eq_lhs[0].copy()
+        # Write plurality equation
+        gen_lhs = self.get_equation_lhs(words[0])[0].copy()
         equals = Tex(":=")
         rf1, rf2 = self.ref_words
         rhs = Tex(
@@ -1839,20 +1901,26 @@ class DotProductWithGenderDirection(InteractiveScene):
             x_range,
             big_tick_numbers=list(np.arange(*x_range[:2])),
             tick_size=0.05,
-            longer_tick_multiple=2.5,
+            longer_tick_multiple=3.0,
             width=12
         )
+        number_line.rotate(PI / 2)
         number_line.add_numbers(
             np.arange(*x_range[:2]),
             num_decimal_places=1,
-            font_size=30,
+            font_size=40,
+            direction=LEFT,
         )
-        number_line.move_to(self.number_line_y * UP)
+        number_line.numbers.shift(SMALL_BUFF * LEFT)
+        number_line.set_max_height(FRAME_HEIGHT - 1)
+        number_line.to_edge(LEFT, buff=1.0)
+
+        eq_lhs = self.get_equation_lhs(words[0])
         eq_rhs = self.get_equation_rhs(eq_lhs, words[0])
         equation = VGroup(eq_lhs, eq_rhs)
-        low_brace = Brace(equation, DOWN)
-        arrow = Vector(DOWN).next_to(low_brace, DOWN)
-        equation_group = VGroup(equation, low_brace, arrow)
+        brace = Brace(eq_lhs[2], LEFT, buff=0.1)
+        brace.next_to(equation, LEFT, SMALL_BUFF, DOWN)
+        equation_group = VGroup(brace, equation)
         dp = eq_rhs.get_value()
 
         word = eq_lhs[2][2:-1]
@@ -1860,14 +1928,15 @@ class DotProductWithGenderDirection(InteractiveScene):
         dot = GlowDot(color=word[0].get_color())
         dot.move_to(number_line.n2p(dp))
 
-        lil_word.next_to(dot, UP, buff=0)
-        equation_group.next_to(dot, UP)
+        lil_word.next_to(dot, RIGHT, buff=0)
+        equation_group.next_to(dot, RIGHT, buff=0, submobject_to_align=brace)
 
+        globals().update(locals())
         self.play(
+            top_eq.animate.scale(0.75).to_corner(UR),
             TransformFromCopy(gen_lhs, eq_lhs[0]),
-            FadeIn(eq_lhs[1:], shift=RIGHT),
-            FadeIn(low_brace, shift=RIGHT),
-            FadeIn(arrow, shift=RIGHT),
+            FadeIn(eq_lhs[1:], shift=DOWN),
+            FadeIn(brace, shift=DOWN),
             UpdateFromAlphaFunc(
                 eq_rhs,
                 lambda m, a: m.set_value(a * dp).next_to(eq_lhs[-1], RIGHT),
@@ -1875,47 +1944,61 @@ class DotProductWithGenderDirection(InteractiveScene):
             ),
             Write(number_line, run_time=1)
         )
-        self.play(
-            FadeIn(dot, DOWN),
-            # TransformFromCopy(word, lil_word)
-        )
+        self.add_dot(word, dot)
         self.wait()
 
         # Show some alternate
         new_rhs = eq_rhs.copy()
         eq_rhs.set_opacity(0)
-        new_rhs.add_updater(lambda m: m.set_value(number_line.p2n(arrow.get_center())))
-        new_rhs.add_updater(lambda m: m.next_to(eq_lhs[-1], RIGHT))
+        new_rhs.f_always.set_value(lambda: number_line.p2n(brace.get_center()))
+        new_rhs.always.next_to(eq_lhs[-1], RIGHT)
         self.add(new_rhs)
 
-        low_brace.add_updater(lambda m: m.become(Brace(equation, DOWN)))
+        to_fade = Group(dot)
+        for word_group in self.word_groups:
+            for new_word in word_group:
+                new_dp = self.get_dot_with_key_word(new_word)
+                nl_point = number_line.n2p(new_dp)
+                color = self.colors[int(new_dp > self.threshold)]
+                new_dot = GlowDot(number_line.n2p(new_dp), color=color)
+                new_lhs = self.get_equation_lhs(new_word)
+                new_rhs = self.get_equation_rhs(new_lhs, new_word)
+                new_rhs.set_opacity(0)
+                new_equation = VGroup(new_lhs, new_rhs)
+                new_equation.move_to(equation, LEFT)
+                new_brace = brace.copy()
+                new_equation_group = VGroup(new_brace, new_equation)
+                y_shift = new_dot.get_y() - brace.get_y()
+                new_equation_group.shift(y_shift * UP)
 
-        for new_word in words[1:]:
-            new_dp = self.get_gender_value(new_word)
-            nl_point = number_line.n2p(new_dp)
-            color = self.colors[int(new_dp > self.threshold)]
-            new_dot = GlowDot(number_line.n2p(new_dp), color=color)
-            new_lhs = self.get_equation_lhs(new_word)
-            new_rhs = self.get_equation_rhs(new_lhs, new_word)
-            new_rhs.set_opacity(0)
-            new_equation = VGroup(new_lhs, new_rhs)
-            new_equation.match_y(equation)
-            new_equation.match_x(nl_point)
+                if new_word == word_group[0]:
+                    added_anim = FadeOut(to_fade)
+                    to_fade = Group()
+                else:
+                    ghost = equation_group.copy()
+                    ghost.target = ghost.generate_target()
+                    ghost.target.set_fill(opacity=0.75)
+                    ghost.target.scale(0.5, about_point=ghost[0].get_left())
+                    added_anim = MoveToTarget(ghost)
+                    to_fade.add(ghost)
+                self.play(
+                    Transform(equation_group, new_equation_group),
+                    added_anim,
+                )
+                self.add_dot(new_lhs[2][2:-1], new_dot)
+                to_fade.add(new_dot)
 
-            word = new_lhs[2][2:-1]
-            lil_word = word.copy().scale(0.25)
-            lil_word.next_to(new_dot, UP, buff=0)
-
-            self.play(
-                Transform(equation, new_equation),
-                arrow.animate.match_x(nl_point)
-            )
-
-            self.play(
-                FadeIn(new_dot, DOWN),
-                # TransformFromCopy(word, lil_word),
-            )
-            self.wait()
+    def add_dot(self, word, dot):
+        self.play(
+            FadeInFromPoint(dot, word.get_center()),
+            LaggedStart(
+                (FadeTransform(char.copy(), dot.copy().set_opacity(0))
+                for char in word),
+                lag_ratio=2e-2,
+                group_type=Group
+            ),
+            run_time=1
+        )
 
     def get_equation_lhs(self, word):
         tex_pieces = [
@@ -1931,16 +2014,21 @@ class DotProductWithGenderDirection(InteractiveScene):
         ]
         gen_part = parts[0]
         gen_part[0].set_width(0.75 * gen_part.get_width(), about_edge=DOWN)
-        value = self.get_gender_value(word)
+        gen_part[0].shift(SMALL_BUFF * DOWN)
+        value = self.get_dot_with_key_word(word)
         parts[2][2:-1].set_color(self.colors[int(value > self.threshold)])
         return VGroup(*parts)
 
     def get_equation_rhs(self, equation_lhs, word):
-        rhs = DecimalNumber(self.get_gender_value(word))
-        rhs.next_to(equation_lhs, RIGHT)
+        rhs = DecimalNumber(self.get_dot_with_key_word(word))
+        rhs.next_to(equation_lhs[-1], RIGHT)
         return rhs
 
-    def get_gender_value(self, word):
+    def get_dot_with_key_word(self, word):
+        if word == "octopodes":
+            return 2.3  # Hack
+        elif word == "four":
+            return 1.80  # To make the spacing nicer
         rf1, rf2 = self.ref_words
         return np.dot(
             (self.model[rf2] - self.model[rf1]).flatten(),
@@ -1948,19 +2036,18 @@ class DotProductWithGenderDirection(InteractiveScene):
         )
 
 
-class DotProductWithPluralityDirection(DotProductWithGenderDirection):
-    vec_tex = R"\vec{\text{plur}}"
-    ref_words = ["cat", "cats"]
+class DotProductWithGenderDirection(DotProductWithPluralDirection):
+    vec_tex = R"\vec{\text{gen}}"
+    ref_words = ["man", "woman"]
     words = [
-        "octopus", "octopi",
-        "puppy", "puppies",
-        "student", "students",
-        "one", "two", "three", "four",
-        "single", "multiple",
+        "mother", "father",
+        "aunt", "uncle",
+        "sister", "brother",
+        "mama", "papa",
     ]
-    x_range = (-8, 5 + 1e-4, 0.25)
+    x_range = (-5, 7 + 1e-4, 0.25)
     colors = [BLUE, RED]
-    threshold = -1.0
+    threshold = 1.0
 
 
 class RicherEmbedding(InteractiveScene):
@@ -2096,7 +2183,7 @@ class RicherEmbedding(InteractiveScene):
             run_time=5
         )
 
-    def get_added_vector(self, curr_tip, direction, label, color=None, next_to_direction=UP, font_size=24):
+    def get_added_vector(self, curr_tip, direction, label, color=None, next_to_direction=UP, buff=0.1, font_size=24):
         if color is None:
             color = random_bright_color(hue_range=(0.45, 0.65))
         vect = Vector(direction)
@@ -2105,8 +2192,347 @@ class RicherEmbedding(InteractiveScene):
         vect.shift(curr_tip)
         text = Text(label, font_size=font_size)
         text.set_backstroke(BLACK, 4)
-        text.next_to(vect.get_center(), next_to_direction, buff=0.1)
+        text.next_to(vect.get_center(), next_to_direction, buff=buff)
         text.set_fill(border_width=0)
 
         result = VGroup(vect, text)
         return result
+
+
+# For chapter 2
+
+class MultipleMoleEmbeddings(Word2VecScene):
+    default_frame_orientation = (0, 0)
+    label_rotation = 0
+
+    def setup(self):
+        super().setup()
+        self.set_floor_plane("xz")
+        self.frame.add_ambient_rotation()
+        self.add_plane()
+        for mob in [self.plane, self.axes]:
+            mob.rotate(-90 * DEGREES, RIGHT)
+
+    def construct(self):
+        # Show generic mole embedding
+        frame = self.frame
+        frame.reorient(-6, -6, 0, (-0.73, 1.29, -0.57), 5.27)
+        phrases = VGroup(map(Text, [
+            "American shrew mole",
+            "One mole of carbon dioxide",
+            "Take a biopsy of the mole",
+        ]))
+        for phrase in phrases:
+            phrases.fix_in_frame()
+            phrases.to_corner(UL)
+            phrase["mole"][0].set_color(YELLOW)
+
+        gen_vector = self.get_labeled_vector("mole", coords=(-2, 1.0, 1.5))
+        curr_phrase = phrases[1]
+        mover = curr_phrase["mole"][0]
+        mover.set_backstroke(BLACK, 4)
+
+        self.add(curr_phrase)
+        self.wait()
+        self.play(
+            GrowArrow(gen_vector),
+            TransformFromCopy(mover, gen_vector.label),
+        )
+        self.wait(10)
+
+        # Show three refined meanings
+        images = Group(
+            ImageMobject("ShrewMole"),
+            Tex(R"6.02 \times 10^{23}", font_size=24).set_color(BLUE),
+            ImageMobject("LipMole"),
+        )
+        for image in images[::2]:
+            image.set_height(0.5)
+            image.set_opacity(0.75)
+
+        colors = [GREY_BROWN, BLUE, ORANGE]
+        ref_vects = VGroup(
+            self.get_labeled_vector("", coords=coords)
+            for coords in [
+                (-1.0, -1.5, 1.5),
+                (-4.0, 0.5, 1.0),
+                (-0.5, 1.0, 2.5),
+            ]
+        )
+        for vect, image, color in zip(ref_vects, images, colors):
+            vect.set_color(color)
+            image.next_to(vect.get_end(), UP, SMALL_BUFF)
+
+        gen_vect_group = VGroup(gen_vector, gen_vector.label)
+
+        self.play(
+            frame.animate.reorient(-30, -5, 0, (-1.11, 1.35, -0.72), 5.27),
+            LaggedStart(
+                (TransformFromCopy(gen_vector, ref_vect)
+                for ref_vect in ref_vects),
+                lag_ratio=0.25,
+                run_time=2,
+            ),
+            LaggedStart(
+                (FadeInFromPoint(image, gen_vector.label.get_center())
+                for image in images),
+                lag_ratio=0.25,
+                run_time=2,
+                group_type=Group,
+            ),
+            gen_vect_group.animate.set_opacity(0.25).set_anim_args(run_time=2),
+            run_time=2,
+        )
+        self.wait(3)
+
+        ref_vect_groups = Group(
+            Group(*pair) for pair in zip(ref_vects, images)
+        )
+
+        # Oscillate between meanings based on context
+        diff_vects = VGroup(
+            Arrow(gen_vector.get_end(), ref_vect.get_end(), buff=0)
+            for ref_vect in ref_vects
+        )
+        diff_vects.set_color(GREY_B)
+
+        last_phrase = curr_phrase
+        last_diff = VGroup()
+        for n, diff in enumerate(diff_vects):
+            ref_vect_groups.target = ref_vect_groups.generate_target()
+            ref_vect_groups.target.set_opacity(0.2)
+            ref_vect_groups.target[n].set_opacity(1)
+            if n != 2:
+                ref_vect_groups.target[2][1].set_opacity(0.1)
+            phrase = phrases[n]
+            self.play(
+                gen_vect_group.animate.set_opacity(1),
+                MoveToTarget(ref_vect_groups),
+                FadeOut(last_phrase, UP),
+                FadeIn(phrase, UP),
+                FadeOut(last_diff)
+            )
+            self.play(
+                ShowCreation(diff, time_span=(1, 2)),
+                TransformFromCopy(gen_vector, ref_vects[n], time_span=(1, 2)),
+                ContextAnimation(
+                    phrase["mole"][0], phrase,
+                    direction=DOWN,
+                    fix_in_frame=True,
+                ),
+            )
+            self.wait(3)
+
+            last_phrase = phrase
+            last_diff = diff
+
+        self.wait(5)
+
+    def get_basis(self, model):
+        basis = super().get_basis(model) * 2
+        basis[2] *= -1
+        return basis
+
+
+class RefineTowerMeaning(MultipleMoleEmbeddings):
+    def construct(self):
+        # Set up vectors and images
+        frame = self.frame
+        frame.reorient(-26, -4, 0, (3.27, 1.57, 0.59), 5.28)
+        frame.add_ambient_rotation(0.5 * DEGREES)
+
+        words = VGroup(Text(word) for word in "Miniature Eiffel Tower".split(" "))
+        words.scale(1.25)
+        words.to_edge(UP)
+        words.fix_in_frame()
+
+        tower_images = Group(
+            ImageMobject(f"Tower{n}")
+            for n in range(1, 5)
+        )
+        eiffel_tower_images = Group(
+            ImageMobject(f"EiffelTower{n}")
+            for n in range(1, 4)
+        )
+        mini_eiffel_tower_images = Group(
+            ImageMobject("MiniEiffelTower1")
+        )
+        image_groups = Group(
+            tower_images,
+            eiffel_tower_images,
+            mini_eiffel_tower_images
+        )
+
+        vectors = VGroup(
+            self.get_labeled_vector("", coords=coords)
+            for coords in [
+                (4, -1, 3.0),
+                (5, -2, 1.5),
+                (-3, -1, 2.5),
+            ]
+        )
+        colors = [BLUE_D, GREY_B, GREY_C]
+        for vector, color, image_group in zip(vectors, colors, image_groups):
+            vector.set_color(color)
+            for image in image_group:
+                image.set_height(1.5)
+                image.next_to(vector.get_end(), RIGHT * np.sign(vector.get_end()[0]))
+
+        # Show tower
+        tower = words[-1]
+        tower.set_x(0)
+        pre_tower_image = tower_images[0].copy()
+        pre_tower_image.fix_in_frame()
+        pre_tower_image.replace(tower, stretch=True)
+        pre_tower_image.set_opacity(0)
+
+        self.add(tower)
+        self.wait()
+        self.play(
+            GrowArrow(vectors[0]),
+            ReplacementTransform(pre_tower_image, tower_images[0]),
+            run_time=2,
+        )
+        for ti1, ti2 in zip(tower_images, tower_images[1:]):
+            self.play(
+                FadeTransform(ti1, ti2),
+                run_time=2
+            )
+        self.wait(2)
+
+        # Eiffel tower
+        words[:-1].set_opacity(0)
+        eiffel_tower = words[-2:]
+
+        self.play(
+            frame.animate.reorient(-4, -7, 0, (2.95, 1.82, 0.49), 6.59),
+            eiffel_tower.animate.set_opacity(1).arrange(RIGHT, aligned_edge=DOWN).to_edge(UP),
+        )
+        self.play(
+            vectors[0].animate.set_opacity(0.25),
+            tower_images[-1].animate.set_opacity(0.2),
+            TransformFromCopy(vectors[0], vectors[1]),
+            FadeTransform(tower_images[-1].copy(), eiffel_tower_images[0]),
+            ContextAnimation(words[2], words[1], direction=DOWN, fix_in_frame=True),
+            run_time=2,
+        )
+        for ti1, ti2 in zip(eiffel_tower_images, eiffel_tower_images[1:]):
+            self.play(
+                FadeTransform(ti1, ti2),
+                run_time=2
+            )
+        self.wait(6)
+
+        # Miniature eiffel tower
+        self.play(
+            frame.animate.reorient(-14, -2, 0, (-0.12, 2.21, 0.72), 7.05).set_anim_args(run_time=2),
+            words.animate.set_opacity(1).arrange(RIGHT, aligned_edge=DOWN).to_edge(UP),
+        )
+        self.play(
+            vectors[1].animate.set_opacity(0.25),
+            eiffel_tower_images[-1].animate.set_opacity(0.2),
+            TransformFromCopy(vectors[1], vectors[2]),
+            FadeTransform(eiffel_tower_images[-1].copy(), mini_eiffel_tower_images[0]),
+            ContextAnimation(words[2], words[0], direction=DOWN, fix_in_frame=True),
+            run_time=2,
+        )
+        self.wait(10)
+
+
+class UpdatingPoetryEmbedding(RicherEmbedding):
+    def construct(self):
+        # (Largely copied from RicherEmbedding, could factor better later)
+        # Add phrase
+        poem_str = "...\nTwo roads diverged in a wood, and I—\nI took the one less traveled by,"
+        phrase = Text(poem_str, alignment="LEFT")
+        phrase[:3].rotate(PI / 2).shift(SMALL_BUFF * UP)
+        phrase.refresh_bounding_box()
+        phrase.to_edge(UP, buff=SMALL_BUFF)
+        words = break_into_words(phrase)
+        rects = get_piece_rectangles(words)
+
+        words.fix_in_frame()
+        rects.fix_in_frame()
+
+        self.add(words)
+
+        # Setup axes
+        self.set_floor_plane("xz")
+        frame = self.frame
+        frame.reorient(9, -6, 0)
+        frame.reorient(9, -1, 0, 0.75 * UP)
+        axes = ThreeDAxes((-5, 5), (-2, 2), (-5, 5))
+        axes.shift(DOWN)
+        plane = NumberPlane(
+            (-5, 5), (-5, 5),
+            background_line_style=dict(stroke_width=1, stroke_color=BLUE_E),
+            faded_line_ratio=1,
+        )
+        plane.axes.set_stroke(GREY)
+        plane.set_flat_stroke(False)
+        plane.rotate(PI / 2, RIGHT)
+        plane.move_to(axes)
+
+        self.add(axes)
+        self.add(plane)
+
+        # Embed the word
+        one_index = len(words) - 4
+        one_rect = SurroundingRectangle(words[one_index])
+        one_rect.set_fill(GREEN, 0.2)
+        one_rect.set_stroke(GREEN, 2)
+        one_rect.fix_in_frame()
+        vector = Vector([-3, 1, 2])
+        vector.shift(axes.get_origin())
+        vector.match_color(one_rect)
+        vector.set_flat_stroke(False)
+        label = Text("one", font_size=36)
+        label.next_to(vector.get_end(), normalize(vector.get_vector()), buff=0.1)
+
+        self.play(DrawBorderThenFill(one_rect))
+        self.play(
+            TransformFromCopy(words[one_index], label),
+            GrowArrow(vector),
+        )
+        self.wait(3)
+
+        # Knock in many directions
+        new_labeled_vector_args = [
+            ([2, 1, 0], "of two roads", None, UL),
+            ([2, -1, -1], "symbolizing choice", None, UR),
+            ([0.5, 1, -3], "contrasting the original\nwith the familiar", None, DR),
+        ]
+        new_labeled_vects = VGroup()
+        last_vect = vector
+        for args in new_labeled_vector_args:
+            new_labeled_vects.add(self.get_added_vector(
+                last_vect.get_end(), *args
+            ))
+            last_vect = new_labeled_vects[-1][0]
+            last_vect.apply_depth_test()
+        orientation_args = [
+            (-4, -12, 0, (-0.89, 0.03, -0.41), 8.10),
+            (3, -9, 0, (-0.34, 0.49, -0.63), 8.60),
+            (34, -14, 0, (-0.59, 0.49, -0.62), 9.20),
+            (20, -29, 0, (0.61, 0.01, 0.0), 6.10),
+        ]
+
+
+        for (vect, label), orientation in zip(new_labeled_vects, orientation_args):
+            self.play(
+                GrowArrow(vect, time_span=(2, 3)),
+                FadeIn(label, 0.5 * DOWN, time_span=(2, 3)),
+                frame.animate.reorient(*orientation).set_anim_args(run_time=6),
+                ContextAnimation(
+                    one_rect, phrase[:-16],
+                    run_time=4,
+                    fix_in_frame=True,
+                    path_arc=60 * DEGREES,
+                    lag_ratio=1e-3,
+                    direction=UP,
+                ),
+            )
+        self.play(
+            frame.animate.reorient(22, -23, 0, (-0.86, 0.4, -0.35), 7.15),
+            run_time=5
+        )

@@ -23,6 +23,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         (" Ludwig", 0.0104),
     ]
     hide_block_labels = False
+    block_to_title_direction = UP
 
     def setup(self):
         super().setup()
@@ -153,7 +154,7 @@ class HighLevelNetworkFlow(InteractiveScene):
 
         title = Text(title, font_size=title_font_size)
         title.set_backstroke(BLACK, title_backstroke_width)
-        title.next_to(body, UP, buff=0.1)
+        title.next_to(body, self.block_to_title_direction, buff=0.1)
         block = Group(body, title)
         block.body = body
         block.title = title
@@ -221,7 +222,6 @@ class HighLevelNetworkFlow(InteractiveScene):
         self.play(LaggedStartMap(VFadeInThenOut, arrows, lag_ratio=0.25, run_time=4))
         self.play(FadeOut(token_label, DOWN))
 
-
         # Show words into vectors
         layer = self.get_embedding_array(
             shape=(len(words), 10),
@@ -266,15 +266,17 @@ class HighLevelNetworkFlow(InteractiveScene):
 
     def progress_through_attention_block(
         self,
+        depth=2.0,
         target_orientation=(-40, -15, 0),
         target_frame_height=14,
         target_frame_x=-2,
         target_frame_y=0,
         attention_anim_run_time=5,
+        label_text="Attention"
     ):
         layer = self.layers[-1]
         layer.save_state()
-        block = self.get_block(layer, title="Attention")
+        block = self.get_block(layer, title=label_text, depth=depth)
         z_diff = block.get_z() - layer.get_z()
         block_opacity = block.body[0].get_opacity()
         block.body[0].set_opacity(0)
@@ -309,6 +311,25 @@ class HighLevelNetworkFlow(InteractiveScene):
             Restore(layer),
         )
         self.add(block, new_layer)
+
+        # # Highlight example
+        # highlight = new_layer[0][3].copy()
+        # highlight.set_backstroke(BLACK, 3)
+        # highlight.set_fill(border_width=1)
+        # rect = SurroundingRectangle(highlight)
+        # rect.set_stroke(TEAL, 3)
+
+        # self.add(block.body, new_layer, block.title),
+        # self.play(LaggedStart(
+        #     self.frame.animate.reorient(-27, -6, 0, (-2.47, 0.33, 3.49), 10.23),
+        #     block.body.animate.set_color(BLACK).set_shading(0.1, 0.1, 0.5),
+        #     block.title.animate.set_opacity(0.75),
+        #     new_layer.animate.fade(0.75).set_stroke(width=0),
+        #     FadeIn(highlight),
+        #     ShowCreation(rect),
+        #     run_time=3
+        # ))
+        # self.wait()
 
         self.blocks.add(block)
         self.layers.add(new_layer)
@@ -352,6 +373,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         sideview_orientation=(-60, -5, 0),
         final_orientation=(-51, -18, 0),
         show_one_by_one=False,
+        label_text="Multilayer\nPerceptron",
     ):
         # MLP Test
         layer = self.layers[-1]
@@ -360,7 +382,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             depth=depth,
             buff=buff,
             size_buff=1.0,
-            title="Multilayer\nPerceptron",
+            title=label_text,
             title_font_size=72,
         )
 
@@ -614,14 +636,18 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     attention_anim_run_time = 1.0
     orientation = (-55, -19, 0)
     target_frame_x = -2
+    x_range = np.linspace(-2, -8, 5)
 
     def construct(self):
+        # Test
+        self.camera.light_source.set_z(60)
         self.show_initial_text_embedding(word_scale_factor=0.6)
-        self.show_simple_flow(np.linspace(-2, -8, 5))
+        self.show_simple_flow(self.x_range)
 
     def show_simple_flow(self, x_range, orientation=None):
         if orientation is None:
             orientation = self.orientation
+        self.frame.add_updater(lambda f: f.set_height(FRAME_HEIGHT + 0.15 * self.time))
         for x in x_range:
             self.progress_through_attention_block(
                 target_orientation=orientation,
@@ -634,12 +660,27 @@ class SimplifiedFlow(HighLevelNetworkFlow):
             )
 
 
+class AltIntro(HighLevelNetworkFlow):
+    example_text = "Four score and seven years ago our fathers"
+
+    def construct(self):
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+
+
 class SimplifiedFlowAlternateAngle(SimplifiedFlow):
     example_text = "The goal of the network is to predict the next token"
     attention_anim_run_time = 1.0
     orientation = (-10, -20, 0)
     target_frame_x = 0
     hide_block_labels = True
+
+
+class LongerFlowLongerAttention(SimplifiedFlow):
+    example_text = "The goal of the network is to predict the next token"
+    attention_anim_run_time = 3.0
+    target_frame_x = 0
+    hide_block_labels = True
+    x_range = np.linspace(-2, -12, 7)
 
 
 class MentionContextSizeAndUnembedding(SimplifiedFlow):
@@ -1165,4 +1206,201 @@ class TextPassageIntro(InteractiveScene):
             run_time=3
         )
         self.add(short_text)
+        self.wait()
+
+
+class ThumbnailBase(HighLevelNetworkFlow):
+    block_to_title_direction = LEFT
+    def construct(self):
+        # Add blocks
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+        for x in range(4):
+            self.progress_through_attention_block(
+                depth=1.5,
+                label_text="Att"
+            )
+            self.progress_through_mlp_block(
+                depth=2.0,
+                label_text="MLP"
+            )
+        self.frame.reorient(-45, -10, 0, (-2.9, 0.95, 24.44), 14.34)
+
+        # Fade title
+        for n, block in enumerate(self.blocks):
+            block.title.set_opacity(0)
+            block.body.set_opacity(0.5)
+        self.remove(*self.layers[:-1])
+
+        self.mention_repetitions()
+        self.rep_label[0].apply_depth_test()
+        self.rep_label[1:].set_opacity(0)
+        self.add(self.blocks)
+
+    example_text = "The initials GPT stand for Generative Pre-trained Transformer"
+
+
+
+
+class MoleExample1(HighLevelNetworkFlow):
+    block_to_title_direction = LEFT
+    highlighted_group_index = 1
+
+    def construct(self):
+        # Show three phrases
+        phrase_strs = [
+            "American shrew mole",
+            "One mole of carbon dioxide",
+            "Take a biopsy of the mole",
+        ]
+        phrases = VGroup(map(Text, phrase_strs))
+        phrases.arrange(DOWN, buff=2.0)
+        phrases.move_to(0.25 * DOWN)
+
+        self.play(Write(phrases[0]), run_time=1)
+        self.wait()
+        for i in [1, 2]:
+            self.play(
+                Transform(phrases[i - 1]["mole"].copy(), phrases[i]["mole"].copy(), remover=True),
+                FadeIn(phrases[i], lag_ratio=0.1)
+            )
+            self.wait()
+
+        # Add mole images
+        images = Group(
+            ImageMobject("ShrewMole").set_height(1),
+            Tex(R"6.02 \times 10^{23}").set_color(TEAL),
+            ImageMobject("LipMole").set_height(1),
+        )
+        braces = VGroup()
+        mole_words = VGroup()
+        for image, phrase in zip(images, phrases):
+            mole_word = phrase["mole"][0]
+            brace = Brace(mole_word, UP, SMALL_BUFF)
+            image.next_to(brace, UP, SMALL_BUFF)
+            braces.add(brace)
+            mole_words.add(mole_word)
+
+        self.play(
+            LaggedStartMap(GrowFromCenter, braces, lag_ratio=0.5),
+            LaggedStartMap(FadeIn, images, shift=UP, lag_ratio=0.5),
+            mole_words.animate.set_color(YELLOW).set_anim_args(lag_ratio=0.1),
+        )
+        self.wait()
+
+        # Subdivide
+        word_groups = VGroup()
+        for phrase in phrases:
+            words = break_into_words(phrase.copy())
+            rects = get_piece_rectangles(
+                words, leading_spaces=False, h_buff=0.05
+            )
+            word_group = VGroup(VGroup(*pair) for pair in zip(rects, words))
+            word_groups.add(word_group)
+
+        self.play(
+            FadeIn(word_groups),
+            LaggedStartMap(FadeOut, braces, shift=0.25 * DOWN, lag_ratio=0.25),
+            LaggedStartMap(FadeOut, images, shift=0.25 * DOWN, lag_ratio=0.25),
+            run_time=1
+        )
+        self.remove(phrases)
+        self.wait()
+
+        # Divide into three regions
+        for group, sign in zip(word_groups, [-1, 0, 1]):
+            group.target = group.generate_target()
+            group.target.scale(0.75)
+            group.target.set_x(sign * FRAME_WIDTH / 3)
+            group.target.to_edge(UP)
+
+        v_lines = Line(UP, DOWN).replicate(2)
+        v_lines.set_height(FRAME_HEIGHT)
+        v_lines.arrange(RIGHT, buff=FRAME_WIDTH / 3)
+        v_lines.center()
+        v_lines.set_stroke(GREY_B, 1)
+
+        self.play(
+            LaggedStartMap(MoveToTarget, word_groups),
+            ShowCreation(v_lines, lag_ratio=0.5, time_span=(1, 2))
+        )
+
+        # Show vector embeddings
+        embs = VGroup()
+        arrows = VGroup()
+        seed_array = np.random.uniform(0, 10, 7)
+        for group in word_groups:
+            for word in group:
+                arrow = Vector(0.5 * DOWN)
+                arrow.next_to(word, DOWN, SMALL_BUFF)
+                size = sum(len(m.get_points()) for m in  word.family_members_with_points())
+                values = (seed_array * size % 10)
+                emb = NumericEmbedding(values=values)
+                emb.set_height(2)
+                emb.next_to(arrow, DOWN, SMALL_BUFF)
+
+                arrows.add(arrow)
+                embs.add(emb)
+        mole_indices = [2, 4, 13]
+        non_mole_indices = [n for n in range(len(embs)) if n not in mole_indices]
+
+        mole_vect_rects = VGroup(
+            SurroundingRectangle(embs[index])
+            for index in mole_indices
+        )
+        mole_vect_rects.set_stroke(YELLOW, 2)
+
+        globals().update(locals())
+        self.play(
+            LaggedStartMap(GrowArrow, arrows),
+            LaggedStartMap(FadeIn, embs, shift=0.25 * DOWN),
+        )
+        self.wait()
+        self.play(
+            LaggedStartMap(ShowCreation, mole_vect_rects),
+            VGroup(arrows[j] for j in non_mole_indices).animate.set_fill(opacity=0.5),
+            VGroup(embs[j] for j in non_mole_indices).animate.set_fill(opacity=0.5),
+        )
+        self.wait()
+        self.play(
+            FadeOut(mole_vect_rects)
+        )
+
+        # Prepare to pass through an attention block
+        wg_lens = [len(wg) for wg in word_groups]
+        indices = [0, *np.cumsum(wg_lens)]
+        full_groups = VGroup(
+            VGroup(wg, arrows[i:j], embs[i:j])
+            for wg, i, j in zip(word_groups, indices, indices[1:])
+        )
+        highlighted_group = full_groups[self.highlighted_group_index]
+        fade_groups = [fg for n, fg in enumerate(full_groups) if n != self.highlighted_group_index]
+        highlighted_group.target = highlighted_group.generate_target()
+        highlighted_group.target.scale(1.5, about_edge=UP)
+        highlighted_group.target.space_out_submobjects(1.1)
+        highlighted_group.target.center()
+        highlighted_group.target[2].set_fill(opacity=1)
+
+        globals().update(locals())
+        self.play(
+            FadeOut(v_lines, time_span=(0, 1)),
+            MoveToTarget(highlighted_group, lag_ratio=5e-4),
+            *(
+                FadeOut(
+                    fg,
+                    shift=fg.get_center() - highlighted_group.get_center() + 2 * DOWN,
+                    lag_ratio=1e-3
+                )
+                for fg in  fade_groups
+            ),
+            run_time=2
+        )
+        self.wait()
+
+        # Pass through attention
+        layer = VGroup(highlighted_group[2])
+        layer.embeddings = highlighted_group[2]
+        self.layers.set_submobjects([])
+        self.layers.add(layer)
+
+        self.progress_through_attention_block(target_frame_x=-2)
         self.wait()

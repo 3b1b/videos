@@ -103,7 +103,7 @@ def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
     rhs = NumericEmbedding(
         values=x_max * np.ones(shape),
         value_range=(-x_max, x_max),
-        decimal_config=dict(include_sign=True),
+        decimal_config=dict(include_sign=True, edge_to_fix=ORIGIN),
         ellipses_row=matrix.ellipses_row,
     )
     rhs.scale(vector.elements[0].get_height() / rhs.elements[0].get_height())
@@ -243,7 +243,7 @@ def data_flying_animation(point, vect=2 * DOWN + RIGHT, color=GREY_C, max_opacit
     )
 
 
-def data_modifying_matrix(scene, matrix, word_shape=(5, 10), alpha_maxes=(0.7, 0.9), run_time=3):
+def get_data_modifying_matrix_anims(matrix, word_shape=(5, 10), alpha_maxes=(0.7, 0.9), shift_vect=2 * DOWN + RIGHT, run_time=3):
     x_min, x_max = [matrix.get_x(LEFT), matrix.get_x(RIGHT)]
     y_min, y_max = [matrix.get_y(UP), matrix.get_y(DOWN)]
     z = matrix.get_z()
@@ -256,10 +256,20 @@ def data_modifying_matrix(scene, matrix, word_shape=(5, 10), alpha_maxes=(0.7, 0
         for a1 in np.linspace(0, alpha_maxes[1], word_shape[1])
         for a2 in np.linspace(0, alpha_maxes[0], word_shape[0])
     ])
-    scene.play(
-        LaggedStart(map(data_flying_animation, points), lag_ratio=1 / len(points), run_time=run_time),
+    return [
+        LaggedStart(
+            (data_flying_animation(p, vect=shift_vect)
+            for p in points),
+            lag_ratio=1 / len(points),
+            run_time=run_time
+        ),
         RandomizeMatrixEntries(matrix, run_time=run_time),
-    )
+    ]
+
+
+def data_modifying_matrix(scene, matrix, *args, **kwargs):
+    anims = get_data_modifying_matrix_anims(matrix, *args, **kwargs)
+    scene.play(*anims)
 
 
 def create_pixels(image_mob, pixel_width=0.1):
@@ -471,9 +481,9 @@ class NumericEmbedding(WeightMatrix):
         num_decimal_places: int = 1,
         ellipses_row: int = -2,
         ellipses_col: int = -2,
-        value_range: tuple[float, float] = (0, 9.9),
+        value_range: tuple[float, float] = (-9.9, 9.9),
         bracket_h_buff: float = 0.1,
-        decimal_config=dict(),
+        decimal_config=dict(include_sign=True),
         dark_color: ManimColor = GREY_C,
         light_color: ManimColor = WHITE,
         **kwargs,

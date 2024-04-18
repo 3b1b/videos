@@ -1,5 +1,9 @@
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
+from _2024.transformers.embedding import *
+
+
+# Intro chapter
 
 
 class GPTInitials(InteractiveScene):
@@ -215,11 +219,9 @@ class DifferentUsesOfModel(InteractiveScene):
 
 class BigMatrixMultiplication(InteractiveScene):
     mat_dims = (12, 12)
+    random_seed = 9
 
     def construct(self):
-        from datetime import datetime
-        np.random.seed(datetime.now().toordinal())
-        random.seed(datetime.now().toordinal())
         # Test
         matrix = WeightMatrix(shape=self.mat_dims)
         matrix.set_width(FRAME_WIDTH - 4)
@@ -253,7 +255,7 @@ class LongListOFQuestions(InteractiveScene):
             "Is it a noun?",
             "Does it refer to a person?",
             "Is it an amount?",
-            "Is the tone assertive",
+            "Is A tone assertive",
             "Is it a piece of a bigger word?",
             "Is it part of a quote?",
             "Is it part of a lie?",
@@ -460,9 +462,10 @@ class GamePlan(InteractiveScene):
         prev_thumbnails.set_width(FRAME_WIDTH - 2)
         prev_thumbnails.move_to(2 * UP)
 
-        new_thumbnails = Group(  # TODO, give these images
-            Rectangle().set_stroke(width=0).set_fill(BLACK, 1)
-            for vid in tr_vids
+        tn_dir = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/Thumbnails/"
+        new_thumbnails = Group(
+            ImageMobject(os.path.join(tn_dir, f"Chapter{n}"))
+            for n in range(5, 8)
         )
         for tn1, tn2 in zip(prev_thumbnails, new_thumbnails):
             tn2.replace(tn1, stretch=True)
@@ -565,6 +568,57 @@ class SeaOfNumbersUnderlay(TeacherStudentsScene):
             self.change_students("tease", "thinking", "pondering", look_at=5 * RIGHT + 3 * UP)
         )
         self.wait(8)
+
+
+class Outdated(TeacherStudentsScene):
+    def construct(self):
+        # Add label
+        text = Text("GPT-3", font="Consolas", font_size=72)
+        openai_logo = SVGMobject("OpenAI.svg")
+        openai_logo.set_fill(WHITE)
+        openai_logo.set_height(2.0 * text.get_height())
+        gpt3_label = VGroup(openai_logo, text)
+        gpt3_label.arrange(RIGHT)
+        gpt3_label.scale(0.75)
+        param_count = Text("175B Parameters")
+        param_count.set_color(BLUE)
+        param_count.next_to(gpt3_label, DOWN, aligned_edge=LEFT)
+        gpt3_label.add(param_count)
+
+        gpt3_label.move_to(self.hold_up_spot, DOWN)
+
+        morty = self.teacher
+        morty.body.insert_n_curves(100)
+
+        self.play(
+            morty.change("raise_right_hand"),
+            FadeIn(gpt3_label, UP),
+        )
+        self.play(self.change_students("raise_left_hand", "hesitant", "sassy"))
+        self.play(
+            self.students[0].says(TexText("Isn't that outdated?"))
+        )
+        self.wait(3)
+
+
+class ConvolutionComment(InteractiveScene):
+    def construct(self):
+        # Test
+        morty = Mortimer()
+        morty.to_corner(DR)
+        bubble = morty.get_bubble(Text("""
+            In other models, the weighted
+            sums can be grouped differently,
+            e.g. as convolutions, but for
+            Transformers it's always
+            matrix-vector multiplication.
+        """, font_size=36, alignment="LEFT"), bubble_type=SpeechBubble)
+
+        self.add(bubble)
+        self.play(morty.change("speaking"))
+        for x in range(2):
+            self.play(Blink(morty))
+            self.wait()
 
 
 class ConfusionAtScreen(TeacherStudentsScene):
@@ -728,3 +782,558 @@ class LowTempHighTempContrast(InteractiveScene):
             run_time=1
         )
         self.wait()
+
+
+class Intuitions(TeacherStudentsScene):
+    def construct(self):
+        # Add words
+        words = VGroup(
+            Text("Structure of Deep Learning"),
+            Text("Word embeddings"),
+            Text("Dot products"),
+            Text("Softmax"),
+        )
+        words.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        words.move_to(self.hold_up_spot, DOWN)
+        checks = VGroup(
+            Checkmark(font_size=72).next_to(word, LEFT)
+            for word in words
+        )
+        checks.set_color(GREEN)
+
+        morty = self.teacher
+        self.play(
+            LaggedStartMap(FadeIn, words, shift=UP, lag_ratio=0.1),
+            morty.change("raise_right_hand"),
+            self.change_students("thinking", "pondering", "well", look_at=words),
+            run_time=1,
+        )
+        self.play(
+            LaggedStartMap(Write, checks, lag_ratio=0.25, stroke_color=GREEN),
+        )
+        for pi in self.students:
+            pi.body.insert_n_curves(100)
+        self.play(
+            self.change_students("tease", "thinking", "well")
+        )
+        self.wait(4)
+
+
+class PiGesturingAtEarlyView(PiCreatureScene):
+    def construct(self):
+        morty = self.pi_creature.flip()
+        morty.to_corner(DR)
+        morty.shift(0.5 * LEFT)
+        morty.set_color(GREY_BROWN)
+        morty.body.insert_n_curves(100)
+        for mode in ["raise_right_hand", "well", "gracious", "well", "tease"]:
+            self.play(morty.change(mode, ORIGIN + 2 * random.random() * UP))
+            self.wait(3)
+
+
+class EndScreen(PatreonEndScreen):
+    pass
+
+
+# Attention chapter
+
+
+class HighlightAttentionTitle(TeacherStudentsScene):
+    def construct(self):
+        # Add image
+        im = ImageMobject("AttentionPaper")
+        im.set_height(FRAME_HEIGHT)
+        title = Text("Attention is All You Need")
+        title.set_height(0.219)
+        title.move_to(np.array([-0.037, 3.28, 0.0]))
+        title.set_fill(BLACK, 1)
+        self.clear()
+        self.background.set_opacity(0)
+        self.add(self.background, im)
+        
+        self.wait()
+        morty = self.teacher
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+        self.play(
+            im.animate.set_opacity(0.1),
+            title.animate.set_fill(WHITE).scale(2).next_to(morty, UP, MED_LARGE_BUFF).to_edge(RIGHT),
+            LaggedStartMap(VFadeIn, self.pi_creatures),
+            morty.change("raise_right_hand"),
+            self.change_students("pondering", "well", "thinking", look_at=self.hold_up_spot)
+        )
+        self.wait()
+
+        # # Small transition
+        # alt_title = Text("Attention is all\nyou need")
+        # alt_title.move_to(4.68 * LEFT)
+
+        # self.play(
+        #     # TransformMatchingStrings(title, alt_title, run_time=1),
+        #     FadeTransformPieces(title, alt_title, run_time=1),
+        #     FadeOut(im, scale=2),
+        #     self.change_students("pondering", "pondering", "pondering", look_at=alt_title),
+        # )
+        # self.wait()
+
+        # Highlight attention
+        att = title["Attention"][0]
+        rest = title["is All You Need"][0]
+        self.play(
+            FlashAround(att, run_time=2),
+            att.animate.set_color(YELLOW),
+        )
+        self.wait(2)
+        self.play(
+            att.animate.center().to_edge(UP),
+            FadeOut(rest, DR),
+            FadeOut(im, scale=1.5),
+            self.background.animate.set_opacity(0.75),
+            morty.change("tease", 3 * UP),
+            self.change_students(None, None, "pondering", look_at=3 * UP)
+        )
+        self.look_at(3 * UL)
+        self.wait()
+        self.look_at(3 * UR)
+        self.wait(2)
+
+        # Key property
+        sentence = Text("What makes Attention powerful is that it's parallelizable")
+        sentence.move_to(UP)
+        sent_att = sentence["Attention"]
+        sent_par = sentence["parallelizable"]
+        sent_att.set_opacity(0)
+        sent_par.set_opacity(0)
+        par_box = SurroundingRectangle(sent_par, buff=0)
+        par_box.stretch(1.2, 1, about_edge=DOWN)
+        par_box.set_stroke(width=0)
+        par_box.set_fill(RED, 0.2)
+        par_line = Underline(sent_par, stretch_factor=1)
+        par_line.set_stroke(RED, 2)
+
+        self.play(
+            att.animate.replace(sentence["Attention"]),
+            FadeIn(sentence, lag_ratio=0.1),
+            morty.change("raise_right_hand", sentence),
+            self.change_students("sassy", "confused", "pondering", look_at=sentence)
+        )
+        self.play(
+            ShowCreation(par_line),
+            morty.animate.look_at(par_line),
+            FadeIn(par_box),
+            self.change_students("pondering", look_at=par_line),
+        )
+        self.wait(5)
+
+
+class ThinkOfMoreExamples(TeacherStudentsScene):
+    def construct(self):
+        # Show general confusion
+        morty = self.teacher
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+
+        self.play(
+            morty.change("raise_right_hand"),
+            self.change_students("confused", "maybe", "confused", look_at=3 *UP, run_time=2, lag_ratio=0.25),
+        )
+        self.wait(2)
+        self.play(morty.change("guilty"))
+        self.play(
+            
+            self.change_students("confused", "pleading", "concentrating", look_at=3 * UP, run_time=2, lag_ratio=0.25)
+        )
+        self.wait(3)
+        self.play(
+            self.change_students("maybe", "confused", "dejected", look_at=morty.eyes, lag_ratio=0),
+            morty.change("well")
+        )
+        self.wait(2)
+
+        # Ask about the goal
+        self.wait()
+        self.play(LaggedStart(
+            self.students[2].says("What is attention\nsupposed to do?"),
+            self.students[0].change("maybe"),
+            self.students[1].change("pondering"),
+            morty.change("tease"),
+            lag_ratio=0.1
+        ))
+        self.wait(5)
+
+
+class SimplerExample(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.change_students("pondering", "thinking", "pondering", look_at=self.screen)
+        )
+        self.play(
+            self.teacher.says("Take a simpler\nexample"),
+            self.change_students("pondering", look_at=self.teacher.eyes)
+        )
+        self.play(self.change_students("thinking", "well", "tease"))
+        self.wait(6)
+
+
+class NotQuiteTrue(InteractiveScene):
+    def construct(self):
+        morty = Mortimer()
+        morty.to_corner(DR)
+        self.play(
+            morty.says("Actually, that's not\nquite true!"),
+            run_time=1
+        )
+        for x in range(2):
+            self.play(Blink(morty))
+            self.wait()
+
+
+class ThisIsMadeUp(TeacherStudentsScene):
+    def construct(self):
+        for pi in self.students:
+            pi.change_mode("pondering").look_at(self.screen)
+        self.play(
+            self.teacher.says("This is a made-up\nmotivating example"),
+            self.change_students("pondering", look_at=self.teacher.eyes)
+        )
+        self.play(self.change_students("well", "sassy", "guilty", look_at=self.teacher.eyes))
+        self.wait(4)
+
+
+class AskAboutOtherEmbeddings(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.students[1].says(
+                TexText(R"What does $W_Q$ do \\ to the non-nouns?"),
+                mode="raise_left_hand"
+            ),
+            self.teacher.change("guilty"),
+        )
+        self.play(
+            self.change_students("confused", None, "pondering", look_at=self.screen)
+        )
+        self.wait()
+        self.play(self.teacher.change("shruggie"))
+        self.play(
+            self.change_students("sassy", "maybe", "sassy"),
+        )
+        self.wait(3)
+
+
+class ShoutSoftmax(TeacherStudentsScene):
+    def construct(self):
+        self.play(LaggedStart(
+            self.students[0].change("happy"),
+            self.students[1].change("hooray"),
+            self.students[2].says("Softmax!", mode="surprised", bubble_config=dict(buff=0.5, direction=LEFT)),
+            self.teacher.change("well")
+        ))
+        self.wait(5)
+
+
+class LeftArcSmaller(InteractiveScene):
+    def construct(self):
+        # Test
+        arrow = Arrow(RIGHT, LEFT, path_arc=1.0 * PI, stroke_color=RED, stroke_width=8)
+        self.play(ShowCreation(arrow))
+        self.wait()
+
+
+class SetThemToZero(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.students[0].says("Set them to 0?", mode="maybe"),
+            self.students[1].change("pondering", look_at=self.screen),
+            self.students[1].change("pondering", look_at=self.screen),
+
+        )
+        self.wait()
+        self.play(
+            self.teacher.says("Then they wouldn't\nbe normalized", mode="tease"),
+        )
+        self.wait(3)
+
+
+class CalledMasking(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.teacher.says(TexText(R"This is called\\``masking''")),
+            self.change_students(
+                "pondering", "confused", "erm", look_at=self.screen,
+            )
+        )
+        self.wait(5)
+
+
+class ReferenceLargerContextTechnologies(InteractiveScene):
+    def construct(self):
+        # Test
+        words = VGroup(
+            Text("Sparse Attention Mechanisms"),
+            Text("Blockwise Attention"),
+            Text("Linformer"),
+            Text("Reformer"),
+            Text("Ring attention"),
+            Text("Longformer"),
+            Text("Adaptive Attention Span"),
+            Tex(R"\vdots")
+        )
+        words.arrange(DOWN, aligned_edge=LEFT, buff=MED_LARGE_BUFF)
+        words[-1].shift(0.5 * RIGHT)
+
+        self.play(
+            LaggedStartMap(FadeIn, words, shift=0.5 * DOWN, lag_ratio=0.5, run_time=4)
+        )
+        self.wait()
+        self.play(
+            LaggedStartMap(FadeOut, words, shift=RIGHT, lag_ratio=0.1)
+        )
+        self.wait()
+
+
+class AskAboutCrossAttention(TeacherStudentsScene):
+    def construct(self):
+        stds = self.students
+        self.play(
+            stds[0].change("hesitant", look_at=stds[1].eyes),
+            stds[1].says("What about\ncross-attention?", bubble_config=dict(buff=0.5), mode="raise_left_hand"),
+            stds[2].change("pondering", look_at=stds[1].eyes),
+            self.teacher.change("well", look_at=stds[1].eyes)
+        )
+        self.wait(5)
+
+
+class SelfVsCrossFrames(InteractiveScene):
+    def construct(self):
+        # Add screens
+        self.add(FullScreenRectangle())
+        screens = ScreenRectangle().replicate(2)
+        screens.set_fill(BLACK, 1)
+        screens.set_stroke(WHITE, 2)
+        screens.set_height(0.45 * FRAME_HEIGHT)
+        screens.arrange(RIGHT, buff=0.5)
+        self.add(screens)
+
+        # Add titles
+        titles = VGroup(
+            Text("Self-attention", font_size=60),
+            Text("Cross-attention", font_size=60),
+        )
+        for title, screen in zip(titles, screens):
+            title.next_to(screen, UP, buff=MED_LARGE_BUFF)
+
+        self.play(Write(titles[0]))
+        self.wait()
+        self.play(TransformMatchingStrings(titles[0].copy(), titles[1]))
+        self.wait()
+
+
+class OngoingTranscription(InteractiveScene):
+    def construct(self):
+        phrase = Text("or maybe audio input of speech, and an ongoing transcription")
+        words = break_into_words(phrase)
+        for word in words:
+            self.add(word)
+            self.wait(0.1 * len(word))
+        self.wait()
+
+
+class ReferenceStraightforwardValueMatrix(TeacherStudentsScene):
+    def construct(self):
+        morty = self.teacher
+        morty.body.insert_n_curves(100)
+        self.play(
+            morty.change("raise_right_hand"),
+            self.change_students("happy", "well", "tease", look_at=3 * UR)
+        )
+        self.wait(3)
+        self.play(
+            morty.change("hesitant"),
+            self.change_students("erm", "hesitant", "guilty", look_at=3 * UR)
+        )
+        self.wait(5)
+
+
+class SeekingMatchedParameters(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+        equation = VGroup(
+            Text("# Value params").set_color(RED),
+            Tex("=", font_size=72).rotate(PI / 2),
+            Text("(# Query params) + (# Key params)"),
+        )
+        equation[2].scale(0.75)
+        equation[2]["# Query params"].set_color(YELLOW)
+        equation[2]["# Key params"].set_color(TEAL)
+        equation.arrange(DOWN, buff=MED_LARGE_BUFF)
+        equation.move_to(self.hold_up_spot, DOWN)
+
+        self.play(
+            self.teacher.change("raise_right_hand", equation),
+            FadeIn(equation, UP),
+            self.change_students("erm", "confused", "sassy", look_at=equation),
+        )
+        self.wait(2)
+        self.play(
+            self.change_students("pondering", "confused", "hesitant", look_at=self.screen)
+        )
+        self.wait(4)
+        self.play(
+            self.change_students("erm", "confused", "sassy", look_at=equation)
+        )
+        self.wait(4)
+
+
+class HeadName(InteractiveScene):
+    def construct(self):
+        # Test
+        title = Text("One head of attention", font_size=72)
+        title.to_edge(UP)
+        head = title["head"][0]
+        self.play(
+            Write(title, run_time=1)
+        )
+        self.play(
+            FlashAround(head, time_width=2, run_time=2),
+            head.animate.set_color(YELLOW),
+        )
+        self.wait()
+
+
+class DInputAndOutputOfValue(InteractiveScene):
+    def construct(self):
+        # Test
+        d_embed = 12_288
+        in_label, out_label = [
+            VGroup(Text(text), Integer(d_embed))
+            for text in ["d_input", "d_output"]
+        ]
+        for label, shift in [(in_label, LEFT), (out_label, RIGHT)]:
+            label.arrange(DOWN)
+            label.scale(0.65)
+            label.next_to(ORIGIN, UP, buff=LARGE_BUFF)
+            label.shift(1.0 * shift)
+            arrow = Arrow(label, 0.5 * shift)
+            label.add(arrow)
+
+        self.play(FadeIn(in_label, lag_ratio=0.1))
+        self.wait()
+        self.play(FadeIn(out_label, lag_ratio=0.1))
+        self.wait()
+
+
+class NowRepeatManyTimes(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.change_students("pondering", "pondering", "pondering", look_at=self.screen),
+        )
+        self.wait()
+        self.play(
+            self.teacher.says("Now do that about\n10,000 times"),
+            self.change_students("droopy", "erm", "well", look_at=self.teacher.eyes)
+        )
+        self.wait(5)
+
+
+class ALotToHoldInYouHead(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.teacher.says("It's a lot to\nhold in your head!", mode="surprised"),
+            self.change_students("confused", "erm", "dejected", look_at=self.screen),
+        )
+        self.wait(5)
+
+
+class ReactToMHSA(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.teacher.change("hesitant"),
+            self.change_students("sad", "confused", "dejected", look_at=self.screen)
+        )
+        self.wait(3)
+        self.play(
+            self.change_students("guilty", "maybe", "erm")
+        )
+        self.wait(3)
+
+
+class AskAboutOutput(TeacherStudentsScene):
+    random_seed = 3
+    def construct(self):
+        morty = self.teacher
+        stds = self.students
+        self.play(
+            stds[0].change("hesitant", look_at=stds[1].eyes),
+            stds[1].says("What about the\nOutput matrix?", mode="raise_left_hand"),
+            stds[2].change("hesitant", look_at=stds[1].eyes),
+        )
+        self.play(
+            morty.change("concentrating")
+        )
+        self.play(Blink(morty))
+        self.wait(5)
+
+
+class OneThirdOfWhatYouNeed(InteractiveScene):
+    def construct(self):
+        # Test
+        self.add(FullScreenRectangle().fix_in_frame())
+        title = Text("Attention is All You Need", font_size=72)
+        all_word = title["All"][0]
+        cross = Line(all_word.get_left(), all_word.get_right())
+        cross.set_stroke(RED, 8)
+        correction = Text("About 1/3 of What", font_size=60)
+        correction.set_color(RED)
+        correction.next_to(all_word, UP, MED_LARGE_BUFF)
+        lines = VGroup(
+            CubicBezier(
+                all_word.get_corner(UP + v),
+                all_word.get_corner(UP + v) + 0.5 * UP,
+                correction.get_corner(DOWN + v) + 0.5 * DOWN,
+                correction.get_corner(DOWN + v),
+            )
+            for v in [LEFT, RIGHT]
+        )
+        lines.set_stroke(RED, 2)
+
+        self.add(title)
+        self.wait()
+        self.add(all_word, cross)
+        self.play(ShowCreation(cross), all_word.animate.set_fill(opacity=0.5))
+        self.play(
+            FadeTransform(all_word.copy(), correction),
+            ShowCreation(lines, lag_ratio=0),
+        )
+        self.wait()
+        self.play(self.frame.animate.set_y(-3.75).set_height(11), run_time=2)
+        self.wait()
+
+
+class MoreResourcesBelow(InteractiveScene):
+    def construct(self):
+        # Test
+        self.add(FullScreenRectangle())
+        words = Text("More resources below", font_size=72)
+        words.move_to(UP)
+        arrows = Vector(1.5 * DOWN, stroke_width=10).get_grid(1, 3, buff=1.5)
+        arrows.next_to(words, DOWN, buff=MED_LARGE_BUFF)
+        morty = Mortimer()
+        morty.body.insert_n_curves(100)
+        morty.to_corner(DR)
+
+        self.add(words)
+        self.play(
+            LaggedStartMap(GrowArrow, arrows, lag_ratio=0.5),
+            morty.change("thinking", look_at=4 * DOWN)
+        )
+        self.play(Blink(morty))
+        self.wait()
+
+
+class PatreonEndScreen(EndScreen):
+    pass

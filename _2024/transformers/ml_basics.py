@@ -435,7 +435,7 @@ class PremiseOfML(InteractiveScene):
         code = self.get_code()
         code.set_height(machine.get_height() - MED_SMALL_BUFF)
         code.set_max_width(machine.get_width() - MED_SMALL_BUFF)
-        code.move_to(machine)
+        code.move_to(machine, UP).shift(SMALL_BUFF * DOWN)
 
         self.play(
             MoveToTarget(model_label),
@@ -1204,11 +1204,11 @@ class ShowGPT3Numbers(InteractiveScene):
         dots = dial_matrix.get_ellipses()
 
         self.play(
-            FadeIn(weights_text[:-1]),
+            FadeIn(weights_text[:-1], time_span=(0, 3)),
             CountInFrom(weights_count, 0),
-            GrowArrow(weights_arrow),
-            LaggedStartMap(FadeIn, pre_dials, scale=3, lag_ratio=0.05),
-            run_time=5,
+            GrowArrow(weights_arrow, time_span=(0, 3)),
+            LaggedStartMap(FadeIn, pre_dials, scale=3, lag_ratio=0.1),
+            run_time=10,
         )
         self.play(
             LaggedStart(
@@ -1307,17 +1307,19 @@ class ShowGPT3Numbers(InteractiveScene):
         h_line.insert_n_curves(10)
         h_line.set_stroke(width=[0, 3, 3, 3, 0])
 
-        category_names = VGroup(*map(Text, [
+        category_names = VGroup(*map(TexText, [
             "Embedding",
             "Key",
             "Query",
-            "Valuey",  # Dumb alignment hack
-            "Output",
+            # "Value",  # Dumb alignment hack
+            # "Output",
+            R"Value$_\downarrow$",
+            R"Value$_\uparrow$",
             "Up-projection",
             "Down-projection",
             "Unembedding",
         ]))
-        category_names[3][-1].set_fill(BLACK)  # Dumb alignment hack
+        # category_names[3][-1].set_fill(BLACK)  # Dumb alignment hack
         category_names.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)
         category_names.set_height(5.5)
         category_names.next_to(h_line, DOWN, buff=MED_LARGE_BUFF)
@@ -1680,8 +1682,6 @@ class DistinguishWeightsAndData(InteractiveScene):
         v_line = Line(UP, DOWN).set_height(4.5)
         v_line.to_edge(UP, buff=0)
         v_line.set_stroke(GREY_A, 2)
-
-        self.add(titles)
 
         # Set up matrices
         matrices = VGroup(

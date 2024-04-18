@@ -206,14 +206,7 @@ class PiCreature(SVGMobject):
         return self
 
     def get_bubble(self, content, bubble_type=ThoughtBubble, **bubble_config):
-        bubble = bubble_type(**bubble_config)
-        if len(content) > 0:
-            if isinstance(content[0], str):
-                content_mob = Text(content)
-            else:
-                content_mob = content
-            bubble.add_content(content_mob)
-            bubble.resize_to_content()
+        bubble = bubble_type(content, **bubble_config)
         bubble.pin_to(self, auto_flip=("direction" not in bubble_config))
         self.bubble = bubble
         return bubble
@@ -284,7 +277,6 @@ class PiCreature(SVGMobject):
         self.bubble = new_bubble
         return AnimationGroup(
             ReplacementTransform(old_bubble, new_bubble),
-            FadeTransform(old_bubble.content, new_bubble.content),
             self.change(mode, look_at)
         )
 

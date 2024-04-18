@@ -144,8 +144,10 @@ class SimpleAutogregression(InteractiveScene):
         blocks.set_shading(0.5, 0.5, 0.5)
         blocks.arrange(OUT)
         blocks.move_to(ORIGIN, OUT)
-        blocks.rotate(10 * DEGREES, RIGHT, about_edge=OUT)
-        blocks.rotate(5 * DEGREES, UP, about_edge=OUT)
+        # blocks.rotate(10 * DEGREES, RIGHT, about_edge=OUT)
+        # blocks.rotate(5 * DEGREES, UP, about_edge=OUT)
+        blocks.rotate(5 * DEGREES, RIGHT, about_edge=OUT)
+        blocks.rotate(15 * DEGREES, UP, about_edge=OUT)
 
         word = Text("Transformer")
         word.next_to(blocks[-1], UP)
@@ -158,6 +160,7 @@ class SimpleAutogregression(InteractiveScene):
             max_width_to_length_ratio=12
         )
         out_arrow.next_to(blocks[-1], RIGHT, buff=SMALL_BUFF)
+        out_arrow.scale(0, about_point=blocks.get_right())
         in_arrow = out_arrow.copy()
         in_arrow.rotate(-PI / 4)
         in_arrow.next_to(blocks, UL)
@@ -318,6 +321,19 @@ class SimpleAutogregression(InteractiveScene):
     def new_selection_cycle(self, text_mob, next_word_line, machine, quick=False, skip_anims=False):
         if skip_anims:
             self.skip_animations = True
+
+        # Clean view of the distribution
+        # self.clear()
+        # words, probs = self.predict_next_token(self.cur_str)
+        # bar_groups = self.get_distribution(words, probs, machine[-1].get_right())
+        # bars = VGroup(group[1] for group in bar_groups)
+        # bars.stretch(3, 0, about_edge=LEFT)
+        # bars = bars[:7]
+        # bars[2].stretch(1.1, 0, about_edge=LEFT)
+        # bars[5].stretch(0.8, 0, about_edge=LEFT)
+        # bars[6:].stretch(0.8, 0, about_edge=LEFT)
+        # bars.set_height(FRAME_HEIGHT - 1).center()
+        # self.add(bars)
 
         if quick:
             words, probs = self.predict_next_token(self.cur_str)
@@ -491,6 +507,17 @@ class GPT3OnLongPassages(GPT3OnLearningSimpler):
     seed_text = "Writing long passages seems to involve more foresight and planning than what single-word prediction"
     n_predictions = 100
     color_seed = False
+
+
+class GPT3CreaturePrediction(GPT3CleverestAutocomplete):
+    seed_text = "the fluffy blue creature"
+    n_predictions = 1
+
+
+class GPT3CreaturePrediction2(GPT3CleverestAutocomplete):
+    seed_text = "the fluffy blue creature roamed the"
+    n_predictions = 1
+
 
 
 class LowTempExample(GPT3OnLearningSimpler):
@@ -676,8 +703,8 @@ class VoiceToTextExample(SimpleAutogregression):
 
     def get_output(self) -> Mobject:
         return Text("""
-            Some of them will
-            take in audio and
+            Some models take
+            in audio and
             produce a transcript
         """, alignment="LEFT")
 
@@ -759,7 +786,7 @@ class TranslationExample(VoiceToTextExample):
         return Text("Attention is all\nyou need")
 
     def get_output(self):
-        return Group(Point(), *Text("注意力就是你所需要的"))
+        return Group(Point(), *Text("注意力就是你所需要的一切"))
 
 
 class PredictionVsGeneration(SimpleAutogregression):
@@ -895,22 +922,34 @@ class PeekUnderTheHood(SimpleAutogregression):
     def construct(self):
         # Add parts
         text_mob, next_word_line, machine = self.init_text_and_machine()
+        blocks, label, arrow = machine
         self.remove(text_mob, next_word_line)
 
         # Zoom in
-        blocks, label, arrow = machine
+        self.camera.light_source.move_to([-15, 5, 10])
+        self.set_floor_plane("xz")
+
+        blocks.rotate(-5 * DEGREES, UP, about_edge=OUT)
+        blocks.rotate(-10 * DEGREES, RIGHT, about_edge=OUT)
         blocks.target = blocks.generate_target()
-        blocks.target.rotate(-5 * DEGREES, UP)
-        blocks.target.rotate(-10 * DEGREES, RIGHT)
-        blocks.target.rotate(40 * DEGREES, UP)
         blocks.target.set_height(5)
-        # blocks.target.arrange(OUT)
         blocks.target.center()
-        blocks.target[5:].set_opacity(0.1)
+        blocks.target[5:].set_opacity(0.3)
 
         self.play(
+            self.frame.animate.reorient(-23, -12, 0, (1.79, -0.56, 1.27), 8.40).set_anim_args(run_time=3),
             MoveToTarget(blocks, run_time=3),
             FadeOut(arrow, RIGHT),
             FadeOut(label, 2 * OUT),
         )
         self.wait()
+
+        blocks[5:].set_opacity(0.3)
+
+        # Add matrices
+        matrices = VGroup(WeightMatrix(shape=(8, 8)) for x in range(9))
+        matrices.arrange_in_grid(h_buff_ratio=0.25, v_buff_ratio=0.4)
+        matrices.match_width(blocks)
+        index = 6
+        matrices.move_to(blocks[index], OUT)
+        self.add(matrices, blocks[index:])

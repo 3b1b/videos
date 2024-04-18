@@ -38,8 +38,6 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
         target_mode: str = "speaking",
         look_at: Mobject | Vect3 | None = None,
         bubble_type: type = SpeechBubble,
-        max_bubble_height: float | None = None,
-        max_bubble_width: float | None = None,
         bubble_direction: Vect3 | None = None,
         bubble_config=dict(),
         bubble_creation_class: type = DrawBorderThenFill,
@@ -49,19 +47,18 @@ class PiCreatureBubbleIntroduction(AnimationGroup):
         **kwargs,
     ):
         bubble_config = dict(bubble_config)
-        bubble_config["max_height"] = max_bubble_height
-        bubble_config["max_width"] = max_bubble_width
         if bubble_direction is not None:
             bubble_config["direction"] = bubble_direction
         bubble = pi_creature.get_bubble(
-            content, bubble_type=bubble_type,
+            content,
+            bubble_type=bubble_type,
             **bubble_config
         )
-        Group(bubble, bubble.content).shift_onto_screen()
+        bubble.shift_onto_screen()
 
         super().__init__(
             pi_creature.change(target_mode, look_at),
-            bubble_creation_class(bubble, **bubble_creation_kwargs),
+            bubble_creation_class(bubble.body, **bubble_creation_kwargs),
             content_introduction_class(bubble.content, **content_introduction_kwargs),
             **kwargs
         )
@@ -96,16 +93,15 @@ class RemovePiCreatureBubble(AnimationGroup):
         assert hasattr(pi_creature, "bubble")
         self.pi_creature = pi_creature
 
-        pi_creature.generate_target()
+        pi_creature.target = pi_creature.generate_target()
         pi_creature.target.change_mode(target_mode)
         if look_at is not None:
             pi_creature.target.look_at(look_at)
+        anims = [MoveToTarget(pi_creature)]
+        if pi_creature.bubble is not None:
+            anims.append(FadeOut(pi_creature.bubble))
 
-        super().__init__(
-            MoveToTarget(pi_creature),
-            FadeOut(pi_creature.bubble),
-            FadeOut(pi_creature.bubble.content),
-        )
+        super().__init__(*anims)
 
     def clean_up_from_scene(self, scene=None):
         AnimationGroup.clean_up_from_scene(self, scene)
