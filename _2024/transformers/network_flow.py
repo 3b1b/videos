@@ -69,57 +69,18 @@ class HighLevelNetworkFlow(InteractiveScene):
         backstroke_width=3,
         add_background_rectangle=False,
     ):
-        result = VGroup()
-        embeddings = VGroup(*(
-            NumericEmbedding(length=shape[1])
-            for n in range(shape[0])
-        ))
-        embeddings.set_height(height)
-        buff = buff_ratio * embeddings[0].get_width()
-        embeddings.arrange(RIGHT, buff=buff)
-
-        # Background rectangle
-        if add_background_rectangle:
-            for embedding in embeddings:
-                if not isinstance(embedding, NumericEmbedding):
-                    continue
-                embedding.add_background_rectangle()
-
-        # Add brackets
-        brackets = Tex("".join((
-            R"\left[\begin{array}{c}",
-            *(shape[0] // 3) * [R"\quad \\"],
-            R"\end{array}\right]",
-        )))
-        brackets.set_height(1.1 * embeddings.get_height())
-        lb = brackets[:len(brackets) // 2]
-        rb = brackets[len(brackets) // 2:]
-        lb.next_to(embeddings, LEFT, buff=-0.0 * buff)
-        rb.next_to(embeddings, RIGHT, buff=-0.0 * buff)
-        brackets.set_fill(bracket_color)
-
-        # Assemble result
-        dots = VGroup()
-        result = VGroup(embeddings, dots, brackets)
-        result.embeddings = embeddings
-        result.dots = dots
-        result.brackets = brackets
-        result.set_backstroke(BLACK, backstroke_width)
-
-        if dots_index is not None:
-            self.swap_embedding_for_dots(result, dots_index)
-
-        return result
+        return EmbeddingArray(
+            shape=shape,
+            height=height,
+            dots_index=dots_index,
+            buff_ratio=buff_ratio,
+            bracket_color=bracket_color,
+            backstroke_width=backstroke_width,
+            add_background_rectangle=add_background_rectangle,
+        )
 
     def swap_embedding_for_dots(self, embedding_array, dots_index=-4):
-        embeddings = embedding_array.embeddings
-        to_replace = embeddings[dots_index]
-        dots = Tex(R"\dots", font_size=60)
-        dots.set_width(0.75 * to_replace.get_width())
-        dots.move_to(to_replace)
-        embeddings.remove(to_replace)
-        embedding_array.dots.add(dots)
-        return embedding_array
+        embedding_array.swap_embedding_for_dots(dots_index)
 
     def get_next_layer_array(self, embedding_array, z_buff=3.0):
         next_array = embedding_array.copy()

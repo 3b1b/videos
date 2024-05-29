@@ -511,6 +511,69 @@ class NumericEmbedding(WeightMatrix):
         )
 
 
+class EmbeddingArray(VGroup):
+    def __init__(
+        self,
+        shape=(10, 9),
+        height=4,
+        dots_index=-4,
+        buff_ratio=0.4,
+        bracket_color=GREY_B,
+        backstroke_width=3,
+        add_background_rectangle=False,
+    ):
+        super().__init__()
+
+        # Embeddings
+        embeddings = VGroup(
+            NumericEmbedding(length=shape[1])
+            for n in range(shape[0])
+        )
+        embeddings.set_height(height)
+        buff = buff_ratio * embeddings[0].get_width()
+        embeddings.arrange(RIGHT, buff=buff)
+
+        # Background rectangle
+        if add_background_rectangle:
+            for embedding in embeddings:
+                embedding.add_background_rectangle()
+
+        # Add brackets
+        brackets = Tex("".join((
+            R"\left[\begin{array}{c}",
+            *(shape[0] // 3) * [R"\quad \\"],
+            R"\end{array}\right]",
+        )))
+        brackets.set_height(1.1 * embeddings.get_height())
+        lb = brackets[:len(brackets) // 2]
+        rb = brackets[len(brackets) // 2:]
+        lb.next_to(embeddings, LEFT, buff=0)
+        rb.next_to(embeddings, RIGHT, buff=0)
+        brackets.set_fill(bracket_color)
+
+        # Assemble result
+        dots = VGroup()
+        self.add(embeddings, dots, brackets)
+        self.embeddings = embeddings
+        self.dots = dots
+        self.brackets = brackets
+        self.set_backstroke(BLACK, backstroke_width)
+
+        if dots_index is not None:
+            self.swap_embedding_for_dots(dots_index)
+
+
+    def swap_embedding_for_dots(self, dots_index=-4):
+        to_replace = self.embeddings[dots_index]
+        dots = Tex(R"\dots", font_size=60)
+        dots.set_width(0.75 * to_replace.get_width())
+        dots.move_to(to_replace)
+        self.embeddings.remove(to_replace)
+        self.dots.add(dots)
+        return self
+
+
+
 class RandomizeMatrixEntries(Animation):
     def __init__(self, matrix, **kwargs):
         self.matrix = matrix
@@ -531,9 +594,6 @@ class RandomizeMatrixEntries(Animation):
             entry.set_value(interpolate(start, target, sub_alpha))
         self.matrix.reset_entry_colors()
 
-
-class EmbeddingSequence(MobjectMatrix):
-    pass
 
 
 class AbstractEmbeddingSequence(MobjectMatrix):
