@@ -61,7 +61,7 @@ class HighLevelNetworkFlow(InteractiveScene):
 
     def get_embedding_array(
         self,
-        shape=(10, 9),
+        shape=(9, 10),
         height=4,
         dots_index=-4,
         buff_ratio=0.4,
@@ -598,6 +598,7 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     orientation = (-55, -19, 0)
     target_frame_x = -2
     x_range = np.linspace(-2, -8, 5)
+    frame_height_growth_rate = 0.15
 
     def construct(self):
         # Test
@@ -608,7 +609,9 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     def show_simple_flow(self, x_range, orientation=None):
         if orientation is None:
             orientation = self.orientation
-        self.frame.add_updater(lambda f: f.set_height(FRAME_HEIGHT + 0.15 * self.time))
+        curr_time = float(self.time)
+        curr_height = self.frame.get_height()
+        self.frame.add_updater(lambda f: f.set_height(curr_height + self.frame_height_growth_rate * (self.time - curr_time)))
         for x in x_range:
             self.progress_through_attention_block(
                 target_orientation=orientation,
@@ -1097,6 +1100,37 @@ class MentionContextSizeAndUnembedding(SimplifiedFlow):
         self.wait()
 
 
+class FlowForMLPIntroReview(SimplifiedFlow):
+    example_text = "That which does not kill you only makes you stronger"
+    x_range = np.linspace(-2, -4, 3)
+    frame_height_growth_rate = 0.3
+    possible_next_tokens = [
+        ("stronger", 0.906),
+        ("stranger", 0.028),
+        ("more", 0.006),
+        ("weaker", 0.003),
+        ("...", 0.003),
+        ("Strong", 0.002),
+        ("wish", 0.002),
+        ("STR", 0.002),
+    ]
+
+    def construct(self):
+        # Initial flow
+        self.camera.light_source.set_z(60)
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+        self.play(self.frame.animate.scale(1.25))
+        self.show_simple_flow(self.x_range)
+
+        # Show how it ends
+        self.remove_mlps()
+        self.mention_repetitions()
+        self.frame.clear_updaters()
+        self.focus_on_last_layer()
+        self.play(self.frame.animate.scale(1.15).shift(RIGHT))
+        self.show_unembedding()
+
+
 class TextPassageIntro(InteractiveScene):
     example_text = MentionContextSizeAndUnembedding.example_text
 
@@ -1198,8 +1232,6 @@ class ThumbnailBase(HighLevelNetworkFlow):
         self.add(self.blocks)
 
     example_text = "The initials GPT stand for Generative Pre-trained Transformer"
-
-
 
 
 class MoleExample1(HighLevelNetworkFlow):

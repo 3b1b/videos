@@ -1,4 +1,4 @@
-import gensim.downloader
+# import gensim.downloader
 import tiktoken
 from pathlib import Path
 
@@ -99,7 +99,7 @@ def get_word_to_vec_model(model_name="glove-wiki-gigaword-50"):
     return model
 
 
-# For chapter 1
+# For chapter 5
 
 
 class LyingAboutTokens2(InteractiveScene):
@@ -2199,7 +2199,7 @@ class RicherEmbedding(InteractiveScene):
         return result
 
 
-# For chapter 2
+# For chapter 6
 
 class MultipleMoleEmbeddings(Word2VecScene):
     default_frame_orientation = (0, 0)
@@ -2536,3 +2536,15 @@ class UpdatingPoetryEmbedding(RicherEmbedding):
             frame.animate.reorient(22, -23, 0, (-0.86, 0.4, -0.35), 7.15),
             run_time=5
         )
+
+
+# For chapter 7
+
+class SimpleSpaceExample(InteractiveScene):
+    def construct(self):
+        # Show an initial vector in the space
+
+        # Many directions -> Many ideas
+
+        # Add on to the "you" for "that which does not kill you"
+        pass

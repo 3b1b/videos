@@ -68,6 +68,8 @@ class SimpleAutogregression(InteractiveScene):
     n_shown_predictions = 12
     seed_text = "Behold, a wild pi creature, foraging in its native"
     seed_text_color = BLUE_B
+    machine_phi = 10 * DEGREES
+    machine_theta = 12 * DEGREES
     n_predictions = 120
     skip_through = False
     random_seed = 0
@@ -132,8 +134,8 @@ class SimpleAutogregression(InteractiveScene):
         blocks.set_shading(0.5, 0.5, 0.5)
         blocks.arrange(OUT)
         blocks.move_to(ORIGIN, OUT)
-        blocks.rotate(10 * DEGREES, RIGHT, about_edge=OUT)
-        blocks.rotate(12 * DEGREES, UP, about_edge=OUT)
+        blocks.rotate(self.machine_phi, RIGHT, about_edge=OUT)
+        blocks.rotate(self.machine_theta, UP, about_edge=OUT)
 
         word = Text("Transformer")
         word.next_to(blocks[-1], UP)
@@ -434,6 +436,147 @@ class ModelTakingInTextWithSurroundingPieces(SimpleAutogregression):
         text_mob, next_word_line, machine = self.init_text_and_machine()
 
 
-class VariousInputsAndOutputs(InteractiveScene):
+class AthleteCompletion(SimpleAutogregression):
+    seed_text = "Michael Jordan plays the sport of"
+    text_corner = 3.5 * UP + 3.0 * LEFT
+    machine_phi = 5 * DEGREES
+    machine_theta = 12 * DEGREES
+    model = "gpt3"
+
     def construct(self):
-        pass
+        # Initialize machine
+        self.set_floor_plane("xz")
+        frame = self.frame
+        in_text, next_word_line, machine = self.init_text_and_machine()
+        self.clear()
+        machine = VGroup(*machine[0])
+        machine.set_height(4)
+        machine.next_to(in_text, DOWN, buff=LARGE_BUFF)
+
+        dials = MachineWithDials(n_rows=10, n_cols=15).dials
+        dials.set_stroke(opacity=0.25)
+        dials.set_height(machine[-1].get_height() * 0.9)
+
+        llm_title = Text("Large\nLanguage\nModel", alignment="LEFT", font_size=72)
+        llm_title.set_backstroke(width=8)
+
+        for mob in [dials, llm_title]:
+            mob.rotate(self.machine_phi, RIGHT).rotate(self.machine_theta, UP)
+            mob.move_to(machine[-1], OUT)
+
+        last_block_copy = machine[-1].copy()
+        self.add(last_block_copy)
+
+        frame.reorient(-13, -6, 0)
+        self.play(
+            LaggedStart(
+                (TransformFromCopy(last_block_copy.copy().set_opacity(0), block)
+                for block in machine),
+                lag_ratio=0.05,
+            ),
+            Write(dials),
+            Write(llm_title),
+            frame.animate.reorient(0, 0, 0),
+            run_time=3
+        )
+        self.remove(last_block_copy)
+        self.add(machine, dials, llm_title)
+
+        # Feed in many facts
+        facts = Path(DATA_DIR, "facts.txt").read_text().split("\n")
+        fact_mobs = VGroup(get_paragraph(fact.split(" "), line_len=20) for fact in facts)
+        directions = compass_directions(12, start_vect=UR)
+        for fact_mob, vect in zip(fact_mobs, it.cycle(directions)):
+            fact_mob.set_max_width(2)
+            fact_mob.move_to(5 * vect).shift_onto_screen(buff=0.25)
+
+        self.play(
+            LaggedStart(
+                (Succession(
+                    FadeIn(fact_mob),
+                    fact_mob.animate.set_opacity(0).move_to(machine.get_center()),
+                )
+                for fact_mob in fact_mobs),
+                lag_ratio=0.05,
+                run_time=8
+            )
+        )
+        self.remove(fact_mobs)
+        self.wait()
+
+        # Show MJ fact
+        full_input = VGroup(in_text, next_word_line)
+        full_input.set_height(0.4)
+        full_input.to_edge(UP)
+
+        in_arrow = Arrow(full_input, machine, buff=0.1)
+        predictions, probs = self.predict_next_token(self.seed_text)
+
+        bar_groups = self.get_distribution(predictions, probs, machine)
+        bar_groups.next_to(machine[-1], RIGHT, buff=1.5)
+        out_arrow = Arrow(machine[-1], bar_groups)
+
+        top_rect = SurroundingRectangle(VGroup(bar_groups[0]))
+
+        self.play(FadeIn(full_input, scale=2))
+        self.play(
+            GrowArrow(in_arrow),
+            Transform(full_input.copy(), full_input.copy().scale(0.5).set_opacity(0).move_to(machine.get_top()))
+        )
+        self.play(
+            frame.animate.reorient(-14, -2, 0, (1.83, 0.07, -0.38), 8.63),
+            LaggedStart(
+                (block.animate.set_color(TEAL).set_anim_args(rate_func=there_and_back)
+                for block in machine[:-1]),
+                lag_ratio=0.1,
+                run_time=1
+            ),
+        )
+        self.play(
+            ShowCreation(out_arrow),
+            FadeIn(bar_groups, lag_ratio=0.1)
+        )
+        self.wait()
+        self.play(ShowCreation(top_rect))
+
+        # Reshow parameters
+        self.play(
+            FadeOut(llm_title),
+            dials.animate.set_stroke(opacity=1)
+        )
+        for _ in range(5):
+            self.play(
+                LaggedStart(
+                    (dial.animate_set_value(dial.get_random_value())
+                    for dial in dials),
+                    lag_ratio=0.25 / len(dials),
+                    run_time=1
+                )
+            )
+
+        # Quetsions
+        questions = VGroup(Text("How?"), Text("Where?"))
+        questions.arrange(RIGHT, buff=1.0)
+        questions.set_height(0.5)
+        questions.next_to(machine[-1], DOWN)
+
+        for question in questions:
+            self.play(FadeIn(question, 0.5 * UP, scale=1.5))
+        self.wait()
+
+
+class ThatWhichDoesNotKillMe(SimpleAutogregression):
+    text_corner = 3.5 * UP + 5.0 * LEFT
+    line_len = 75
+    seed_text = "That which does not kill you only makes you"
+    model = "gpt3"
+
+    def construct(self):
+        # Test
+        text_mob, next_word_line, machine = self.init_text_and_machine()
+        machine.set_x(0)
+        text_mob = self.new_selection_cycle(
+            text_mob, next_word_line, machine,
+            quick=False,
+            skip_anims=False,
+        )

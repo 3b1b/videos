@@ -4,8 +4,7 @@ from manim_imports_ext import *
 
 from typing import TYPE_CHECKING
 import warnings
-import requests
-import datasets
+# import datasets
 
 DATA_DIR = Path(get_output_dir(), "2024/transformers/data/")
 WORD_FILE = Path(DATA_DIR, "OWL3_Dictionary.txt")
@@ -95,7 +94,7 @@ def load_image_net_data(dataset_name="image_net_1k"):
     ]
 
 
-def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
+def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999, fix_in_frame=False):
     # Show product
     eq = Tex("=")
     eq.set_width(0.5 * vector.get_width())
@@ -109,6 +108,9 @@ def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
     rhs.scale(vector.elements[0].get_height() / rhs.elements[0].get_height())
     eq.next_to(vector, RIGHT, buff=buff)
     rhs.next_to(eq, RIGHT, buff=buff)
+    if fix_in_frame:
+        eq.fix_in_frame()
+        rhs.fix_in_frame()
 
     scene.play(FadeIn(eq), FadeIn(rhs.get_brackets()))
 
@@ -119,16 +121,17 @@ def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
             scene.add(entry)
         else:
             last_rects = matrix_row_vector_product(
-                scene, row, vector, entry, last_rects
+                scene, row, vector, entry, last_rects,
+                fix_in_frame=fix_in_frame
             )
     scene.play(FadeOut(last_rects))
 
     return eq, rhs
 
 
-def matrix_row_vector_product(scene, row, vector, entry, to_fade):
+def matrix_row_vector_product(scene, row, vector, entry, to_fade, fix_in_frame=False):
     def get_rect(elem):
-        return SurroundingRectangle(elem, buff=0.1).set_stroke(YELLOW, 2)
+        return SurroundingRectangle(elem, buff=0.1, is_fixed_in_frame=fix_in_frame).set_stroke(YELLOW, 2)
 
     row_rects = VGroup(*map(get_rect, row))
     vect_rects = VGroup(*map(get_rect, vector[:-2]))
@@ -234,8 +237,16 @@ def show_symbolic_matrix_vector_product(scene, matrix, vector, rhs, run_time_per
     scene.play(FadeOut(last_rects))
 
 
-def data_flying_animation(point, vect=2 * DOWN + RIGHT, color=GREY_C, max_opacity=0.75):
+def data_flying_animation(
+    point,
+    vect=2 * DOWN + RIGHT,
+    color=GREY_C,
+    max_opacity=0.75,
+    fix_in_frame=False
+    ):
     word = Text("Data", color=color)
+    if fix_in_frame:
+        word.fix_in_frame()
     return UpdateFromAlphaFunc(
         word, lambda m, a: m.move_to(
             interpolate(point, point + vect, a)
@@ -243,7 +254,14 @@ def data_flying_animation(point, vect=2 * DOWN + RIGHT, color=GREY_C, max_opacit
     )
 
 
-def get_data_modifying_matrix_anims(matrix, word_shape=(5, 10), alpha_maxes=(0.7, 0.9), shift_vect=2 * DOWN + RIGHT, run_time=3):
+def get_data_modifying_matrix_anims(
+    matrix,
+    word_shape=(5, 10),
+    alpha_maxes=(0.7, 0.9),
+    shift_vect=2 * DOWN + RIGHT,
+    run_time=3,
+    fix_in_frame=False
+):
     x_min, x_max = [matrix.get_x(LEFT), matrix.get_x(RIGHT)]
     y_min, y_max = [matrix.get_y(UP), matrix.get_y(DOWN)]
     z = matrix.get_z()
@@ -258,7 +276,7 @@ def get_data_modifying_matrix_anims(matrix, word_shape=(5, 10), alpha_maxes=(0.7
     ])
     return [
         LaggedStart(
-            (data_flying_animation(p, vect=shift_vect)
+            (data_flying_animation(p, vect=shift_vect, fix_in_frame=fix_in_frame)
             for p in points),
             lag_ratio=1 / len(points),
             run_time=run_time
@@ -510,6 +528,11 @@ class NumericEmbedding(WeightMatrix):
             **kwargs,
         )
 
+        # No sign on zeros
+        for entry in self.get_entries():
+            if entry.get_value() == 0:
+                entry[0].set_opacity(0)
+
 
 class EmbeddingArray(VGroup):
     def __init__(
@@ -526,8 +549,8 @@ class EmbeddingArray(VGroup):
 
         # Embeddings
         embeddings = VGroup(
-            NumericEmbedding(length=shape[1])
-            for n in range(shape[0])
+            NumericEmbedding(length=shape[0])
+            for n in range(shape[1])
         )
         embeddings.set_height(height)
         buff = buff_ratio * embeddings[0].get_width()
@@ -541,7 +564,7 @@ class EmbeddingArray(VGroup):
         # Add brackets
         brackets = Tex("".join((
             R"\left[\begin{array}{c}",
-            *(shape[0] // 3) * [R"\quad \\"],
+            *(shape[1] // 3) * [R"\quad \\"],
             R"\end{array}\right]",
         )))
         brackets.set_height(1.1 * embeddings.get_height())
@@ -573,7 +596,6 @@ class EmbeddingArray(VGroup):
         return self
 
 
-
 class RandomizeMatrixEntries(Animation):
     def __init__(self, matrix, **kwargs):
         self.matrix = matrix
@@ -593,7 +615,6 @@ class RandomizeMatrixEntries(Animation):
             sub_alpha = self.get_sub_alpha(alpha, index, len(self.entries))
             entry.set_value(interpolate(start, target, sub_alpha))
         self.matrix.reset_entry_colors()
-
 
 
 class AbstractEmbeddingSequence(MobjectMatrix):

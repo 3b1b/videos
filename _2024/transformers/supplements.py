@@ -1337,3 +1337,86 @@ class MoreResourcesBelow(InteractiveScene):
 
 class PatreonEndScreen(EndScreen):
     pass
+
+
+# MLP Chapter
+
+class IntroducingMLPs(TeacherStudentsScene):
+    def construct(self):
+        # Look at screen
+        morty = self.teacher
+        screen = self.screen
+        self.play(
+            morty.change("raise_right_hand", screen),
+            self.change_students("pondering", "confused", "pondering", look_at=screen),
+        )
+        self.wait(2)
+
+        # Computation vs. interpretation
+        words = VGroup(Text("Computation"), Text("Interpretation"))
+        words.scale(1.5)
+        words.arrange(DOWN, buff=1.0, aligned_edge=LEFT)
+        words.to_corner(UR).shift(LEFT)
+        check = Checkmark()
+        check.match_height(words[0])
+        check.next_to(words[0], RIGHT)
+        check.set_color(GREEN)
+        warning = SVGMobject("warning")
+        warning.set_color(RED)
+        warning.match_height(words[1])
+        warning.next_to(words[1], RIGHT)
+
+        self.play(
+            FadeIn(words[0], UP),
+            self.change_students("tease", "happy", "thinking", look_at=words[0]),
+            morty.change("raise_left_hand", words[0]),
+        )
+        self.play(Write(check, stroke_color=GREEN))
+        self.wait(3)
+        self.play(
+            FadeIn(words[1], UP),
+            self.change_students("erm", "confused", "pondering", words[1]),
+            morty.change("maybe", words[1])
+        )
+        self.play(Write(warning, stroke_color=RED))
+        self.wait(5)
+
+
+class EmbeddingLabel(InteractiveScene):
+    def construct(self):
+        # Background
+        bg = ImageMobject("/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/images/EmbeddingStill.jpg")
+        bg.set_height(FRAME_HEIGHT)
+        # self.add(bg)
+
+        # Label
+        ghost_vect = Rectangle()
+        ghost_vect.set_shape(0.8, 4)
+        ghost_vect.move_to([4.25, -1.0, 0])
+
+        brace = Brace(ghost_vect, LEFT)
+        name = brace.get_text("Embedding")
+        length = Integer(12288)
+        length.next_to(brace, LEFT, buff=0.5).shift(0.25 * UP)
+        numbers_label = Text("Numbers")
+        numbers_label.next_to(length, DOWN)
+        gpt3_label = Text("Length in\nGPT-3")
+        gpt3_label.next_to(length, UL, buff=1.0).shift(1.5 * RIGHT)
+        gpt3_label.set_color(YELLOW)
+        arrow = Arrow(gpt3_label.get_bottom(), length.get_corner(UL), buff=0.1)
+
+        self.play(
+            GrowFromCenter(brace),
+            Write(name)
+        )
+        self.wait()
+        self.play(
+            FadeTransform(name, numbers_label),
+            CountInFrom(length, 0, run_time=2),
+        )
+        self.play(
+            FadeIn(gpt3_label, lag_ratio=0.1),
+            GrowFromCenter(arrow),
+        )
+        self.wait()
+
