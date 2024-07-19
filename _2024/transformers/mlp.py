@@ -1,7 +1,8 @@
 from scipy.stats import norm
 
-from manim_imports_ext import *
 from _2024.transformers.helpers import *
+from manim_imports_ext import *
+
 
 class LastTwoChapters(InteractiveScene):
     def construct(self):
@@ -10,21 +11,7 @@ class LastTwoChapters(InteractiveScene):
         self.camera.light_source.set_z(15)
         self.set_floor_plane("xz")
 
-        folder = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/Thumbnails"
-        images = [
-            ImageMobject(str(Path(folder, "Chapter5_TN5"))),
-            ImageMobject(str(Path(folder, "Chapter6_TN4"))),
-        ]
-        thumbnails = Group(
-            Group(
-                SurroundingRectangle(image, buff=0).set_stroke(WHITE, 3),
-                image
-            )
-            for n, image in zip([5, 6], images)
-        )
-        thumbnails.set_height(3.5)
-        thumbnails.arrange(RIGHT, buff=1.0)
-        thumbnails.fix_in_frame()
+        thumbnails = self.get_thumbnails()
         self.play(
             LaggedStartMap(FadeIn, thumbnails, shift=UP, lag_ratio=0.5)
         )
@@ -96,6 +83,7 @@ class LastTwoChapters(InteractiveScene):
             fact.shift(random.uniform(-3, 3) * RIGHT)
             fact.shift(random.uniform(0, 3) * UP)
 
+        self.remove(mlp_icon, mlp_title)
         self.play(
             FadeOut(thumbnails),
             FadeOut(trans_title),
@@ -126,6 +114,24 @@ class LastTwoChapters(InteractiveScene):
         )
         self.wait()
 
+    def get_thumbnails(self):
+        folder = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/Thumbnails"
+        images = [
+            ImageMobject(str(Path(folder, "Chapter5_TN5"))),
+            ImageMobject(str(Path(folder, "Chapter6_TN4"))),
+        ]
+        thumbnails = Group(
+            Group(
+                SurroundingRectangle(image, buff=0).set_stroke(WHITE, 3),
+                image
+            )
+            for n, image in zip([5, 6], images)
+        )
+        thumbnails.set_height(3.5)
+        thumbnails.arrange(RIGHT, buff=1.0)
+        thumbnails.fix_in_frame()
+        return thumbnails
+
     def get_att_icon(self, block, n_rows=8):
         att_icon = Dot().get_grid(n_rows, n_rows)
         att_icon.set_height(block.get_height() * 0.9)
@@ -135,14 +141,14 @@ class LastTwoChapters(InteractiveScene):
         att_icon.move_to(block, OUT)
         return att_icon
 
-    def get_mlp_icon(self, block):
+    def get_mlp_icon(self, block, dot_buff=0.15, layer_buff=1.5, layer0_size=5):
         layers = VGroup(
-            Dot().get_grid(5, 1, buff=0.15),
-            Dot().get_grid(10, 1, buff=0.15),
-            Dot().get_grid(5, 1, buff=0.15),
+            Dot().get_grid(layer0_size, 1, buff=dot_buff),
+            Dot().get_grid(2 * layer0_size, 1, buff=dot_buff),
+            Dot().get_grid(layer0_size, 1, buff=dot_buff),
         )
         layers.set_height(block.get_height() * 0.9)
-        layers.arrange(RIGHT, buff=1.5)
+        layers.arrange(RIGHT, buff=layer_buff)
         for layer in layers:
             for dot in layer:
                 dot.set_fill(opacity=random.random())
@@ -170,6 +176,214 @@ class LastTwoChapters(InteractiveScene):
         block.set_shading(0.5, 0.5, 0.0)
         block.sort(lambda p: np.dot(p, [-1, 1, 1]))
         return block
+
+
+class AltLastTwoChapters(LastTwoChapters):
+    def construct(self):
+        # Show last two chapters
+        thumbnails = self.get_thumbnails()
+        thumbnails.set_height(2.0)
+        thumbnails.arrange(RIGHT, buff=2.0)
+        thumbnails.to_edge(UP)
+        for n, thumbnail in zip([5, 6], thumbnails):
+            label = Text(f"Chapter {n}")
+            label.next_to(thumbnail, DOWN, SMALL_BUFF)
+            thumbnail.add(label)
+
+        self.play(
+            LaggedStartMap(FadeIn, thumbnails, shift=UP, lag_ratio=0.5)
+        )
+        self.wait()
+
+        # Focus on chapter 6
+        for thumbnail in thumbnails:
+            thumbnail.target = thumbnail.generate_target()
+            thumbnail.target.scale(1.25)
+            thumbnail.target[-1].scale(1.0 / 1.5).next_to(thumbnail.target[0], DOWN, SMALL_BUFF)
+        thumbnails[1].target.set_x(-2.85)
+        thumbnails[1].target.to_edge(UP, MED_SMALL_BUFF)
+        thumbnails[0].target.next_to(thumbnails[1].target, LEFT, buff=2.5)
+
+        self.play(
+            LaggedStartMap(MoveToTarget, thumbnails)
+        )
+        self.wait()
+
+
+class MLPIcon(LastTwoChapters):
+    def construct(self):
+        # Add network
+        network = self.get_mlp_icon(Square(6), layer_buff=3.0, layer0_size=6)
+        self.play(Write(network, stroke_width=0.5, lag_ratio=1e-2, run_time=5))
+        self.wait()
+
+        # Propagate through
+        thick_layers = VGroup(network[1].family_members_with_points()).copy()
+        for line in thick_layers:
+            line.set_stroke(width=2 * line.get_width())
+            line.insert_n_curves(20)
+        self.play(LaggedStartMap(VShowPassingFlash, thick_layers, time_width=1.5, lag_ratio=5e-3, run_time=3))
+        self.wait()
+
+
+class MLPStepsPreview(InteractiveScene):
+    def construct(self):
+        # Setup framing
+        background = FullScreenRectangle()
+        top_frame, low_frame = frames = Rectangle(7, 3.25).replicate(2)
+        frames.arrange(DOWN, buff=0.5)
+        frames.to_edge(LEFT)
+        frames.set_fill(BLACK, 1)
+        frames.set_stroke(WHITE, 2)
+
+        titles = VGroup(
+            VGroup(Text("Structure:"), Text("Easy")),
+            VGroup(Text("Emergent behavior:"), Text("Exceedingly challenging")),
+        )
+        for title, frame, color in zip(titles, frames, [GREEN, RED]):
+            title.scale(2)
+            for part in title:
+                part.set_max_width(6)
+            title.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+            title.next_to(frame, RIGHT, buff=0.5)
+            title[1].set_color(color)
+
+        titles[0].save_state()
+        top_frame.save_state()
+        top_frame.set_shape(8, 6).center().to_edge(LEFT)
+        titles[0].next_to(top_frame, RIGHT, buff=0.5)
+
+        self.add(background)
+        self.add(top_frame)
+        self.add(titles[0][0])
+
+        # Add all steps
+        arrows = Vector(2.2 * RIGHT).get_grid(1, 3, buff=0.25)
+        arrows.move_to(top_frame)
+        up_proj = WeightMatrix(shape=(10, 6))
+        down_proj = WeightMatrix(shape=(6, 10))
+        VGroup(up_proj, down_proj).match_width(arrows[0])
+        up_proj.next_to(arrows[0], UP, buff=MED_SMALL_BUFF)
+        down_proj.next_to(arrows[2], UP, buff=MED_SMALL_BUFF)
+
+        axes = Axes((-4, 4), (0, 4))
+        graph = axes.get_graph(lambda x: max(0, x))
+        graph.set_stroke(YELLOW, 5)
+        plot = VGroup(axes, graph)
+        plot.set_width(arrows[0].get_width() * 0.75)
+        plot.next_to(arrows[1], UP, buff=MED_SMALL_BUFF)
+
+        labels = VGroup(*map(Text, ["Linear", "ReLU", "Linear"]))
+        for label, arrow in zip(labels, arrows):
+            label.next_to(arrow, DOWN)
+
+        structure = VGroup(arrows, labels, VGroup(up_proj, plot, down_proj))
+
+        self.play(
+            LaggedStartMap(GrowArrow, arrows, lag_ratio=0.5),
+            LaggedStartMap(FadeIn, labels, shift=0.5 * RIGHT, lag_ratio=0.5),
+            Write(titles[0][1])
+        )
+        self.play(LaggedStart(
+            FadeIn(up_proj, shift=0.5 * UP),
+            FadeIn(down_proj, shift=0.5 * UP),
+            lag_ratio=0.5
+        ))
+        self.play(FadeIn(plot, lag_ratio=1e-2))
+        self.wait(3)
+
+        # Reference emergent structure
+
+        self.play(
+            Restore(top_frame),
+            Restore(titles[0]),
+            structure.animate.set_width(0.9 * top_frame.saved_state.get_width()).move_to(top_frame.saved_state),
+            FadeIn(low_frame, DOWN),
+            FadeIn(titles[1][0], DOWN),
+        )
+        self.play(
+            Write(titles[1][1], stroke_color=RED)
+        )
+
+        # Data flying
+        kw = dict(font_size=16, shift_vect=0.5 * DOWN + 0.5 * RIGHT, word_shape=(5, 5))
+        data_modifying_matrix(self, up_proj, **kw)
+        data_modifying_matrix(self, down_proj, **kw)
+        self.wait()
+
+        # Swap out for toy example
+        toy_example_title = Text("Motivating Toy Example", font_size=54)
+        toy_example_title.next_to(titles[1][0], DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        strike = Line().replace(titles[1][0])
+        strike.set_stroke(RED, 8)
+
+        low_matrices = VGroup(up_proj, down_proj)
+        top_matrices = low_matrices.copy()
+        low_matrices.generate_target()
+        low_matrices.target.scale(1.75).arrange(RIGHT, buff=0.5)
+        low_matrices.target.move_to(low_frame, DOWN).shift(MED_SMALL_BUFF * UP)
+
+        self.play(
+            ShowCreation(strike),
+            FadeOut(titles[1][1]),
+            titles[1][0].animate.set_opacity(0.5)
+        )
+        self.add(top_matrices)
+        self.play(
+            MoveToTarget(low_matrices),
+            FadeIn(toy_example_title, DOWN)
+        )
+        self.wait()
+
+        # Write down fact
+        row_rect = SurroundingRectangle(low_matrices[0].get_rows()[0], buff=0.1)
+        col_rect = SurroundingRectangle(low_matrices[1].get_columns()[0], buff=0.1)
+        VGroup(row_rect, col_rect).set_stroke(WHITE, 1)
+        fact = Text("Michael Jordan plays Basketball", font_size=36)
+        fact.next_to(frames[1].get_top(), DOWN)
+        fact.align_to(low_matrices, LEFT)
+        mj, bb = fact["Michael Jordan"], fact["plays Basketball"]
+        mj_brace = Brace(mj, DOWN, buff=0.1)
+        bb_brace = Brace(bb, DOWN).match_y(mj_brace)
+        mj_arrow = Arrow(row_rect, mj_brace, buff=0.05)
+        bb_arrow = Arrow(col_rect.get_top(), bb_brace, buff=0.05)
+
+        row_cover = BackgroundRectangle(low_matrices[0].get_rows()[1:], buff=0.05)
+        col_cover = BackgroundRectangle(low_matrices[1].get_columns()[1:], buff=0.05)
+        VGroup(row_cover, col_cover).set_fill(BLACK, 0.75)
+
+        self.play(LaggedStart(
+            FadeIn(row_cover),
+            FadeIn(row_rect),
+            GrowFromCenter(mj_brace),
+            FadeIn(mj, 0.5 * UP)
+        ))
+        self.play(
+            FadeIn(col_cover),
+            FadeIn(col_rect),
+            GrowArrow(bb_arrow),
+            GrowFromCenter(bb_brace),
+            FadeIn(bb, 0.5 * UP)
+        )
+        self.add(*low_matrices, row_cover, col_cover, row_rect, col_rect)
+        self.play(
+            RandomizeMatrixEntries(low_matrices[0]),
+            RandomizeMatrixEntries(low_matrices[1]),
+        )
+        self.wait()
+
+
+class MatricesVsIntuition(InteractiveScene):
+    def construct(self):
+        # Add matrix
+        matrix = WeightMatrix(shape=(15, 15))
+        matrix.set_height(4)
+        matrix.to_edge(LEFT)
+
+        Text("Matrices filled with parameters\nlearned during gradient descent")
+        Text("Motivating examples which risk being\noversimplifications of what true models do")
+
+        self.add(matrix)
 
 
 class BasicMLPWalkThrough(InteractiveScene):
@@ -741,10 +955,11 @@ class BasicMLPWalkThrough(InteractiveScene):
         row_rects[-2].match_width(row_rects, stretch=True)
 
         over_brace = Brace(row_rects[0], UP, buff=SMALL_BUFF)
-        row_size = Integer(12288)
+        d_model = 12288
+        row_size = Integer(d_model)
         row_size.next_to(over_brace, UP)
         side_brace = Brace(row_rects, LEFT)
-        num_rows = Integer(4 * 12288)
+        num_rows = Integer(4 * d_model)
         num_rows.next_to(side_brace, LEFT)
         num_rows_expr = Tex(R"4 \times 12{,}288")
         num_rows_expr.next_to(side_brace, LEFT)
@@ -763,6 +978,69 @@ class BasicMLPWalkThrough(InteractiveScene):
         )
         self.wait()
         self.play(FadeOut(row_rects, lag_ratio=0.1))
+
+        # Calculate matrix size
+        full_product = VGroup(
+            num_rows_expr.copy(),
+            Tex(R"\times"),
+            row_size.copy(),
+            Tex(Rf"="),
+            Integer(4 * d_model * d_model)
+        )
+        full_product.scale(1.5)
+        full_product.arrange(RIGHT, buff=MED_SMALL_BUFF)
+        full_product.next_to(row_rects, UP, buff=2.5)
+
+        self.play(LaggedStart(
+            frame.animate.reorient(0, 0, 0, (-3.88, 1.51, 0.0), 11.35),
+            TransformFromCopy(num_rows_expr, full_product[0]),
+            FadeIn(full_product[1], UP),
+            TransformFromCopy(row_size, full_product[2]),
+            lag_ratio=0.25,
+            run_time=2
+        ))
+        self.play(
+            TransformFromCopy(full_product[:3], full_product[3:])
+        )
+        self.wait()
+        self.play(FlashAround(full_product[-1], run_time=2, time_width=1.5))
+
+        # Count bias parameters
+        bias_count = Tex(R"4 \times 12{,}288")
+        bias_count.match_height(full_product)
+        bias_count.match_y(full_product)
+        bias_count.match_x(bias)
+        bias_rect = SurroundingRectangle(VGroup(bias, bias_name))
+        bias_rect.set_stroke(BLUE_B)
+        bias_arrow = Arrow(bias_rect.get_top(), bias_count.get_bottom())
+        bias_arrow.match_color(bias_rect)
+        bias_count.match_color(bias_rect)
+
+        div_eq = Tex(R"{4 \times 12{,}288 \over 603{,}979{,}776} \approx 0.00008 ")
+        div_eq[R"{4 \times 12{,}288"].match_color(bias_rect)
+        div_eq.next_to(frame.get_corner(UR), DL, buff=MED_LARGE_BUFF)
+        div_eq.shift(RIGHT)
+
+        self.play(ShowCreation(bias_rect))
+        self.play(
+            GrowArrow(bias_arrow),
+            FadeInFromPoint(bias_count, bias_arrow.get_start()),
+            full_product.animate.scale(0.8).shift(3.5 * LEFT)
+        )
+        self.wait()
+        self.play(
+            frame.animate.set_x(-3.0),
+            FadeTransform(bias_count.copy(), div_eq[R"4 \times 12{,}288"]),
+            Write(div_eq[R"\over"]),
+            FadeTransform(full_product[-1].copy(), div_eq[R"603{,}979{,}776}"]),
+            Write(div_eq[R"\approx 0.00008"]),
+        )
+        self.wait()
+
+        self.play(
+            frame.animate.reorient(0, 0, 0, (-2.5, 0.44, 0.0), 9.33),
+            *map(FadeOut, [full_product, bias_rect, bias_arrow, bias_count, div_eq])
+        )
 
         # Collapse
         substrs = [R"W_\uparrow", R"\vec{\textbf{E}}_i", "+", R"\vec{\textbf{B}}_\uparrow"]
@@ -1475,19 +1753,282 @@ class BasicMLPWalkThrough(InteractiveScene):
         return VGroup(matrix.get_brackets().copy(), col_labels)
 
 
+class NonlinearityOfLanguage(InteractiveScene):
+    def construct(self):
+        # Set up axes and M + J
+        unit_size = 2.5
+
+        plane = NumberPlane(
+            axis_config=dict(
+                stroke_width=1,
+            ),
+            background_line_style=dict(
+                stroke_color=BLUE_D,
+                stroke_width=1,
+                stroke_opacity=0.75
+            ),
+            faded_line_ratio=1,
+            unit_size=unit_size,
+        )
+        m_vect = Vector(unit_size * RIGHT).rotate(60 * DEGREES, about_point=ORIGIN)
+        j_vect = m_vect.copy().rotate(-90 * DEGREES, about_point=ORIGIN)
+        m_vect.set_color(YELLOW)
+        j_vect.set_color(RED)
+        m_ghost = m_vect.copy().shift(j_vect.get_vector())
+        j_ghost = j_vect.copy().shift(m_vect.get_vector())
+        VGroup(m_ghost, j_ghost).set_stroke(opacity=0.25)
+
+        sum_point = m_ghost.get_end()
+        span_line = Line(-sum_point, sum_point)
+        span_line.set_length(2 * FRAME_WIDTH)
+        span_line.set_stroke(WHITE, 2, opacity=0.5)
+
+        self.add(plane)
+        self.add(m_vect, m_ghost, j_vect, j_ghost)
+        self.add(span_line)
+
+        # Label vectors
+        m_label = Text("First Name Michael")
+        j_label = Text("Last Name Jordan")
+        for label, vect in [(m_label, m_vect), (j_label, j_vect)]:
+            label.scale(0.6)
+            label.match_color(vect)
+            direction = np.sign(vect.get_vector()[1]) * UP
+            label.next_to(ORIGIN, direction, buff=0.2, aligned_edge=LEFT)
+            label.rotate(vect.get_angle(), about_point=ORIGIN)
+            label.set_backstroke(BLACK, 3)
+
+        self.add(m_label)
+        self.add(j_label)
+
+        # Add dot product expression
+        expr = Tex(R"(\vec{\textbf{M}} + \vec{\textbf{J}}) \cdot \textbf{E}")
+        expr[1:3].match_color(m_vect)
+        expr[4:6].match_color(j_vect)
+        expr.to_corner(UL)
+        self.add(expr)
+
+        # Set up embedding with dot product tracker
+        emb_point = VectorizedPoint(unit_size * UL)
+        emb = Vector()
+        emb.add_updater(lambda m: m.put_start_and_end_on(ORIGIN, emb_point.get_center()))
+        normalized_sum = normalize(sum_point)
+
+        def get_line_point():
+            return normalized_sum * np.dot(normalized_sum, emb_point.get_center())
+
+        shadow = Line()
+        shadow.set_stroke(PINK, 3)
+        shadow.add_updater(lambda m: m.put_start_and_end_on(ORIGIN, get_line_point()))  # This is a long line
+
+        dot = Dot()
+        dot.set_fill(PINK, 1)
+        dot.f_always.move_to(get_line_point)
+
+        dashed_line = always_redraw(
+            lambda: DashedLine(emb_point.get_center(), get_line_point()).set_stroke(PINK, 2)
+        )
+
+        dp_decimal = DecimalNumber(font_size=36)
+        dp_decimal.match_color(dot)
+        dp_decimal.f_always.set_value(lambda: np.dot(normalized_sum, emb_point.get_center()) * 2.0 / 3.535534)
+        dp_decimal.always.next_to(dot, DR, buff=SMALL_BUFF)
+
+        self.add(shadow, emb, dot, dashed_line, dp_decimal)
+
+        emb_point.move_to(ORIGIN + 0.01 * UP)
+        for point in [m_vect.get_end(), m_ghost.get_end(), j_vect.get_end(), m_ghost.get_end()]:
+            self.play(emb_point.animate.move_to(point), run_time=3)
+
+        # Set up names
+        names = VGroup(
+            Text(name, font_size=36)
+            for name in [
+                "Michael Jordan",
+                "Michael Phelps",
+                "Alexis Jordan",
+            ]
+        )
+        name_points = [
+            sum_point,
+            m_vect.get_end(),
+            j_vect.get_end(),
+        ]
+        for name, point in zip(names, name_points):
+            name.set_backstroke(BLACK, 3)
+            direction = RIGHT + np.sign(point[1]) * UP
+            name.next_to(point, direction, buff=0.1)
+
+        # Go through names
+        name = names[0].copy()
+        name_ghosts = names.copy().set_fill(opacity=0.75).set_stroke(width=0)
+
+        self.play(
+            FadeIn(name, 0.5 * UP),
+            Rotate(emb_point, TAU, about_point=emb_point.get_center() + 0.15 * DL, run_time=4),
+        )
+        self.wait()
+        self.add(name_ghosts[0])
+        self.play(
+            Transform(name, names[1]),
+            emb_point.animate.move_to(m_vect.get_end()),
+            run_time=2,
+        )
+        self.wait()
+        self.add(name_ghosts[1])
+        self.play(
+            Transform(name, names[2]),
+            emb_point.animate.move_to(j_vect.get_end()).set_anim_args(path_arc=30 * DEGREES),
+            run_time=2,
+        )
+        self.add(name_ghosts[2])
+        self.wait()
+
+        # Show other names
+        other_point = span_line.pfp(0.45)
+        other_word = Text("(Other)", font_size=36)
+        other_word.set_fill(GREY_B)
+        other_word.next_to(other_point, UL, buff=0)
+
+        self.play(
+            emb_point.animate.move_to(other_point),
+            LaggedStart(
+                FadeOut(name),
+                FadeIn(other_word),
+                lag_ratio=0.5,
+            ),
+            run_time=3
+        )
+        self.wait()
+
+        # Show "yes" vs. "no" regions
+        regions = FullScreenRectangle().scale(2).replicate(2)
+        regions.arrange(LEFT, buff=0)
+        regions[0].set_fill(GREEN_B, 0.35)
+        regions[1].set_fill(RED, 0.25)
+        regions.rotate(span_line.get_angle(), about_point=ORIGIN)
+        regions.shift(0.85 * sum_point)
+
+        yes_no_words = VGroup(
+            Text("Yes", font_size=72).set_fill(GREEN).to_corner(UR),
+            Text("No", font_size=72).set_fill(RED).to_edge(UP).shift(LEFT),
+        )
+
+        for region, word in zip(regions, yes_no_words):
+            self.play(FadeIn(region), FadeIn(word))
+        self.wait()
+
+
 # Show classic neural net picture
+
 class ClassicNeuralNetworksPicture(InteractiveScene):
     def construct(self):
         pass
 
 
-## Maybe not needed?
-class ShowBiasBakedIntoWeightMatrix(InteractiveScene):
+class ShowBiasBakedIntoWeightMatrix(LastTwoChapters):
     def construct(self):
-        pass
+        # Add initial blocks
+        frame = self.frame
+        square = Square(2.0)
+        att_icon = self.get_att_icon(square)
+        att_icon.set_stroke(WHITE, 1, 0.5)
+        mlp_icon = self.get_mlp_icon(square, layer_buff=1.0)
+        lnm_icon = self.get_layer_norm_icon()
+        lnm_icon.match_height(mlp_icon)
 
+        att_block = self.get_block(att_icon, "Attention", "604M Parameters", color=YELLOW)
+        mlp_block = self.get_block(mlp_icon, "MLP", "1.2B Parameters", color=BLUE)
+        lnm_block = self.get_block(lnm_icon, "Layer Norm", "49K Parameters", color=GREY_B)
 
+        blocks = VGroup(att_block, mlp_block, lnm_block)
+        blocks.arrange(RIGHT, buff=1.5)
 
+        lil_wrapper = self.get_layer_wrapper(blocks[:2].copy())
+        big_wrapper = self.get_layer_wrapper(blocks)
+
+        self.add(lil_wrapper, blocks[:2])
+        frame.match_x(blocks[:2])
+        self.wait()
+        self.play(
+            frame.animate.match_x(blocks),
+            ReplacementTransform(lil_wrapper, big_wrapper),
+            FadeIn(lnm_block, RIGHT),
+        )
+        self.wait()
+        self.play(FlashAround(lnm_block[2], run_time=3, time_width=2))
+        self.wait()
+
+    def get_layer_norm_icon(self):
+        axes1, axes2 = all_axes = VGroup(
+            Axes((-4, 4), (0, 1, 0.25))
+            for x in range(2)
+        )
+        all_axes.set_shape(1.5, 0.5)
+        all_axes.arrange(DOWN, buff=1.0)
+        graph1 = axes1.get_graph(lambda x: 0.5 * norm.pdf(0.5 * x - 0.5))
+        graph2 = axes2.get_graph(lambda x: 1.5 * norm.pdf(x))
+        graph1.set_stroke(BLUE).set_fill(BLUE, 0.25)
+        graph2.set_stroke(BLUE).set_fill(BLUE, 0.25)
+        arrow = Arrow(axes1, axes2, buff=0.1)
+
+        return VGroup(axes1, graph1, arrow, axes2, graph2)
+
+    def get_layer_wrapper(self, blocks):
+        beige = "#F5F5DC"
+        rect = self.get_block(blocks, color=beige, buff=0.5, height=4)[0]
+        wrapped_arrow = self.get_wrapped_arrow(rect)
+        multiple = Tex(R"\times 96")
+        multiple.next_to(wrapped_arrow, UP)
+
+        arrows = VGroup()
+        for b1, b2 in zip(blocks, blocks[1:]):
+            arrows.add(Arrow(b1[0], b2[0], buff=0.1))
+
+        return VGroup(rect, arrows, wrapped_arrow, multiple)
+
+    def get_block(
+        self, content,
+        upper_label="",
+        lower_label="",
+        upper_font_size=42,
+        lower_font_size=36,
+        buff=0.25,
+        height=2,
+        color=BLUE,
+        stroke_width=3,
+        fill_opacity=0.2
+    ):
+        block = SurroundingRectangle(content, buff=buff)
+        block.set_height(height, stretch=True)
+        block.round_corners(radius=0.25)
+        block.set_stroke(color, 3)
+        block.set_fill(color, fill_opacity)
+
+        low_label = Text(lower_label, font_size=lower_font_size)
+        low_label.next_to(block, DOWN, MED_SMALL_BUFF)
+        top_label = Text(upper_label, font_size=upper_font_size)
+        top_label.next_to(block, UP, MED_SMALL_BUFF)
+
+        return VGroup(block, content, low_label, top_label)
+
+    def get_wrapped_arrow(self, big_block, buff=0.75, color=GREY_B, stroke_width=4):
+        vertices = [
+            big_block.get_corner(RIGHT),
+            big_block.get_corner(RIGHT) + buff * RIGHT,
+            big_block.get_corner(UR) + buff * UR,
+            big_block.get_corner(UL) + buff * UL,
+            big_block.get_corner(LEFT) + buff * LEFT,
+            big_block.get_corner(LEFT),
+        ]
+        line = Polygon(*vertices)
+        line.round_corners()
+        line.set_points(line.get_points()[:-2, :])
+        line.set_stroke(color, stroke_width)
+        tip = ArrowTip().move_to(line.get_end(), RIGHT)
+        tip.set_color(color)
+        line.add(tip)
+        return line
 
 
 class AlmostOrthogonal(InteractiveScene):

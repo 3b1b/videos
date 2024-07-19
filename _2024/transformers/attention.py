@@ -1,4 +1,3 @@
-from sqlalchemy.sql.base import _DialectArgDict
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 from _2024.transformers.embedding import break_into_words
@@ -3389,7 +3388,7 @@ class ManyTypesOfUpdates(InteractiveScene):
         self.add(matrices, titles)
 
         # Add phrase
-        phrase = Text("John hit the breaks sharply, they screeched loudly, and he jolted forward.")
+        phrase = Text("John hit the brakes sharply, they screeched loudly, and he jolted forward.")
         raw_words = break_into_words(phrase)
         rects = get_piece_rectangles(raw_words)
         rects.fade(0.5)
@@ -3491,7 +3490,6 @@ class ManyTypesOfUpdates(InteractiveScene):
             self.wait(2)
             # last_group = VGroup(desc, connections)
             last_group = VGroup(connections)
-
 
     def get_matrix_update_anim(self, matrix):
         rects = VGroup(

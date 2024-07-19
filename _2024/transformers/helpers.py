@@ -242,9 +242,10 @@ def data_flying_animation(
     vect=2 * DOWN + RIGHT,
     color=GREY_C,
     max_opacity=0.75,
+    font_size=48,
     fix_in_frame=False
     ):
-    word = Text("Data", color=color)
+    word = Text("Data", color=color, font_size=font_size)
     if fix_in_frame:
         word.fix_in_frame()
     return UpdateFromAlphaFunc(
@@ -260,7 +261,8 @@ def get_data_modifying_matrix_anims(
     alpha_maxes=(0.7, 0.9),
     shift_vect=2 * DOWN + RIGHT,
     run_time=3,
-    fix_in_frame=False
+    fix_in_frame=False,
+    font_size=48,
 ):
     x_min, x_max = [matrix.get_x(LEFT), matrix.get_x(RIGHT)]
     y_min, y_max = [matrix.get_y(UP), matrix.get_y(DOWN)]
@@ -276,7 +278,7 @@ def get_data_modifying_matrix_anims(
     ])
     return [
         LaggedStart(
-            (data_flying_animation(p, vect=shift_vect, fix_in_frame=fix_in_frame)
+            (data_flying_animation(p, vect=shift_vect, fix_in_frame=fix_in_frame, font_size=font_size)
             for p in points),
             lag_ratio=1 / len(points),
             run_time=run_time

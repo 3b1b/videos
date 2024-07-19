@@ -1,5 +1,7 @@
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
+from _2024.transformers.embedding import *
+from _2024.transformers.generation import *
 
 
 class DialTest(InteractiveScene):
@@ -2363,3 +2365,50 @@ class SoftmaxBreakdown(InteractiveScene):
                 Write(rects, stroke_width=5, stroke_color=rects[0].get_stroke_color(), lag_ratio=0.3, run_time=3),
             )
             self.wait()
+
+
+class CostFunction(InteractiveScene):
+    def construct(self):
+        # Add graph
+        axes = Axes((0, 1, 0.1), (0, 5, 1), width=10, height=6)
+        axes.center().to_edge(LEFT)
+        axes.x_axis.add_numbers(num_decimal_places=1)
+        axes.y_axis.add_numbers(num_decimal_places=0, direction=LEFT)
+        x_label = Tex("p")
+        x_label.next_to(axes.x_axis.get_right(), UR)
+        axes.add(x_label)
+
+        graph = axes.get_graph(lambda x: -np.log(x), x_range=(0.001, 10, 0.01))
+        graph.set_color(RED)
+
+        expr = Tex(R"\text{Cost} = -\log(p)", font_size=60)
+        expr.next_to(axes.i2gp(0.2, graph), UR, buff=0.1)
+
+        self.add(axes, graph, expr)
+
+        # Add sample phrase
+        phrase = Text("TNG Technology Consulting is a leading")
+        phrase.to_edge(UP)
+        pieces = break_into_tokens(phrase)
+        pieces[-1].set_opacity(0.5)
+        rects = get_piece_rectangles(pieces, leading_spaces=True, h_buff=0)
+
+        self.add(rects, pieces)
+
+        # Add predictions
+        arrow = Vector(0.5 * DOWN)
+        arrow.next_to(rects[-1], DOWN, SMALL_BUFF)
+
+        tokens, probs = gpt3_predict_next_token(phrase.get_text()[:-len(" leading")])
+        bar_chart = next_token_bar_chart(
+            tokens[:8], probs[:8],
+            width_100p=10.0,
+            bar_space_factor=1.0,
+            use_percent=False,
+        )
+        bar_chart.next_to(arrow, DOWN)
+        bar_chart.set_opacity(0.5)
+        bar_chart[4].set_opacity(1.0)
+        rect = SurroundingRectangle(bar_chart[4])
+
+        self.add(arrow, bar_chart, rect)

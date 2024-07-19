@@ -67,6 +67,48 @@ def clean_text(text):
     return " ".join(filter(lambda s: s.strip(), re.split(r"\s", text)))
 
 
+def next_token_bar_chart(
+    words, probs,
+    reference_point=ORIGIN,
+    font_size=24,
+    width_100p=1.0,
+    prob_exp=0.75,
+    bar_height=0.25,
+    bar_space_factor=0.5,
+    buff=1.2,
+    show_ellipses=True,
+    use_percent=True,
+):
+    labels = VGroup(Text(word, font_size=font_size) for word in words)
+    bars = VGroup(
+        Rectangle(prob**(prob_exp) * width_100p, bar_height)
+        for prob, label in zip(probs, labels)
+    )
+    bars.arrange(DOWN, aligned_edge=LEFT, buff=bar_space_factor * bar_height)
+    bars.set_fill(opacity=1)
+    bars.set_submobject_colors_by_gradient(TEAL, YELLOW)
+    bars.set_stroke(WHITE, 1)
+
+    bar_groups = VGroup()
+    for label, bar, prob in zip(labels, bars, probs):
+        if use_percent:
+            prob_label = Integer(int(100 * prob), unit="%", font_size=0.75 * font_size)
+        else:
+            prob_label = DecimalNumber(prob, font_size=0.75 * font_size)
+        prob_label.next_to(bar, RIGHT, buff=SMALL_BUFF)
+        label.next_to(bar, LEFT)
+        bar_groups.add(VGroup(label, bar, prob_label))
+
+    if show_ellipses:
+        ellipses = Tex(R"\vdots", font_size=font_size)
+        ellipses.next_to(bar_groups[-1][0], DOWN)
+        bar_groups.add(ellipses)
+
+    bar_groups.shift(reference_point - bars.get_left() + buff * RIGHT)
+
+    return bar_groups
+
+
 class SimpleAutogregression(InteractiveScene):
     text_corner = 3.5 * UP + 6.75 * LEFT
     line_len = 29
@@ -178,31 +220,16 @@ class SimpleAutogregression(InteractiveScene):
         buff=1.2,
         show_ellipses=True
     ):
-        labels = VGroup(Text(word, font_size=font_size) for word in words)
-        bars = VGroup(
-            Rectangle(prob**(prob_exp) * width_100p, bar_height)
-            for prob, label in zip(probs, labels)
+        return next_token_bar_chart(
+            words, probs,
+            reference_point=reference_point,
+            font_size=font_size,
+            width_100p=width_100p,
+            prob_exp=prob_exp,
+            bar_height=bar_height,
+            buff=buff,
+            show_ellipses=show_ellipses,
         )
-        bars.arrange(DOWN, aligned_edge=LEFT, buff=0.5 * bar_height)
-        bars.set_fill(opacity=1)
-        bars.set_submobject_colors_by_gradient(TEAL, YELLOW)
-        bars.set_stroke(WHITE, 1)
-
-        bar_groups = VGroup()
-        for label, bar, prob in zip(labels, bars, probs):
-            prob_label = Integer(int(100 * prob), unit="%", font_size=0.75 * font_size)
-            prob_label.next_to(bar, RIGHT, buff=SMALL_BUFF)
-            label.next_to(bar, LEFT)
-            bar_groups.add(VGroup(label, bar, prob_label))
-
-        if show_ellipses:
-            ellipses = Tex(R"\vdots", font_size=font_size)
-            ellipses.next_to(bar_groups[-1][0], DOWN)
-            bar_groups.add(ellipses)
-
-        bar_groups.shift(reference_point - bars.get_left() + buff * RIGHT)
-
-        return bar_groups
 
     def animate_text_input(self, text_mob, machine):
         blocks = machine[0]
@@ -572,7 +599,7 @@ class ChatBotPrompt(SimpleAutogregression):
         text_mob, next_word_line, machine = self.init_text_and_machine()
 
         all_strs = list(map(clean_text, [self.system_prompt, self.user_prompt, self.ai_seed]))
-        
+
         system_prompt, user_prompt, ai_seed = all_text = VGroup(
             get_paragraph(
                 s.split(" "),
@@ -592,7 +619,6 @@ class ChatBotPrompt(SimpleAutogregression):
 
         self.cur_str = "\n\n".join(all_strs)
 
-
         # Comment on system prompt
         sys_rect = SurroundingRectangle(system_prompt)
         sys_rect.set_stroke(GREEN, 2)
@@ -605,6 +631,7 @@ class ChatBotPrompt(SimpleAutogregression):
 
         # Users prompt
         from manimlib.mobject.boolean_ops import Union
+
         top_line = user_prompt["Give me some ideas for what"]
         low_line = user_prompt["to do when visiting Santiago."]
         user_rect = Union(
@@ -642,6 +669,10 @@ class ChatBotPrompt(SimpleAutogregression):
 
 class ChatBotPrompt2(ChatBotPrompt):
     user_prompt = "User: Can you explain what temperature is, in the context of softmax?"
+
+
+class ChatBotPrompt3(ChatBotPrompt):
+    user_prompt = "User: Can you give me some ideas for what to do while visiting Munich?"
 
 
 class VoiceToTextExample(SimpleAutogregression):

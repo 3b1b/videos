@@ -1341,6 +1341,22 @@ class PatreonEndScreen(EndScreen):
 
 # MLP Chapter
 
+
+class HowAndWhere(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.remove(self.background)
+        self.play(
+            self.students[1].says("How?", mode="raise_left_hand", look_at=self.screen),
+            self.teacher.change("tease"),
+            self.students[2].change("pondering", look_at=self.screen),
+        )
+        self.play(
+            self.students[0].says("Where?", mode="maybe", look_at=self.screen),
+        )
+        self.wait(3)
+
+
 class IntroducingMLPs(TeacherStudentsScene):
     def construct(self):
         # Look at screen
@@ -1382,6 +1398,57 @@ class IntroducingMLPs(TeacherStudentsScene):
         self.wait(5)
 
 
+class ReferenceFactStorage(TeacherStudentsScene):
+    def construct(self):
+        # Look at screen
+        morty = self.teacher
+        screen = self.screen
+        self.play(
+            morty.change("raise_right_hand", screen),
+            self.change_students("pondering", "confused", "pondering", look_at=screen),
+        )
+        self.wait(4)
+
+        # Hold up words
+        words = Text("Store a fact", font_size=72)
+        words.next_to(morty, UP, LARGE_BUFF).shift_onto_screen()
+
+        self.play(
+            morty.change("raise_left_hand"),
+            FadeIn(words, UP),
+            self.change_students("erm", "maybe", "sassy", look_at=morty.eyes),
+        )
+        self.look_at(self.screen)
+        self.wait(3)
+        self.play(morty.change("tease"))
+        self.wait(2)
+
+        # Relax
+        self.play(
+            FadeOut(words, DOWN),
+            self.change_students("pondering", "tease", "happy", look_at=self.screen),
+        )
+        self.wait(3)
+
+
+class LookingAtPreview(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        bubble = ThoughtBubble(filler_shape=(5, 2.5))
+        bubble.flip()
+        bubble.pin_to(self.students[2])
+        bubble.to_edge(LEFT)
+        self.play(
+            self.teacher.change("raise_right_hand"),
+            self.change_students("pondering", "confused", "pondering", look_at=bubble),
+        )
+        self.play(FadeIn(bubble, lag_ratio=0.1))
+        self.play(self.teacher.change("tease"))
+        self.wait(2)
+        self.play(self.change_students("erm", "pondering", "thinking", look_at=bubble))
+        self.wait(3)
+
+
 class EmbeddingLabel(InteractiveScene):
     def construct(self):
         # Background
@@ -1400,10 +1467,10 @@ class EmbeddingLabel(InteractiveScene):
         length.next_to(brace, LEFT, buff=0.5).shift(0.25 * UP)
         numbers_label = Text("Numbers")
         numbers_label.next_to(length, DOWN)
-        gpt3_label = Text("Length in\nGPT-3")
-        gpt3_label.next_to(length, UL, buff=1.0).shift(1.5 * RIGHT)
+        gpt3_label = Text("(Length in GPT-3)", font_size=24)
+        gpt3_label.next_to(length, UP, buff=1.0),
         gpt3_label.set_color(YELLOW)
-        arrow = Arrow(gpt3_label.get_bottom(), length.get_corner(UL), buff=0.1)
+        arrow = Arrow(gpt3_label.get_bottom(), length.get_top(), buff=0.1)
 
         self.play(
             GrowFromCenter(brace),
@@ -1412,11 +1479,274 @@ class EmbeddingLabel(InteractiveScene):
         self.wait()
         self.play(
             FadeTransform(name, numbers_label),
-            CountInFrom(length, 0, run_time=2),
+            CountInFrom(length, 0, run_time=1.5),
         )
         self.play(
             FadeIn(gpt3_label, lag_ratio=0.1),
             GrowFromCenter(arrow),
         )
+        self.wait(1.5)
+
+
+class ThatWhichDoesntKillHeader(InteractiveScene):
+    def construct(self):
+        # Test
+        words = Text("That which does not kill you only makes you")
+        words.to_edge(UP)
+        rect = SurroundingRectangle(words["you"][-1], buff=0.1)
+        rect.set_stroke(BLUE, 3)
+        rect.set_fill(BLUE, 0.5)
+        arrow = Arrow(rect.get_bottom(), rect.get_bottom() + 2 * DL)
+        arrow.match_color(rect)
+
+        brace = Brace(rect, DOWN, buff=0.1)
+
+        self.add(rect, words, brace)
+
+
+class QuickAttentionDescription(InteractiveScene):
+    def construct(self):
+        # To be added standing on an Attention block
+        morty = Mortimer(height=2)
+        morty.move_to(DOWN + LEFT)
+        morty.flip()
+        self.play(morty.says("Incorporate context", look_at=4 * DOWN))
+        for x in range(2):
+            self.play(Blink(morty))
+            self.wait(2)
+
+
+class QuickMLPDescription(InteractiveScene):
+    def construct(self):
+        # To be added standing on an MLP block
+        morty = Mortimer(height=2, color=GREY_C)
+        morty.move_to(DOWN + RIGHT)
+        self.play(morty.says("More\ncomputation", mode="maybe", look_at=4 * DOWN))
+        for x in range(2):
+            self.play(Blink(morty))
+            self.wait(2)
+
+
+class ContrastBetweenSimpleComputationDifficultInterpretation(InteractiveScene):
+    def construct(self):
+        morty = Mortimer(height=2).to_edge(DOWN, buff=1.0)
+        morty.body.insert_n_curves(100)
+        items = VGroup(
+            VGroup(Text("Computation"), Checkmark().set_height(0.5).set_color(GREEN)),
+            VGroup(Text("Interpretation"), SVGMobject("warning").set_color(RED).set_height(0.5)),
+        )
+        for item, vect in zip(items, [LEFT, RIGHT]):
+            item.scale(0.75)
+            item.arrange(RIGHT)
+            item.next_to(morty, UP + vect, buff=0.5)
+            item.shift(-1.0 * vect * RIGHT)
+
+
+        self.play(
+            morty.change("raise_right_hand", items[0]),
+            FadeIn(items[0], UP)
+        )
+        self.play(Blink(morty))
+        self.wait()
+        self.play(
+            morty.change("raise_left_hand", items[1]),
+            FadeIn(items[1], UP),
+            items[0].animate.fade(0.5),
+        )
+        self.play(Blink(morty))
         self.wait()
 
+
+class AmbientChangingDots(InteractiveScene):
+    def construct(self):
+        # Test
+        dots = Dot().get_grid(20, 30)
+        dots.set_height(8)
+        dots.set_fill(opacity=0.5)
+        dots.phases = np.random.uniform(0, TAU, len(dots))
+        dots.freqs = np.random.uniform(0.3, 0.8, len(dots))
+
+        def update_dots(dots):
+            for dot, phase, freq in zip(dots, dots.phases, dots.freqs):
+                dot.set_fill(opacity=np.cos(phase + freq * self.time)**2)
+            return dots
+
+        dots.add_updater(update_dots)
+        self.add(dots)
+        self.wait(30)
+
+
+class MakeSomeAssumptions(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.teacher.says("We need a\nfew assumptions"),
+            self.change_students("pondering", "sassy", "tease", look_at=self.screen)
+        )
+        self.play(self.teacher.change("raise_right_hand"))
+        self.wait(6)
+
+
+class WhatAboutBiggerThanOne(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.screen.set_x(0)
+        self.play(
+            self.students[0].change("pondering", self.screen),
+            self.students[1].says("And if it's\nbigger than 1?", mode="sassy", bubble_direction=RIGHT),
+            self.students[2].change("erm", self.screen),
+            self.teacher.change("guilty"),
+        )
+        self.wait(2)
+        self.play(
+            # self.teacher.says("Don't worry\nabout it", mode="maybe")
+            self.teacher.change("maybe")
+        )
+        self.play(
+            self.change_students("hesitant", "sassy", "angry")
+        )
+        self.wait(3)
+
+
+class HighlightRect(InteractiveScene):
+    def construct(self):
+        rect = Rectangle(1, 3)
+        rect.scale(0.5)
+        rect.set_stroke(MAROON_B, 3)
+        self.play(ShowCreation(rect))
+        self.wait()
+
+
+class AskWhy(TeacherStudentsScene):
+    def construct(self):
+        self.remove(self.background)
+
+        # Test
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+        self.play(
+            self.teacher.change("guilty"),
+            self.students[2].says(Text("Um, Why?", font_size=72), mode="maybe", look_at=self.screen),
+            self.students[0].change("confused", self.screen),
+            self.students[1].change("erm", self.screen),
+        )
+        self.wait()
+        self.play(self.teacher.change("tease"))
+        self.wait(2)
+
+
+class GPT3Logo(InteractiveScene):
+    def construct(self):
+        # Test
+        gpt3_label = Text("GPT-3", font="Consolas", font_size=72)
+        openai_logo = SVGMobject("OpenAI.svg")
+        openai_logo.set_fill(WHITE)
+        openai_logo.set_height(2.0 * gpt3_label.get_height())
+        title = VGroup(openai_logo, gpt3_label)
+        title.arrange(RIGHT)
+        title.to_edge(UP)
+
+        self.play(
+            FadeIn(gpt3_label, lag_ratio=0.1),
+            Write(openai_logo, stroke_color=BLUE, stroke_width=0.5),
+        )
+        self.wait()
+
+
+class AndGate(InteractiveScene):
+    def construct(self):
+        # Test
+        gate = SVGMobject("and_gate")
+        gate.set_fill(WHITE).set_stroke(width=0)
+        name = Text("AND\nGate", font_size=96, alignment="LEFT")
+        name.next_to(gate, RIGHT, LARGE_BUFF)
+        self.play(
+            Write(gate),
+            FadeIn(name, lag_ratio=0.1, time_span=(0, 2)),
+            run_time=3
+        )
+        self.wait()
+
+
+class MJFactsAsVectorSum(InteractiveScene):
+    def construct(self):
+        # Test
+        facts = VGroup(
+            Tex(Rf"\overrightarrow{{\text{{{fact}}}}}")
+            for fact in [
+                "Basketball",
+                "Chicago Bulls",
+                "Number 23",
+                "Born 1963",
+            ]
+        )
+        facts.add(Tex(R"\vdots"))
+        facts.arrange(DOWN, buff=0.75)
+        colors = ["#F88158", "#CE1141", YELLOW, GREY, WHITE]
+        for fact, color in zip(facts, colors):
+            fact.set_color(color)
+
+        plusses = Tex(R"+").replicate(len(facts) - 1)
+        for f1, f2, plus in zip(facts, facts[1:], plusses):
+            plus.move_to(midpoint(f1.get_bottom(), f2.get_top()))
+
+        self.add(facts[0])
+        for fact, plus in zip(facts[1:], plusses):
+            self.play(
+                FadeIn(fact, shift=0.5 * DOWN),
+                Write(plus),
+                run_time=1,
+            )
+            self.wait()
+
+
+class AskAboutBias(TeacherStudentsScene):
+    def construct(self):
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+        self.play(
+            self.students[0].change("erm", look_at=self.screen),
+            self.students[1].change("confused", look_at=self.screen),
+            self.students[2].says("What's that\nbias doing?", look_at=self.screen, bubble_direction=LEFT),
+        )
+        self.play(
+            self.teacher.change("maybe")
+        )
+        self.wait(4)
+        self.play(
+            self.change_students("sassy", "maybe", "pondering", look_at=self.screen)
+        )
+        self.wait(4)
+
+
+class ThatsIt(TeacherStudentsScene):
+    def construct(self):
+        for pi in self.pi_creatures:
+            pi.body.insert_n_curves(100)
+        self.play(
+            self.teacher.says("That's it!", mode="hooray", look_at=self.students),
+            self.change_students("happy", "thinking", "well", look_at=self.screen)
+        )
+        self.wait()
+        self.play(self.teacher.debubble(mode="raise_right_hand", look_at=self.screen))
+        self.wait()
+        self.play(
+            self.change_students("thinking", "tease", "happy", look_at=self.screen)
+        )
+        self.wait(3)
+
+
+class AddTwoMatrixSizes(InteractiveScene):
+    def construct(self):
+        # Test
+        rect = Rectangle(3.0, 1.0)
+        rect.set_stroke(BLUE, 3)
+        total = Integer(2 * 4 * (12288**2))
+        total.set_color(BLUE)
+        total.next_to(rect, UP)
+
+        self.play(
+            ShowCreation(rect),
+            Write(total)
+        )
+        self.wait()
