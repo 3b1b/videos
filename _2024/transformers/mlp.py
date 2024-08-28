@@ -2018,7 +2018,7 @@ class Superposition(InteractiveScene):
         new_cond = task2[conditions[1]]
         new_cond.align_to(ninety_part, LEFT)
 
-        pairs = VGroup(self.get_vector_pair(89), self.get_vector_pair(91))
+        pairs = VGroup(get_vector_pair(89), get_vector_pair(91))
         pairs.arrange(RIGHT)
         pairs.to_corner(UL)
 
@@ -2096,6 +2096,7 @@ class Superposition(InteractiveScene):
         vectors.set_flat_stroke(True)
         vectors.rotate(30 * DEGREES, UR)
         for vector in vectors:
+            vector.always.set_perpendicular_to_camera(self.frame)
             vector.set_color(random_bright_color(hue_range=(0.5, 0.7)))
         vectors.move_to(bubble)
 
@@ -2129,19 +2130,6 @@ class Superposition(InteractiveScene):
 
         bubble.add_updater(update_bubble)
         return bubble
-
-    def get_vector_pair(self, angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
-        angle = angle_in_degrees * DEGREES
-        v1 = Vector(length * RIGHT)
-        v2 = v1.copy().rotate(angle, about_point=ORIGIN)
-        v1.set_color(colors[0])
-        v2.set_color(colors[1])
-        arc = Arc(radius=0.2, angle=angle)
-        arc.set_stroke(WHITE, 2)
-        label = Tex(Rf"{angle_in_degrees}^\circ", font_size=24)
-        label.next_to(arc.pfp(0.5), normalize(arc.pfp(0.5)), buff=SMALL_BUFF)
-
-        return VGroup(v1, v2, arc, label)
 
 
 class StackOfVectors(InteractiveScene):

@@ -1750,3 +1750,79 @@ class AddTwoMatrixSizes(InteractiveScene):
             Write(total)
         )
         self.wait()
+
+
+class ReflectOnTwoThings(TeacherStudentsScene):
+    def construct(self):
+        # Initial reactions
+        morty = self.teacher
+        screen = self.screen
+        stds = self.students
+
+        morty.change_mode("raise_right_hand").look_at(self.screen)
+        for std in stds:
+            std.change_mode("happy")
+        self.play(
+            self.change_students("pondering", "thinking", "happy", look_at=screen)
+        )
+        self.wait(2)
+
+        # Reflection points
+        points = VGroup(
+            Text("Two points of reflection"),
+            Text("1."),
+            Text("2."),
+        )
+
+        points[0].add(Underline(points[0], buff=-0.05))
+        points[0].scale(1.25)
+        points[0].set_color(YELLOW)
+
+        dials = VGroup(Dial(initial_value=random.random()) for n in range(10))
+        dials.set_height(0.5)
+        dials.arrange(RIGHT)
+        dials.set_flat_stroke(True)
+        dials[-2].become(Tex(R"\dots").replace(dials[-2], dim_to_match=0))
+        dials.next_to(points[1], RIGHT)
+        points[1].add(dials)
+
+        dodec = Dodecahedron()
+        vectors = VGroup()
+        for face in dodec:
+            for vert in face.get_anchors():
+                if not any([np.isclose(vert, v.get_end()).all() for v in vectors]):
+                    vect = Vector(vert)
+                    vect.set_color(random_bright_color(hue_range=(0.5, 0.7)))
+                    vect.always.set_perpendicular_to_camera(self.frame)
+                    vectors.add(vect)
+        vectors.rotate(25 * DEGREES, axis=UR)
+        vectors.set_height(1.5)
+        vectors.next_to(points[2], RIGHT, buff=LARGE_BUFF)
+        points[2].add(vectors)
+
+        points.arrange(DOWN, aligned_edge=LEFT, buff=0.5)
+        points.to_edge(UP)
+        points[1:].shift(MED_SMALL_BUFF * RIGHT + 0.5 * DOWN)
+
+        self.play(
+            morty.change("tease", points[0]),
+            self.change_students("erm", "plain", "hesitant", look_at=points[0]),
+            Write(points[0], stroke_color=YELLOW_B),
+        )
+        self.wait(2)
+        self.play(
+            Write(points[1][:2]),
+            LaggedStartMap(FadeIn, dials, lag_ratio=0.25),
+            self.change_students("tease", "plain", "erm", look_at=points[1]),
+            morty.change("raise_right_hand", points[1]),
+        )
+        self.wait(2)
+
+        # Show vector clump
+        self.play(
+            VFadeIn(points[2]),
+            Rotate(vectors, PI, axis=UP, run_time=8),
+            self.change_students("confused", "hesitant", "erm", look_at=points[2]),
+            morty.change("surprised", points[2]),
+        )
+        self.wait(3)

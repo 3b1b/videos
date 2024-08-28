@@ -6,10 +6,11 @@ from tqdm import tqdm
 # more vectors than there are dimensions
 num_vectors = 10000
 vector_len = 100
-big_id = torch.eye(num_vectors, num_vectors)
 big_matrix = torch.randn(num_vectors, vector_len)
 big_matrix /= big_matrix.norm(p=2, dim=1, keepdim=True)  # Normalize
 big_matrix.requires_grad_(True)
+
+big_id = torch.eye(num_vectors, num_vectors)
 
 # Set up an ptimization loop to create nearly-perpendicular vectors
 optimizer = torch.optim.Adam([big_matrix], lr=0.01)

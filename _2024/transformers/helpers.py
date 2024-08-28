@@ -310,6 +310,20 @@ def create_pixels(image_mob, pixel_width=0.1):
     return pixels
 
 
+def get_vector_pair(angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
+    angle = angle_in_degrees * DEGREES
+    v1 = Vector(length * RIGHT)
+    v2 = v1.copy().rotate(angle, about_point=ORIGIN)
+    v1.set_color(colors[0])
+    v2.set_color(colors[1])
+    arc = Arc(radius=0.2, angle=angle)
+    arc.set_stroke(WHITE, 2)
+    label = Tex(Rf"{angle_in_degrees}^\circ", font_size=24)
+    label.next_to(arc.pfp(0.5), normalize(arc.pfp(0.5)), buff=SMALL_BUFF)
+
+    return VGroup(v1, v2, arc, label)
+
+
 class NeuralNetwork(VGroup):
     def __init__(
         self,
