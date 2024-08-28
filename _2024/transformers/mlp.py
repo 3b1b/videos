@@ -402,7 +402,7 @@ class BasicMLPWalkThrough(InteractiveScene):
         block = VCube(fill_color=GREY_D, fill_opacity=0.5)
         block.sort(lambda p: p[2])
         block[-1].set_fill(opacity=0)
-        block.set_stroke(GREY_B, 2, 0.25, background=False)
+        block.set_stroke(GREY_B, 2, 0.25, behind=False)
         block.set_shading(0.25, 0.25, 0.5)
         block.set_shape(11, 4, 4)
         block.move_to(0.5 * IN, IN)
@@ -528,6 +528,7 @@ class BasicMLPWalkThrough(InteractiveScene):
             run_time=3,
         )
         self.play(frame.animate.reorient(9, -15, 0, (0.55, -2.21, 0.18), 7.05), run_time=4)
+        self.play(frame.animate.reorient(-24, -16, 0, (0.18, -2.13, 0.09), 7.63), run_time=12)
         block_title.next_to(block, UP)
         self.play(
             frame.animate.to_default_state(),
@@ -818,10 +819,10 @@ class BasicMLPWalkThrough(InteractiveScene):
         questions = VGroup(*map(Text, [
             "Blah",
             "Is it English?",
-            "Part of sourcecode?",
+            "Part of source code?",
             "European country?",
             "In quotation marks?",
-            "Something metalic?",
+            "Something metallic?",
             "A four-legged animal?",
         ]))
         questions.scale(0.75)
@@ -1313,7 +1314,8 @@ class BasicMLPWalkThrough(InteractiveScene):
         self.wait()
         self.play(
             ChangeDecimalToValue(entry, 0),
-            ReplacementTransform(active, inactive)
+            ReplacementTransform(active, inactive[2:]),
+            GrowFromCenter(inactive[:2]),
         )
         active_words.add(inactive)
         self.wait()
@@ -1919,7 +1921,259 @@ class NonlinearityOfLanguage(InteractiveScene):
         self.wait()
 
 
-# Show classic neural net picture
+class Superposition(InteractiveScene):
+    def construct(self):
+        # Add undulating bubble to encompass N-dimensional space
+        frame = self.frame
+        bubble = self.undulating_bubble()
+        bubble_label = TexText(R"$N$-dimensional\\ Space")
+        bubble_label.set_height(1)
+        bubble_label["$N$"].set_color(YELLOW)
+        bubble_label.next_to(bubble, LEFT)
+
+        self.add(bubble)
+        self.add(bubble_label)
+
+        # Preview some ideas
+        ideas = VGroup(Text("Latin"), Text("Microphone"), Text("Basketball"), Text("The 1920s"))
+        ideas.scale(0.75)
+        vectors = VGroup()
+        idea_vects = VGroup()
+        vect = DOWN
+        colors = [PINK, GREEN, ORANGE, BLUE]
+        for idea, color in zip(ideas, colors):
+            vect = rotate_vector(vect, 80 * DEGREES)
+            vector = Vector(1.25 * normalize(vect))
+            idea.next_to(vector.get_end(), vector.get_vector(), buff=SMALL_BUFF)
+            idea_vect = VGroup(vector, idea)
+            idea_vect.set_color(color)
+            idea_vect.shift(bubble.get_center())
+            idea_vects.add(idea_vect)
+
+        frame.save_state()
+        frame.scale(0.75)
+        frame.move_to(VGroup(bubble, bubble_label))
+        self.play(
+            Restore(frame, run_time=7),
+            LaggedStartMap(VFadeInThenOut, idea_vects, lag_ratio=0.5, run_time=5)
+        )
+
+        # Written conditions and answer
+        conditions = [
+            R"$90^\circ$ apart",
+            R"between $89^\circ$ and $91^\circ$ apart"
+        ]
+        task1, task2 = tasks = VGroup(
+            TexText(Rf"Choose multiple vectors,\\ each pair {phrase}", font_size=42, alignment="")
+            for phrase in conditions
+        )
+        task1[R"90^\circ"].set_color(RED)
+        task2[R"$89^\circ$ and $91^\circ$"].set_color(BLUE)
+        task1.center().to_edge(UP)
+        task2.move_to(task1, UL)
+
+        maximum1, maximum2 = maxima = VGroup(
+            TexText(fR"Maximum \# of vectors: {answer}", font_size=42)
+            for answer in ["$N$", R"$\approx \exp(\epsilon \cdot N)$"]
+        )
+        for maximum in maxima:
+            maximum.next_to(tasks, DOWN, buff=LARGE_BUFF, aligned_edge=LEFT)
+        maximum1["N"].set_color(YELLOW)
+        maximum2["N"].set_color(YELLOW)
+
+        # Add 3 vectors such that each pair is 90-degrees
+        perp_vectors = VGroup(*map(Vector, [RIGHT, UP, OUT]))
+        perp_vectors.set_shading(0.25, 0.25, 0.25)
+        perp_vectors.set_submobject_colors_by_gradient(RED, GREEN, BLUE)
+        elbows = VGroup(
+            Elbow(width=0.1).rotate(angle, axis, about_point=ORIGIN).set_stroke(WHITE, 2)
+            for angle, axis in [(0, UP), (-PI / 2, UP), (PI / 2, RIGHT)]
+        )
+        elbows.set_stroke(GREY_A, 2)
+
+        perp_group = VGroup(perp_vectors, elbows)
+        perp_group.rotate(-10 * DEGREES, UP)
+        perp_group.rotate(20 * DEGREES, RIGHT)
+        perp_group.scale(2)
+        perp_group.move_to(bubble)
+
+        self.play(
+            FadeIn(task1),
+            LaggedStartMap(GrowArrow, perp_vectors[:2], lag_ratio=0.5)
+        )
+        self.play(ShowCreation(elbows[0]))
+        self.play(
+            GrowArrow(perp_vectors[2]),
+            LaggedStartMap(ShowCreation, elbows[1:3], lag_ratio=0.5),
+        )
+        self.play(
+            Rotate(perp_group, -50 * DEGREES, axis=perp_vectors[1].get_vector(), run_time=15),
+            Write(maximum1, time_span=(2, 4)),
+        )
+
+        # Relax the assumption
+        ninety_part = task1[conditions[0]]
+        cross = Cross(ninety_part)
+        crossed_part = VGroup(ninety_part, cross)
+        new_cond = task2[conditions[1]]
+        new_cond.align_to(ninety_part, LEFT)
+
+        pairs = VGroup(self.get_vector_pair(89), self.get_vector_pair(91))
+        pairs.arrange(RIGHT)
+        pairs.to_corner(UL)
+
+        self.play(
+            FadeOut(maximum1),
+            ShowCreation(cross),
+        )
+        self.play(
+            crossed_part.animate.shift(0.5 * DOWN).set_fill(opacity=0.5),
+            Write(new_cond),
+            LaggedStartMap(FadeIn, pairs, lag_ratio=0.25),
+        )
+        self.play(
+            Rotate(perp_group, 50 * DEGREES, axis=perp_vectors[1].get_vector(), run_time=10)
+        )
+
+        # Struggle with 3 vectors (Sub out the title)
+        three_d_label = TexText(R"3-dimensional\\ Space")
+        three_d_label["3"].set_color(BLUE)
+        three_d_label.move_to(bubble_label, UL)
+        bubble_label.save_state()
+
+        pv = perp_vectors
+        pv.save_state()
+        alt_vects = pv.copy()
+        origin = pv[0].get_start()
+        for vect in alt_vects:
+            vect.rotate(5 * DEGREES, axis=normalize(np.random.random(3)), about_point=origin)
+
+        new_vects = VGroup()
+        for (v1, v2) in it.combinations(pv, 2):
+            new_vects.add(Arrow(ORIGIN, v1.get_length() * normalize(v1.get_vector() + v2.get_vector()), buff=0).shift(origin))
+        new_vects.set_color(YELLOW)
+        new_vect = new_vects[0]
+
+        def shake(vect):
+            self.play(
+                vect.animate.rotate(5 * DEGREES, RIGHT, about_point=origin),
+                rate_func=lambda t: wiggle(t, 9)
+            )
+
+        self.play(
+            FadeIn(three_d_label, DOWN),
+            bubble_label.animate.to_edge(DOWN).set_opacity(0.5)
+        )
+        self.play(
+            GrowArrow(new_vect),
+            Transform(perp_vectors, alt_vects)
+        )
+        shake(new_vect)
+        self.play(
+            Restore(perp_vectors),
+            Transform(new_vect, new_vects[1])
+        )
+        shake(new_vect)
+        self.play(
+            Transform(perp_vectors, alt_vects),
+            Transform(new_vect, new_vects[2])
+        )
+        shake(new_vect)
+        self.wait()
+        self.play(
+            new_vect.animate.scale(0, about_point=origin),
+            ApplyMethod(perp_group.scale, 0, dict(about_point=origin), lag_ratio=0.25),
+            Restore(bubble_label),
+            FadeOut(three_d_label, UP),
+            run_time=2
+        )
+        self.remove(new_vect, perp_group)
+
+        # Stack on many vectors
+        dodec = Dodecahedron()
+        vertices = [face.get_center() for face in dodec]
+        vectors = VGroup(Vector(vert) for vert in vertices)
+        vectors.set_flat_stroke(True)
+        vectors.rotate(30 * DEGREES, UR)
+        for vector in vectors:
+            vector.set_color(random_bright_color(hue_range=(0.5, 0.7)))
+        vectors.move_to(bubble)
+
+        self.play(
+            FadeOut(crossed_part),
+            Write(maximum2),
+            Rotating(vectors, TAU, axis=UP, run_time=20),
+            LaggedStartMap(VFadeIn, vectors, lag_ratio=0.5, run_time=8)
+        )
+        self.wait()
+
+        # Somehow communicate exponential scaling
+
+    def undulating_bubble(self):
+        bubble = ThoughtBubble(filler_shape=(6, 3))[0][-1]
+        bubble.set_stroke(WHITE, 1)
+        bubble.set_fill(GREY)
+        bubble.set_shading(0.5, 0.5, 0)
+        bubble.to_edge(DOWN)
+
+        points = bubble.get_points().copy()
+        points -= np.mean(points, 0)
+
+        def update_bubble(bubble):
+            center = bubble.get_center()
+            angles = np.apply_along_axis(angle_of_vector, 1, points)
+            stretch_factors = 1.0 + 0.05 * np.sin(6 * angles + self.time)
+            bubble.set_points(points * stretch_factors[:, np.newaxis])
+            # bubble.move_to(center)
+            bubble.set_x(0).to_edge(DOWN)
+
+        bubble.add_updater(update_bubble)
+        return bubble
+
+    def get_vector_pair(self, angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
+        angle = angle_in_degrees * DEGREES
+        v1 = Vector(length * RIGHT)
+        v2 = v1.copy().rotate(angle, about_point=ORIGIN)
+        v1.set_color(colors[0])
+        v2.set_color(colors[1])
+        arc = Arc(radius=0.2, angle=angle)
+        arc.set_stroke(WHITE, 2)
+        label = Tex(Rf"{angle_in_degrees}^\circ", font_size=24)
+        label.next_to(arc.pfp(0.5), normalize(arc.pfp(0.5)), buff=SMALL_BUFF)
+
+        return VGroup(v1, v2, arc, label)
+
+
+class StackOfVectors(InteractiveScene):
+    def construct(self):
+        # Set up the big matrix
+        rows = VGroup(
+            NumericEmbedding(shape=(1, 9), ellipses_col=-5, value_range=(-1, 1))
+            for n in range(20)
+        )
+        rows.arrange(DOWN)
+        for row in rows:
+            row.brackets[0].align_to(rows, LEFT)
+            row.brackets[1].align_to(rows, RIGHT)
+        rows.set_height(6)
+        rows.to_edge(DOWN)
+        rows[-2].become(Tex(R"\vdots").replace(rows[-2], dim_to_match=1))
+        brackets = NumericEmbedding(shape=(20, 9)).brackets
+        brackets.set_height(rows.get_height() + MED_SMALL_BUFF)
+        brackets[0].next_to(rows, LEFT, SMALL_BUFF)
+        brackets[1].next_to(rows, RIGHT, SMALL_BUFF)
+
+        self.add(rows)
+        self.add(brackets)
+
+        # Label first vector
+        brace = Brace(rows[0], UP)
+        brace.get_text("100-dimensional vector")
+
+
+
+# Some old stubs
+
 
 class ClassicNeuralNetworksPicture(InteractiveScene):
     def construct(self):
@@ -2033,58 +2287,4 @@ class ShowBiasBakedIntoWeightMatrix(LastTwoChapters):
 
 class AlmostOrthogonal(InteractiveScene):
     def construct(self):
-        # From Stephens notebook
-        import torch  # Need to figure this out
-        import matplotlib.pyplot as plt
-        from tqdm import tqdm
-
-        # Big example
-        num_vectors = 10000
-        vector_len = 100
-
-        # Quick optimization loop
-        big_matrix = torch.randn(num_vectors, vector_len)
-        big_matrix /= big_matrix.norm(p=2, dim=1, keepdim=True)  # Normalize
-        big_matrix.requires_grad_(True)
-
-        optimizer = torch.optim.Adam([big_matrix], lr=0.01)
-        num_steps = 50
-
-        losses = []
-        big_id = torch.eye(num_vectors, num_vectors)
-
-        min_dot = 0.01
-
-        for step_num in tqdm(range(num_steps)):
-            optimizer.zero_grad()
-
-            dot_products = big_matrix @ big_matrix.T
-            # Punishment deveation from othogonal
-            diff = dot_products - big_id
-            loss = (diff.abs() - min_dot).relu().sum() + diff.pow(2).sum()
-            # loss = diff.pow(2).sum()
-
-            # Extra incentive to keep rows normlaized
-            loss += num_vectors * diff.diag().pow(2).sum()
-
-            loss.backward();
-            optimizer.step()  
-            losses.append(loss.item())
-
-        # Loss curve
-        plt.plot(losses); plt.grid(1); plt.show();
-
-        # Angle distribution
-        dot_products = big_matrix @ big_matrix.T
-        norms = torch.sqrt(torch.diag(dot_products))
-        normed_dot_products = dot_products / torch.outer(norms, norms)
-        angles_degrees = torch.rad2deg(torch.acos(normed_dot_products.detach()))
-        self_orthogonality_mask = ~(big_id.bool()) #use this to ignore self-orthogonality.
-        plt.hist(angles_degrees[self_orthogonality_mask].numpy().ravel(), bins=1000);
-        plt.grid(1);
-        plt.show()
-
-        # Look at angles
-        d_degree = 1
-        in_range = (90 - d_degree < angles_degrees) & (angles_degrees < 90 + d_degree)
-        in_range.sum() / (num_vectors**2 - num_vectors)
+        pass

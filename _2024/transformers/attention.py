@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 from _2024.transformers.embedding import break_into_words

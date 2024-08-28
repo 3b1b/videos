@@ -1549,7 +1549,7 @@ class SizeDirection(Word2VecScene):
                 ReplacementTransform(vect_groups[i].labels, vect_groups[i + 1].labels),
             )
             self.wait()
-        
+
 
 class PluralityDirection(Word2VecScene):
     def construct(self):
@@ -2722,7 +2722,12 @@ class MJSpace(SimpleSpaceExample):
         self.remove(arrs)
         self.add(vects)
         self.wait()
-        self.play(LaggedStartMap(Uncreate, vects))
+        self.play(LaggedStart(
+            (vect.animate.scale(0, about_point=vect.get_start())
+            for vect in vects),
+            lag_ratio=0.05,
+            remover=True
+        ))
 
         # Show three directions
         colors = [YELLOW, RED, "#F88158"]
@@ -2736,9 +2741,9 @@ class MJSpace(SimpleSpaceExample):
         vect_groups = VGroup()
         vects = VGroup()
         for coords, label, color, direction in zip(all_coords, labels, colors, label_directions):
-            vect = Vector(2.0 * coords, stroke_width=3)
+            vect = Vector(2.0 * coords)
             vect.set_color(color)
-            vect.set_flat_stroke(False)
+            vect.always.set_perpendicular_to_camera(self.frame)
             label.scale(0.5)
             label.rotate(PI / 2, RIGHT)
             label.set_color(color)
@@ -2747,7 +2752,6 @@ class MJSpace(SimpleSpaceExample):
             label.set_backstroke(BLACK, 4)
             vects.add(vect)
             vect_groups.add(VGroup(vect, label))
-
 
         orientations = [
             (17, 76, 0),
@@ -2769,7 +2773,8 @@ class MJSpace(SimpleSpaceExample):
 
         # Bring in "plucked out" vector
         emb_coords = 2.0 * all_coords[:2].sum(0)
-        emb = Vector(emb_coords, stroke_width=3)
+        emb = Vector(emb_coords)
+        emb.always.set_perpendicular_to_camera(self.frame)
         emb.set_flat_stroke(False)
         emb_label = Tex(R"\vec{\textbf{E}}", font_size=30)
         emb_label.rotate(89 * DEGREES, RIGHT)
@@ -2792,10 +2797,10 @@ class MJSpace(SimpleSpaceExample):
 
         def get_dot_product_lines(vect, proj_line_color=GREY_A):
             dashed_line = always_redraw(
-                lambda: DashedLine(emb.get_end(), get_proj_point(emb, vect), flat_stroke=False)
+                lambda: Line(emb.get_end(), get_proj_point(emb, vect)).set_stroke(WHITE, 2).set_anti_alias_width(10)
             )
             proj_line = always_redraw(
-                lambda: Line(ORIGIN, get_proj_point(emb, vect), flat_stroke=False).set_stroke(proj_line_color, width=4, opacity=0.75)
+                lambda: Line(ORIGIN, get_proj_point(emb, vect)).set_stroke(proj_line_color, width=4, opacity=0.75)
             )
             return dashed_line, proj_line
 
@@ -2934,9 +2939,11 @@ class MJSpace(SimpleSpaceExample):
 
         # Show sum of the first two names
         j_vect_copy, m_vect_copy = vect_copies = vects[:2].copy()
+        vect_copies.clear_updaters()
         vect_copies.set_stroke(opacity=0.5)
         j_vect_copy.shift(vects[1].get_vector())
         m_vect_copy.shift(vects[0].get_vector())
+        emb.put_start_and_end_on(axes.get_origin(), m_vect_copy.get_end())
 
         self.play(frame.animate.reorient(-6, 78, 0), run_time=2)
         self.play(LaggedStart(
@@ -2954,7 +2961,7 @@ class MJSpace(SimpleSpaceExample):
         self.play(
             frame.animate.reorient(-19, 77, 0, (1.32, -0.22, -0.12), 3.75),
             vect_groups[:2].animate.set_opacity(0.25),
-            vect_groups[2][0].animate.set_stroke(width=6, opacity=1.0),
+            vect_groups[2][0].animate.set_opacity(1.0),
             vect_groups[2][1].animate.set_opacity(1.0),
             run_time=2
         )

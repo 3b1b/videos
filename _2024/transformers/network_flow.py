@@ -1117,7 +1117,7 @@ class FlowForMLPIntroReview(SimplifiedFlow):
 
     def construct(self):
         # Initial flow
-        self.camera.light_source.set_z(60)
+        self.camera.light_source.set_z(20)
         self.show_initial_text_embedding(word_scale_factor=0.6)
         self.play(self.frame.animate.scale(1.25))
         self.show_simple_flow(self.x_range)
