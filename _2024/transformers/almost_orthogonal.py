@@ -10,7 +10,6 @@ big_matrix = torch.randn(num_vectors, vector_len)
 big_matrix /= big_matrix.norm(p=2, dim=1, keepdim=True)  # Normalize
 big_matrix.requires_grad_(True)
 
-big_id = torch.eye(num_vectors, num_vectors)
 
 # Set up an ptimization loop to create nearly-perpendicular vectors
 optimizer = torch.optim.Adam([big_matrix], lr=0.01)
@@ -19,6 +18,7 @@ num_steps = 250
 losses = []
 
 dot_diff_cutoff = 0.01
+big_id = torch.eye(num_vectors, num_vectors)
 
 for step_num in tqdm(range(num_steps)):
     optimizer.zero_grad()
@@ -36,7 +36,6 @@ for step_num in tqdm(range(num_steps)):
     losses.append(loss.item())
 
 # Loss curve
-plt.style.use('dark_background')
 plt.plot(losses)
 plt.grid(1)
 plt.show()
@@ -47,7 +46,7 @@ norms = torch.sqrt(torch.diag(dot_products))
 normed_dot_products = dot_products / torch.outer(norms, norms)
 angles_degrees = torch.rad2deg(torch.acos(normed_dot_products.detach()))
 # Use this to ignore self-orthogonality.
-self_orthogonality_mask = ~(big_id.bool())
-plt.hist(angles_degrees[self_orthogonality_mask].numpy().ravel(), bins=1000, range=(80, 100))
+self_orthogonality_mask = ~(torch.eye(num_vectors, num_vectors).bool())
+plt.hist(angles_degrees[self_orthogonality_mask].numpy().ravel(), bins=1000, range=(0, 180))
 plt.grid(1)
 plt.show()
