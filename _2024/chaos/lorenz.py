@@ -36,6 +36,7 @@ class LorenzAttractor(InteractiveScene):
         axes.center()
 
         self.frame.reorient(43, 76, 1, IN, 10)
+        self.frame.add_updater(lambda m, dt: m.increment_theta(dt * 3 * DEGREES))
         self.add(axes)
 
         # Add the equations
@@ -44,7 +45,7 @@ class LorenzAttractor(InteractiveScene):
             \begin{aligned}
             \frac{\mathrm{d} x}{\mathrm{~d} t} & =\sigma(y-x) \\
             \frac{\mathrm{d} y}{\mathrm{~d} t} & =x(\rho-z)-y \\
-            \frac{\mathrm{d} z}{\mathrm{~d} t} & =x y-\beta z .
+            \frac{\mathrm{d} z}{\mathrm{~d} t} & =x y-\beta z
             \end{aligned}
             """,
             t2c={
@@ -59,41 +60,47 @@ class LorenzAttractor(InteractiveScene):
         equations.set_backstroke()
         self.play(Write(equations))
 
-        # Display Lorenz solutions
-        epsilon = 0.001
-        evolution_time = 120
+        # Compute a set of solutions
+        epsilon = 1e-5
+        evolution_time = 60
+        n_points = 2
         states = [
             [10, 10, 10 + n * epsilon]
-            for n in range(10)
+            for n in range(n_points)
         ]
         colors = color_gradient([BLUE_E, BLUE_A], len(states))
 
         curves = VGroup()
         for state, color in zip(states, colors):
             points = ode_solution_points(lorenz_system, state, evolution_time)
-            curve = VMobject().set_points_as_corners(axes.c2p(*points.T))
-            curve.set_stroke(color, 2)
+            curve = VMobject().set_points_smoothly(axes.c2p(*points.T))
+            curve.set_stroke(color, 1, opacity=0.25)
             curves.add(curve)
 
+        curves.set_stroke(width=1, opacity=0.5)
+
+        # Display dots moving along those trajectories
         dots = Group(GlowDot(color=color, radius=0.5) for color in colors)
 
-        curves.set_stroke(opacity=0)
+        def update_dots(dots):
+            for dot, curve in zip(dots, curves):
+                dot.move_to(curve.get_end())
+
+        dots.add_updater(update_dots)
 
         tails = VGroup(
-            TracingTail(dot, time_traced=5).match_color(dot)
+            TracingTail(dot, time_traced=3).match_color(dot)
             for dot in dots
         )
 
         self.add(dots)
-        self.add(curves)
         self.add(tails)
-        self.add(equations)
         self.play(
             *(
-                MoveAlongPath(dot, curve, rate_func=linear)
-                for dot, curve in zip(dots, curves)
+                ShowCreation(curve, rate_func=linear)
+                for curve in curves
             ),
-            self.frame.animate.reorient(270, 72, 0, (0.0, 0.0, -1.0), 10.00),
             run_time=evolution_time,
         )
+        self.play(FadeOut(dots))
         self.wait(5)
