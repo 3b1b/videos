@@ -1786,18 +1786,7 @@ class ReflectOnTwoThings(TeacherStudentsScene):
         dials.next_to(points[1], RIGHT)
         points[1].add(dials)
 
-        dodec = Dodecahedron()
-        vectors = VGroup()
-        for face in dodec:
-            for vert in face.get_anchors():
-                if not any([np.isclose(vert, v.get_end()).all() for v in vectors]):
-                    vect = Vector(vert)
-                    vect.set_color(random_bright_color(hue_range=(0.5, 0.7)))
-                    vect.always.set_perpendicular_to_camera(self.frame)
-                    vectors.add(vect)
-        vectors.rotate(25 * DEGREES, axis=UR)
-        vectors.set_height(1.5)
-        vectors.next_to(points[2], RIGHT, buff=LARGE_BUFF)
+        vectors = self.get_vectors()
         points[2].add(vectors)
 
         points.arrange(DOWN, aligned_edge=LEFT, buff=0.5)
@@ -1826,3 +1815,326 @@ class ReflectOnTwoThings(TeacherStudentsScene):
             morty.change("surprised", points[2]),
         )
         self.wait(3)
+
+    def get_vectors(self):
+        dodec = Dodecahedron()
+        vectors = VGroup()
+        for face in dodec:
+            for vert in face.get_anchors():
+                if not any([np.isclose(vert, v.get_end()).all() for v in vectors]):
+                    vect = Vector(vert)
+                    vect.set_color(random_bright_color(hue_range=(0.5, 0.7)))
+                    vect.always.set_perpendicular_to_camera(self.frame)
+                    vectors.add(vect)
+        vectors.rotate(25 * DEGREES, axis=UR)
+        vectors.set_height(1.5)
+        return vectors
+
+
+class RotatingVectors(ReflectOnTwoThings):
+    def construct(self):
+        self.clear()
+        # Test
+        vectors = self.get_vectors()
+        vectors.set_height(4)
+
+        self.play(
+            Rotate(vectors, TAU, axis=UP, run_time=25, rate_func=linear),
+        )
+
+
+class AskIfThisIsReal(TeacherStudentsScene):
+    def construct(self):
+        morty = self.teacher
+        stds = self.students
+
+        # Test
+        self.play(
+            stds[0].says("Is his how ChatGPT store facts?"),
+            morty.change("guilty"),
+        )
+        self.look_at(self.screen)
+        self.wait()
+        self.play(
+            self.change_students("speaking", "pondering", "skeptical", look_at=self.screen)
+        )
+        self.wait(2)
+        self.play(
+            morty.says("Almost certainly\nnot quite...", mode="maybe"),
+            stds[1].change("angry"),
+            stds[2].change("erm"),
+        )
+        self.wait(4)
+
+
+class SingleNeuronVsMultiple(InteractiveScene):
+    def construct(self):
+        # Add network
+        radius = 0.1
+        layers = VGroup(
+            Dot(radius=radius).get_grid(n, 1, buff=radius)
+            for n in [8, 16, 8]
+        )
+        layers.arrange(RIGHT, buff=2.0)
+        layers.set_stroke(WHITE, 1)
+        for layer in layers:
+            for dot in layer:
+                dot.set_fill(opacity=random.random())
+
+        globals().update(locals())
+        connections = VGroup(
+            get_network_connections(layers[i], layers[i + 1])
+            for i in (0, 1)
+        )
+
+        network = VGroup(layers, connections)
+        network.set_height(5)
+        network.center()
+
+        self.add(network)
+
+        # Show first neuron light up
+        rect = SurroundingRectangle(layers[1][0])
+        name = Text("Michael Jordan")
+        name.next_to(rect, UP, SMALL_BUFF)
+        name.save_state()
+        for letter, dot in zip(*make_even(name, layers[0])):
+            letter.move_to(dot)
+            letter.set_opacity(0)
+
+        thick_connections = connections.copy()
+        for group in thick_connections:
+            for line in group:
+                line.set_stroke(width=2 * line.get_stroke_width(), opacity=1)
+                line.insert_n_curves(20)
+        self.play(
+            LaggedStartMap(
+                VShowPassingFlash,
+                thick_connections[0],
+                lag_ratio=1 / len(thick_connections[0]),
+                time_width=2.0,
+            ),
+            layers[1][0].animate.set_fill(opacity=1),
+            layers[1][1:].animate.set_fill(opacity=0),
+            Restore(name, lag_ratio=0.05),
+            run_time=2
+        )
+        self.play(ShowCreation(rect))
+        self.wait()
+        network.add(rect, name)
+
+        # Split the image
+        network_copy = network.copy()
+        for dot in network_copy[0][1]:
+            dot.set_fill(opacity=random.random())
+        network_copy.to_edge(RIGHT)
+        network_copy[-2].become(SurroundingRectangle(network_copy[0][1]))
+
+        v_line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        v_line.set_stroke(WHITE, 2)
+        check = Checkmark().set_fill(GREEN).scale(2)
+        ex = Exmark().set_fill(RED).scale(2)
+        check.next_to(network_copy[-1], RIGHT)
+        ex.move_to(check).shift(0.5 * FRAME_WIDTH * LEFT)
+
+        self.play(
+            network.animate.to_edge(LEFT),
+            TransformFromCopy(network, network_copy),
+            ShowCreation(v_line),
+        )
+        self.play(LaggedStart(
+            Write(ex, stroke_color=RED),
+            Write(check, stroke_color=GREEN),
+            lag_ratio=0.5
+        ))
+        self.wait()
+
+
+class WriteSuperposition(InteractiveScene):
+    def construct(self):
+        # Test
+        word = Text("Superposition", font_size=120)
+        outline = word.copy()
+        outline.set_stroke(TEAL, 3)
+        outline.set_fill(opacity=0)
+
+        self.play(
+            FadeIn(word, lag_ratio=0.1),
+            LaggedStartMap(
+                VShowPassingFlash,
+                outline,
+                time_width=2,
+                run_time=5,
+                lag_ratio=0.01
+            )
+        )
+        self.wait()
+
+
+class JohnsonLindenstraussName(InteractiveScene):
+    def construct(self):
+        # Test
+        text = VGroup(
+            Text("Johnson–Lindenstrauss\nLemma"),
+            Tex(R"\Rightarrow", font_size=120),
+        )
+        text[0].set_color(RED_B)
+        text.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        self.play(
+            FadeIn(text[0], lag_ratio=0.1),
+            Write(text[1], run_time=1)
+        )
+
+
+class ContrastGPTDimensionSizes(InteractiveScene):
+    def construct(self):
+        # Setup
+        openai_logo = SVGMobject("OpenAI.svg")
+        openai_logo.set_fill(WHITE)
+        openai_logo.set_height(1.0)
+
+        model_names = VGroup(
+            Text("GPT-2"),
+            Text("GPT-3"),
+            Text("GPT-4"),
+        )
+        model_names.scale(1.25)
+        model_names.arrange(RIGHT, buff=2.0)
+        model_names.set_color(GREY_A)
+        arrows = VGroup(
+            Arrow(n1, n2, buff=0.25)
+            for n1, n2 in zip(model_names, model_names[1:])
+        )
+        dim_counts = VGroup(
+            Text(f"Model dim: {dim}", font_size=36)
+            for dim in ["768", "12,288", "???"]
+        )
+        for model, count in zip(model_names, dim_counts):
+            count.next_to(model, DOWN)
+
+        arrows.add_to_back(Arrow().set_opacity(0))
+        for name, count, arrow in zip(model_names, dim_counts, arrows):
+            self.play(
+                FadeIn(name),
+                FadeIn(count, 0.5 * DOWN),
+                GrowArrow(arrow)
+            )
+        self.wait()
+
+
+class ReferenceSAP(TeacherStudentsScene):
+    def construct(self):
+        morty = self.teacher
+        stds = self.students
+        self.background.scale(2)
+        self.frame.scale(1.25, about_edge=DR)
+
+        # Test
+        bubble = stds[0].get_bubble("How would you\ntest this?", bubble_type=SpeechBubble)
+        bubble.shift(0.5 * LEFT)
+        self.play(LaggedStart(
+            FadeIn(bubble, lag_ratio=0.1),
+            stds[0].change("raise_left_hand"),
+            stds[1].change("confused"),
+            stds[2].change("maybe"),
+            morty.change("tease")
+        ))
+        self.wait(2)
+        self.play(
+            morty.says(TexText(R"There's nice\\research using\\Sparse Autoencoder"), mode="hooray")
+        )
+        self.play(
+            self.change_students(None, "pondering", "erm", look_at=morty.bubble),
+        )
+        self.wait()
+        self.look_at(self.screen)
+        self.wait(5)
+
+
+class DetailsNotDiscussed(InteractiveScene):
+    def construct(self):
+        # Test
+        title = Text("Details not discussed")
+        title.add(Underline(title))
+        title.scale(1.25)
+        title.set_color(RED)
+        title.to_edge(UP).to_edge(RIGHT, buff=0)
+
+        details = VGroup(
+            Text("Tokenization"),
+            Text("Positional encoding"),
+            Text("Layer normalization"),
+            Text("Batch normalization"),
+            Text("Training"),
+        )
+        dots = Dot().get_grid(len(details), 1, buff=0.75)
+        dots.next_to(title, DOWN, buff=MED_LARGE_BUFF).shift(2 * LEFT)
+        for detail, dot in zip(details, dots):
+            detail.next_to(dot, RIGHT)
+            detail.add_to_back(dot)
+        vdots = Tex(R"\vdots")
+        vdots.next_to(details, DOWN, MED_LARGE_BUFF).shift(LEFT)
+        details.add(vdots)
+        details.set_color(GREY_A)
+
+        self.add(title)
+        self.play(
+            LaggedStartMap(FadeIn, details, shift=0.25 * DOWN, lag_ratio=0.5),
+            run_time=4
+        )
+        self.wait()
+
+        # Highlight training
+        self.play(
+            details[-2][1:].animate.scale(2, about_edge=LEFT).set_color(WHITE),
+            details[-1].animate.shift(0.1 * DOWN),
+            details[:-2].animate.set_opacity(0.5).scale(0.9, about_edge=UL),
+        )
+        self.wait()
+
+
+class TriPanelWithPi(InteractiveScene):
+    def construct(self):
+        vlines = Line(UP, DOWN).replicate(2)
+        vlines.set_height(FRAME_HEIGHT / 2)
+        vlines.arrange(RIGHT, buff=FRAME_WIDTH / 3)
+        vlines.to_edge(UP, buff=0)
+        hline = Line(LEFT, RIGHT).set_width(FRAME_WIDTH)
+        hline.move_to(vlines, DOWN)
+        lines = VGroup(*vlines, hline)
+
+        lines.set_stroke(WHITE, 2)
+        self.add(lines)
+
+        # Test
+        morty = Mortimer(mode="happy")
+        morty.to_corner(DR).shift(3 * LEFT)
+
+        self.play(morty.change("tease", 4 * UL))
+        self.play(Blink(morty))
+        self.wait()
+        self.play(morty.change("coin_flip_2", 3 * UP))
+        self.play(Blink(morty))
+        self.wait()
+        self.play(morty.change("hooray", 5 * UR).set_anim_args(path_arc=10 * DEGREES))
+        self.play(Blink(morty))
+        self.wait()
+
+
+class WriteRLHF(InteractiveScene):
+    def construct(self):
+        words = VGroup(
+            Text("Reinforcement"),
+            Text("Learning with"),
+            Text("Human"),
+            Text("Feedback"),
+        )
+        words.scale(1.5)
+        words.arrange(DOWN, aligned_edge=LEFT)
+        words.set_color(GREY_A)
+        self.play(LaggedStartMap(FadeIn, words, shift=0.25 * DOWN, lag_ratio=0.25))
+        self.play(*(
+            word[1:].animate.set_opacity(0.75)
+            for word in words
+        ))
+        self.wait()

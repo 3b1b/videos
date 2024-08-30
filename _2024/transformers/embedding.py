@@ -2565,7 +2565,7 @@ class SimpleSpaceExample(InteractiveScene):
         frame.add_ambient_rotation()
         vect = Arrow(axes.c2p(0, 0, 0), axes.c2p(2, -1, 1), buff=0)
         vect.set_color(BLUE)
-        vect.set_flat_stroke(False)
+        vect.always.set_perpendicular_to_camera(self.frame)
         label = Text("you", font_size=24)
         label.rotate(PI / 2, RIGHT)
         label.next_to(vect.get_center(), OUT + LEFT, buff=0)
@@ -2578,9 +2578,6 @@ class SimpleSpaceExample(InteractiveScene):
 
         # Many directions -> Different kinds of meaning
         ideas = VGroup(
-            # Text("Second person"),
-            # Text("Generic third person"),
-            # Text("Plural"),
             Text("Part of a command"),
             Text("Affectionate"),
             Text("Sadness"),
@@ -2589,15 +2586,12 @@ class SimpleSpaceExample(InteractiveScene):
         ideas.scale(0.35)
         ideas.rotate(PI / 2, RIGHT)
 
-        # vect.scale(0, about_point=ORIGIN)
-        # self.remove(label)
-        # frame.reorient(30, 76, 0, (0.59, -0.89, 0.49), 2.35)
-
         last_idea = VGroup()
         last_direction = 1.0 * normalize(cross(RIGHT, vect.get_vector()))
         for idea in ideas:
             direction = rotate_vector(last_direction, PI / 3, vect.get_vector())
             new_vect = self.get_added_vector(vect, direction)
+            new_vect.set_perpendicular_to_camera(self.frame)
             idea.next_to(new_vect.get_center(), buff=0.1)
             lines = get_direction_lines(axes, new_vect.get_vector(), color=new_vect.get_color())
             self.play(
@@ -2648,9 +2642,9 @@ class SimpleSpaceExample(InteractiveScene):
 
     def add_plane_and_axes(
         self,
-        x_range = (-4, 4),
-        y_range = (-4, 4),
-        z_range = (-3, 3),
+        x_range=(-4, 4),
+        y_range=(-4, 4),
+        z_range=(-3, 3),
     ):
         axes = ThreeDAxes(x_range, y_range, z_range)
         plane = NumberPlane(
@@ -2672,6 +2666,69 @@ class SimpleSpaceExample(InteractiveScene):
         new_vect.set_color(random_bright_color())
         new_vect.set_flat_stroke(False)
         return new_vect
+
+
+class ManyIdeasManyDirections(SimpleSpaceExample):
+    random_seed = 2
+
+    def construct(self):
+        # Axes
+        frame = self.frame
+        plane, axes = self.add_plane_and_axes()
+        frame.reorient(-17, 73, 0, (-0.06, 0.11, 0.31), 6.03)
+        frame.add_ambient_rotation()
+
+        # Many directions -> Different kinds of meaning
+        ideas = VGroup(
+            Text(word)
+            for word in [
+                "Typewriter",
+                "Paradigm",
+                "Whimsical",
+                "Gelatinous",
+                "Rainbow",
+                "Serendipitous",
+                "Algorithm",
+                "Nebulous",
+                "Spatula",
+                "Lethargic",
+                "Effervescent",
+                "Asteroid",
+                "Pungent",
+                "Daydream",
+                "Mercurial",
+                "Cactus",
+                "Diaphanous",
+                "Hiccup",
+                "Viscous",
+                "Thunderclap",
+            ]
+        )
+        ideas.set_backstroke(BLACK, 3)
+        ideas.scale(0.5)
+        ideas.rotate(PI / 2, RIGHT)
+
+        last_idea = VGroup()
+        last_direction = RIGHT + OUT
+        for idea in ideas:
+            direction = normalize(cross(last_direction, np.random.uniform(-1, 1, 3)))
+            new_vect = Vector(direction)
+            new_vect.set_perpendicular_to_camera(self.frame)
+            new_vect.set_color(random_bright_color())
+            idea.next_to(new_vect.get_end(), direction, buff=0.1)
+            lines = get_direction_lines(axes, direction, color=new_vect.get_color(), n_lines=250, stroke_width=2)
+            idea.set_fill(interpolate_color(new_vect.get_color(), WHITE, 0.5))
+            self.play(
+                FadeOut(last_idea),
+                GrowArrow(new_vect),
+                FadeIn(idea, new_vect.get_vector()),
+                LaggedStartMap(ShowCreationThenFadeOut, lines, lag_ratio=1 / len(lines), run_time=1.5)
+            )
+            self.wait()
+            last_idea = VGroup(new_vect, idea)
+            last_direction = direction
+        self.play(FadeOut(last_idea))
+        self.wait(5)
 
 
 class MJSpace(SimpleSpaceExample):

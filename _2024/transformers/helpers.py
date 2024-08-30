@@ -310,6 +310,19 @@ def create_pixels(image_mob, pixel_width=0.1):
     return pixels
 
 
+def get_network_connections(layer1, layer2, max_width=2.0, opacity_exp=1.0):
+    radius = layer1[0].get_width() / 2
+    return VGroup(
+        Line(n1.get_center(), n2.get_center(), buff=radius).set_stroke(
+            color=value_to_color(random.uniform(-10, 10)),
+            width=max_width * random.random(),
+            opacity=random.random()**opacity_exp,
+        )
+        for n1 in layer1
+        for n2 in layer2
+    )
+
+
 def get_vector_pair(angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
     angle = angle_in_degrees * DEGREES
     v1 = Vector(length * RIGHT)
@@ -318,7 +331,9 @@ def get_vector_pair(angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
     v2.set_color(colors[1])
     arc = Arc(radius=0.2, angle=angle)
     arc.set_stroke(WHITE, 2)
-    label = Tex(Rf"{angle_in_degrees}^\circ", font_size=24)
+    label = Tex(Rf"180^\circ", font_size=24)
+    num = label.make_number_changeable("180")
+    num.set_value(angle_in_degrees)
     label.next_to(arc.pfp(0.5), normalize(arc.pfp(0.5)), buff=SMALL_BUFF)
 
     return VGroup(v1, v2, arc, label)

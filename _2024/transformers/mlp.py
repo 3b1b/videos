@@ -1,3 +1,4 @@
+import torch
 from scipy.stats import norm
 
 from _2024.transformers.helpers import *
@@ -1728,7 +1729,7 @@ class BasicMLPWalkThrough(InteractiveScene):
 
         return circuit, output
 
-    def get_col_matrix(self, matrix, n_cols_shown, dots_index=-2, sym="C", top_index="m", width_multiple=1.0):
+    def get_col_matrix(self, matrix, n_cols_shown, dots_index=-2, sym="C", top_index="m-1", width_multiple=1.0):
         C_labels = VGroup(
             Tex(Rf"\vec{{\textbf{{{sym}}}}}_{{{n}}}")
             for n in [*range(n_cols_shown - 1), top_index]
@@ -2100,6 +2101,7 @@ class Superposition(InteractiveScene):
             vector.set_color(random_bright_color(hue_range=(0.5, 0.7)))
         vectors.move_to(bubble)
 
+        self.wait(6)
         self.play(
             FadeOut(crossed_part),
             Write(maximum2),
@@ -2151,13 +2153,361 @@ class StackOfVectors(InteractiveScene):
         brackets[0].next_to(rows, LEFT, SMALL_BUFF)
         brackets[1].next_to(rows, RIGHT, SMALL_BUFF)
 
-        self.add(rows)
-        self.add(brackets)
+        top_brace = Brace(rows[0], UP)
+        top_label = top_brace.get_text("100-dimensional")
+        side_brace = Brace(brackets, LEFT)
+        side_label = side_brace.get_text("10,000\nvectors")
+
+        self.play(
+            GrowFromCenter(top_brace),
+            FadeIn(top_label, lag_ratio=0.1),
+            LaggedStartMap(FadeIn, rows, shift=0.25 * DOWN, lag_ratio=0.1, run_time=3),
+            *map(GrowFromCenter, brackets)
+        )
+        self.play(
+            LaggedStart(
+                (RandomizeMatrixEntries(row)
+                for row in rows[:-2]),
+                lag_ratio=0.05,
+            )
+        )
+        self.wait()
 
         # Label first vector
-        brace = Brace(rows[0], UP)
-        brace.get_text("100-dimensional vector")
+        self.play(
+            GrowFromCenter(side_brace),
+            FadeIn(side_label, lag_ratio=0.1),
+        )
+        self.wait(4)
 
+
+class ShowAngleRange(InteractiveScene):
+    def construct(self):
+        # Test
+        angle_tracker = ValueTracker(10)
+        vect_pair = always_redraw(lambda: get_vector_pair(angle_tracker.get_value(), length=3, colors=(RED, GREEN)))
+
+        self.add(vect_pair)
+        self.play(
+            angle_tracker.animate.set_value(180),
+            run_time=8,
+        )
+        self.wait()
+        self.play(
+            angle_tracker.animate.set_value(95),
+            run_time=3
+        )
+        self.wait()
+
+
+class MLPFeatures(InteractiveScene):
+    def construct(self):
+        # Add neurons
+        radius = 0.15
+        layer1, layer2 = layers = VGroup(
+            Dot(radius=radius).get_grid(n, 1, buff=radius / 2)
+            for n in [8, 16]
+        )
+        layer2.arrange(DOWN, buff=radius)
+        layers.arrange(RIGHT, buff=3.0)
+        layers.to_edge(LEFT, buff=LARGE_BUFF)
+        layers.set_stroke(WHITE, 1)
+        for neuron in layer1:
+            neuron.set_fill(opacity=random.random())
+        layer2.set_fill(opacity=0)
+
+        self.add(layers)
+
+        # Add connections
+        connections = get_network_connections(layer1, layer2)
+        self.add(connections)
+
+        # Show single-neuron features
+        features = iter([
+            "Table",
+            "Slang",
+            "AM Radio",
+            "Humble",
+            "Notebook",
+            "Transparent",
+            "Duration",
+            "Madonna",
+            "Mirror",
+            "Pole Vaulting",
+            "Albert Einstein",
+            "Authentic",
+            "Scientific",
+            "Passionate",
+            "Bell Laboratories",
+            "Uzbekistan",
+            "Umbrella",
+            "Immanuel Kant",
+            "Baroque Music",
+            "Intense",
+            "Clock",
+            "Water skiing",
+            "Ancient Egypt",
+            "Ambiguous",
+            "Volume",
+            "Alexander the Great",
+            "Innovative",
+            "Religious",
+        ])
+
+        last_neuron = VGroup()
+        last_feature_label = VGroup()
+        for neuron in layer2[:15]:
+            feature_label = Text(next(features), font_size=36)
+            feature_label.next_to(neuron, buff=SMALL_BUFF)
+
+            self.play(
+                FadeOut(last_feature_label),
+                FadeIn(feature_label),
+                last_neuron.animate.set_fill(opacity=0),
+                neuron.animate.set_fill(opacity=1),
+            )
+
+            last_neuron = neuron
+            last_feature_label = feature_label
+
+        # Show polysemantic features
+        brace = Brace(layer2, RIGHT)
+
+        def to_random_state(layer):
+            for dot in layer.generate_target():
+                dot.set_fill(opacity=random.random())
+            return MoveToTarget(layer)
+
+        self.play(
+            feature_label.animate.scale(48 / 36).next_to(brace, RIGHT),
+            GrowFromCenter(brace),
+            to_random_state(layer2),
+        )
+        self.wait()
+        for n in range(12):
+            feature_label = Text(next(features))
+            feature_label.next_to(brace, RIGHT)
+            self.play(
+                FadeOut(last_feature_label),
+                FadeIn(feature_label),
+                to_random_state(layer2),
+            )
+            self.wait(0.5)
+
+            last_feature_label = feature_label
+
+
+class BreakDownThreeSteps(BasicMLPWalkThrough):
+    def construct(self):
+        # Add four vectors, spaced apart
+        vectors = VGroup(
+            NumericEmbedding(length=n)
+            for n in [8, 16, 16, 8]
+        )
+        vectors.set_height(6)
+        vectors.arrange(RIGHT, buff=3.5)
+        vectors[2].shift(1.1 * LEFT)
+        vectors[1].shift(0.2 * LEFT)
+        vectors.shift(DOWN)
+        for e1, e2 in zip(vectors[1].get_entries(), vectors[2].get_entries()):
+            e2.set_value(max(e1.get_value(), 0))
+
+        # Add arrows between them
+        arrows = VGroup(
+            Arrow(v1, v2)
+            for v1, v2 in zip(vectors, vectors[1:])
+        )
+        arrows.shift(DOWN)
+
+        E_sym = Tex(R"\vec{\textbf{E}}")
+        E_sym.next_to(arrows[0], LEFT).shift(0.1 * UP)
+
+        for vect in vectors:
+            vect.scale(0.75)
+            vect.shift(0.25 * UP)
+
+        # Put matrices on outer two
+        up_proj, down_proj = matrices = VGroup(
+            WeightMatrix(shape=(12, 6)),
+            WeightMatrix(shape=(6, 11)),
+        )
+        matrices.scale(0.25)
+        for arrow, mat in zip(arrows[::2], matrices):
+            mat.next_to(arrow, UP)
+
+        # Put ReLU graph on the middle
+        axes = Axes((-3, 3), (0, 3))
+        graph = axes.get_graph(lambda x: max(x, 0))
+        graph.set_color(BLUE)
+        relu = VGroup(axes, graph)
+        relu.match_width(arrows[1])
+        relu.next_to(arrows[1], UP)
+
+        # Full box
+        box = SurroundingRectangle(VGroup(arrows, matrices), buff=1.0)
+        box.set_stroke(WHITE, 2)
+        box.set_fill(GREY_E, 1)
+        title = Text("Multilayer Perceptron", font_size=60)
+        title.next_to(box, UP, SMALL_BUFF)
+
+        self.add(box, title)
+
+        # Animate them all in
+        for matrix in matrices:
+            matrix.brackets.save_state()
+            matrix.brackets.stretch(0, 0).set_opacity(0)
+
+        self.play(
+            LaggedStartMap(GrowArrow, arrows, lag_ratio=0.5),
+            FadeIn(up_proj.get_rows(), lag_ratio=0.1, time_span=(0.0, 1.5)),
+            FadeIn(down_proj.get_rows(), lag_ratio=0.1, time_span=(1.5, 3.0)),
+            Restore(up_proj.brackets, time_span=(0.0, 1.5)),
+            Restore(down_proj.brackets, time_span=(1.5, 3.0)),
+            Write(relu, time_span=(1, 2)),
+            run_time=3
+        )
+        self.wait()
+
+        # Show row replacement on the first
+        n, m = up_proj.shape
+        n_rows_shown = 8
+        R_labels = VGroup(
+            Tex(R"\vec{\textbf{R}}_{" + str(n) + "}")
+            for n in [*range(n_rows_shown - 1), "n-1"]
+        )
+        R_labels[-2].become(Tex(R"\vdots").replace(R_labels[-2], dim_to_match=1))
+        R_labels.arrange(DOWN, buff=0.5)
+        R_labels.match_height(up_proj)
+        R_labels.move_to(up_proj)
+        h_lines = VGroup(
+            Line(up_proj.get_brackets()[0], R_labels, buff=0.1),
+            Line(R_labels, up_proj.get_brackets()[1], buff=0.1),
+        )
+        h_lines.set_stroke(GREY_A, 2)
+        row_labels = VGroup(
+            VGroup(R_label, h_lines.copy().match_y(R_label))
+            for R_label in R_labels
+        )
+        row_labels.set_color(YELLOW)
+        row_matrix = VGroup(
+            up_proj.get_brackets().copy(),
+            row_labels
+        )
+
+        self.play(
+            FadeOut(up_proj.get_rows(), lag_ratio=0.1),
+            FadeIn(row_labels, lag_ratio=0.1),
+        )
+        self.wait()
+        self.play(
+            row_labels[0][0].copy().animate.scale(2).next_to(title, UL).shift(2 * LEFT).set_opacity(0),
+        )
+        self.wait()
+
+        # Show the neurons
+        dots = VGroup(
+            Dot().set_fill(opacity=random.random()).move_to(entry)
+            for entry in vectors[2].get_columns()[0]
+        )
+        for dot in dots:
+            dot.match_x(dots[0])
+        dots.set_stroke(WHITE, 1)
+        self.play(Write(dots))
+        self.wait()
+
+        # Show column replacement on the second
+        col_matrix = self.get_col_matrix(down_proj, 8)
+        col_labels = col_matrix[1]
+        col_labels.set_color(RED_B)
+
+        self.play(
+            FadeOut(down_proj.get_columns(), lag_ratio=0.1),
+            FadeIn(col_labels, lag_ratio=0.1),
+        )
+        self.wait()
+        self.play(
+            col_labels[0][0].copy().animate.scale(2).next_to(title, UR).shift(2 * RIGHT).set_opacity(0),
+        )
+        self.wait()
+
+        return
+        #### Trash ####
+
+        vectors[0].next_to(arrows[0], LEFT)
+        vectors[0].align_to(vectors[1], DOWN)
+        self.play(FadeIn(vectors[0]))
+        for i in (0, 1):
+            self.play(
+                FadeTransform(vectors[i].copy(), vectors[i + 1]),
+                rate_func=linear,
+            )
+
+
+class SuperpositionVectorBundle(InteractiveScene):
+    def construct(self):
+        # Setup
+        frame = self.frame
+        axes = ThreeDAxes(z_range=(-3, 3))
+        axes.scale(0.5)
+        vects = VGroup(
+            self.get_new_vector(v)
+            for v in np.identity(3)
+        )
+
+        frame.reorient(23, 71, 0, (0.0, 0.0, 0.5), 3.5)
+        frame.add_ambient_rotation(4 * DEGREES)
+        self.add(frame)
+        self.add(axes)
+        self.add(vects)
+        self.wait(2)
+
+        # Add a new vector
+        n_vects = 10
+        for n in range(n_vects):
+            new_vect = self.get_new_vector(normalize(np.random.uniform(-1, 1, 3)))
+            # self.play(GrowArrow(new_vect))
+            vects.add(new_vect)
+            self.space_out_vectors(vects, run_time=3 + 0.5 * n)
+        self.wait(5)
+
+        # Use tensor flow to repeatedly cram more vectors into a space
+        pass
+
+    def get_new_vector(self, coords, color=None, opacity=0.9):
+        if color is None:
+            color = random_bright_color(hue_range=(0.4, 0.6), luminance_range=(0.5, 0.9))
+        vect = Vector(coords, thickness=2.0)
+        vect.set_fill(color, opacity=opacity, border_width=2)
+        vect.always.set_perpendicular_to_camera(self.frame)
+        return vect
+
+    def space_out_vectors(self, vects, run_time=4, learning_rate=0.01):
+        num_vectors = len(vects)
+        ends = np.array([v.get_end() for v in vects])
+        matrix = torch.from_numpy(ends)
+        matrix.requires_grad_(True)
+
+        optimizer = torch.optim.Adam([matrix], lr=learning_rate)
+        dot_diff_cutoff = 0.01
+        id_mat = torch.eye(num_vectors, num_vectors)
+
+        def update_vects(vects):
+            optimizer.zero_grad()
+            dot_products = matrix @ matrix.T
+            # Punish deviation from orthogonal
+            diff = dot_products - id_mat
+            # loss = (diff.abs() - dot_diff_cutoff).relu().sum()
+            loss = diff.pow(6).sum()
+
+            # Extra incentive to keep rows normalized
+            loss += num_vectors * diff.diag().pow(2).sum()
+            loss.backward()
+            optimizer.step()
+
+            for vect, arr in zip(vects, matrix):
+                vect.put_start_and_end_on(ORIGIN, arr.detach().numpy())
+
+        self.play(UpdateFromFunc(vects, update_vects, run_time=run_time))
 
 
 # Some old stubs

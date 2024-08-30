@@ -1,4 +1,4 @@
-import torch  # Need to figure this out
+import torch
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -10,8 +10,7 @@ big_matrix = torch.randn(num_vectors, vector_len)
 big_matrix /= big_matrix.norm(p=2, dim=1, keepdim=True)  # Normalize
 big_matrix.requires_grad_(True)
 
-
-# Set up an ptimization loop to create nearly-perpendicular vectors
+# Set up an Optimization loop to create nearly-perpendicular vectors
 optimizer = torch.optim.Adam([big_matrix], lr=0.01)
 num_steps = 250
 
@@ -24,11 +23,11 @@ for step_num in tqdm(range(num_steps)):
     optimizer.zero_grad()
 
     dot_products = big_matrix @ big_matrix.T
-    # Punish deveation from othogonal
+    # Punish deviation from orthogonal
     diff = dot_products - big_id
     loss = (diff.abs() - dot_diff_cutoff).relu().sum()
 
-    # Extra incentive to keep rows normlaized
+    # Extra incentive to keep rows normalized
     loss += num_vectors * diff.diag().pow(2).sum()
 
     loss.backward()
