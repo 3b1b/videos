@@ -519,7 +519,6 @@ class GPT3CreaturePrediction2(GPT3CleverestAutocomplete):
     n_predictions = 1
 
 
-
 class LowTempExample(GPT3OnLearningSimpler):
     seed_text = "Once upon a time, there was a"
     model = "gpt3"
