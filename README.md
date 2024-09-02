@@ -23,13 +23,7 @@ Copyright © 2022 3Blue1Brown
 
 ### Running a video
 
-1. Ensure Latex is installed, for example on Ubuntu
-   ```sh
-   sudo apt install texlive-latex-extra
-   sudo apt install texlive-fonts-extra
-   ```
-
-2. Setup includes (if you don't want to modify your path)
+1. Setup includes (if you don't want to modify your path)
     ```sh
     cd _2023/optics_puzzles
     vi e_field.py
@@ -42,7 +36,7 @@ Copyright © 2022 3Blue1Brown
     sys.path.append("../..")
     ```
 
-3. Run an example
+2. Run an example
    ```sh
    manimgl e_field.py
    ```
