@@ -1,4 +1,4 @@
-# import gensim.downloader
+import gensim
 import tiktoken
 from pathlib import Path
 
@@ -664,7 +664,7 @@ class Word2VecScene(InteractiveScene):
         self,
         word,
         coords=None,
-        stroke_width=5,
+        thickness=5,
         color=YELLOW,
         func_name: str | None = "E",
         buff=0.05,
@@ -676,19 +676,21 @@ class Word2VecScene(InteractiveScene):
         if coords is None:
             coords = self.basis @ self.model[word.lower()]
         point = axes.c2p(*coords)
-        label_config["label_buff"] = buff
-        return LabeledArrow(
+        label_config.update(label_buff=buff)
+        if "label_rotation" not in label_config:
+            label_config.update(label_rotation=self.label_rotation)
+        arrow = LabeledArrow(
             axes.get_origin(),
             point,
-            stroke_width=stroke_width,
-            stroke_color=color,
-            flat_stroke=False,
+            thickness=thickness,
+            fill_color=color,
             label_text=word if func_name is None else f"{func_name}({word})",
             buff=0,
             direction=direction,
-            label_rotation=self.label_rotation,
             **label_config,
         )
+        arrow.always.set_perpendicular_to_camera(self.frame)
+        return arrow
 
 
 class AmbientWordEmbedding(Word2VecScene):
@@ -904,7 +906,7 @@ class ThreeDSpaceExample(InteractiveScene):
 class HighDimensionalSpaceCompanion(InteractiveScene):
     def construct(self):
         # Vector example
-        word = Text("aardvark")
+        word = Text("bank")
         vect = WeightMatrix(shape=(8, 1))
         vect.next_to(word, RIGHT, buff=LARGE_BUFF)
         vect.set_height(3)
@@ -916,11 +918,18 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
 
         # Draw vague embedding space
         bubble_center = np.array([0.5, -2.25, 0])
-        base_bubble: VMobject = ThoughtBubble()[-1]
+        base_bubble: VMobject = OldThoughtBubble()[-2][-1]
         base_bubble.set_shape(8, 7)
         base_bubble.rotate(PI)
-        base_bubble.set_fill(GREY_D, opacity=[0.5, 1, 0.5])
+        base_bubble.set_fill(GREY_D, opacity=[0.25, 1, 0.25])
         base_bubble.move_to(bubble_center)
+        bubble_label = Text("Word vector space", font_size=60)
+        bubble_label.move_to(base_bubble)
+        bubble_label.shift(2.0 * UP)
+        # bubble_label = Text("Embedding space", font_size=72)
+        q_marks = Tex("???", font_size=120)
+        q_marks.next_to(bubble_label, DOWN, buff=0.5)
+        base_bubble.add(bubble_label, q_marks)
 
         def get_bubble():
             result = base_bubble.copy()
@@ -931,19 +940,14 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
             return result
 
         bubble = always_redraw(get_bubble)
-        bubble_label = Text("Embedding space", font_size=72)
-        bubble_label.move_to(bubble)
-        bubble_label.shift(1.0 * UP)
-        q_marks = Tex("???", font_size=120)
-        q_marks.next_to(bubble_label, DOWN, buff=0.5)
         self.add(bubble)
-        self.add(bubble_label, q_marks)
         self.wait(10)
 
         # Show dimension
         brace = Brace(vect, RIGHT)
         label = VGroup(
-            Integer(12288),
+            # Integer(12288),
+            Integer(10000),
             Text("coordinates")
         )
         label.arrange(DOWN, aligned_edge=LEFT)
@@ -958,7 +962,7 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
         dimension_label.arrange(RIGHT, buff=0.05, aligned_edge=UP)
         dimension_label.match_height(bubble_label).scale(0.8)
         dimension_label.set_color(YELLOW)
-        dimension_label.next_to(bubble_label, DOWN)
+        dimension_label.next_to(q_marks, DOWN, buff=0.5)
 
         self.play(
             GrowFromCenter(brace),
@@ -969,8 +973,8 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
         self.play(
             TransformFromCopy(label[0], dimension_label[0]),
             FadeInFromPoint(dimension_label[1], label[0].get_center()),
-            q_marks.animate.next_to(dimension_label, DOWN, buff=0.5)
         )
+        self.remove(dimension_label)
         bubble_label.add(*dimension_label)
 
         self.wait(10)
@@ -1023,7 +1027,8 @@ class LearningEmbeddings(Word2VecScene):
 
         # Get sample words
         # phrase = "The first big idea is that as a model tweaks and tunes its weights"
-        phrase = "The big idea as a model tweaks and tunes its weights"
+        # phrase = "The big idea as a model tweaks and tunes its weights"
+        phrase = "Features can be encoded with directions in a big space"
         words = [word.lower() for word in phrase.split(" ")]
 
         # Get initial and final states
@@ -1033,12 +1038,12 @@ class LearningEmbeddings(Word2VecScene):
             for word in words
         ])
         true_embeddings -= true_embeddings.mean(0)
-        true_embeddings *= 3 / np.abs(true_embeddings).max(0)
+        true_embeddings *= 5 / np.abs(true_embeddings).max(0)
 
         np.random.seed(2)
         thetas = np.arange(0, TAU, TAU / len(words))
         thetas += np.random.uniform(-0.5, 0.5, thetas.size)
-        amps = np.random.uniform(2, 4, thetas.size)
+        amps = np.random.uniform(3, 5, thetas.size)
         initial_coords = [
             rotate_vector(amp * OUT, theta, axis=UP)
             for theta, amp in zip(thetas, amps)
@@ -1059,7 +1064,7 @@ class LearningEmbeddings(Word2VecScene):
         labels = VGroup()
         for vect in word_vects:
             label = vect.label
-            label.set_backstroke(BLACK, 8)
+            label.set_backstroke(BLACK, 3)
             label.vect = vect
             label.add_updater(lambda m: m.move_to(
                 m.vect.get_end() + 0.25 * normalize(m.vect.get_vector())
@@ -1075,13 +1080,13 @@ class LearningEmbeddings(Word2VecScene):
 
         # Tweak and tune weights
         turn_animation_into_updater(
-            ApplyMethod(frame.reorient, -29, 70, 0, (-0.04, -0.18, -0.5), 8.00),
+            ApplyMethod(frame.reorient, 4, 72, 0, (-0.04, -0.18, -0.5), 8.00),
             run_time=8
         )
         self.progressive_nudges(word_vects, true_embeddings, 8)
         frame.clear_updaters()
         turn_animation_into_updater(
-            ApplyMethod(frame.reorient, 29, 70, 0, (-0.32, 0.02, -0.54), 7.68),
+            ApplyMethod(frame.reorient, 38, 69, 0, (-0.32, 0.02, -0.54), 7.68),
             run_time=12
         )
         self.progressive_nudges(word_vects, true_embeddings, 12)
@@ -1113,7 +1118,7 @@ class KingQueenExample(Word2VecScene):
         frame = self.frame
         self.add_plane()
         self.plane.rotate(90 * DEGREES, LEFT)
-        frame.reorient(-178, 9, 178, (1.72, -3, 0.73), 6.0)
+        frame.reorient(-178, 9, 178, (2.15, 1.12, 0.56), 6.84)
 
         # Initial word vectors
         words = ["man", "woman", "king", "queen"]
@@ -1160,7 +1165,7 @@ class KingQueenExample(Word2VecScene):
             part.set_fill(vect.get_color())
 
         # Show man and woman vectors
-        diff = FillArrow(man.get_end(), woman.get_end(), buff=0, stroke_color=YELLOW)
+        diff = Arrow(man.get_end(), woman.get_end(), buff=0, stroke_color=YELLOW)
         diff.set_fill(YELLOW, opacity=0.8)
         diff.set_backstroke(BLACK, 3)
         self.play(
@@ -1254,6 +1259,7 @@ class KingQueenExample(Word2VecScene):
         # Show a few other examples
         word_pairs = [
             ("uncle", "aunt"),
+            ("brother", "sister"),
             ("nephew", "niece"),
             ("father", "mother"),
             ("son", "daughter"),
@@ -1274,6 +1280,8 @@ class KingQueenExample(Word2VecScene):
             new_coords += (adj_point - new_coords[0])
             vect1 = self.get_labeled_vector(word1, color=colors[2], label_config=label_config, coords=new_coords[0])
             vect2 = self.get_labeled_vector(word2, color=colors[3], label_config=label_config, coords=new_coords[1])
+            vect2.put_start_and_end_on(ORIGIN, vect1.get_end() + diff.get_vector() + np.random.uniform(-0.1, 0.1, 3))
+            vect2.label.next_to(vect2.get_end(), LEFT)
 
             new_equation = self.get_equation1(word2, word1, "woman", "man")
             new_equation.move_to(equation, RIGHT)
@@ -1320,9 +1328,15 @@ class KingQueenExample(Word2VecScene):
             )
         )
 
+    def get_labeled_vector(self, *args, **kwargs):
+        kwargs.update(func_name = None)
+        kwargs.update(thickness=3)
+        return super().get_labeled_vector(*args, **kwargs)
+
     def get_equation1(self, word1, word2, word3, word4, colors=None):
         equation = TexText(
-            Rf"E({word1}) - E({word2}) $\approx$ E({word3}) - E({word4})",
+            # Rf"E({word1}) - E({word2}) $\approx$ E({word3}) - E({word4})",
+            Rf"{{{word1}}} - {{{word2}}} $\approx$ {{{word3}}} - {{{word4}}}",
             font_size=48
         )
         equation.fix_in_frame(True)
@@ -1332,20 +1346,21 @@ class KingQueenExample(Word2VecScene):
             for word, color in zip(words, colors):
                 equation[word].set_fill(color)
         pieces = VGroup(
-            equation[f"E({word1})"][0],
+            equation[f"{{{word1}}}"][0],
             equation["-"][0],
-            equation[f"E({word2})"][0],
+            equation[f"{{{word2}}}"][0],
             equation[R"$\approx$"][0],
-            equation[f"E({word3})"][0],
+            equation[f"{{{word3}}}"][0],
             equation["-"][1],
-            equation[f"E({word4})"][0],
+            equation[f"{{{word4}}}"][0],
         )
         pieces.fix_in_frame(True)
         return pieces
 
     def get_equation2(self, word1, word2, word3, word4, colors=None):
         equation = TexText(
-            Rf"E({word1}) + E({word2}) - E({word3}) $\approx$ E({word4})",
+            # Rf"E({word1}) + E({word2}) - E({word3}) $\approx$ E({word4})",
+            Rf"{{{word1}}} + {{{word2}}} - {{{word3}}} $\approx$ {{{word4}}}",
             font_size=48
         )
         equation.fix_in_frame(True)
@@ -1355,13 +1370,13 @@ class KingQueenExample(Word2VecScene):
             for word, color in zip(words, colors):
                 equation[word].set_fill(color)
         pieces = VGroup(
-            equation[f"E({word1})"],
+            equation[f"{{{word1}}}"],
             equation["+"],
-            equation[f"E({word2})"],
+            equation[f"{{{word2}}}"],
             equation["-"],
-            equation[f"E({word3})"],
+            equation[f"{{{word3}}}"],
             equation[R"$\approx$ "],
-            equation[f"E({word4})"],
+            equation[f"{{{word4}}}"],
         )
         pieces.fix_in_frame(True)
         return pieces
@@ -2567,6 +2582,7 @@ class SimpleSpaceExample(InteractiveScene):
         vect.set_color(BLUE)
         vect.always.set_perpendicular_to_camera(self.frame)
         label = Text("you", font_size=24)
+        # label = Text("bank", font_size=24).set_backstroke(BLACK, 5)
         label.rotate(PI / 2, RIGHT)
         label.next_to(vect.get_center(), OUT + LEFT, buff=0)
 
@@ -2611,6 +2627,9 @@ class SimpleSpaceExample(InteractiveScene):
             Text("needs an adjective next"),
             Text("preceded by \"that which does not kill\""),
             Text("related to growth and strength"),
+            # Text("River bank"),
+            # Text("Beginning of a story"),
+            # Text("Establishing a setting"),
         )
         ideas.scale(0.4)
         ideas.rotate(PI / 2, RIGHT)
@@ -2630,6 +2649,7 @@ class SimpleSpaceExample(InteractiveScene):
         for idea, direction, orientation in zip(ideas, directions, orientations):
             point = vects[-1].get_end()
             new_vect = self.get_added_vector(vects[-1], direction)
+            new_vect.always.set_perpendicular_to_camera(self.frame)
             idea.next_to(new_vect.get_center())
             self.play(
                 frame.animate.reorient(*orientation),
@@ -2638,7 +2658,7 @@ class SimpleSpaceExample(InteractiveScene):
             )
             self.wait(2)
             vects.add(new_vect)
-        self.wait(10)
+        self.wait(15)
 
     def add_plane_and_axes(
         self,
@@ -2863,7 +2883,7 @@ class MJSpace(SimpleSpaceExample):
 
         m_dashed_line, m_proj_line = get_dot_product_lines(vects[0])
 
-        formula = Tex(R"\vec{\textbf{E}} \cdot \big(\overrightarrow{\text{First Name Micahel}}\big) = ", font_size=36)
+        formula = Tex(R"\vec{\textbf{E}} \cdot \big(\overrightarrow{\text{First Name Michael}}\big) = ", font_size=36)
         formula[3:-1].set_color(YELLOW)
         formula.to_corner(UL)
         formula.fix_in_frame()

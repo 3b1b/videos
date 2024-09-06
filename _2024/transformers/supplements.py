@@ -1449,6 +1449,20 @@ class LookingAtPreview(TeacherStudentsScene):
         self.wait(3)
 
 
+class RefreshersNeverHurt(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.play(
+            self.change_students("confused", "horrified", "sad", look_at=self.screen),
+        )
+        self.wait(2)
+        self.play(
+            self.teacher.says(TexText(R"Let's do a\\quick refresher"), mode="tease"),
+            self.change_students("pondering", "hesitant", "erm", look_at=self.teacher.eyes)
+        )
+        self.wait(3)
+
+
 class EmbeddingLabel(InteractiveScene):
     def construct(self):
         # Background
@@ -1585,6 +1599,62 @@ class MakeSomeAssumptions(TeacherStudentsScene):
         )
         self.play(self.teacher.change("raise_right_hand"))
         self.wait(6)
+
+
+class MovingToSecondToken(InteractiveScene):
+    def construct(self):
+        # Add phrase
+        phrase = Text("Michael Jordan plays the sport of")
+        phrase.to_edge(UP)
+        tokens = break_into_tokens(phrase)
+        rects = get_piece_rectangles(tokens, h_buff=0, leading_spaces=True)
+
+        self.add(tokens, rects)
+
+        # Add vectors
+        embeddings = VGroup(
+            NumericEmbedding().scale(0.5).next_to(rect, DOWN, LARGE_BUFF)
+            for rect in rects
+        )
+        arrows = VGroup(Arrow(rect, emb, buff=0.1) for rect, emb in zip(rects, embeddings))
+
+        self.add(arrows)
+        self.add(embeddings)
+
+        # Animate in
+        self.play(
+            Write(rects),
+            LaggedStartMap(GrowArrow, arrows),
+            LaggedStartMap(FadeIn, embeddings, shift=0.5 * DOWN),
+        )
+        self.wait()
+
+        # Highlight two
+        highlight_rect = SurroundingRectangle(VGroup(rects[:2], embeddings[:2]))
+
+        self.play(
+            ShowCreation(highlight_rect),
+            tokens[2:].animate.fade(0.5),
+            rects[2:].animate.fade(0.5),
+            arrows[2:].animate.fade(0.5),
+            embeddings[2:].animate.fade(0.5),
+        )
+        self.wait()
+
+        # Attention
+        self.play(
+            LaggedStart(
+                (ContextAnimation(e2, embeddings[0].get_entries(), path_arc=90 * DEGREES, lag_ratio=0.1, min_stroke_width=2)
+                for e2 in embeddings[1].get_entries()),
+                lag_ratio=0.1
+            ),
+            RandomizeMatrixEntries(embeddings[1]),
+            run_time=4
+        )
+        self.play(
+            highlight_rect.animate.surround(VGroup(rects[1], embeddings[1]), buff=0)
+        )
+        self.wait()
 
 
 class WhatAboutBiggerThanOne(TeacherStudentsScene):
@@ -1820,7 +1890,8 @@ class ReflectOnTwoThings(TeacherStudentsScene):
         dodec = Dodecahedron()
         vectors = VGroup()
         for face in dodec:
-            for vert in face.get_anchors():
+            # for vert in face.get_anchors():
+            for vert in [face.get_center()]:
                 if not any([np.isclose(vert, v.get_end()).all() for v in vectors]):
                     vect = Vector(vert)
                     vect.set_color(random_bright_color(hue_range=(0.5, 0.7)))
@@ -1850,8 +1921,8 @@ class AskIfThisIsReal(TeacherStudentsScene):
 
         # Test
         self.play(
-            stds[0].says("Is his how ChatGPT store facts?"),
-            morty.change("guilty"),
+            stds[0].says("Is this how ChatGPT stores facts?"),
+            morty.change("well"),
         )
         self.look_at(self.screen)
         self.wait()
@@ -1860,7 +1931,7 @@ class AskIfThisIsReal(TeacherStudentsScene):
         )
         self.wait(2)
         self.play(
-            morty.says("Almost certainly\nnot quite...", mode="maybe"),
+            morty.says("Almost certainly\nnot quite...", mode="guilty", bubble_direction=RIGHT),
             stds[1].change("angry"),
             stds[2].change("erm"),
         )
@@ -2041,7 +2112,7 @@ class ReferenceSAP(TeacherStudentsScene):
         ))
         self.wait(2)
         self.play(
-            morty.says(TexText(R"There's nice\\research using\\Sparse Autoencoder"), mode="hooray")
+            morty.says(TexText(R"There's nice\\research using\\Sparse Autoencoders"), mode="hooray")
         )
         self.play(
             self.change_students(None, "pondering", "erm", look_at=morty.bubble),
@@ -2064,7 +2135,6 @@ class DetailsNotDiscussed(InteractiveScene):
             Text("Tokenization"),
             Text("Positional encoding"),
             Text("Layer normalization"),
-            Text("Batch normalization"),
             Text("Training"),
         )
         dots = Dot().get_grid(len(details), 1, buff=0.75)
@@ -2138,3 +2208,46 @@ class WriteRLHF(InteractiveScene):
             for word in words
         ))
         self.wait()
+
+
+class ListOfFacts(InteractiveScene):
+    def construct(self):
+        # Title
+        title = Text("Facts", font_size=120)
+        title.to_corner(UL, buff=0.75)
+        underline = Underline(title)
+        underline.scale(1.3)
+        underline.set_stroke(width=(0, 5, 5, 5, 0))
+        title.add(underline)
+        self.add(title)
+
+        # List of facts
+        n_facts = 15
+        facts = VGroup(
+            Text(line)
+            for line in Path(DATA_DIR, "facts.txt").read_text().split("\n")[:n_facts]
+        )
+        facts.set_color(GREY_A)
+        facts.arrange(DOWN, buff=0.35, aligned_edge=LEFT)
+        facts.set_height(5.5)
+        facts.next_to(title, DOWN, buff=0.5).align_to(title[0], LEFT)
+        self.add(facts)
+
+        # Add line to LLM
+        vline = Line(UP, DOWN).replace(facts, dim_to_match=1)
+        vline.next_to(facts, RIGHT, buff=2.0)
+        vline.scale(0.7)
+
+        lines = VGroup(
+            Line(
+                fact.get_right(),
+                vline.pfp(a),
+                path_arc=interpolate(-20, 20, a) * DEGREES,
+                color=random_bright_color(hue_range=(0.1, 0.2))
+            ).insert_n_curves(20).set_stroke(width=(0, 5, 5, 0))
+            for fact, a in zip(
+                facts,
+                np.linspace(0, 1, len(facts))
+            )
+        )
+        self.add(lines)

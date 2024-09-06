@@ -583,8 +583,9 @@ class ChatBotPrompt(SimpleAutogregression):
         What follows is a conversation between a user and a helpful,
         very knowledgeable AI assistant.
     """
-    user_prompt = "User: Give me some ideas for what to do when visiting Santiago."
+    user_prompt = "User: Give me some ideas for what to do when visiting Paris."
     ai_seed = "AI Assistant: "
+    machine_name = "Large\nLanguage\nModel"
 
     line_len = 28
     font_size = 36

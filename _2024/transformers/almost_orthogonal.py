@@ -46,6 +46,6 @@ normed_dot_products = dot_products / torch.outer(norms, norms)
 angles_degrees = torch.rad2deg(torch.acos(normed_dot_products.detach()))
 # Use this to ignore self-orthogonality.
 self_orthogonality_mask = ~(torch.eye(num_vectors, num_vectors).bool())
-plt.hist(angles_degrees[self_orthogonality_mask].numpy().ravel(), bins=1000, range=(0, 180))
+plt.hist(angles_degrees[self_orthogonality_mask].numpy().ravel(), bins=1000, range=(80, 100))
 plt.grid(1)
 plt.show()

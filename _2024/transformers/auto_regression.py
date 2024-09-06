@@ -58,7 +58,11 @@ def gpt3_predict_next_token(text, n_shown=10, random_seed=0):
     top_logprob_dict = response.choices[0]["logprobs"]["top_logprobs"][0]
     tokens, logprobs = zip(*top_logprob_dict.items())
     probs = np.exp(logprobs)
-    return tokens[:n_shown], probs[:n_shown]
+    indices = np.argsort(probs)
+    top_indices = indices[-1:-n_shown:-1]
+    top_tokens = [tokens[i] for i in top_indices]
+    top_probs = [probs[i] for i in top_indices]
+    return top_tokens, top_probs
 
 
 class SimpleAutogregression(InteractiveScene):
@@ -68,6 +72,7 @@ class SimpleAutogregression(InteractiveScene):
     n_shown_predictions = 12
     seed_text = "Behold, a wild pi creature, foraging in its native"
     seed_text_color = BLUE_B
+    machine_name = "Transformer"
     machine_phi = 10 * DEGREES
     machine_theta = 12 * DEGREES
     n_predictions = 120
@@ -123,21 +128,25 @@ class SimpleAutogregression(InteractiveScene):
         return next_word_line
 
     def get_transformer_drawing(self):
-        self.camera.light_source.set_z(8)
+        self.camera.light_source.move_to([-5, 5, 10])
         self.frame.set_field_of_view(20 * DEGREES)
         blocks = VGroup(
             VPrism(3, 2, 0.2)
             for n in range(10)
         )
-        blocks.set_fill(GREY_E, 1)
-        blocks.set_stroke(BLACK, 0.5, 0.5)
-        blocks.set_shading(0.5, 0.5, 0.5)
+        blocks.set_fill(GREY_D, 1)
+        blocks.set_stroke(width=0)
+        blocks.set_shading(0.25, 0.5, 0.2)
         blocks.arrange(OUT)
         blocks.move_to(ORIGIN, OUT)
         blocks.rotate(self.machine_phi, RIGHT, about_edge=OUT)
         blocks.rotate(self.machine_theta, UP, about_edge=OUT)
 
-        word = Text("Transformer")
+        blocks.deactivate_depth_test()
+        for block in blocks:
+            block.sort(lambda p: p[2])
+
+        word = Text(self.machine_name, alignment="LEFT")
         word.next_to(blocks[-1], UP)
         word.shift(0.1 * UP + 0.4 * LEFT)
         word.move_to(blocks[-1])
@@ -150,7 +159,7 @@ class SimpleAutogregression(InteractiveScene):
         out_arrow.next_to(blocks[-1], RIGHT, buff=SMALL_BUFF)
         out_arrow.set_opacity(0)
 
-        result = Group(Group(*blocks), word, out_arrow)
+        result = VGroup(blocks, word, out_arrow)
         return result
 
     def get_distribution(
@@ -188,15 +197,17 @@ class SimpleAutogregression(InteractiveScene):
 
         return bar_groups
 
-    def animate_text_input(self, text_mob, machine):
+    def animate_text_input(self, text_mob, machine, position_text_over_machine=True, added_anims=[]):
         blocks = machine[0]
         text_copy = text_mob.copy()
-        text_copy.target = text_copy.generate_target()
-        text_copy.target.set_max_width(4)
-        text_copy.target.next_to(blocks[0], UP)
-        text_copy.target.shift_onto_screen()
-        self.play(MoveToTarget(text_copy, path_arc=-45 * DEGREES))
+        if position_text_over_machine:
+            text_copy.target = text_copy.generate_target()
+            text_copy.target.set_max_width(4)
+            text_copy.target.next_to(blocks[0], UP)
+            text_copy.target.shift_onto_screen()
+            self.play(MoveToTarget(text_copy, path_arc=-45 * DEGREES))
         self.play(LaggedStart(
+            *added_anims,
             Transform(
                 text_copy,
                 VGroup(VectorizedPoint(machine.get_top())),
@@ -206,8 +217,12 @@ class SimpleAutogregression(InteractiveScene):
                 remover=True,
             ),
             LaggedStart(
-                (block.animate.set_color(TEAL).set_anim_args(rate_func=there_and_back)
-                for block in blocks[:-1]),
+                (
+                    block.animate.set_color(
+                        block.get_color() if block is blocks[-1] else TEAL
+                    ).set_anim_args(rate_func=there_and_back)
+                    for block in blocks
+                ),
                 lag_ratio=0.1,
                 run_time=1
             ),
@@ -276,6 +291,7 @@ class SimpleAutogregression(InteractiveScene):
 
         # target = new_text_mob[-len(word):]
 
+        self.add(bar_groups)
         self.play(
             FadeTransform(bar_group[0].copy(), target),
             Transform(
@@ -568,7 +584,8 @@ class AthleteCompletion(SimpleAutogregression):
 class ThatWhichDoesNotKillMe(SimpleAutogregression):
     text_corner = 3.5 * UP + 5.0 * LEFT
     line_len = 75
-    seed_text = "That which does not kill you only makes you"
+    # seed_text = "That which does not kill you only makes you"
+    seed_text = "Down by the river bank"
     model = "gpt3"
 
     def construct(self):
