@@ -1,3 +1,4 @@
+from __future__ import annotations
 from manim_imports_ext import *
 
 
@@ -32,6 +33,66 @@ def hsl_to_rgb(hsl):
 
     rgb = np.stack([r, g, b], axis=1)
     return rgb
+
+
+class DiffractionPattern(Mobject):
+    shader_folder: str = str(Path(Path(__file__).parent, "diffraction_shader"))
+    data_dtype: Sequence[Tuple[str, type, Tuple[int]]] = [
+        ('point', np.float32, (3,)),
+    ]
+    render_primitive: int = moderngl.TRIANGLES
+
+    def __init__(
+        self,
+        point_sources: Vect3Array = np.zeros((1, 3)),
+        shape: tuple[float, float] = (4.0, 4.0),
+        color: ManimColor = WHITE,
+        opacity: float = 1.0,
+        frequency: float = 2.0,
+        wave_number: float = 2.0,
+        max_amp: Optional[float] = None,
+        **kwargs
+    ):
+        self.shape = shape
+        super().__init__(**kwargs)
+
+        if max_amp is None:
+            max_amp = len(point_sources)
+        self.set_uniforms(dict(
+            frequency=frequency,
+            wave_number=wave_number,
+            max_amp=max_amp,
+        ))
+        self.set_color(color, opacity)
+        self.set_point_sources(point_sources)
+
+    def init_data(self) -> None:
+        super().init_data(length=6)
+        self.data["point"][:] = [UL, DL, UR, DR, UR, DL]
+
+    def init_points(self) -> None:
+        self.set_shape(*self.shape)
+
+    def init_uniforms(self):
+        super().init_uniforms()
+
+    def set_color(
+        self,
+        color: ManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float] | None = None,
+    ) -> Self:
+        if color is not None:
+            self.set_uniform(color=color_to_rgb(color))
+        if opacity is not None:
+            self.set_uniform(opacity=opacity)
+        return self
+
+    def set_point_sources(self, sources: Vect3Array):
+        full_point_sources = np.zeros((16, 3))
+        full_point_sources[:len(sources)] = sources
+        for n, source in enumerate(sources):
+            self.set_uniform(**{f"point_source{n}": source})
+        self.set_uniform(n_sources=len(sources))
 
 
 class PointSourceDiffractionPattern(InteractiveScene):
@@ -129,6 +190,46 @@ class PointSourceDiffractionPattern(InteractiveScene):
     # TODO, have a picture in picture phasor
 
 
+class DiffractionTest(InteractiveScene):
+    def construct(self):
+        # Test
+        plate = DiffractionPattern(
+            color=RED,
+            opacity=0.5,
+        )
+        plate.set_height(FRAME_HEIGHT)
+        plate.set_uniform(wave_number=10)
+        sources = GlowDots(np.array([UR, UL]) + OUT)
+        sources.set_color(WHITE)
+        plate.f_always.set_point_sources(sources.get_points)
+
+        self.add(plate)
+        self.add(sources)
+
+        # Move sources
+        self.play(sources.animate.move_to(2 * OUT), run_time=3)
+        self.play(Rotate(sources, PI, axis=UP, run_time=4))
+
+        sources.add_point(UP)
+
+        circle = Circle()
+        circle.rotate(PI / 2, RIGHT)
+        sources.set_points([
+            circle.pfp(a)
+            for a in np.arange(0, 1, 1 / 8)
+        ])
+
+        plates = Group(plate.copy() for x in range(5))
+        plates.arrange(OUT, buff=0.1)
+        plates.move_to(ORIGIN, OUT)
+        for plate in plates:
+            plate.set_color(RED, opacity=0.25)
+        self.add(plates)
+
+        self.play(Rotate(plates, 90 * DEGREES, axis=RIGHT, run_time=5))
+        self.play(plates.animate.move_to(3 * UP))
+
+
 class DoubleSlit(PointSourceDiffractionPattern):
     max_mag = 2.0
 
@@ -217,7 +318,6 @@ class DoubleSlit(PointSourceDiffractionPattern):
         # Graph
 
         # Add dot screen
-
 
     def get_point_source_locations(self):
         return [LEFT, RIGHT]
