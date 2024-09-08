@@ -44,27 +44,33 @@ class DiffractionPattern(Mobject):
 
     def __init__(
         self,
-        point_sources: Vect3Array = np.zeros((1, 3)),
-        shape: tuple[float, float] = (4.0, 4.0),
-        color: ManimColor = WHITE,
+        point_sources: DotCloud,
+        shape: tuple[float, float] = (8.0, 8.0),
+        color: ManimColor = RED_D,
         opacity: float = 1.0,
         frequency: float = 2.0,
         wave_number: float = 2.0,
         max_amp: Optional[float] = None,
+        show_intensity: bool = True,
         **kwargs
     ):
         self.shape = shape
+        self.point_sources = point_sources
         super().__init__(**kwargs)
 
         if max_amp is None:
-            max_amp = len(point_sources)
+            max_amp = point_sources.get_num_points()
         self.set_uniforms(dict(
             frequency=frequency,
             wave_number=wave_number,
             max_amp=max_amp,
+            time=0,
+            show_intensity=float(show_intensity)
         ))
         self.set_color(color, opacity)
-        self.set_point_sources(point_sources)
+
+        self.add_updater(lambda m, dt: m.increment_time(dt))
+        self.always.sync_points()
 
     def init_data(self) -> None:
         super().init_data(length=6)
@@ -72,9 +78,6 @@ class DiffractionPattern(Mobject):
 
     def init_points(self) -> None:
         self.set_shape(*self.shape)
-
-    def init_uniforms(self):
-        super().init_uniforms()
 
     def set_color(
         self,
@@ -87,12 +90,22 @@ class DiffractionPattern(Mobject):
             self.set_uniform(opacity=opacity)
         return self
 
-    def set_point_sources(self, sources: Vect3Array):
-        full_point_sources = np.zeros((16, 3))
-        full_point_sources[:len(sources)] = sources
-        for n, source in enumerate(sources):
-            self.set_uniform(**{f"point_source{n}": source})
-        self.set_uniform(n_sources=len(sources))
+    def set_opacity(self, opacity: float):
+        self.set_uniform(opacity=opacity)
+
+    def sync_points(self):
+        sources: DotCloud = self.point_sources
+        for n, point in enumerate(sources.get_points()):
+            self.set_uniform(**{f"point_source{n}": point})
+        self.set_uniform(n_sources=sources.get_num_points())
+        return self
+
+    def increment_time(self, dt):
+        self.uniforms["time"] += dt
+        return self
+
+    def show_intensity(self, show: bool = True):
+        self.set_uniform(show_intensity=float(show))
 
 
 class PointSourceDiffractionPattern(InteractiveScene):
@@ -193,15 +206,9 @@ class PointSourceDiffractionPattern(InteractiveScene):
 class DiffractionTest(InteractiveScene):
     def construct(self):
         # Test
-        plate = DiffractionPattern(
-            color=RED,
-            opacity=0.5,
-        )
-        plate.set_height(FRAME_HEIGHT)
-        plate.set_uniform(wave_number=10)
-        sources = GlowDots(np.array([UR, UL]) + OUT)
+        sources = GlowDots(np.array([LEFT, RIGHT]) + OUT)
         sources.set_color(WHITE)
-        plate.f_always.set_point_sources(sources.get_points)
+        plate = DiffractionPattern(sources)
 
         self.add(plate)
         self.add(sources)
@@ -210,24 +217,19 @@ class DiffractionTest(InteractiveScene):
         self.play(sources.animate.move_to(2 * OUT), run_time=3)
         self.play(Rotate(sources, PI, axis=UP, run_time=4))
 
-        sources.add_point(UP)
+        # Diffraction grating
+        self.set_floor_plane("xz")
+        plate.rotate(PI / 2, RIGHT)
+        plate.scale(5)
+        plate.show_intensity(False)
+        plate.set_uniform(max_amp=1)
+        sources.set_points(np.array([
+            interpolate(LEFT, RIGHT, a)
+            for a in np.linspace(0, 1, 16)
+        ]))
+        sources.set_width(8)
 
-        circle = Circle()
-        circle.rotate(PI / 2, RIGHT)
-        sources.set_points([
-            circle.pfp(a)
-            for a in np.arange(0, 1, 1 / 8)
-        ])
 
-        plates = Group(plate.copy() for x in range(5))
-        plates.arrange(OUT, buff=0.1)
-        plates.move_to(ORIGIN, OUT)
-        for plate in plates:
-            plate.set_color(RED, opacity=0.25)
-        self.add(plates)
-
-        self.play(Rotate(plates, 90 * DEGREES, axis=RIGHT, run_time=5))
-        self.play(plates.animate.move_to(3 * UP))
 
 
 class DoubleSlit(PointSourceDiffractionPattern):
