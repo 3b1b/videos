@@ -5,7 +5,7 @@ from manim_imports_ext import *
 
 
 class ExtractFramesFromFootage(InteractiveScene):
-    video_file = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/holograms/SceneModel/MultiplePOVs.mp4"
+    video_file = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/holograms/SceneModel/MultiplePOVs.2.mp4"
     image_dir = "/tmp/"
     frequency = 0.25
     start_time = 0
@@ -57,7 +57,7 @@ class ExtractFramesFromFootage(InteractiveScene):
 
         # Add still
         still_image = images[-1].copy()
-        still_image.move_to(video_box)
+        still_image.replace(video_box)
         self.add(still_image)
         self.wait()
 
