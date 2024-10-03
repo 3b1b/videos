@@ -40,7 +40,7 @@ class LightWaveSlice(Mobject):
     data_dtype: Sequence[Tuple[str, type, Tuple[int]]] = [
         ('point', np.float32, (3,)),
     ]
-    render_primitive: int = moderngl.TRIANGLES
+    render_primitive: int = moderngl.TRIANGLE_STRIP
 
     def __init__(
         self,
@@ -78,8 +78,8 @@ class LightWaveSlice(Mobject):
         self.apply_depth_test()
 
     def init_data(self) -> None:
-        super().init_data(length=6)
-        self.data["point"][:] = [UL, DL, UR, DR, UR, DL]
+        super().init_data(length=4)
+        self.data["point"][:] = [UL, DL, UR, DR]
 
     def init_points(self) -> None:
         self.set_shape(*self.shape)
@@ -182,6 +182,151 @@ class LightIntensity(LightWaveSlice):
 
 # Scenes
 
+
+class LightFieldAroundScene(InteractiveScene):
+    def construct(self):
+        # Add scene
+        frame = self.frame
+        folder = "/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/holograms/Paul Animations/LightFieldDraft"
+        scene, scene_top, lamp = group = Group(
+            ImageMobject(os.path.join(folder, "LightFieldScene")),
+            ImageMobject(os.path.join(folder, "TopHalfCutoff")),
+            ImageMobject(os.path.join(folder, "Lamp")),
+        )
+        group.set_height(7)
+        group.to_edge(RIGHT)
+
+        light_point = scene.get_corner(UL) + 1.6 * RIGHT + 0.8 * DOWN
+        scene_point = scene.get_center() + 0.8 * RIGHT + 0.4 * DOWN
+
+        frame.reorient(0, 0, 0, (3.44, -0.2, 0.0), 4.78)
+        self.add(scene)
+        self.play(FadeIn(scene, 0.25 * UP))
+        self.wait()
+
+        # Add light
+        line = Line(light_point, scene_point)
+        n_dots = 50
+        light = Group(
+            GlowDot(line.pfp(a), color=WHITE, radius=interpolate(0.5, 4, a), opacity=3 / n_dots)
+            for a in np.linspace(0, 1, n_dots)
+        )
+        self.play(
+            FadeIn(lamp, time_span=(1, 3)),
+            FadeIn(light, lag_ratio=0.2, time_span=(1, 3)),
+            frame.animate.reorient(0, 0, 0, (3.64, 0.68, 0.0), 5.30),
+            run_time=2,
+        )
+        self.wait()
+
+        # Set up wave
+        sources = DotCloud([
+            (2.42, -0.27, 0.0),
+            (1.96, -0.14, 0.0),
+            (2.11, 0.05, 0.0),
+            (2.51, 0.16, 0.0),
+            (2.75, 0.07, 0.0),
+            (3.19, 0.41, 0.0),
+            (3.48, 0.39, 0.0),
+            (4.81, 0.28, 0.0),
+            (5.1, 0.22, 0.0),
+            (5.53, -0.04, 0.0),
+            (5.8, -0.18, 0.0),
+            (4.87, -0.58, 0.0),
+            (4.71, -0.68, 0.0),
+            (4.28, -0.61, 0.0),
+            (3.92, -0.51, 0.0),
+            (4.18, -0.27, 0.0),
+            (3.8, 0.09, 0.0),
+            (3.55, 0.23, 0.0),
+            (2.43, 0.7, 0.0),
+            (2.43, 0.7, 0.0),
+            (3.71, 0.51, 0.0),
+            (3.94, -0.49, 0.0),
+            (1.9, -0.3, 0.0),
+            (2.61, 0.06, 0.0),
+            (2.92, 0.23, 0.0),
+            (3.25, 0.38, 0.0),
+        ])
+        wave = LightWaveSlice(sources)
+        wave.set_max_amp(math.sqrt(30))
+        wave.set_shape(50, 100)
+        wave.rotate(70 * DEGREES, LEFT)
+        wave.set_wave_number(4)
+        wave.set_frequency(1)
+
+        n_perp_waves = 10
+        perp_waves = Group(wave.copy().rotate(PI / 2, RIGHT).shift(z * OUT) for z in np.linspace(-1, 1, n_perp_waves))
+        perp_waves.set_opacity(0.1)
+
+        self.add(scene, wave, perp_waves, scene_top, lamp, light)
+        self.play(
+            FadeIn(wave),
+            FadeIn(perp_waves),
+            light.animate.set_opacity(2 / n_dots),
+            scene.animate.set_opacity(0.5),
+            run_time=2
+        )
+
+        # Slow zoom out
+        self.play(
+            frame.animate.to_default_state(),
+            run_time=12
+        )
+
+        # Linger
+        self.wait(12)
+
+        # Reflection
+        if False:
+            self.remove(light)
+            self.remove(lamp)
+            self.frame.set_theta(-10 * DEGREES).set_y(0.5)
+            scene_top.set_opacity(0.5)
+            self.wait(12)
+
+        # Show an observer
+        eye_dot = GlowDot(1.0 * LEFT, radius=0.5, color=WHITE)
+
+        self.play(FadeIn(eye_dot))
+        self.wait(3)
+        self.play(
+            eye_dot.animate.move_to(1.5 * LEFT + 2 * DOWN).set_anim_args(path_arc=45 * DEGREES),
+            run_time=12,
+            rate_func=there_and_back,
+        )
+        self.play(FadeOut(eye_dot))
+
+        # Show recreation
+        right_rect = FullScreenRectangle().set_fill(BLACK, 1)
+        right_rect.stretch(0.35, 0, about_edge=RIGHT)
+        film_rect = Rectangle()
+        film_rect.set_fill(interpolate_color(RED_E, BLACK, 0.8), 1).set_stroke(WHITE, 1)
+        film_rect.rotate(80 * DEGREES, UP)
+        film_rect.rotate(20 * DEGREES, RIGHT)
+        film_rect.move_to(right_rect.get_left())
+
+        laser_point = RIGHT_SIDE + RIGHT
+        laser_light = VGroup(
+            Line(laser_point, film_rect.pfp(a + random.random() / 250))
+            for a in np.linspace(0, 1, 250)
+        )
+        laser_light.set_stroke(GREEN_SCREEN, (0, 1), 0.2)
+        laser_light.shuffle()
+
+        self.play(
+            FadeOut(lamp),
+            FadeOut(light),
+            FadeOut(scene),
+            FadeOut(scene_top),
+            FadeIn(right_rect),
+            FadeIn(film_rect),
+        )
+        self.play(ShowCreation(laser_light, lag_ratio=0.001))
+        self.wait(12)
+        self.wait(2)  # Just in case
+
+
 class DiffractionGratingScene(InteractiveScene):
     light_position = 10 * DOWN + 5 * OUT + 3 * LEFT
 
@@ -228,6 +373,566 @@ class DiffractionGratingScene(InteractiveScene):
         graph.apply_depth_test()
         graph.set_stroke(color, stroke_width)
         return graph
+
+
+class LightExposingFilm(DiffractionGratingScene):
+    def construct(self):
+        # Set up wave
+        frame = self.frame
+        self.set_floor_plane("xz")
+
+        source_dist = 16.5
+        source = GlowDot(source_dist * OUT).set_opacity(0)
+        wave = LightWaveSlice(source, decay_factor=0, wave_number=0.5)
+        wave.set_opacity(0)
+        wave_line = Line(source.get_center(), ORIGIN)
+        wave_line.set_stroke(width=0)
+        initial_wave_amp = 0.75
+        wave_amp_tracker = ValueTracker(initial_wave_amp)
+        graph = self.get_graph_over_wave(wave_line, wave, direction=UP, scale_factor=wave_amp_tracker.get_value(), n_curves=200)
+        graph.add_updater(lambda m: m.stretch(wave_amp_tracker.get_value() / initial_wave_amp, dim=1))
+
+        # Set up linear vector field
+        def field_func(points):
+            result = np.zeros_like(points)
+            result[:, 1] = wave_amp_tracker.get_value() * wave.wave_func(points)
+            return result
+
+        linear_field = VectorField(field_func, sample_points=wave_line.get_points()[::4], max_vect_len=2.0)
+        linear_field.always.update_vectors()
+        linear_field.set_stroke(WHITE, width=1.5, opacity=0.75)
+
+        # Add film
+        film = Rectangle(16, 9)
+        film.set_fill(GREY_E, 0.75)
+        film.set_height(8)
+        film.center()
+
+        exp_source = GlowDot(OUT).set_opacity(0)
+        exposure = LightIntensity(exp_source)
+        exposure.set_color(GREEN)
+        exposure.set_decay_factor(3)
+        exposure.set_max_amp(0.15)
+        exposure.set_opacity(0.7)
+        exposure.replace(film, stretch=True)
+
+        film_label = Text("Film", font_size=96)
+        film_label.next_to(film, UP, MED_SMALL_BUFF)
+
+        frame.reorient(-18, -7, 0, (0.46, -0.4, -2.46), 17.86)
+        self.add(film, exposure, film_label)
+        self.add(wave, linear_field, graph)
+
+        # Fade in
+        self.play(
+            frame.animate.reorient(-88, -4, 0, (3.56, -0.71, 4.59), 14.60),
+            FadeIn(exposure, time_span=(0, 3)),
+            run_time=7.5
+        )
+
+        # Label amplitude
+        low_line = DashedLine(8 * OUT, ORIGIN)
+        high_line = low_line.copy().shift(wave_amp_tracker.get_value() * UP)
+        amp_lines = VGroup(low_line, high_line)
+        amp_lines.set_stroke(YELLOW, 3)
+        brace = Brace(amp_lines, RIGHT)
+        brace.rotate(PI / 2, DOWN)
+        brace.next_to(amp_lines, OUT, SMALL_BUFF)
+        amp_label = Tex(R"\text{Amplitude}", font_size=72)
+        amp_label.set_backstroke(BLACK, 5)
+        amp_label.rotate(PI / 2, DOWN)
+        amp_label.next_to(brace, OUT, SMALL_BUFF)
+        fade_rect = Rectangle(8, 3)
+        fade_rect.rotate(PI / 2, DOWN)
+        fade_rect.next_to(amp_lines, OUT, buff=0)
+        fade_rect.set_stroke(BLACK, 0)
+        fade_rect.set_fill(BLACK, 0.7)
+
+        self.play(
+            FadeIn(fade_rect),
+            GrowFromCenter(brace),
+            FadeIn(amp_lines[0]),
+            ReplacementTransform(amp_lines[0].copy().fade(1), amp_lines[1]),
+        )
+        self.play(Write(amp_label, stroke_color=WHITE, lag_ratio=0.1, run_time=2.0))
+        self.wait_until(lambda: 8 / 30 < wave.uniforms["time"] % 1 < 9 / 30)
+
+        # Label phase
+        phase_text = Text("Phase", font_size=72)
+        phase_circle = Circle(radius=0.75)
+        phase_circle.set_stroke(BLUE, 2)
+        phase_circle.next_to(phase_text, DOWN)
+        phase_vect = Arrow(phase_circle.get_center(), phase_circle.get_right(), buff=0, thickness=2)
+        phase_vect.set_fill(BLUE)
+
+        phase_label = VGroup(phase_text, phase_circle, phase_vect)
+        phase_label.rotate(PI / 2, DOWN)
+        phase_label.next_to(amp_lines, DOWN, buff=2)
+        phase_label.set_z(2)
+        og_phase_label = phase_label.copy()
+
+        wavelength = 1.0 / wave.uniforms["wave_number"]
+        start_z = 0
+        phase_line = Line(start_z * OUT, (start_z + wavelength) * OUT)
+        phase_line.set_stroke(BLUE, 3)
+
+        phase_arrow = Arrow(phase_text.get_corner(IN + UP) + 0.2 * (OUT + UP), phase_line.get_start(), buff=0)
+        phase_arrow.always.set_perpendicular_to_camera(self.frame)
+
+        self.play(
+            wave.animate.pause(),
+            FadeIn(phase_label),
+            FadeIn(phase_arrow),
+            frame.animate.reorient(-99, -2, 0, (3.56, -0.71, 4.59), 14.60),
+        )
+        self.play(
+            Rotate(phase_vect, -TAU, axis=LEFT, about_point=phase_vect.get_start()),
+            ShowCreation(phase_line),
+            phase_arrow.animate.put_start_and_end_on(phase_arrow.get_start(), phase_line.get_end()),
+            run_time=3
+        )
+        self.play(
+            Rotate(phase_vect, TAU, axis=LEFT, about_point=phase_vect.get_start()),
+            phase_arrow.animate.put_start_and_end_on(phase_arrow.get_start(), phase_line.get_start()),
+            run_time=3
+        )
+        self.wait(2)
+
+        # Decrease and increase amplitude
+        amp_group = VGroup(amp_lines, brace)
+        amp_group.f_always.set_height(wave_amp_tracker.get_value, stretch=lambda: True)
+        amp_group.always.move_to(ORIGIN, IN + DOWN)
+        amp_label.always.next_to(brace, OUT, SMALL_BUFF)
+        self.add(amp_group, amp_label)
+
+        phase_vect.add_updater(lambda m: m.put_start_and_end_on(
+            phase_circle.get_center(),
+            phase_circle.pfp((wave.uniforms["frequency"] * wave.uniforms["time"]) % 1),
+        ))
+        phase_vect.always.set_perpendicular_to_camera(self.frame)
+
+        self.play(
+            wave.animate.set_time_rate(0.5),
+            frame.animate.reorient(-55, -13, 0, (2.59, -0.61, 2.18), 17.00),
+            phase_arrow.animate.fade(0.8),
+            phase_label.animate.fade(0.8),
+            FadeOut(phase_line),
+            run_time=3
+        )
+        self.play(
+            wave_amp_tracker.animate.set_value(0.25),
+            exposure.animate.set_opacity(0.25),
+            run_time=3,
+        )
+        self.wait(2)
+        self.play(
+            wave_amp_tracker.animate.set_value(1.0),
+            exposure.animate.set_opacity(1.0),
+            run_time=4
+        )
+        self.wait()
+
+        # Write exposure expression
+        exp_expr = Tex(R"\text{Exposure} = c \cdot |\text{Amplitude}|^2", font_size=72)
+        exp_expr.move_to(2 * UP)
+
+        self.play(
+            LaggedStart(
+                Write(exp_expr[R"\text{Exposure} = c \cdot |"][0]),
+                TransformFromCopy(amp_label.copy().clear_updaters(), exp_expr[R"\text{Amplitude}"][0]),
+                Write(exp_expr[R"|^2"][0]),
+                lag_ratio=0.1,
+            ),
+            frame.animate.reorient(-34, -15, 0, (1.48, -0.23, 1.29), 16.08),
+            run_time=3,
+        )
+        self.wait(8)
+
+        # Focus on phase again
+        to_fade = VGroup(fade_rect, amp_group, amp_label)
+        wave.pause()
+        self.play(
+            FadeOut(to_fade, lag_ratio=0.01, time_span=(0, 1.5)),
+            phase_label.animate.match_style(og_phase_label),
+            phase_arrow.animate.set_fill(opacity=1),
+            frame.animate.reorient(-86, -4, 0, (2.43, -0.97, 1.94), 12.91),
+            run_time=2
+        )
+
+        # Shift back the phase
+        shift_label = TexText(R"Shift back phase $\rightarrow$")
+        shift_label.rotate(PI / 2, DOWN)
+        shift_label.move_to(7 * OUT + 1.5 * DOWN)
+
+        self.play(
+            wave.animate.set_uniform(time_rate=-0.5).set_anim_args(rate_func=there_and_back),
+            FadeIn(shift_label, shift=OUT),
+            run_time=2.0
+        )
+        self.play(FadeOut(shift_label))
+        self.wait()
+
+        # Play for a while
+        self.play(wave.animate.set_time_rate(0.5))
+        self.wait(16)
+
+        # Shine a second beam in
+        source2 = GlowDot(source_dist * (OUT + RIGHT))
+        wave2 = LightWaveSlice(source2)
+        wave2.set_uniforms(dict(wave.uniforms))
+        wave2.set_opacity(0)
+        line2 = Line(ORIGIN, source2.get_center())
+        ref_amp = 0.75
+        graph2 = self.get_graph_over_wave(line2, wave2, direction=UP, scale_factor=ref_amp, n_curves=int(200 * math.sqrt(2)))
+        graph2.set_color(YELLOW)
+        graph2.update()
+
+        def field_func2(points):
+            result = np.zeros_like(points)
+            result[:, 1] = ref_amp * wave2.wave_func(points)
+            return result
+
+        linear_field2 = VectorField(field_func2, sample_points=line2.get_points()[::4], max_vect_len=2.0)
+        linear_field2.always.update_vectors()
+        linear_field2.set_stroke(YELLOW, width=1.5, opacity=0.75)
+
+        ref_wave_label = Text("Reference Wave", font_size=72)
+        ref_wave_label.set_color(YELLOW)
+        ref_wave_label.set_backstroke(BLACK, 3)
+        ref_wave_label.rotate(PI / 4, DOWN)
+        ref_wave_label.move_to([5, 1.25, 5])
+
+        self.play(
+            FadeOut(phase_label),
+            FadeOut(phase_arrow),
+            wave_amp_tracker.animate.set_value(0.75),
+            exposure.animate.set_opacity(0.75),
+            frame.animate.reorient(-32, -20, 0, (1.48, -0.73, 0.84), 14.72),
+            run_time=2,
+        )
+        self.wait_until(lambda: 8 / 30 < wave.uniforms["time"] % 1 < 9 / 30)
+        self.add(wave2)
+        self.play(
+            FadeIn(graph2),
+            FadeIn(linear_field2),
+        )
+        self.wait()
+        self.play(FadeIn(ref_wave_label, shift=UP))
+        self.wait(5)
+
+        # Zoom in
+        self.play(
+            frame.animate.reorient(-58, -18, 0, (3.29, 0.39, 0.55), 10.68),
+            run_time=4
+        )
+        self.play(
+            exposure.animate.set_opacity(1).set_max_amp(0.1),
+            run_time=2
+        )
+        self.wait(3)
+
+        # Shift back
+        self.remove(ref_wave_label)
+        self.remove(exp_expr)
+        self.remove(film_label)
+        # shift_label = TexText(R"Shift back phase $\rightarrow$")
+        shift_label = TexText(R"Tiny change $\rightarrow$")
+        shift_label.rotate(PI / 2, DOWN)
+        shift_label.set_backstroke(BLACK, 5)
+        shift_label.move_to(5 * OUT + 1.25 * UP)
+
+        self.play(
+            wave.animate.pause(),
+            wave2.animate.pause(),
+        )
+        self.play(
+            wave.animate.set_uniform(time_rate=-0.5).set_anim_args(rate_func=there_and_back),
+            exposure.animate.set_max_amp(0.2).set_opacity(0.15),
+            FadeIn(shift_label, OUT),
+            run_time=2.0
+        )
+        self.play(FadeOut(shift_label))
+        self.play(
+            wave.animate.set_time_rate(0.5),
+            wave2.animate.set_time_rate(0.5),
+        )
+        self.play(
+            frame.animate.reorient(-54, -16, 0, (3.01, -0.09, 0.55), 14.47),
+            run_time=10,
+        )
+
+        wave.pause()
+        wave2.pause()
+        self.play(
+            wave.animate.set_uniform(time_rate=-0.5).set_anim_args(rate_func=there_and_back),
+            exposure.animate.set_max_amp(0.1).set_opacity(1),
+            FadeIn(shift_label, OUT),
+            run_time=2.0
+        )
+        self.play(FadeOut(shift_label))
+        wave.set_time_rate(0.5)
+        wave2.set_time_rate(0.5)
+        self.play(
+            frame.animate.reorient(15, -22, 0, (2.14, -0.48, -0.07), 15.51),
+            run_time=12,
+        )
+
+        wave.pause()
+        wave2.pause()
+        self.play(
+            wave.animate.set_uniform(time_rate=-0.5).set_anim_args(rate_func=there_and_back),
+            exposure.animate.set_max_amp(0.2).set_opacity(0.15),
+            run_time=2.0
+        )
+        wave.set_time_rate(0.5)
+        wave2.set_time_rate(0.5)
+        self.play(
+            frame.animate.reorient(15, -14, 0, (1.47, 0.09, -0.04), 13.26),
+            run_time=12,
+        )
+
+
+class TwoInterferingWaves(DiffractionGratingScene):
+    def construct(self):
+        # Setup reference and object waves
+        frame = self.frame
+        self.set_floor_plane("xz")
+
+        film_border = ScreenRectangle()
+        film_border.set_height(6)
+        film_border.set_fill(BLACK, 0)
+        film_border.set_stroke(WHITE, 1)
+        film_image = ImageMobject("HologramFilm.jpg")
+        film_image.replace(film_border)
+
+        frame.set_height(6)
+        self.add(film_image, film_border)
+
+        # Add waves
+        obj_vect = 5 * OUT + 2 * LEFT
+        ref_vect = 5 * OUT + 2 * RIGHT
+        lp = film_border.get_left() + 3 * DOWN
+        rp = film_border.get_right() + 3 * DOWN
+
+        obj_points = DotCloud(np.random.random((31, 3)))
+        obj_points.set_height(10)
+        obj_points.move_to(obj_vect)
+        obj_wave = LightWaveSlice(obj_points)
+        obj_wave.set_wave_number(8)
+        obj_wave.set_frequency(1)
+        obj_wave.set_max_amp(3)
+
+        ref_wave = LightWaveSlice(TrueDot(10 * ref_vect))
+        ref_wave.match_points(obj_wave)
+        ref_wave.set_uniforms(dict(obj_wave.uniforms))
+        ref_wave.set_max_amp(1.25)
+        ref_wave.set_decay_factor(0)
+        ref_wave.set_opacity(0.85)
+
+        rect = film_border
+        obj_wave.set_points([
+            2 * obj_vect, rect.get_corner(UL), rect.get_corner(DL),
+            2 * obj_vect, rect.get_corner(UL), rect.get_corner(UR),
+            2 * obj_vect, rect.get_corner(UR), rect.get_corner(DR),
+            2 * obj_vect, rect.get_corner(DR), rect.get_corner(DL),
+        ])
+        ref_wave.set_points([
+            2 * ref_vect, rect.get_corner(UL), rect.get_corner(DL),
+            2 * ref_vect, rect.get_corner(UL), rect.get_corner(UR),
+            2 * ref_vect, rect.get_corner(UR), rect.get_corner(DR),
+            2 * ref_vect, rect.get_corner(DR), rect.get_corner(DL),
+        ])
+        obj_wave.deactivate_depth_test()
+        ref_wave.deactivate_depth_test()
+
+        waves = Group(ref_wave, obj_wave)
+        waves.set_opacity(0.25)
+
+        self.play(
+            FadeIn(waves),
+            frame.animate.reorient(0, -21, 0, (-0.09, -0.86, 0.04), 9.40),
+            run_time=3
+        )
+        self.wait(3)
+
+        # Diversion into backdrop for complex wave scene
+        if False:
+            # Isolate object wave
+            new_obj_wave = LightWaveSlice(obj_points)
+            new_obj_wave.set_points([2 * obj_vect, rect.get_left(), rect.get_right()])
+            new_obj_wave.set_uniforms(dict(obj_wave.uniforms))
+            new_obj_wave.set_opacity(1)
+            new_obj_wave.set_frequency(0.25)
+
+            frame.reorient(0, -19, 0, (0.01, -0.03, -0.28), 12.53)
+            waves.set_opacity(0.4)
+            for wave in waves:
+                wave.set_frequency(0.25)
+            self.wait(4)
+
+            self.play(
+                FadeOut(ref_wave),
+                FadeOut(film_border),
+                FadeOut(film_image),
+                FadeOut(obj_wave),
+                FadeIn(new_obj_wave)
+            )
+
+            # Go to 2d slice
+            self.play(
+                new_obj_wave.animate.scale(10),
+                frame.animate.reorient(-3, -5, 0, (-0.96, 0.03, -0.15), 5.32),
+                run_time=5
+            )
+            self.wait(4)
+
+            # Circle a point
+            circle = Circle(radius=0.1).set_stroke(WHITE, 2)
+            circle.move_to(LEFT + 2 * DOWN)
+            circle.reverse_points()
+            full_rect = FullScreenRectangle()
+            full_rect.set_fill(BLACK, 0.75)
+            full_rect.append_points([full_rect.get_end(), *circle.get_points()])
+
+            circle.fix_in_frame()
+            full_rect.fix_in_frame()
+
+            self.play(
+                FadeIn(full_rect),
+                ShowCreation(circle),
+            )
+            self.wait(8)
+
+        # Add exposure
+        exposure = LightIntensity(obj_points)
+        exposure.set_color(WHITE)
+        exposure.replace(film_border, stretch=True)
+        exposure.set_wave_number(256)
+        exposure.set_max_amp(4)
+
+        # One more insertion
+        exposure.set_opacity(0.5)
+        self.add(exposure, waves)
+        frame.reorient(-18, -30, 0, (-5.85, -0.18, -0.89), 15.16)
+        self.play(
+            frame.animate.reorient(17, -24, 0, (-5.5, -0.82, -0.67), 15.86),
+            run_time=30
+        )
+
+        self.add(exposure, waves)
+        self.play(
+            FadeIn(exposure, run_time=5),
+            FadeOut(waves, time_span=(3, 5)),
+        )
+
+        # Zoom in on the film
+        self.play(
+            frame.animate.reorient(0, 0, 0, (0.5, 0.07, 0.0), 0.15),
+            film_image.animate.set_opacity(0.1).set_anim_args(time_span=(0, 5)),
+            run_time=8,
+        )
+        self.play(frame.animate.reorient(0, 0, 0, (0.41, 0.03, 0.0), 0.05), run_time=8)
+
+
+class SinglePointOnFilm(DiffractionGratingScene):
+    def construct(self):
+        # Reference image
+        img = ImageMobject("SinglePointHologram")
+        img.set_height(FRAME_HEIGHT)
+        img.fix_in_frame()
+        img.set_opacity(0.75)
+        # self.add(img)
+
+        # Create object and reference wave
+        # Much of this copied from CreateZonePlate below
+        frame = self.frame
+        frame.set_field_of_view(42 * DEGREES)
+        axes = ThreeDAxes()
+        self.set_floor_plane("xz")
+
+        wave_width = 100
+        wave_number = 2
+        frequency = 1
+
+        source_point = GlowDot(color=WHITE, radius=0.5)
+        source_point.move_to([0., -0.75, 4.62])
+        obj_wave = LightWaveSlice(source_point)
+        obj_wave.set_decay_factor(0.7)
+
+        obj_wave.set_width(wave_width)
+        obj_wave.rotate(PI / 2, RIGHT, about_point=ORIGIN)
+        obj_wave.move_to(source_point)
+        obj_wave.set_wave_number(wave_number)
+        obj_wave.set_frequency(frequency)
+
+        # Add film
+        plate_border = Rectangle(4, 4)
+        plate_border.set_fill(BLACK, 0)
+        plate_border.set_stroke(WHITE, 2)
+        plate_body = Square3D()
+        plate_body.set_color(BLACK, 0.9)
+        plate_body.replace(plate_border, stretch=True)
+        plate_body.set_shading(0.1, 0.1, 0)
+
+        plate = Group(plate_body, plate_border)
+        plate.center()
+
+        film_label = Text("Film")
+        film_label.next_to(plate, UP)
+        film_label.set_backstroke(BLACK, 3)
+        film_label.set_z_index(1)
+
+        # Spherical waves
+        wave_stack = Group(
+            obj_wave.copy().rotate(PI / 2, OUT).set_opacity(0.1)
+            for x in range(30)
+        )
+        wave_stack.set_opacity(0.07)
+        wave_stack.arrange_to_fit_width(4)
+        wave_stack.sort(lambda p: -p[0])
+        wave_stack.move_to(obj_wave)
+
+        # Label object wave
+        source_label = Text("Object (idealized point)", font_size=36)
+        source_label.next_to(source_point, UR, buff=MED_LARGE_BUFF)
+        source_label.shift(0.25 * UL)
+        source_label.set_backstroke(BLACK, 2)
+        source_arrow = Arrow(source_label["Object"].get_bottom(), source_point.get_center(), buff=0.1)
+        source_arrow.set_perpendicular_to_camera(self.frame)
+        source_label.add(source_arrow)
+        source_label.rotate(PI / 2, DOWN, about_point=source_point.get_center())
+        obj_point = TrueDot()
+        obj_point.move_to(source_point)
+
+        obj_wave_label = Text("Object wave")
+        obj_wave_label.rotate(PI / 2, LEFT)
+        obj_wave_label.next_to(source_point, IN, buff=0.1)
+        obj_wave_label.set_backstroke(BLACK, 2)
+
+        frame.reorient(-88, -12, 0, (0.22, -0.81, 4.62), 13.76)
+        self.add(plate, film_label)
+        self.add(obj_wave, wave_stack, obj_point, source_point)
+        self.add(source_label)
+        self.wait()
+
+        # Slowly reorient
+        self.play(
+            frame.animate.reorient(-14, -11, 0, (0.27, 0.14, 3.59), 6.17),
+            Rotate(source_label, PI / 2, UP, about_point=source_point.get_center()),
+            Rotate(wave_stack, PI / 2, UP, about_point=source_point.get_center()),
+            run_time=10
+        )
+
+        # Look from above
+        self.play(
+            FadeOut(wave_stack),
+            FadeOut(source_label),
+            FadeOut(plate),
+            FadeOut(film_label),
+            obj_wave.animate.set_decay_factor(0.5),
+            frame.animate.reorient(0, -90, 0, source_point.get_center(), 4).set_anim_args(run_time=4)
+        )
+        self.wait(2)
 
 
 class ExplainWaveVisualization(DiffractionGratingScene):
@@ -512,7 +1217,7 @@ class CreateZonePlate(DiffractionGratingScene):
         p1 = film.get_right()
         p2 = p0 + dist * direction
         p3 = p1 + dist * direction
-        ref_wave.target.set_points([p2, p0, p3, p1, p3, p0])
+        ref_wave.target.set_points([p2, p0, p3, p1])
 
         self.play(
             MoveToTarget(ref_wave, run_time=2),
@@ -620,6 +1325,9 @@ class CreateZonePlate(DiffractionGratingScene):
         exposure.replace(plate_body, stretch=True)
         exposure.set_shape(0.5 * plate_body.get_width(), 0.25)
         exposure.move_to(plate_body.get_center(), LEFT).shift(1e-2 * OUT)
+        full_exposure = exposure.copy()
+        full_exposure.replace(plate_body, stretch=True)
+        full_exposure.shift(2e-2 * OUT)
         exposure.save_state()
         exposure.stretch(0, 0, about_edge=LEFT)
 
@@ -723,8 +1431,13 @@ class CreateZonePlate(DiffractionGratingScene):
         )
 
         # Just kinda hang for a bit
-        self.play(trg_point.animate.move_to(film.get_right()), run_time=8)
-        self.wait(4)
+        time0 = self.time
+        globals().update(locals())
+        frame.add_updater(lambda m: m.set_theta(math.sin(0.1 * (self.time - time0)) * 30 * DEGREES))
+        self.play(trg_point.animate.move_to(film.get_left()), run_time=10)
+        self.play(trg_point.animate.move_to(film.get_right()), run_time=20)
+        self.wait(5)
+        frame.clear_updaters()
 
         # Change wavelength
         trg_wave_number = 16
@@ -825,8 +1538,13 @@ class CreateZonePlate(DiffractionGratingScene):
             run_time=5
         )
         self.wait(4)
+
+        # Go to othe side
+        frame.reorient(-171, -18, 0, (0.12, -0.21, -1.33), 9.31)
+        self.remove(film)
+        self.add(exposure, plate_border)
         self.play(
-            frame.animate.reorient(0, -21, 0, (2.68, 0.3, -1.56), 0.38),
+            frame.animate.reorient(0, -16, 0, (-3.06, -0.18, -3.19), 1.49),
             run_time=10,
         )
         self.wait(4)
@@ -855,6 +1573,82 @@ class CreateZonePlate(DiffractionGratingScene):
         return waves
 
 
+class ShowEffectOfChangedReferenceAngle(InteractiveScene):
+    def construct(self):
+        # Create object and reference wave
+        frame = self.frame
+        axes = ThreeDAxes()
+        self.set_floor_plane("xz")
+
+        wave_width = 100
+        wave_number = 10
+        frequency = 1
+
+        source_points = GlowDots([OUT, 10 * OUT], color=WHITE, radius=0.0)
+        wave = LightWaveSlice(source_points)
+
+        wave.set_width(wave_width)
+        wave.rotate(PI / 2, RIGHT, about_point=ORIGIN)
+        wave.center()
+        wave.set_wave_number(wave_number)
+        wave.set_frequency(frequency)
+        wave.set_max_amp(1.5)
+        wave.set_decay_factor(0.5)
+
+        # Add film
+        plate_border = Rectangle(16, 9)
+        plate_border.set_fill(BLACK, 0)
+        plate_border.set_stroke(WHITE, 2)
+        plate_body = Square3D()
+        plate_body.set_color(BLACK, 0.9)
+        plate_body.replace(plate_border, stretch=True)
+        plate_body.set_shading(0.1, 0.1, 0)
+        exposure = LightIntensity(source_points)
+        exposure.set_decay_factor(0)
+        exposure.set_wave_number(wave_number)
+        exposure.replace(plate_border, stretch=True).shift(1e-2 * OUT)
+        exposure.set_color(WHITE, 0.85)
+
+        plate = Group(plate_border, plate_body)
+        film = Group(plate, exposure)
+        film.set_height(4)
+        film.set_z(-2)
+
+        film_label = Text("Film")
+        film_label.next_to(plate, UP)
+        film_label.set_backstroke(BLACK, 3)
+        film_label.set_z_index(1)
+
+        source_dot = GlowDot(source_points.get_points()[0], color=WHITE, radius=0.5)
+
+        self.add(film, exposure, wave, source_points, source_dot)
+
+        # Add reference wave lines
+        plate_border.insert_n_curves(max(25 - plate_border.get_num_curves(), 0))
+        film_points = np.array([plate_border.pfp(a) for a in np.linspace(0, 1, 500)])
+        ref_lines = Line().replicate(len(film_points))
+        ref_lines.set_stroke(GREEN_SCREEN, width=1, opacity=0.25)
+
+        def update_ref_lines(lines):
+            for line, point in zip(lines, film_points):
+                line.set_points_as_corners([source_points.get_points()[1], point])
+            return lines
+
+        ref_lines.add_updater(update_ref_lines)
+
+        self.add(ref_lines)
+
+        # Move reference wave
+        frame.reorient(-52, -29, 0, (1.21, -0.31, 1.52), 9.28)
+        self.wait()
+        self.play(
+            Rotate(source_points, 60 * DEGREES, axis=UP, about_point=source_points.get_points()[0], run_time=5),
+            frame.animate.reorient(-48, -46, 0, (1.17, -0.41, 1.55), 9.28),
+            run_time=5
+        )
+        self.wait(3)
+
+
 class DoubleSlit(DiffractionGratingScene):
     def construct(self):
         # Show a diffraction grating
@@ -872,14 +1666,22 @@ class DoubleSlit(DiffractionGratingScene):
         in_wave.set_width(full_width)
         in_wave.move_to(ORIGIN, UP)
 
+        line = Line(0.5 * IN + 16 * DOWN + 0.5 * OUT, 0.5 * IN + 0.5 * OUT)
+        graph = self.get_graph_over_wave(line, in_wave)
+
+        self.add(graph)
         self.add(n_slit_wall)
         self.add(in_wave)
 
-        frame.reorient(-38, 72, 0, (-0.39, 0.31, 0.11), 7.85)
+        frame.reorient(-31, 67, 0, (-3.1, 1.32, -1.12), 15.89)
         self.play(
             frame.animate.reorient(33, 65, 0, (1.24, 1.09, -0.39), 10.01),
-            Restore(n_slit_wall, time_span=(4, 6)),
-            run_time=14
+            UpdateFromAlphaFunc(
+                graph,
+                lambda m, a: m.set_stroke(width=3 * clip(there_and_back_with_pause(2 * a, 0.7), 0, 1)),
+            ),
+            Restore(n_slit_wall, time_span=(9, 12)),
+            run_time=15
         )
 
         # Preview the other side
@@ -1407,6 +2209,9 @@ class FullDiffractionGrating(DiffractionGratingScene):
         self.wait(4)
 
         # Highlight the higher order beams
+        in_wave.scale(0)
+        out_wave.scale(0)
+
         beam_point = GlowDot(color=WHITE, radius=3)
         beam_point.move_to(1000 * UP)
         beam_outlines = Line().replicate(2)
@@ -1538,7 +2343,7 @@ class FullDiffractionGrating(DiffractionGratingScene):
         )
         self.wait(2)
         self.play(
-            ShowCreation(lines, lag_ratio=0.01, run_time=2),
+            ShowCreation(lines, lag_ratio=0.01, run_time=2, suspend_mobject_updating=True),
             FadeOut(VGroup(v_line, d_line, arc, theta_sym))
         )
         self.wait(4)
@@ -1781,21 +2586,21 @@ class FullDiffractionGrating(DiffractionGratingScene):
         line1.add_updater(lambda m: m.match_points(lines[15]))
         line1.resume_updating()
 
-        def get_dist_point():
+        def get_dist_point(wavelength):
             dist_to_point = get_norm(point_tracker.get_center())
             d = get_norm(sources.get_points()[1] - sources.get_points()[0])
-            angle = math.asin(1.0 / wave_number / d)
+            angle = math.asin(wavelength / d)
             return rotate_vector(UP, -angle) * dist_to_point
 
         self.add(lines, line1, diff_label_group, sine)
         wall_center = sources.get_points()[15]
-        scale_factors = [0.5, 2.0, 1.5, 1.0 / 1.5]
+        scale_factors = [0.5, 2.0, 1.5, 1.0 / 1.5][:-1]
         for scale_factor in scale_factors:
             arrows = VGroup(Vector(0.3 * RIGHT, thickness=1), Vector(0.3 * LEFT, thickness=1))
             arrows.arrange(RIGHT if scale_factor < 1 else LEFT, buff=0.25)
             arrows.always.move_to(d_label)
             self.play(
-                UpdateFromFunc(point_tracker, lambda m: m.move_to(get_dist_point())),
+                UpdateFromFunc(point_tracker, lambda m: m.move_to(get_dist_point(1.0 / wave_number))),
                 MaintainPositionRelativeTo(d_sine_theta, lambda_label),
                 sources.animate.scale(scale_factor, about_point=wall_center),
                 wall.animate.scale(scale_factor, about_point=wall_center),
@@ -1803,6 +2608,43 @@ class FullDiffractionGrating(DiffractionGratingScene):
                 run_time=5,
             )
             self.play(FadeOut(arrows))
+
+        # Show double
+        if False:  # This was just a temporary insert, not to be run in general
+            d_angle2, d_angle3 = [
+                angle_of_vector(get_dist_point(n / wave_number)) - angle_of_vector(get_dist_point((n + 1) / wave_number))
+                for n in (1, 2)
+            ]
+            sine.clear_updaters()
+            new_rhs = Tex(Rf"= 1.00 \lambda", t2c={R"\lambda": TEAL})
+            new_rhs.set_height(0.8 * lambda_label.get_height())
+            factor = new_rhs.make_number_changeable("1.00")
+            factor_tracker = ValueTracker(1.0)
+            globals().update(locals())
+            new_rhs.add_updater(lambda m: m[1].set_value(factor_tracker.get_value()))
+            new_rhs.always.move_to(lambda_label, RIGHT)
+
+            self.play(
+                d_sine_theta.animate.next_to(new_rhs, LEFT, buff=0.05).shift(0.02 * DOWN),
+                lambda_label.animate.set_opacity(0),
+                FadeIn(new_rhs)
+            )
+            self.play(
+                Rotate(point_tracker, -d_angle2, about_point=ORIGIN),
+                Rotate(sine, -d_angle2, about_point=sine.get_start()),
+                factor_tracker.animate.set_value(2.0),
+                MaintainPositionRelativeTo(d_sine_theta, lambda_label),
+                run_time=5,
+            )
+            self.wait()
+            self.play(
+                Rotate(point_tracker, -d_angle2, about_point=ORIGIN),
+                Rotate(sine, -d_angle2, about_point=sine.get_start()),
+                factor_tracker.animate.set_value(3.0),
+                MaintainPositionRelativeTo(d_sine_theta, lambda_label),
+                run_time=5,
+            )
+            self.wait()
 
         # Show the angle match
         self.revert_to_checkpoint("d*sin(theta)")
@@ -1894,10 +2736,20 @@ class FullDiffractionGrating(DiffractionGratingScene):
         # Change the slit distance zoomed out
         for scale_factor in scale_factors:
             self.play(
-                UpdateFromFunc(point_tracker, lambda m: m.move_to(get_dist_point())),
+                UpdateFromFunc(point_tracker, lambda m: m.move_to(get_dist_point(1.0 / wave_number))),
                 sources.animate.scale(scale_factor, about_point=wall_center),
                 wall.animate.scale(scale_factor, about_point=wall_center),
                 run_time=5,
+            )
+            self.wait()
+
+        # Double and triple the angle
+        for n in [1, 2]:
+            d_angle = angle_of_vector(get_dist_point(n / wave_number)) - angle_of_vector(get_dist_point((n + 1) / wave_number))
+            self.play(
+                Rotate(point_tracker, -d_angle, about_point=ORIGIN),
+                frame.animate.set_height(450),
+                run_time=5
             )
             self.wait()
 
@@ -2091,8 +2943,8 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         equations.set_backstroke(BLACK, 10)
 
         annotations = VGroup(
-            Text("The distances between adjascent fringes and\nthe object should differ by one wavelength"),
-            TexText(R"First-order Taylor's expansion: \\ \quad \\ $\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"),
+            Text("The distances between adjacent fringes and\nthe object should differ by one wavelength"),
+            TexText(R"First-order Taylor expansion: \\ \quad \\ $\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"),
             TexText(R"$d$ is small compared to $x$, \\ so $d^2$ is small compared to $xd$"),
         )
         annotations[2].scale(0.8)
@@ -2121,12 +2973,19 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
 
         self.play(
             FadeIn(terms, lag_ratio=0.1, time_span=(0, 2)),
+            Write(equations, time_span=(2, 5)),
             frame.animate.reorient(0, 0, 0, (-0.3, 2.5, 0.0), 9).set_anim_args(run_time=3),
-            FadeIn(braces, time_span=(4, 5)),
-            FadeIn(brace_texts, time_span=(4.5, 5.5)),
-            Write(equations, time_span=(2, 6)),
-            FadeIn(annotations, lag_ratio=0.01, time_span=(5, 6)),
         )
+        self.wait()
+        self.play(LaggedStart(
+            FadeIn(annotations[0]),
+            FadeIn(braces),
+            FadeIn(brace_texts),
+        ))
+        self.wait()
+        self.play(FadeIn(annotations[1]))
+        self.play(FadeIn(annotations[2]))
+        self.wait()
 
         # Reduce down to the key conclusion
         key_equation = Tex(R"d \cdot \sin(\theta') = \lambda", **kw)
@@ -2313,6 +3172,8 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
             run_time=3
         )
         self.play(film_dot.animate.set_y(3.5), run_time=5)
+        self.play(film_dot.animate.set_y(0.5), run_time=6)
+        self.play(film_dot.animate.set_y(3.5), run_time=6)
 
         # Show zone plate and observer
         equaiton_group = VGroup(box, key_equation, diff_eq, diff_eq_label, implication)
@@ -2619,58 +3480,580 @@ class SuperpositionOfPoints(InteractiveScene):
         output_dir = Path(self.file_writer.output_directory)
         data_file = output_dir.parent.joinpath("data", "PiCreaturePointCloud.csv")
         all_points = np.loadtxt(data_file, delimiter=',', skiprows=1)
+        all_points = all_points[:int(0.8 * len(all_points))]  # Limit to first 400k
         dot_cloud = DotCloud(all_points)
         dot_cloud.set_height(4).center()
-        all_points = dot_cloud.get_points().copy()
+        dot_cloud.rotate(50 * DEGREES, DOWN)
+        points = dot_cloud.get_points().copy()
+        max_z_index = np.argmax(points[:, 2])
+        min_z_index = np.argmin(points[:, 2])
+        all_points = np.array([points[max_z_index], points[min_z_index], *points])
 
         dot_cloud.set_points(all_points[:100_000])
         dot_cloud.set_radius(0.02)
 
-        # Add axes
-        axes = ThreeDAxes(x_range=(-8, 8), y_range=(-8, 8), z_range=(-8, 8))
-        axes.move_to(2 * IN)
+        # Add axes, points and plate
+        plate_center = 5 * IN
+        axes = ThreeDAxes(x_range=(-6, 6), y_range=(-4, 4), z_range=(-4, 8))
+        axes.shift(plate_center - axes.get_origin())
 
-        frame.reorient(-30, -6, 0, (-0.6, 1.16, -0.31), 12.00)
-        self.add(axes)
-
-        # Two point zone plate pattern
-        dot_cloud.set_points(np.array([LEFT, LEFT, 1000 * OUT]))
-        dot_cloud.set_color(WHITE)
+        dist_point = 1000 * OUT
+        dot_cloud.set_points(np.array([2 * LEFT, 2 * LEFT, dist_point]))
+        dot_cloud.set_color(BLUE_B)
         dot_cloud.set_radius(0.5)
         dot_cloud.set_glow_factor(2)
 
         plate = LightIntensity(dot_cloud)
+        plate.set_color(WHITE)
         plate.set_shape(16, 9)
         plate.set_height(6)
-        plate.move_to(2 * IN)
-        plate.set_wave_number(8)
+        plate.move_to(plate_center)
+        plate.set_wave_number(16)
         plate.set_max_amp(4)
         plate.set_decay_factor(0)
 
-        self.add(dot_cloud)
+        frame.reorient(-66, -21, 0, (-0.95, 0.41, -1.11), 11.73)
+        frame.clear_updaters()
+        frame.add_ambient_rotation(1 * DEGREES)
+        self.add(axes)
         self.add(plate)
-
-        self.play(
-            dot_cloud.animate.set_points([LEFT, RIGHT + OUT, 1000 * OUT]),
-            run_time=3
-        )
-
-        self.play(
-            dot_cloud.animate.set_points([LEFT, RIGHT + OUT, 2 * UR, 1000 * OUT]),
-            run_time=3
-        )
-
-        self.play(
-            dot_cloud.animate.set_points([UL, DL + OUT, 2 * UR, DR + IN, 1000 * OUT]),
-            run_time=3
-        )
-
-        # Full cloud
-        dot_cloud.set_points(all_points)
-        dot_cloud.set_radius(1e-2)
-        dot_cloud.set_opacity(0.5)
         self.add(dot_cloud)
 
+        # Separate out pair of points
+        point_sets = [
+            (2 * LEFT, RIGHT + OUT),
+            (2 * LEFT + IN, RIGHT + OUT),
+            (2 * LEFT + IN, 3 * RIGHT + 2 * IN),
+            (LEFT + 2 * OUT, RIGHT + OUT),
+        ]
+
+        for point_set in point_sets:
+            self.play(
+                dot_cloud.animate.set_points([*point_set, dist_point]),
+                run_time=3
+            )
+            self.wait(2)
+
+        # Zoom in on the plate
+        frame.clear_updaters()
+        self.play(
+            frame.animate.reorient(-18, -11, 0, (-1.52, 1.18, -0.67), 0.92),
+            run_time=6,
+        )
+        self.wait()
+
+        dot_cloud.set_points([point_sets[-1][0], dist_point])
+        plate.set_max_amp(3)
+        self.wait(2)
+        dot_cloud.set_points([point_sets[-1][1], dist_point])
+        self.wait(2)
+        dot_cloud.set_points([*point_sets[-1], dist_point])
+        plate.set_max_amp(4)
+        self.play(
+            frame.animate.reorient(61, -7, 0, (0.61, -0.11, -2.44), 8.66),
+            run_time=5
+        )
+
+        # Add on up to 32 points
+        self.play(
+            dot_cloud.animate.set_points([*all_points[:2], dist_point]).set_radius(0.2),
+            run_time=8
+        )
+        frame.clear_updaters()
+        frame.add_ambient_rotation(0.5 * DEGREES)
+        self.play(
+            UpdateFromAlphaFunc(
+                dot_cloud,
+                lambda m, a: m.set_points(
+                    [*all_points[:int(2 + a * 29)], dist_point]
+                )
+            ),
+            UpdateFromFunc(plate, lambda m: m.set_max_amp(2 * np.sqrt(dot_cloud.get_num_points()))),
+            run_time=10
+        )
+        self.wait(2)
+
+        # Describe as a combination of zone plates
+        zone_plates = Group()
+        for point in all_points[:30]:
+            zone_plate = LightIntensity(DotCloud([point, dist_point]))
+            zone_plate.set_uniforms(dict(plate.uniforms))
+            zone_plate.match_points(plate)
+            zone_plate.set_max_amp(10)
+            zone_plate.set_opacity(0.25)
+            zone_plates.add(zone_plate)
+
+        zone_plates.deactivate_depth_test()
+        self.remove(plate)
+        self.add(zone_plates)
+
+        for n, zone_plate, point in zip(it.count(1), zone_plates, all_points[:30]):
+            zone_plate.shift(1e-2 * IN)
+            zone_plate.save_state()
+            zone_plate.scale(0).move_to(point).set_max_amp(2).set_opacity(1)
+
+        self.play(
+            UpdateFromAlphaFunc(plate, lambda m, a: m.set_opacity(1 - there_and_back_with_pause(a, 0.6))),
+            LaggedStartMap(Restore, zone_plates, lag_ratio=0.05),
+            frame.animate.reorient(66, -18, 0, (1.44, 0.59, -6.18), 16.05),
+            run_time=5
+        )
+        self.play(FadeOut(zone_plates))
+
+        # Move around points
+        frame.clear_updaters()
+        frame.add_ambient_rotation(-2 * DEGREES)
+
+        dot_cloud.save_state()
+        self.play(dot_cloud.animate.shift(2 * IN), run_time=3)
+        self.play(Rotate(dot_cloud, PI / 2 , axis=UP, about_point=ORIGIN), run_time=3)
+        self.play(Restore(dot_cloud), run_time=3)
+        self.wait(3)
+
+        # Show reference wave through it
+        rect = Rectangle().replace(plate, stretch=True)
+        rect.insert_n_curves(20)
+        globals().update(locals())
+        beam = VGroup(
+            Line(25 * OUT, rect.pfp(a))
+            for a in np.linspace(0, 1, 500)
+        )
+        beam.set_stroke(GREEN_SCREEN, (1, 0), 0.5)
+        beam.shuffle()
+
+        self.play(
+            ShowCreation(beam, lag_ratio=1 / len(beam)),
+            FadeOut(dot_cloud),
+            frame.animate.reorient(83, -27, 0, (-0.63, -0.01, -0.79), 14.36),
+            run_time=2
+        )
+        frame.clear_updaters()
+        dot_cloud.set_color(GREEN_SCREEN)
+
+        # Test
+        frame.reorient(-26, -9, 0, (0.15, -0.46, -0.42), 15.13)
+        self.play(frame.animate.reorient(0, 0, 0, (0.53, 0.16, -0.0), 0.22), run_time=8)
+        self.play(frame.animate.reorient(3, 0, 0, (0.14, -0.02, 0.03), 0.22), run_time=8)
+
+        # Build it up again from the other side
+        self.play(
+            plate.animate.set_opacity(0.2).set_anim_args(time_span=(1.6, 1.7)),
+            frame.animate.reorient(162, -3, 0, (-0.89, 0.06, 0.03), 12.77),
+            run_time=4,
+        )
+        dot_cloud.set_points([all_points[0], dist_point])
+        plate.set_max_amp(2 * np.sqrt(dot_cloud.get_num_points()))
+        self.add(dot_cloud)
+        self.wait()
+        self.play(
+            UpdateFromAlphaFunc(
+                dot_cloud,
+                lambda m, a: m.set_points(
+                    [*all_points[:int(1 + a * 29)], dist_point]
+                )
+            ),
+            UpdateFromFunc(plate, lambda m: m.set_max_amp(2 * np.sqrt(dot_cloud.get_num_points()))),
+            frame.animate.reorient(207, -8, 0, (-0.89, 0.06, 0.03), 12.77),
+            run_time=12
+        )
+        self.wait(2)
+
+        # Close up on cloud
+        self.play(
+            FadeOut(beam),
+            FadeOut(dot_cloud),
+            frame.animate.reorient(185, -39, 0, (-0.89, 0.06, 0.03), 12.77).set_anim_args(run_time=3),
+        )
+        dot_cloud.set_color(BLUE).set_glow_factor(1).set_radius(0.1)
+        self.play(
+            FadeOut(plate),
+            FadeIn(dot_cloud),
+            frame.animate.reorient(115, -16, 0, (0.33, 0.28, -0.52), 4.38),
+            run_time=3
+        )
+
+        # Denser cloud
+        self.play(
+            UpdateFromAlphaFunc(
+                dot_cloud,
+                lambda m, a: m.set_points(
+                    [*all_points[:int(interpolate(31, 500, a))], dist_point]
+                ).set_glow_factor(interpolate(1, 0, a**0.25)).set_radius(interpolate(0.1, 0.02, a**0.25)).set_opacity(interpolate(1, 0.5, a**0.25)),
+            ),
+            run_time=4
+        )
+        self.play(
+            UpdateFromAlphaFunc(
+                dot_cloud,
+                lambda m, a: m.set_points(
+                    [*all_points[:int(interpolate(500, len(all_points), a**3))]]
+                ).set_radius(interpolate(0.02, 0.01, a)).set_opacity(interpolate(0.5, 0.2, a)),
+            ),
+            run_time=5
+        )
+
+        # Add better updating film
+        sheet_dots = self.create_dot_sheet(plate.get_width(), plate.get_height(), radius=0.025, z=plate.get_z())
+        self.color_sheet_by_exposure(sheet_dots, dot_cloud.get_points()[:1000], wave_number=32)
+        self.add(sheet_dots)
+
+        self.play(
+            frame.animate.reorient(-16, -45, 0, (-0.97, 1.52, -1.18), 8.67),
+            run_time=2,
+        )
+        frame.clear_updaters()
+        frame.add_ambient_rotation(3 * DEGREES)
+
+        # Move dot cloud around
+        self.play(
+            dot_cloud.animate.shift(2 * IN),
+            UpdateFromFunc(sheet_dots, lambda m: self.color_sheet_by_exposure(m, dot_cloud.get_points()[:1000], wave_number=32)),
+            run_time=3,
+        )
+        self.wait(3)
+        self.play(
+            Rotate(dot_cloud, 120 * DEGREES, axis=UP),
+            UpdateFromFunc(sheet_dots, lambda m: self.color_sheet_by_exposure(m, dot_cloud.get_points()[:1000], wave_number=32)),
+            run_time=3,
+        )
+        self.wait(3)
+        self.play(
+            dot_cloud.animate.shift(3 * OUT),
+            UpdateFromFunc(sheet_dots, lambda m: self.color_sheet_by_exposure(m, dot_cloud.get_points()[:1000], wave_number=32)),
+            run_time=3,
+        )
+        self.wait(3)
+
+    def color_sheet_by_exposure(self, sheet_dots, point_sources, wave_number=16, opacity=0.5):
+        centers = sheet_dots.get_points()
+        diffs = centers[:, np.newaxis, :] - point_sources[np.newaxis, :, :]
+        distances = np.linalg.norm(diffs, axis=2)
+        amplitudes = np.exp(distances * TAU * 1j * wave_number).sum(1)
+        mags = abs(amplitudes)
+        max_amp = 2 * np.sqrt(len(point_sources))
+        opacities = opacity * np.clip(mags / max_amp, 0, 1)
+        sheet_dots.set_opacity(opacities)
+        return sheet_dots
+
+    def create_dot_sheet(self, width=4, height=4, radius=0.05, z=0, make_3d=False):
+        # Add dots
+        dots = DotCloud()
+        dots.set_color(WHITE)
+        dots.to_grid(int(height / radius), int(width / radius))
+        dots.set_shape(width, height)
+        dots.set_radius(radius)
+        dots.set_z(z)
+
+        if make_3d:
+            dots.make_3d()
+
+        return dots
+
+
+class ComplexWavesBase(InteractiveScene):
+    def construct(self):
+        # Transition from TwoInterferingWaves to just show the object wave
+        # Maybe it makes more sense to do that from TwoInterferingWaves itself?
+        pass
+
+
+class ComplexWaves(InteractiveScene):
+    def construct(self):
+        # Add Amplitude(R + O)^2
+        amp_expr = Tex(R"\text{Amplitude}(R + O)^2", font_size=60)
+        amp_expr.to_edge(UP)
+        RO = amp_expr[R"R + O"][0]
+        RO.save_state()
+        RO.set_x(0)
+
+        self.play(FadeIn(RO, UP))
+        self.wait()
+        self.play(
+            Write(amp_expr[R"\text{Amplitude}("][0]),
+            Write(amp_expr[R")"][0], time_span=(1.5, 2)),
+            Restore(RO, time_span=(0.5, 1.5)),
+            run_time=2
+        )
+        self.wait()
+        self.play(FadeIn(amp_expr[R"^2"], 0.25 * UP, scale=0.8))
+        self.wait()
+
+        # Expand as functions of (x, y, z, t)
+        amp_expr.save_state()
+
+        O_func = Tex("O(x, y, z, t)", font_size=60)
+        O_func.move_to(UP + LEFT)
+
+        xyz_rect = SurroundingRectangle(O_func["x, y, z"], buff=0.05)
+        xyz_rect.set_stroke(YELLOW)
+        xyz_rect.stretch(1.3, 1, about_edge=DOWN)
+        xyz_rect.round_corners()
+        xyz_arrow = Vector(2.2 * UP, thickness=5).next_to(xyz_rect, DOWN)
+        xyz_arrow.set_backstroke(BLACK, 4)
+        space_words = Text("Point\nin space", font_size=36)
+        space_words.next_to(xyz_rect, UP)
+
+        time_rect = SurroundingRectangle(O_func["t"], buff=0.05)
+        time_rect.match_height(xyz_rect, stretch=True, about_edge=DOWN)
+        time_rect.align_to(xyz_rect, DOWN)
+        time_rect.round_corners()
+        time_rect.set_stroke(TEAL)
+        time_word = Text("Time", font_size=36)  # Make a clock instead?
+        time_word.next_to(time_rect, UP)
+
+        self.play(
+            amp_expr.animate.scale(0.5).to_corner(UL).set_opacity(0.5),
+            TransformFromCopy(amp_expr["O"][0], O_func["O"][0]),
+        )
+        self.play(Write(O_func[1:], run_time=1, stroke_color=WHITE))
+        O_func.set_backstroke(BLACK, 5)
+        self.play(
+            ShowCreation(xyz_rect),
+            GrowArrow(xyz_arrow),
+            FadeIn(space_words, lag_ratio=0.1),
+        )
+        self.wait()
+        self.play(
+            FadeTransformPieces(space_words, time_word),
+            ShowCreation(time_rect),
+        )
+        self.wait()
+
+        # Show O(x, y, z, t) outputting to a real line
+        frequency = 0.25
+        amplitude = 1.5
+        out_arrow = Vector(RIGHT, thickness=4)
+        out_arrow.next_to(O_func, RIGHT)
+
+        real_line = NumberLine((-2, 2, 0.25), width=4, tick_size=0.025, big_tick_spacing=1.0, longer_tick_multiple=3)
+        real_line.next_to(out_arrow, RIGHT)
+        plane = ComplexPlane(
+            (-2, 2), (-2, 2),
+            width=4,
+            background_line_style=dict(
+                stroke_color=GREY_C,
+                stroke_width=1,
+            ),
+            faded_line_style=dict(
+                stroke_color=GREY_D,
+                stroke_width=0.5,
+                stroke_opacity=1,
+            )
+        )
+        plane.move_to(real_line)
+
+        real_line.add_numbers(list(range(-2, 3)), font_size=16)
+        plane.add_coordinate_labels(font_size=16)
+        plane.set_stroke(behind=True)
+
+        time_tracker = ValueTracker()
+        time_tracker.add_updater(lambda m, dt: m.increment_value(dt))
+
+        def get_z():
+            return amplitude * np.exp(complex(0, TAU * frequency * time_tracker.get_value()))
+
+        def get_z_point():
+            return plane.n2p(get_z())
+
+        real_indicator = Group(GlowDot(radius=0.3), TrueDot().make_3d())
+
+        def update_real_indicator(indicator):
+            x = get_z().real
+            indicator.move_to(plane.n2p(x))
+            if x > 0:
+                indicator.set_color(interpolate_color(GREY_D, BLUE, x / amplitude))
+            else:
+                indicator.set_color(interpolate_color(GREY_D, RED, -x / amplitude))
+
+        real_indicator.add_updater(update_real_indicator)
+
+        self.add(time_tracker)
+        self.play(
+            GrowArrow(out_arrow),
+            FadeIn(real_line),
+            xyz_rect.animate.set_stroke(width=1),
+            time_rect.animate.set_stroke(width=1),
+            FadeOut(time_word),
+            FadeIn(real_indicator)
+        )
+        self.wait(12)
+
+        # Extend to complex plane
+        complex_label = Text("Complex Plane")
+        complex_label.next_to(plane, UP)
+        complex_dot = real_indicator.copy()
+        complex_dot.clear_updaters()
+        complex_dot.set_color(YELLOW)
+        complex_dot.f_always.move_to(get_z_point)
+
+        complex_arrow = Vector(RIGHT)
+        complex_arrow.set_color(YELLOW)
+        complex_arrow.f_always.put_start_and_end_on(plane.get_origin, get_z_point)
+
+        v_line = Line(UP, DOWN)
+        v_line.set_stroke(GREY, 1)
+        v_line.f_always.put_start_and_end_on(get_z_point, real_indicator.get_center)
+
+        self.add(plane, real_indicator)
+        self.play(
+            FadeIn(plane),
+            FadeOut(real_line),
+            FadeIn(complex_arrow),
+            FadeIn(v_line),
+        )
+        self.play(Write(complex_label))
+        self.wait(12)
+
+        # Get into a good position
+        time_tracker.resume_updating()
+        self.wait_until(lambda: 0.4 < time_tracker.get_value() % 4 < 0.5)
+        time_tracker.suspend_updating()
+
+        # Mention amplitude and phase
+        angle = complex_arrow.get_angle()
+        rot_arrow = complex_arrow.copy()
+        rot_arrow.clear_updaters()
+        rot_arrow.rotate(-angle, about_point=rot_arrow.get_start())
+        rot_arrow.set_opacity(0)
+        brace = Brace(rot_arrow, UP, buff=0)
+        amp_label = brace.get_text("Amplitude", font_size=30)
+        amp_label.set_backstroke(BLACK, 5)
+        VGroup(brace, amp_label).rotate(angle, about_point=complex_arrow.get_start())
+
+        arc = Arc(0, angle, radius=0.5, arc_center=plane.get_origin())
+        phase_label = Text("Phase", font_size=30)
+        phase_label.next_to(arc, RIGHT, SMALL_BUFF)
+        phase_label.shift(SMALL_BUFF * UR)
+
+        self.play(
+            GrowFromCenter(brace),
+            Write(amp_label),
+        )
+        self.wait()
+        self.play(
+            ShowCreation(arc),
+            TransformFromCopy(rot_arrow, complex_arrow, path_arc=angle),
+            Write(phase_label)
+        )
+        self.wait()
+
+        # Re-emphasize the real component
+        self.play(FadeOut(VGroup(brace, amp_label, arc, phase_label)))
+        time_tracker.resume_updating()
+
+        plane.save_state()
+        self.play(
+            plane.animate.fade(0.75),
+            FadeIn(real_line),
+            complex_arrow.animate.set_fill(opacity=0.25)
+        )
+        self.wait(8)
+        self.play(
+            Restore(plane),
+            FadeOut(real_line),
+            complex_arrow.animate.set_fill(opacity=1.0)
+        )
+        self.wait(8)
+        self.play(
+            FadeOut(xyz_rect),
+            FadeOut(time_rect),
+            FadeOut(xyz_arrow),
+            FadeOut(out_arrow),
+            FadeOut(real_indicator),
+            FadeOut(v_line),
+        )
+
+        # Package back into R + O expression
+        time_tracker.suspend_updating()
+
+        self.remove(complex_label)
+        plane.add(complex_label)
+        self.add(plane, complex_arrow)
+        self.play(
+            Transform(O_func, amp_expr.saved_state[-3], remover=True),
+            Restore(amp_expr),
+            plane.animate.move_to(DOWN),
+            run_time=2
+        )
+
+        # Add R arrow
+        O_arrow = complex_arrow
+        O_arrow.clear_updaters()
+        R_arrow = Vector().set_color(TEAL)
+        comb_arrow = Vector().set_color(GREY_B)
+
+        R_phase_tracker = ValueTracker(30 * DEGREES)
+        O_phase_tracker = ValueTracker(complex_arrow.get_angle())
+        R_amp = math.sqrt(2)
+        O_amp = 1.5
+
+        def get_R():
+            return R_amp * np.exp(complex(0, R_phase_tracker.get_value()))
+
+        def get_O():
+            return O_amp * np.exp(complex(0, O_phase_tracker.get_value()))
+
+        R_arrow.put_start_and_end_on(plane.get_origin(), plane.n2p(get_R()))
+        comb_arrow.put_start_and_end_on(plane.get_origin(), plane.n2p(get_R() + get_O()))
+
+        R_label = self.get_arrow_label(R_arrow, "R")
+        O_label = self.get_arrow_label(O_arrow, "O")
+        comb_label = self.get_arrow_label(comb_arrow, "R + O", buff=-0.5)
+
+        self.play(
+            GrowArrow(R_arrow),
+            O_arrow.animate.shift(R_arrow.get_vector()),
+            FadeIn(R_label),
+            FadeIn(O_label),
+        )
+        self.play(
+            FadeIn(comb_arrow),
+            FadeIn(comb_label),
+        )
+        self.wait()
+
+        R_arrow.add_updater(lambda m: m.put_start_and_end_on(
+            plane.get_origin(), plane.n2p(get_R())
+        ))
+        O_arrow.add_updater(lambda m: m.put_start_and_end_on(
+            plane.n2p(get_R()), plane.n2p(get_R() + get_O()),
+        ))
+        comb_arrow.add_updater(lambda m: m.put_start_and_end_on(
+            plane.get_origin(), plane.n2p(get_R() + get_O()),
+        ))
+
+        # Write |R + O|^2
+        lhs = Text("Film opacity = ")
+        lhs.move_to(amp_expr, LEFT)
+        lhs.set_color(GREY_B)
+        new_amp_expr = Tex(R"|R + O|^2")
+        new_amp_expr.next_to(lhs, RIGHT)
+
+        self.play(
+            ReplacementTransform(amp_expr["(R + O)^2"][0], new_amp_expr),
+            FadeOut(amp_expr["Amplitude"][0]),
+        )
+        self.play(FadeIn(lhs, lag_ratio=0.1))
+        self.wait()
+
+        # Change R and O values
+        self.play(
+            R_phase_tracker.animate.set_value(-45 * DEGREES),
+            O_phase_tracker.animate.set_value(-45 * DEGREES), run_time=2
+        )
+        self.wait()
+        self.play(
+            O_phase_tracker.animate.set_value(-125 * DEGREES),
+            R_phase_tracker.animate.set_value(45 * DEGREES),
+            run_time=3
+        )
+        self.wait()
+
+    def get_arrow_label(self, arrow, symbol, font_size=24, buff=0.25):
+        result = Tex(symbol, font_size=font_size)
+        result.match_color(arrow)
+        result.add_updater(lambda m: m.move_to(arrow.get_center() + buff * normalize(rotate_vector(arrow.get_vector(), PI / 2))))
+        return result
 
 
 ## Old ##
