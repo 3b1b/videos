@@ -348,11 +348,9 @@ class Outline(InteractiveScene):
 class GoalOfRediscovery(TeacherStudentsScene):
     def construct(self):
         # Test
-        for pi in self.pi_creatures:
-            pi.body.insert_n_curves(100)
         morty = self.teacher
         self.play(
-            self.change_students("pondering", "confused", "erm", look_at=self.screen),
+            self.change_students("pondering", "confused", "maybe", look_at=self.screen),
             morty.change("guilty"),
         )
         self.wait(2)
@@ -1314,6 +1312,110 @@ class ModeledAs2D(InteractiveScene):
         self.wait()
 
 
+class ThinkingAboutRediscovery(InteractiveScene):
+    def construct(self):
+        # Test
+        randy = Randolph()
+        randy.body.insert_n_curves(100)
+        randy.to_corner(DL)
+        bubble = ThoughtBubble(filler_shape=(5, 2))
+        bubble.pin_to(randy)
+        bubble = bubble[0]
+        bubble.set_fill(opacity=0)
+
+        rect = FullScreenRectangle().set_fill(BLACK, 1)
+        rect.append_points([rect.get_points()[-1], *bubble[-1].get_points()])
+        self.add(rect, randy)
+
+        self.play(
+            randy.change('pondering'),
+            Write(bubble, stroke_color=WHITE, lag_ratio=0.2)
+        )
+        self.play(Blink(randy))
+        self.wait(2)
+        self.play(randy.change('thinking', bubble.get_top()))
+        self.play(Blink(randy))
+        self.play(randy.change('tease', bubble.get_top()))
+        for _ in range(2):
+            self.play(Blink(randy))
+            self.wait(2)
+
+
+class IntroduceFormalSection(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        morty = self.teacher
+        stds = self.students
+
+        self.play(LaggedStart(
+            stds[0].change("sassy", morty.eyes),
+            stds[1].says("Okay but really, why\ndoes it work?", look_at=morty.eyes),
+            stds[2].change("angry", look_at=morty.eyes),
+            morty.change("guilty"),
+        ))
+        self.wait(2)
+        self.play(LaggedStart(
+            morty.change("tease"),
+            stds[0].change("well"),
+            stds[1].debubble(),
+            stds[2].change("hesitant"),
+            lag_ratio=0.5
+        ))
+        self.wait(2)
+
+        # Show complex plane
+        plane = ComplexPlane((-3, 3), (-3, 3))
+        plane.faded_lines.set_stroke(BLUE_E, 1, 0.5)
+        plane.axes.set_stroke(width=1)
+        plane.background_lines.set_stroke(width=1)
+        plane.set_width(3)
+        plane.next_to(self.hold_up_spot, UP)
+
+        a, b = (2, 1.5)
+        z = complex(a, b)
+        z_dot = GlowDot(plane.n2p(0), color=WHITE)
+        z_dot.set_z_index(1)
+        h_line = Line(plane.n2p(0), plane.n2p(a))
+        v_line = Line(plane.n2p(a), plane.n2p(z))
+        h_line.set_stroke(YELLOW, 3)
+        v_line.set_stroke(RED, 3)
+        a_label = Tex(R"a", font_size=24)
+        a_label.match_color(h_line)
+        a_label.next_to(h_line, DOWN, buff=0.1)
+        b_label = Tex(R"bi", font_size=24)
+        b_label.match_color(v_line)
+        b_label.next_to(v_line, RIGHT, buff=0.1)
+        z_label = Tex(R"a + bi", font_size=24)
+        z_label.next_to(v_line.get_end(), UR, SMALL_BUFF)
+        VGroup(a_label, b_label, z_label).set_backstroke(BLACK, 3)
+
+        self.play(
+            morty.change("raise_right_hand", plane),
+            self.change_students(*3 * ["pondering"], look_at=plane),
+            FadeIn(plane, UP),
+        )
+        self.play(
+            ShowCreation(h_line),
+            FadeIn(a_label, 0.5 * RIGHT),
+            z_dot.animate.move_to(plane.n2p(a)),
+        )
+        self.play(
+            ShowCreation(v_line),
+            FadeIn(b_label, 0.5 * UP),
+            z_dot.animate.move_to(plane.n2p(z)),
+        )
+        self.play(
+            TransformMatchingShapes(VGroup(a_label, b_label).copy(), z_label)
+        )
+        self.play(self.change_students("erm", "thinking", "well", look_at=plane))
+        self.wait(2)
+
+
+class HoldUpEquation(InteractiveScene):
+    def construct(self):
+        pass
+
+
 class GaborQuote(InteractiveScene):
     def construct(self):
         # Test
@@ -1328,6 +1430,19 @@ class GaborQuote(InteractiveScene):
         self.play(Write(quote), run_time=2, lag_ratio=0.01)
         self.play(quote["looking for something"].animate.set_color(BLUE), lag_ratio=0.1)
         self.play(quote["finding something else"].animate.set_color(TEAL), lag_ratio=0.1)
+        self.wait()
+
+
+class GaborQuote2(InteractiveScene):
+    def construct(self):
+        # Test
+        quote = TexText(R"""
+            ``In holography, nature\\
+            is on the inventor's side''
+        """, font_size=60, alignment="")
+        quote.to_edge(RIGHT)
+
+        self.play(Write(quote), run_time=2, lag_ratio=0.1)
         self.wait()
 
 
@@ -1397,6 +1512,49 @@ class ComplexConjugateFact(InteractiveScene):
         self.wait()
 
 
+class PrepareComplexAlgebra(InteractiveScene):
+    def construct(self):
+        # Test
+        lines = VGroup(
+            Tex(R"R \cdot (1 - \text{Opacity})"),
+            Tex(R"R \cdot (1 - c|R + O|^2)"),
+            Tex(R"R - c R \cdot |R + O|^2"),
+        )
+        lines.arrange(DOWN, buff=0.75)
+        lines.to_edge(UP)
+
+        label = Text("Wave beyond\nthe film")
+        arrow = Vector(LEFT)
+        arrow.next_to(lines[0], RIGHT)
+        label.next_to(arrow, RIGHT)
+
+        rect = SurroundingRectangle(lines[2][R"R \cdot |R + O|^2"], buff=0.05)
+        rect.set_stroke(TEAL, 2)
+
+        self.play(
+            FadeIn(label, lag_ratio=0.1),
+            GrowArrow(arrow),
+            FadeIn(lines[0], LEFT),
+        )
+        self.wait()
+        self.play(
+            TransformMatchingStrings(lines[0].copy(), lines[1]),
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            TransformMatchingStrings(lines[1].copy(), lines[2]),
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            ShowCreation(rect),
+            lines[:2].animate.set_opacity(0.5),
+            lines[2][R"R - c"].animate.set_opacity(0.5),
+        )
+        self.wait()
+
+
 class ComplexAlgebra(InteractiveScene):
     def construct(self):
         # Add first lines
@@ -1410,7 +1568,7 @@ class ComplexAlgebra(InteractiveScene):
         lines.arrange(DOWN, buff=LARGE_BUFF)
         lines.to_edge(UP)
 
-        label = Text("Wave beyond\nthe film")
+        label = Text("Part of the wave\nbeyond the film", font_size=36)
         arrow = Vector(LEFT)
         arrow.next_to(lines[0], RIGHT)
         label.next_to(arrow, RIGHT)
@@ -1616,6 +1774,49 @@ class ComplexAlgebra(InteractiveScene):
             low_box.get_top() + 1.0 * UP,
             low_box.get_top(),
         ).set_stroke(WHITE, 2)
+
+
+class PlaneAfterFilm(InteractiveScene):
+    def construct(self):
+        # Test
+        image = ImageMobject("FilmFromBehind")
+        image.set_height(FRAME_HEIGHT)
+        image.set_height(FRAME_HEIGHT)
+        image.fix_in_frame()
+        # self.add(image)
+
+        rect = Polygon(
+            (2.56, -0.12, 0.0),
+            (5.69, -2.51, 0.0),
+            (6.25, 1.31, 0.0),
+            (2.72, 2.62, 0.0),
+        )
+        rect.set_fill(BLACK, 0.75)
+        rect.set_stroke(BLUE, 10)
+        rect.fix_in_frame()
+        words = Text("True on this\n2D Plane")
+
+        self.set_floor_plane("xz")
+        self.frame.reorient(73, -24, 0, (-1.53, -0.68, 4.14), 9.19)
+
+        self.play(
+            DrawBorderThenFill(rect),
+            FadeIn(words),
+        )
+        self.wait()
+
+
+class LookingAtScreen(TeacherStudentsScene):
+    def construct(self):
+        self.play(
+            self.change_students("confused", "pondering", "maybe", look_at=self.screen),
+            self.teacher.change("well")
+        )
+        self.wait(5)
+
+
+class EndScreen(PatreonEndScreen):
+    pass
 
 
 # Old stubs

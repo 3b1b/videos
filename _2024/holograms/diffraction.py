@@ -632,11 +632,7 @@ class LightExposingFilm(DiffractionGratingScene):
         self.wait(3)
 
         # Shift back
-        self.remove(ref_wave_label)
-        self.remove(exp_expr)
-        self.remove(film_label)
-        # shift_label = TexText(R"Shift back phase $\rightarrow$")
-        shift_label = TexText(R"Tiny change $\rightarrow$")
+        shift_label = TexText(R"Shift back phase $\rightarrow$")
         shift_label.rotate(PI / 2, DOWN)
         shift_label.set_backstroke(BLACK, 5)
         shift_label.move_to(5 * OUT + 1.25 * UP)
@@ -1089,6 +1085,8 @@ class ExplainWaveVisualization(DiffractionGratingScene):
 
 
 class CreateZonePlate(DiffractionGratingScene):
+    samples = 4
+
     def construct(self):
         # Create object and reference wave
         frame = self.frame
@@ -1122,20 +1120,24 @@ class CreateZonePlate(DiffractionGratingScene):
             ])
 
         # Add film
-        plate_border = Rectangle(16, 9)
-        plate_border.set_fill(BLACK, 0)
-        plate_border.set_stroke(WHITE, 2)
+        plate = Rectangle(16, 9)
+        plate.set_height(4)
+        plate.set_stroke(WHITE, 1, 0.5).set_fill(BLACK, 0.0)
+        plate.set_shading(0.1, 0.1, 0)
+        plate.apply_depth_test()
         plate_body = Square3D()
+        plate_group = Group(plate_body, plate)
+
         plate_body.set_color(BLACK, 0.9)
-        plate_body.replace(plate_border, stretch=True)
-        plate_body.set_shading(0.1, 0.1, 0)
+        plate_body.set_shape(plate.get_width(), plate.get_height())
+        plate_body.move_to(plate.get_center() + 1e-2 * IN)
+
         exposure = LightIntensity(DotCloud(get_all_sources()))
         exposure.set_decay_factor(0)
         exposure.set_wave_number(wave_number)
-        exposure.replace(plate_border, stretch=True).shift(1e-2 * OUT)
+        exposure.replace(plate, stretch=True).shift(1e-2 * OUT)
         exposure.set_color(WHITE, 0.85)
 
-        plate = Group(plate_border, plate_body)
         film = Group(plate, exposure)
         film.set_height(4)
         film.set_z(-2)
@@ -1151,7 +1153,7 @@ class CreateZonePlate(DiffractionGratingScene):
         source_label.shift(0.25 * UL)
         source_label.set_backstroke(BLACK, 2)
         source_arrow = Arrow(source_label["Object"].get_bottom(), source_point.get_center(), buff=0.1)
-        source_arrow.set_perpendicular_to_camera(self.frame)
+        source_arrow.always.set_perpendicular_to_camera(self.frame)
         obj_point = TrueDot()
         obj_point.move_to(source_point)
 
@@ -1160,8 +1162,9 @@ class CreateZonePlate(DiffractionGratingScene):
         obj_wave_label.next_to(source_point, IN, buff=0.1)
         obj_wave_label.set_backstroke(BLACK, 2)
 
-        frame.reorient(16, -9, 0, (-0.74, 0.32, -0.49), 7.08)
-        self.add(obj_wave, plate, film_label)
+        frame.reorient(41, -9, 0, (-0.72, 0.27, -0.49), 6.75)
+        self.add(plate_group, obj_wave, film_label)
+        plate_body.move_to(plate.get_center() + 1e-2 * IN)
         self.play(
             FadeIn(source_point),
             FadeIn(source_label),
@@ -1184,7 +1187,7 @@ class CreateZonePlate(DiffractionGratingScene):
         ref_wave_label.set_backstroke(BLACK, 2)
 
         wave_fronts = Group(
-            plate_body.copy().set_color([BLUE, RED][z % 2], 0.15).shift(0.5 * z * OUT)
+            plate.copy().set_color([BLUE, RED][z % 2], 0.15).shift(0.5 * z * OUT)
             for z in range(4, 16)
         )
         for front in wave_fronts:
@@ -1322,11 +1325,11 @@ class CreateZonePlate(DiffractionGratingScene):
         )
 
         # Look off center
-        exposure.replace(plate_body, stretch=True)
-        exposure.set_shape(0.5 * plate_body.get_width(), 0.25)
-        exposure.move_to(plate_body.get_center(), LEFT).shift(1e-2 * OUT)
+        exposure.replace(plate, stretch=True)
+        exposure.set_shape(0.5 * plate.get_width(), 0.25)
+        exposure.move_to(plate.get_center(), LEFT).shift(1e-2 * OUT)
         full_exposure = exposure.copy()
-        full_exposure.replace(plate_body, stretch=True)
+        full_exposure.replace(plate, stretch=True)
         full_exposure.shift(2e-2 * OUT)
         exposure.save_state()
         exposure.stretch(0, 0, about_edge=LEFT)
@@ -1339,7 +1342,7 @@ class CreateZonePlate(DiffractionGratingScene):
             ).shift(O_point - m[0].get_center())
         )
 
-        trg_point = VectorizedPoint(plate_body.get_center())
+        trg_point = VectorizedPoint(plate.get_center())
         obj_line.add_updater(lambda m: m.put_start_and_end_on(source_point.get_center(), trg_point.get_center()))
         ref_line.add_updater(lambda m: m.move_to(trg_point.get_center() + 0.02 * RIGHT, IN))
 
@@ -1360,7 +1363,7 @@ class CreateZonePlate(DiffractionGratingScene):
 
         # Look to halfwavelength point
         trg_x = 0.9
-        mid_line = Line(source_point.get_center(), plate_body.get_center())
+        mid_line = Line(source_point.get_center(), plate.get_center())
         mid_line.set_stroke(TEAL, 2)
         mid_line_label = Tex("D", font_size=30).rotate(PI / 2, LEFT)
         mid_line_label.next_to(mid_line, LEFT)
@@ -1373,7 +1376,7 @@ class CreateZonePlate(DiffractionGratingScene):
             FadeOut(ref_line),
             FadeOut(ref_graph),
             frame.animate.reorient(0, -62, 0, (-0.27, -1.26, -1.17), 7.38),
-            trg_point.animate.move_to(plate_body.get_center() + trg_x * RIGHT),
+            trg_point.animate.move_to(plate.get_center() + trg_x * RIGHT),
             run_time=3
         )
         d_line_label.next_to(obj_line.get_center(), RIGHT, buff=SMALL_BUFF)
@@ -1420,7 +1423,7 @@ class CreateZonePlate(DiffractionGratingScene):
         self.wait(2)
 
         # Grow rings fully
-        exposure.replace(plate_body, stretch=True).shift(0.01 * OUT)
+        exposure.replace(plate, stretch=True).shift(0.01 * OUT)
 
         self.add(exposure, round_exposure)
         self.play(
@@ -1539,10 +1542,10 @@ class CreateZonePlate(DiffractionGratingScene):
         )
         self.wait(4)
 
-        # Go to othe side
+        # Go to other side
         frame.reorient(-171, -18, 0, (0.12, -0.21, -1.33), 9.31)
         self.remove(film)
-        self.add(exposure, plate_border)
+        self.add(exposure, plate)
         self.play(
             frame.animate.reorient(0, -16, 0, (-3.06, -0.18, -3.19), 1.49),
             run_time=10,
@@ -1599,23 +1602,23 @@ class ShowEffectOfChangedReferenceAngle(InteractiveScene):
         plate_border = Rectangle(16, 9)
         plate_border.set_fill(BLACK, 0)
         plate_border.set_stroke(WHITE, 2)
-        plate_body = Square3D()
-        plate_body.set_color(BLACK, 0.9)
-        plate_body.replace(plate_border, stretch=True)
-        plate_body.set_shading(0.1, 0.1, 0)
+        plate = Square3D()
+        plate.set_color(BLACK, 0.9)
+        plate.replace(plate_border, stretch=True)
+        plate.set_shading(0.1, 0.1, 0)
         exposure = LightIntensity(source_points)
         exposure.set_decay_factor(0)
         exposure.set_wave_number(wave_number)
         exposure.replace(plate_border, stretch=True).shift(1e-2 * OUT)
         exposure.set_color(WHITE, 0.85)
 
-        plate = Group(plate_border, plate_body)
-        film = Group(plate, exposure)
+        plate_group = Group(plate_border, plate)
+        film = Group(plate_group, exposure)
         film.set_height(4)
         film.set_z(-2)
 
         film_label = Text("Film")
-        film_label.next_to(plate, UP)
+        film_label.next_to(plate_group, UP)
         film_label.set_backstroke(BLACK, 3)
         film_label.set_z_index(1)
 
@@ -3724,6 +3727,24 @@ class SuperpositionOfPoints(InteractiveScene):
         )
         self.wait(3)
 
+        # Transform point into film
+        frame.clear_updaters()
+        frame.reorient(111, -13, 0, (-0.54, 0.04, -1.71), 5.72)
+        pre_dots = dot_cloud.copy()
+        pre_dots.set_points(dot_cloud.get_points()[:len(sheet_dots.get_points())])
+
+        self.play(
+            TransformFromCopy(pre_dots, sheet_dots, time_span=(2, 8)),
+            frame.animate.reorient(17, -19, 0, (0.82, 0.57, -3.07), 7.99),
+            run_time=12
+        )
+        self.play(
+            dot_cloud.animate.shift(2 * IN),
+            UpdateFromFunc(sheet_dots, lambda m: self.color_sheet_by_exposure(m, dot_cloud.get_points()[:1000], wave_number=32)),
+            run_time=3,
+        )
+        self.wait()
+
     def color_sheet_by_exposure(self, sheet_dots, point_sources, wave_number=16, opacity=0.5):
         centers = sheet_dots.get_points()
         diffs = centers[:, np.newaxis, :] - point_sources[np.newaxis, :, :]
@@ -4026,7 +4047,7 @@ class ComplexWaves(InteractiveScene):
         lhs = Text("Film opacity = ")
         lhs.move_to(amp_expr, LEFT)
         lhs.set_color(GREY_B)
-        new_amp_expr = Tex(R"|R + O|^2")
+        new_amp_expr = Tex(R"c|R + O|^2")
         new_amp_expr.next_to(lhs, RIGHT)
 
         self.play(
@@ -4054,6 +4075,75 @@ class ComplexWaves(InteractiveScene):
         result.match_color(arrow)
         result.add_updater(lambda m: m.move_to(arrow.get_center() + buff * normalize(rotate_vector(arrow.get_vector(), PI / 2))))
         return result
+
+
+class StateOnA2DScreen(InteractiveScene):
+    def construct(self):
+        # Add screen
+        frame = self.frame
+        self.set_floor_plane("xz")
+
+        screen = ScreenRectangle()
+        screen.set_height(6)
+        screen.set_stroke(WHITE, 1)
+
+        source_points = DotCloud(np.random.random((10, 3)))
+        source_points.set_width(8)
+        source_points.move_to(screen, OUT)
+        wave2d = LightWaveSlice(source_points)
+        wave2d.replace(screen, stretch=True)
+        wave2d.set_wave_number(4)
+        wave2d.set_frequency(1)
+        wave2d.set_max_amp(4)
+        wave2d.set_decay_factor(0)
+
+        axes = ThreeDAxes((-5, 5), (-5, 5), (-5, 5))
+
+        self.add(axes)
+        self.add(screen)
+        self.add(wave2d)
+        self.wait(4)
+
+        # Zoom out to 3d waves
+        wave3d = Group(
+            # wave2d.copy().rotate(PI / 2, RIGHT).stretch(10, 2).move_to(ORIGIN, IN)
+        )
+        n_slices = 3
+        for x in np.linspace(-5, 5, n_slices):
+            wave_slice = wave2d.copy()
+            wave_slice.scale(20)
+            wave_slice.rotate(PI / 2, UP)
+            wave_slice.move_to(ORIGIN, IN)
+            wave_slice.set_x(x)
+            wave_slice.set_opacity(1.0 / n_slices)
+            wave3d.add(wave_slice)
+
+        for wave in wave3d:
+            wave.set_opacity(1)
+            wave.set_max_amp(10)
+
+        # wave3d[n_slices // 2].set_opacity(0.75)
+        # wave3d.set_opacity(0.1)
+        # wave3d.save_state()
+        # wave3d.stretch(0, dim=2, about_point=ORIGIN)
+
+        self.play(
+            frame.animate.reorient(101, -1, 0, (-0.53, 0.13, 7.82), 13.40),
+            FadeIn(wave3d, time_span=(3, 8)),
+            run_time=8,
+        )
+
+        # Linger and collapse
+        self.wait(4)
+        self.play(
+            LaggedStart(*(
+                wave.animate.match_points(wave2d).set_opacity(1).shift(1e-2 * IN)
+                for wave in wave3d
+            ), lag_ratio=0),
+            frame.animate.reorient(25, -6, 0, (0.18, 0.29, 0.15), 9.15).set_anim_args(time_span=(1, 4)),
+            run_time=4
+        )
+        self.wait(8)
 
 
 ## Old ##
