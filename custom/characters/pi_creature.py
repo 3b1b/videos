@@ -77,7 +77,6 @@ class PiCreature(SVGMobject):
             self.flip()
         if start_corner is not None:
             self.to_corner(start_corner)
-        self.refresh_triangulation()
 
     def get_svg_file_path(self, mode):
         folder = get_directories()["pi_creature_images"]
