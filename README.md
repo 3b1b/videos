@@ -5,3 +5,42 @@ This almost entirely consists of scenes generated using the library [Manim](http
 Note, while the library Manim itself is open source and under the MIT license, the contents of this project are intended only to be used for 3Blue1Brown videos themselves.
 
 Copyright © 2022 3Blue1Brown
+
+## Installation
+1. Install `manimgl` [from source](https://github.com/3b1b/manim?tab=readme-ov-file#directly-windows) since the latest version published is not up to date.
+2. Ensure Latex is installed, for example on Ubuntu
+   ```sh
+   sudo apt install texlive
+   sudo apt install texlive-latex-extra
+   sudo apt install texlive-fonts-extra
+   sudo apt install texlive-science
+   ```
+3. Clone this repository to run the video samples
+   ```sh
+   git clone git@github.com:3b1b/videos.git
+   cd videos
+   ```
+
+### Running a video
+
+1. Setup includes (if you don't want to modify your path)
+    ```sh
+    cd _2023/optics_puzzles
+    vi e_field.py
+    ```
+    And add the following to the top
+    ```python
+    import sys
+    sys.path.append(".")
+    sys.path.append("..")
+    sys.path.append("../..")
+    ```
+
+2. Run an example
+   ```sh
+   manimgl e_field.py
+   ```
+   Or
+   ```sh
+   manimgl e_field.py WavesIn3D
+   ```
