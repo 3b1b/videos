@@ -1,4 +1,4 @@
-import gensim.downloader
+import gensim
 import tiktoken
 from pathlib import Path
 
@@ -99,7 +99,21 @@ def get_word_to_vec_model(model_name="glove-wiki-gigaword-50"):
     return model
 
 
-# For chapter 1
+def get_direction_lines(axes, direction, n_lines=500, color=YELLOW, line_length=1.0, stroke_width=3):
+    line = Line(ORIGIN, line_length * normalize(direction))
+    line.insert_n_curves(20).set_stroke(width=(0, stroke_width, stroke_width, stroke_width, 0))
+    lines = line.replicate(n_lines)
+    lines.set_color(color)
+    for line in lines:
+        line.move_to(axes.c2p(
+            random.uniform(*axes.x_range),
+            random.uniform(*axes.y_range),
+            random.uniform(*axes.z_range),
+        ))
+    return lines
+
+
+# For chapter 5
 
 
 class LyingAboutTokens2(InteractiveScene):
@@ -650,7 +664,7 @@ class Word2VecScene(InteractiveScene):
         self,
         word,
         coords=None,
-        stroke_width=5,
+        thickness=5,
         color=YELLOW,
         func_name: str | None = "E",
         buff=0.05,
@@ -662,19 +676,21 @@ class Word2VecScene(InteractiveScene):
         if coords is None:
             coords = self.basis @ self.model[word.lower()]
         point = axes.c2p(*coords)
-        label_config["label_buff"] = buff
-        return LabeledArrow(
+        label_config.update(label_buff=buff)
+        if "label_rotation" not in label_config:
+            label_config.update(label_rotation=self.label_rotation)
+        arrow = LabeledArrow(
             axes.get_origin(),
             point,
-            stroke_width=stroke_width,
-            stroke_color=color,
-            flat_stroke=False,
+            thickness=thickness,
+            fill_color=color,
             label_text=word if func_name is None else f"{func_name}({word})",
             buff=0,
             direction=direction,
-            label_rotation=self.label_rotation,
             **label_config,
         )
+        arrow.always.set_perpendicular_to_camera(self.frame)
+        return arrow
 
 
 class AmbientWordEmbedding(Word2VecScene):
@@ -890,7 +906,7 @@ class ThreeDSpaceExample(InteractiveScene):
 class HighDimensionalSpaceCompanion(InteractiveScene):
     def construct(self):
         # Vector example
-        word = Text("aardvark")
+        word = Text("bank")
         vect = WeightMatrix(shape=(8, 1))
         vect.next_to(word, RIGHT, buff=LARGE_BUFF)
         vect.set_height(3)
@@ -902,11 +918,18 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
 
         # Draw vague embedding space
         bubble_center = np.array([0.5, -2.25, 0])
-        base_bubble: VMobject = ThoughtBubble()[-1]
+        base_bubble: VMobject = OldThoughtBubble()[-2][-1]
         base_bubble.set_shape(8, 7)
         base_bubble.rotate(PI)
-        base_bubble.set_fill(GREY_D, opacity=[0.5, 1, 0.5])
+        base_bubble.set_fill(GREY_D, opacity=[0.25, 1, 0.25])
         base_bubble.move_to(bubble_center)
+        bubble_label = Text("Word vector space", font_size=60)
+        bubble_label.move_to(base_bubble)
+        bubble_label.shift(2.0 * UP)
+        # bubble_label = Text("Embedding space", font_size=72)
+        q_marks = Tex("???", font_size=120)
+        q_marks.next_to(bubble_label, DOWN, buff=0.5)
+        base_bubble.add(bubble_label, q_marks)
 
         def get_bubble():
             result = base_bubble.copy()
@@ -917,19 +940,14 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
             return result
 
         bubble = always_redraw(get_bubble)
-        bubble_label = Text("Embedding space", font_size=72)
-        bubble_label.move_to(bubble)
-        bubble_label.shift(1.0 * UP)
-        q_marks = Tex("???", font_size=120)
-        q_marks.next_to(bubble_label, DOWN, buff=0.5)
         self.add(bubble)
-        self.add(bubble_label, q_marks)
         self.wait(10)
 
         # Show dimension
         brace = Brace(vect, RIGHT)
         label = VGroup(
-            Integer(12288),
+            # Integer(12288),
+            Integer(10000),
             Text("coordinates")
         )
         label.arrange(DOWN, aligned_edge=LEFT)
@@ -944,7 +962,7 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
         dimension_label.arrange(RIGHT, buff=0.05, aligned_edge=UP)
         dimension_label.match_height(bubble_label).scale(0.8)
         dimension_label.set_color(YELLOW)
-        dimension_label.next_to(bubble_label, DOWN)
+        dimension_label.next_to(q_marks, DOWN, buff=0.5)
 
         self.play(
             GrowFromCenter(brace),
@@ -955,8 +973,8 @@ class HighDimensionalSpaceCompanion(InteractiveScene):
         self.play(
             TransformFromCopy(label[0], dimension_label[0]),
             FadeInFromPoint(dimension_label[1], label[0].get_center()),
-            q_marks.animate.next_to(dimension_label, DOWN, buff=0.5)
         )
+        self.remove(dimension_label)
         bubble_label.add(*dimension_label)
 
         self.wait(10)
@@ -1009,7 +1027,8 @@ class LearningEmbeddings(Word2VecScene):
 
         # Get sample words
         # phrase = "The first big idea is that as a model tweaks and tunes its weights"
-        phrase = "The big idea as a model tweaks and tunes its weights"
+        # phrase = "The big idea as a model tweaks and tunes its weights"
+        phrase = "Features can be encoded with directions in a big space"
         words = [word.lower() for word in phrase.split(" ")]
 
         # Get initial and final states
@@ -1019,12 +1038,12 @@ class LearningEmbeddings(Word2VecScene):
             for word in words
         ])
         true_embeddings -= true_embeddings.mean(0)
-        true_embeddings *= 3 / np.abs(true_embeddings).max(0)
+        true_embeddings *= 5 / np.abs(true_embeddings).max(0)
 
         np.random.seed(2)
         thetas = np.arange(0, TAU, TAU / len(words))
         thetas += np.random.uniform(-0.5, 0.5, thetas.size)
-        amps = np.random.uniform(2, 4, thetas.size)
+        amps = np.random.uniform(3, 5, thetas.size)
         initial_coords = [
             rotate_vector(amp * OUT, theta, axis=UP)
             for theta, amp in zip(thetas, amps)
@@ -1045,7 +1064,7 @@ class LearningEmbeddings(Word2VecScene):
         labels = VGroup()
         for vect in word_vects:
             label = vect.label
-            label.set_backstroke(BLACK, 8)
+            label.set_backstroke(BLACK, 3)
             label.vect = vect
             label.add_updater(lambda m: m.move_to(
                 m.vect.get_end() + 0.25 * normalize(m.vect.get_vector())
@@ -1061,13 +1080,13 @@ class LearningEmbeddings(Word2VecScene):
 
         # Tweak and tune weights
         turn_animation_into_updater(
-            ApplyMethod(frame.reorient, -29, 70, 0, (-0.04, -0.18, -0.5), 8.00),
+            ApplyMethod(frame.reorient, 4, 72, 0, (-0.04, -0.18, -0.5), 8.00),
             run_time=8
         )
         self.progressive_nudges(word_vects, true_embeddings, 8)
         frame.clear_updaters()
         turn_animation_into_updater(
-            ApplyMethod(frame.reorient, 29, 70, 0, (-0.32, 0.02, -0.54), 7.68),
+            ApplyMethod(frame.reorient, 38, 69, 0, (-0.32, 0.02, -0.54), 7.68),
             run_time=12
         )
         self.progressive_nudges(word_vects, true_embeddings, 12)
@@ -1099,7 +1118,7 @@ class KingQueenExample(Word2VecScene):
         frame = self.frame
         self.add_plane()
         self.plane.rotate(90 * DEGREES, LEFT)
-        frame.reorient(-178, 9, 178, (1.72, -3, 0.73), 6.0)
+        frame.reorient(-178, 9, 178, (2.15, 1.12, 0.56), 6.84)
 
         # Initial word vectors
         words = ["man", "woman", "king", "queen"]
@@ -1146,7 +1165,7 @@ class KingQueenExample(Word2VecScene):
             part.set_fill(vect.get_color())
 
         # Show man and woman vectors
-        diff = FillArrow(man.get_end(), woman.get_end(), buff=0, stroke_color=YELLOW)
+        diff = Arrow(man.get_end(), woman.get_end(), buff=0, stroke_color=YELLOW)
         diff.set_fill(YELLOW, opacity=0.8)
         diff.set_backstroke(BLACK, 3)
         self.play(
@@ -1240,6 +1259,7 @@ class KingQueenExample(Word2VecScene):
         # Show a few other examples
         word_pairs = [
             ("uncle", "aunt"),
+            ("brother", "sister"),
             ("nephew", "niece"),
             ("father", "mother"),
             ("son", "daughter"),
@@ -1260,6 +1280,8 @@ class KingQueenExample(Word2VecScene):
             new_coords += (adj_point - new_coords[0])
             vect1 = self.get_labeled_vector(word1, color=colors[2], label_config=label_config, coords=new_coords[0])
             vect2 = self.get_labeled_vector(word2, color=colors[3], label_config=label_config, coords=new_coords[1])
+            vect2.put_start_and_end_on(ORIGIN, vect1.get_end() + diff.get_vector() + np.random.uniform(-0.1, 0.1, 3))
+            vect2.label.next_to(vect2.get_end(), LEFT)
 
             new_equation = self.get_equation1(word2, word1, "woman", "man")
             new_equation.move_to(equation, RIGHT)
@@ -1306,9 +1328,15 @@ class KingQueenExample(Word2VecScene):
             )
         )
 
+    def get_labeled_vector(self, *args, **kwargs):
+        kwargs.update(func_name = None)
+        kwargs.update(thickness=3)
+        return super().get_labeled_vector(*args, **kwargs)
+
     def get_equation1(self, word1, word2, word3, word4, colors=None):
         equation = TexText(
-            Rf"E({word1}) - E({word2}) $\approx$ E({word3}) - E({word4})",
+            # Rf"E({word1}) - E({word2}) $\approx$ E({word3}) - E({word4})",
+            Rf"{{{word1}}} - {{{word2}}} $\approx$ {{{word3}}} - {{{word4}}}",
             font_size=48
         )
         equation.fix_in_frame(True)
@@ -1318,20 +1346,21 @@ class KingQueenExample(Word2VecScene):
             for word, color in zip(words, colors):
                 equation[word].set_fill(color)
         pieces = VGroup(
-            equation[f"E({word1})"][0],
+            equation[f"{{{word1}}}"][0],
             equation["-"][0],
-            equation[f"E({word2})"][0],
+            equation[f"{{{word2}}}"][0],
             equation[R"$\approx$"][0],
-            equation[f"E({word3})"][0],
+            equation[f"{{{word3}}}"][0],
             equation["-"][1],
-            equation[f"E({word4})"][0],
+            equation[f"{{{word4}}}"][0],
         )
         pieces.fix_in_frame(True)
         return pieces
 
     def get_equation2(self, word1, word2, word3, word4, colors=None):
         equation = TexText(
-            Rf"E({word1}) + E({word2}) - E({word3}) $\approx$ E({word4})",
+            # Rf"E({word1}) + E({word2}) - E({word3}) $\approx$ E({word4})",
+            Rf"{{{word1}}} + {{{word2}}} - {{{word3}}} $\approx$ {{{word4}}}",
             font_size=48
         )
         equation.fix_in_frame(True)
@@ -1341,13 +1370,13 @@ class KingQueenExample(Word2VecScene):
             for word, color in zip(words, colors):
                 equation[word].set_fill(color)
         pieces = VGroup(
-            equation[f"E({word1})"],
+            equation[f"{{{word1}}}"],
             equation["+"],
-            equation[f"E({word2})"],
+            equation[f"{{{word2}}}"],
             equation["-"],
-            equation[f"E({word3})"],
+            equation[f"{{{word3}}}"],
             equation[R"$\approx$ "],
-            equation[f"E({word4})"],
+            equation[f"{{{word4}}}"],
         )
         pieces.fix_in_frame(True)
         return pieces
@@ -1535,7 +1564,7 @@ class SizeDirection(Word2VecScene):
                 ReplacementTransform(vect_groups[i].labels, vect_groups[i + 1].labels),
             )
             self.wait()
-        
+
 
 class PluralityDirection(Word2VecScene):
     def construct(self):
@@ -2199,7 +2228,7 @@ class RicherEmbedding(InteractiveScene):
         return result
 
 
-# For chapter 2
+# For chapter 6
 
 class MultipleMoleEmbeddings(Word2VecScene):
     default_frame_orientation = (0, 0)
@@ -2536,3 +2565,481 @@ class UpdatingPoetryEmbedding(RicherEmbedding):
             frame.animate.reorient(22, -23, 0, (-0.86, 0.4, -0.35), 7.15),
             run_time=5
         )
+
+
+# For chapter 7
+
+class SimpleSpaceExample(InteractiveScene):
+    def construct(self):
+        # Setup axes
+        frame = self.frame
+        plane, axes = self.add_plane_and_axes()
+        frame.reorient(14, 77, 0, (2.23, 0.25, 1.13), 4.46)
+
+        # Show an initial vector in the space
+        frame.add_ambient_rotation()
+        vect = Arrow(axes.c2p(0, 0, 0), axes.c2p(2, -1, 1), buff=0)
+        vect.set_color(BLUE)
+        vect.always.set_perpendicular_to_camera(self.frame)
+        label = Text("you", font_size=24)
+        # label = Text("bank", font_size=24).set_backstroke(BLACK, 5)
+        label.rotate(PI / 2, RIGHT)
+        label.next_to(vect.get_center(), OUT + LEFT, buff=0)
+
+        self.play(
+            ShowCreation(vect),
+            FadeIn(label, vect.get_vector())
+        )
+        self.wait(5)
+
+        # Many directions -> Different kinds of meaning
+        ideas = VGroup(
+            Text("Part of a command"),
+            Text("Affectionate"),
+            Text("Sadness"),
+        )
+        ideas.set_backstroke(BLACK, 3)
+        ideas.scale(0.35)
+        ideas.rotate(PI / 2, RIGHT)
+
+        last_idea = VGroup()
+        last_direction = 1.0 * normalize(cross(RIGHT, vect.get_vector()))
+        for idea in ideas:
+            direction = rotate_vector(last_direction, PI / 3, vect.get_vector())
+            new_vect = self.get_added_vector(vect, direction)
+            new_vect.set_perpendicular_to_camera(self.frame)
+            idea.next_to(new_vect.get_center(), buff=0.1)
+            lines = get_direction_lines(axes, new_vect.get_vector(), color=new_vect.get_color())
+            self.play(
+                FadeOut(last_idea),
+                ShowCreation(new_vect),
+                FadeIn(idea, new_vect.get_vector()),
+                LaggedStartMap(ShowCreationThenFadeOut, lines, lag_ratio=2 / len(lines), run_time=2)
+            )
+            self.wait(1)
+            last_idea = VGroup(new_vect, idea)
+            last_direction = direction
+        self.play(FadeOut(last_idea))
+        self.wait(5)
+
+        # Specific ideas added onto "you"
+        ideas = VGroup(
+            Text("needs an adjective next"),
+            Text("preceded by \"that which does not kill\""),
+            Text("related to growth and strength"),
+            # Text("River bank"),
+            # Text("Beginning of a story"),
+            # Text("Establishing a setting"),
+        )
+        ideas.scale(0.4)
+        ideas.rotate(PI / 2, RIGHT)
+        directions = [
+            (-0.25, -1, 0.75),
+            (-0.5, -0.25, 0.5),
+            (1.0, -0.5, 1.0),
+        ]
+        orientations = [
+            (11, 92, 0, (2.69, 0.55, 1.12), 6.25),
+            (-8, 83, 0, (2.73, 0.56, 1.24), 6.80),
+            (-14, 79, 0, (2.49, 0.61, 1.41), 7.64),
+        ]
+
+        vects = VGroup(vect)
+        concepts = VGroup(label)
+        for idea, direction, orientation in zip(ideas, directions, orientations):
+            point = vects[-1].get_end()
+            new_vect = self.get_added_vector(vects[-1], direction)
+            new_vect.always.set_perpendicular_to_camera(self.frame)
+            idea.next_to(new_vect.get_center())
+            self.play(
+                frame.animate.reorient(*orientation),
+                GrowArrow(new_vect),
+                FadeIn(idea, 0.5 * new_vect.get_vector())
+            )
+            self.wait(2)
+            vects.add(new_vect)
+        self.wait(15)
+
+    def add_plane_and_axes(
+        self,
+        x_range=(-4, 4),
+        y_range=(-4, 4),
+        z_range=(-3, 3),
+    ):
+        axes = ThreeDAxes(x_range, y_range, z_range)
+        plane = NumberPlane(
+            x_range, y_range,
+            background_line_style=dict(
+                stroke_color=GREY_D,
+                stroke_width=1
+            ),
+            faded_line_ratio=1,
+        )
+        plane.axes.set_stroke(GREY_D, 0)
+
+        self.add(plane, axes)
+        return plane, axes
+
+    def get_added_vector(self, last_vect, direction):
+        point = last_vect.get_end()
+        new_vect = Arrow(point, point + direction, buff=0)
+        new_vect.set_color(random_bright_color())
+        new_vect.set_flat_stroke(False)
+        return new_vect
+
+
+class ManyIdeasManyDirections(SimpleSpaceExample):
+    random_seed = 2
+
+    def construct(self):
+        # Axes
+        frame = self.frame
+        plane, axes = self.add_plane_and_axes()
+        frame.reorient(-17, 73, 0, (-0.06, 0.11, 0.31), 6.03)
+        frame.add_ambient_rotation()
+
+        # Many directions -> Different kinds of meaning
+        ideas = VGroup(
+            Text(word)
+            for word in [
+                "Typewriter",
+                "Paradigm",
+                "Whimsical",
+                "Gelatinous",
+                "Rainbow",
+                "Serendipitous",
+                "Algorithm",
+                "Nebulous",
+                "Spatula",
+                "Lethargic",
+                "Effervescent",
+                "Asteroid",
+                "Pungent",
+                "Daydream",
+                "Mercurial",
+                "Cactus",
+                "Diaphanous",
+                "Hiccup",
+                "Viscous",
+                "Thunderclap",
+            ]
+        )
+        ideas.set_backstroke(BLACK, 3)
+        ideas.scale(0.5)
+        ideas.rotate(PI / 2, RIGHT)
+
+        last_idea = VGroup()
+        last_direction = RIGHT + OUT
+        for idea in ideas:
+            direction = normalize(cross(last_direction, np.random.uniform(-1, 1, 3)))
+            new_vect = Vector(direction)
+            new_vect.set_perpendicular_to_camera(self.frame)
+            new_vect.set_color(random_bright_color())
+            idea.next_to(new_vect.get_end(), direction, buff=0.1)
+            lines = get_direction_lines(axes, direction, color=new_vect.get_color(), n_lines=250, stroke_width=2)
+            idea.set_fill(interpolate_color(new_vect.get_color(), WHITE, 0.5))
+            self.play(
+                FadeOut(last_idea),
+                GrowArrow(new_vect),
+                FadeIn(idea, new_vect.get_vector()),
+                LaggedStartMap(ShowCreationThenFadeOut, lines, lag_ratio=1 / len(lines), run_time=1.5)
+            )
+            self.wait()
+            last_idea = VGroup(new_vect, idea)
+            last_direction = direction
+        self.play(FadeOut(last_idea))
+        self.wait(5)
+
+
+class MJSpace(SimpleSpaceExample):
+    def construct(self):
+        # Set up axes
+        frame = self.frame
+        plane, axes = self.add_plane_and_axes()
+        axes.set_stroke(width=1)
+        frame.add_ambient_rotation()
+
+        # Show vectors landing in the space
+        sentence = Text("Michael Jordan plays the sport of basketball", font_size=36)
+        sentence.to_edge(UP)
+        tokens = break_into_tokens(sentence)
+        token_rects = get_piece_rectangles(tokens, leading_spaces=True, h_buff=0)
+        arrs = VGroup(
+            NumericEmbedding().scale(0.25).next_to(rect, DOWN, buff=1.0)
+            for rect in token_rects
+        )
+        arrows = VGroup(Arrow(rect, arr, buff=0.1) for rect, arr in zip(token_rects, arrs))
+        vects = VGroup(
+            Vector(np.random.uniform(-3, 3, 3))
+            for arr in arrs
+        )
+        vects.set_stroke(GREY_B)
+        vects.fix_in_frame()
+
+        VGroup(token_rects, tokens, arrows, arrs).fix_in_frame()
+
+        frame.reorient(-18, 86, 0, (0.21, 0.12, 3.56), 11.65)
+        self.add(token_rects, tokens)
+        self.play(
+            LaggedStartMap(FadeIn, arrs, shift=DOWN, lag_ratio=0.1),
+            LaggedStartMap(GrowArrow, arrows, lag_ratio=0.1),
+        )
+        self.wait()
+        globals().update(locals())
+        self.play(
+            frame.animate.reorient(11, 76, 0, ORIGIN, FRAME_HEIGHT),
+            FadeOut(VGroup(token_rects, tokens, arrows), UP, time_span=(1, 2)),
+            LaggedStart(
+                (Transform(arrow, vect)
+                for arrow, vect in zip(arrs, vects)),
+                lag_ratio=0.05,
+            ),
+            run_time=3
+        )
+        self.remove(arrs)
+        self.add(vects)
+        self.wait()
+        self.play(LaggedStart(
+            (vect.animate.scale(0, about_point=vect.get_start())
+            for vect in vects),
+            lag_ratio=0.05,
+            remover=True
+        ))
+
+        # Show three directions
+        colors = [YELLOW, RED, "#F88158"]
+        all_coords = [normalize([-1, -1, 1])]
+        all_coords.append(normalize(cross(all_coords[0], IN)))
+        all_coords.append(-normalize(cross(all_coords[0], all_coords[1])))
+        all_coords = np.array(all_coords)[[0, 2, 1]]
+        labels = VGroup(*map(Text, ["First Name Michael", "Last Name Jordan", "Basketball"]))
+        label_directions = [LEFT + OUT, IN, RIGHT + OUT]
+
+        vect_groups = VGroup()
+        vects = VGroup()
+        for coords, label, color, direction in zip(all_coords, labels, colors, label_directions):
+            vect = Vector(2.0 * coords)
+            vect.set_color(color)
+            vect.always.set_perpendicular_to_camera(self.frame)
+            label.scale(0.5)
+            label.rotate(PI / 2, RIGHT)
+            label.set_color(color)
+            label.next_to(vect.get_end(), direction, buff=0.1)
+            label.set_fill(border_width=0.5)
+            label.set_backstroke(BLACK, 4)
+            vects.add(vect)
+            vect_groups.add(VGroup(vect, label))
+
+        orientations = [
+            (17, 76, 0),
+            (17, 80, 0),
+            (-16, 77, 0),
+        ]
+
+        for vect, label, orientation in zip(vects, labels, orientations):
+            lines = get_direction_lines(axes, vect.get_vector(), color=vect.get_color())
+            self.play(
+                GrowArrow(vect),
+                FadeIn(label, vect.get_vector()),
+                frame.animate.reorient(*orientation),
+            )
+            self.play(
+                LaggedStartMap(ShowCreationThenFadeOut, lines, lag_ratio=2 / len(lines))
+            )
+            self.wait(2)
+
+        # Bring in "plucked out" vector
+        emb_coords = 2.0 * all_coords[:2].sum(0)
+        emb = Vector(emb_coords)
+        emb.always.set_perpendicular_to_camera(self.frame)
+        emb.set_flat_stroke(False)
+        emb_label = Tex(R"\vec{\textbf{E}}", font_size=30)
+        emb_label.rotate(89 * DEGREES, RIGHT)
+        globals().update(locals())
+        emb_label.add_updater(lambda m: m.move_to(1.1 * emb.get_end()))
+        emb_label.suspend_updating()
+
+        self.play(
+            frame.animate.reorient(7, 66, 0).set_anim_args(run_time=2),
+            FadeIn(emb, shift=2 * (IN + LEFT)),
+            FadeIn(emb_label, shift=2 * (IN + LEFT)),
+        )
+        self.wait()
+
+        # Set up dot product display
+        def get_proj_point(vect1, vect2):
+            v1 = vect1.get_end()
+            v2 = vect2.get_end()
+            return v2 * np.dot(v1, v2) / np.dot(v2, v2)
+
+        def get_dot_product_lines(vect, proj_line_color=GREY_A):
+            dashed_line = always_redraw(
+                lambda: Line(emb.get_end(), get_proj_point(emb, vect)).set_stroke(WHITE, 2).set_anti_alias_width(10)
+            )
+            proj_line = always_redraw(
+                lambda: Line(ORIGIN, get_proj_point(emb, vect)).set_stroke(proj_line_color, width=4, opacity=0.75)
+            )
+            return dashed_line, proj_line
+
+        m_dashed_line, m_proj_line = get_dot_product_lines(vects[0])
+
+        formula = Tex(R"\vec{\textbf{E}} \cdot \big(\overrightarrow{\text{First Name Michael}}\big) = ", font_size=36)
+        formula[3:-1].set_color(YELLOW)
+        formula.to_corner(UL)
+        formula.fix_in_frame()
+        rhs = DecimalNumber(font_size=42)
+        rhs.fix_in_frame()
+        rhs.next_to(formula[-1], RIGHT, buff=0.15)
+        rhs.target_vect = vects[0]
+        rhs.add_updater(lambda m: m.set_value(np.dot(m.target_vect.get_end(), emb.get_end()) / 4.0))
+
+        m_proj_line.suspend_updating()
+        self.play(
+            ShowCreation(m_dashed_line),
+            TransformFromCopy(Line(ORIGIN, emb.get_end(), flat_stroke=False), m_proj_line),
+            FadeIn(formula, UP),
+            vect_groups[1:].animate.set_opacity(0.25),
+        )
+        m_proj_line.resume_updating()
+        self.play(
+            TransformFromCopy(rhs.copy().unfix_from_frame().set_opacity(0).move_to(m_proj_line), rhs),
+        )
+        emb_label.resume_updating()
+        for _ in range(2):
+            self.play(
+                emb.animate.put_start_and_end_on(ORIGIN, [-2.5, -2.0, -0.5]),
+                rate_func=wiggle,
+                run_time=5
+            )
+        self.wait(2)
+        self.play(emb.animate.put_start_and_end_on(axes.get_origin(), 1.5 * all_coords[1:3].sum(0)), run_time=3)
+        self.play(frame.animate.reorient(26, 68, 0), run_time=2 )
+        self.play(emb.animate.put_start_and_end_on(ORIGIN, [1.0, -1.5, -1.0]), run_time=3)
+        self.wait(2)
+        self.play(
+            frame.animate.reorient(-4, 73, 0),
+            emb.animate.put_start_and_end_on(ORIGIN, emb_coords),
+            run_time=3
+        )
+        self.wait(5)
+
+        # Dotting against L.N. Jordan
+        j_dashed_line, j_proj_line = get_dot_product_lines(vects[1])
+        j_paren = Tex(R"\big(\overrightarrow{\text{Last Name Jordan}}\big) = ", font_size=36)
+        j_paren[:-1].set_color(RED)
+        m_paren = formula[3:]
+        m_paren.fix_in_frame()
+        j_paren.move_to(m_paren, LEFT)
+        j_paren.fix_in_frame()
+        rhs.target_vect = vects[1]
+
+        self.play(
+            frame.animate.reorient(15, 97, 0),
+            FadeOut(m_paren, UP, time_span=(1, 2)),
+            FadeIn(j_paren, UP, time_span=(1, 2)),
+            rhs.animate.next_to(j_paren, RIGHT, buff=0.15).set_anim_args(time_span=(1, 2)),
+            LaggedStart(
+                vect_groups[0].animate.set_opacity(0.25),
+                vect_groups[1].animate.set_opacity(1),
+                FadeOut(m_dashed_line),
+                FadeOut(m_proj_line),
+                lag_ratio=0.25,
+                run_time=2
+            )
+        )
+        j_proj_line.suspend_updating()
+        self.play(
+            ShowCreation(j_dashed_line),
+            TransformFromCopy(Line(ORIGIN, emb.get_end(), flat_stroke=False), j_proj_line),
+        )
+        j_proj_line.resume_updating()
+        self.play(
+            emb.animate.put_start_and_end_on(ORIGIN, [-1.5, -1.5, 0]).set_anim_args(run_time=3, rate_func=there_and_back)
+        )
+        self.wait()
+
+        # Dotting against basketball
+        b_dashed_line, b_proj_line = get_dot_product_lines(vects[2])
+        b_paren = Tex(R"\big(\overrightarrow{\text{Basketball}}\big) = ", font_size=36)
+        b_paren[:-1].set_color(vects[2].get_color())
+        b_paren.move_to(m_paren, LEFT)
+        b_paren.fix_in_frame()
+        rhs.suspend_updating()
+
+        self.play(
+            frame.animate.reorient(2, 65, 0),
+            FadeOut(j_paren, UP),
+            FadeIn(b_paren, UP),
+            rhs.animate.next_to(b_paren[-1], RIGHT, buff=0.2).set_value(0),
+            FadeOut(j_dashed_line),
+            FadeOut(j_proj_line),
+            vect_groups[1].animate.set_opacity(0.25),
+            vect_groups[2].animate.set_opacity(1.0),
+        )
+        self.wait()
+
+        rhs.target_vect = vects[2]
+        rhs.resume_updating()
+        self.add(b_dashed_line, b_proj_line)
+        self.play(
+            emb.animate.put_start_and_end_on(ORIGIN, [0.6, -2.2, 0]),
+            rate_func=there_and_back,
+            run_time=6,
+        )
+        self.wait(3)
+
+        # Emphasize dot products with first two names
+        self.play(
+            frame.animate.reorient(5, 85, 0).set_anim_args(run_time=2),
+            FadeOut(formula[:3]),
+            FadeOut(b_paren),
+            FadeOut(rhs),
+            FadeOut(b_dashed_line),
+            FadeOut(b_proj_line),
+            vect_groups[:2].animate.set_opacity(1),
+            vect_groups[2].animate.set_opacity(0.25),
+        )
+        self.wait()
+        self.play(
+            ShowCreation(m_dashed_line),
+            ShowCreation(m_proj_line),
+        )
+        self.wait()
+        self.play(
+            ShowCreation(j_dashed_line),
+            ShowCreation(j_proj_line),
+        )
+        self.wait(20)
+        self.play(
+            *map(FadeOut, [j_dashed_line, j_proj_line, m_dashed_line, m_proj_line, emb, emb_label]),
+        )
+
+        # Show sum of the first two names
+        j_vect_copy, m_vect_copy = vect_copies = vects[:2].copy()
+        vect_copies.clear_updaters()
+        vect_copies.set_stroke(opacity=0.5)
+        j_vect_copy.shift(vects[1].get_vector())
+        m_vect_copy.shift(vects[0].get_vector())
+        emb.put_start_and_end_on(axes.get_origin(), m_vect_copy.get_end())
+
+        self.play(frame.animate.reorient(-6, 78, 0), run_time=2)
+        self.play(LaggedStart(
+            TransformFromCopy(vects[1], m_vect_copy),
+            TransformFromCopy(vects[0], j_vect_copy),
+            lag_ratio=0.5
+        ))
+        self.play(GrowArrow(emb))
+        self.wait(4)
+
+        # Show the basketball direction
+        self.play(
+            *map(FadeOut, [m_vect_copy, j_vect_copy, emb])
+        )
+        self.play(
+            frame.animate.reorient(-19, 77, 0, (1.32, -0.22, -0.12), 3.75),
+            vect_groups[:2].animate.set_opacity(0.25),
+            vect_groups[2][0].animate.set_opacity(1.0),
+            vect_groups[2][1].animate.set_opacity(1.0),
+            run_time=2
+        )
+        self.wait(20)

@@ -5,30 +5,43 @@ from _2024.transformers.embedding import *
 
 
 class HighLevelNetworkFlow(InteractiveScene):
-    example_text = "To date, the cleverest thinker of all time was blank"
+    # example_text = "To date, the cleverest thinker of all time was blank"
     use_words = False
-    possible_next_tokens = [
-        (" the", 0.0882),
-        (" probably", 0.0437),
-        (" John", 0.0404),
-        (" Sir", 0.0366),
-        (" Albert", 0.0363),
-        (" Ber", 0.0331),
-        (" a", 0.029),
-        (" Isaac", 0.0201),
-        (" undoubtedly", 0.0158),
-        (" arguably", 0.0133),
-        (" Im", 0.0116),
-        (" Einstein", 0.0113),
-        (" Ludwig", 0.0104),
-    ]
+    # possible_next_tokens = [
+    #     (" the", 0.0882),
+    #     (" probably", 0.0437),
+    #     (" John", 0.0404),
+    #     (" Sir", 0.0366),
+    #     (" Albert", 0.0363),
+    #     (" Ber", 0.0331),
+    #     (" a", 0.029),
+    #     (" Isaac", 0.0201),
+    #     (" undoubtedly", 0.0158),
+    #     (" arguably", 0.0133),
+    #     (" Im", 0.0116),
+    #     (" Einstein", 0.0113),
+    #     (" Ludwig", 0.0104),
+    # ]
     hide_block_labels = False
     block_to_title_direction = UP
+
+    example_text = "It is said that which does not kill you only makes you stronger"
+    possible_next_tokens = [
+        ("stronger", 0.806),
+        ("stranger", 0.078),
+        ("more", 0.006),
+        ("weaker", 0.003),
+        ("into", 0.002),
+        ("Strong", 0.002),
+        ("wish", 0.002),
+        ("STR", 0.002),
+    ]
 
     def setup(self):
         super().setup()
         self.set_floor_plane("xz")
-        self.camera.light_source.move_to([-10, 10, 30])
+        self.camera.light_source.move_to([-10, 10, 15])
+        self.camera.light_source.add_updater(lambda m: m.set_z(self.frame.get_z() + 10))
         self.layers = VGroup()
         self.blocks = Group()
         self.mlps = Group()
@@ -48,10 +61,9 @@ class HighLevelNetworkFlow(InteractiveScene):
         orientation = frame.get_euler_angles() / DEGREES
         mlp_kw = dict(sideview_orientation=orientation, final_orientation=orientation)
         att_kw = dict(target_orientation=orientation)
-        self.progress_through_attention_block(target_frame_x=-3, **att_kw)
-        self.progress_through_mlp_block(**mlp_kw)
-        self.progress_through_attention_block(target_frame_x=-4, **att_kw)
-        self.progress_through_mlp_block(**mlp_kw)
+        for x in [-3, -4, -5, -6, -7]:
+            self.progress_through_attention_block(target_frame_x=x, **att_kw)
+            self.progress_through_mlp_block(**mlp_kw)
 
         # Show how it ends
         self.remove_mlps()
@@ -61,7 +73,7 @@ class HighLevelNetworkFlow(InteractiveScene):
 
     def get_embedding_array(
         self,
-        shape=(10, 9),
+        shape=(9, 10),
         height=4,
         dots_index=-4,
         buff_ratio=0.4,
@@ -69,57 +81,18 @@ class HighLevelNetworkFlow(InteractiveScene):
         backstroke_width=3,
         add_background_rectangle=False,
     ):
-        result = VGroup()
-        embeddings = VGroup(*(
-            NumericEmbedding(length=shape[1])
-            for n in range(shape[0])
-        ))
-        embeddings.set_height(height)
-        buff = buff_ratio * embeddings[0].get_width()
-        embeddings.arrange(RIGHT, buff=buff)
-
-        # Background rectangle
-        if add_background_rectangle:
-            for embedding in embeddings:
-                if not isinstance(embedding, NumericEmbedding):
-                    continue
-                embedding.add_background_rectangle()
-
-        # Add brackets
-        brackets = Tex("".join((
-            R"\left[\begin{array}{c}",
-            *(shape[0] // 3) * [R"\quad \\"],
-            R"\end{array}\right]",
-        )))
-        brackets.set_height(1.1 * embeddings.get_height())
-        lb = brackets[:len(brackets) // 2]
-        rb = brackets[len(brackets) // 2:]
-        lb.next_to(embeddings, LEFT, buff=-0.0 * buff)
-        rb.next_to(embeddings, RIGHT, buff=-0.0 * buff)
-        brackets.set_fill(bracket_color)
-
-        # Assemble result
-        dots = VGroup()
-        result = VGroup(embeddings, dots, brackets)
-        result.embeddings = embeddings
-        result.dots = dots
-        result.brackets = brackets
-        result.set_backstroke(BLACK, backstroke_width)
-
-        if dots_index is not None:
-            self.swap_embedding_for_dots(result, dots_index)
-
-        return result
+        return EmbeddingArray(
+            shape=shape,
+            height=height,
+            dots_index=dots_index,
+            buff_ratio=buff_ratio,
+            bracket_color=bracket_color,
+            backstroke_width=backstroke_width,
+            add_background_rectangle=add_background_rectangle,
+        )
 
     def swap_embedding_for_dots(self, embedding_array, dots_index=-4):
-        embeddings = embedding_array.embeddings
-        to_replace = embeddings[dots_index]
-        dots = Tex(R"\dots", font_size=60)
-        dots.set_width(0.75 * to_replace.get_width())
-        dots.move_to(to_replace)
-        embeddings.remove(to_replace)
-        embedding_array.dots.add(dots)
-        return embedding_array
+        embedding_array.swap_embedding_for_dots(dots_index)
 
     def get_next_layer_array(self, embedding_array, z_buff=3.0):
         next_array = embedding_array.copy()
@@ -141,7 +114,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         shading=(0.25, 0.1, 0.0),
         title="Attention",
         title_font_size=96,
-        title_backstroke_width=5,
+        title_backstroke_width=3,
     ):
         # Block
         body = Cube(color=color, opacity=opacity)
@@ -224,7 +197,7 @@ class HighLevelNetworkFlow(InteractiveScene):
 
         # Show words into vectors
         layer = self.get_embedding_array(
-            shape=(len(words), 10),
+            shape=(10, len(words)),
             dots_index=None,
         )
         vectors = layer.embeddings
@@ -242,7 +215,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             for block, vect in zip(blocks.target, vectors)
         ))
         word_to_index = dict(zip(self.example_text.split(" "), it.count()))
-        self.swap_embedding_for_dots(layer, word_to_index.get("...", -4))
+        # self.swap_embedding_for_dots(layer, word_to_index.get("...", -4))
 
         if bump_first:
             blocks.target[0].next_to(blocks.target[1], LEFT, buff=0.1)
@@ -255,7 +228,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             LaggedStartMap(GrowFromCenter, arrows),
             Write(layer.dots)
         )
-        self.play(Write(layer.brackets))
+        # self.play(Write(layer.brackets))
         self.wait()
 
         self.token_blocks = blocks
@@ -295,6 +268,7 @@ class HighLevelNetworkFlow(InteractiveScene):
                 layer.animate.set_opacity(0.25),
                 FadeIn(block),
                 TransformFromCopy(layer, new_layer),
+                (self.blocks[-1].title if len(self.blocks) > 0 else VGroup()).animate.set_opacity(0.25),
                 lag_ratio=0.3
             ),
             run_time=2
@@ -356,8 +330,10 @@ class HighLevelNetworkFlow(InteractiveScene):
                     LaggedStartMap(ShowCreationThenFadeOut, arc_group, lag_ratio=0.05),
                 )
                 for arc_group in arc_groups
-            ), lag_ratio=0.25),
-            LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.5),
+            # ), lag_ratio=0.25),
+            ), lag_ratio=0.0),
+            # LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.5),
+            LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.0),
             run_time=run_time
         )
         self.add(layer)
@@ -365,7 +341,8 @@ class HighLevelNetworkFlow(InteractiveScene):
     def progress_through_mlp_block(
         self,
         n_neurons=20,
-        depth=3.0,
+        # depth=3.0,
+        depth=4.0,
         buff=1.0,
         dot_buff_ratio=0.2,
         neuron_color=GREY_C,
@@ -373,7 +350,10 @@ class HighLevelNetworkFlow(InteractiveScene):
         sideview_orientation=(-60, -5, 0),
         final_orientation=(-51, -18, 0),
         show_one_by_one=False,
-        label_text="Multilayer\nPerceptron",
+        # label_text="Multilayer\nPerceptron",
+        # title_font_size=72,
+        label_text="Feedforward",
+        title_font_size=90,
     ):
         # MLP Test
         layer = self.layers[-1]
@@ -383,7 +363,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             buff=buff,
             size_buff=1.0,
             title=label_text,
-            title_font_size=72,
+            title_font_size=title_font_size,
         )
 
         # New layer
@@ -449,6 +429,7 @@ class HighLevelNetworkFlow(InteractiveScene):
             index = 4
             block.title.rotate(PI / 2, DOWN)
             self.play(
+                self.blocks[-1].title.animate.set_opacity(0.25),
                 FadeIn(block.title, time_span=(0, 1)),
                 self.frame.animate.reorient(*sideview_orientation),
                 Write(networks[index][1]),
@@ -457,6 +438,7 @@ class HighLevelNetworkFlow(InteractiveScene):
                 run_time=3
             )
             lag_kw = dict(lag_ratio=0.5, run_time=9)
+            self.remove(block.title)
             self.play(
                 LaggedStart(*(
                     FadeTransform(e1.copy(), e2)
@@ -472,7 +454,7 @@ class HighLevelNetworkFlow(InteractiveScene):
                 ), **lag_kw),
                 self.frame.animate.reorient(0, -37, 0, (-1.08, 2.29, 7.99), 12.27),
                 block.title.animate.rotate(PI / 2, UP),
-                run_time=9,
+                run_time=15,
             )
             self.remove(networks)
             self.add(neurons, connections, block.body, block.title, new_layer)
@@ -480,12 +462,14 @@ class HighLevelNetworkFlow(InteractiveScene):
                 FadeIn(block.body),
                 FadeIn(new_layer),
                 FadeOut(new_layer.embeddings.copy()),
-                self.frame.animate.reorient(*final_orientation).match_z(new_layer),
+                # self.frame.animate.reorient(*final_orientation).match_z(new_layer),
+                self.frame.animate.reorient(-48, -12, 0).match_z(new_layer),
                 run_time=2
             )
         else:
             self.play(
                 FadeIn(block.title, time_span=(0, 1)),
+                self.blocks[-1].title.animate.set_opacity(0.25),
                 self.frame.animate.reorient(*sideview_orientation),
                 FadeIn(neurons, time_span=(0, 1)),
                 Write(connections, stroke_width=3),
@@ -537,7 +521,7 @@ class HighLevelNetworkFlow(InteractiveScene):
         final_layer.set_opacity(0)
 
         self.play(
-            frame.animate.reorient(-58, -12, 0, (-3.27, 0.98, 26.89), 25),
+            frame.animate.reorient(-57, -8, 0, (-6.59, 1.2, 57.84), 30),
             FadeIn(thin_blocks, lag_ratio=0.1),
             GrowFromCenter(brace),
             Write(brace_text, time_span=(1, 2)),
@@ -586,7 +570,8 @@ class HighLevelNetworkFlow(InteractiveScene):
         words, dist = zip(*self.possible_next_tokens)
         bars = BarChart(dist).bars
         bars.rotate(-90 * DEGREES)
-        bars.next_to(layer, RIGHT, buff=6.0)
+        bars.set_width(2.5, stretch=True)
+        bars.next_to(layer, RIGHT, buff=4.0)
         bars.set_y(2)
         for bar, word, value in zip(bars, words, dist):
             percentage = DecimalNumber(
@@ -617,10 +602,9 @@ class HighLevelNetworkFlow(InteractiveScene):
         arrow.add_line_to(
             brace.get_left() + 0.1 * LEFT,
         )
-        arrow.make_smooth()
+        arrow.make_smooth(approx=False)
         arrow.add_tip()
         arrow.set_color(YELLOW)
-
 
         self.play(ShowCreation(rect))
         self.play(
@@ -629,6 +613,11 @@ class HighLevelNetworkFlow(InteractiveScene):
             LaggedStartMap(FadeIn, bars, shift=DOWN)
         )
         self.wait()
+        # Test
+        self.play(
+            self.frame.animate.reorient(-5, -8, 0, (2.99, 2.67, 71.6), 13.60),
+            run_time=8
+        )
 
 
 class SimplifiedFlow(HighLevelNetworkFlow):
@@ -637,6 +626,7 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     orientation = (-55, -19, 0)
     target_frame_x = -2
     x_range = np.linspace(-2, -8, 5)
+    frame_height_growth_rate = 0.15
 
     def construct(self):
         # Test
@@ -647,7 +637,9 @@ class SimplifiedFlow(HighLevelNetworkFlow):
     def show_simple_flow(self, x_range, orientation=None):
         if orientation is None:
             orientation = self.orientation
-        self.frame.add_updater(lambda f: f.set_height(FRAME_HEIGHT + 0.15 * self.time))
+        curr_time = float(self.time)
+        curr_height = self.frame.get_height()
+        self.frame.add_updater(lambda f: f.set_height(curr_height + self.frame_height_growth_rate * (self.time - curr_time)))
         for x in x_range:
             self.progress_through_attention_block(
                 target_orientation=orientation,
@@ -1136,6 +1128,81 @@ class MentionContextSizeAndUnembedding(SimplifiedFlow):
         self.wait()
 
 
+class FlowForMLPIntroReview(SimplifiedFlow):
+    example_text = "That which does not kill you only makes you stronger"
+    x_range = np.linspace(-2, -4, 3)
+    frame_height_growth_rate = 0.3
+    possible_next_tokens = [
+        ("stronger", 0.906),
+        ("stranger", 0.028),
+        ("more", 0.006),
+        ("weaker", 0.003),
+        ("...", 0.003),
+        ("Strong", 0.002),
+        ("wish", 0.002),
+        ("STR", 0.002),
+    ]
+
+    def construct(self):
+        # Initial flow
+        self.camera.light_source.set_z(20)
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+        self.play(self.frame.animate.scale(1.25))
+        self.show_simple_flow(self.x_range)
+
+        # Show how it ends
+        self.remove_mlps()
+        self.mention_repetitions()
+        self.frame.clear_updaters()
+        self.focus_on_last_layer()
+        self.play(self.frame.animate.scale(1.15).shift(RIGHT))
+        self.show_unembedding()
+
+
+class FlowForCHM(SimplifiedFlow):
+    example_text = "Down by the river bank ... until they jumped into the pond"
+    use_words = True
+    x_range = np.linspace(-2, -4, 3)
+    frame_height_growth_rate = 0.3
+
+    def construct(self):
+        # Initial flow
+        self.camera.light_source.set_z(20)
+        self.show_initial_text_embedding(word_scale_factor=0.6)
+        self.play(self.frame.animate.scale(1.25))
+        self.show_simple_flow(self.x_range)
+
+        # Show how it ends
+        self.remove_mlps()
+        self.mention_repetitions()
+        self.frame.clear_updaters()
+        self.focus_on_last_layer()
+        self.play(self.frame.animate.scale(1.15).shift(RIGHT))
+        self.show_unembedding()
+
+    def progress_through_mlp_block(self, *args, **kwargs):
+        kwargs.update(
+            label_text="Feed Forward",
+            title_font_size=92,
+        )
+        super().progress_through_mlp_block(*args, **kwargs)
+
+
+class TextToNumerical(SimplifiedFlow):
+    example_text = "Text must be encoded as numbers blah"
+    use_words = True
+
+    def construct(self):
+        # Test
+        self.show_initial_text_embedding(word_scale_factor=0.75)
+
+
+class FlowForCHMNoText(FlowForCHM):
+    def get_block(self, *args, **kwargs):
+        kwargs.update(title="")
+        return super().get_block(*args, **kwargs)
+
+
 class TextPassageIntro(InteractiveScene):
     example_text = MentionContextSizeAndUnembedding.example_text
 
@@ -1237,8 +1304,6 @@ class ThumbnailBase(HighLevelNetworkFlow):
         self.add(self.blocks)
 
     example_text = "The initials GPT stand for Generative Pre-trained Transformer"
-
-
 
 
 class MoleExample1(HighLevelNetworkFlow):

@@ -4,8 +4,7 @@ from manim_imports_ext import *
 
 from typing import TYPE_CHECKING
 import warnings
-import requests
-import datasets
+# import datasets
 
 DATA_DIR = Path(get_output_dir(), "2024/transformers/data/")
 WORD_FILE = Path(DATA_DIR, "OWL3_Dictionary.txt")
@@ -95,7 +94,7 @@ def load_image_net_data(dataset_name="image_net_1k"):
     ]
 
 
-def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
+def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999, fix_in_frame=False):
     # Show product
     eq = Tex("=")
     eq.set_width(0.5 * vector.get_width())
@@ -109,6 +108,9 @@ def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
     rhs.scale(vector.elements[0].get_height() / rhs.elements[0].get_height())
     eq.next_to(vector, RIGHT, buff=buff)
     rhs.next_to(eq, RIGHT, buff=buff)
+    if fix_in_frame:
+        eq.fix_in_frame()
+        rhs.fix_in_frame()
 
     scene.play(FadeIn(eq), FadeIn(rhs.get_brackets()))
 
@@ -119,16 +121,17 @@ def show_matrix_vector_product(scene, matrix, vector, buff=0.25, x_max=999):
             scene.add(entry)
         else:
             last_rects = matrix_row_vector_product(
-                scene, row, vector, entry, last_rects
+                scene, row, vector, entry, last_rects,
+                fix_in_frame=fix_in_frame
             )
     scene.play(FadeOut(last_rects))
 
     return eq, rhs
 
 
-def matrix_row_vector_product(scene, row, vector, entry, to_fade):
+def matrix_row_vector_product(scene, row, vector, entry, to_fade, fix_in_frame=False):
     def get_rect(elem):
-        return SurroundingRectangle(elem, buff=0.1).set_stroke(YELLOW, 2)
+        return SurroundingRectangle(elem, buff=0.1, is_fixed_in_frame=fix_in_frame).set_stroke(YELLOW, 2)
 
     row_rects = VGroup(*map(get_rect, row))
     vect_rects = VGroup(*map(get_rect, vector[:-2]))
@@ -234,8 +237,17 @@ def show_symbolic_matrix_vector_product(scene, matrix, vector, rhs, run_time_per
     scene.play(FadeOut(last_rects))
 
 
-def data_flying_animation(point, vect=2 * DOWN + RIGHT, color=GREY_C, max_opacity=0.75):
-    word = Text("Data", color=color)
+def data_flying_animation(
+    point,
+    vect=2 * DOWN + RIGHT,
+    color=GREY_C,
+    max_opacity=0.75,
+    font_size=48,
+    fix_in_frame=False
+    ):
+    word = Text("Data", color=color, font_size=font_size)
+    if fix_in_frame:
+        word.fix_in_frame()
     return UpdateFromAlphaFunc(
         word, lambda m, a: m.move_to(
             interpolate(point, point + vect, a)
@@ -243,7 +255,15 @@ def data_flying_animation(point, vect=2 * DOWN + RIGHT, color=GREY_C, max_opacit
     )
 
 
-def get_data_modifying_matrix_anims(matrix, word_shape=(5, 10), alpha_maxes=(0.7, 0.9), shift_vect=2 * DOWN + RIGHT, run_time=3):
+def get_data_modifying_matrix_anims(
+    matrix,
+    word_shape=(5, 10),
+    alpha_maxes=(0.7, 0.9),
+    shift_vect=2 * DOWN + RIGHT,
+    run_time=3,
+    fix_in_frame=False,
+    font_size=48,
+):
     x_min, x_max = [matrix.get_x(LEFT), matrix.get_x(RIGHT)]
     y_min, y_max = [matrix.get_y(UP), matrix.get_y(DOWN)]
     z = matrix.get_z()
@@ -258,7 +278,7 @@ def get_data_modifying_matrix_anims(matrix, word_shape=(5, 10), alpha_maxes=(0.7
     ])
     return [
         LaggedStart(
-            (data_flying_animation(p, vect=shift_vect)
+            (data_flying_animation(p, vect=shift_vect, fix_in_frame=fix_in_frame, font_size=font_size)
             for p in points),
             lag_ratio=1 / len(points),
             run_time=run_time
@@ -288,6 +308,35 @@ def create_pixels(image_mob, pixel_width=0.1):
         for point in points
     )
     return pixels
+
+
+def get_network_connections(layer1, layer2, max_width=2.0, opacity_exp=1.0):
+    radius = layer1[0].get_width() / 2
+    return VGroup(
+        Line(n1.get_center(), n2.get_center(), buff=radius).set_stroke(
+            color=value_to_color(random.uniform(-10, 10)),
+            width=max_width * random.random(),
+            opacity=random.random()**opacity_exp,
+        )
+        for n1 in layer1
+        for n2 in layer2
+    )
+
+
+def get_vector_pair(angle_in_degrees=90, length=1.0, colors=(BLUE, BLUE)):
+    angle = angle_in_degrees * DEGREES
+    v1 = Vector(length * RIGHT)
+    v2 = v1.copy().rotate(angle, about_point=ORIGIN)
+    v1.set_color(colors[0])
+    v2.set_color(colors[1])
+    arc = Arc(radius=0.2, angle=angle)
+    arc.set_stroke(WHITE, 2)
+    label = Tex(Rf"180^\circ", font_size=24)
+    num = label.make_number_changeable("180")
+    num.set_value(angle_in_degrees)
+    label.next_to(arc.pfp(0.5), normalize(arc.pfp(0.5)), buff=SMALL_BUFF)
+
+    return VGroup(v1, v2, arc, label)
 
 
 class NeuralNetwork(VGroup):
@@ -510,6 +559,73 @@ class NumericEmbedding(WeightMatrix):
             **kwargs,
         )
 
+        # No sign on zeros
+        for entry in self.get_entries():
+            if entry.get_value() == 0:
+                entry[0].set_opacity(0)
+
+
+class EmbeddingArray(VGroup):
+    def __init__(
+        self,
+        shape=(10, 9),
+        height=4,
+        dots_index=-4,
+        buff_ratio=0.4,
+        bracket_color=GREY_B,
+        backstroke_width=3,
+        add_background_rectangle=False,
+    ):
+        super().__init__()
+
+        # Embeddings
+        embeddings = VGroup(
+            NumericEmbedding(length=shape[0])
+            for n in range(shape[1])
+        )
+        embeddings.set_height(height)
+        buff = buff_ratio * embeddings[0].get_width()
+        embeddings.arrange(RIGHT, buff=buff)
+
+        # Background rectangle
+        if add_background_rectangle:
+            for embedding in embeddings:
+                embedding.add_background_rectangle()
+
+        # Add brackets
+        brackets = Tex("".join((
+            R"\left[\begin{array}{c}",
+            *(shape[1] // 3) * [R"\quad \\"],
+            R"\end{array}\right]",
+        )))
+        brackets.set_height(1.1 * embeddings.get_height())
+        lb = brackets[:len(brackets) // 2]
+        rb = brackets[len(brackets) // 2:]
+        lb.next_to(embeddings, LEFT, buff=0)
+        rb.next_to(embeddings, RIGHT, buff=0)
+        brackets.set_fill(bracket_color)
+
+        # Assemble result
+        dots = VGroup()
+        self.add(embeddings, dots, brackets)
+        self.embeddings = embeddings
+        self.dots = dots
+        self.brackets = brackets
+        self.set_backstroke(BLACK, backstroke_width)
+
+        if dots_index is not None:
+            self.swap_embedding_for_dots(dots_index)
+
+
+    def swap_embedding_for_dots(self, dots_index=-4):
+        to_replace = self.embeddings[dots_index]
+        dots = Tex(R"\dots", font_size=60)
+        dots.set_width(0.75 * to_replace.get_width())
+        dots.move_to(to_replace)
+        self.embeddings.remove(to_replace)
+        self.dots.add(dots)
+        return self
+
 
 class RandomizeMatrixEntries(Animation):
     def __init__(self, matrix, **kwargs):
@@ -530,10 +646,6 @@ class RandomizeMatrixEntries(Animation):
             sub_alpha = self.get_sub_alpha(alpha, index, len(self.entries))
             entry.set_value(interpolate(start, target, sub_alpha))
         self.matrix.reset_entry_colors()
-
-
-class EmbeddingSequence(MobjectMatrix):
-    pass
 
 
 class AbstractEmbeddingSequence(MobjectMatrix):

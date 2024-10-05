@@ -1755,7 +1755,7 @@ class IntegralExample(InteractiveScene):
         graph = axes.get_graph(lambda x: x**2)
         graph.set_stroke(TEAL, 2)
         all_rects = VGroup(*(
-            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), background=False)
+            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), behind=False)
             for dx in [2**(-n) for n in range(2, 8)]
         ))
         rects = all_rects[0]
@@ -1794,7 +1794,7 @@ class IntegralError(InteractiveScene):
         graph = axes.get_graph(lambda x: x**2)
         graph.set_stroke(TEAL, 2)
         all_rects = VGroup(*(
-            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), background=False)
+            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), behind=False)
             for dx in [2**(-n) for n in range(2, 9)]
         ))
         rects = all_rects[0]

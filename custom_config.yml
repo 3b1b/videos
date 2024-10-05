@@ -19,6 +19,8 @@ style:
   background_color: "#000000"
 camera_resolutions:
   default_resolution: "4k"
+file_writer_config:
+  saturation: 1.5
 fps: 30
 window_position: UR
 window_monitor: 0

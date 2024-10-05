@@ -72,7 +72,7 @@ def get_figure(image_name, person_name, year_text, height=3, label_direction=DOW
 class NewtonFractal(Mobject):
     CONFIG = {
         "shader_folder": "newton_fractal",
-        "shader_dtype": [
+        "data_dtype": [
             ('point', np.float32, (3,)),
         ],
         "colors": ROOT_COLORS_DEEP,

@@ -36,8 +36,8 @@ class PatreonEndScreen(Scene):
     capitalize = True
     name_y_spacing = 0.6
     thanks_words = """
-        Instead of sponsor messages, these lessons are supported
-        directly by viewers, such as those below | 3b1b.co/support
+        These videos are unsponsored, instead funded by viewers.
+        Special thanks to the ones listed below | 3b1b.co/support
     """
     scroll_time = 20
 
@@ -78,7 +78,8 @@ class PatreonEndScreen(Scene):
         thanks = Text(self.thanks_words)
         thanks.scale(0.8)
         thanks.next_to(line, DOWN, buff=MED_SMALL_BUFF)
-        thanks.set_color(YELLOW)
+        thanks.set_color(GREY_A)
+        thanks["3b1b.co/support"].set_color(YELLOW)
         underline = Line(LEFT, RIGHT)
         underline.match_width(thanks)
         underline.scale(1.1)

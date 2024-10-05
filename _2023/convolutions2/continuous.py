@@ -74,7 +74,7 @@ class TransitionToContinuousProbability(InteractiveScene):
                 x_range=(0, min(6 + n, 12)),
                 dx=(1 / n),
                 input_sample_type="right",
-            ).set_stroke(WHITE, width=(2.0 / n), opacity=(2.0 / n), background=False)
+            ).set_stroke(WHITE, width=(2.0 / n), opacity=(2.0 / n), behind=False)
             for n in (*range(1, 10), *range(10, 20, 2), *range(20, 100, 5))
         ))
         area = all_rects[-1]
