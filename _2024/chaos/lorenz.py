@@ -61,9 +61,9 @@ class LorenzAttractor(InteractiveScene):
         self.play(Write(equations))
 
         # Compute a set of solutions
-        epsilon = 1e-5
+        epsilon = 1e-3
         evolution_time = 60
-        n_points = 2
+        n_points = 10
         states = [
             [10, 10, 10 + n * epsilon]
             for n in range(n_points)
@@ -80,21 +80,22 @@ class LorenzAttractor(InteractiveScene):
         curves.set_stroke(width=1, opacity=0.5)
 
         # Display dots moving along those trajectories
-        dots = Group(GlowDot(color=color, radius=0.5) for color in colors)
+        dots = Group(GlowDot(color=color, radius=0.25) for color in colors)
 
+        globals().update(locals())  # Cursed
         def update_dots(dots):
             for dot, curve in zip(dots, curves):
                 dot.move_to(curve.get_end())
 
         dots.add_updater(update_dots)
 
-        tails = VGroup(
+        tail = VGroup(
             TracingTail(dot, time_traced=3).match_color(dot)
             for dot in dots
         )
 
         self.add(dots)
-        self.add(tails)
+        self.add(tail)
         self.play(
             *(
                 ShowCreation(curve, rate_func=linear)
@@ -103,4 +104,3 @@ class LorenzAttractor(InteractiveScene):
             run_time=evolution_time,
         )
         self.play(FadeOut(dots))
-        self.wait(5)
