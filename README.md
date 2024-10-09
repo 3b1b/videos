@@ -9,7 +9,9 @@ Note, while the library Manim itself is open source and under the MIT license, t
 
 ## Workflow
 
-I made this video to show more of how I use manim. A lot of my workflow depends on some custom plugins with Sublime, which is the text editor I use, and below I've outlined what's involved for those who want to try it out themselves. I also use macOS, and it's very possible some of what I've written won't work on other operating systems.
+I made this video to show more of how I use manim, and the details for installing manim are visible on [its repo](https://github.com/3b1b/manim).
+
+However, a lot of my workflow depends on some custom plugins with Sublime, the text editor I use, and below I've outlined what's involved for those who want to try it out themselves. Note, I use macOS, and it's very possible some of what I've written won't work on other operating systems.
 
 If you use another text editor, the same functionality can, I'm sure, be mimicked. The key is to make use of two facts.
 
