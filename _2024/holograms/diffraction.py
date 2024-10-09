@@ -1931,7 +1931,7 @@ class DoubleSlit(DiffractionGratingScene):
         )
 
         self.play(
-            out_wave.animate.pause().set_opacity(0.5).set_anim_args(suspend_mobject_updating=False),
+            out_wave.animate.pause().set_opacity(0.5),
             exposure.animate.set_opacity(0),
             frame.animate.reorient(0, 69, 0, (-0.09, 4.1, -0.16), 7.52),
             FadeIn(exposure_point),
@@ -1939,9 +1939,9 @@ class DoubleSlit(DiffractionGratingScene):
         )
         wave1.set_uniform(time=out_wave.uniforms["time"])
         wave2.set_uniform(time=out_wave.uniforms["time"])
-        self.play(ShowCreation(lines, lag_ratio=0))
+        self.play(ShowCreation(lines, lag_ratio=0, suspend_mobject_updating=True))
         self.wait()
-        self.play(ShowCreation(graphs, lag_ratio=0, run_time=3))
+        self.play(ShowCreation(graphs, lag_ratio=0, run_time=3, suspend_mobject_updating=True))
 
         # Show combination from a side angle
         self.play(frame.animate.reorient(-80, 83, 0, (-0.09, 4.1, -0.16), 7.52), run_time=3)
@@ -2931,10 +2931,10 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         # Limit to reference beam at just one point
         equations_tex = [
             R"\lambda = \sqrt{L^2 + (x + d)^2} - \sqrt{L^2 + x^2}",
-            R"\approx \left(L + \frac{1}{2L}(x + d)^2\right) - \left(L + \frac{1}{2L} x^2\right)",
-            R"= \frac{1}{2L}\left(x^2 + 2xd + d^2 - x^2 \right)",
-            R"= \frac{1}{2L}\left(2xd + d^2\right)",
-            R"\approx d \cdot \frac{x}{L}",
+            R"= \sqrt{L^2 + x^2 + 2xd + d^2} - \sqrt{L^2 + x^2}",
+            R"\approx \sqrt{L^2 + x^2 + 2xd} - \sqrt{L^2 + x^2}",
+            R"\approx \frac{1}{2\sqrt{L^2 + x^2}} 2xd",
+            R"= d \cdot \frac{x}{\sqrt{L^2 + x^2}}",
             R"= d \cdot \sin(\theta')",
         ]
         equations = VGroup(
@@ -2942,28 +2942,24 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
             for eq in equations_tex
         )
         equations.arrange(DOWN, buff=0.65, aligned_edge=LEFT)
-        equations.move_to(7 * LEFT + 5.65 * UP, UL)
+        equations.move_to(9.5 * LEFT + 5.65 * UP, UL)
         equations.set_backstroke(BLACK, 10)
 
         annotations = VGroup(
             Text("The distances between adjacent fringes and\nthe object should differ by one wavelength"),
-            TexText(R"First-order Taylor expansion: \\ \quad \\ $\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"),
-            TexText(R"$d$ is small compared to $x$, \\ so $d^2$ is small compared to $xd$"),
+            TexText(R"$d^2$ is small compared to $xd$"),
+            TexText(R"Linear approximation:\\ \quad \\$\sqrt{X + \epsilon} \approx \sqrt{X} + \frac{1}{2\sqrt{X}} \epsilon$"),
         )
-        annotations[2].scale(0.8)
-        for annotation, i in zip(annotations, [0, 1, 4]):
-            arrow = Vector(LEFT)
-            arrow.next_to(equations[i], RIGHT)
-            annotation.scale(0.75)
-            annotation.next_to(arrow, RIGHT)
+        annotations.scale(0.75)
+        for annotation, i in zip(annotations, [0, 1, 3]):
+            eq = equations[i]
+            annotation.next_to(eq, RIGHT, buff=1.5)
+            if i == 2:
+                annotation.next_to(eq, DR)
+            arrow = Arrow(annotation.get_left(), eq.get_right())
             annotation.add(arrow)
             annotation.set_color(GREY_A)
-        annotations.set_backstroke(BLACK, 5)
-        annotations[1][:-1].shift(0.35 * DOWN)
-        annotations[1][R"$\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"].scale(1.25, about_edge=UP).set_fill(WHITE)
-        annotations[0].align_to(annotations[1], LEFT)
-        annotations[2].shift(0.15 * UP)
-        annotations[2][-1].become(Arrow(annotations[2][0].get_left(), equations[3]["d^2"].get_bottom()))
+        annotations[2][:-1].align_to(annotations[2][-1], UP)
 
         braces = VGroup(
             Brace(equations[0][R"\sqrt{L^2 + (x + d)^2}"], UP, SMALL_BUFF),
@@ -2977,7 +2973,7 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         self.play(
             FadeIn(terms, lag_ratio=0.1, time_span=(0, 2)),
             Write(equations, time_span=(2, 5)),
-            frame.animate.reorient(0, 0, 0, (-0.3, 2.5, 0.0), 9).set_anim_args(run_time=3),
+            frame.animate.reorient(0, 0, 0, (-2, 2.5, 0.0), 9).set_anim_args(run_time=3),
         )
         self.wait()
         self.play(LaggedStart(
