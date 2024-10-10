@@ -9,18 +9,17 @@ Note, while the library Manim itself is open source and under the MIT license, t
 
 ## Workflow
 
-I made this video to show more of how I use manim, and the details for installing manim are visible on [its repo](https://github.com/3b1b/manim).
+I made [this video](https://youtu.be/3rmlSPcB6cU) to show more of how I use manim. Aside from [installing manim itself](https://github.com/3b1b/manim?tab=readme-ov-file#installation), of course, replicating the workflow involves some custom plugins with Sublime, the text editor I use.
 
-However, a lot of my workflow depends on some custom plugins with Sublime, the text editor I use, and below I've outlined what's involved for those who want to try it out themselves. Note, I use macOS, and it's very possible some of what I've written won't work on other operating systems.
+If you use another text editor, the same functionality can be mimicked. The key is to make use of two facts.
 
-If you use another text editor, the same functionality can, I'm sure, be mimicked. The key is to make use of two facts.
-
-- Running manim with the arguments "-se (line_number)" will drop you into an interactive mode at that line, like a debugger, with an iPython terminal that can be used to interact with the scene.
+- Running `manimgl (file name) (scene name) -se (line_number)` will drop you into an interactive mode at that line of the file, like a debugger, with an iPython terminal that can be used to interact with the scene.
 
 - Within that interactive mode, if you enter "checkpoint_paste()" to the terminal, it will run whatever bit of code is copied to the clipboard. Moreover, if that copied code begins with a comment, the first time it sees that comment it will save the state of the scene at that point, and for all future calls on code beginning with the same comment, it will first revert to that state of the scene before running the code.
     - The argument "skip" of checkpoint_paste will mean it runs the code without animating, as if all run times set to 0.
     - The argument "record" of checkpoint_paste will cause whatever animations are run with that copied code to be rendered to file.
 
+For my own workflow, I set up some keyboard shortcuts to kick off each of these commands. For those who want to try it out themselves, here's what's involved.
 
 ### Sublime-specific instructions
 
