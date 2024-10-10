@@ -89,8 +89,7 @@ class LorenzAttractor(InteractiveScene):
         # Display dots moving along those trajectories
         dots = Group(GlowDot(color=color, radius=0.25) for color in colors)
 
-        globals().update(locals())  # Cursed
-        def update_dots(dots):
+        def update_dots(dots, curves=curves):
             for dot, curve in zip(dots, curves):
                 dot.move_to(curve.get_end())
 
