@@ -1405,7 +1405,6 @@ class CreateZonePlate(DiffractionGratingScene):
 
         tail = TracingTail(circle.get_end, stroke_color=BLUE_D, stroke_width=(0, 3))
 
-        globals().update(locals())
         self.add(tail)
         self.wait()
         self.add(circle, tail)
@@ -1413,7 +1412,7 @@ class CreateZonePlate(DiffractionGratingScene):
         self.play(
             frame.animate.reorient(41, -15, 0, (-0.54, -0.17, -1.78), 4.65),
             ShowCreation(circle),
-            UpdateFromFunc(trg_point, lambda m: m.move_to(circle.get_end())),
+            UpdateFromFunc(trg_point, lambda m, c=circle: m.move_to(c.get_end())),
             round_exposure.animate.set_width(3),
             FadeOut(exposure, time_span=(0, 1)),
             run_time=4
@@ -1435,8 +1434,7 @@ class CreateZonePlate(DiffractionGratingScene):
 
         # Just kinda hang for a bit
         time0 = self.time
-        globals().update(locals())
-        frame.add_updater(lambda m: m.set_theta(math.sin(0.1 * (self.time - time0)) * 30 * DEGREES))
+        frame.add_updater(lambda m, t0=time0, sc=self: m.set_theta(math.sin(0.1 * (sc.time - t0)) * 30 * DEGREES))
         self.play(trg_point.animate.move_to(film.get_left()), run_time=10)
         self.play(trg_point.animate.move_to(film.get_right()), run_time=20)
         self.wait(5)
@@ -1814,11 +1812,10 @@ class DoubleSlit(DiffractionGratingScene):
         # Wave to various spots
         exposure_glow = GlowDot(color=GREEN_SCREEN)
         exposure_glow.move_to(film.get_center())
-        globals().update(locals())
         line = Line(stroke_color=TEAL)
-        line.add_updater(lambda l: l.put_start_and_end_on(
-            source.get_center(), exposure_glow.get_center()
-        ))
+        line.f_always.put_start_and_end_on(
+            source.get_center, exposure_glow.get_center
+        )
         graph = self.get_graph_over_wave(line, radial_wave, scale_factor=0.2)
         graph.set_stroke(WHITE, 2, 1)
         line.set_stroke(opacity=0)
@@ -1921,9 +1918,8 @@ class DoubleSlit(DiffractionGratingScene):
 
         lines = Line().replicate(2)
         lines.set_stroke(TEAL, 2)
-        globals().update(locals())
-        lines.add_updater(lambda m: m[0].put_start_and_end_on(source1.get_center(), exposure_point.get_center()))
-        lines.add_updater(lambda m: m[1].put_start_and_end_on(source2.get_center(), exposure_point.get_center()))
+        lines[0].f_always.put_start_and_end_on(source1.get_center, exposure_point.get_center)
+        lines[1].f_always.put_start_and_end_on(source2.get_center, exposure_point.get_center)
 
         graphs = VGroup(
             self.get_graph_over_wave(lines[0], wave1),
@@ -2220,10 +2216,9 @@ class FullDiffractionGrating(DiffractionGratingScene):
         beam_outlines = Line().replicate(2)
         center_beam_line = Line()
         VGroup(beam_outlines, center_beam_line).set_stroke(WHITE, 50)
-        globals().update(locals())
-        beam_outlines.add_updater(lambda m: m[0].put_start_and_end_on(sources.get_left(), beam_point.get_center()))
-        beam_outlines.add_updater(lambda m: m[1].put_start_and_end_on(sources.get_right(), beam_point.get_center()))
-        center_beam_line.add_updater(lambda m: m.put_start_and_end_on(sources.get_center(), beam_point.get_center()))
+        beam_outlines[0].f_always.put_start_and_end_on(sources.get_left, beam_point.get_center)
+        beam_outlines[1].f_always.put_start_and_end_on(sources.get_right, beam_point.get_center)
+        center_beam_line.f_always.put_start_and_end_on(sources.get_center, beam_point.get_center)
 
         theta = math.asin(1.0 / wave_number / slit_dist)  # Diffraction equation!
 
@@ -2623,8 +2618,7 @@ class FullDiffractionGrating(DiffractionGratingScene):
             new_rhs.set_height(0.8 * lambda_label.get_height())
             factor = new_rhs.make_number_changeable("1.00")
             factor_tracker = ValueTracker(1.0)
-            globals().update(locals())
-            new_rhs.add_updater(lambda m: m[1].set_value(factor_tracker.get_value()))
+            new_rhs.f_always.set_value(factor_tracker.get_value)
             new_rhs.always.move_to(lambda_label, RIGHT)
 
             self.play(
@@ -2721,11 +2715,10 @@ class FullDiffractionGrating(DiffractionGratingScene):
             stroke_width=100
         ))
         theta_sym.set_height(16)
-        globals().update(locals())
-        theta_sym.add_updater(lambda m: m.next_to(arc.pfp(0.7), UP, buff=6))
+        theta_sym.add_updater(lambda m, arc=arc: m.next_to(arc.pfp(0.7), UP, buff=6))
         theta_sym.suspend_updating()
         VGroup(v_line, d_line).set_stroke(WHITE, 150)
-        d_line.add_updater(lambda m: m.put_start_and_end_on(ORIGIN, 5 * point_tracker.get_center()))
+        d_line.add_updater(lambda m, pt=point_tracker: m.put_start_and_end_on(ORIGIN, 5 * pt.get_center()))
         self.play(
             ShowCreation(v_line),
             ShowCreation(d_line),
