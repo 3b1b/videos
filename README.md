@@ -9,7 +9,7 @@ Note, while the library Manim itself is open source and under the MIT license, t
 
 ## Workflow
 
-I made [this video](https://youtu.be/3rmlSPcB6cU) to show more of how I use manim. Note that I'm using 3b1b/manim, not the community edition, some functionality may differ between the two. Aside from [installing manim itself](https://github.com/3b1b/manim?tab=readme-ov-file#installation), replicating the workflow involves some custom plugins with Sublime, the text editor I use.
+I made [this video](https://youtu.be/rbu7Zu5X1zI) to show more of how I use manim. Note that I'm using 3b1b/manim, not the community edition, some functionality may differ between the two. Aside from [installing manim itself](https://github.com/3b1b/manim?tab=readme-ov-file#installation), replicating the workflow involves some custom plugins with Sublime, the text editor I use.
 
 If you use another text editor, the same functionality can be mimicked. The key is to make use of two facts.
 
