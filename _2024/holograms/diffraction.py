@@ -1405,7 +1405,6 @@ class CreateZonePlate(DiffractionGratingScene):
 
         tail = TracingTail(circle.get_end, stroke_color=BLUE_D, stroke_width=(0, 3))
 
-        globals().update(locals())
         self.add(tail)
         self.wait()
         self.add(circle, tail)
@@ -1413,7 +1412,7 @@ class CreateZonePlate(DiffractionGratingScene):
         self.play(
             frame.animate.reorient(41, -15, 0, (-0.54, -0.17, -1.78), 4.65),
             ShowCreation(circle),
-            UpdateFromFunc(trg_point, lambda m: m.move_to(circle.get_end())),
+            UpdateFromFunc(trg_point, lambda m, c=circle: m.move_to(c.get_end())),
             round_exposure.animate.set_width(3),
             FadeOut(exposure, time_span=(0, 1)),
             run_time=4
@@ -1435,8 +1434,7 @@ class CreateZonePlate(DiffractionGratingScene):
 
         # Just kinda hang for a bit
         time0 = self.time
-        globals().update(locals())
-        frame.add_updater(lambda m: m.set_theta(math.sin(0.1 * (self.time - time0)) * 30 * DEGREES))
+        frame.add_updater(lambda m, t0=time0, sc=self: m.set_theta(math.sin(0.1 * (sc.time - t0)) * 30 * DEGREES))
         self.play(trg_point.animate.move_to(film.get_left()), run_time=10)
         self.play(trg_point.animate.move_to(film.get_right()), run_time=20)
         self.wait(5)
@@ -1814,11 +1812,10 @@ class DoubleSlit(DiffractionGratingScene):
         # Wave to various spots
         exposure_glow = GlowDot(color=GREEN_SCREEN)
         exposure_glow.move_to(film.get_center())
-        globals().update(locals())
         line = Line(stroke_color=TEAL)
-        line.add_updater(lambda l: l.put_start_and_end_on(
-            source.get_center(), exposure_glow.get_center()
-        ))
+        line.f_always.put_start_and_end_on(
+            source.get_center, exposure_glow.get_center
+        )
         graph = self.get_graph_over_wave(line, radial_wave, scale_factor=0.2)
         graph.set_stroke(WHITE, 2, 1)
         line.set_stroke(opacity=0)
@@ -1921,9 +1918,8 @@ class DoubleSlit(DiffractionGratingScene):
 
         lines = Line().replicate(2)
         lines.set_stroke(TEAL, 2)
-        globals().update(locals())
-        lines.add_updater(lambda m: m[0].put_start_and_end_on(source1.get_center(), exposure_point.get_center()))
-        lines.add_updater(lambda m: m[1].put_start_and_end_on(source2.get_center(), exposure_point.get_center()))
+        lines[0].f_always.put_start_and_end_on(source1.get_center, exposure_point.get_center)
+        lines[1].f_always.put_start_and_end_on(source2.get_center, exposure_point.get_center)
 
         graphs = VGroup(
             self.get_graph_over_wave(lines[0], wave1),
@@ -1931,7 +1927,7 @@ class DoubleSlit(DiffractionGratingScene):
         )
 
         self.play(
-            out_wave.animate.pause().set_opacity(0.5).set_anim_args(suspend_mobject_updating=False),
+            out_wave.animate.pause().set_opacity(0.5),
             exposure.animate.set_opacity(0),
             frame.animate.reorient(0, 69, 0, (-0.09, 4.1, -0.16), 7.52),
             FadeIn(exposure_point),
@@ -1939,9 +1935,9 @@ class DoubleSlit(DiffractionGratingScene):
         )
         wave1.set_uniform(time=out_wave.uniforms["time"])
         wave2.set_uniform(time=out_wave.uniforms["time"])
-        self.play(ShowCreation(lines, lag_ratio=0))
+        self.play(ShowCreation(lines, lag_ratio=0, suspend_mobject_updating=True))
         self.wait()
-        self.play(ShowCreation(graphs, lag_ratio=0, run_time=3))
+        self.play(ShowCreation(graphs, lag_ratio=0, run_time=3, suspend_mobject_updating=True))
 
         # Show combination from a side angle
         self.play(frame.animate.reorient(-80, 83, 0, (-0.09, 4.1, -0.16), 7.52), run_time=3)
@@ -2220,10 +2216,9 @@ class FullDiffractionGrating(DiffractionGratingScene):
         beam_outlines = Line().replicate(2)
         center_beam_line = Line()
         VGroup(beam_outlines, center_beam_line).set_stroke(WHITE, 50)
-        globals().update(locals())
-        beam_outlines.add_updater(lambda m: m[0].put_start_and_end_on(sources.get_left(), beam_point.get_center()))
-        beam_outlines.add_updater(lambda m: m[1].put_start_and_end_on(sources.get_right(), beam_point.get_center()))
-        center_beam_line.add_updater(lambda m: m.put_start_and_end_on(sources.get_center(), beam_point.get_center()))
+        beam_outlines[0].f_always.put_start_and_end_on(sources.get_left, beam_point.get_center)
+        beam_outlines[1].f_always.put_start_and_end_on(sources.get_right, beam_point.get_center)
+        center_beam_line.f_always.put_start_and_end_on(sources.get_center, beam_point.get_center)
 
         theta = math.asin(1.0 / wave_number / slit_dist)  # Diffraction equation!
 
@@ -2623,8 +2618,7 @@ class FullDiffractionGrating(DiffractionGratingScene):
             new_rhs.set_height(0.8 * lambda_label.get_height())
             factor = new_rhs.make_number_changeable("1.00")
             factor_tracker = ValueTracker(1.0)
-            globals().update(locals())
-            new_rhs.add_updater(lambda m: m[1].set_value(factor_tracker.get_value()))
+            new_rhs.f_always.set_value(factor_tracker.get_value)
             new_rhs.always.move_to(lambda_label, RIGHT)
 
             self.play(
@@ -2721,11 +2715,10 @@ class FullDiffractionGrating(DiffractionGratingScene):
             stroke_width=100
         ))
         theta_sym.set_height(16)
-        globals().update(locals())
-        theta_sym.add_updater(lambda m: m.next_to(arc.pfp(0.7), UP, buff=6))
+        theta_sym.add_updater(lambda m, arc=arc: m.next_to(arc.pfp(0.7), UP, buff=6))
         theta_sym.suspend_updating()
         VGroup(v_line, d_line).set_stroke(WHITE, 150)
-        d_line.add_updater(lambda m: m.put_start_and_end_on(ORIGIN, 5 * point_tracker.get_center()))
+        d_line.add_updater(lambda m, pt=point_tracker: m.put_start_and_end_on(ORIGIN, 5 * pt.get_center()))
         self.play(
             ShowCreation(v_line),
             ShowCreation(d_line),
@@ -2931,10 +2924,10 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         # Limit to reference beam at just one point
         equations_tex = [
             R"\lambda = \sqrt{L^2 + (x + d)^2} - \sqrt{L^2 + x^2}",
-            R"\approx \left(L + \frac{1}{2L}(x + d)^2\right) - \left(L + \frac{1}{2L} x^2\right)",
-            R"= \frac{1}{2L}\left(x^2 + 2xd + d^2 - x^2 \right)",
-            R"= \frac{1}{2L}\left(2xd + d^2\right)",
-            R"\approx d \cdot \frac{x}{L}",
+            R"= \sqrt{L^2 + x^2 + 2xd + d^2} - \sqrt{L^2 + x^2}",
+            R"\approx \sqrt{L^2 + x^2 + 2xd} - \sqrt{L^2 + x^2}",
+            R"\approx \frac{1}{2\sqrt{L^2 + x^2}} 2xd",
+            R"= d \cdot \frac{x}{\sqrt{L^2 + x^2}}",
             R"= d \cdot \sin(\theta')",
         ]
         equations = VGroup(
@@ -2942,28 +2935,24 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
             for eq in equations_tex
         )
         equations.arrange(DOWN, buff=0.65, aligned_edge=LEFT)
-        equations.move_to(7 * LEFT + 5.65 * UP, UL)
+        equations.move_to(9.5 * LEFT + 5.65 * UP, UL)
         equations.set_backstroke(BLACK, 10)
 
         annotations = VGroup(
             Text("The distances between adjacent fringes and\nthe object should differ by one wavelength"),
-            TexText(R"First-order Taylor expansion: \\ \quad \\ $\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"),
-            TexText(R"$d$ is small compared to $x$, \\ so $d^2$ is small compared to $xd$"),
+            TexText(R"$d^2$ is small compared to $xd$"),
+            TexText(R"Linear approximation:\\ \quad \\$\sqrt{X + \epsilon} \approx \sqrt{X} + \frac{1}{2\sqrt{X}} \epsilon$"),
         )
-        annotations[2].scale(0.8)
-        for annotation, i in zip(annotations, [0, 1, 4]):
-            arrow = Vector(LEFT)
-            arrow.next_to(equations[i], RIGHT)
-            annotation.scale(0.75)
-            annotation.next_to(arrow, RIGHT)
+        annotations.scale(0.75)
+        for annotation, i in zip(annotations, [0, 1, 3]):
+            eq = equations[i]
+            annotation.next_to(eq, RIGHT, buff=1.5)
+            if i == 2:
+                annotation.next_to(eq, DR)
+            arrow = Arrow(annotation.get_left(), eq.get_right())
             annotation.add(arrow)
             annotation.set_color(GREY_A)
-        annotations.set_backstroke(BLACK, 5)
-        annotations[1][:-1].shift(0.35 * DOWN)
-        annotations[1][R"$\sqrt{L^2 + x} \approx L + \frac{1}{2L} x$"].scale(1.25, about_edge=UP).set_fill(WHITE)
-        annotations[0].align_to(annotations[1], LEFT)
-        annotations[2].shift(0.15 * UP)
-        annotations[2][-1].become(Arrow(annotations[2][0].get_left(), equations[3]["d^2"].get_bottom()))
+        annotations[2][:-1].align_to(annotations[2][-1], UP)
 
         braces = VGroup(
             Brace(equations[0][R"\sqrt{L^2 + (x + d)^2}"], UP, SMALL_BUFF),
@@ -2977,7 +2966,7 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         self.play(
             FadeIn(terms, lag_ratio=0.1, time_span=(0, 2)),
             Write(equations, time_span=(2, 5)),
-            frame.animate.reorient(0, 0, 0, (-0.3, 2.5, 0.0), 9).set_anim_args(run_time=3),
+            frame.animate.reorient(0, 0, 0, (-2, 2.5, 0.0), 9).set_anim_args(run_time=3),
         )
         self.wait()
         self.play(LaggedStart(

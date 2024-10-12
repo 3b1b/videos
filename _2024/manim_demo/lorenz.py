@@ -21,6 +21,13 @@ def ode_solution_points(function, state0, time, dt=0.01):
     return solution.y.T
 
 
+def for_later():
+    tail = VGroup(
+        TracingTail(dot, time_traced=3).match_color(dot)
+        for dot in dots
+    )
+
+
 class LorenzAttractor(InteractiveScene):
     def construct(self):
         # Set up axes
@@ -62,8 +69,8 @@ class LorenzAttractor(InteractiveScene):
 
         # Compute a set of solutions
         epsilon = 1e-5
-        evolution_time = 60
-        n_points = 2
+        evolution_time = 30
+        n_points = 10
         states = [
             [10, 10, 10 + n * epsilon]
             for n in range(n_points)
@@ -77,24 +84,25 @@ class LorenzAttractor(InteractiveScene):
             curve.set_stroke(color, 1, opacity=0.25)
             curves.add(curve)
 
-        curves.set_stroke(width=1, opacity=0.5)
+        curves.set_stroke(width=2, opacity=1)
 
         # Display dots moving along those trajectories
-        dots = Group(GlowDot(color=color, radius=0.5) for color in colors)
+        dots = Group(GlowDot(color=color, radius=0.25) for color in colors)
 
-        def update_dots(dots):
+        def update_dots(dots, curves=curves):
             for dot, curve in zip(dots, curves):
                 dot.move_to(curve.get_end())
 
         dots.add_updater(update_dots)
 
-        tails = VGroup(
+        tail = VGroup(
             TracingTail(dot, time_traced=3).match_color(dot)
             for dot in dots
         )
 
         self.add(dots)
-        self.add(tails)
+        self.add(tail)
+        curves.set_opacity(0)
         self.play(
             *(
                 ShowCreation(curve, rate_func=linear)
@@ -102,5 +110,7 @@ class LorenzAttractor(InteractiveScene):
             ),
             run_time=evolution_time,
         )
-        self.play(FadeOut(dots))
-        self.wait(5)
+
+
+class EndScreen(PatreonEndScreen):
+    pass
