@@ -703,7 +703,6 @@ class OscillatingGraphValue(InteractiveScene):
         # Add s tracker
         s_tracker = ValueTracker(-3)
         get_s = s_tracker.get_value
-        globals().update(locals())
         v_line = always_redraw(lambda: axes.get_v_line_to_graph(get_s(), graph, line_func=Line).set_stroke(WHITE, 1))
         dot = GlowDot(radius=0.2, color=WHITE)
         dot.add_updater(lambda m: m.move_to(axes.i2gp(get_s(), graph)))
@@ -712,7 +711,6 @@ class OscillatingGraphValue(InteractiveScene):
         tri.set_fill(TEAL, 1)
         tri.set_stroke(width=0)
         tri.add_updater(lambda m: m.move_to(axes.c2p(get_s(), 0), UP))
-        globals().update(locals())
         label = DecimalNumber(0, font_size=24)
         label.add_updater(lambda m: m.set_value(get_s()))
         label.add_updater(lambda m: m.next_to(tri, DOWN, SMALL_BUFF))

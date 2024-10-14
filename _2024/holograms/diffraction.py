@@ -2793,7 +2793,6 @@ class FullDiffractionGrating(DiffractionGratingScene):
         # Old
         dist_label = DecimalNumber(num_decimal_places=1)
         dist_label.set_height(4)
-        globals().update(locals())
         dist_label.add_updater(lambda m: m.next_to(L_line.get_center(), RIGHT, buff=2))
         dist_label.add_updater(lambda m: m.set_value(L_line.get_length()))
 
@@ -3122,7 +3121,6 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
 
         # Move film point around
         film_dot = Point(film_point)
-        globals().update(locals())
 
         line.f_always.put_start_and_end_on(film_dot.get_center, obj_dot.get_center)
 
@@ -3136,7 +3134,6 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
             for beam in beams:
                 beam[1].set_uniform(time=self.time)
 
-        globals().update(locals())
         out_beams.clear_updaters()
         out_beams.add_updater(update_out_beams)
 
@@ -3605,7 +3602,6 @@ class SuperpositionOfPoints(InteractiveScene):
         # Show reference wave through it
         rect = Rectangle().replace(plate, stretch=True)
         rect.insert_n_curves(20)
-        globals().update(locals())
         beam = VGroup(
             Line(25 * OUT, rect.pfp(a))
             for a in np.linspace(0, 1, 500)

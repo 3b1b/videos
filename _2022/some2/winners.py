@@ -58,7 +58,6 @@ class ExampleChannels(InteractiveScene):
         tile.stretch(0.8, 0)
         tile.set_stroke(WHITE, 0)
         tile.set_fill(GREY_E, 0)
-        globals().update(locals())
         tiles = Group(*(Group(tile.copy()) for x in range(9))).arrange_in_grid(3, 3, buff=0)
         tiles.set_height(FRAME_HEIGHT)
         for tile, channel in zip(tiles, channels):
@@ -148,7 +147,6 @@ class IntroScene(InteractiveScene):
         inits.target.shift(0.25 * LEFT)
         two.next_to(inits.target, RIGHT, buff=0.2, aligned_edge=DOWN)
 
-        globals().update(locals())
         self.play(
             LaggedStart(*(
                 FadeTransform(init.copy(), two)
@@ -247,7 +245,6 @@ class PeerReview(InteractiveScene):
         ), lag_ratio=0.1))
 
         for x in range(10):
-            globals().update(locals())
             self.play(LaggedStart(*(
                 AnimationGroup(
                     pi.change(

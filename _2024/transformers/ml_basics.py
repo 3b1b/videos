@@ -2129,7 +2129,6 @@ class SoftmaxBreakdown(InteractiveScene):
         exp_sum[R"e^{x_{n}}"].scale(1.5, about_edge=LEFT)
         exp_sum.next_to(softmax_box.get_right(), LEFT, buff=0.75)
 
-        globals().update(locals())
         lines = VGroup(*(Line(exp_part.get_right(), exp_sum.get_left(), buff=0.1) for exp_part in exp_parts))
         lines.set_stroke(TEAL, 2)
 
@@ -2275,7 +2274,6 @@ class SoftmaxBreakdown(InteractiveScene):
         t_label = Tex("T = 0.00", font_size=36)
         t_label.rhs = t_label.make_number_changeable("0.00")
         t_label["T"].set_color(temp_color)
-        globals().update(locals())
         t_tri.add_updater(lambda m: m.move_to(t_line.n2p(get_t()), DOWN))
         t_label.add_updater(lambda m: m.rhs.set_value(get_t()))
         t_label.add_updater(lambda m: m.next_to(t_tri, UP, buff=0.1, aligned_edge=LEFT))

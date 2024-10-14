@@ -448,7 +448,6 @@ class AttentionPatterns(InteractiveScene):
         q_sym = q_syms[index]
         low_q_sym = q_sym.copy()
         low_q_sym.next_to(rhs, UP)
-        globals().update(locals())
 
         self.play(LaggedStart(
             LaggedStart(
@@ -1191,7 +1190,6 @@ class AttentionPatterns(InteractiveScene):
             delta_E.next_to(eq, DOWN)
             delta_Es.add(delta_E)
 
-        globals().update(locals())
         self.play(
             LaggedStart(
                 (FadeTransform(term.copy(), delta_Es[index])
@@ -1283,7 +1281,6 @@ class AttentionPatterns(InteractiveScene):
         )
 
         other_indices = [*range(index), *range(index + 1, len(plus_groups))]
-        globals().update(locals())
         self.play(LaggedStart(
             (LaggedStart(
                 FadeIn(plus_groups[j], lag_ratio=0.1),
@@ -1885,7 +1882,6 @@ class DescribeAttentionEquation(InteractiveScene):
             lil_rect = SurroundingRectangle(equation["Q"][0])
             lil_rect.match_x(equation[sym][0])
             big_rect = SurroundingRectangle(arr)
-            globals().update(locals())
             lines = VGroup(
                 Line(lil_rect.get_corner(DOWN + v), big_rect.get_corner(UP + v))
                 for v in [LEFT, RIGHT]
@@ -2197,7 +2193,6 @@ class ShowMasking(InteractiveScene):
 
         values_array = np.random.normal(0, 2, shape)
         font_size = 30
-        globals().update(locals())
         raw_values = VGroup(
             DecimalNumber(
                 value,
@@ -3762,7 +3757,6 @@ class MultiHeadedAttention(InteractiveScene):
             v_stacks.set_height(rect.get_height() * 0.85)
             v_stacks.set_fill(border_width=1)
 
-            globals().update(locals())
             v_terms = VGroup(
                 *(Tex(Rf"\vec{{\textbf{{v}}}}_{n}^{{({idx})}}") for n in range(1, 4)),
                 Tex(R"\dots")

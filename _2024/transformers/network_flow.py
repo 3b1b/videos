@@ -392,7 +392,6 @@ class HighLevelNetworkFlow(InteractiveScene):
             l1_points[:, 2] = block_z - 0.4 * depth
             l3_points[:, 2] = block_z + 0.4 * depth
             x0, y0, z0 = embedding.get_center()
-            globals().update(locals())
             l2_points = np.array([
                 [x0, y, block_z]
                 for y in np.linspace(y_min, y_max, n_neurons)
@@ -1414,7 +1413,6 @@ class MoleExample1(HighLevelNetworkFlow):
         )
         mole_vect_rects.set_stroke(YELLOW, 2)
 
-        globals().update(locals())
         self.play(
             LaggedStartMap(GrowArrow, arrows),
             LaggedStartMap(FadeIn, embs, shift=0.25 * DOWN),
@@ -1445,7 +1443,6 @@ class MoleExample1(HighLevelNetworkFlow):
         highlighted_group.target.center()
         highlighted_group.target[2].set_fill(opacity=1)
 
-        globals().update(locals())
         self.play(
             FadeOut(v_lines, time_span=(0, 1)),
             MoveToTarget(highlighted_group, lag_ratio=5e-4),

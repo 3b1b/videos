@@ -129,7 +129,6 @@ class ShowIntegrals(InteractiveScene):
         x_tracker = ValueTracker(1.5 * PI)
         get_x = x_tracker.get_value
         dots = GlowDot().replicate(2)
-        globals().update(locals())
         dots.add_updater(lambda d: d[0].move_to(axes.i2gp(-get_x(), graph)))
         dots.add_updater(lambda d: d[1].move_to(axes.i2gp(get_x(), graph)))
         dots.update()
@@ -1386,7 +1385,6 @@ class WhatWeNeedToShow(InteractiveScene):
 
         k_tracker = ValueTracker(1)
         get_k = k_tracker.get_value
-        globals().update(locals())
 
         graph1 = axes1.get_graph(lambda x: 0, color=BLUE)
         axes1.bind_graph_to_func(graph1, lambda x: np.sinc(x / get_k()))

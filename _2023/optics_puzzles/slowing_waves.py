@@ -428,7 +428,6 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
         self.play(FlashAround(pk_label))
         for value in [-0.01, self.exagerated_phase_kick]:
             phase_kick = value
-            globals().update(locals())
             self.play(
                 ChangeDecimalToValue(pk_decimal, -phase_kick),
                 *(
@@ -480,7 +479,6 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
 
             new_layers.set_stroke(width=stroke_width, opacity=opacity)
 
-            globals().update(locals())  # Only necessary for embedded runs
             self.play(
                 LaggedStart(*(
                     GrowFromCenter(layer)
@@ -504,7 +502,6 @@ class RevertToOneLayerAtATime(PhaseKickBacks):
             nl_decimal = new_nl_decimal
             pk_decimal = new_pk_decimal
 
-            globals().update(locals())  # Only necessary for embedded runs
             self.play(*(
                 pkt.animate.set_value(phase_kick)
                 for pkt in pkts[::nls]
