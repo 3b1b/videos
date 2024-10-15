@@ -38,7 +38,7 @@
         ".gleam": "gleam run -m $fileNameWithoutExt"
     },
     "code-runner.executorMapByGlob": {
-        "*.py": "manimvideo $fullFileName",
+        "*.py": "manimvideos $fullFileName",
         "pom.xml": "cd $dir && mvn clean package"
     },
     "code-runner.saveAllFilesBeforeRun": true
