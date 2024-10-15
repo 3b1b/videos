@@ -1910,7 +1910,6 @@ class GeneratingFunctions(InteractiveScene):
             "5 x^{5}+ 8 x^{6} + 13 x^{7}+21 x^{8}+\\cdots",
             isolate=["=", "+", "x"]
         )
-        globals().update(locals())
         coefs = VGroup(*(
             fib_poly[fib_poly.submobjects.index(sep) + 1]
             for sep in (fib_poly.get_part_by_tex("="), *fib_poly.get_parts_by_tex("+"))
@@ -2054,7 +2053,6 @@ class WideGraph(InteractiveScene):
 
         x_tracker = ValueTracker(0.75)
         dot = GlowDot(color=WHITE)
-        globals().update(locals())
         dot.add_updater(lambda d: d.move_to(plane.i2gp(x_tracker.get_value(), graph)))
 
         self.add(plane, graph, graph_label, dot)
@@ -3704,7 +3702,6 @@ class ReflectOnGeneratingFunctions(InteractiveScene):
         def func(z):
             return np.prod([1 + z**n for n in range(10)])
 
-        globals().update(locals())
         out_dot.add_updater(lambda od: od.move_to(out_plane.n2p(func(get_z()))))
 
         arc = ParametricCurve(lambda t: in_plane.n2p(np.exp(complex(0, PI - t))), t_range=(0, TAU))
@@ -3712,7 +3709,6 @@ class ReflectOnGeneratingFunctions(InteractiveScene):
         # arc.set_stroke(YELLOW, 2)
         # arc_image.set_stroke(RED, 1)
 
-        globals().update(locals())
 
         paths = [
             TracingTail(in_dot, stroke_color=YELLOW, stroke_width=(0, 3), time_traced=16),
@@ -5442,7 +5438,6 @@ class Thumbnail(InteractiveScene):
         circle.move_to(plane.n2p(0))
         circle.set_stroke(WHITE, 2)
 
-        globals().update(locals())
         points = [plane.n2p(np.exp(complex(0, angle))) for angle in np.arange(0, TAU, TAU / 5)]
         glow_dots = GlowDots(points, radius=0.5)
         dots = DotCloud(points, radius=0.05, color=YELLOW)

@@ -590,7 +590,6 @@ class AnnotateSetup(InteractiveScene):
         ref_circle = Circle(radius=0.5)
         ref_circle.rotate(PI / 2, RIGHT)
         ref_circle.move_to((1.23, -3.39, 0))
-        globals().update(locals())
         ref_beam_spread = VGroup(
             Line(ref_beam_points[-1], ref_circle.pfp(a) + np.random.uniform(-0.025, 0.025, 3))
             for a in np.arange(0, 1, 0.001)
@@ -1845,7 +1844,6 @@ class DiffractionEquation(InteractiveScene):
         arrow = Vector(DOWN, thickness=4)
         arrow.set_color(BLUE)
 
-        globals().update(locals())
         d, theta, lam = syms = [equation[s][0] for s in [R"{d}", R"\theta", R"\lambda"]]
         colors = [BLUE, YELLOW, TEAL]
 

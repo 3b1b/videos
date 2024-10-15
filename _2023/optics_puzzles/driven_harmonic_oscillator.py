@@ -187,7 +187,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         cover = BackgroundRectangle(sho, buff=0.1)
         cover.set_fill(BLACK, 1)
         spacing = get_norm(charges.get_points()[1] - charges.get_points()[0])
-        globals().update(locals())
         small_radius = 0.35 * radius
         springs = VGroup(*(
             Spring(sho, sho.get_center() + (spacing - small_radius) * vect)
@@ -453,7 +452,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         )
         initial_position = sho.get_center()
         self.wait(5)
-        globals().update(locals())
         self.wait_until(lambda: get_norm(sho.get_center() - initial_position) < 0.05)
         sho.set_k(0.5 * original_k)
         sho.move_to(initial_position)
@@ -597,7 +595,6 @@ class DrivenHarmonicOscillator(InteractiveScene):
         z_axis_field.set_stroke(opacity=1)
         full_field_opacity_mult = ValueTracker(0)
 
-        globals().update(locals())
         def udpate_full_field_opacity(ff):
             ff.data["stroke_rgba"][:, 3] *= full_field_opacity_mult.get_value()
 

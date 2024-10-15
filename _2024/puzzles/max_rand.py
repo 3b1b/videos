@@ -86,7 +86,6 @@ class MaxProcess(InteractiveScene):
         x1_tracker, x1_tip, x1_label = x1_group
         x2_tracker, x2_tip, x2_label = x2_group
         max_tracker, max_tip, max_label = max_group
-        globals().update(locals())
         max_tracker.add_updater(lambda m: m.set_value(max(x1_tracker.get_value(), x2_tracker.get_value())))
 
         self.add(intervals)
@@ -165,7 +164,6 @@ class SqrtProcess(InteractiveScene):
         )
         x_tracker, x_tip, x_label = x_group
         sqrt_tracker, sqrt_tip, sqrt_label = sqrt_group
-        globals().update(locals())
         sqrt_tracker.add_updater(lambda m: m.set_value(math.sqrt(x_tracker.get_value())))
 
         self.add(intervals)
@@ -535,7 +533,6 @@ class VisualizeMaxOfPairCDF(InteractiveScene):
             )
 
         xyz_dot = TrueDot().make_3d()
-        globals().update(locals())
         xyz_dot.add_updater(lambda m: m.move_to(get_xzy_point()))
 
         self.remove(max_lines)

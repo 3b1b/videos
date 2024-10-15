@@ -1952,7 +1952,6 @@ class SingleNeuronVsMultiple(InteractiveScene):
             for dot in layer:
                 dot.set_fill(opacity=random.random())
 
-        globals().update(locals())
         connections = VGroup(
             get_network_connections(layers[i], layers[i + 1])
             for i in (0, 1)

@@ -1960,7 +1960,6 @@ class DotProductWithPluralDirection(InteractiveScene):
         lil_word.next_to(dot, RIGHT, buff=0)
         equation_group.next_to(dot, RIGHT, buff=0, submobject_to_align=brace)
 
-        globals().update(locals())
         self.play(
             top_eq.animate.scale(0.75).to_corner(UR),
             TransformFromCopy(gen_lhs, eq_lhs[0]),
@@ -2785,7 +2784,6 @@ class MJSpace(SimpleSpaceExample):
             LaggedStartMap(GrowArrow, arrows, lag_ratio=0.1),
         )
         self.wait()
-        globals().update(locals())
         self.play(
             frame.animate.reorient(11, 76, 0, ORIGIN, FRAME_HEIGHT),
             FadeOut(VGroup(token_rects, tokens, arrows), UP, time_span=(1, 2)),
@@ -2855,7 +2853,6 @@ class MJSpace(SimpleSpaceExample):
         emb.set_flat_stroke(False)
         emb_label = Tex(R"\vec{\textbf{E}}", font_size=30)
         emb_label.rotate(89 * DEGREES, RIGHT)
-        globals().update(locals())
         emb_label.add_updater(lambda m: m.move_to(1.1 * emb.get_end()))
         emb_label.suspend_updating()
 

@@ -655,7 +655,6 @@ class AddTwoSineWaves(InteractiveScene):
         y_dot.add_updater(lambda m: m.match_x(plane).match_y(rot_vect.get_end()))
         y_line = Line()
         y_line.set_stroke(WHITE, 1, 0.5)
-        globals().update(locals())
         y_line.add_updater(lambda m: m.put_start_and_end_on(
             rot_vect.get_end(), y_dot.get_center()
         ))
@@ -1004,7 +1003,6 @@ class WavePlusLayerInfluence(InteractiveScene):
             scale_arrows.save_state()
             scale_arrows.stretch(0.5 if stretch > 1 else 1.5, 1)
             scale_arrows.set_stroke(opacity=0)
-            globals().update(locals())
 
             self.play(
                 Restore(scale_arrows),

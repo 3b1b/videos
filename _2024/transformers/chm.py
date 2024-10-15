@@ -592,7 +592,6 @@ class SequentialProcessing(InteractiveScene):
                 vect.animate.next_to(blocks[n], UP),
                 MoveToTarget(blocks)
             )
-            globals().update(locals())
             self.play(
                 LaggedStart(
                     (ContextAnimation(elem, blocks[n][1], lag_ratio=0.01)

@@ -1065,7 +1065,6 @@ class ShowSquishingAndStretching(Scene):
         ))
         eigenlines.set_stroke(GREY_B, 2)
 
-        globals().update(locals())
         eigenvect_mobs = VGroup(*(
             Vector(ev, fill_color=color)
             for ev, color in zip(eigenvectors, EIGEN_COLORS)
@@ -1078,7 +1077,6 @@ class ShowSquishingAndStretching(Scene):
             Vector(RIGHT, fill_color=GREEN, thickness=0.05),
             Vector(UP, fill_color=RED, thickness=0.05),
         )
-        globals().update(locals())
         bases[0].add_updater(lambda m: m.put_start_and_end_on(plane.c2p(0, 0), plane.c2p(1, 0)))
         bases[1].add_updater(lambda m: m.put_start_and_end_on(plane.c2p(0, 0), plane.c2p(0, 1)))
 

@@ -734,7 +734,6 @@ class RasterizingBezier(Scene):
         t_tracker = ValueTracker(0)
         get_t = t_tracker.get_value
         P_dot = Dot(color=GREEN)
-        globals().update(locals())
         ct[1].add_updater(lambda m: m.set_value(get_t()))
         ct[1].next_to(ct[0], RIGHT, buff=0)
         P_dot.add_updater(lambda m: m.move_to(curve.pfp(get_t() / 2)))
@@ -899,7 +898,6 @@ class RasterizingBezier(Scene):
         axes.shift((top_axes.c2p(0, 0) - axes.c2p(0, 0))[0] * RIGHT)
         dt = 1e-5
         f = top_graph.underlying_function
-        globals().update(locals())
         graph = axes.get_graph(lambda t: (f(t + dt) - f(t)) / dt)
         graph.set_stroke(MAROON_B)
         # Dumb hack, not sure why it's needed

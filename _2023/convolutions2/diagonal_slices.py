@@ -929,7 +929,6 @@ class RotateGaussianSlice(RotationalSymmetryOfGaussian):
         slice_graph.clear_updaters()
 
         clip_vect = VectorizedPoint(surface.uniforms["clip_plane"][:3])
-        globals().update(locals())
         surface.add_updater(lambda m: m.set_clip_plane(
             clip_vect.get_center(), -s_tracker.get_value()
         ))

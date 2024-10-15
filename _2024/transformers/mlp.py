@@ -1047,7 +1047,6 @@ class BasicMLPWalkThrough(InteractiveScene):
         # Collapse
         substrs = [R"W_\uparrow", R"\vec{\textbf{E}}_i", "+", R"\vec{\textbf{B}}_\uparrow"]
         linear_expr = Tex(" ".join(substrs))
-        globals().update(locals())
         W_up, E_i, plus2, B_up = [linear_expr[ss] for ss in substrs]
         VGroup(W_up, B_up).set_color(BLUE)
         E_i.set_color(YELLOW)
