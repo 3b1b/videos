@@ -25,16 +25,16 @@ class HighLevelNetworkFlow(InteractiveScene):
     hide_block_labels = False
     block_to_title_direction = UP
 
-    example_text = "It is said that which does not kill you only makes you stronger"
+    example_text = "The Computer History Museum is located in Mountain"
     possible_next_tokens = [
-        ("stronger", 0.806),
-        ("stranger", 0.078),
-        ("more", 0.006),
-        ("weaker", 0.003),
-        ("into", 0.002),
-        ("Strong", 0.002),
-        ("wish", 0.002),
-        ("STR", 0.002),
+        ("Mountain", 0.706),
+        ("the", 0.128),
+        ("San", 0.078),
+        ("Seattle", 0.006),
+        ("New", 0.003),
+        ("Palo", 0.002),
+        ("Google", 0.002),
+        ("southern", 0.002),
     ]
 
     def setup(self):
@@ -58,6 +58,29 @@ class HighLevelNetworkFlow(InteractiveScene):
             show_one_by_one=True,
             sideview_orientation=(-78, -10, 0),
         )
+
+        # # Temporary
+        # block = self.blocks[-1]
+        # nodes = self.mlps[-1][0]
+        # lines = self.mlps[-1][1]
+        # lines.save_state()
+        # lines.set_stroke(width=0.5, opacity=0.5)
+        # self.play(
+        #     FadeOut(self.token_blocks),
+        #     FadeOut(self.token_arrows),
+        #     FadeOut(self.final_word_question),
+        #     FadeOut(self.blocks[0]),
+        #     FadeOut(self.layers),
+        #     FadeOut(block[0]),
+        # )
+        # self.play(
+        #     self.frame.animate.reorient(-65, -8, 0, (-0.77, 1.7, 7.26), 12.57),
+        #     Restore(lines, lag_ratio=0.01),
+        #     run_time=4
+        # )
+        # self.play(self.frame.animate.reorient(-15, -8, 0, (-0.77, 1.7, 7.26), 12.57), run_time=4)
+
+        #
         orientation = frame.get_euler_angles() / DEGREES
         mlp_kw = dict(sideview_orientation=orientation, final_orientation=orientation)
         att_kw = dict(target_orientation=orientation)
@@ -247,14 +270,24 @@ class HighLevelNetworkFlow(InteractiveScene):
         attention_anim_run_time=5,
         label_text="Attention"
     ):
+        # self.embed()
+        # # Test
+        # self.frame.clear_updaters()
+        # attention_anim_run_time = 16
+        # target_orientation = (-53, -16, 0, (-1.08, -0.57, 1.12), 11.27)
+        # self.camera.light_source.set_z(10)
+
         layer = self.layers[-1]
+        layer.brackets.set_fill(opacity=1)
         layer.save_state()
         block = self.get_block(layer, title=label_text, depth=depth)
         z_diff = block.get_z() - layer.get_z()
         block_opacity = block.body[0].get_opacity()
         block.body[0].set_opacity(0)
+        block.title.set_backstroke(BLACK, 5)
         new_layer = layer.copy()
         new_layer.match_z(block)
+        new_layer.set_backstroke(BLACK, 1)
 
         self.frame.target = self.frame.generate_target()
         self.frame.target.reorient(*target_orientation)
@@ -271,9 +304,14 @@ class HighLevelNetworkFlow(InteractiveScene):
                 (self.blocks[-1].title if len(self.blocks) > 0 else VGroup()).animate.set_opacity(0.25),
                 lag_ratio=0.3
             ),
+            self.token_arrows.animate.set_opacity(0.1),
             run_time=2
         )
-        self.play_simple_attention_animation(new_layer, run_time=attention_anim_run_time)
+        self.play_simple_attention_animation(
+            new_layer,
+            run_time=attention_anim_run_time,
+            added_anims=[self.frame.animate.reorient(0, -15, 0, (-0.07, 0.45, 2.03), 9.25)]
+        )
 
         # Take new layer out of block
         self.add(*block.body, block.title, new_layer)
@@ -286,54 +324,62 @@ class HighLevelNetworkFlow(InteractiveScene):
         )
         self.add(block, new_layer)
 
-        # # Highlight example
-        # highlight = new_layer[0][3].copy()
-        # highlight.set_backstroke(BLACK, 3)
-        # highlight.set_fill(border_width=1)
-        # rect = SurroundingRectangle(highlight)
-        # rect.set_stroke(TEAL, 3)
+        if False:
+            # Highlight example
+            index = 4
+            highlight = new_layer[0][index].copy()
+            highlight.set_backstroke(BLACK, 3)
+            highlight.set_fill(border_width=1)
+            rect = SurroundingRectangle(highlight)
+            rect.set_stroke(TEAL, 3)
+            new_arrow = Arrow(self.token_blocks[index].get_bottom(), rect.get_top(), tip_angle=45 * DEGREES)
+            new_arrow.set_fill(GREY_A, border_width=4)
 
-        # self.add(block.body, new_layer, block.title),
-        # self.play(LaggedStart(
-        #     self.frame.animate.reorient(-27, -6, 0, (-2.47, 0.33, 3.49), 10.23),
-        #     block.body.animate.set_color(BLACK).set_shading(0.1, 0.1, 0.5),
-        #     block.title.animate.set_opacity(0.75),
-        #     new_layer.animate.fade(0.75).set_stroke(width=0),
-        #     FadeIn(highlight),
-        #     ShowCreation(rect),
-        #     run_time=3
-        # ))
-        # self.wait()
+            self.add(block.body, new_layer, block.title),
+            self.play(LaggedStart(
+                self.frame.animate.reorient(0, -14, 0, (-0.18, 0.73, 3.26), 8.31),
+                block.body.animate.set_color(BLACK).set_shading(0.1, 0.1, 0.5),
+                block.title.animate.set_opacity(0.1),
+                new_layer.animate.fade(0.75).set_stroke(width=0),
+                self.token_blocks[index].animate.scale(2, about_edge=DOWN),
+                self.token_blocks[:index].animate.shift(0.35 * LEFT),
+                FadeIn(highlight),
+                ShowCreation(rect),
+                FadeIn(new_arrow, scale=4),
+                run_time=3
+            ))
+            self.wait()
 
         self.blocks.add(block)
         self.layers.add(new_layer)
 
-    def play_simple_attention_animation(self, layer, run_time=5):
+    def play_simple_attention_animation(self, layer, run_time=5, added_anims=[]):
         arc_groups = VGroup()
-        for e1 in layer.embeddings:
-            arc_group = VGroup()
-            for e2 in layer.embeddings:
-                sign = (-1)**int(e2.get_x() < e1.get_x())
-                arc_group.add(Line(
-                    e2.get_top(), e1.get_top(), 
-                    path_arc=sign * PI / 3,
-                    stroke_color=random_bright_color(hue_range=(0.1, 0.3)),
-                    stroke_width=5 * random.random()**5,
-                ))
-            arc_group.shuffle()
-            arc_groups.add(arc_group)
+        for _ in range(3):
+            for n, e1 in enumerate(layer.embeddings):
+                arc_group = VGroup()
+                for e2 in layer.embeddings[n + 1:]:
+                    sign = (-1)**int(e2.get_x() > e1.get_x())
+                    arc_group.add(Line(
+                        e1.get_top(), e2.get_top(),
+                        path_arc=sign * PI / 3,
+                        stroke_color=random_bright_color(hue_range=(0.1, 0.3)),
+                        stroke_width=5 * random.random()**5,
+                    ))
+                arc_group.shuffle()
+                if len(arc_group) > 0:
+                    arc_groups.add(arc_group)
 
         self.play(
             LaggedStart(*(
                 AnimationGroup(
-                    LaggedStartMap(VShowPassingFlash, arc_group.copy(), time_width=2, lag_ratio=0.05),
-                    LaggedStartMap(ShowCreationThenFadeOut, arc_group, lag_ratio=0.05),
+                    LaggedStartMap(VShowPassingFlash, arc_group.copy(), time_width=2, lag_ratio=0.15),
+                    LaggedStartMap(ShowCreationThenFadeOut, arc_group, lag_ratio=0.15),
                 )
                 for arc_group in arc_groups
-            # ), lag_ratio=0.25),
             ), lag_ratio=0.0),
-            # LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.5),
             LaggedStartMap(RandomizeMatrixEntries, layer.embeddings, lag_ratio=0.0),
+            *added_anims,
             run_time=run_time
         )
         self.add(layer)
@@ -1187,6 +1233,23 @@ class FlowForCHM(SimplifiedFlow):
         super().progress_through_mlp_block(*args, **kwargs)
 
 
+class FlowForCHM2(FlowForCHM):
+    example_text = "The Computer History Museum is located in Mountain"
+    possible_next_tokens = [
+        ("Mountain", 0.706),
+        ("the", 0.128),
+        ("San", 0.078),
+        ("Seattle", 0.006),
+        ("New", 0.003),
+        ("Palo", 0.002),
+        ("Google", 0.002),
+        ("southern", 0.002),
+    ]
+
+    def show_initial_text_embedding(self, word_scale_factor=0.6, bump_first=False):
+        super().show_initial_text_embedding(word_scale_factor=0.5)
+
+
 class TextToNumerical(SimplifiedFlow):
     example_text = "Text must be encoded as numbers blah"
     use_words = True
@@ -1196,7 +1259,7 @@ class TextToNumerical(SimplifiedFlow):
         self.show_initial_text_embedding(word_scale_factor=0.75)
 
 
-class FlowForCHMNoText(FlowForCHM):
+class FlowForCHMNoText(FlowForCHM2):
     def get_block(self, *args, **kwargs):
         kwargs.update(title="")
         return super().get_block(*args, **kwargs)

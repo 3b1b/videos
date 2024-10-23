@@ -110,17 +110,19 @@ def next_token_bar_chart(
 
 
 class SimpleAutogregression(InteractiveScene):
-    text_corner = 3.5 * UP + 6.75 * LEFT
-    line_len = 29
+    text_corner = 3.5 * UP + 0.75 * RIGHT
+    line_len = 31
     font_size = 35
     n_shown_predictions = 12
     seed_text = "Behold, a wild pi creature, foraging in its native"
     seed_text_color = BLUE_B
+    machine_name = "Transformer"
+    machine_phi = 10 * DEGREES
+    machine_theta = 12 * DEGREES
     n_predictions = 120
     skip_through = False
     random_seed = 0
     model = "gpt2"
-    color_seed = True
 
     def construct(self):
         # Repeatedly generate
@@ -141,7 +143,7 @@ class SimpleAutogregression(InteractiveScene):
 
         # Set up Transformer as some sort of machine
         machine = self.get_transformer_drawing()
-        self.reposition_transformer_drawing(machine)
+        machine.set_y(0).to_edge(LEFT, buff=-0.6)
 
         self.add(text_mob)
         self.add(next_word_line)
@@ -165,33 +167,30 @@ class SimpleAutogregression(InteractiveScene):
         next_word_line = Underline(text_mob[:char_len])
         next_word_line.set_stroke(TEAL, 2)
         next_word_line.next_to(text_mob[-1], RIGHT, SMALL_BUFF, aligned_edge=DOWN)
-        if next_word_line.pfp(0.25)[0] > text_mob.get_x(RIGHT):
-            next_word_line.next_to(text_mob[:-1], DOWN, buff=0.5, aligned_edge=LEFT)
         if self.skip_through:
             next_word_line.set_opacity(0)
         return next_word_line
 
-    def reposition_transformer_drawing(self, machine):
-        machine.move_to(1.5 * RIGHT)
-
     def get_transformer_drawing(self):
-        self.camera.light_source.set_z(8)
+        self.camera.light_source.move_to([-5, 5, 10])
         self.frame.set_field_of_view(20 * DEGREES)
         blocks = VGroup(
             VPrism(3, 2, 0.2)
             for n in range(10)
         )
-        blocks.set_fill(GREY_E, 1)
-        blocks.set_stroke(BLACK, 0.5, 0.5)
-        blocks.set_shading(0.5, 0.5, 0.5)
+        blocks.set_fill(GREY_D, 1)
+        blocks.set_stroke(width=0)
+        blocks.set_shading(0.25, 0.5, 0.2)
         blocks.arrange(OUT)
         blocks.move_to(ORIGIN, OUT)
-        # blocks.rotate(10 * DEGREES, RIGHT, about_edge=OUT)
-        # blocks.rotate(5 * DEGREES, UP, about_edge=OUT)
-        blocks.rotate(5 * DEGREES, RIGHT, about_edge=OUT)
-        blocks.rotate(15 * DEGREES, UP, about_edge=OUT)
+        blocks.rotate(self.machine_phi, RIGHT, about_edge=OUT)
+        blocks.rotate(self.machine_theta, UP, about_edge=OUT)
 
-        word = Text("Transformer")
+        blocks.deactivate_depth_test()
+        for block in blocks:
+            block.sort(lambda p: p[2])
+
+        word = Text(self.machine_name, alignment="LEFT")
         word.next_to(blocks[-1], UP)
         word.shift(0.1 * UP + 0.4 * LEFT)
         word.move_to(blocks[-1])
@@ -202,55 +201,72 @@ class SimpleAutogregression(InteractiveScene):
             max_width_to_length_ratio=12
         )
         out_arrow.next_to(blocks[-1], RIGHT, buff=SMALL_BUFF)
-        out_arrow.scale(0, about_point=blocks.get_right())
-        in_arrow = out_arrow.copy()
-        in_arrow.rotate(-PI / 4)
-        in_arrow.next_to(blocks, UL)
+        out_arrow.set_opacity(0)
 
-        result = Group(Group(*blocks), word, out_arrow)
+        result = VGroup(blocks, word, out_arrow)
         return result
 
     def get_distribution(
-        self, words, probs,
-        reference_point=ORIGIN,
+        self, words, probs, machine,
         font_size=24,
-        width_100p=1.0,
-        prob_exp=0.75,
+        width_100p=1.8,
         bar_height=0.25,
-        buff=1.2,
         show_ellipses=True
     ):
-        return next_token_bar_chart(
-            words, probs,
-            reference_point=reference_point,
-            font_size=font_size,
-            width_100p=width_100p,
-            prob_exp=prob_exp,
-            bar_height=bar_height,
-            buff=buff,
-            show_ellipses=show_ellipses,
+        labels = VGroup(Text(word, font_size=font_size) for word in words)
+        bars = VGroup(
+            Rectangle(prob * width_100p, bar_height)
+            for prob, label in zip(probs, labels)
         )
+        bars.arrange(DOWN, aligned_edge=LEFT, buff=0.5 * bar_height)
+        bars.set_fill(opacity=1)
+        bars.set_submobject_colors_by_gradient(TEAL, YELLOW)
+        bars.set_stroke(WHITE, 1)
 
-    def animate_text_input(self, text_mob, machine):
+        bar_groups = VGroup()
+        for label, bar, prob in zip(labels, bars, probs):
+            prob_label = Integer(int(100 * prob), unit="%", font_size=0.75 * font_size)
+            prob_label.next_to(bar, RIGHT, buff=SMALL_BUFF)
+            label.next_to(bar, LEFT)
+            bar_groups.add(VGroup(label, bar, prob_label))
+
+        if show_ellipses:
+            ellipses = Tex(R"\vdots", font_size=font_size)
+            ellipses.next_to(bar_groups[-1][0], DOWN)
+            bar_groups.add(ellipses)
+
+        arrow_point = machine[-1].get_right()
+        bar_groups.shift(arrow_point - bars.get_left() + 1.5 * RIGHT)
+        bar_groups.align_to(machine, UP)
+
+        return bar_groups
+
+    def animate_text_input(self, text_mob, machine, position_text_over_machine=True, added_anims=[], lag_ratio=0.02):
         blocks = machine[0]
         text_copy = text_mob.copy()
-        text_copy.target = text_copy.generate_target()
-        text_copy.target.set_max_width(blocks[0].get_width())
-        text_copy.target.next_to(blocks[0], UP)
-        text_copy.target.shift_onto_screen()
-        self.play(MoveToTarget(text_copy, path_arc=-45 * DEGREES))
+        if position_text_over_machine:
+            text_copy.target = text_copy.generate_target()
+            text_copy.target.set_max_width(4)
+            text_copy.target.next_to(blocks[0], UP)
+            text_copy.target.shift_onto_screen()
+            self.play(MoveToTarget(text_copy, path_arc=-45 * DEGREES))
         self.play(LaggedStart(
+            *added_anims,
             Transform(
                 text_copy,
-                VGroup(VectorizedPoint(blocks[0].get_center())),
-                lag_ratio=0.02,
+                VGroup(VectorizedPoint(machine.get_top())),
+                lag_ratio=lag_ratio,
                 run_time=1,
                 path_arc=-45 * DEGREES,
                 remover=True,
             ),
             LaggedStart(
-                (block.animate.set_color(TEAL).set_anim_args(rate_func=there_and_back)
-                for block in blocks[:-1]),
+                (
+                    block.animate.set_color(
+                        block.get_color() if block is blocks[-1] else TEAL
+                    ).set_anim_args(rate_func=there_and_back)
+                    for block in blocks
+                ),
                 lag_ratio=0.1,
                 run_time=1
             ),
@@ -260,7 +276,7 @@ class SimpleAutogregression(InteractiveScene):
 
     def animate_prediction_ouptut(self, machine, cur_str):
         words, probs = self.predict_next_token(cur_str)
-        bar_groups = self.get_distribution(words, probs, machine[-1].get_right())
+        bar_groups = self.get_distribution(words, probs, machine)
         self.play(
             LaggedStart(
                 (FadeInFromPoint(bar_group, machine[0][-1].get_right())
@@ -282,7 +298,7 @@ class SimpleAutogregression(InteractiveScene):
         highlight_rect.set_fill(YELLOW, 0.25)
 
         def highlight_randomly(rect, dist, alpha):
-            np.random.seed(seed + int(30 * alpha))
+            np.random.seed(seed + int(10 * alpha))
             index = np.random.choice(np.arange(len(dist)), p=dist)
             rect.surround(bar_groups[index], buff=buff)
             rect.stretch(1.1, 0)
@@ -309,8 +325,7 @@ class SimpleAutogregression(InteractiveScene):
         word = bar_group[0].get_text()
         new_str = self.cur_str + word
         new_text_mob = self.string_to_mob(new_str)
-        if self.color_seed:
-            new_text_mob[:len(self.seed_text.replace(" ", ""))].set_color(self.seed_text_color)
+        new_text_mob[:len(self.seed_text.replace(" ", ""))].set_color(self.seed_text_color)
 
         word_targets = new_text_mob[word.strip()]
         if len(word_targets) > 0:
@@ -320,6 +335,7 @@ class SimpleAutogregression(InteractiveScene):
 
         # target = new_text_mob[-len(word):]
 
+        self.add(bar_groups)
         self.play(
             FadeTransform(bar_group[0].copy(), target),
             Transform(
@@ -349,22 +365,9 @@ class SimpleAutogregression(InteractiveScene):
         if skip_anims:
             self.skip_animations = True
 
-        # Clean view of the distribution
-        # self.clear()
-        # words, probs = self.predict_next_token(self.cur_str)
-        # bar_groups = self.get_distribution(words, probs, machine[-1].get_right())
-        # bars = VGroup(group[1] for group in bar_groups)
-        # bars.stretch(3, 0, about_edge=LEFT)
-        # bars = bars[:7]
-        # bars[2].stretch(1.1, 0, about_edge=LEFT)
-        # bars[5].stretch(0.8, 0, about_edge=LEFT)
-        # bars[6:].stretch(0.8, 0, about_edge=LEFT)
-        # bars.set_height(FRAME_HEIGHT - 1).center()
-        # self.add(bars)
-
         if quick:
             words, probs = self.predict_next_token(self.cur_str)
-            bar_groups = self.get_distribution(words, probs, machine[-1].get_right())
+            bar_groups = self.get_distribution(words, probs, machine)
             self.add(bar_groups)
         else:
             self.animate_text_input(text_mob, machine)
@@ -378,11 +381,9 @@ class SimpleAutogregression(InteractiveScene):
 
     #
 
-    def predict_next_token(self, text, n_shown=None):
-        if n_shown is None:
-            n_shown = self.n_shown_predictions
-
+    def predict_next_token(self, text):
         result = None
+        n_shown = self.n_shown_predictions
         if self.model == "gpt3":
             try:
                 result = gpt3_predict_next_token(
