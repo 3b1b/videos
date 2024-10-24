@@ -67,7 +67,7 @@ class BruteForceVerification(Scene):
         cross = Matrix(list(it.starmap(get_term, [
             (v2, w3, v3, w2),
             (v3, w1, v1, w3),
-            (v2, w3, v3, w2),
+            (v1, w2, v2, w1),
         ])))
         cross_product = VGroup(
             v.copy(), OldTex("\\times"), w.copy(),
