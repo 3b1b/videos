@@ -1204,7 +1204,7 @@ class LargeInLargeLanguageModel(InteractiveScene):
 class ThousandsOfWords(InteractiveScene):
     def construct(self):
         # Find passage
-        file = Path("/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/data/tale_of_two_cities.txt")
+        file = Path("/Users/bowen/Documents/Python/Manim/ManimVideos/videos/_2024/transformers/tale-of-two-cities.txt")
         novel = file.read_text()
         start_index = novel.index("It was the best of times")
         end_index = novel.index("There were a king with a large jaw")
