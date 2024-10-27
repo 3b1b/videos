@@ -1565,7 +1565,6 @@ class ShowHypercubeConstruction(InteractiveScene):
         self.wait()
 
         # Grow new sets
-        # indices = list(range(1, 6))
         indices = list(range(1, 10))
         for n, vect, color in zip(indices, vects, colors):
             new_sets = VGroup(*(
@@ -1600,6 +1599,7 @@ class ShowHypercubeConstruction(InteractiveScene):
             for line in line_copies:
                 if abs(line.get_vector()[0]) > 1e-2:
                     line.set_width(line.get_width() - diff)
+                line.set_stroke(width=(1, 5, 5, 5, 1))
             lines.generate_target()
             line_copies.shift(vect)
             lines.target.shift(-vect)
@@ -1636,6 +1636,17 @@ class ShowHypercubeConstruction(InteractiveScene):
                 for i in range(1, 4):
                     self.highlight_direction(curr_sets, lines, i)
         self.wait(5)
+
+    def styling(self):
+        # Style (To insert above)
+        everything = VGroup(*curr_sets.family_members_with_points(), *lines.family_members_with_points())
+        everything.sort(lambda p: -get_norm(p - self.frame.get_implied_camera_location()))
+        self.add(*everything)
+        for line in lines.family_members_with_points():
+            line.insert_n_curves(20)
+            line.set_stroke(width=(1, 7, 7, 7, 1))
+
+        curr_sets.set_fill(border_width=1.5)
 
     def highlight_direction(self, set_texs, lines, index):
         anims = []
