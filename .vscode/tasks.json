@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run check_paste in Terminal",
+            "type": "shell",
+            "command": "/Users/bowen/Documents/Python/Manim/VirEnvs/.vscode/run_terminal.sh"
+        },
+        {
+            "label": "Run hi in Terminal",
+            "type": "shell",
+            "command": "/Users/bowen/Documents/Python/Manim/VirEnvs/.vscode/open_file.sh",
+            "args": [
+                "${file}"  // Passes the active file path to the script
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
