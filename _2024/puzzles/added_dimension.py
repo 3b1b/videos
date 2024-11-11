@@ -382,6 +382,8 @@ class HexagonStack(CubesAsHexagonTiling):
             for y in range(self.n - x):
                 for z in range(self.n - x - y):
                     self.add_cube(self.get_new_cube(x, y))
+        self.remove(self.base_cube)
+        self.cubes.set_fill(BLUE_D)
         self.wait()
 
 
@@ -1198,7 +1200,7 @@ class ShowRhombicDodecTesselation(Project4DCube):
         N = 6
         coords = [
             coords
-            for coords in it.product(*4 * [list(range(6))])
+            for coords in it.product(*4 * [list(range(N))])
             if sum(coords) == 8
         ]
         pieces = Group(
