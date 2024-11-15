@@ -24,19 +24,20 @@ def get_matrix_exponential(matrix, height=1.5, scalar_tex="t", **matrix_config):
     return result
 
 
-def get_vector_field_and_stream_lines(func, coordinate_system,
-                                      magnitude_range=(0.5, 4),
-                                      vector_opacity=0.75,
-                                      vector_thickness=0.03,
-                                      color_by_magnitude=False,
-                                      line_color=GREY_A,
-                                      line_width=3,
-                                      line_opacity=0.75,
-                                      sample_freq=5,
-                                      n_samples_per_line=10,
-                                      arc_len=3,
-                                      time_width=0.3,
-                                      ):
+def get_vector_field_and_stream_lines(
+    func, coordinate_system,
+    magnitude_range=(0.5, 4),
+    vector_opacity=0.75,
+    vector_thickness=0.03,
+    color_by_magnitude=False,
+    line_color=GREY_A,
+    line_width=3,
+    line_opacity=0.75,
+    sample_freq=5,
+    n_samples_per_line=10,
+    arc_len=3,
+    time_width=0.3,
+):
     vector_field = VectorField(
         func, coordinate_system,
         magnitude_range=magnitude_range,
