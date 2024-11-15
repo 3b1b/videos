@@ -5,6 +5,59 @@ from _2024.transformers.embedding import *
 from _2024.transformers.ml_basics import *
 
 
+# Intro
+
+class HoldUpThumbnail(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        im = ImageMobject("/Users/grant/3Blue1Brown Dropbox/3Blue1Brown/videos/2024/transformers/Thumbnails/Chapter5_TN3.png")
+        im_group = Group(
+            SurroundingRectangle(im, buff=0).set_stroke(WHITE, 3),
+            im
+        )
+        im_group.set_height(3)
+        im_group.move_to(self.hold_up_spot, DOWN)
+
+        morty = self.teacher
+        stds = self.students
+
+        self.play(
+            FadeIn(im_group, UP),
+            morty.change("raise_right_hand", look_at=im_group),
+            self.change_students("tease", "happy", "tease", look_at=im_group),
+        )
+        self.wait(4)
+
+
+class IsThisUsefulToShare(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        morty = self.teacher
+        self.play(
+            morty.says("Do you find\nthis useful?"),
+            self.change_students("pondering", "hesitant", "well", look_at=self.screen)
+        )
+        self.wait(3)
+        self.play(self.change_students("thinking", "pondering", "tease"))
+        self.wait(3)
+
+
+class AskAboutAttention(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        stds = self.students
+        morty = self.teacher
+        self.play(
+            morty.change("tease"),
+            stds[2].says("Can you explain what\nAttention does?", mode="raise_left_hand", bubble_direction=LEFT),
+            stds[1].change("pondering", self.screen),
+            stds[0].change("pondering", self.screen),
+        )
+        self.wait(4)
+
+
+# Version 1
+
 class PredictTheNextWord(SimpleAutogregression):
     text_corner = 3.5 * UP + 6.5 * LEFT
     machine_name = "Large\nLanguage\nModel"
@@ -2046,3 +2099,62 @@ class DivyUpParameters(ShowMachineWithDials):
             ),
         )
         self.wait()
+
+
+# End clips
+
+
+class ShowPreviousVideos(InteractiveScene):
+    def construct(self):
+        # Backdrop
+        background = FullScreenRectangle()
+        self.add(background)
+
+        line = Line(UP, DOWN).set_height(FRAME_HEIGHT)
+        line.set_stroke(WHITE, 2)
+
+        series_name = Text("Deep Learning Series", font_size=68)
+        series_name.to_edge(UP, buff=0.35)
+        self.add(series_name)
+
+        # Show thumbnails
+        thumbnails = Group(
+            Group(
+                Rectangle(16, 9).set_height(1).set_stroke(WHITE, 2),
+                ImageMobject(f"https://img.youtube.com/vi/{slug}/maxresdefault.jpg", height=1)
+            )
+            for slug in [
+                "aircAruvnKk",
+                "IHZwWFHWa-w",
+                "Ilg3gGewQ5U",
+                "tIeHLnjs5U8",
+                "wjZofJX0v4M",
+                "eMlx5fFNoYc",
+                "9-Jl0dxWQs8",
+            ]
+        )
+
+        thumbnails.arrange_in_grid(n_cols=4, buff=0.2)
+        thumbnails.set_width(FRAME_WIDTH - 1)
+        thumbnails.next_to(series_name, DOWN, buff=1.0)
+        thumbnails[-3:].set_x(0)
+
+        self.play(LaggedStartMap(FadeIn, thumbnails, shift=0.3 * UP, lag_ratio=0.35, run_time=4))
+        self.wait()
+
+        # Rearrange
+        left_x = -FRAME_WIDTH / 4
+        self.play(
+            series_name.animate.set_x(left_x),
+            thumbnails.animate.arrange_in_grid(n_cols=2, buff=0.25).set_height(6).set_x(left_x).to_edge(DOWN),
+            ShowCreation(line, time_span=(1, 2)),
+            run_time=2,
+        )
+        self.wait()
+
+
+class EndScreen(PatreonEndScreen):
+    title_text = "Where to dig deeper"
+    thanks_words = """
+        Special thanks to these Patreon supporters
+    """
