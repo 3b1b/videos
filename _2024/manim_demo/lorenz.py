@@ -1,5 +1,4 @@
 from manim_imports_ext import *
-from scipy.integrate import odeint
 from scipy.integrate import solve_ivp
 
 
