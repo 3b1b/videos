@@ -1678,16 +1678,23 @@ class StruggleWithStrips(AskStripQuestion):
         # Show varying strip
         r0 = subdivision[1]
         delta_r = subdivision[2] - subdivision[1]
+        delta_r_tracker = ValueTracker(delta_r)
         r0_tracker = ValueTracker(r0)
 
         strip.add_updater(lambda m: m.match_points(self.get_strip(
             circle,
             r0_tracker.get_value(),
-            r0_tracker.get_value() + delta_r,
+            r0_tracker.get_value() + delta_r_tracker.get_value(),
             theta=0
         )))
         for value in [-1, 0.6, r0]:
             self.play(r0_tracker.animate.set_value(value), run_time=4)
+
+        self.play(
+            delta_r_tracker.animate.set_value(0.3),
+            arrow.animate.scale(0.3 / 0.44),
+            run_time=3
+        )
 
         strip.clear_updaters()
         self.play(
