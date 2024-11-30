@@ -930,6 +930,15 @@ class PileOfEquations(InteractiveScene):
         self.wait()
 
 
+class Obvious(InteractiveScene):
+    def construct(self):
+        # Test
+        randy = Randolph()
+        self.play(randy.says("Isn't that\nobvious?", mode="confused", bubble_direction=LEFT))
+        self.play(randy.animate.look_at(3 * UP))
+        self.wait(5)
+
+
 class BonusVideo(InteractiveScene):
     def construct(self):
         # Test
