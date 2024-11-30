@@ -241,7 +241,7 @@ def get_vector_field_and_stream_lines(
     # Vector config
     vector_stroke_width=5,
     vector_opacity=0.5,
-    step_multiple=0.25,
+    density=4,
     # Streamline config
     sample_freq=5,
     n_samples_per_line=10,
@@ -255,7 +255,7 @@ def get_vector_field_and_stream_lines(
     # Vector field
     vector_field = VectorField(
         func, axes,
-        step_multiple=step_multiple,
+        density=density,
         stroke_width=vector_stroke_width,
         stroke_opacity=vector_opacity,
     )
@@ -263,7 +263,7 @@ def get_vector_field_and_stream_lines(
     # Streamlines
     stream_lines = StreamLines(
         func, axes,
-        step_multiple=1.0 / sample_freq,
+        density=sample_freq,
         n_samples_per_line=n_samples_per_line,
         solution_time=solution_time,
         magnitude_range=vector_field.magnitude_range,
