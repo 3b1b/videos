@@ -1,3 +1,5 @@
+#~ 1.7.2
+
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 
