@@ -9,19 +9,22 @@ directories:
     downloads: "manim_downloads"
     # Use the default value for the rest
 universal_import_line: "from manim_imports_ext import *"
-# tex:
-#   executable: "xelatex -no-pdf"
-#   template_file: "ctex_template.tex"
-#   intermediate_filetype: "xdv"
-style:
-  font: "CMU Serif"
-  text_alignment: "CENTER"
+window:
+  position_string: UR
+  monitor_index: 0
+  full_screen: False
+camera:
+  resolution: (3840, 2160)
   background_color: "#000000"
-camera_resolutions:
-  default_resolution: "4k"
-file_writer_config:
+  fps: 30
+  background_opacity: 1.0
+file_writer:
   saturation: 1.5
-fps: 30
-window_position: UR
-window_monitor: 0
-full_screen: False
+text:
+  font: "CMU Serif"
+  alignment: "CENTER"
+tex:
+  template: "default"
+embed:
+  autoreload: True
+ignore_manimlib_modules_on_reload: True
