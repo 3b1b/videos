@@ -4,7 +4,7 @@ import itertools as it
 
 import numpy as np
 
-from manimlib.constants import DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+from manimlib.constants import DEFAULT_MOBJECT_TO_MOBJECT_BUFF
 from manimlib.constants import LEFT, RIGHT
 from manimlib.constants import WHITE
 from manimlib.mobject.shape_matchers import BackgroundRectangle
@@ -59,9 +59,9 @@ def vector_coordinate_label(
 
     shift_dir = np.array(vector_mob.get_end())
     if shift_dir[0] >= 0:  # Pointing right
-        shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * LEFT
+        shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFF * LEFT
     else:  # Pointing left
-        shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
+        shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFF * RIGHT
     label.shift(shift_dir)
     label.set_color(color)
     label.rect = BackgroundRectangle(label)
