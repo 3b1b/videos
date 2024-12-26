@@ -53,7 +53,6 @@ def get_full_surface(band_func, x_range):
     bound.apply_depth_test()
     meshes.set_stroke(WHITE, 0.5, 0.5)
     return Group(surface, m1, m2, bound)
-    return Group(surface, bound)
 
 
 def get_sudanese_band(circle_on_xy_plane=False):

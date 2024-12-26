@@ -167,6 +167,28 @@ class WhatIsTopology(InteractiveScene):
         self.wait()
 
 
+class ThreeShapes(InteractiveScene):
+    def construct(self):
+        # Test
+        v_lines = Line(DOWN, UP).replicate(2)
+        v_lines.set_height(FRAME_HEIGHT)
+        v_lines.arrange(RIGHT, buff=FRAME_WIDTH / 3)
+        v_lines.set_stroke(WHITE, 3)
+
+        titles = VGroup(
+            Text("Möbius Strip"),
+            Text("Torus"),
+            Text("Klein Bottle"),
+        )
+        for title, x in zip(titles, [-1, 0, 1]):
+            title.scale(60 / 48)
+            title.set_x(x * FRAME_WIDTH / 3)
+            title.to_edge(UP)
+
+        self.add(v_lines)
+        self.add(titles)
+
+
 class ThisIsTheSame(InteractiveScene):
     def construct(self):
         # Test
@@ -261,6 +283,36 @@ class AskAboutProvingCollision(InteractiveScene):
         self.play(randy.thinks("Why must there\nbe a collision?"))
         self.play(Blink(randy))
         self.play(randy.change("confused"))
+        self.wait()
+
+
+class GraphOfBellCurve(InteractiveScene):
+    def construct(self):
+        # Test
+        axes = ThreeDAxes((-3, 3), (-3, 3), (0, 1))
+        axes.set_depth(2, stretch=True)
+        surface = axes.get_graph(lambda x, y: np.exp(-x**2 - y**2))
+        surface.set_opacity(0.7)
+        surface.always_sort_to_camera(self.camera)
+        mesh = SurfaceMesh(surface, resolution=(21, 21))
+        mesh.set_stroke(WHITE, 0.5, 0.5)
+
+        self.frame.reorient(42, 67, 0, (0.42, 0.43, 0.1), 6.03)
+        self.frame.add_ambient_rotation(3 * DEG)
+        self.add(axes)
+        self.add(surface, mesh)
+        self.wait(30)
+
+
+class GraphLabel(InteractiveScene):
+    def construct(self):
+        group = VGroup(
+            Text("Graph of"),
+            Tex(R"f(x, y) = e^{-x^2 - y^2}"),
+        )
+        group.arrange(DOWN)
+        group.to_edge(UP)
+        self.play(Write(group))
         self.wait()
 
 
@@ -519,7 +571,7 @@ class AskAboutUnsolved(InteractiveScene):
     def construct(self):
         randy = Randolph()
         randy.to_corner(DL)
-        self.play(randy.says("What about the\nunsolvd problem?", "maybe"))
+        self.play(randy.says("What about the\nunsolved problem?", "maybe"))
         self.play(Blink(randy))
         self.wait(2)
 
@@ -602,7 +654,7 @@ class GreeneLobbTheorem(InteractiveScene):
             Theorem by Greene and Lobb (2020):
             Every smooth closed curve contains
             inscribed rectangles of all possible
-            aspect ratio.
+            aspect ratios.
         """, t2s={"smooth": ITALIC}, alignment="LEFT")
         text.to_corner(UL)
 
@@ -640,3 +692,121 @@ class SmoothImplication(InteractiveScene):
             FadeIn(tangent, 0.5 * DOWN),
         )
         self.wait()
+
+
+class ProblemSolvingToRecreation(InteractiveScene):
+    def construct(self):
+        # Test
+        words = VGroup(
+            Text("Solving\nproblems"),
+            Text("Helpful\nconstructs"),
+            Text("Recreational\nmath"),
+        )
+        words.arrange(RIGHT, buff=2.5)
+        words.set_y(-1.5)
+        mind_bending = Text("(Sometimes Mind-bending)", font_size=24)
+        mind_bending.next_to(words[1], DOWN)
+
+        arrows = VGroup(
+            Arrow(w1, w2, thickness=4, buff=0.45)
+            for w1, w2 in zip(words, words[1:])
+        )
+        arrows.space_out_submobjects(1.1)
+
+        self.play(FadeIn(words[0], lag_ratio=0.1))
+        self.wait()
+        self.play(
+            FadeIn(words[1], lag_ratio=0.1),
+            GrowArrow(arrows[0]),
+        )
+        self.wait()
+        self.play(FadeIn(mind_bending, 0.25 * DOWN))
+        self.wait()
+
+        # Move mind-bending
+        mb = mind_bending["Mind-bending"]
+        helpful = words[1]["Helpful"]
+
+        self.play(
+            mb.animate.scale(2).move_to(helpful),
+            FadeOut(helpful, 0.25 * UP),
+            FadeOut(mind_bending["(Sometimes"][0]),
+            FadeOut(mind_bending[")"][0]),
+        )
+        self.play(
+            FadeIn(words[2], lag_ratio=0.1),
+            GrowArrow(arrows[1]),
+        )
+        self.wait()
+        self.play(
+            words[0].animate.set_opacity(0.1),
+            arrows[0].animate.set_opacity(0.1),
+        )
+        self.wait()
+
+
+class WriteTopologicalSpace(InteractiveScene):
+    def construct(self):
+        # Test
+        text = Text("Topological Space", font_size=72)
+        text.to_edge(UP)
+        self.play(Write(text))
+        self.wait()
+
+
+class AskAboutTopology(TeacherStudentsScene):
+    def construct(self):
+        morty = self.teacher
+        stds = self.students
+
+        self.play(
+            stds[0].says("What is a\ntopological space?", "raise_left_hand"),
+            stds[1].change("pondering", stds[0].eyes),
+            stds[2].change("pondering", stds[0].eyes),
+            morty.change("tease"),
+        )
+        self.wait(2)
+        self.play(
+            stds[1].animate.look_at(stds[2].eyes),
+            stds[2].says("What is\ntopology?", "maybe", look_at=morty.eyes, bubble_direction=LEFT)
+        )
+        self.wait()
+        self.play(morty.change("guilty"))
+        self.play(stds[0].change('confused'))
+        self.play(morty.change("hesitant"))
+        self.wait(4)
+
+
+class PlaylistMention(InteractiveScene):
+    def construct(self):
+        # Test
+        rects = ScreenRectangle().replicate(8)
+        rects.set_fill(GREY_E, 1)
+        rects.set_stroke(WHITE, 1)
+        group = Group()
+        for x, rect in zip(np.linspace(1, 0, len(rects)), rects):
+            rect.shift(x * 0.75 * UR)
+            group.add(rect)
+            group.add(Point())
+
+        thumbnail = ImageMobject("https://img.youtube.com/vi/OkmNXy7er84/maxresdefault.jpg")
+        thumbnail.replace(rects[-1])
+        group.add(thumbnail)
+
+        group.set_height(2)
+        group.to_edge(UP, buff=1.0)
+
+        words = Text("More neat proofs\nand puzzle solutions")
+        words.next_to(group, DOWN, buff=2.5)
+        arrow = Arrow(words, group)
+        self.play(
+            FadeIn(group, UP),
+            Write(words),
+            GrowArrow(arrow)
+        )
+        self.wait()
+        self.play(FadeOut(words), FadeOut(arrow))
+
+
+class EndScreen(PatreonEndScreen):
+    title_text = ""

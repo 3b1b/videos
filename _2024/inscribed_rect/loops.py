@@ -96,7 +96,7 @@ class StateThePuzzle(LoopScene):
         loop = get_example_loop(4)
         loop.set_height(7)
         loop.move_to(2 * RIGHT)
-        curve_words = Text("Closed\nContinus\nCurve", alignment="LEFT", font_size=72)
+        curve_words = Text("Closed\nContinuous\nCurve", alignment="LEFT", font_size=72)
         curve_words.to_edge(LEFT)
 
         self.play(
@@ -162,14 +162,17 @@ class StateThePuzzle(LoopScene):
         self.wait()
 
         # Ambiently animate to various different loops
-        def true_find_square(loop_func, trg_angle=90 * DEG, cost_tol=1e-2, max_tries=10):
+        def true_find_square(loop_func, trg_angle=90 * DEG, cost_tol=1e-2, max_tries=8):
             ic = np.arange(0, 1, 0.25)
+            min_params = ic
+            min_cost = np.inf
             for x in range(max_tries):
                 params, cost = find_rectangle(loop_func, target_angle=trg_angle, n_refinements=3, return_cost=True)
-                if cost < cost_tol:
-                    break
+                if cost < min_cost:
+                    min_params = params
+                    min_cost = cost
                 ic = np.random.random(4)
-            return params
+            return min_params
 
         new_loops = [
             get_example_loop(1),
@@ -188,15 +191,19 @@ class StateThePuzzle(LoopScene):
         dots.resume_updating()
         self.add(dots, polygon)
         for new_loop in new_loops:
+            self.remove(dots, polygon)
             self.play(
                 Transform(loop, new_loop),
-                UpdateFromFunc(
-                    quad_tracker,
-                    lambda m: m.set_value(true_find_square(loop_func))
-                ),
-                run_time=5
+                # UpdateFromFunc(
+                #     quad_tracker,
+                #     lambda m: m.set_value(true_find_square(loop_func))
+                # ),
+                run_time=1
             )
-            self.wait()
+            self.add(dots, polygon)
+            for _ in range(5):
+                quad_tracker.set_value(find_rectangle(loop_func, np.random.random(4), target_angle=90 * DEG))
+                self.wait(0.5)
 
         # Change question to rectangle
         square_word = question["square"]
@@ -427,17 +434,18 @@ class ShowTheSurface(LoopScene):
 
         # Pair of points
         uv_tracker = ValueTracker([0, 0.5])
-        dots = self.get_movable_pair(uv_tracker, loop_func, radius=0.05)
+        dots = self.get_movable_pair(uv_tracker, loop_func, radius=0.075)
         connecting_line = self.get_connecting_line(dots)
         midpoint_dot = self.get_midpoint_dot(dots)
 
+        self.add(uv_tracker)
         self.add(dots)
         self.add(connecting_line)
 
         self.play(
             UpdateFromFunc(uv_tracker, lambda m: m.set_value(np.random.random(2))),
         )
-        self.add(dots)
+        self.add(dots, connecting_line)
         self.play(uv_tracker.animate.set_value([0.8, 0.5]), run_time=3)
 
         # Add coordinates
@@ -2033,6 +2041,63 @@ class MapTheStripOntoTheSurface(ShowTheSurface):
         )
 
 
+class AmbientRectangleSearch(ShowTheSurface):
+    def construct(self):
+        # Setup loop
+        frame = self.frame
+        axes, plane = self.get_axes_and_plane()
+        self.add(plane)
+
+        loop = get_example_loop(2)
+        loop.insert_n_curves(50)
+        loop.set_height(5)
+        loop.set_stroke(WHITE, 3)
+        loop.set_fill(opacity=0)
+        loop_func = get_quick_loop_func(loop)
+        self.add(loop)
+
+        # Dots
+        abcd_tracker = ValueTracker(np.random.random(4))
+        dots = self.get_movable_quad(abcd_tracker, loop_func, radius=0.1)
+        polygon = self.get_dot_polygon(dots)
+        polygon.set_stroke(YELLOW, 2)
+
+        self.add(dots, polygon)
+
+        # Various rectangles
+        for _ in range(20):
+            rect_params = find_rectangle(
+                loop_func,
+                initial_condition=np.random.random(4),
+                target_angle=np.random.uniform(0, 90 * DEG),
+            )
+            self.play(abcd_tracker.animate.set_value(rect_params), run_time=2)
+            self.wait()
+
+
+class GenericLoopPair(ShowTheSurface):
+    def construct(self):
+        loop = Circle(radius=2.5)
+        loop.set_stroke(WHITE, 3)
+        loop.set_fill(opacity=0)
+        loop_func = get_quick_loop_func(loop)
+        self.add(loop)
+
+        uv_tracker = ValueTracker([0, 0.5])
+        # self.set_uv_tracker_in_motion(uv_tracker, velocity=(0.1 * PI / 2, -0.1))
+        dots = self.get_movable_pair(uv_tracker, loop_func, radius=0.075, colors=[YELLOW, YELLOW])
+        connecting_line = self.get_connecting_line(dots)
+        connecting_line.set_stroke(YELLOW)
+        pair_group = Group(dots, connecting_line)
+
+        self.add(uv_tracker, pair_group)
+
+        # Wait
+        for _ in range(20):
+            self.play(uv_tracker.animate.set_value(np.random.random(2)), run_time=2)
+            self.wait(0.5)
+
+
 class SudaneseBand(InteractiveScene):
     def construct(self):
         # Tranform mobius to Sudanese
@@ -2044,7 +2109,10 @@ class SudaneseBand(InteractiveScene):
         sudanese_band.set_height(6)
 
         frame.reorient(28, 75, 0, ORIGIN, 8)
-        self.add(strip)
+        # self.add(strip)
+        self.add(sudanese_band)
+        frame.add_ambient_rotation(6 * DEG)
+        self.wait(60)
         self.play(frame.animate.increment_theta(180 * DEG), run_time=12)
         self.play(
             frame.animate.reorient(99, 102, 0),
@@ -2446,7 +2514,6 @@ class PuzzleOverMobiusDiagram(ConstructKleinBottle):
                 run_time=3,
                 rate_func=linear
             )
-
 
 
 class ShowAngleInformation(ShowTheSurface):
