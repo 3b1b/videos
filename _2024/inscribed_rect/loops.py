@@ -2109,10 +2109,7 @@ class SudaneseBand(InteractiveScene):
         sudanese_band.set_height(6)
 
         frame.reorient(28, 75, 0, ORIGIN, 8)
-        # self.add(strip)
-        self.add(sudanese_band)
-        frame.add_ambient_rotation(6 * DEG)
-        self.wait(60)
+        self.add(strip)
         self.play(frame.animate.increment_theta(180 * DEG), run_time=12)
         self.play(
             frame.animate.reorient(99, 102, 0),
