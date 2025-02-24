@@ -25,6 +25,9 @@ MARS_ORBIT_PERIOD = 686.98
 JUPITER_ORBIT_PERIOD = 4332.82
 SATURN_ORBIT_PERIOD = 10755.7
 
+# In km / s
+SPEED_OF_LIGHT = 299792
+
 
 def get_earth(radius=1.0, day_texture="EarthTextureMap", night_texture="NightEarthTextureMap"):
     sphere = Sphere(radius=radius)
@@ -84,6 +87,14 @@ def get_celestial_sphere(radius=1000, constellation_opacity=0.1):
     sphere.rotate(EARTH_TILT_ANGLE, RIGHT)
 
     return sphere
+
+
+def get_planet_symbols(text, font_size=48):
+    return Tex(
+        Rf"\{text}",
+        additional_preamble=R"\usepackage{wasysym}",
+        font_size=font_size,
+    )
 
 
 class PerspectivesOnEarth(InteractiveScene):
@@ -2772,3 +2783,306 @@ class ShowCreationOfAllOrbits(KeplersMethod):
             FadeOut(orbit.symbol),
             orbit.animate.set_stroke(width=1)
         )
+
+
+class LightFromEarthToMoon(InteractiveScene):
+    def construct(self):
+        # Earth and moon
+        self.camera.light_source.move_to(20 * LEFT)
+        self.frame.set_field_of_view(15 * DEG)
+
+        conversion_factor = 12 / MOON_ORBIT_RADIUS
+        earth = get_earth(radius=conversion_factor * EARTH_RADIUS)
+        earth.rotate(EARTH_TILT_ANGLE, axis=DOWN)
+        moon = get_moon(radius=conversion_factor * MOON_RADIUS)
+        earth.to_edge(LEFT, buff=0.75)
+        moon.move_to(earth.get_center() + conversion_factor * MOON_ORBIT_RADIUS * RIGHT)
+
+        labels = VGroup(Text("Earth"), Text("Moon"))
+        for label, body in zip(labels, [earth, moon]):
+            label.scale(0.75).next_to(body, UP, buff=0.25)
+
+        self.add(earth, moon)
+        self.add(labels)
+
+        # Light beam
+        low_x = earth.get_x(RIGHT)
+        high_x = moon.get_left()[0] - 0.1
+        pulse = self.get_pulse(SPEED_OF_LIGHT * conversion_factor * LEFT, low_x, high_x)
+        pulse.next_to(moon, LEFT, buff=0)
+
+        self.add(pulse)
+        self.wait(20)
+
+    def get_pulse(
+        self,
+        velocity,
+        low_x=-np.inf,
+        high_x=np.inf,
+        radius=0.2,
+        max_stroke_width=6,
+        tail_time=0.25,
+        label_text=""
+    ):
+        pulse = GlowDot(radius=radius).set_color(WHITE)
+
+        pulse.velocities = np.zeros_like(pulse.get_points())
+        pulse.velocities[:] = velocity
+
+        def update_pulse(pulse, dt):
+            points = pulse.get_points()
+            new_points = points.copy()
+            too_low = points[:, 0] < low_x
+            too_high = points[:, 0] > high_x
+
+            new_points[too_low][:, 0] = low_x
+            new_points[too_high][:, 0] = high_x
+
+            pulse.velocities[too_low] *= -1
+            pulse.velocities[too_high] *= -1
+            new_points += pulse.velocities * dt
+            pulse.set_points(new_points)
+
+        pulse.add_updater(update_pulse)
+        tail = TracingTail(pulse, stroke_width=(0, max_stroke_width), time_traced=tail_time)
+
+        result = Group(pulse, tail)
+
+        if label_text:
+            label = Text(label_text, font_size=24)
+            label.always.next_to(pulse, DOWN, buff=0)
+            result.add(label)
+
+        return result
+
+
+class LightFromSunToEarth(LightFromEarthToMoon):
+    def construct(self):
+        # Sun and earth
+        self.frame.set_field_of_view(15 * DEG)
+
+        conversion_factor = 12 / EARTH_ORBIT_RADIUS
+        earth = get_earth(radius=conversion_factor * EARTH_RADIUS)
+        earth.rotate(EARTH_TILT_ANGLE, axis=DOWN)
+
+        sun = get_sun(radius=SUN_RADIUS * conversion_factor, big_glow_ratio=20)
+        sun.move_to(6.5 * LEFT)
+        earth.move_to(sun.get_center() + conversion_factor * EARTH_ORBIT_RADIUS * RIGHT)
+        earth_glow = GlowDot(earth.get_center(), color=BLUE)
+
+        colors = [GREY_C, TEAL, BLUE]
+        radii = [MERCURY_ORBIT_RADIUS, VENUS_ORBIT_RADIUS, EARTH_ORBIT_RADIUS]
+        orbits = VGroup(
+            Circle(radius=radius * conversion_factor)
+            for radius, color in zip(radii, colors)
+        )
+        glows = Group()
+        np.random.seed(1)
+        angles = [-7 * DEG, 8 * DEG, 0]
+        for orbit, angle, color in zip(orbits, angles, colors):
+            orbit.rotate(angle)
+            orbit.move_to(sun)
+            orbit.set_stroke(color, (0, 3))
+            glow = GlowDot(color=orbit.get_color())
+            glow.move_to(orbit.get_start())
+            glows.add(glow)
+
+        symbol_texs = [R"\sun", R"\mercury", R"\venus", R"\earth"]
+        labels = Tex(
+            "".join(symbol_texs),
+            additional_preamble=R"\usepackage{wasysym}",
+            font_size=40
+        )
+        labels[0].set_opacity(0)
+        for label, body in zip(labels, [sun[0], *glows]):
+            label.next_to(body.get_center(), UR, buff=0.15)
+
+        self.camera.light_source.move_to(sun)
+
+        self.add(sun, earth, glows, orbits, labels)
+
+        # Add pulse
+        pulse = self.get_pulse(
+            SPEED_OF_LIGHT * conversion_factor * RIGHT,
+            low_x=sun.get_x(RIGHT),
+            high_x=earth.get_x(LEFT),
+            tail_time=20,
+            label_text="Light"
+        )
+        pulse.next_to(sun, RIGHT)
+
+        self.add(pulse)
+        self.wait(40)
+
+
+class LightAcrossEarth(LightFromEarthToMoon):
+    def construct(self):
+        # Test
+        self.frame.set_field_of_view(10 * DEG)
+        self.camera.light_source.move_to([-5, 0, 2])
+        radius = 2.5
+        earth = get_earth(radius=radius)
+        earth.rotate(90 * DEG - EARTH_TILT_ANGLE, LEFT)
+        conversion_factor = radius / EARTH_RADIUS
+        pulse = self.get_pulse(
+            0.1 * SPEED_OF_LIGHT * conversion_factor * RIGHT,
+            low_x=earth.get_x(LEFT) + 0.025,
+            high_x=earth.get_x(RIGHT),
+            tail_time=0.4,
+        )
+        pulse.move_to(earth.get_corner(DL) + 0.5 * DOWN)
+
+        v_lines = Group(
+            DashedLine(
+                earth.get_corner(UP + vect) + UP,
+                earth.get_corner(DOWN + vect) + DOWN,
+            ).set_stroke(WHITE, 1)
+            for vect in [LEFT, RIGHT]
+        )
+        v_lines[1].shift(0.1 * RIGHT)
+
+        self.add(earth)
+        self.add(v_lines)
+        self.add(pulse)
+        self.wait(50)
+
+
+class LightAcrossEarthsOrbit(LightFromEarthToMoon):
+    def construct(self):
+        # Add orbit
+        orbit = Circle(radius=3)
+        orbit.set_stroke(BLUE, width=(0, 3))
+        orbit.rotate(190 * DEG)
+
+        sun = get_sun(radius=0.05, big_glow_ratio=20)
+        sun.center()
+
+        self.add(sun, orbit)
+
+        # Show light
+        pulse = self.get_pulse(velocity=0.25 * LEFT, tail_time=5)
+        pulse.next_to(orbit.get_right(), RIGHT, buff=LARGE_BUFF)
+        pulse.match_y(orbit.get_start())
+        label = Text("Light from Io", font_size=24)
+        label.always.next_to(pulse, DOWN, buff=-0.05)
+
+        self.add(pulse)
+        self.wait(4)
+        self.play(FadeIn(label))
+        self.wait(20)
+
+    def get_light_pulse(self, width=2, n_points=25, dropoff=2):
+        pulse = GlowDots(np.linspace(ORIGIN, width * RIGHT, n_points), radius=0.1)
+        pulse.set_opacity(np.linspace(1, 0, pulse.get_num_points())**dropoff)
+        pulse.set_color(WHITE)
+        return pulse
+
+
+class EarthAndVenus(InteractiveScene):
+    def construct(self):
+        # Add sun, stars, and orbits (copied from below)
+        frame = self.frame
+        conversion_factor = 3.5 / EARTH_ORBIT_RADIUS
+        celestial_sphere = get_celestial_sphere(radius=100, constellation_opacity=0.05)
+
+        sun = get_sun(radius=SUN_RADIUS * conversion_factor, big_glow_ratio=20)
+        sun.center()
+
+        colors = [TEAL, BLUE]
+        radii = np.array([VENUS_ORBIT_RADIUS, EARTH_ORBIT_RADIUS]) * conversion_factor
+        orbits = VGroup(
+            Circle(radius=radius).set_stroke(color, (0, 5))
+            for radius, color in zip(radii, colors)
+        )
+        glows = Group(GlowDot(color=orbit.get_color()) for orbit in orbits)
+        symbols = VGroup(*map(get_planet_symbols, ["venus", "earth"]))
+
+        for symbol, glow, orbit in zip(symbols, glows, orbits):
+            orbit.rotate(PI)
+            glow.f_always.move_to(orbit.get_start)
+            symbol.scale(0.5)
+            symbol.glow = glow
+            # symbol.add_updater(lambda m: m.move_to(1.075 * m.glow.get_center()))
+            symbol.always.next_to(glow, UL, buff=-SMALL_BUFF)
+
+        self.add(celestial_sphere, sun, orbits, glows, symbols)
+
+        # Add line
+        venus, earth = glows
+        angles = [(180 / period) * TAU for period in [VENUS_ORBIT_PERIOD, EARTH_ORBIT_PERIOD]]
+        for orbit, angle in zip(orbits, angles):
+            orbit.rotate(-angle)
+
+        line_of_sight = Line()
+        line_of_sight.set_stroke(WHITE, 1)
+        line_of_sight.f_always.put_start_and_end_on(earth.get_center, venus.get_center)
+        line_of_sight.add_updater(lambda m: m.scale(5, about_point=m.get_start())),
+
+        self.play(
+            *(Rotate(orbit, angle) for orbit, angle in zip(orbits, angles)),
+            VFadeIn(line_of_sight, time_span=(8, 10)),
+            run_time=20,
+            # rate_func=lambda t: 0.999 * bezier([0, 1, 1])(t),
+            rate_func=lambda t: 0.999 * t,
+        )
+        line_of_sight.clear_updaters()
+        self.play(
+            frame.animate.reorient(-89, 82, 0, (-0.0, 0.01, -0.01), 0.49),
+            run_time=5,
+        )
+        self.play(
+            line_of_sight.animate.rotate(-0.6 * DEG, about_point=earth.get_center()),
+            run_time=6,
+        )
+        self.wait()
+
+
+class RadarToVenus(LightFromEarthToMoon):
+    def construct(self):
+        # Add sun, stars, and orbits
+        frame = self.frame
+        conversion_factor = 7 / EARTH_ORBIT_RADIUS
+        celestial_sphere = get_celestial_sphere(radius=100, constellation_opacity=0.05)
+
+        sun = get_sun(radius=SUN_RADIUS * conversion_factor, big_glow_ratio=20)
+        sun.center()
+
+        colors = [TEAL, BLUE]
+        radii = np.array([VENUS_ORBIT_RADIUS, EARTH_ORBIT_RADIUS]) * conversion_factor
+        angles = [160 * DEG, 180 * DEG]
+        orbits = VGroup(
+            Circle(radius=radius).rotate(angle).set_stroke(color, (0, 5))
+            for radius, color, angle in zip(radii, colors, angles)
+        )
+        glows = Group(
+            GlowDot(orbit.get_start(), color=orbit.get_color())
+            for orbit in orbits
+        )
+        symbols = VGroup(*map(get_planet_symbols, ["venus", "earth"]))
+        for symbol, glow in zip(symbols, glows):
+            symbol.scale(0.5)
+            symbol.rotate(110 * DEG, LEFT)
+            symbol.rotate(-54 * DEG, OUT)
+            symbol.next_to(glow, IN, buff=0)
+
+        frame.reorient(-51, 60, 0, (-2.11, 1.24, -2.0), 7.66)
+        frame.add_ambient_rotation(-1 * DEG)
+        self.add(celestial_sphere, sun, orbits, glows, symbols)
+
+        # Show pulses
+        venus_point = orbits[0].get_start()
+        earth_point = orbits[1].get_start()
+
+        for _ in range(4):
+            pulse = self.get_pulse(
+                velocity=0.15 * (venus_point - earth_point),
+                radius=0.05,
+                max_stroke_width=2,
+                low_x=earth_point[0],
+                high_x=venus_point[0],
+                tail_time=0.5,
+            )
+            pulse.move_to(earth_point)
+            self.add(pulse)
+            self.wait(0.2)
+        self.wait(20)

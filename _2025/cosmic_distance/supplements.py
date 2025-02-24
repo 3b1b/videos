@@ -199,7 +199,7 @@ class TableOfContents(InteractiveScene):
                 else:
                     item.set_height(0.25, about_edge=LEFT).set_opacity(0.5)
             self.play(MoveToTarget(items))
-            # self.wait()
+            self.wait()
         self.wait(2)
 
 
@@ -240,20 +240,28 @@ class MainCharacterTimeline(InteractiveScene):
             ("Kepler", 1571, 1630, 0.2, RED_C),
             ("Copernicus", 1473, 1543, 0.2, RED_A),
             ("Brahe", 1546, 1601, 0.5, RED_E),
+            ("James Cook", 1728, 1779, 0.2, GREEN_E),
+            ("Edmond Halley", 1656, 1742, 0.5, GREEN_C),
+            ("Ole Rømer", 1644, 1710, 0.2, BLUE_D),
+            ("Huygens", 1629, 1695, 0.5, BLUE_C),
+            ("Friedrich Bessel", 1784, 1846, 0.2, GREEN_B),
+            ("Henrietta Leavitt", 1868, 1921, 0.5, RED_D),
+            ("Edwin Hubble", 1889, 1953, 0.2, RED_C),
         ]
         character_labels = VGroup()
         for name, start, end, offset, color in characters:
             line = Line(timeline.n2p(start), timeline.n2p(end))
             line.set_stroke(color, 2)
             line.shift(offset * UP)
-            name_mob = Text(name, font_size=24)
+            # name_mob = Text(name, font_size=24)
+            name_mob = Text(name, font_size=18)
             name_mob.set_color(color)
             name_mob.next_to(line, UP, buff=0.05)
             dashes = VGroup(
-                DashedLine(line.get_start(), timeline.n2p(start), dash_length=0.025),
-                DashedLine(line.get_end(), timeline.n2p(end), dash_length=0.025),
+                DashedLine(line.get_start(), timeline.n2p(start), dash_length=0.01),
+                DashedLine(line.get_end(), timeline.n2p(end), dash_length=0.01),
             )
-            dashes.set_stroke(color, 1)
+            dashes.set_stroke(color, 1.5)
             line_group = VGroup(line, name_mob, dashes)
             character_labels.add(line_group)
 
@@ -264,12 +272,21 @@ class MainCharacterTimeline(InteractiveScene):
             ImageMobject("Kepler"),
             ImageMobject("Copernicus"),
             ImageMobject("TychoBrahe"),
+            ImageMobject("JamesCook"),
+            ImageMobject("EdmondHalley"),
+            ImageMobject("OleRomer"),
+            ImageMobject("ChristiaanHuygens"),
+            ImageMobject("FriedrichBessel"),
+            ImageMobject("HenriettaLeavitt"),
+            ImageMobject("EdwinHubble"),
         )
         for image, character_label in zip(images, character_labels):
             image.set_height(2.0)
             image.next_to(character_label, UP)
 
-        frame.set_height(5).move_to(timeline.n2p(-250) + UP)
+        # Add greeks
+        frame.set_height(5).move_to(timeline.n2p(-250))
+        frame.set_y(0.5)
         self.play(
             FadeIn(character_labels[0], lag_ratio=0.1),
         )
@@ -277,7 +294,7 @@ class MainCharacterTimeline(InteractiveScene):
         self.play(
             FadeIn(character_labels[1], lag_ratio=0.1),
             FadeIn(images[1], 0.5 * UP),
-            frame.animate.set_height(6).move_to(timeline.n2p(-175) + UP).set_anim_args(run_time=3),
+            frame.animate.set_height(6).match_x(timeline.n2p(-175)).set_anim_args(run_time=3),
         )
         self.wait()
         self.play(
@@ -287,26 +304,145 @@ class MainCharacterTimeline(InteractiveScene):
         self.wait()
 
         # Up to Kepler
+        kepler_label, copernicus_label, brahe_label = character_labels[3:6]
+        kepler_image, copernicus_image, brahe_image = images[3:6]
         self.play(
             frame.animate.match_x(timeline.n2p(1600)),
             UpdateFromAlphaFunc(frame, lambda m, a: m.set_height(interpolate(6, 12, there_and_back(a)))),
             run_time=3,
         )
         self.play(
-            FadeIn(character_labels[3], lag_ratio=0.1),
-            FadeIn(images[3], 0.5 * UP),
+            FadeIn(kepler_label, lag_ratio=0.1),
+            FadeIn(kepler_image, 0.5 * UP),
         )
         self.wait()
         self.play(
-            FadeIn(character_labels[4], lag_ratio=0.1),
-            FadeIn(images[4], 0.5 * UP),
+            FadeIn(copernicus_label, lag_ratio=0.1),
+            FadeIn(copernicus_image, 0.5 * UP),
         )
         self.wait()
         self.play(
-            FadeIn(character_labels[5], lag_ratio=0.1),
-            FadeIn(images[5], 0.5 * UP),
-            images[4].animate.scale(0.5, about_edge=DL).shift(0.25 * RIGHT),
-            images[3].animate.scale(0.5, about_edge=DR).shift(0.25 * DR),
+            FadeIn(brahe_label, lag_ratio=0.1),
+            FadeIn(brahe_image, 0.5 * UP),
+            copernicus_image.animate.scale(0.5, about_edge=DL).shift(0.25 * RIGHT),
+            kepler_image.animate.scale(0.5, about_edge=DR).shift(0.25 * DR),
+        )
+        self.wait()
+        self.play(
+            brahe_image.animate.scale(0.5, about_edge=DOWN),
+            kepler_image.animate.shift(0.2 * LEFT),
+        )
+
+        # Cook and Halley
+        cook_label, halley_label, romer_label = character_labels[6:9]
+        cook_image, halley_image, romer_image = images[6:9]
+        romer_image.scale(0.75, about_point=romer_label.get_top())
+        self.play(
+            frame.animate.match_x(cook_label).set_anim_args(run_time=2),
+            FadeIn(cook_label, lag_ratio=0.1),
+            FadeIn(cook_image, 0.5 * UP),
+            images[3:6].animate.set_opacity(0.25),
+            character_labels[3:6].animate.set_opacity(0.25),
+        )
+        self.wait()
+        self.play(
+            FadeIn(halley_label, lag_ratio=0.1),
+            FadeIn(halley_image, 0.5 * UP),
+            cook_image.animate.scale(0.5, about_point=cook_label.get_corner(UR)).shift(0.1 * LEFT),
+        )
+        self.wait()
+
+        # Romer and Huygens
+        romer_label, huygens_label = character_labels[8:10]
+        romer_image, huygens_image = images[8:10]
+        huygens_image.set_height(1.5).next_to(huygens_label, UP, SMALL_BUFF).shift(0 * LEFT)
+
+        halley_label.target = halley_label.generate_target()
+        halley_label.target.rotate(PI, RIGHT, about_edge=DOWN)
+        halley_label.target[1].rotate(PI, RIGHT)
+        self.play(
+            FadeIn(romer_label, lag_ratio=0.1),
+            FadeIn(romer_image, 0.5 * UP),
+            FadeOut(halley_image),
+            MoveToTarget(halley_label),
+            cook_image.animate.set_opacity(0.25).match_x(cook_label),
+        )
+        self.wait()
+        self.play(
+            FadeIn(huygens_label, lag_ratio=0.1),
+            FadeIn(huygens_image, 0.5 * UP),
+            romer_image.animate.set_height(1.5).next_to(romer_label, UR, 0).shift(0.25 * LEFT),
+            FadeOut(kepler_image),
+            FadeOut(cook_image),
+            FadeOut(cook_label),
+        )
+        self.wait()
+
+        # Point out Venus
+        venus_points = Group(TrueDot(timeline.n2p(year), color=YELLOW).make_3d() for year in [1761, 1769])
+        venus_words = Text("Transit of Venus\nObservations", font_size=30)
+        venus_words.next_to(venus_points, DOWN, MED_LARGE_BUFF, aligned_edge=LEFT)
+        venus_words.set_color(YELLOW)
+        venus_arrows = VGroup(
+            Arrow(venus_words["r"][0].get_top(), dot.get_center(), buff=0.1, thickness=1.5).set_color(YELLOW)
+            for dot in venus_points
+        )
+        venus_words.shift(0.1 * DL)
+
+        self.play(
+            Write(venus_words),
+            FadeIn(venus_points),
+            ShowCreation(venus_arrows),
+        )
+        self.wait()
+
+        # Bessel
+        bessel_label = character_labels[10]
+        bessel_image = images[10]
+
+        star_words = Text("Measurement of\n61 Cygni", font_size=24)
+        star_words.set_color(YELLOW)
+        star_point = TrueDot(timeline.n2p(1838), color=YELLOW).make_3d()
+        star_words.next_to(star_point, DOWN, buff=0.75)
+        star_arrow = Arrow(star_words, star_point, buff=0.1, thickness=2).set_color(YELLOW)
+
+        self.play(
+            frame.animate.match_x(bessel_label),
+            FadeOut(venus_words),
+            FadeOut(venus_arrows),
+            venus_points.animate.set_opacity(0.5),
+            Write(star_words),
+            ShowCreation(star_arrow),
+            FadeIn(star_point),
+            huygens_image.animate.set_opacity(0.5),
+            FadeOut(romer_image),
+        )
+        self.play(
+            FadeIn(bessel_label, lag_ratio=0.1),
+            FadeIn(bessel_image, 0.5 * UP),
+        )
+        self.wait()
+
+        # Add Leavitt and Hubble
+        leavitt_label, hubble_label = labels = character_labels[11:13]
+        leavitt_image, hubble_image = imgs = images[11:13]
+        for image, label in zip(imgs, labels):
+            image.set_height(1.5)
+            image.next_to(label, UP, SMALL_BUFF)
+        hubble_image.match_x(hubble_label.get_right()).shift(0.3 * RIGHT)
+
+        self.play(
+            bessel_image.animate.set_opacity(0.25).scale(0.5, about_edge=DOWN),
+            FadeOut(star_words),
+            FadeOut(star_arrow),
+            FadeIn(leavitt_label, lag_ratio=0.1),
+            FadeIn(leavitt_image, 0.5 * UP),
+            frame.animate.match_x(leavitt_label).set_height(5.0).set_anim_args(run_time=2),
+        )
+        self.wait()
+        self.play(
+            FadeIn(hubble_label, lag_ratio=0.1),
+            FadeIn(hubble_image, 0.5 * UP),
         )
         self.wait()
 
@@ -1026,3 +1162,160 @@ class UniversalProblemSolvingTip(InteractiveScene):
         )
         self.wait()
 
+
+class CountUpDates(InteractiveScene):
+    def construct(self):
+        # Test
+        day_tracker = ValueTracker(1)
+        label = always_redraw(lambda: self.day_to_date_label(int(day_tracker.get_value())))
+        self.add(label)
+        self.play(
+            day_tracker.animate.set_value(365),
+            run_time=10,
+            rate_func=smooth
+        )
+
+    def day_to_date_label(self, day_number, buff=MED_SMALL_BUFF):
+        # Days in each month (non-leap year)
+        month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        # Find the month
+        month = 0
+        days_remaining = day_number
+        while days_remaining > month_days[month]:
+            days_remaining -= month_days[month]
+            month += 1
+
+        result = VGroup(
+            Text(month_names[month]),
+            Integer(days_remaining),
+        )
+        result.arrange(RIGHT, buff=buff, aligned_edge=UP)
+        result[0].set_y(result[1].get_y(DOWN) - result[0][0].get_y(DOWN))
+        result.shift(-result[1].get_left())
+        return result
+
+
+class ScaleIndicator(InteractiveScene):
+    def construct(self):
+        # Test
+        power_tracker = ValueTracker(0)
+        indicator = always_redraw(lambda: self.get_indicator(power_tracker.get_value()))
+
+        self.add(indicator)
+        max_tim = 27
+        self.play(
+            power_tracker.animate.set_value(max_tim),
+            run_time=3 * max_tim,
+            rate_func=linear
+        )
+
+    def get_indicator(self, exponent, ref_width=2.0):
+        low_power = int(exponent)
+        high_power = int(exponent + 1)
+        pieces = VGroup(
+            self.get_piece(width=(10**(low_power - exponent)) * ref_width),
+            self.get_piece(width=(10**(high_power - exponent)) * ref_width),
+        )
+        labels = VGroup(
+            self.get_label(low_power),
+            self.get_label(high_power),
+        )
+        opacities = [
+            self.get_opacity(low_power - exponent),
+            self.get_opacity(high_power - exponent),
+        ]
+        for piece, label, opacity in zip(pieces, labels, opacities):
+            piece.move_to(4 * LEFT, DL)
+            label.set_height(0.25)
+            label.set_max_width(0.8 * piece.get_width())
+            label.next_to(piece, DOWN, buff=SMALL_BUFF)
+            width_diff = abs(ref_width - piece.get_width())
+            piece.set_stroke(opacity=opacity)
+            label.set_fill(opacity=opacity).set_stroke(opacity=opacity)
+
+        return VGroup(pieces, labels)
+
+    def get_piece(self, width):
+        line = UnitInterval(width=1, tick_size=0.075)
+        line.set_width(width, stretch=True)
+        line.center()
+        for tick in line.ticks:
+            tick.align_to(ORIGIN, DOWN)
+
+        return VGroup(line.copy().set_stroke(BLACK, width=3), line)
+
+    def get_label(self, power):
+        if power <= 14:
+            result = Integer(10**power, unit="km")
+        else:
+            result = Tex(fR"10^{{{power}}} \text{{ km}}")
+        result.set_backstroke(BLACK, 4)
+        return result
+
+    def get_opacity(self, exp_diff):
+        return 1.0 - clip(inverse_interpolate(0.25, 0.75, abs(exp_diff)), 0, 1)
+
+
+class Subscribe(InteractiveScene):
+    def construct(self):
+        # Test
+        morty = Mortimer()
+        morty.to_corner(DR)
+        morty.body.insert_n_curves(100)
+        title = Text("Follow @3blue1brown wherever you follow things")
+        title.to_edge(UP)
+        title.set_fill(border_width=1)
+
+        logos = Group(
+            SVGMobject("youtube_logo"),
+            SVGMobject("email").set_fill(GREY_A),
+            SVGMobject("x_logo").set_fill(GREY_C),
+            ImageMobject("instagram_logo"),
+            SVGMobject("bluesky_logo"),
+            ImageMobject("facebook_logo"),
+            SVGMobject("rss_logo"),
+            Tex(R"\dots", font_size=72),
+        )
+        for logo in logos[:-1]:
+            logo.set_height(0.75)
+            if isinstance(logo, SVGMobject):
+                logo.set_fill(border_width=1)
+        logos.arrange(RIGHT, buff=0.75, aligned_edge=DOWN)
+        logos.next_to(title, DOWN, buff=1)
+        logos[-1].match_y(logos)
+
+        self.add(title)
+        self.play(morty.change("raise_right_hand"))
+        self.play(LaggedStartMap(FadeIn, logos, shift=0.25 * DR, lag_ratio=0.25, run_time=2))
+        self.play(Blink(morty))
+        self.wait()
+
+        # Highlight email
+        mail = logos[1]
+        url = Text("https://3b1b.co/mail", font="Consolas")
+        url.next_to(mail, DOWN, buff=1.5)
+        arrow = Arrow(mail, url, thickness=5, buff=0.2)
+
+        self.play(
+            GrowArrow(arrow),
+            FadeIn(url, DOWN),
+            morty.change("tease"),
+        )
+        self.play(Blink(morty))
+        self.wait()
+
+        # Organize
+        n = len("Follow@3blue1brown")
+        self.play(
+            LaggedStart(FadeOut(arrow, LEFT), FadeOut(url, LEFT)),
+            logos.animate.arrange_in_grid(2, 4, h_buff=0.25, v_buff=0.5).set_height(1.0).next_to(title, DOWN, 0.5).to_edge(LEFT, buff=0.5),
+            title[:n].animate.to_edge(LEFT),
+            FadeOut(title[n:], LEFT),
+            run_time=2
+        )
+        self.wait()
+
+
+class EndScreen(PatreonEndScreen):
+    pass

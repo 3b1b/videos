@@ -339,8 +339,22 @@ class BabyPiCreature(PiCreature):
 
 
 class TauCreature(PiCreature):
-    # TODO, this currently does nothing
-    file_name_prefix: str = "TauCreatures"
+    def init_structure(self):
+        pass
+
+    def get_svg_file_path(self, mode):
+        folder = get_directories()["vector_images"]
+        path = os.path.join(folder, f"TauCreatures_{mode}.svg")
+        if os.path.exists(path):
+            return path
+        else:
+            logging.log(
+                logging.WARNING,
+                f"No design with mode {mode}\n"
+                f"Searched at path {path}"
+            )
+            folder = get_directories()["pi_creature_images"]
+            return os.path.join(folder, "plain.svg")
 
 
 class ThreeLeggedPiCreature(PiCreature):
