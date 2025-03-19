@@ -63,7 +63,7 @@ class Banner(Scene):
         message = self.get_message()
         message.set_height(self.message_height)
         message.next_to(pis, DOWN)
-        message.set_stroke(BLACK, 10, background=True)
+        message.set_stroke(BLACK, 10, behind=True)
         self.add(message)
 
         # Suppoerter note
