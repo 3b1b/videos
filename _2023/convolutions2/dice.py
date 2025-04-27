@@ -311,7 +311,6 @@ class SumAlongDiagonal(InteractiveScene):
             morty.says(
                 "Assuming rolls\nare independent!",
                 mode="surprised",
-                max_bubble_width=3.5
             ),
             VFadeIn(morty),
         )
