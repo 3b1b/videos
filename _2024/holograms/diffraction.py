@@ -1,7 +1,6 @@
 from __future__ import annotations
 from manim_imports_ext import *
 
-
 def hsl_to_rgb(hsl):
     """
     Convert an array of HSL values to RGB.
