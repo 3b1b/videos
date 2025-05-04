@@ -2488,8 +2488,10 @@ class GroversAlgorithm(InteractiveScene):
         self.wait()
 
         # Show sine of smaller angle
+        target_thickness = 3
+
         for vect in [b_vect, key_vect]:
-            vect.target = Arrow(ORIGIN, vect.get_end(), thickness=3, buff=0)
+            vect.target = Arrow(ORIGIN, vect.get_end(), thickness=target_thickness, buff=0)
             vect.target.match_style(vect)
 
         theta = 90 * DEG - alpha
@@ -2644,7 +2646,7 @@ class GroversAlgorithm(InteractiveScene):
 
         self.add(vect_ghosts, vector)
         self.play(FadeIn(circle))
-        for n in range(1):
+        for n in range(4):
             vect_ghosts.add(vector.copy())
             right_filp()
             self.wait()
@@ -2846,6 +2848,16 @@ class GroversAlgorithm(InteractiveScene):
             run_time=2
         )
         self.wait()
+
+    def thumbnail_insertion(self):
+        # Test
+        plane.background_lines.set_stroke(BLUE, 8, 1)
+        plane.faded_lines.set_stroke(BLUE, 5, 0.25)
+        circle.set_stroke(WHITE, 3)
+        self.remove(N_eq)
+        self.remove(theta_label)
+        self.remove(theta_arc)
+        self.remove(theta_approx)
 
 
 class TwoFlipsEqualsRotation(InteractiveScene):
