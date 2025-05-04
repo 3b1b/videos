@@ -1473,7 +1473,7 @@ class Qubit(DisectAQuantumComputer):
         # Set up plane
         frame = self.frame
         plane = self.get_plane()
-        zero_label, one_label = qubit_labels = self.get_qubit_labels()
+        zero_label, one_label = qubit_labels = self.get_qubit_labels(plane)
 
         frame.move_to(plane)
         self.add(plane)
@@ -1825,7 +1825,8 @@ class Qubit(DisectAQuantumComputer):
         return plane
 
     def get_small_plane(self, plane):
-        small_plane = NumberPlane((-1, 0.99), (-1, 0.99), faded_line_ratio=5)
+        x_range = (-1, 1 - 1e-5)
+        small_plane = NumberPlane(x_range, x_range, faded_line_ratio=5)
         small_plane.set_height(0.5 * plane.get_height())
         small_plane.move_to(plane)
         return small_plane
@@ -1841,13 +1842,50 @@ class Qubit(DisectAQuantumComputer):
         one_label.next_to(plane.c2p(0, 1), DR, SMALL_BUFF)
         return qubit_labels
 
-    def get_vector(self, plane, x=1, y=0, fill_color=TEAL, thickness=5):
+    def get_vector(self, plane, x=1, y=0, fill_color=TEAL, thickness=6):
         return Arrow(
             plane.c2p(0, 0),
             plane.c2p(x, y),
             buff=0,
             thickness=thickness,
             fill_color=fill_color
+        )
+
+    def thumbnail_insert(self):
+        # To be put above the "note x^2 + y^2" above
+        self.remove(vector_label)
+        self.remove(plane)
+        small_plane = self.get_small_plane(plane)
+        small_plane.set_z_index(-1)
+        small_plane.axes.set_stroke(WHITE, 4)
+        small_plane.background_lines.set_stroke(BLUE, 3)
+        small_plane.faded_lines.set_stroke(BLUE, 2, 0.8)
+        qubit_labels.set_fill(border_width=2)
+        vector.set_color(YELLOW)
+        theta_tracker.set_value(45 * DEG)
+        self.add(small_plane)
+
+        # Add glass
+        glass = get_magnifying_glass()
+        glass.set_height(5)
+        glass[0].set_fill(BLACK)
+        glass.shift(vector.get_center() - glass[0].get_center())
+        one = KetGroup(Integer(1))
+        one.set_height(1.5)
+        one.move_to(glass[0])
+        self.add(glass, one)
+
+    def z_filp_insert(self):
+        # For the clarification supplement
+        angle = theta_tracker.get_value()
+        self.play(theta_tracker.animate.set_value(angle + TAU), run_time=5)
+        theta_tracker.set_value(angle)
+
+        # Flips
+        flipper = VGroup(vector, circle, zero_vect, one_vect)
+        flipper.clear_updaters()
+        self.play(
+            Rotate(flipper, PI, axis=RIGHT, about_point=plane.c2p(0, 0), run_time=6, rate_func=there_and_back_with_pause)
         )
 
 
@@ -2200,6 +2238,29 @@ class ThreeDSample(InteractiveScene):
             run_time=run_time,
             **kwargs
         )
+
+    def flip_along_key_axis(self):
+        # To be inserted after highlighting the key state above
+        sphere = Sphere(radius=vector.get_length())
+        mesh = SurfaceMesh(sphere, resolution=(51, 101))
+        mesh.set_stroke(WHITE, 2, 0.1)
+
+        key_vect = vector.copy()
+        key_vect.clear_updaters()
+        key_vect.set_fill(YELLOW, 0.5)
+
+        self.add(key_vect)
+        self.play(
+            self.set_vect_anim(vector, normalize([1, 1, 1])),
+            FadeIn(mesh)
+        )
+        vector.clear_updaters()
+        for _ in range(4):
+            self.play(
+                Group(mesh, vector, key_vect).animate.stretch(-1, 2, about_point=ORIGIN),
+                run_time=2
+            )
+            self.wait()
 
 
 class GroversAlgorithm(InteractiveScene):
@@ -2712,25 +2773,29 @@ class GroversAlgorithm(InteractiveScene):
             VGroup(lhs, rhs_terms).animate.shift(1.5 *  UP)
         ))
 
-        # Increment to 1 million
-        new_theta = math.asin(1e-3)
+        # Increment to 2^20
+        new_theta = math.asin(2**(-10))
         dim.set_value(100)
-        step_count = Tex(R"\frac{\pi}{4}\sqrt{1{,}000{,}000} = 785.398...")
+        step_count = Tex(R"\frac{\pi}{4}\sqrt{2^{20}} = 804.248...")
         step_count.next_to(rhs_terms, DOWN, LARGE_BUFF)
         step_count.to_edge(RIGHT).shift(frame.get_x() * RIGHT)
 
+        eq_two_twenty = Tex(R"=2^{20}")
+        eq_two_twenty.next_to(N_eq["="], DOWN, aligned_edge=LEFT)
+
         self.play(
-            ChangeDecimalToValue(dim, int(1e6)),
+            ChangeDecimalToValue(dim, int(2**20)),
             Rotate(vector, new_theta - theta, about_point=ORIGIN),
+            FadeIn(eq_two_twenty, time_span=(0, 1)),
             run_time=3
         )
         self.wait()
         self.play(
             TransformFromCopy(rhs_terms[-1][1:6], step_count[:5]),
-            TransformFromCopy(dim, step_count["1{,}000{,}000}"][0]),
+            TransformFromCopy(eq_two_twenty[1:], step_count["2^{20}"][0]),
             run_time=2
         )
-        self.play(Write(step_count["= 785.398..."][0]))
+        self.play(Write(step_count["= 804.248..."][0]))
         self.wait()
 
         # Change vector
@@ -2742,7 +2807,7 @@ class GroversAlgorithm(InteractiveScene):
         step_count = step_label.make_number_changeable(0, edge_to_fix=UL)
         step_count.f_always.set_value(lambda: 0.5 * step_tracker.get_value())
 
-        shadows = VectorizedPoint().replicate(100)
+        shadows = VectorizedPoint().replicate(300)
 
         def update_vector(vector):
             steps = int(step_tracker.get_value())
@@ -2760,13 +2825,26 @@ class GroversAlgorithm(InteractiveScene):
 
         self.play(FadeIn(step_label))
         self.add(shadows)
+        self.add(vect_coords, bars)
         self.play(
-            step_tracker.animate.set_value(2 * 785),
+            step_tracker.animate.set_value(2 * 804),
             UpdateFromFunc(vector, update_vector),
-            run_time=16,
+            frame.animate.scale(1.4, about_edge=RIGHT).set_anim_args(time_span=(0, 8)),
+            run_time=20,
             rate_func=linear,
         )
         self.play(FadeOut(shadows, lag_ratio=0.1, run_time=1))
+        self.wait()
+
+    def key_flip_insertion(self):
+        # Test
+        self.clear()
+        key_ghost = key_vect.copy().set_fill(opacity=0.5)
+        self.add(key_ghost)
+        self.play(
+            key_vect.animate.flip(axis=RIGHT, about_edge=DOWN),
+            run_time=2
+        )
         self.wait()
 
 

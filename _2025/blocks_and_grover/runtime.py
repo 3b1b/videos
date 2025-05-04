@@ -1046,7 +1046,7 @@ class ShowSha256(InteractiveScene):
 
         self.add(equation)
         self.play(
-            ChangeDecimalToValue(input_int, 1200, rate_func=linear, run_time=12)
+            ChangeDecimalToValue(input_int, 2400, rate_func=linear, run_time=24)
         )
 
 
