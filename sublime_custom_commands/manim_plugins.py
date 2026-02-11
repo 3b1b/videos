@@ -7,7 +7,7 @@ import re
 import time
 
 
-def get_command(view, window):
+def get_manim_command(view, window):
     file_path = os.path.join(
         window.extract_variables()["file_path"],
         window.extract_variables()["file_name"],
@@ -37,7 +37,7 @@ def get_command(view, window):
         raise Exception("No matching classes")
     scene_name = matching_class_str[len("class "):matching_class_str.index("(")]
 
-    cmds = ["manimgl", file_path, scene_name]
+    cmds = ["manim", file_path, scene_name]
     enter = False
 
     if row != scene_line_no:
@@ -52,50 +52,82 @@ def send_terminus_command(
     clear=True,
     center=True,
     enter=True,
+    terminal_name="Manim",
 ):
     # Find terminus window
-    terminal_sheet = find_terminus_sheet()
+    terminal_sheet = find_terminus_sheet(terminal_name)
     if terminal_sheet is None:
         return
     window = terminal_sheet.window()
     view = terminal_sheet.view()
-    _, col = view.rowcol(view.size())
 
-    # Ammend command with various keyboard shortcuts
-    full_command = "".join([
-        "\x7F" * col if clear else "",  # Bad hack
-        "\x0C" if center else "",  # Command + l
-        command,
-        "\n" if enter else "",
-    ])
-    window.run_command("terminus_send_string", {"string": full_command})
+    # Focus the terminal first
+    window.focus_view(view)
+
+    # Small delay to ensure focus has taken effect
+    def send_after_focus():
+        _, col = view.rowcol(view.size())
+        # Ammend command with various keyboard shortcuts
+        full_command = "".join([
+            "\x7F" * col if clear else "",  # Bad hack
+            "\x0C" if center else "",  # Command + l
+            command,
+            "\n" if enter else "",
+        ])
+        window.run_command("terminus_send_string", {"string": full_command})
+
+    sublime.set_timeout(send_after_focus, 50)  # 50ms delay
 
 
-def find_terminus_sheet():
+def find_terminus_sheet(terminal_name=None):
     for win in sublime.windows():
         for sheet in win.sheets():
             name = sheet.view().name()
-            if name == "Login Shell" or name.startswith("IPython: "):
-                return sheet
+            if terminal_name:
+                if name == terminal_name:
+                    return sheet
+            else:
+                # Default behavior: find any terminus terminal
+                if name in ["Login Shell", "Manim", "Claude Terminal"] or name.startswith("IPython:"):
+                    return sheet
     return None
 
 
-def ensure_terminus_tab_exists():
+def is_terminal_in_ipython(terminal_name="Manim"):
     """
-    If there is no sheet with a terminus tab,
+    Check if the terminal is currently in an IPython session
+    by looking at the last line for IPython prompt pattern
+    """
+    terminal_sheet = find_terminus_sheet(terminal_name)
+    if terminal_sheet is None:
+        return False
+
+    view = terminal_sheet.view()
+    # Get the last line of the terminal
+    last_line_region = view.line(view.size())
+    last_line = view.substr(last_line_region).strip()
+
+    # Check if it matches IPython prompt pattern: "In [123]:" or similar
+    ipython_pattern = r"^In\s*\[\d*\]:\s*$"
+    return bool(re.match(ipython_pattern, last_line))
+
+
+def ensure_terminus_tab_exists(terminal_name="Manim"):
+    """
+    If there is no sheet with the specified terminus tab,
     it opens a new window with one.
     Returns a timeout period suitable for
     following commands
     """
-    if find_terminus_sheet() is None:
+    if find_terminus_sheet(terminal_name) is None:
         sublime.run_command('new_window')
         new_window = next(reversed(sublime.windows()))
-        new_window.run_command("terminus_open")
+        new_window.run_command("terminus_open", {"title": terminal_name})
         return 500
     return 0
 
 
-def checkpoint_paste_wrapper(view, arg_str=""):
+def checkpoint_paste_wrapper(view, arg_str="", terminal_name="Manim"):
     window = view.window()
     sel = view.sel()
     window.run_command("copy")
@@ -117,7 +149,10 @@ def checkpoint_paste_wrapper(view, arg_str=""):
     sel.clear()
     sel.add(sublime.Region(pos))
 
-    send_terminus_command(command)
+    send_terminus_command(command, terminal_name=terminal_name)
+
+    # Return focus to the original view
+    window.focus_view(view)
 
 
 class ManimRunScene(sublime_plugin.TextCommand):
@@ -125,54 +160,74 @@ class ManimRunScene(sublime_plugin.TextCommand):
         view = self.view
         window = view.window()
         window.run_command("save")
-        command, enter = get_command(view, window)
-        # If one wants to run it in a different terminal,
-        # it's often to write to a file
-        sublime.set_clipboard(command + " --prerun --finder -w")
 
-        timeout = ensure_terminus_tab_exists()
+        # Check if we should reload instead of run fresh
+        if is_terminal_in_ipython("Manim"):
+            # Terminal is in IPython session, use reload instead
+            row, col = view.rowcol(view.sel()[0].begin())
+            send_terminus_command(f"reload({row + 1})", terminal_name="Manim")
+            # Focus back to the original view within Sublime after a short delay
+            sublime.set_timeout(
+                lambda: window.focus_view(view),
+                100
+            )
+            return
+
+        # Terminal is not in IPython, proceed with normal run
+        command, enter = get_manim_command(view, window)
+        timeout = ensure_terminus_tab_exists("Manim")
         sublime.set_timeout(
-            lambda: send_terminus_command(command, enter=enter),
+            lambda: send_terminus_command(command, enter=enter, terminal_name="Manim"),
             timeout
         )
-
-        if enter:
-            # Keep cursor where it started
-            sublime.set_timeout(
-                lambda: threading.Thread(target=self.focus_sublime).start(),
-                1000
-            )
-        else:
-            # Put cursor in terminus window
-            sheet = find_terminus_sheet()
-            if sheet is not None:
-                window.focus_view(sheet.view())
-
-    def focus_sublime(self):
-        cmd = "osascript -e 'tell application \"Sublime Text\" to activate'"
-        sp.call(cmd, shell=True)
 
 
 class ManimExit(sublime_plugin.TextCommand):
     def run(self, edit):
-        send_terminus_command("\x03quit\n", center=False)
+        send_terminus_command("\x03quit\n", center=False, terminal_name="Manim")
         time.sleep(0.01)
-        send_terminus_command("", clear=False, center=True, enter=False)
+        send_terminus_command("", clear=False, center=True, enter=False, terminal_name="Manim")
 
 
 class ManimCheckpointPaste(sublime_plugin.TextCommand):
     def run(self, edit):
+        self.view.window().run_command("save")
         checkpoint_paste_wrapper(self.view)
 
 
 class ManimRecordedCheckpointPaste(sublime_plugin.TextCommand):
     def run(self, edit):
-        checkpoint_paste_wrapper(self.view, arg_str="record=True")
+        checkpoint_paste_wrapper(self.view, arg_str="record=True, progress_bar=False")
 
 
 class ManimSkippedCheckpointPaste(sublime_plugin.TextCommand):
     def run(self, edit):
         checkpoint_paste_wrapper(self.view, arg_str="skip=True")
+
+
+class ManimReload(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.view.window().run_command("save")
+        row, col = self.view.rowcol(self.view.sel()[0].begin())
+        send_terminus_command(f"reload({row + 1})", terminal_name="Manim")
+
+
+class ManimRender(sublime_plugin.TextCommand):
+    def run(self, edit):
+        """Copy manim render command with --prerun --finder -w flags to clipboard"""
+        view = self.view
+        window = view.window()
+
+        # Get the manim command
+        command, enter = get_manim_command(view, window)
+
+        # Add the flags and copy to clipboard
+        full_command = command + " --prerun -w"
+        sublime.set_clipboard(full_command)
+
+        # Send to terminus
+        ensure_terminus_tab_exists("Rendering")
+        send_terminus_command(full_command, terminal_name="Rendering", enter=False)
 
 
 class OpenMirroredDirectory(sublime_plugin.TextCommand):
@@ -188,42 +243,3 @@ class OpenMirroredDirectory(sublime_plugin.TextCommand):
         )
         print(new_path)
         sp.call(["open", "-R", new_path])
-
-
-class CommentFold(sublime_plugin.TextCommand):
-    def run(self, edit):
-        view = self.view
-        regions = view.sel()
-        regions_to_fold = []
-        for region in regions:
-            reg_str = view.substr(region)
-
-            lines = reg_str.split("\n")
-            view_index = region.begin()
-
-            indent_level = None
-            last_full_line_end = view_index
-            last_comment_line_end = None
-            last_line_was_comment = False
-            for line in lines:
-                line_end_point = view_index + len(line)
-                if line.lstrip().startswith("#"):
-                    if indent_level is None:
-                        indent_level = len(line) - len(line.lstrip())
-                    if len(line) - len(line.lstrip()) == indent_level and not last_line_was_comment:
-                        if last_comment_line_end:
-                            regions_to_fold.append(sublime.Region(
-                                last_comment_line_end,
-                                last_full_line_end,
-                            ))
-                        last_comment_line_end = line_end_point
-                else:
-                    last_line_was_comment = False
-                if line.strip():
-                    last_full_line_end = line_end_point
-                view_index = line_end_point + 1
-            if last_comment_line_end:
-                regions_to_fold.append(sublime.Region(
-                    last_comment_line_end, region.end(),
-                ))
-        self.view.fold(regions_to_fold)
