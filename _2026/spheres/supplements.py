@@ -1,6 +1,127 @@
 from manim_imports_ext import *
 
 
+class TalkFrame(InteractiveScene):
+    def construct(self):
+        # Test
+        background = FullScreenRectangle()
+        background.set_fill(interpolate_color(BLUE_E, BLACK, 0.9), 1)
+        background.set_shading(0.1, 0.1, 0)
+
+        slides = ScreenRectangle()
+        slides.set_fill(BLACK, 1)
+        slides.set_stroke(WHITE, 1)
+        slides.set_height(6)
+        slides.to_edge(LEFT, buff=0.1)
+
+        speaker = ScreenRectangle()
+        speaker.set_width(3)
+        speaker.set_fill(BLACK, 1)
+        speaker.set_stroke(WHITE, 1)
+        speaker.next_to(slides, RIGHT, aligned_edge=UP)
+
+        self.add(background)
+        self.add(slides)
+        self.add(speaker)
+
+
+class IntroSphereAnimation(InteractiveScene):
+    def construct(self):
+        # Circles to sphere
+        frame = self.frame
+        frame.set_height(4)
+
+        circle = Circle(radius = 1)
+        circle.set_stroke(TEAL, 2)
+
+        lattitude_lines = VGroup(
+            Circle(radius=math.sqrt(1 - z**2)).set_z(z)
+            for z in np.linspace(-0.99, 0.99, 50)
+        )
+        lattitude_lines.set_stroke(TEAL, 1, 0.5)
+
+        self.play(ShowCreation(circle))
+        self.remove(circle)
+        self.play(
+            LaggedStart(
+                (TransformFromCopy(circle, lat_line)
+                for lat_line in lattitude_lines),
+                lag_ratio=0.05,
+            ),
+            frame.animate.reorient(-2, 56, 0, (0.02, -0.09, -0.07), 2.83),
+            run_time=6,
+        )
+        frame.add_ambient_rotation(4 * DEG)
+        self.wait()
+
+        # Spheres
+        mesh = SurfaceMesh(Sphere(radius=1), resolution=(101, 201))
+        sphere = VMobject()
+        for part in mesh:
+            sphere.append_vectorized_mobject(part)
+        sphere.set_stroke(BLUE, 0.1)
+
+        lattitude_spheres = VGroup()
+        pre_points = sphere.get_points().copy()
+        for w in np.linspace(-0.99, 0.99, 20):
+            points_4d = np.zeros((len(pre_points), 4))
+            points_4d[:, :3] = pre_points * math.sqrt(1 - w**2)
+            points_4d[:, 3] = w
+            lat_sphere = sphere.copy()
+            lat_sphere.points_4d = points_4d
+            lattitude_spheres.add(lat_sphere)
+
+        lattitude_spheres.set_stroke(opacity=0.1)
+
+        angle_tracker = ValueTracker(0)
+
+        def update_lat_sphere(lat_sphere):
+            rot_matrix_T = rotation_matrix_transpose(angle_tracker.get_value(), axis=UR)
+            pre_proj = lat_sphere.points_4d.copy()
+            pre_proj[:, 1:] = np.dot(pre_proj[:, 1:], rot_matrix_T)
+            lat_sphere.set_points(pre_proj[:, :3])
+
+        for lat_sphere in lattitude_spheres:
+            lat_sphere.add_updater(update_lat_sphere)
+
+        self.play(FadeIn(sphere), FadeOut(lattitude_lines))
+        self.wait()
+        self.play(
+            LaggedStart(
+                (ReplacementTransform(sphere.copy().scale(0.99).set_opacity(0), lat_sphere)
+                for lat_sphere in lattitude_spheres),
+                lag_ratio=0.05,
+            ),
+            FadeOut(sphere),
+            angle_tracker.animate.set_value(80 * DEG),
+            run_time=6
+        )
+        self.wait()
+        self.play(
+            angle_tracker.animate.set_value(360 * DEG),
+            run_time=12,
+        )
+        self.wait()
+
+
+class IntroText(InteractiveScene):
+    def construct(self):
+        # Test
+        group = VGroup(
+            Text("Exploring high-dimensional spheres", font_size=90),
+            Text("Delivered at UC Santa Cruz on February 17, 2026"),
+        )
+        group[1].set_color(GREY_A)
+        group.arrange(DOWN, buff=0.5)
+        group.set_width(FRAME_WIDTH - 3)
+        self.play(LaggedStart(
+            Write(group[0], lag_ratio=0.1),
+            FadeIn(group[1], 0.25 * DOWN),
+            lag_ratio=0.6
+        ))
+        self.wait()
+
+
 class CornerDistance(InteractiveScene):
     def construct(self):
         words = Text("Distance to corner")
@@ -16,6 +137,74 @@ class CornerDistance(InteractiveScene):
         r_eq.next_to(pythag, DOWN, buff=LARGE_BUFF)
 
         self.add(words, equals, pythag, sqrt3, r_eq)
+
+
+class Hypercube(InteractiveScene):
+    def construct(self):
+        # Test
+        frame = self.frame
+        bases = [RIGHT, UP, OUT, np.array([1.5, 1.0, 0.5])]
+        pre_cube = self.get_cube([*bases[:3], ORIGIN])
+        hypercube = self.get_cube(bases)
+
+        frame.reorient(-21, 79, 0, (1.13, 0.35, 0.88), 3.81)
+        frame.add_ambient_rotation(2 * DEG)
+        self.add(pre_cube)
+        self.wait()
+        self.play(ReplacementTransform(pre_cube, hypercube, run_time=2))
+        self.wait(8)
+
+        # Flatten
+        flat_bases = [RIGHT, UP, np.array([0.2, 0.5, 0]), 1 * OUT]
+        flat_cube = self.get_cube(flat_bases)
+
+        leg1 = Line(bases[0], bases[1] + bases[2])
+        leg2 = Line(bases[0], bases[0] + bases[3])
+        leg1.set_stroke(RED, 3)
+        leg2.set_stroke(TEAL, 3)
+
+        root3_label = Tex(R"\sqrt{3}", font_size=24)
+        root3_label.rotate(90 * DEG, RIGHT)
+        root3_label.next_to(leg1.get_center(), LEFT)
+        one_label = Tex(R"1", font_size=24)
+        one_label.rotate(90 * DEG, RIGHT)
+        one_label.next_to(leg2.get_center(), IN)
+
+        hyp = Line(leg1.get_end(), leg2.get_end())
+        hyp.set_stroke(YELLOW, 3)
+        hyp_label = Tex(R"\sqrt{3 + 1}", font_size=24)
+        hyp_label.rotate(90 * DEG, RIGHT)
+        hyp_label.next_to(hyp.get_center(), OUT, buff=SMALL_BUFF)
+
+        self.play(
+            hypercube.animate.set_stroke(WHITE, 1, 0.5),
+            ShowCreation(leg1),
+            FadeIn(root3_label)
+        )
+        self.play(
+            ShowCreation(leg2),
+            FadeIn(one_label),
+        )
+        self.wait()
+        self.play(
+            FadeTransformPieces(VGroup(root3_label, one_label).copy(), hyp_label),
+            ShowCreation(hyp)
+        )
+        self.wait(12)
+
+    def get_cube(self, bases, stroke_color=WHITE, stroke_width=2):
+        n = len(bases)
+        lines = VGroup()
+        for bits in it.product(*n * [[0, 1]]):
+            base_point = sum([
+                bit * basis
+                for bit, basis in zip(bits, bases)
+            ])
+            for bit, basis in zip(bits, bases):
+                if bit == 0:
+                    lines.add(Line(base_point, base_point + basis))
+        lines.set_stroke(stroke_color, stroke_width)
+        return lines
 
 
 class REqExample(InteractiveScene):
@@ -334,6 +523,56 @@ class Integrals(InteractiveScene):
         self.add(inv_power_rules)
 
 
+class DrawTorus(InteractiveScene):
+    def construct(self):
+        # Add torus
+        frame = self.frame
+        r1 = 3
+        r2 = 1
+
+        circle1 = Circle().set_fill(GREEN_E, 0.5).set_stroke(GREEN, 2)
+        circle2 = Circle().set_stroke(RED, 2)
+        circles = VGroup(circle1, circle2)
+        circles.arrange(RIGHT, buff=LARGE_BUFF)
+
+        self.add(circles)
+        self.wait()
+        self.play(
+            frame.animate.reorient(19, 63, 0, (0.05, -0.15, -0.75), 9.57),
+            circle1.animate.rotate(90 * DEG, LEFT).move_to(r1 * RIGHT),
+            circle2.animate.set_width(2 * r1).move_to(ORIGIN),
+            run_time=2
+        )
+        
+        # Add torus
+        torus = Torus(r1=r1, r2=r2)
+        partial_torus = Torus()
+        partial_torus.set_color(GREY, 0.5)
+        partial_torus.always_sort_to_camera(self.camera)
+        self.play(
+            UpdateFromAlphaFunc(
+                partial_torus,
+                lambda m, a: m.pointwise_become_partial(torus, 0, a, axis=0),
+            ),
+            Rotate(circle1, TAU, about_point=ORIGIN),
+            run_time=5
+        )
+        self.wait()
+
+
+class GammaGraph(InteractiveScene):
+    def construct(self):
+        # Test
+        axes = Axes((-1, 5), (0, 20), width=FRAME_WIDTH - 1, height=FRAME_HEIGHT - 1.5)
+        axes.x_axis.add_numbers()
+        self.add(axes)
+
+        import scipy
+        graph = axes.get_graph(lambda x: scipy.special.gamma(x + 1), x_range=(-0.99, 5, 0.01))
+        graph.set_stroke(TEAL, 5)
+        self.add(graph)
+
+
 class CommentOnGeneralFormula(InteractiveScene):
     def construct(self):
         morty = Mortimer()
@@ -353,6 +592,66 @@ class CommentOnGeneralFormula(InteractiveScene):
         )
         self.play(Blink(randy))
         self.wait()
+
+
+class SquarePyramid(InteractiveScene):
+    def construct(self):
+        # Show pyramid
+        frame = self.frame
+
+        n_squares = 40
+        max_side_length = 2
+        squares = VGroup(
+            Square(side_length)
+            for side_length in np.linspace(max_side_length, 0.01, n_squares)
+        )
+        squares.arrange(OUT, buff=max_side_length / n_squares)
+        squares.set_fill(RED, 0.2)
+        squares.set_stroke(RED, 2, 0.5)
+
+        frame.reorient(21, 67, 0, (-0.2, -0.12, -0.92), 4.41)
+        self.play(
+            LaggedStartMap(FadeIn, squares, shift=RIGHT, lag_ratio=0.35, run_time=8),
+        )
+
+        # Volume
+        label =Tex(R"\text{Vol.} = \frac{1}{3} \text{B} \times \text{H}", font_size=72)
+        label.fix_in_frame()
+        label.to_edge(DOWN)
+        label.set_backstroke(BLACK, 5)
+
+        self.play(Write(label))
+        self.wait()
+
+
+class ShellTimesThickness(InteractiveScene):
+    def construct(self):
+        # Test
+        equation = Tex(R"V(\partial B^n) \times {1 \over n} = V(B^n)", font_size=72)
+        shell_rect = SurroundingRectangle(equation[R"V(\partial B^n)"]).set_stroke(TEAL, 2)
+        thickness_rect = SurroundingRectangle(equation[R"{1 \over n}"]).set_stroke(YELLOW, 2)
+        volume_rect = SurroundingRectangle(equation[R"V(B^n)"]).set_stroke(BLUE, 2)
+        rects = VGroup(shell_rect, thickness_rect, volume_rect)
+        for rect in rects:
+            rect.set_height(rects.get_height(), stretch=True)
+            rect.align_to(rects, UP)
+
+        labels = VGroup()
+        for rect, text in zip(rects, ["Shell", "Thickness", "Total\nVolume"]):
+            label = Text(text, font_size=48)
+            label.match_color(rect)
+            label.next_to(rect, DOWN)
+            labels.add(label)
+        # for label in labels:
+        #     label.align_to(labels, DOWN)
+
+        radius_label = Text("(When radius=1)", font_size=36)
+        radius_label.set_color(GREY_C)
+        radius_label.next_to(labels, DOWN, MED_LARGE_BUFF).match_x(equation)
+
+        self.add(equation, radius_label)
+        self.add(rects)
+        self.add(labels)
 
 
 class VolumeRatio(InteractiveScene):
@@ -375,3 +674,7 @@ class VolumeRatio(InteractiveScene):
         )
         group.arrange(RIGHT, buff=0.5)
         self.add(group)
+
+
+class EndScreen(SideScrollEndScreen):
+    scroll_time = 25

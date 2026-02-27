@@ -96,15 +96,15 @@ class SurfaceAreaToVolume(InteractiveScene):
         # Inner spheres
         inner_spheres = Group(
             sphere.copy().set_width(a * sphere.get_width())
-            for a in np.linspace(0, 1, 50)
+            for a in np.linspace(0, 1, 30)
         )
-        inner_spheres.set_color(BLUE, 0.2)
-        inner_spheres.set_clip_plane(IN, 0)
+        inner_spheres.set_color(BLUE, 0.05)
+        # inner_spheres.set_clip_plane(IN, 0)
 
         self.remove(sphere)
         self.add(inner_spheres, mesh)
         self.play(
-            ShowCreation(inner_spheres, lag_ratio=0.5, run_time=3),
+            ShowCreation(inner_spheres, lag_ratio=0.1, run_time=20),
         )
         self.play(inner_spheres.animate.set_clip_plane(IN, radius), run_time=2)
         self.wait()
@@ -129,7 +129,7 @@ class VolumeGrid(InteractiveScene):
                 label.move_to(square)
                 square.label = label
 
-        self.add(grid[1:4])
+        self.add(grid[1:])
 
         # Row labels
         row_labels = VGroup(
@@ -147,7 +147,7 @@ class VolumeGrid(InteractiveScene):
         cols_label.next_to(col_labels[1:4], UP)
         cols_label.to_edge(UP, buff=MED_SMALL_BUFF)
 
-        self.add(col_labels[1:4])
+        self.add(col_labels[1:])
         self.add(cols_label)
 
         # Add for d=2 and d=3
@@ -160,11 +160,8 @@ class VolumeGrid(InteractiveScene):
             self.play(
                 highlight_cell(n, d),
                 Write(labels[d][n]),
+                run_time=1
             )
-
-        # Show derivatives
-        self.show_derivative_and_integral(grid, 2)
-        self.show_derivative_and_integral(grid, 3)
 
         # Add row labels
         rect = SurroundingRectangle(row_labels[1])
@@ -193,6 +190,26 @@ class VolumeGrid(InteractiveScene):
             FadeOut(boundary_word),
         )
         self.wait()
+
+        # Arrows from bottom to top
+        arrows = VGroup(
+            Arrow(
+                stack[1].get_right(),
+                stack[0].get_corner(DR),
+                buff=SMALL_BUFF,
+                thickness=5,
+                path_arc=180 * DEG
+            )
+            for stack in labels[2:4]
+        )
+        arrows.set_color(TEAL)
+        self.play(Write(arrows))
+        self.wait()
+        self.play(FadeOut(arrows))
+
+        # Show derivatives
+        self.show_derivative_and_integral(grid, 2)
+        self.show_derivative_and_integral(grid, 3)
 
         # Add for d=1
         self.play(
@@ -498,7 +515,7 @@ class VolumeGrid(InteractiveScene):
 
         # Fill in even volume labels
         def fill_every_other_label_from(n=2):
-            for vl1, vl2 in zip(volume_labels[n::2], volume_labels[n + 2::2]):
+            for vl1, vl2 in zip(volume_labels[n::2], volume_labels[n + 2:-1:2]):
                 self.play(
                     TransformMatchingTex(vl1.copy(), vl2, path_arc=60 * DEG),
                     run_time=1
@@ -530,9 +547,17 @@ class VolumeGrid(InteractiveScene):
             R"\times {\pi \over 7 / 2}",
             R"\times {\pi \over 9 / 2}",
         ]
+        alt_new_arrow_texs = [
+            R"\times {2 \pi \over 3}",
+            R"\times {2 \pi \over 5}",
+            R"\times {2 \pi \over 7}",
+            R"\times {2 \pi \over 9}",
+        ]
         new_arrow_labels = VGroup(map(Tex, new_arrow_texs))
-        for label, arrow in zip(new_arrow_labels, pure_mult_arrows.target):
-            label.next_to(arrow, DOWN, SMALL_BUFF)
+        alt_new_arrow_labels = VGroup(map(Tex, alt_new_arrow_texs))
+        for label, alt_label, arrow in zip(new_arrow_labels, alt_new_arrow_labels, pure_mult_arrows.target):
+            for mob in [label, alt_label]:
+                mob.next_to(arrow, DOWN, SMALL_BUFF)
 
         self.play(
             MoveToTarget(pure_mult_arrows, lag_ratio=0.2),
@@ -549,6 +574,17 @@ class VolumeGrid(InteractiveScene):
 
         # Fill in odd volume labels
         fill_every_other_label_from(3)
+
+        self.play(
+            LaggedStart(
+                (TransformMatchingTex(l1, l2, rate_func=there_and_back_with_pause)
+                for l1, l2 in zip(new_arrow_labels, alt_new_arrow_labels)),
+                lag_ratio=0.05,
+                run_time=5
+            )
+        )
+        self.remove(alt_new_arrow_labels)
+        self.add(new_arrow_labels)
 
         # Plug it in for n = 1
         d1_form = Tex(R"V(B^1) = {\pi^{1/2} \over (1/2)!} {r} = 2{r}", t2c={"{r}": BLUE})
@@ -572,7 +608,7 @@ class VolumeGrid(InteractiveScene):
         )
         self.wait()
 
-        # Half factoril fact
+        # Half factorial fact
         half_fact = Tex(R"(1/2)! = {\sqrt{\pi} \over 2}")
         half_fact.move_to(d1_form)
 
@@ -827,7 +863,6 @@ class ShowSphereVolumeDerivative(ShowCircleAreaDerivative):
         self.play(dr_tracker.animate.set_value(0.0), run_time=5)
 
 
-
 class SphereDerivativeFormula(InteractiveScene):
     def construct(self):
         # Test
@@ -946,125 +981,248 @@ class SeparateRingsOfLatitude(InteractiveScene):
         )
         self.wait()
 
+        # Move up and down
+        z_tracker = ValueTracker(0)
+        get_z = z_tracker.get_value
+        equator = rings[n_rings // 2]
+        equator.add_updater(
+            lambda m: m.set_width(2 * math.sqrt(1 - get_z()**2)).move_to(get_z() * OUT)
+        )
 
-# TODO, too much code redundancy below?
+        self.play(z_tracker.animate.set_value(0.5), run_time=4)
+        self.play(z_tracker.animate.set_value(-0.5), run_time=6)
+        self.play(z_tracker.animate.set_value(0), run_time=4)
+
+
 class CrossLineWithCircle(InteractiveScene):
     def construct(self):
         # Equation
+        self.frame.set_field_of_view(5 * DEG)
         line = Line(DOWN, UP)
         line.set_stroke(GREEN_E, 8)
         circle = Circle()
         circle.set_stroke(RED, 3)
+        pure_sphere = Sphere()
+        pure_sphere.set_color(BLUE_E, 1)
+        sphere = Group(pure_sphere, SurfaceMesh(pure_sphere))
+        sphere.match_height(circle)
+        sphere.rotate(75 * DEG, LEFT)
 
         group = Group(
-            Tex(R"\partial B^3 = ", font_size=120),
-            circle,
-            Tex(R"\times", font_size=120),
+            sphere,
+            Tex(R"=", font_size=120),
             line,
+            Tex(R"\times", font_size=120),
+            circle,
         )
-        group[0].shift(MED_SMALL_BUFF * UL)
-        group.arrange(RIGHT)
-        group[-1].shift(0.5 * RIGHT)
+        group.arrange(RIGHT, buff=LARGE_BUFF)
 
         self.add(group)
 
         # Formulas
         sphere_3d_form = Tex(R"x^2 + y^2 + z^2 = 1")
-        sphere_3d_form.to_corner(UL)
-        sphere_3d_form.next_to(group[0], UP, buff=MED_LARGE_BUFF)
-        sphere_3d_form.shift(LEFT)
+        sphere_3d_form.next_to(group[0], DOWN, buff=MED_LARGE_BUFF)
 
-        circle_form = Tex(R"x^2 + y^2 = 1")
-        circle_form.next_to(circle, DOWN)
         line_form = Tex(R"z^2 \le 1")
-        line_form.next_to(line, DOWN)
+        line_form.match_x(line).match_y(sphere_3d_form)
 
-        self.add(sphere_3d_form)
-        self.add(circle_form)
-        self.add(line_form)
+        circle_form = Tex(R"x^2 + y^2 = 1 - z^2")
+        circle_form.match_x(circle).match_y(sphere_3d_form)
 
-
-class CrossDiskWithCircle(InteractiveScene):
-    def construct(self):
-        # Test
-        disk = Circle()
-        disk.set_fill(BLUE_E, 1)
-        disk.set_stroke(WHITE, 1)
-        circle = Circle()
-        circle.set_stroke(RED, 3)
-
-        group = VGroup(
-            Tex(R"\partial B^4 = ", font_size=120),
-            circle,
-            Tex(R"\times", font_size=120),
-            disk,
+        self.play(FadeIn(sphere_3d_form, DOWN))
+        self.wait()
+        self.play(TransformFromCopy(sphere_3d_form["z^2 = 1"], line_form))
+        self.wait()
+        self.play(
+            TransformMatchingTex(sphere_3d_form.copy(), circle_form, path_arc=45 * DEG)
         )
-        group[0].shift(SMALL_BUFF * UL)
-        group.arrange(RIGHT)
+        self.wait()
 
-        self.add(group)
+        # Show dependence
+        interval = NumberLine((-1, 1))
+        interval.put_start_and_end_on(line.get_start(), line.get_end())
 
-        # Formulas
-        sphere_4d_form = Tex(R"x^2 + y^2 + z^2 + w^2 = 1")
-        sphere_4d_form.to_corner(UL)
-        sphere_4d_form.next_to(group[0], UP, buff=LARGE_BUFF)
-        sphere_4d_form.shift(LEFT)
+        z_dot = Group(GlowDot(radius=0.5), TrueDot(radius=0.1).make_3d())
+        z_dot.set_color(GREEN)
+        z_tracker = ValueTracker(0)
+        get_z = z_tracker.get_value
+        z_dot.add_updater(lambda m: m.move_to(interval.n2p(get_z())))
 
-        circle_form = Tex(R"x^2 + y^2 = 1")
-        circle_form.next_to(circle, DOWN)
-        disk_form = Tex(R"z^2 + w^2 \le 1")
-        disk_form.next_to(disk, DOWN)
+        circle_width = circle.get_width()
+        circle_center = circle.get_center().copy()
+        circle.add_updater(lambda m: m.set_width(circle_width * math.sqrt(1 - get_z()**2)).move_to(circle_center))
 
-        self.add(sphere_4d_form)
-        self.add(circle_form)
-        self.add(disk_form)
-
-
-class CrossBallWithCircle(InteractiveScene):
-    def construct(self):
-        # Equation
-        ball = Sphere()
-        ball.set_color(BLUE_E, 1)
-        circle = Circle()
-        circle.set_stroke(RED, 3)
-
-        group = Group(
-            Tex(R"\partial B^5 = ", font_size=120),
-            circle,
-            Tex(R"\times", font_size=120),
-            ball,
+        self.play(
+            FadeIn(z_dot),
+            FadeIn(interval),
         )
-        group[0].shift(SMALL_BUFF * UL)
-        group.arrange(RIGHT)
+        self.play(z_tracker.animate.set_value(0.95), run_time=4)
+        self.play(z_tracker.animate.set_value(-0.95), run_time=8)
+        self.play(z_tracker.animate.set_value(0), run_time=4)
+        circle.clear_updaters()
 
-        self.add(group)
+        # Repalce with final form
+        rect = SurroundingRectangle(circle_form)
+        self.play(ShowCreation(rect))
+        self.play(
+            FadeOut(circle_form[-3:]),
+            circle_form[:-3].animate.shift(0.5 * RIGHT),
+        )
+        self.wait()
+        self.play(
+            FadeOut(rect),
+            FadeOut(z_dot),
+            FadeOut(interval),
+        )
 
-        # Formulas
-        sphere_4d_form = Tex(R"x^2 + y^2 + z^2 + w^2 + v^2 = 1")
-        sphere_4d_form.to_corner(UL)
-        sphere_4d_form.next_to(group[0], UP, buff=LARGE_BUFF)
-        sphere_4d_form.shift(LEFT)
+        # Label it as boundary of B^3
+        fade_rects = VGroup(
+            BackgroundRectangle(mob, buff=SMALL_BUFF, fill_opacity=0.5)
+            for mob in group[0::2]
+        )
+        sphere_labels = self.get_sphere_labels(3, fade_rects)
 
-        circle_form = Tex(R"x^2 + y^2 = 1")
-        circle_form.next_to(circle, DOWN)
-        ball_form = Tex(R"z^2 + w^2 + v^2 \le 1")
-        ball_form.next_to(ball, DOWN)
-        ball_form.shift(RIGHT)
+        for label, rect in zip(sphere_labels, fade_rects):
+            self.play(FadeIn(rect), FadeIn(label))
+        self.wait()
 
-        self.add(sphere_4d_form)
-        self.add(circle_form)
-        self.add(ball_form)
+        # Transition to 4D case
+        disk = circle.copy()
+        disk.match_style(line)
+        disk.set_fill(GREEN, 0.5)
+        disk.move_to(line)
+        hyper_sphere_labels = self.get_sphere_labels(4, group[0::2])
+        db4_label, b2_label, db2_label = hyper_sphere_labels
+        db4_label.shift(SMALL_BUFF * UP)
+        for label in hyper_sphere_labels[1:]:
+            label.scale(0.8)
+
+        self.play(
+            LaggedStartMap(FadeOut, sphere_labels, shift=0.5 * UP, lag_ratio=0.5, run_time=1),
+            FadeIn(db4_label, shift=0.5 * UP),
+            FadeOut(group[0], LEFT),
+            group[1].animate.move_to(midpoint(db4_label.get_right(), disk.get_left())),
+            group[3].animate.move_to(VGroup(disk, circle)),
+            ReplacementTransform(line, disk),
+            FadeOut(VGroup(sphere_3d_form, circle_form, line_form)),
+            *map(FadeOut, fade_rects),
+        )
+
+        # Add labels
+        labels4d = VGroup(
+            Tex(R"x^2 + y^2 + z^2 + w^2 = 1").next_to(db4_label, DOWN),
+            Tex(R"z^2 + w^2 \le 1").next_to(disk, DOWN),
+            Tex(R"x^2 + y^2 = 1 - z^2 - w^2").next_to(circle, DOWN),
+            Tex(R"x^2 + y^2 = 1").next_to(circle, DOWN),
+        )
+        for label in labels4d:
+            label.align_to(labels4d, DOWN)
+
+        labels4d[0].shift(0.5 * LEFT)
+        labels4d[2].to_edge(RIGHT, buff=SMALL_BUFF)
+
+        self.play(FadeIn(labels4d[0], DOWN))
+        self.wait()
+        self.play(TransformFromCopy(labels4d[0]["z^2 + w^2 = 1"][0], labels4d[1], path_arc=30 * DEG))
+        self.wait()
+        self.play(TransformFromCopy(labels4d[0], labels4d[2], path_arc=30 * DEG))
+        self.wait()
+
+        # Manipuliate z and w, let circle change size
+        axes = Axes((-1, 1, 0.25), (-1, 1, 0.25), axis_config=dict(tick_size=0.025))
+        axes.replace(disk)
+        z_dot.clear_updaters()
+        z_dot[1].set_radius(0.07)
+        z_dot.move_to(axes.c2p(0, 0))
+
+        def get_radius():
+            z, w = axes.p2c(z_dot.get_center())
+            return math.sqrt(1 - z**2 - w**2)
+
+        circle_center = circle.get_center()
+        circle.add_updater(lambda m: m.set_width(circle_width * get_radius()).move_to(circle_center))
+
+        self.play(
+            FadeIn(axes),
+            FadeIn(z_dot),
+        )
+        self.play(z_dot.animate.shift(0.7 * UR), run_time=4)
+        self.wait()
+        self.play(z_dot.animate.shift(1.0 * DOWN), run_time=4)
+        self.wait()
+        self.play(z_dot.animate.move_to(axes.get_origin()), run_time=5)
+        circle.clear_updaters()
+        self.play(FadeOut(z_dot), FadeOut(axes))
+
+        # Simplify circle formula
+        rect = SurroundingRectangle(labels4d[2])
+        self.play(ShowCreation(rect))
+        self.play(
+            TransformMatchingTex(labels4d[2], labels4d[3]),
+            rect.animate.surround(labels4d[3]),
+            run_time=2
+        )
+        self.wait()
+        self.play(FadeOut(rect))
+
+        # Go up to five dimensions
+        db5_label = Tex(R"\partial B^5", font_size=120)
+        db5_label.move_to(db4_label)
+        sphere = pure_sphere
+        sphere.replace(disk)
+
+        self.play(LaggedStart(
+            FadeOut(labels4d[:2]),
+            FadeOut(labels4d[3]),
+            FadeOut(disk, 0.5 * UP),
+            FadeIn(sphere, 0.5 * UP),
+            FadeOut(db4_label, 0.5 * UP),
+            FadeIn(db5_label, 0.5 * UP),
+        ))
+        self.wait()
+
+        # Show the labels
+        labels5d = VGroup(
+            Tex(R"x^2 + y^2 + z^2 + w^2 + v^2 = 1").next_to(db5_label, DOWN),
+            Tex(R"z^2 + w^2 + v^2 \le 1").next_to(sphere, DOWN),
+            Tex(R"x^2 + y^2 = 1").next_to(circle, DOWN),
+        )
+        for label in labels5d:
+            label.scale(0.8, about_edge=DOWN)
+            label.align_to(labels5d, DOWN)
+
+        labels5d[0].shift(LEFT)
+
+        self.play(FadeIn(labels5d[0], DOWN))
+        self.wait()
+        self.play(TransformFromCopy(labels5d[0]["z^2 + w^2 + v^2 = 1"][0], labels5d[1], path_arc=30 * DEG))
+        self.wait()
+        self.play(
+            TransformFromCopy(labels5d[0]["x^2 + y^2"][0], labels5d[2]["x^2 + y^2"][0], path_arc=30 * DEG),
+            TransformFromCopy(labels5d[0]["= 1"][0], labels5d[2]["= 1"][0], path_arc=30 * DEG),
+        )
+        self.wait()
+
+    def get_sphere_labels(self, n, group):
+        labels = VGroup(
+            Tex(tex, font_size=120)
+            for tex in [fR"\partial B^{n}", f"B^{n - 2}", fR"\partial B^2"]
+        )
+        for label, mob in zip(labels, group):
+            label.move_to(mob)
+        return labels
 
 
 class ShowNumericalValues(InteractiveScene):
     def construct(self):
         # Set up
-        axes = Axes((0, 25), (0, 6))
-        axes.to_edge(UP, buff=LARGE_BUFF)
+        axes = Axes((0, 25), (0, 5))
+        axes.to_edge(DOWN, buff=LARGE_BUFF)
         axes.to_edge(LEFT, buff=MED_LARGE_BUFF)
         axes.x_axis.add_numbers()
-        y_label = TexText("Volume of a\nunit ball")
-        y_label.next_to(axes.y_axis.get_top(), RIGHT)
+        y_label = Text("Volume of a\nunit ball")
+        y_label.next_to(axes.y_axis.get_top(), UP)
+        y_label.shift_onto_screen(buff=MED_SMALL_BUFF)
         x_label = Text("Dimension")
         x_label.next_to(axes.x_axis.get_end(), UP)
         x_label.shift_onto_screen()
@@ -1114,7 +1272,7 @@ class ShowNumericalValues(InteractiveScene):
 
         # Show general graph
         gen_formula = Tex(R"\pi^{n/2} \over (n/2)!")
-        gen_formula.next_to(axes.i2gp(9, graph), UR)
+        gen_formula.next_to(axes.i2gp(11, graph), UR)
 
         self.play(
             ShowCreation(graph),
@@ -1125,6 +1283,59 @@ class ShowNumericalValues(InteractiveScene):
             run_time=2
         )
         self.wait()
+
+        # Smooth shot of general graph
+        if False:
+            gen_formula.scale(2).to_corner(UR).fix_in_frame()
+
+            graph_segment = graph.copy().pointwise_become_partial(graph, 0, 0.6)
+
+            self.frame.reorient(0, 0, 0, (-4.4, -2.29, 0.0), 2.91)
+            self.remove(graph, y_label)
+            self.play(
+                self.frame.animate.to_default_state().set_anim_args(run_time=8),
+                ShowCreation(graph_segment, time_span=(2, 12), run_time=15),
+                LaggedStartMap(ShowCreation, v_lines, lag_ratio=0.75, run_time=12),
+                LaggedStartMap(FadeIn, dots, lag_ratio=0.75, run_time=12),
+                Write(gen_formula, time_span=(7, 9)),
+            )
+            self.wait()
+            return
+
+        # Add recurrence relationship
+        recurrence = Tex(
+            R"V_n = {2\pi \over n} V_{n - 2}",
+            font_size=72,
+            t2c={"V_n": YELLOW, "V_{n - 2}": YELLOW}
+        )
+        recurrence.to_corner(UR)
+
+        self.add(recurrence)
+        self.wait()
+
+        for n in range(1, 9):
+            dot1, dot2 = dots = VGroup(Dot(v_lines[k].get_top()) for k in [n, n + 2])
+            dots.set_fill(YELLOW)
+            arrow = Arrow(
+                dot1.get_center(),
+                dot2.get_center(),
+                path_arc=-75 * DEG,
+                thickness=5,
+                fill_color=YELLOW,
+                buff=0.1
+            )
+            label = Tex(Rf"2\pi / {n + 2}")
+            label.next_to(
+                arrow.get_center(),
+                rotate_vector(arrow.get_vector(), 90 * DEG),
+                buff=0.15,
+            )
+            group = VGroup(dots, arrow, label)
+            self.add(group)
+            self.wait()
+            self.remove(group)
+
+        # Zoom out
         self.play(
             self.frame.animate.reorient(0, 0, 0, (5.6, 0.15, 0.0), 14.77),
             run_time=3
