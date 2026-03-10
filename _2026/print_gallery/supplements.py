@@ -1,13 +1,15 @@
 from manim_imports_ext import *
 
 
-class DistributeZoom(InteractiveScene):
+class DistributeZoomOverlay(InteractiveScene):
     def construct(self):
         # Add frames
         frames = Square(side_length=6).replicate(2)
         frames.arrange(RIGHT, buff=1.5)
         frames.set_stroke(WHITE, 2)
         left_frame, right_frame = frames
+        left_frame.set_stroke(BLACK)
+        right_frame.set_stroke(opacity=0)
 
         self.add(left_frame)
 
@@ -47,8 +49,6 @@ class DistributeZoom(InteractiveScene):
         corner_arrow_ghosts = corner_arrows.copy().set_fill(opacity=0.35)
         zoom_label_ghost = zoom_label.copy().set_fill(opacity=0.35)
 
-        self.add(corner_arrow_ghosts)
-        self.add(zoom_label_ghost)
         self.remove(zoom_label)
         self.play(
             small_left.animate.set_stroke(opacity=0.35),
