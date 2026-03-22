@@ -9,7 +9,7 @@ class Car(SVGMobject):
     light_colors = [BLACK, BLACK]
 
     def __init__(self, **kwargs):
-        SVGMobject.__init__(self, **kwargs)
+        super().__init__(file_name=self.file_name, **kwargs)
 
         path = self.submobjects[0]
         subpaths = path.get_subpaths()
@@ -17,22 +17,12 @@ class Car(SVGMobject):
         for indices in [(0, 1), (2, 3), (4, 6, 7), (5,), (8,)]:
             part = VMobject()
             for index in indices:
-                part.append_points(subpaths[index])
+                part.add_subpath(subpaths[index])
             path.add(part)
 
         self.set_height(self.height)
         self.set_stroke(color=WHITE, width=0)
         self.set_fill(self.color, opacity=1)
-
-        from videos.characters.pi_creature import Randolph
-        randy = Randolph(mode="happy")
-        randy.set_height(0.6 * self.get_height())
-        randy.stretch(0.8, 0)
-        randy.look(RIGHT)
-        randy.move_to(self)
-        randy.shift(0.07 * self.height * (RIGHT + UP))
-        self.randy = self.pi_creature = randy
-        self.add_to_back(randy)
 
         orientation_line = Line(self.get_left(), self.get_right())
         orientation_line.set_stroke(width=0)
@@ -44,6 +34,16 @@ class Car(SVGMobject):
             light.is_subpath = False
 
         self.add_treds_to_tires()
+
+    def add_driver(self, pi_creature):
+        randy = Randolph(mode="happy")
+        pi_creature.set_height(0.6 * self.get_height())
+        pi_creature.stretch(0.8, 0)
+        pi_creature.look(RIGHT)
+        pi_creature.move_to(self)
+        pi_creature.shift(0.07 * self.height * (RIGHT + UP))
+        self.pi_creature = self.pi_creature 
+        self.add_to_back(self.pi_creature)
 
     def move_to(self, point_or_mobject):
         vect = rotate_vector(
@@ -84,10 +84,10 @@ class Car(SVGMobject):
         return VGroup(self.get_front_light(), self.get_rear_light())
 
     def get_front_light(self):
-        return self[1][3]
+        return self[0][3]
 
     def get_rear_light(self):
-        return self[1][4]
+        return self[0][4]
 
 
 class MoveCar(ApplyMethod):

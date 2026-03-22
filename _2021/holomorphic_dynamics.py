@@ -66,7 +66,7 @@ def get_iteration_label(font_size=36):
 class MandelbrotFractal(NewtonFractal):
     CONFIG = {
         "shader_folder": "mandelbrot_fractal",
-        "shader_dtype": [
+        "data_dtype": [
             ('point', np.float32, (3,)),
         ],
         "scale_factor": 1.0,

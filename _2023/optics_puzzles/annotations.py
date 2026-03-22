@@ -913,7 +913,6 @@ class LengthsOnDifferentColors(InteractiveScene):
 
         # Show braces
         for brace, rect, number in zip(braces, rects, numbers):
-            globals().update(locals())
             other_rects = VGroup(*(r for r in rects if r is not rect))
             self.play(
                 GrowFromPoint(brace, brace.get_right()),

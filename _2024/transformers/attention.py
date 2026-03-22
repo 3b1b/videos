@@ -1,4 +1,5 @@
-from sqlalchemy.sql.base import _DialectArgDict
+from __future__ import annotations
+
 from manim_imports_ext import *
 from _2024.transformers.helpers import *
 from _2024.transformers.embedding import break_into_words
@@ -447,7 +448,6 @@ class AttentionPatterns(InteractiveScene):
         q_sym = q_syms[index]
         low_q_sym = q_sym.copy()
         low_q_sym.next_to(rhs, UP)
-        globals().update(locals())
 
         self.play(LaggedStart(
             LaggedStart(
@@ -1190,7 +1190,6 @@ class AttentionPatterns(InteractiveScene):
             delta_E.next_to(eq, DOWN)
             delta_Es.add(delta_E)
 
-        globals().update(locals())
         self.play(
             LaggedStart(
                 (FadeTransform(term.copy(), delta_Es[index])
@@ -1282,7 +1281,6 @@ class AttentionPatterns(InteractiveScene):
         )
 
         other_indices = [*range(index), *range(index + 1, len(plus_groups))]
-        globals().update(locals())
         self.play(LaggedStart(
             (LaggedStart(
                 FadeIn(plus_groups[j], lag_ratio=0.1),
@@ -1857,7 +1855,7 @@ class DescribeAttentionEquation(InteractiveScene):
         self.add(image)
 
         # Add equation
-        equation = Tex(R"\text{Attention}(Q, K, V) = \text{softmax}({QK^T \over \sqrt{d_k}}) V")
+        equation = Tex(R"\text{Attention}(Q, K, V) = \text{softmax}\left({K^T Q \over \sqrt{d_k}}\right) V")
         equation.set_height(1.06929)
         equation.move_to([-0.41406, 1.177, 0])
 
@@ -1884,7 +1882,6 @@ class DescribeAttentionEquation(InteractiveScene):
             lil_rect = SurroundingRectangle(equation["Q"][0])
             lil_rect.match_x(equation[sym][0])
             big_rect = SurroundingRectangle(arr)
-            globals().update(locals())
             lines = VGroup(
                 Line(lil_rect.get_corner(DOWN + v), big_rect.get_corner(UP + v))
                 for v in [LEFT, RIGHT]
@@ -1906,7 +1903,7 @@ class DescribeAttentionEquation(InteractiveScene):
         self.wait()
 
         # Highlight numerator
-        num_rect = SurroundingRectangle(equation["QK^T"])
+        num_rect = SurroundingRectangle(equation["K^T Q"])
         num_rect.set_stroke(BLUE, 2)
 
         self.play(
@@ -2016,7 +2013,7 @@ class DescribeAttentionEquation(InteractiveScene):
             VGroup(dot_prod.target, denom).scale(0.75)
             denoms.add(denom)
 
-        self.play(num_rect.animate.surround(equation[R"QK^T \over \sqrt{d_k}"]))
+        self.play(num_rect.animate.surround(equation[R"K^T Q \over \sqrt{d_k}"]))
         self.play(
             LaggedStartMap(MoveToTarget, dot_prods, lag_ratio=0.05, time_span=(1, 3)),
             LaggedStart(
@@ -2030,7 +2027,7 @@ class DescribeAttentionEquation(InteractiveScene):
 
         # Highlight softmax
         self.play(
-            num_rect.animate.surround(equation[R"\text{softmax}({QK^T \over \sqrt{d_k}})"])
+            num_rect.animate.surround(equation[R"\text{softmax}\left({K^T Q \over \sqrt{d_k}}\right)"])
         )
         self.wait()
 
@@ -2196,7 +2193,6 @@ class ShowMasking(InteractiveScene):
 
         values_array = np.random.normal(0, 2, shape)
         font_size = 30
-        globals().update(locals())
         raw_values = VGroup(
             DecimalNumber(
                 value,
@@ -3389,7 +3385,7 @@ class ManyTypesOfUpdates(InteractiveScene):
         self.add(matrices, titles)
 
         # Add phrase
-        phrase = Text("John hit the breaks sharply, they screeched loudly, and he jolted forward.")
+        phrase = Text("John hit the brakes sharply, they screeched loudly, and he jolted forward.")
         raw_words = break_into_words(phrase)
         rects = get_piece_rectangles(raw_words)
         rects.fade(0.5)
@@ -3491,7 +3487,6 @@ class ManyTypesOfUpdates(InteractiveScene):
             self.wait(2)
             # last_group = VGroup(desc, connections)
             last_group = VGroup(connections)
-
 
     def get_matrix_update_anim(self, matrix):
         rects = VGroup(
@@ -3762,7 +3757,6 @@ class MultiHeadedAttention(InteractiveScene):
             v_stacks.set_height(rect.get_height() * 0.85)
             v_stacks.set_fill(border_width=1)
 
-            globals().update(locals())
             v_terms = VGroup(
                 *(Tex(Rf"\vec{{\textbf{{v}}}}_{n}^{{({idx})}}") for n in range(1, 4)),
                 Tex(R"\dots")

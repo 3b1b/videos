@@ -58,7 +58,7 @@ class Eoc1Thumbnail(GraphScene):
         # self.add(title)
         # self.add(answer)
 
-    def func(slef, x):
+    def func(self, x):
         return 0.35 * ((x - 2)**3 - 2 * (x - 2) + 6)
 
 

@@ -1,9 +1,9 @@
 from manim_imports_ext import *
 
-from _2022.quintic import coefficients_to_roots
-from _2022.quintic import roots_to_coefficients
-from _2022.quintic import dpoly
-from _2022.quintic import poly
+from _2022.quintic.roots_and_coefs import coefficients_to_roots
+from _2022.quintic.roots_and_coefs import roots_to_coefficients
+from _2022.quintic.roots_and_coefs import dpoly
+from _2022.quintic.roots_and_coefs import poly
 
 
 ROOT_COLORS_BRIGHT = [RED, GREEN, BLUE, YELLOW, MAROON_B]
@@ -72,7 +72,7 @@ def get_figure(image_name, person_name, year_text, height=3, label_direction=DOW
 class NewtonFractal(Mobject):
     CONFIG = {
         "shader_folder": "newton_fractal",
-        "shader_dtype": [
+        "data_dtype": [
             ('point', np.float32, (3,)),
         ],
         "colors": ROOT_COLORS_DEEP,
@@ -734,7 +734,6 @@ class RasterizingBezier(Scene):
         t_tracker = ValueTracker(0)
         get_t = t_tracker.get_value
         P_dot = Dot(color=GREEN)
-        globals().update(locals())
         ct[1].add_updater(lambda m: m.set_value(get_t()))
         ct[1].next_to(ct[0], RIGHT, buff=0)
         P_dot.add_updater(lambda m: m.move_to(curve.pfp(get_t() / 2)))
@@ -899,7 +898,6 @@ class RasterizingBezier(Scene):
         axes.shift((top_axes.c2p(0, 0) - axes.c2p(0, 0))[0] * RIGHT)
         dt = 1e-5
         f = top_graph.underlying_function
-        globals().update(locals())
         graph = axes.get_graph(lambda t: (f(t + dt) - f(t)) / dt)
         graph.set_stroke(MAROON_B)
         # Dumb hack, not sure why it's needed

@@ -171,7 +171,6 @@ class GaltonBoard(InteractiveScene):
         last_labels = VGroup(get_peg_label(0, 0))
         self.play(FadeIn(last_labels))
         for n in range(1, self.n_rows + 1):
-            globals().update(locals())
             split_labels = VGroup(*(get_peg_label(n, k, split=True) for k in range(n + 1)))
             unsplit_labels = VGroup(*(get_peg_label(n, k, split=False) for k in range(n + 1)))
             anims = [

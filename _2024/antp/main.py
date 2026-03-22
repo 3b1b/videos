@@ -648,7 +648,6 @@ class SieveWithMod(InteractiveScene):
                 for n, label in enumerate(labels)
                 if label.get_value() % prime_value == 0
             ]
-            globals().update(locals())
             self.play(
                 *(
                     LaggedStartMap(FadeOut, VGroup(group[n] for n in killed_indices), shift=0.1 * DOWN, lag_ratio=0.1)
@@ -658,7 +657,6 @@ class SieveWithMod(InteractiveScene):
             )
 
             for group in [labeled_boxes, grid, labels, arrows, reductions]:
-                globals().update(locals())
                 to_remove = [group[n] for n in killed_indices]
                 group.remove(*to_remove)
 

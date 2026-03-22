@@ -1417,7 +1417,6 @@ class CumulantsOfScaledSum(InteractiveScene):
 
         self.play(Write(scaling_rule["K_m[cX] = "][0]))
         self.wait()
-        globals().update(locals())
         self.play(
             new_K_rect.animate.move_to(scaling_rule["c^m K_m[X]"]),
             LaggedStart(*(

@@ -888,7 +888,6 @@ class AltEFieldIntroduction(IntroduceEField):
             dist = get_norm(q1.get_center() - q2.get_center())
             self.add(ring)
             self.play(wiggle_charge(q1, sign * amp * UP))
-            globals().update(locals())
             self.wait_until(lambda: ring.get_radius() > dist)
             amp *= 0.4
         self.wait(4)

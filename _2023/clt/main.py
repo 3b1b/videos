@@ -1381,7 +1381,6 @@ class MeanAndStandardDeviation(InteractiveScene):
             return result
 
         squares = get_squares(bars)
-        globals().update(locals())
         labels = VGroup(*(Tex(Rf"P({n}) \cdot ({n} - \mu)^2", **tex_kw) for n in range(1, 7)))
         labels.scale(0.5)
         for label, square in zip(labels, squares):

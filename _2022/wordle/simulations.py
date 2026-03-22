@@ -22,6 +22,14 @@ ENT_SCORE_PAIRS_FILE = os.path.join(DATA_DIR, "ent_score_pairs.json")
 # To store the large grid of patterns at run time
 PATTERN_GRID_DATA = dict()
 
+CHUNK_LENGTH = 13000
+
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 
 def safe_log2(x):
     return math.log2(x) if x > 0 else 0
@@ -167,10 +175,30 @@ def generate_pattern_matrix(words1, words2):
 
     return pattern_matrix
 
+def generate_pattern_matrix_in_blocks(many_words1, many_words2, block_length=CHUNK_LENGTH):
+    block_matrix = None
+    for words1 in chunks(many_words1, block_length):
+        row = None
+
+        for words2 in chunks(many_words2, block_length):
+            block = generate_pattern_matrix(words1, words2)
+
+            if row is None:
+                row = block
+            else:
+                row = np.hstack((row, block))
+
+        if block_matrix is None:
+            block_matrix = row
+        else:
+            block_matrix = np.vstack((block_matrix, row))
+
+    return block_matrix
+
 
 def generate_full_pattern_matrix():
     words = get_word_list()
-    pattern_matrix = generate_pattern_matrix(words, words)
+    pattern_matrix = generate_pattern_matrix_in_blocks(words, words)
     # Save to file
     np.save(PATTERN_MATRIX_FILE, pattern_matrix)
     return pattern_matrix

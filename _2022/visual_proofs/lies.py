@@ -1418,7 +1418,6 @@ class SquareCircleExample(InteractiveScene):
         t_label.next_to(t_axis, UP, buff=LARGE_BUFF)
         VGroup(t_axis, t_label).to_edge(UP)
 
-        globals().update(locals())
         t_label[1].add_updater(lambda d: d.set_value(get_t()))
         dot.add_updater(lambda d: d.move_to(square.pfp(get_t())))
         t_indicator.add_updater(lambda m: m.move_to(t_axis.n2p(get_t()), DOWN))
@@ -1755,7 +1754,7 @@ class IntegralExample(InteractiveScene):
         graph = axes.get_graph(lambda x: x**2)
         graph.set_stroke(TEAL, 2)
         all_rects = VGroup(*(
-            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), background=False)
+            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), behind=False)
             for dx in [2**(-n) for n in range(2, 8)]
         ))
         rects = all_rects[0]
@@ -1794,7 +1793,7 @@ class IntegralError(InteractiveScene):
         graph = axes.get_graph(lambda x: x**2)
         graph.set_stroke(TEAL, 2)
         all_rects = VGroup(*(
-            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), background=False)
+            axes.get_riemann_rectangles(graph, (0, 3), dx).set_stroke(BLACK, np.round(4 * dx, 1), behind=False)
             for dx in [2**(-n) for n in range(2, 9)]
         ))
         rects = all_rects[0]

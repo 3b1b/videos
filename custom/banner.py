@@ -46,8 +46,9 @@ class Banner(Scene):
             line.set_stroke(width=line.get_stroke_width() / 2)
         self.add(
             plane,
-            # FullScreenFadeRectangle().set_fill(BLACK, 0.25),
+            FullScreenFadeRectangle().set_fill(BLACK, 0.25),
         )
+        return
 
         # Pis
         pis = self.get_pis()
@@ -63,7 +64,7 @@ class Banner(Scene):
         message = self.get_message()
         message.set_height(self.message_height)
         message.next_to(pis, DOWN)
-        message.set_stroke(BLACK, 10, background=True)
+        message.set_stroke(BLACK, 3, behind=True)
         self.add(message)
 
         # Suppoerter note
@@ -90,19 +91,9 @@ class Banner(Scene):
         )
 
     def get_message(self):
-        if self.message:
-            return Text(self.message)
         if self.use_date:
             return self.get_date_message()
-        else:
-            return self.get_probabalistic_message()
-
-    def get_probabalistic_message(self):
-        return Text(
-            "New video every day " + \
-            "(with probability 0.05)",
-            t2c={"Sunday": YELLOW},
-        )
+        return Text(self.message)
 
     def get_date_message(self):
         return Text(

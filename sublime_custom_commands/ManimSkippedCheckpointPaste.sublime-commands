@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "ManimSkippedCheckpointPaste: Copy selection, run `checkpoint_paste(skip=True)` in terminal",
+        "command": "manim_skipped_checkpoint_paste"
+    }
+]

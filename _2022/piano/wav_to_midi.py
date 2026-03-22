@@ -212,7 +212,6 @@ def get_volume_to_velocity_func_map(folder="true_piano_samples", sampled_velocit
     result = dict()
     vels = sampled_velocities
     for key in piano_midi_range:
-        globals().update(locals())
         volumes = [
             wav_data(os.path.join(DATA_DIR, folder, f"{key}_{vel}.wav"))[1].max()
             for vel in vels

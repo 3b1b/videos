@@ -310,6 +310,7 @@ class TeacherStudentsScene(PiCreatureScene):
         self, content,
         target_mode=None,
         bubble_direction=LEFT,
+        bubble_config=None,
         index=2,
         **kwargs
     ):
@@ -318,10 +319,12 @@ class TeacherStudentsScene(PiCreatureScene):
                 "raise_right_hand",
                 "raise_left_hand",
             ])
+        bubble_config = bubble_config or dict()
+        bubble_config["direction"] = bubble_direction
         return self.pi_creature_says(
             self.get_students()[index], content,
             target_mode=target_mode,
-            bubble_direction=bubble_direction,
+            bubble_config=bubble_config,
             **kwargs
         )
 

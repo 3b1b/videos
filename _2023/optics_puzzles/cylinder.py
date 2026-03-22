@@ -555,7 +555,6 @@ class TwistingWithinCylinder(InteractiveScene):
             vcomp.move_to(axes.c2p(x, -2 + index / len(lines), 0))
             z = float(axes.z_axis.p2n(vcomp.get_zenith()))
             y_min, y_max = axes.y_range[:2]
-            globals().update(locals())
             dashed_lines = VGroup(*(
                 DashedLine(axes.c2p(x, y_min, u * z), axes.c2p(x, y_max, u * z), dash_length=0.02)
                 for u in [1, -1]

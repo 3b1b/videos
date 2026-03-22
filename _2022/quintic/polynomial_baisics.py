@@ -238,7 +238,6 @@ class ConstructPolynomialWithGivenRoots(Scene):
             alt_factored.replace(factored)
             alt_expanded = expanded_poly_tex(alt_roots, vertical=False)
             alt_expanded.replace(cleaner_expanded)
-            globals().update(locals())
             movers, targets = [
                 VGroup(*(
                     group.get_parts_by_tex(str(root))
