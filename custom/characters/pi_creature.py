@@ -236,8 +236,8 @@ class PiCreature(SVGMobject):
 
     # Overrides
 
-    def become(self, mobject):
-        super().become(mobject)
+    def become(self, mobject, **kwargs):
+        super().become(mobject, **kwargs)
         if isinstance(mobject, PiCreature):
             self.bubble = mobject.bubble
         return self

@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "ManimRender: Stage the rendering command in the terminal",
+        "command": "manim_render"
+    }
+]
