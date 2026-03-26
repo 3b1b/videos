@@ -13,7 +13,7 @@ class Ladybug(InteractiveScene):
     # random_seed = 14 # ends with 1
     # random_seed = 15 # ends with 5
     # random_seed = 18 # ends with 2
-    random_seed = 19 # ends with 3
+    random_seed = 19  # ends with 3
 
     def construct(self):
         # Add clock
@@ -98,37 +98,39 @@ class Question(InteractiveScene):
         self.play(Write(text))
         self.wait()
 
+
 class Simulation(Ladybug):
     def construct(self):
         random.seed(8)
 
         num_trials = 1000
         trialTracker = ValueTracker(0)
-        trialCounter = Integer(1, color = YELLOW, font_size = 35)
+        trialCounter = Integer(1, color=YELLOW, font_size=35)
         trialCounter.add_updater(lambda c: c.set_value(trialTracker.get_value()))
         trialLabel = VGroup(
-            Text("Trial: ", color = WHITE, font_size = 35),
+            Text("Trial: ", color=WHITE, font_size=35),
             trialCounter
         )
         results = [int(0) for _ in range(11)]
+
         def get_hist():
-            proportions = [x/(max(trialTracker.get_value(), 1)) for x in results]
+            proportions = [x / (max(trialTracker.get_value(), 1)) for x in results]
             hist = BarChart(
-                values = proportions,
-                n_ticks = 0,
-                bar_names = [str(x) for x in list(range(1, 12))],
-                bar_colors = [BLUE]
+                values=proportions,
+                n_ticks=0,
+                bar_names=[str(x) for x in list(range(1, 12))],
+                bar_colors=[BLUE]
             )
             hist.y_axis_labels.set_opacity(0)
-            yAxisLabel = Tex(r"\%\ \text{occurrence}", font_size = 30).next_to(hist.y_axis, LEFT)
+            yAxisLabel = Tex(r"\%\ \text{occurrence}", font_size=30).next_to(hist.y_axis, LEFT)
             hist.add(yAxisLabel)
 
-            hist.center().scale(0.6).to_edge(DOWN, buff = 1.5).shift(LEFT*0.3)
+            hist.center().scale(0.6).to_edge(DOWN, buff=1.5).shift(LEFT * 0.3)
             return hist
         hist = get_hist()
         self.add(hist, trialLabel)
-        trialLabel.add_updater(lambda l: l.arrange(buff = 0.3).next_to(hist.x_axis, DOWN, buff = 0.6))
- 
+        trialLabel.add_updater(lambda label: label.arrange(buff=0.3).next_to(hist.x_axis, DOWN, buff=0.6))
+
         clock = self.get_clock()
         clock_points = [tick.get_start() for tick in clock.ticks]
         ladybug = SVGMobject("ladybug")
@@ -139,8 +141,7 @@ class Simulation(Ladybug):
         circle = Dot(fill_color=RED_E, radius=0.36 * ladybug.get_height())
         circle.move_to(ladybug, DOWN)
         bug = Group(circle, Point(), ladybug)
-        self.add(Group(clock, bug).scale(0.6).to_edge(UP, buff = 1).set_opacity(0))
-
+        self.add(Group(clock, bug).scale(0.6).to_edge(UP, buff=1).set_opacity(0))
 
         for trial in range(num_trials):
             trialTracker.increment_value(1)
@@ -159,12 +160,13 @@ class Simulation(Ladybug):
                 clock.numbers.set_color(RED)
                 clock.numbers[final_number].set_color(TEAL)
                 Group(clock, bug).set_opacity(1)
-                clock[0].set_fill(opacity = 0)
+                clock[0].set_fill(opacity=0)
 
             results[final_number - 1] += 1
             new_hist = get_hist()
             self.play(hist.animate.become(new_hist))
         self.wait(3)
+
 
 class ProbabilityCalculation(Ladybug):
     def construct(self):
@@ -198,12 +200,12 @@ class ProbabilityCalculation(Ladybug):
         phase2b[-1].move_to(phase2b[0].ticks[ending_number + 1].get_start())
         phase2b[0].numbers[:2].set_color(RED)
         phase2b[0].numbers[ending_number + 1:].set_color(RED)
-        Group(phase2a, phase2b).arrange(buff = 2)
+        Group(phase2a, phase2b).arrange(buff=2)
         phase2 = Group(phase2a, Text("OR").set_color(TEAL), phase2b)
         phase3 = phase1.copy()
         phase3[-1].move_to(phase3[0].ticks[ending_number].get_start())
         phase3[0].numbers.set_color(RED)
-        Group(phase1, phase2, phase3).scale(0.35).arrange(DOWN, buff = 1).center()
+        Group(phase1, phase2, phase3).scale(0.35).arrange(DOWN, buff=1).center()
         self.add(phase1)
         arrow1 = Arrow(phase1, phase2[1]).set_color(YELLOW)
         self.play(
@@ -213,16 +215,13 @@ class ProbabilityCalculation(Ladybug):
                     Group(phase2a, phase2b)
                 ),
                 GrowArrow(arrow1),
-                FadeIn(phase2[1])
-            , lag_ratio = 0.2)
-        , run_time = 3)
+                FadeIn(phase2[1]), lag_ratio=0.2), run_time=3)
         self.wait(1)
         self.play(
             AnimationGroup(
                 Flash(phase2a[0].numbers[ending_number - 1]),
                 Flash(phase2b[0].numbers[ending_number + 1])
-            )
-        , run_time = 2, rate_func = there_and_back_with_pause)
+            ), run_time=2, rate_func=there_and_back_with_pause)
         arrow2 = Arrow(phase2[1], phase3).set_color(YELLOW)
         phase3Copy = phase3.copy()
         self.play(
@@ -231,20 +230,18 @@ class ProbabilityCalculation(Ladybug):
                     Group(phase2a, phase2b).copy(),
                     Group(phase3, phase3Copy)
                 ),
-                GrowArrow(arrow2)
-            , lag_ratio = 0.2)
-        , run_time = 3)
+                GrowArrow(arrow2), lag_ratio=0.2), run_time=3)
         self.remove(phase3Copy)
         probabilityQuestionmark = Tex(
             # had to do mathrm for the text to render
-            r"\mathrm{Probability}=\ ?", font_size = 20
-        ).next_to(arrow2, RIGHT, buff = 0.1).shift(DOWN*0.25).set_color(PINK)
+            r"\mathrm{Probability}=\ ?", font_size=20
+        ).next_to(arrow2, RIGHT, buff=0.1).shift(DOWN * 0.25).set_color(PINK)
         self.play(Write(probabilityQuestionmark))
         self.wait(1)
         probability1 = Tex(
             # had to do mathrm for the text to render
-            r"\mathrm{Probability}=\ 1", font_size = 20
-        ).next_to(arrow1, RIGHT, buff = 0.1).shift(UP*0.25).set_color(PINK)
+            r"\mathrm{Probability}=\ 1", font_size=20
+        ).next_to(arrow1, RIGHT, buff=0.1).shift(UP * 0.25).set_color(PINK)
         self.play(Write(probability1))
         self.wait(4)
         self.play(
@@ -261,9 +258,7 @@ class ProbabilityCalculation(Ladybug):
                     probabilityQuestionmark.animate.scale(1.1).align_to(
                         probabilityQuestionmark, LEFT
                     ).set_y(0)
-                )
-            , lag_ratio = 0.4)
-        , run_time = 3)
+                ), lag_ratio=0.4), run_time=3)
         self.wait(2)
         self.play(
             AnimationGroup(
@@ -272,23 +267,23 @@ class ProbabilityCalculation(Ladybug):
                     FadeOut(probabilityQuestionmark),
                     FadeOut(phase3)
                 ),
-                phase2b.animate.set_height(2.7).center()
-            , lag_ratio = 0.4)
+                phase2b.animate.set_height(2.7).center(), lag_ratio=0.4)
         )
         clock = phase2b[0]
         bug = phase2b[-1]
-        self.play(CircleIndicate(clock.numbers[ending_number - 1]), run_time = 2, rate_func = there_and_back_with_pause)
-        self.play(CircleIndicate(clock.numbers[ending_number]), run_time = 2, rate_func = there_and_back_with_pause)
+        self.play(CircleIndicate(clock.numbers[ending_number - 1]), run_time=2, rate_func=there_and_back_with_pause)
+        self.play(CircleIndicate(clock.numbers[ending_number]), run_time=2, rate_func=there_and_back_with_pause)
         self.wait(2)
         clock_points = [tick.get_start() for tick in clock.ticks]
         arcTracker = ValueTracker(0)
-        final_angle = -10*TAU/12
+        final_angle = -10 * TAU / 12
+
         def get_clockwise_arrow():
             return Arrow(
                 clock_points[ending_number + 1],
                 clock.get_center() + [
-                    clock.get_width()*0.5*math.cos(arcTracker.get_value() - (4*TAU/12 if ending_number == 6 else TAU/12)),
-                    clock.get_width()*0.5*math.sin(arcTracker.get_value() - (4*TAU/12 if ending_number == 6 else TAU/12)),
+                    clock.get_width() * 0.5 * math.cos(arcTracker.get_value() - (4 * TAU / 12 if ending_number == 6 else TAU / 12)),
+                    clock.get_width() * 0.5 * math.sin(arcTracker.get_value() - (4 * TAU / 12 if ending_number == 6 else TAU / 12)),
                     0
                 ],
                 buff=0,
@@ -304,36 +299,36 @@ class ProbabilityCalculation(Ladybug):
         ).next_to(
             clock_points[ending_number - 1],
             RIGHT if ending_number == 6 else UP,
-            buff = 0.4
+            buff=0.4
         )
         self.play(
             AnimationGroup(
                 arcTracker.animate.set_value(final_angle),
-                bug.animate.move_to(bug), # weird trick to get z index to work
+                bug.animate.move_to(bug),  # weird trick to get z index to work
                 Write(plus10)
             )
         )
         counterclockwiseArrow = Arrow(
-            clock_points[ending_number + 1]*0.6,
-            clock_points[ending_number]*0.6,
+            clock_points[ending_number + 1] * 0.6,
+            clock_points[ending_number] * 0.6,
             buff=0,
             fill_color=YELLOW,
-            path_arc=-PI*0.5,
+            path_arc=-PI * 0.5,
             thickness=3,
         )
-        minus1 = Tex("-1", font_size = 25).set_color(
+        minus1 = Tex("-1", font_size=25).set_color(
             YELLOW
         ).next_to(
             counterclockwiseArrow,
             UP if ending_number == 6 else LEFT,
-            buff = 0.05
+            buff=0.05
         )
         self.remove(bug)
         self.add(clockwiseArrow, Point(), bug)
         self.play(
             AnimationGroup(
                 GrowArrow(counterclockwiseArrow),
-                bug.animate.move_to(bug), # weird trick to get z index to work
+                bug.animate.move_to(bug),  # weird trick to get z index to work
                 Write(minus1)
             )
         )
@@ -344,7 +339,7 @@ class ProbabilityCalculation(Ladybug):
         self.play(
             AnimationGroup(
                 FadeOut(clockwiseArrow),
-                bug.animate.move_to(bug), # weird trick to get z index to work
+                bug.animate.move_to(bug),  # weird trick to get z index to work
                 FadeOut(plus10),
                 FadeOut(counterclockwiseArrow),
                 FadeOut(minus1)
@@ -360,15 +355,15 @@ class ProbabilityCalculation(Ladybug):
         predetermined_steps = [
             +1, +1, -1, +1, -1, +1, +1, -1, -1, +1,
             +1, -1, +1, +1, +1, -1, +1, -1, +1, +1,
-            -1, +1, +1, -1, +1, +1, +1, -1, +1, +1, # reached the 5
+            -1, +1, +1, -1, +1, +1, +1, -1, +1, +1,  # reached the 5
             -1, +1, -1, -1, +1, -1, +1, +1, -1, -1,
             -1, +1, +1, -1, +1, -1, +1, -1, -1, +1,
             -1, -1, -1, +1, -1, -1, -1, +1, -1, -1,
-            +1, -1, # wanders off
+            +1, -1,  # wanders off
             +1, -1, +1, +1, -1, -1, +1, +1, -1, +1, +1,
             -1, -1, +1, -1, +1, +1, +1, -1, -1, +1, -1,
             +1, +1, -1, +1, +1, -1, -1, +1, +1, +1, -1,
-            +1, -1, +1, +1, -1, +1, +1, +1 # finally reaches the 6
+            +1, -1, +1, +1, -1, +1, +1, +1  # finally reaches the 6
         ]
 
         for step in predetermined_steps:
@@ -397,14 +392,14 @@ class ProbabilityCalculation(Ladybug):
 
         numberLine = NumberLine(
             [-1, 10, 1],
-            include_numbers = True
+            include_numbers=True
         )
         for num in numberLine.numbers:
-            num.scale(2.3).shift(DOWN*0.08)
+            num.scale(2.3).shift(DOWN * 0.08)
         numberLine.numbers[0].set_color(TEAL)
         numberLine.numbers[1].set_color(RED)
         for tick in numberLine.ticks:
-            tick.set_stroke(width = 5)
+            tick.set_stroke(width=5)
         axis = Line(numberLine.get_start(), numberLine.get_end())
         self.play(
             AnimationGroup(
@@ -418,11 +413,9 @@ class ProbabilityCalculation(Ladybug):
                     ReplacementTransform(clock[0], axis),
                     ReplacementTransform(VGroup(*[list(clock.numbers[6:]) + list(clock.numbers[:6])]), numberLine[1]),
                     bug.animate.next_to(numberLine[0][1], UP)
-                )
-            , lag_ratio = 0.2, run_time = 3.5)
+                ), lag_ratio=0.2, run_time=3.5)
         )
         self.wait(2)
-
 
         curr_number = 1
         covered_numbers = {1}
@@ -434,10 +427,10 @@ class ProbabilityCalculation(Ladybug):
 
         for step in predetermined_steps:
             next_number = (curr_number + step) % (len(clock_points))
-            path_arc = -step*PI*0.2
+            path_arc = -step * PI * 0.2
             arrow = Arrow(
-                numberLine[0][curr_number].get_top() + UP*0.1,
-                numberLine[0][next_number].get_top() + UP*0.1,
+                numberLine[0][curr_number].get_top() + UP * 0.1,
+                numberLine[0][next_number].get_top() + UP * 0.1,
                 buff=0,
                 fill_color=YELLOW,
                 path_arc=path_arc,
@@ -449,7 +442,11 @@ class ProbabilityCalculation(Ladybug):
                 end_color = TEAL
             self.play(
                 VFadeInThenOut(arrow),
-                bug.animate.next_to(numberLine[0][next_number].get_top(), UP, buff = 0.3).set_anim_args(path_arc=path_arc, time_span=(0, 0.5)),
+                bug.animate.next_to(
+                    numberLine[0][next_number].get_top(), UP, buff=0.3
+                ).set_anim_args(
+                    path_arc=path_arc, time_span=(0, 0.5)
+                ),
                 numberLine.numbers[next_number].animate.set_color(end_color)
             )
             curr_number = next_number
