@@ -15,7 +15,7 @@ LOOP_RAINBOW = [
 
 class Strings(InteractiveScene):
     random_seed = (
-        8  # use once_useful_constructs/find_strings_seeds.py to find/generate more seeds
+        8  # use _2026/monthly_mindbenders/find_strings_seeds.py to find/generate more seeds
     )
     n_anchors = 9
     box_dims = (4.0, 3.0, 2.0)
