@@ -13,9 +13,9 @@ LOOP_RAINBOW = [
 ]
 
 
-class YarnPuzzle(InteractiveScene):
+class Strings(InteractiveScene):
     random_seed = (
-        8  # use once_useful_constructs/find_yarn_seeds.py to find/generate more seeds
+        8  # use once_useful_constructs/find_strings_seeds.py to find/generate more seeds
     )
     n_anchors = 9
     box_dims = (4.0, 3.0, 2.0)
