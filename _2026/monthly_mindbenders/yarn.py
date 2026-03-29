@@ -1,10 +1,17 @@
-from manimlib import *
-
+from manim_imports_ext import *
 
 LOOP_RAINBOW = [
-    RED, YELLOW, GREEN, TEAL,
-    BLUE, "#7744FF", PURPLE, PINK, MAROON,
+    RED,
+    YELLOW,
+    GREEN,
+    TEAL,
+    BLUE,
+    "#7744FF",
+    PURPLE,
+    PINK,
+    MAROON,
 ]
+
 
 class YarnPuzzle(InteractiveScene):
     random_seed = 8
@@ -33,7 +40,8 @@ class YarnPuzzle(InteractiveScene):
             for m in [strings[i], end_dots[2 * i], end_dots[2 * i + 1]]:
                 drop_anims.append(
                     m.animate.restore().set_anim_args(
-                        time_span=span, rate_func=rush_into,
+                        time_span=span,
+                        rate_func=rush_into,
                     )
                 )
         self.play(
@@ -53,11 +61,11 @@ class YarnPuzzle(InteractiveScene):
         piece_map = {}
         for i in range(n):
             piece = {
-                'mob': strings[i],
-                'start_eid': 2 * i,
-                'end_eid': 2 * i + 1,
-                'size': 1,
-                'dots': {
+                "mob": strings[i],
+                "start_eid": 2 * i,
+                "end_eid": 2 * i + 1,
+                "size": 1,
+                "dots": {
                     2 * i: end_dots[2 * i],
                     2 * i + 1: end_dots[2 * i + 1],
                 },
@@ -66,31 +74,25 @@ class YarnPuzzle(InteractiveScene):
             piece_map[2 * i + 1] = piece
 
         def pin_dots_to_endpoints(piece):
-            mob = piece['mob']
-            updaters = []
-            for d_eid, dot in piece['dots'].items():
-                is_start = (d_eid == piece['start_eid'])
-                def make_updater(m, start):
-                    if start:
-                        return lambda d: d.move_to(m.get_anchors()[0])
-                    else:
-                        return lambda d: d.move_to(m.get_anchors()[-1])
-                updater = make_updater(mob, is_start)
-                dot.add_updater(updater)
-                updaters.append((dot, updater))
-            return updaters
+            mob = piece["mob"]
+            for d_eid, dot in piece["dots"].items():
+                if d_eid == piece["start_eid"]:
+                    dot.f_always.move_to(lambda: mob.get_anchors()[0])
+                else:
+                    dot.f_always.move_to(lambda: mob.get_anchors()[-1])
+            return list(piece["dots"].values())
 
-        def remove_updaters(updater_list):
-            for dot, updater in updater_list:
-                dot.remove_updater(updater)
+        def remove_updaters(dots):
+            for dot in dots:
+                dot.clear_updaters()
 
         box_loops = []
         for k in range(n_box_joins):
             e1, e2, forms_loop, _ = join_seq[k]
             pa = piece_map[e1]
             pb = piece_map[e2]
-            d1 = pa['dots'][e1]
-            d2 = pb['dots'][e2]
+            d1 = pa["dots"][e1]
+            d2 = pb["dots"][e2]
 
             self.highlight_endpoints(d1, d2)
 
@@ -102,16 +104,21 @@ class YarnPuzzle(InteractiveScene):
                 pieces_to_lift.append((pb, e2))
 
             dot_updaters = []
-            for piece in ([pa, pb] if pa is not pb else [pa]):
+            for piece in [pa, pb] if pa is not pb else [pa]:
                 dot_updaters.extend(pin_dots_to_endpoints(piece))
             for piece, eid in pieces_to_lift:
-                mob = piece['mob']
+                mob = piece["mob"]
                 if id(mob) in seen_mobs:
                     continue
                 seen_mobs.add(id(mob))
-                lift_anims.append(self.make_pull_lift_anim(
-                    mob, eid, piece, lift_height,
-                ))
+                lift_anims.append(
+                    self.make_pull_lift_anim(
+                        mob,
+                        eid,
+                        piece,
+                        lift_height,
+                    )
+                )
             self.play(*lift_anims, run_time=1.0)
             remove_updaters(dot_updaters)
             self.wait(0.3)
@@ -119,16 +126,16 @@ class YarnPuzzle(InteractiveScene):
             if forms_loop:
                 mid = (d1.get_center() + d2.get_center()) / 2
                 color = LOOP_RAINBOW[len(box_loops) % len(LOOP_RAINBOW)]
-                radius = 0.25 + 0.08 * pa['size']
+                radius = 0.25 + 0.08 * pa["size"]
                 loop_mob = Circle(radius=radius)
                 loop_mob.move_to(mid)
                 loop_mob.set_stroke(color, 4)
 
-                source = pa['mob'].copy()
-                self.remove(pa['mob'])
+                source = pa["mob"].copy()
+                self.remove(pa["mob"])
                 self.add(source)
-                d1.add_updater(lambda d: d.move_to(source.get_anchors()[0]))
-                d2.add_updater(lambda d: d.move_to(source.get_anchors()[-1]))
+                d1.f_always.move_to(source.get_start)
+                d2.f_always.move_to(source.get_end)
                 self.play(
                     Transform(source, loop_mob),
                     run_time=1.2,
@@ -148,7 +155,7 @@ class YarnPuzzle(InteractiveScene):
                 self.wait(0.5)
 
                 box_loops.append(loop_mob)
-                for eid in list(pa['dots'].keys()):
+                for eid in list(pa["dots"].keys()):
                     piece_map.pop(eid, None)
 
             else:
@@ -157,31 +164,31 @@ class YarnPuzzle(InteractiveScene):
                 shift_b = mid - d2.get_center()
 
                 dot_updaters = []
-                for piece in ([pa, pb] if pa is not pb else [pa]):
+                for piece in [pa, pb] if pa is not pb else [pa]:
                     dot_updaters.extend(pin_dots_to_endpoints(piece))
-                slide_anims = [pa['mob'].animate.shift(shift_a)]
+                slide_anims = [pa["mob"].animate.shift(shift_a)]
                 if pa is not pb:
-                    slide_anims.append(pb['mob'].animate.shift(shift_b))
+                    slide_anims.append(pb["mob"].animate.shift(shift_b))
                 self.play(*slide_anims, run_time=0.8)
                 remove_updaters(dot_updaters)
 
-                pts_a = pa['mob'].get_points().copy()
-                pts_b = pb['mob'].get_points().copy()
-                if e1 == pa['start_eid']:
+                pts_a = pa["mob"].get_points().copy()
+                pts_b = pb["mob"].get_points().copy()
+                if e1 == pa["start_eid"]:
                     pts_a = pts_a[::-1].copy()
-                if e2 == pb['end_eid']:
+                if e2 == pb["end_eid"]:
                     pts_b = pts_b[::-1].copy()
                 all_pts = np.concatenate([pts_a, pts_b[1:]])
                 connected = VMobject()
                 connected.set_points(all_pts)
                 connected.set_stroke(ORANGE, 3)
 
-                free_a = pa['start_eid'] if e1 == pa['end_eid'] else pa['end_eid']
-                free_b = pb['start_eid'] if e2 == pb['end_eid'] else pb['end_eid']
-                da = pa['dots'][free_a]
-                db = pb['dots'][free_b]
+                free_a = pa["start_eid"] if e1 == pa["end_eid"] else pa["end_eid"]
+                free_b = pb["start_eid"] if e2 == pb["end_eid"] else pb["end_eid"]
+                da = pa["dots"][free_a]
+                db = pb["dots"][free_b]
 
-                self.remove(pa['mob'], pb['mob'])
+                self.remove(pa["mob"], pb["mob"])
                 self.add(connected)
 
                 da.move_to(connected.get_anchors()[0])
@@ -189,17 +196,18 @@ class YarnPuzzle(InteractiveScene):
 
                 self.play(
                     Flash(mid, color=YELLOW, line_length=0.12, flash_radius=0.25),
-                    FadeOut(d1), FadeOut(d2),
+                    FadeOut(d1),
+                    FadeOut(d2),
                     run_time=0.5,
                 )
 
                 drop_vec = (-bh - connected.get_center()[2]) * OUT
                 merged = {
-                    'mob': connected,
-                    'start_eid': free_a,
-                    'end_eid': free_b,
-                    'size': pa['size'] + pb['size'],
-                    'dots': {free_a: da, free_b: db},
+                    "mob": connected,
+                    "start_eid": free_a,
+                    "end_eid": free_b,
+                    "size": pa["size"] + pb["size"],
+                    "dots": {free_a: da, free_b: db},
                 }
                 dot_updaters = pin_dots_to_endpoints(merged)
                 self.play(
@@ -221,8 +229,8 @@ class YarnPuzzle(InteractiveScene):
             pid = id(piece)
             if pid not in seen:
                 seen.add(pid)
-                all_box_mobs.add(piece['mob'])
-                for d in piece['dots'].values():
+                all_box_mobs.add(piece["mob"])
+                for d in piece["dots"].values():
                     all_box_mobs.add(d)
         for lm in box_loops:
             all_box_mobs.add(lm)
@@ -237,16 +245,14 @@ class YarnPuzzle(InteractiveScene):
         self.init_organized(chains_data, base_height=0.5)
 
         self.play(
-            LaggedStart(
-                *(FadeIn(c['line']) for c in self.org_chains),
+            LaggedStartMap(
+                FadeIn,
+                VGroup(*(c["line"] for c in self.org_chains)),
                 lag_ratio=0.08,
             ),
-            LaggedStart(
-                *(
-                    FadeIn(d)
-                    for c in self.org_chains
-                    for d in c['dots'].values()
-                ),
+            LaggedStartMap(
+                FadeIn,
+                VGroup(*(d for c in self.org_chains for d in c["dots"].values())),
                 lag_ratio=0.04,
             ),
             run_time=1.5,
@@ -266,8 +272,8 @@ class YarnPuzzle(InteractiveScene):
         self.wait(2)
 
         old_mobs = VGroup(
-            *(c['line'] for c in self.org_chains),
-            *(d for c in self.org_chains for d in c['dots'].values()),
+            *(c["line"] for c in self.org_chains),
+            *(d for c in self.org_chains for d in c["dots"].values()),
             *self.org_loops,
             counter_group,
         )
@@ -285,10 +291,8 @@ class YarnPuzzle(InteractiveScene):
             stroke_width=2,
         )
 
-        all_50_lines = VGroup(*(c['line'] for c in self.org_chains))
-        all_50_dots = VGroup(
-            *(d for c in self.org_chains for d in c['dots'].values())
-        )
+        all_50_lines = VGroup(*(c["line"] for c in self.org_chains))
+        all_50_dots = VGroup(*(d for c in self.org_chains for d in c["dots"].values()))
 
         counter_50 = Integer(0, font_size=60)
         label_50 = Text("Loops:", font_size=36)
@@ -306,14 +310,25 @@ class YarnPuzzle(InteractiveScene):
         for k in range(n2):
             e1, e2, forms_loop, _ = join_seq_50[k]
             self.animate_organized_join(
-                e1, e2, forms_loop, counter_50, fast=False,
+                e1,
+                e2,
+                forms_loop,
+                counter_50,
+                fast=False,
             )
 
         self.wait(3)
 
-    def init_organized(self, chains_data, base_height=0.5,
-                       x_range=(-5, 5), y_center=1.0, loop_y=-2.0,
-                       dot_radius=0.07, stroke_width=4):
+    def init_organized(
+        self,
+        chains_data,
+        base_height=0.5,
+        x_range=(-5, 5),
+        y_center=1.0,
+        loop_y=-2.0,
+        dot_radius=0.07,
+        stroke_width=4,
+    ):
         self.org_chains = []
         self.org_end_map = {}
         self.org_loops = []
@@ -328,31 +343,36 @@ class YarnPuzzle(InteractiveScene):
         xs = self._chain_xs(len(chains_data))
         for i, cd in enumerate(chains_data):
             x = xs[i]
-            h = base_height * cd['size']
+            h = base_height * cd["size"]
             top = self.org_y + h / 2
             bot = self.org_y - h / 2
 
             line = Line(
-                np.array([x, bot, 0]), np.array([x, top, 0]),
+                np.array([x, bot, 0]),
+                np.array([x, top, 0]),
             ).set_stroke(ORANGE, stroke_width)
-            td = Dot(np.array([x, top, 0]), radius=dot_radius, color=WHITE).set_z_index(1)
-            bd = Dot(np.array([x, bot, 0]), radius=dot_radius, color=WHITE).set_z_index(1)
+            td = Dot(np.array([x, top, 0]), radius=dot_radius, color=WHITE).set_z_index(
+                1
+            )
+            bd = Dot(np.array([x, bot, 0]), radius=dot_radius, color=WHITE).set_z_index(
+                1
+            )
 
             chain = {
-                'line': line,
-                'ends': [cd['ends'][0], cd['ends'][1]],
-                'dots': {cd['ends'][0]: td, cd['ends'][1]: bd},
-                'size': cd['size'],
+                "line": line,
+                "ends": [cd["ends"][0], cd["ends"][1]],
+                "dots": {cd["ends"][0]: td, cd["ends"][1]: bd},
+                "size": cd["size"],
             }
             self.org_chains.append(chain)
-            self.org_end_map[cd['ends'][0]] = chain
-            self.org_end_map[cd['ends'][1]] = chain
+            self.org_end_map[cd["ends"][0]] = chain
+            self.org_end_map[cd["ends"][1]] = chain
 
     def animate_organized_join(self, e1, e2, forms_loop, counter, fast=False):
         ca = self.org_end_map[e1]
         cb = self.org_end_map[e2]
-        d1 = ca['dots'][e1]
-        d2 = cb['dots'][e2]
+        d1 = ca["dots"][e1]
+        d2 = cb["dots"][e2]
 
         main_rt = 0.25 if fast else 0.5
         lift_y = 1.5
@@ -364,7 +384,7 @@ class YarnPuzzle(InteractiveScene):
             self.org_loop_count += 1
             color = LOOP_RAINBOW[(self.org_loop_count - 1) % len(LOOP_RAINBOW)]
 
-            radius = 0.15 + 0.03 * ca['size']
+            radius = 0.15 + 0.03 * ca["size"]
             if self.org_loops:
                 lx = self.org_loops[-1].get_right()[0] + radius + 0.3
             else:
@@ -381,15 +401,15 @@ class YarnPuzzle(InteractiveScene):
             xs = self._chain_xs(len(self.org_chains))
 
             if not fast:
-                mid = ca['line'].get_center()
+                mid = ca["line"].get_center()
                 circle_raised = Circle(radius=radius)
                 circle_raised.set_stroke(color, 3)
                 circle_raised.move_to(mid)
 
-                d1.add_updater(lambda d: d.move_to(ca['line'].get_start()))
-                d2.add_updater(lambda d: d.move_to(ca['line'].get_end()))
+                d1.f_always.move_to(ca["line"].get_start)
+                d2.f_always.move_to(ca["line"].get_end)
                 self.play(
-                    ReplacementTransform(ca['line'], circle_raised),
+                    ReplacementTransform(ca["line"], circle_raised),
                     run_time=0.5,
                 )
                 d1.clear_updaters()
@@ -397,7 +417,9 @@ class YarnPuzzle(InteractiveScene):
                 self.play(FadeOut(d1), FadeOut(d2), run_time=0.2)
 
                 anims = [
-                    circle_raised.animate.move_to(circle.get_center()),
+                    circle_raised.animate.move_to(circle.get_center()).set_anim_args(
+                        path_arc=-PI / 3
+                    ),
                     counter.animate.set_value(self.org_loop_count),
                 ]
                 self._add_redistribute_anims(anims, xs)
@@ -406,8 +428,9 @@ class YarnPuzzle(InteractiveScene):
 
             else:
                 anims = [
-                    ReplacementTransform(ca['line'], circle),
-                    FadeOut(d1), FadeOut(d2),
+                    ReplacementTransform(ca["line"], circle),
+                    FadeOut(d1),
+                    FadeOut(d2),
                     counter.animate.set_value(self.org_loop_count),
                 ]
                 self._add_redistribute_anims(anims, xs)
@@ -415,10 +438,10 @@ class YarnPuzzle(InteractiveScene):
                 self.org_loops.append(circle)
 
         else:
-            oa = [e for e in ca['ends'] if e != e1][0]
-            ob = [e for e in cb['ends'] if e != e2][0]
-            da, db = ca['dots'][oa], cb['dots'][ob]
-            new_size = ca['size'] + cb['size']
+            oa = [e for e in ca["ends"] if e != e1][0]
+            ob = [e for e in cb["ends"] if e != e2][0]
+            da, db = ca["dots"][oa], cb["dots"][ob]
+            new_size = ca["size"] + cb["size"]
 
             ia = self.org_chains.index(ca)
             ib = self.org_chains.index(cb)
@@ -426,10 +449,10 @@ class YarnPuzzle(InteractiveScene):
             self.org_chains.remove(cb)
 
             nc = {
-                'line': None,
-                'ends': [oa, ob],
-                'dots': {oa: da, ob: db},
-                'size': new_size,
+                "line": None,
+                "ends": [oa, ob],
+                "dots": {oa: da, ob: db},
+                "size": new_size,
             }
             ins = min(ia, ib, len(self.org_chains))
             self.org_chains.insert(ins, nc)
@@ -442,9 +465,10 @@ class YarnPuzzle(InteractiveScene):
             bn = self.org_y - hn / 2
 
             new_line = Line(
-                np.array([xn, bn, 0]), np.array([xn, tn, 0]),
+                np.array([xn, bn, 0]),
+                np.array([xn, tn, 0]),
             ).set_stroke(ORANGE, self.org_sw)
-            nc['line'] = new_line
+            nc["line"] = new_line
 
             del self.org_end_map[e1]
             del self.org_end_map[e2]
@@ -455,8 +479,8 @@ class YarnPuzzle(InteractiveScene):
                 mid_x = (d1.get_center()[0] + d2.get_center()[0]) / 2
                 raised_y = self.org_y + lift_y
 
-                h_a = abs(ca['line'].get_end()[1] - ca['line'].get_start()[1])
-                h_b = abs(cb['line'].get_end()[1] - cb['line'].get_start()[1])
+                h_a = abs(ca["line"].get_end()[1] - ca["line"].get_start()[1])
+                h_b = abs(cb["line"].get_end()[1] - cb["line"].get_start()[1])
 
                 meet_y = raised_y
                 meet_point = np.array([mid_x, meet_y, 0])
@@ -469,18 +493,20 @@ class YarnPuzzle(InteractiveScene):
                 b_top = meet_y
                 db_y = b_bot
 
-                target_a = Line(
+                ca["line"].generate_target()
+                ca["line"].target.put_start_and_end_on(
                     np.array([mid_x, a_bot, 0]),
                     np.array([mid_x, a_top, 0]),
-                ).set_stroke(ORANGE, self.org_sw)
-                target_b = Line(
+                )
+                cb["line"].generate_target()
+                cb["line"].target.put_start_and_end_on(
                     np.array([mid_x, b_bot, 0]),
                     np.array([mid_x, b_top, 0]),
-                ).set_stroke(ORANGE, self.org_sw)
+                )
 
                 self.play(
-                    ca['line'].animate.match_points(target_a),
-                    cb['line'].animate.match_points(target_b),
+                    MoveToTarget(ca["line"]),
+                    MoveToTarget(cb["line"]),
                     d1.animate.move_to(meet_point),
                     d2.animate.move_to(meet_point),
                     da.animate.move_to(np.array([mid_x, da_y, 0])),
@@ -493,28 +519,36 @@ class YarnPuzzle(InteractiveScene):
                     np.array([mid_x, a_top, 0]),
                 ).set_stroke(ORANGE, self.org_sw)
 
-                self.remove(ca['line'], cb['line'])
+                self.remove(ca["line"], cb["line"])
                 self.add(connected)
 
                 self.play(
                     Flash(meet_point, color=YELLOW, line_length=0.1, flash_radius=0.2),
-                    FadeOut(d1), FadeOut(d2),
+                    FadeOut(d1),
+                    FadeOut(d2),
                     run_time=0.25,
                 )
 
+                connected.generate_target()
+                connected.target.put_start_and_end_on(
+                    np.array([xn, bn, 0]),
+                    np.array([xn, tn, 0]),
+                )
                 anims = [
-                    ReplacementTransform(connected, new_line),
+                    MoveToTarget(connected),
                     da.animate.move_to(np.array([xn, tn, 0])),
                     db.animate.move_to(np.array([xn, bn, 0])),
                 ]
                 self._add_redistribute_anims(anims, xs, skip=nc)
                 self.play(*anims, run_time=main_rt)
+                nc["line"] = connected
 
             else:
                 anims = [
-                    ReplacementTransform(ca['line'], new_line),
-                    FadeOut(cb['line']),
-                    FadeOut(d1), FadeOut(d2),
+                    ReplacementTransform(ca["line"], new_line),
+                    FadeOut(cb["line"]),
+                    FadeOut(d1),
+                    FadeOut(d2),
                     da.animate.move_to(np.array([xn, tn, 0])),
                     db.animate.move_to(np.array([xn, bn, 0])),
                 ]
@@ -526,16 +560,18 @@ class YarnPuzzle(InteractiveScene):
             if chain is skip:
                 continue
             x = xs[i]
-            h = self.org_bh * chain['size']
+            h = self.org_bh * chain["size"]
             t = self.org_y + h / 2
             b = self.org_y - h / 2
-            target = Line(
-                np.array([x, b, 0]), np.array([x, t, 0]),
-            ).set_stroke(ORANGE, self.org_sw)
-            anims.append(Transform(chain['line'], target))
-            for j, eid in enumerate(chain['ends']):
+            chain["line"].generate_target()
+            chain["line"].target.put_start_and_end_on(
+                np.array([x, b, 0]),
+                np.array([x, t, 0]),
+            )
+            anims.append(MoveToTarget(chain["line"]))
+            for j, eid in enumerate(chain["ends"]):
                 pos = np.array([x, t if j == 0 else b, 0])
-                anims.append(chain['dots'][eid].animate.move_to(pos))
+                anims.append(chain["dots"][eid].animate.move_to(pos))
 
     def _chain_xs(self, n):
         if n <= 0:
@@ -624,7 +660,7 @@ class YarnPuzzle(InteractiveScene):
             root_strings.setdefault(find(eid), set()).add(eid // 2)
 
         return [
-            {'ends': ends, 'size': len(root_strings[root])}
+            {"ends": ends, "size": len(root_strings[root])}
             for root, ends in root_ends.items()
             if len(ends) == 2
         ]
@@ -632,7 +668,7 @@ class YarnPuzzle(InteractiveScene):
     def make_pull_lift_anim(self, string, grabbed_eid, piece, lift_height):
         start_anchors = string.get_anchors().copy()
         na = len(start_anchors)
-        grab_from_start = (grabbed_eid == piece['start_eid'])
+        grab_from_start = grabbed_eid == piece["start_eid"]
 
         def update(mob, alpha):
             new_anchors = []
@@ -641,9 +677,7 @@ class YarnPuzzle(InteractiveScene):
                     frac = j / max(na - 1, 1)
                 else:
                     frac = 1.0 - j / max(na - 1, 1)
-                local_alpha = np.clip(
-                    (alpha - frac * 0.5) / (1.0 - frac * 0.5), 0, 1
-                )
+                local_alpha = np.clip((alpha - frac * 0.5) / (1.0 - frac * 0.5), 0, 1)
                 lift = smooth(local_alpha) * lift_height
                 pos = start_anchors[j] + lift * OUT
                 new_anchors.append(pos)
@@ -658,11 +692,13 @@ class YarnPuzzle(InteractiveScene):
             ring = Circle(radius=r0)
             ring.set_stroke(YELLOW, 3)
             ring.move_to(dot.get_center())
+            ring.always.move_to(dot)
+
             def update(m, a):
                 r = r0 + (r1 - r0) * smooth(a)
                 m.set_width(2 * r)
                 m.set_opacity(1 - smooth(a))
-                m.move_to(dot.get_center())
+
             return ring, UpdateFromAlphaFunc(ring, update)
 
         ring1, anim1 = make_ring_anim(d1)
@@ -671,7 +707,8 @@ class YarnPuzzle(InteractiveScene):
         self.play(
             d1.animate.set_color(YELLOW),
             d2.animate.set_color(YELLOW),
-            anim1, anim2,
+            anim1,
+            anim2,
             run_time=0.5,
         )
         self.remove(ring1, ring2)
@@ -748,10 +785,11 @@ class YarnPuzzle(InteractiveScene):
             for j in range(na):
                 t = j / (na - 1)
                 p = p1 + t * (p2 - p1)
-                wave = amp_flat * (
-                    np.sin(f1 * PI * t + phase)
-                    + 0.5 * np.sin(f2 * PI * t)
-                ) * perp
+                wave = (
+                    amp_flat
+                    * (np.sin(f1 * PI * t + phase) + 0.5 * np.sin(f2 * PI * t))
+                    * perp
+                )
                 flat_anchors.append(p + wave)
 
             dz = bh + 0.5 + 0.3 * i
@@ -767,11 +805,13 @@ class YarnPuzzle(InteractiveScene):
             for j in range(na):
                 t = j / (na - 1)
                 base = air_center + (t - 0.5) * 2 * spread * d / half_len
-                offset = np.array([
-                    amp_3d * np.sin(f3 * PI * t + phase),
-                    amp_3d * np.sin(f4 * PI * t + phase2),
-                    amp_3d * np.sin(f5 * PI * t + phase3),
-                ])
+                offset = np.array(
+                    [
+                        amp_3d * np.sin(f3 * PI * t + phase),
+                        amp_3d * np.sin(f4 * PI * t + phase2),
+                        amp_3d * np.sin(f5 * PI * t + phase3),
+                    ]
+                )
                 air_anchors.append(base + offset)
 
             string = VMobject()
@@ -795,4 +835,3 @@ class YarnPuzzle(InteractiveScene):
             end_dots.add(dot2)
 
         return strings, end_dots
-
