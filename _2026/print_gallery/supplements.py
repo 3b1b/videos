@@ -683,7 +683,7 @@ class SimplifyFormula(InteractiveScene):
         self.wait()
 
         # Add constants
-        new_eq1 = Tex(R"e^{({c} \cdot \ln({w}) - z_0) + z_0}", **kw)
+        new_eq1 = Tex(R"e^{{c} \cdot \left(\ln({w}) - z_0\right) + z_0}", **kw)
         new_eq1.move_to(eq1, RIGHT)
         new_eq2 = Tex(R"= A {w}^{c}", **kw)
         new_eq2.move_to(eq2, LEFT)
