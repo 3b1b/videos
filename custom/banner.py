@@ -34,21 +34,12 @@ class Banner(Scene):
             (-7, 7), (-5, 5),
             height=10 * 1.5,
             width=14 * 1.5,
-            axis_config=dict(stroke_color=BLUE_A),
-            faded_line_style=dict(
-                stroke_width=0.5,
-                stroke_opacity=0.35,
-                stroke_color=BLUE,
-            ),
             faded_line_ratio=4,
         )
-        for line in plane.family_members_with_points():
-            line.set_stroke(width=line.get_stroke_width() / 2)
-        self.add(
-            plane,
-            FullScreenFadeRectangle().set_fill(BLACK, 0.25),
-        )
-        return
+        plane.axes.set_stroke(WHITE, 1, 1)
+        plane.background_lines.set_stroke(BLUE_D, 1, 0.5)
+        plane.faded_lines.set_stroke(BLUE, 1, 0.1)
+        self.add(plane)
 
         # Pis
         pis = self.get_pis()
@@ -64,10 +55,10 @@ class Banner(Scene):
         message = self.get_message()
         message.set_height(self.message_height)
         message.next_to(pis, DOWN)
-        message.set_stroke(BLACK, 3, behind=True)
+        message.set_stroke(BLACK, 5, behind=True)
         self.add(message)
 
-        # Suppoerter note
+        # Supporter note
         if self.add_supporter_note:
             note = self.get_supporter_note()
             note.scale(0.5)
