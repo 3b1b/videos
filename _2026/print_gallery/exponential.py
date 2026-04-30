@@ -2032,8 +2032,8 @@ class TheNaturalLog(InteractiveScene):
 
 
 class CreatingTheSpiral(InteractiveScene):
-    # log_image_resolution = (21, 51)
-    log_image_resolution = (51, 101)
+    # log_image_resolution = (51, 101)
+    log_image_resolution = (21, 41)
     droste_scale_adjustment = 1.5
     droste_scale_factor = 16
     fixed_point = 4.0j
@@ -2062,8 +2062,8 @@ class CreatingTheSpiral(InteractiveScene):
         self.const = complex(0, TAU) / complex(math.log(self.droste_scale_factor), TAU)
 
         self.log_image_tiles = self.get_log_image_tiles(b_plane, 9, 9, resolution=(2, 2))
-        # self.pre_transform_log = self.get_log_image_tiles(b_plane, 3, 3, resolution=self.log_image_resolution)
-        self.pre_transform_log = self.get_log_image_tiles(b_plane, 5, 5, resolution=self.log_image_resolution)
+        self.pre_transform_log = self.get_log_image_tiles(b_plane, 3, 3, resolution=self.log_image_resolution)
+        # self.pre_transform_log = self.get_log_image_tiles(b_plane, 5, 5, resolution=self.log_image_resolution)
 
         self.var_const = ComplexValueTracker(self.const)
         self.var_fixed_point = ComplexValueTracker(self.fixed_point)
@@ -2607,12 +2607,15 @@ class CreatingTheSpiral(InteractiveScene):
         var_const.clear_updaters().add_updater(lambda m: m.set_value(mult_plane.p2n(c_dot.get_center())))
         rot_log_tiles.clear_updaters().add_updater(lambda m: m.become(get_rot_tiles()))
         final_image.clear_updaters().add_updater(lambda m: m.become(get_final_image()))
+        value = complex(0, 2 * PI) / complex(np.log(16), 2 * PI)
         for mob in self.mobjects:
             self.disable_interaction(mob)
         self.enable_interaction(c_dot)
+        self.add(c_dot)
+        c_dot.move_to(mult_plane.n2p(value))
 
         self.play(Rotating(c_dot, about_point=c_dot.get_center() + 0.25 * DOWN, run_time=10))
-        self.wait()  # TODO, actually interact with this over a longer period
+        self.wait()  # Set longer to interact with in a recording
         self.play(c_dot.animate.move_to(mult_plane.n2p(const)), run_time=2)
 
         rot_log_tiles.clear_updaters()

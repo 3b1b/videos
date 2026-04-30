@@ -110,6 +110,9 @@ Each video project typically contains:
 ## Python Code Style
 - Do not include indentation spaces on blank lines
 - Keep blank lines completely empty (no whitespace)
+- Prefer existing utility functions over one-off index math. For example, use `color_gradient(colors, n)` to produce a list of interpolated colors rather than calling `interpolate_color` manually inside a loop with `i / (n - 1)` arithmetic.
+- Construct VGroups declaratively when possible. If the full meaning of a group can be expressed in one expression, prefer `VGroup(*[...])` or `VGroup(... for ...)` over a for loop that progressively calls `.add()`. Reserve the progressive style for cases where each iteration has non-trivial side effects.
+- Use existing layout methods (`.arrange()`, `.next_to()`, `.move_to()`) instead of manual in-place coordinate logic. A small amount of redundant movement is preferable to bespoke positioning arithmetic that is harder to read and easier to get wrong.
 
 ## Notes
 
