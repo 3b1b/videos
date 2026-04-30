@@ -22,7 +22,7 @@ class ArithmeticCodingDiagram(Group):
         interval_subdivisions=10,
         char_alphabet=CHAR_ALPHABET,
         highlight_colors=(GREEN_E, GREEN_D),
-        context="Article: ",
+        context=" ",
     ):
         self.layers = VGroup()
         self.intervals = VGroup()
@@ -69,7 +69,7 @@ class ArithmeticCodingDiagram(Group):
                     subdivisions=self.interval_subdivisions,
                     include_numbers=self.show_decimal_labels,
                     include_endpoint_numbers=False,
-                    number_font_size=24 + scale * 4,
+                    number_font_size=24 + scale * 2,
                 )
                 interval.shift(self.unit_interval.n2p(low) - interval.n2p(low))
                 self.intervals.add(interval)
@@ -91,8 +91,26 @@ class ArithmeticCodingDiagram(Group):
         layer.next_to(mob_above, DOWN, buff=buff)
         return layer
 
+    def get_conditional_probability(self, char, layer_index=-1):
+        idx = self.char_alphabet.index(char)
+        return self.layers[layer_index].distribution[idx]
+
+    def get_absolute_information(self, text):
+        result = 0
+        for layer, char in zip(self.layers, text):
+            result += -math.log2(layer.distribution[self.char_alphabet.index(char)])
+        return result
+
     # Animations
-    def renormalize_animation(self, x_min, x_max, run_time=3, center=ORIGIN, **kwargs):
+    def renormalize_animation(
+        self,
+        x_min,
+        x_max,
+        run_time=3,
+        center=ORIGIN,
+        center_curr_text=False,
+        **kwargs
+    ):
         big_interval = self.intervals[0]
         x_mid = (x_min + x_max) / 2
         p_left, p_mid, p_right = [big_interval.n2p(x) for x in (x_min, x_mid, x_max)]
@@ -113,9 +131,10 @@ class ArithmeticCodingDiagram(Group):
             layer.shift(x_shift)
             layer.stretch(stretch_factor, 0, about_point=ORIGIN)
             layer.reposition_labels()
-        for layer, char in zip(target.layers, self.curr_text):
-            label = layer[1][self.char_alphabet.index(char)]
-            label.match_x(center)
+        if center_curr_text:
+            for layer, char in zip(target.layers, self.curr_text):
+                label = layer[1][self.char_alphabet.index(char)]
+                label.match_x(center)
 
         return Transform(self, target, run_time=run_time, **kwargs)
 
@@ -136,7 +155,7 @@ class ArithmeticCodingDiagram(Group):
         x_max = self.unit_interval.p2n(bar.get_right())
         if add_to_text:
             self.curr_text += char
-        return self.renormalize_animation(x_min, x_max, **kwargs)
+        return self.renormalize_animation(x_min, x_max, center_curr_text=True, **kwargs)
 
     def fade_in_new_layer(self, char=None, buff=0):
         layer = self.get_new_layer()
@@ -144,7 +163,7 @@ class ArithmeticCodingDiagram(Group):
         return FadeIn(layer)
 
 
-class ProbabilityOfAWord(InteractiveScene):
+class DiagramTest(InteractiveScene):
     interval_width = 12
 
     def construct(self):
@@ -152,35 +171,20 @@ class ProbabilityOfAWord(InteractiveScene):
         diagram = ArithmeticCodingDiagram()
 
         self.add(diagram)
-        for letter in "math":
+        for letter in "mathematic":
             self.play(diagram.highlight_letter(letter))
             self.play(diagram.zoom_in_on_letter(letter))
             self.play(diagram.fade_in_new_layer())
 
-        # Some custom bound
-        self.play(diagram.renormalize_animation(0.5, 0.6))
-        self.play(diagram.renormalize_animation(0.414, 0.415))
+        # A few tests
+        diagram.get_conditional_probability("h")
+        diagram.get_absolute_information("math")
+        bar = diagram.get_letter_bar("e")
+        -np.log2(bar.get_width() / diagram.unit_interval[0].get_width())
+        self.play(diagram.zoom_in_on_letter("p", add_to_text=False))
+
+        # Some custom bounds
+        self.play(diagram.renormalize_animation(0.4, 0.5))
+        self.play(diagram.renormalize_animation(0.45, 0.46))
         self.play(diagram.renormalize_animation(0.4, 0.5))
         self.play(diagram.renormalize_animation(0, 1))
-
-        # Old material
-        chars = CHAR_ALPHABET
-        labels = Text(chars, font_size=24)
-        dist = get_next_char_distribution_nano("mathe")
-
-        layers = VGroup()
-        curr_layer = StackedProbDistribution(
-            dist,
-            labels=labels,
-            width=self.interval_width
-        )
-        curr_layer.next_to(interval.n2p(0.5), DOWN, buff=0.2)
-        self.add(curr_layer)
-
-        self.play(curr_layer.animate.set_distribution(dist))
-        self.wait()
-        self.play(curr_layer.animate.highlight(chars.index('m'), other_bar_opacity=0.35))
-        self.play(curr_layer.animate.renormalize_around(chars.index('m')), run_time=3)
-        self.wait()
-
-        self.play(interval.animate.stretch(0.2, 0), run_time=4)

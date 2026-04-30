@@ -21,6 +21,7 @@ class StackedProbDistribution(VGroup):
         **kwargs
     ):
         super().__init__(**kwargs)
+        self.distribution = distribution
         self.bar_color_bounds = fill_colors
         self.label_height_ratio = label_height_ratio
         self.label_width_ratio = label_width_ratio
@@ -54,9 +55,8 @@ class StackedProbDistribution(VGroup):
         self.labels.move_to(self.bars)
         for label, bar in zip(self.labels, self.bars):
             label.match_x(bar)
-            width_ratio = label.get_width() / (bar.get_width() * self.label_width_ratio)
-            opacity = clip(inverse_interpolate(1, 0.99, width_ratio), 0, 1)
-            label.set_opacity(opacity)
+            fill_opacity = float(label.get_width() < bar.get_width() * self.label_width_ratio)
+            label.set_fill(opacity=fill_opacity)
         return self
 
     def set_distribution(self, distribution):
