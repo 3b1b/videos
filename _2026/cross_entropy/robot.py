@@ -1,6 +1,4 @@
 from manim_imports_ext import *
-from custom.characters import pi_creature
-from _2020.chess import Coin
 import math
 import random
 
@@ -4587,6 +4585,7 @@ class EntropyChart(VGroup):
         segments_height = 0.5,
         fit_event_labels_to_height = True,
         include_vertical_axis = True,
+        vertical_axis_label_text = R"\text{Information } \\ (-\log_2 p_i \text{ bits})",
         fill_colors = (BLUE_E, TEAL_E),
         bar_fill_colors = None,
         *args,
@@ -4691,7 +4690,9 @@ class EntropyChart(VGroup):
 
         if self.include_vertical_axis:
             self.vertical_axis = Line(ORIGIN, UP*self.height).align_to(self.segments.get_corner(UL), DL)
-            self.vertical_axis_label = Tex(R"\text{Information } \\ (-\log_2 p_i \text{ bits})", font_size = 42).next_to(self.vertical_axis, LEFT)
+            self.vertical_axis_label = Tex(
+                vertical_axis_label_text, font_size = 42
+            ).next_to(self.vertical_axis, LEFT)
             self.vertical_axis_label["Information"].match_x(self.vertical_axis_label[len("Information"):])
             self.add(self.vertical_axis, self.vertical_axis_label)
 
@@ -4901,5 +4902,229 @@ class Coin(Group):
 
 
 
-# class AmbientDecodingInstructions(InteractiveScene):
-#     def construct(self):
+class AmbientDecodingInstructions(InteractiveScene):
+    def construct(self):
+        # Add mission_control and the robot
+        mission_control = ImageMobject(
+            "images/pi_creature_mission_control.png"
+        ).set_width(2).to_edge(RIGHT, buff = 0.4)
+        robot = ImageMobject(
+            "images/lunar_rover_assets/stationary.png"
+        ).match_height(mission_control).to_edge(LEFT, buff = 0.4).align_to(mission_control, DOWN)
+        self.add(mission_control, robot)
+
+        # Create a stream of instructions flowing towards the bot, and decode them into instructions by chunks of 2
+        distribution = [1/2, 1/4, 1/8, 1/8]
+        instructions = generate_random_instructions(100, distribution, seed = 7)
+
+        arrows = VGroup(*[
+            InstructionArrow([UP, DOWN, LEFT, RIGHT][instructions[i]]).scale(0.2).match_y(robot).set_color(PINK)
+            for i in range(len(instructions))
+        ]).arrange(buff = 0.5).align_to(mission_control, LEFT)
+        self.add(arrows)
+        def update_arrows(m):
+            for i, arrow in enumerate(m):
+                opacity = min(1, max(0, 0.8*(mission_control.get_left()[0] - (arrow.get_x() + 0.2))))
+                if arrow.get_x() < robot.get_right()[0]:
+                    opacity = min(1, max(0, 1 - 1.2*(robot.get_right()[0] - arrow.get_x())))
+                arrow.set_opacity(opacity)
+        arrows.add_updater(update_arrows)
+        encoding = ["0", "10", "110", "111"]
+        bits = VGroup(*[
+            Tex(encoding[instruction], font_size = 70).set_color(PINK)
+            for instruction in instructions
+        ])
+        position_tracker = ValueTracker(0)
+        interp_x_start = 1
+        interp_x_end = 0.6
+        for arrow, grouping in zip(arrows, bits):
+            grouping.move_to(arrow)
+
+            trans = Transform(arrow, grouping, lag_ratio = 0.8)
+            trans.begin()
+            interpolation_tracker = ValueTracker(0)
+            original_x = arrow.get_x()
+            def update_arrow(m, original_x = original_x, interpolation_tracker = interpolation_tracker, trans = trans):
+                interpolation_tracker.set_value(max(0, min(1, (interp_x_start - m.get_x())/(interp_x_start - interp_x_end))))
+                trans.interpolate_mobject(interpolation_tracker.get_value())
+                m.set_x(original_x - position_tracker.get_value())
+            arrow.add_updater(update_arrow)
+        robot.set_opacity(0)
+        mission_control.set_opacity(0)
+        self.play(position_tracker.animate(run_time = 80, rate_func = linear).set_value(100))
+
+class InterpolateTest(InteractiveScene):
+    def construct(self):
+        # Test Mobject interpolation
+        mob1 = InstructionArrow(LEFT).scale(0.3).shift(RIGHT*6)
+        mob2 = Tex("010").shift(LEFT).move_to(mob1)
+        
+        self.add(mob1)
+        
+        trans = Transform(mob1, mob2)
+        trans.begin()
+        interpolation_tracker = ValueTracker(0)
+        position_tracker = ValueTracker(0)
+        original_x = mob1.get_x()
+        x_start = 1
+        x_end = -1
+        def update_arrow(m):
+            interpolation_tracker.set_value(max(0, min(1, (x_start - m.get_x())/(x_start - x_end))))
+            trans.interpolate_mobject(interpolation_tracker.get_value())
+            m.set_x(original_x - position_tracker.get_value())
+        mob1.add_updater(update_arrow)
+        self.play(position_tracker.animate(run_time = 8, rate_func = linear).set_value(10))
+
+class KLDivergencePreview(InteractiveScene):
+    def construct(self):
+        # Add the charts
+        Q = [0.4, 0.1, 0.08, 0.15, 0.27]
+        P = [0.1, 0.2, 0.3, 0.35, 0.05]
+        # p_cross_entropy_chart = EntropyChart(
+        #     P,
+        #     event_labels = None,
+        #     probability_labels = None,
+        #     bar_labels = None,
+        #     bar_heights = [-math.log2(q) for q in Q],
+        #     width = 5,
+        #     height = 3.5,
+        #     include_vertical_axis = False,
+        #     segments_height = 0.2,
+        #     fill_colors = [GREEN_B, GREEN_D],
+        #     bar_fill_colors = [RED, LIGHT_PINK]
+        # )
+        # p_cross_entropy_chart.to_edge(DOWN, buff = 1)
+        # p_cross_entropy_chart.add_updater(lambda m: m.set_opacity(0))
+        # self.add(p_cross_entropy_chart)
+
+        p_entropy_chart = EntropyChart(
+            P,
+            event_labels = None,
+            probability_labels = VGroup(*[
+                Tex(
+                    (("p_" + str(i)) if i < len(P) - 2 else R"\ldots" if i == len(P) - 2 else "p_n"),
+                    font_size = 40
+                )
+                for i in range(len(P))
+            ]),
+            bar_labels = None,
+            width = 5,
+            height = 3.5,
+            include_vertical_axis = False,
+            segments_height = 0.2,
+            fill_colors = [YELLOW_B, YELLOW_B],
+            bar_fill_colors = [YELLOW_B, YELLOW_B]
+        )
+        p_entropy_chart.to_edge(DOWN, buff = 1).set_stroke(width = 1)
+        p_entropy_chart.add_updater(lambda m: m.bars.set_fill(opacity = 0.1).set_stroke(width = 1))
+        self.add(p_entropy_chart)
+
+        def get_kl_divergence_bars():
+            current_distribution = [t.get_value() for t in p_entropy_chart.distribution_trackers]
+            bar_heights = [math.log2(p/q) for p, q in zip(current_distribution, Q)]
+            bars = EntropyChart(
+                current_distribution,
+                event_labels = None,
+                probability_labels = None,
+                bar_labels = None,
+                bar_heights = bar_heights,
+                width = 5,
+                height = 3.5,
+                include_vertical_axis = False,
+                segments_height = 0.2
+            ).bars.set_stroke(width = 1)
+            bars.clear_updaters()
+            for bar, height, p_entropy_bar in zip(bars, bar_heights, p_entropy_chart.bars):
+                bar.align_to(p_entropy_bar.get_top(), DOWN)
+                if height > 0:
+                    bar.set_fill(color = GREEN)
+                else:
+                    bar.set_fill(color = RED)
+            return bars
+        kl_divergence_chart_bars = always_redraw(get_kl_divergence_bars)
+        self.add(kl_divergence_chart_bars)
+
+        # Change the distribution a little
+        for _ in range(15):
+            self.play(p_entropy_chart.set_distribution(random_distribution(5)), run_time = 2)
+            self.wait(1)
+
+class SamplingSymbols(InteractiveScene):
+    def construct(self):
+        # Add the distribution chart the number line, and the entropy chart
+        distribution = [0.1, 0.5, 0.2, 0.05, 0.15]
+        distribution_chart = StackedProbDistribution(
+            distribution,
+            labels = VGroup(*[
+                Tex("s_" + str(i + 1)).scale(0.8).set_color(BLACK)
+                for i in range(len(distribution))
+            ]),
+            width = FRAME_WIDTH*0.8,
+            height = 0.5,
+            fit_labels_to_height = True,
+            fill_colors = (BLUE_E, TEAL_E),
+            stroke_width = 1.5
+        ).shift(UP*1.5)
+        number_line = NumberLine(
+            (0, 1, 1),
+            width = distribution_chart.get_width(),
+            include_ticks = True,
+            include_numbers = True,
+            stroke_width = 1.5
+        ).next_to(distribution_chart, DOWN, buff = 0)
+        number_line[0].stretch_to_fit_width(distribution_chart.get_width())
+        number_line.shift(RIGHT*(distribution_chart.get_x() - number_line[0].get_x()))
+        self.add(distribution_chart, number_line)
+        triangle = Triangle(
+            stroke_width = 0, fill_opacity = 0.8, fill_color = YELLOW
+        ).set_width(0.3).stretch(1.2, 1).align_to([0, number_line[0].get_y(), 0], UP)
+        x_tracker = ValueTracker(0.314)
+        triangle.add_updater(lambda m: m.set_x(number_line.n2p(x_tracker.get_value())[0]))
+        self.add(triangle)
+        random_value = DecimalNumber(
+            num_decimal_places = 3, font_size = 17
+        ).set_stroke(
+            width = 2, color = BLACK, behind = True, opacity = 0.8
+        )
+        random_value.add_updater(lambda m: m.set_value(x_tracker.get_value()).next_to(triangle, DOWN, buff = 0.1))
+        self.add(random_value)
+
+        entropy_chart = EntropyChart(
+            distribution,
+            event_labels = VGroup(*[
+                Tex("s_" + str(i + 1)).scale(0.8).set_color(BLACK)
+                for i in range(len(distribution))
+            ]),
+            probability_labels = None,
+            bar_labels = None,
+            width = FRAME_WIDTH*0.8,
+            height = 8,
+            include_vertical_axis = False,
+            segments_height = 0.5,
+            fill_colors = [GREEN_B, GREEN_D]
+        ).to_edge(DOWN, buff = 0.7)
+        self.add(entropy_chart)
+
+
+        # Sample some instructions at random
+        buff = 0.1
+        string = VGroup().to_edge(UP, buff = 1.5).align_to(distribution_chart, LEFT).shift(LEFT*buff)
+        random.seed(7)
+        for _ in range(21):
+            x_tracker.set_value(random.random())
+            self.wait(0.2)
+
+            symbol = None
+            for bar, label in zip(distribution_chart.bars, distribution_chart.labels):
+                if bar.get_left()[0] <= triangle.get_x() < bar.get_right()[0]:
+                    symbol = label.copy()
+                    break
+            symbol_move_run_time = 0.01
+            self.play(
+                Indicate(bar, scale_factor = 1, run_time = 0.3),
+                symbol.animate(run_time = symbol_move_run_time).next_to(string, RIGHT, buff = buff).set_color(WHITE)
+            )
+            string.add(symbol)
+
+            self.wait(0.3)
+

@@ -1,0 +1,273 @@
+{
+  "sourceFile": "Languages.txt",
+  "families": [
+    {
+      "name": "Unnamed 1",
+      "languages": [
+        {
+          "name": "Romani Balkan",
+          "originalIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "Romance",
+      "languages": [
+        {
+          "name": "Occitan Auvergnat",
+          "originalIndex": 2
+        },
+        {
+          "name": "Walloon",
+          "originalIndex": 3
+        },
+        {
+          "name": "Corsican",
+          "originalIndex": 4
+        },
+        {
+          "name": "Italian",
+          "originalIndex": 5
+        },
+        {
+          "name": "Sammarinese",
+          "originalIndex": 6
+        },
+        {
+          "name": "Rhaeto Romance",
+          "originalIndex": 7
+        },
+        {
+          "name": "Friulian",
+          "originalIndex": 8
+        },
+        {
+          "name": "French",
+          "originalIndex": 9
+        },
+        {
+          "name": "Catalan",
+          "originalIndex": 10
+        },
+        {
+          "name": "Occitan",
+          "originalIndex": 11
+        },
+        {
+          "name": "Asturian",
+          "originalIndex": 12
+        },
+        {
+          "name": "Spanish",
+          "originalIndex": 13
+        },
+        {
+          "name": "Galican",
+          "originalIndex": 14
+        },
+        {
+          "name": "Portuguese",
+          "originalIndex": 15
+        },
+        {
+          "name": "Sardinian",
+          "originalIndex": 16
+        },
+        {
+          "name": "Romanian",
+          "originalIndex": 17
+        },
+        {
+          "name": "Romani Vlach",
+          "originalIndex": 18
+        }
+      ]
+    },
+    {
+      "name": "Unnamed 2",
+      "languages": [
+        {
+          "name": "English",
+          "originalIndex": 19
+        },
+        {
+          "name": "Maltese",
+          "originalIndex": 19
+        }
+      ]
+    },
+    {
+      "name": "Celtic",
+      "languages": [
+        {
+          "name": "Welsh",
+          "originalIndex": 21
+        },
+        {
+          "name": "Irish Gaelic",
+          "originalIndex": 22
+        },
+        {
+          "name": "Scottish Gaelic",
+          "originalIndex": 23
+        }
+      ]
+    },
+    {
+      "name": "Unnamed 3",
+      "languages": [
+        {
+          "name": "Breton",
+          "originalIndex": 24
+        }
+      ]
+    },
+    {
+      "name": "Germanic",
+      "languages": [
+        {
+          "name": "Faroese",
+          "originalIndex": 25
+        },
+        {
+          "name": "Icelandic",
+          "originalIndex": 26
+        },
+        {
+          "name": "Swedish",
+          "originalIndex": 27
+        },
+        {
+          "name": "Danish",
+          "originalIndex": 28
+        },
+        {
+          "name": "Norwegian Bokmal",
+          "originalIndex": 29
+        },
+        {
+          "name": "Norwegian Nynorsk",
+          "originalIndex": 30
+        },
+        {
+          "name": "Luxembourgish",
+          "originalIndex": 31
+        },
+        {
+          "name": "German",
+          "originalIndex": 32
+        },
+        {
+          "name": "Frisian",
+          "originalIndex": 33
+        },
+        {
+          "name": "Afrikaans",
+          "originalIndex": 34
+        },
+        {
+          "name": "Dutch",
+          "originalIndex": 35
+        }
+      ]
+    },
+    {
+      "name": "Urgofinnic",
+      "languages": [
+        {
+          "name": "Finnish",
+          "originalIndex": 36
+        },
+        {
+          "name": "Estonian",
+          "originalIndex": 37
+        }
+      ]
+    },
+    {
+      "name": "Altaic",
+      "languages": [
+        {
+          "name": "Turkish",
+          "originalIndex": 38
+        },
+        {
+          "name": "Uzbek",
+          "originalIndex": 39
+        }
+      ]
+    },
+    {
+      "name": "Unnamed 4",
+      "languages": [
+        {
+          "name": "Hungarian",
+          "originalIndex": 40
+        },
+        {
+          "name": "Basque",
+          "originalIndex": 41
+        }
+      ]
+    },
+    {
+      "name": "Slavic",
+      "languages": [
+        {
+          "name": "Slovak",
+          "originalIndex": 42
+        },
+        {
+          "name": "Czech",
+          "originalIndex": 43
+        },
+        {
+          "name": "Bosnian",
+          "originalIndex": 44
+        },
+        {
+          "name": "Serbian",
+          "originalIndex": 45
+        },
+        {
+          "name": "Croatian",
+          "originalIndex": 46
+        },
+        {
+          "name": "Slovenian",
+          "originalIndex": 47
+        },
+        {
+          "name": "Polish",
+          "originalIndex": 48
+        },
+        {
+          "name": "Sorbian",
+          "originalIndex": 49
+        }
+      ]
+    },
+    {
+      "name": "Baltic",
+      "languages": [
+        {
+          "name": "Lithuanian",
+          "originalIndex": 50
+        },
+        {
+          "name": "Latvian",
+          "originalIndex": 51
+        }
+      ]
+    },
+    {
+      "name": "Unnamed 5",
+      "languages": [
+        {
+          "name": "Albanian",
+          "originalIndex": 52
+        }
+      ]
+    }
+  ]
+}
