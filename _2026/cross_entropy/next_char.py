@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import heapq
+import json
+import os
 import pickle
 import sys
 
 import torch
 import numpy as np
+from collections import Counter
 from functools import lru_cache
 
-CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,;!?"
+# CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?"
+CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?0123456789-"
 
 NANOGPT_DIR = "/Users/grant/cs/nanoGPT"
 NANOGPT_CKPT = "/Users/grant/cs/nanoGPT/out-wiki-char/ckpt.pt"
@@ -83,3 +88,161 @@ def get_next_char_distribution(prefix: str, alphabet: str = CHAR_ALPHABET) -> np
         char_probs /= total
 
     return char_probs
+
+
+_gpt2_tokenizer = None
+_gpt2_model = None
+
+
+def _ensure_gpt2_loaded():
+    global _gpt2_tokenizer, _gpt2_model
+    if _gpt2_model is not None:
+        return
+    from transformers import GPT2Tokenizer, GPT2LMHeadModel  # noqa: PLC0415
+    _gpt2_tokenizer = GPT2Tokenizer.from_pretrained("gpt2", local_files_only=True)
+    _gpt2_model = GPT2LMHeadModel.from_pretrained("gpt2", local_files_only=True)
+    _gpt2_model.eval()
+
+
+def gpt2_predict_next_token(text: str, n_shown: int = 7):
+    """
+    Top-`n_shown` next-token predictions from a local GPT-2 instance.
+    Returns (tokens, probs) where tokens is a list of decoded strings and
+    probs is a numpy array of their probabilities.
+    """
+    _ensure_gpt2_loaded()
+
+    input_ids = _gpt2_tokenizer.encode(
+        text, add_special_tokens=False, return_tensors="pt"
+    )
+    with torch.no_grad():
+        logits = _gpt2_model(input_ids).logits[0, -1, :]
+    probs = torch.softmax(logits, dim=-1)
+    top_probs, top_indices = torch.topk(probs, n_shown)
+    tokens = [_gpt2_tokenizer.decode([i]) for i in top_indices.tolist()]
+    return tokens, top_probs.numpy()
+
+
+HUFFMAN_TABLE_PATH = os.path.join(
+    os.path.dirname(__file__), "huffman_table.json"
+)
+
+
+def _wiki_char_text() -> str:
+    """Decode the nanoGPT wiki_char train.bin back into a string."""
+    meta_path = f"{NANOGPT_DIR}/data/wiki_char/meta.pkl"
+    bin_path = f"{NANOGPT_DIR}/data/wiki_char/train.bin"
+    with open(meta_path, "rb") as f:
+        meta = pickle.load(f)
+    itos = meta["itos"]
+    ids = np.fromfile(bin_path, dtype=np.uint16)
+    return "".join(itos[int(i)] for i in ids)
+
+
+def build_huffman_table(
+    alphabet: str = CHAR_ALPHABET,
+    save_path: str | None = HUFFMAN_TABLE_PATH,
+) -> dict[str, str]:
+    """
+    Build a Huffman code table for `alphabet` using character frequencies
+    from the lowercased nanoGPT wiki_char training corpus. Characters not
+    in `alphabet` are ignored. Returns a dict mapping char -> bitstring.
+    If `save_path` is given, also writes the result as JSON (sorted by
+    code length, then char).
+    """
+    text = _wiki_char_text().lower()
+    counts = Counter(c for c in text if c in alphabet)
+    # Ensure every alphabet char appears, so all are encodable
+    for c in alphabet:
+        counts.setdefault(c, 1)
+
+    # Heap entries: (weight, tie_breaker, node). Node is either a
+    # single-char string (leaf) or a (left, right) tuple.
+    heap: list[tuple[int, int, object]] = []
+    for i, (ch, w) in enumerate(counts.items()):
+        heapq.heappush(heap, (w, i, ch))
+    next_id = len(heap)
+    while len(heap) > 1:
+        w1, _, n1 = heapq.heappop(heap)
+        w2, _, n2 = heapq.heappop(heap)
+        heapq.heappush(heap, (w1 + w2, next_id, (n1, n2)))
+        next_id += 1
+    root = heap[0][2]
+
+    codes: dict[str, str] = {}
+
+    def walk(node, prefix: str) -> None:
+        if isinstance(node, str):
+            codes[node] = prefix or "0"
+            return
+        left, right = node
+        walk(left, prefix + "0")
+        walk(right, prefix + "1")
+
+    walk(root, "")
+
+    if save_path is not None:
+        ordered = dict(sorted(codes.items(), key=lambda kv: (len(kv[1]), kv[0])))
+        payload = {
+            "source": "nanoGPT/data/wiki_char/train.bin (lowercased)",
+            "alphabet": alphabet,
+            "total_chars_counted": sum(counts.values()),
+            "counts": {c: counts[c] for c in ordered},
+            "codes": ordered,
+        }
+        with open(save_path, "w") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    return codes
+
+
+@lru_cache(maxsize=1)
+def load_huffman_table(alphabet: str = CHAR_ALPHABET) -> dict[str, str]:
+    """
+    Load the cached Huffman table from disk, building it if missing.
+    Rebuilds if the cached alphabet doesn't match.
+    """
+    if os.path.exists(HUFFMAN_TABLE_PATH):
+        with open(HUFFMAN_TABLE_PATH) as f:
+            payload = json.load(f)
+        if payload.get("alphabet") == alphabet:
+            return payload["codes"]
+    return build_huffman_table(alphabet)
+
+
+def total_information(input_text: str, context: str = " ") -> float:
+    """
+    Total information in bits the nanoGPT wiki_char model assigns to
+    `input_text` given `context`: sum of -log2(P(c | context + earlier chars))
+    over each character c in `input_text`. Slides a window across the full
+    sequence so inputs longer than the model's block_size are handled.
+    """
+    _ensure_nano_loaded()
+
+    context_ids = _nano_encode(context)
+    target_ids = _nano_encode(input_text)
+    if not target_ids:
+        return 0.0
+
+    full_ids = context_ids + target_ids
+    n = len(full_ids)
+    block_size = _nano_model.config.block_size
+    stride = max(1, block_size // 2)
+
+    i = max(1, len(context_ids))
+    total_nats = 0.0
+    while i < n:
+        j = min(i + stride, n)
+        a = max(0, j - block_size)
+        window = full_ids[a:j]
+        input_tensor = torch.tensor([window])
+        with torch.no_grad():
+            logits = _nano_model(input_tensor, input_tensor)[0][0]
+        log_probs = torch.log_softmax(logits, dim=-1)
+
+        positions = torch.arange(i - 1 - a, j - 1 - a)
+        targets = torch.tensor(full_ids[i:j])
+        total_nats += -log_probs[positions, targets].sum().item()
+        i = j
+
+    return float(total_nats / np.log(2))

@@ -16,7 +16,7 @@ class StackedProbDistribution(VGroup):
         stroke_width=1,
         stroke_color=WHITE,
         labels=None,
-        label_height_ratio=0.7,
+        label_height_ratio=0.5,
         label_width_ratio=0.8,
         **kwargs
     ):
@@ -40,6 +40,7 @@ class StackedProbDistribution(VGroup):
         self.add(self.bars, self.labels)
 
         self.set_distribution(distribution)
+
         if labels is not None:
             self.set_labels(labels)
 
@@ -82,9 +83,13 @@ class StackedProbDistribution(VGroup):
 
         return self
 
-    def highlight(self, index, color=None, other_bar_opacity=0.35):
+    def highlight(self, index, color=None, other_bar_opacity=0.35, fade_labels=True):
         self.bars.set_fill(opacity=other_bar_opacity)
         self.bars[index].set_fill(color, opacity=1)
+        if fade_labels:
+            for idx, label in enumerate(self.labels):
+                if idx != index and label.get_fill_opacity() > 0:
+                    label.set_fill(opacity=other_bar_opacity)
         return self
 
     def renormalize_around(self, index: int):
