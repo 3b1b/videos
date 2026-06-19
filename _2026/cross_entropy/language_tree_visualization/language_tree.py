@@ -189,6 +189,184 @@ class BuildTree(InteractiveScene):
         )
 
 
+class BuildTreeV2(InteractiveScene):
+    def construct(self):
+        # Instantiate a list of canonical texts
+        texts = {
+            "Czech": [
+                "Babička",
+                "R.U.R.",
+                "Máj"
+            ],
+            "English": [
+                "Hamlet",
+                "Paradise Lost",
+                "Emma",
+                "1984"
+            ],
+            "French": [
+                "Les Misérables",
+                "Le Petit Prince"
+            ],
+            "Scottish Gaelic": [
+                "Dàin do Eimhir",
+                "An t-Ogha Mór",
+                "An Sgàthach"
+            ],
+            "German": [
+                "Faust",
+                "Die Verwandlung"
+            ],
+            "Italian": [
+                "Divina Commedia",
+                "Il Principe",
+                "I Promessi Sposi",
+                "Il Gattopardo"
+            ],
+            "Polish": [
+                "Pan Tadeusz",
+                "Quo Vadis",
+                "Ferdydurke"
+            ],
+            "Spanish": [
+                "Don Quijote",
+                "Ficciones",
+                "Rayuela",
+                "Bodas de sangre"
+            ],
+            "Swedish": [
+                "Fröken Julie",
+                "Pippi Långstrump"
+            ],
+            "Welsh": [
+                "Y Gododdin",
+                "Un Nos Ola Leuad",
+                "Chwalfa"
+            ]
+        }
+
+        # Create the file icons for each example
+        bunches = VGroup()
+        for language in texts.keys():
+            r = 1
+            theta = random.uniform(0, 2*PI)
+            bunch = VGroup()
+            for text in texts[language]:
+                file = LanguageTextExample(text).scale(0.7).shift(RIGHT*r*math.cos(theta) + UP*r*math.sin(theta))
+                bunch.add(file)
+                theta += 2*PI/len(texts[language])
+            bunches.add(bunch)
+        bunches.arrange_in_grid(n_cols = 5, v_buff = 2, h_buff = 0.8).set_width(FRAME_WIDTH*0.95)
+        # self.add(bunches)
+        # for bunch in bunches:
+        #     for file in bunch:
+        #         self.bring_to_front(file.example_text)
+        all_files = []
+        for bunch in bunches:
+            for file in bunch:
+                all_files.append(file)
+        random.shuffle(all_files)
+
+        self.play(
+            AnimationGroup(*[
+                FadeIn(file, shift = UP*0.3)
+                for file in all_files
+            ], lag_ratio = 0.1)
+        , run_time = 3)
+
+        # Label each bunch with its language
+        braces = VGroup()
+        labels = VGroup()
+        for i, bunch in enumerate(bunches):
+            brace = Brace(bunch, DOWN).set_color("#888888")
+            name = list(texts.keys())[i]
+            label = SVGMobject(F"flags/{name}.svg").set_width(0.5).next_to(brace, DOWN)
+            label.name = name
+            if 1 <= i < 5:
+                VGroup(brace, label).align_to(braces[0], UP)
+            if 6 <= i < 10:
+                VGroup(brace, label).align_to(braces[5], UP)
+            braces.add(brace)
+            labels.add(label)
+        self.play(
+            self.camera.frame.animate.match_y(VGroup(*all_files, braces, labels)),
+            AnimationGroup(*[
+                AnimationGroup(
+                    GrowFromEdge(brace, UP),
+                    FadeIn(label, shift = DOWN*0.1)
+                , lag_ratio = 0.1)
+                for brace, label in zip(braces, labels)
+            ], lag_ratio = 0.1)
+        )
+        self.camera.frame.center()
+        VGroup(*all_files, braces, labels).center()
+
+        # Create the full tree of language lineage
+        UNNAMED_COLOR = WHITE
+        colors = [UNNAMED_COLOR, BLUE_D, UNNAMED_COLOR, GREEN_B, UNNAMED_COLOR, TEAL_D, BLUE_B, GREEN_D, UNNAMED_COLOR, TEAL_B, BLUE_E, UNNAMED_COLOR]
+        with open('language_families.json', 'r', encoding='utf-8') as file:
+            families_data = json.load(file)["families"]
+        with open('languages.txt', 'r', encoding='utf-8') as file:
+            leaves_data = file.read().splitlines()
+        families = VGroup()
+        leaves = VGroup()
+        for family_data, color in zip(families_data, colors):
+            family = VGroup()
+            for language in family_data["languages"]:
+                name_text = Text(language["name"]).set_color(color)
+                family.add(name_text)
+                leaves.add(name_text)
+            families.add(family)
+        leaves.arrange(DOWN)
+        for leaf in leaves:
+            leaf.align_to(leaves[0], LEFT)
+        leaves.set_height(FRAME_HEIGHT*0.95)
+        family_braces = VGroup(*[
+            Brace(family, RIGHT).set_color(color)
+            for family, color in zip(families, colors)
+        ]).shift(RIGHT*0.1)
+        for brace in family_braces:
+            brace.align_to(family_braces[0], LEFT)
+        family_labels = VGroup(*[
+            brace.get_text(family_data["name"], font_size = 20).set_color(color)
+            for brace, family_data, color in zip(family_braces, families_data, colors)
+        ])
+        for i in range(len(colors)):
+            if colors[i] == UNNAMED_COLOR:
+                VGroup(family_braces[i], family_labels[i]).set_opacity(0)
+        VGroup(leaves, family_braces, family_labels).to_edge(RIGHT, buff = 1)
+
+        # Transform the file icons into the tree
+        tree = LanguageTree("tree_layout_adjusted.json", node_radius = 0.02).next_to(leaves, LEFT, buff = 0.08)
+        leaf_nodes = tree.node_group[:len(leaves)]
+        tree.shift(DOWN*(leaf_nodes.get_y() - leaves.get_y()))
+
+        self.play(
+            AnimationGroup(
+                AnimationGroup(*[
+                    AnimationGroup(
+                        VGroup(bunch, brace).animate(run_time = 1.5).scale(0.001).move_to(leaves[leaves_data.index(label.name)]),
+                        TransformMatchingShapes(label, leaves[leaves_data.index(label.name)], run_time = 1.5)
+                    )
+                    for bunch, brace, label in zip(bunches, braces, labels)
+                ], lag_ratio = 0.08),
+                AnimationGroup(*[
+                    FadeIn(leaves[i])
+                    for i in range(len(leaves)) if i not in [leaves_data.index(label.name) for label in labels]
+                ], lag_ratio = 0.01)
+            , lag_ratio = 0.6)
+        )
+        self.remove(bunches, braces)
+        self.wait(1)
+
+        self.play(
+            AnimationGroup(
+                FadeIn(tree.edge_group, lag_ratio = 0.1, run_time = 10),
+                FadeIn(tree.node_group, run_time = 3)
+            , lag_ratio = 0.9)
+        )
+
+
 class LanguageTree(VGroup):
     def __init__(
             self,
@@ -288,3 +466,20 @@ class LanguageTree(VGroup):
     #             for edge in self.edge_group
     #         ], lag_ratio=0.1)
     #     , lag_ratio=0.4)
+
+
+class BasicIdea(InteractiveScene):
+    def construct(self):
+        # Add two documents
+        document1 = VGroup(*[
+            Rectangle(
+                width = 3,
+                height = 1,
+                fill_opacity = 1,
+                fill_color = interpolate_color(TEAL_A, TEAL_E, random.random()),
+                stroke_width = 1,
+                stroke_color = WHITE
+            )
+        ]).arrange(DOWN, buff = 0)
+        document1_label = TexText("Document 1").set_color(GREY).next_to(document1, UP)
+        self.play(FadeIn(document1), Write(document1_label))
