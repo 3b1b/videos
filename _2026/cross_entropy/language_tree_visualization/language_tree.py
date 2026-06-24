@@ -473,13 +473,94 @@ class BasicIdea(InteractiveScene):
         # Add two documents
         document1 = VGroup(*[
             Rectangle(
-                width = 3,
+                width = 5,
                 height = 1,
                 fill_opacity = 1,
-                fill_color = interpolate_color(TEAL_A, TEAL_E, random.random()),
+                fill_color = interpolate_color(TEAL_B, TEAL_E, random.random()),
                 stroke_width = 1,
                 stroke_color = WHITE
             )
+            for _ in range(8)
         ]).arrange(DOWN, buff = 0)
-        document1_label = TexText("Document 1").set_color(GREY).next_to(document1, UP)
-        self.play(FadeIn(document1), Write(document1_label))
+        document1_label = TexText("Document A", font_size = 80).next_to(document1, UP, buff = 0.4)
+        document2 = document1.copy()
+        for rect in document2:
+            rect.set_fill(color = interpolate_color(GREEN_B, GREEN_E, random.random()))
+        document2_label = TexText("Document B", font_size = 80).next_to(document2, UP, buff = 0.4)
+        document1_group = VGroup(document1, document1_label)
+        document2_group = VGroup(document2, document2_label)
+        documents = VGroup(document1_group, document2_group)
+        documents.arrange(buff = 2).set_height(4)
+        self.play(
+            AnimationGroup(*[
+                FadeIn(doc, shift = UP*0.5)
+                for doc in documents
+            ], lag_ratio = 0.4)
+        )
+        self.play(documents.animate.scale(0.9).to_edge(LEFT, buff = 1))
+
+        # Take a small snippet of B and append it to a copy of A
+        a_copy = document1.copy()
+        snippet = document2[4:7].copy()
+        new_doc = VGroup(a_copy, snippet).arrange(DOWN, buff = 0).set_x(0.5*(FRAME_WIDTH*0.5 + document2.get_right()[0]))
+        self.play(
+            AnimationGroup(
+                TransformFromCopy(document2[4:7], snippet, path_arc = PI*0.3),
+                TransformFromCopy(document1, a_copy, path_arc = -PI*0.3)
+            , lag_ratio = 0.9)
+        , run_time = 4)
+
+        # "Compress" it
+        new_doc.generate_target()
+        new_doc.target.set_stroke(width = 0)
+        new_doc.target[0].stretch(0.15, 1)
+        new_doc.target[1].stretch(0.25, 1)
+        new_doc.target.arrange(DOWN, buff = 0).set_width(2.2).move_to(new_doc)
+        gzip_ab = TexText("GZIP(A, B)", font_size = 35, tex_to_color_map = {"A": BLUE, "B": GREEN}).next_to(new_doc.target, UP)
+        self.play(AnimationGroup(MoveToTarget(new_doc), Write(gzip_ab), lag_ratio = 0.8))
+        self.wait(1)
+
+        # Compress A on its own
+        a_copy_2 = document1.copy().match_x(new_doc).to_edge(DOWN, buff = 1)
+        self.play(
+            VGroup(new_doc, gzip_ab).animate.to_edge(UP, buff = 2),
+            TransformFromCopy(document1, a_copy_2, path_arc = PI*0.3)
+        , run_time = 2)
+        self.wait(0.5)
+        a_copy_2.generate_target()
+        a_copy_2.target.set_stroke(width = 0).stretch(0.15, 1).set_width(2.2)
+        gzip_a = TexText("GZIP(A)", font_size = 35, tex_to_color_map = {"A": BLUE, "B": TEAL}).next_to(a_copy_2.target, UP)
+        self.play(AnimationGroup(MoveToTarget(a_copy_2), Write(gzip_a), lag_ratio = 0.8))
+
+        # Compare the sizes
+        compressed_docs_group = VGroup(VGroup(gzip_ab, new_doc), VGroup(gzip_a, a_copy_2))
+        compressed_docs_group.generate_target()
+        compressed_docs_group.target.scale(1.3).arrange(buff = 3)
+        compressed_docs_group.target[1].align_to(compressed_docs_group.target[0], UP)
+        self.play(
+            FadeOut(VGroup(document1_group, document2_group), shift = LEFT*4),
+            MoveToTarget(compressed_docs_group, path_arc = PI*0.3)
+        , run_time = 2)
+        difference_equation = VGroup(
+            Line(ORIGIN, UP*4).next_to(compressed_docs_group[0], LEFT, buff = 0.35),
+            Line(ORIGIN, UP*4).next_to(compressed_docs_group[0], RIGHT, buff = 0.35),
+            Tex("-", font_size = 90),
+            Line(ORIGIN, UP*4).next_to(compressed_docs_group[1], LEFT, buff = 0.35).set_y(0),
+            Line(ORIGIN, UP*4).next_to(compressed_docs_group[1], RIGHT, buff = 0.35).set_y(0)
+        )
+        self.play(Write(difference_equation))
+
+
+        # Decrease the "linguistic difference"
+        new_doc.generate_target()
+        new_doc.target[1].stretch(0.75, 1).next_to(new_doc.target[0], DOWN, buff = 0)
+        for rect in new_doc.target[1]:
+            rect.set_fill(color = interpolate_color(BLUE_A, BLUE_E, random.random()))
+        self.play(MoveToTarget(new_doc))
+
+        # Increase the "linguistic difference"
+        new_doc.generate_target()
+        new_doc.target[1].stretch(3, 1).next_to(new_doc.target[0], DOWN, buff = 0)
+        for rect in new_doc.target[1]:
+            rect.set_fill(color = interpolate_color(RED_A, RED_E, random.random()))
+        self.play(MoveToTarget(new_doc))
