@@ -2,6 +2,7 @@ from manim_imports_ext import *
 import math
 import random
 
+PURE_MAGENTA = "#FF00FF"
 
 class FancyCircumscribe(VShowPassingFlash):
     def __init__(self, mobject, time_width = 1.5, run_time = 3, **kwargs):
@@ -774,7 +775,7 @@ class RobotEncodings(InteractiveScene):
             height = 6,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).match_width(naive_chart).match_x(naive_chart)
         huffman_chart_init.shift(DOWN*(huffman_chart_init.segments.get_bottom()[1] - mission_control_2.get_bottom()[1]))
         huffman_chart_init.bar_labels.set_color(WHITE)
@@ -1477,424 +1478,6 @@ class RobotEncodings(InteractiveScene):
         self.play(FadeIn(rects), run_time = 2)
         self.wait(2)
 
-        return
-
-
-
-        # # Define information
-        # huffman_chart.generate_target()
-        # huffman_chart.target.scale(0.8).to_corner(DL, buff = 1)
-        # arrow = Arrow(huffman_chart.target.get_top(), message[10].get_bottom() + DOWN*0.3).set_color(WHITE)
-        # self.play(
-        #     AnimationGroup(
-        #         MoveToTarget(huffman_chart),
-        #         GrowArrow(arrow)
-        #     , lag_ratio = 0.7)
-        # )
-        # self.wait(1.5)
-        # message_probability = Tex(
-        #     R"\mathbf{P}(\text{any $n$-bit message}) = \left(\frac{1}{2}\right)^n"
-        # ).next_to(huffman_chart, RIGHT, buff = 1).align_to(huffman_chart, UP)
-        # self.play(Write(message_probability), run_time = 4.5)
-        # self.wait(5)
-        # message_probability_line_2 = Tex("p = 2^{-n}").next_to(message_probability, DOWN, buff = 0.3)
-        # message_probability_line_2.shift(RIGHT*(message_probability[18].get_x() - message_probability_line_2["="].get_x()))
-        # self.play(
-        #     TransformFromCopy(message_probability[:18], message_probability_line_2["p"], run_time = 1.5),
-        #     TransformMatchingShapes(message_probability[18:].copy(), message_probability_line_2["= 2^{-n}"], run_time = 1.5)
-        # )
-        # self.wait(1.2)
-        # log_of_both_sides = Tex(R"\log_2(p) = \log_2(2^{-n})").match_y(message_probability_line_2)
-        # log_of_both_sides.shift(RIGHT*(message_probability_line_2["="].get_x() - log_of_both_sides["="].get_x()))
-        # self.play(TransformMatchingShapes(message_probability_line_2, log_of_both_sides), run_time = 1)
-        # log_of_both_sides_simplified = Tex(R"\log_2(p) = -n").match_y(log_of_both_sides)
-        # log_of_both_sides_simplified.shift(RIGHT*(log_of_both_sides["="].get_x() - log_of_both_sides_simplified["="].get_x()))
-        # self.play(
-        #     TransformMatchingShapes(log_of_both_sides[R"\log_2(p) ="], log_of_both_sides_simplified[R"\log_2(p) ="]),
-        #     FadeOut(VGroup(log_of_both_sides[R"\log_2(2"], log_of_both_sides[")"][1])),
-        #     ReplacementTransform(log_of_both_sides["-n"], log_of_both_sides_simplified["-n"])
-        # , run_time = 1)
-        # negated = Tex(R"\text{Information} = -\log_2(p) = {n}").match_y(log_of_both_sides_simplified)
-        # negated["Information"].set_color(TEAL)
-        # negated.shift(RIGHT*(log_of_both_sides_simplified["="].get_x() - negated["="][1].get_x()))
-        # self.play(
-        #     TransformMatchingShapes(log_of_both_sides_simplified[R"\log_2(p) ="], negated[R"\log_2(p) ="]),
-        #     TransformMatchingShapes(log_of_both_sides_simplified[R"n"], negated[R"{n}"]),
-        #     TransformMatchingShapes(log_of_both_sides_simplified[R"-"], negated[R"-"], path_arc = PI*0.4)
-        # )
-        # self.wait(6)
-        # self.play(Indicate(negated["p"], color = TEAL))
-        # self.wait(3)
-        # rect = SurroundingRectangle(negated[R"-\log_2(p)"], stroke_width = 3, stroke_color = TEAL)
-        # self.play(ShowCreation(rect), run_time = 2)
-        # self.wait(16)
-        # self.play(Write(negated[R"\text{Information} ="], run_time = 1.2))
-        # self.wait(7.5)
-
-        # # Draw a graph of -log_2 p
-        # x_range = [0, 1]
-        # y_range = [0, 10]
-        # axes = Axes(
-        #     x_range = x_range,
-        #     y_range = y_range,
-        #     width = 6,
-        #     height = 5
-        # ).to_edge(RIGHT, buff = 1)
-        # p_label = Tex("p").next_to(axes, DOWN)
-        # labels = axes.add_coordinate_labels(
-        #     x_values = [0.001, 1],
-        #     y_values = [0, 2, 4, 6, 8, 10]
-        # )
-        # def func(x):
-        #     return -math.log2(x)
-        # curve = ParametricCurve(
-        #     lambda t: (axes.c2p(t, func(t))), (0.001, x_range[1], 0.001)
-        # ).set_stroke(width=4, color=TEAL, opacity=0.9)
-        # information_definition = negated[R"\text{Information} = -\log_2(p)"]
-        # self.play(
-        #     AnimationGroup(
-        #         AnimationGroup(
-        #             FadeOut(mission_control_and_robot_group),
-        #             AnimationGroup(*[t.animate.set_value(0) for t in bit_opacity_trackers]),
-        #             FadeOut(arrow),
-        #             FadeOut(huffman_chart),
-        #             FadeOut(message_probability),
-        #             FadeOut(rect),
-        #             FadeOut(negated["= {n}"])
-        #         ),
-        #         information_definition.animate.scale(1.1).next_to(axes, LEFT, buff = 0.6),
-        #         AnimationGroup(
-        #             FadeIn(VGroup(axes, p_label)),
-        #             ShowCreation(curve, run_time = 1)
-        #         , lag_ratio = 0.5)
-        #     , lag_ratio = 0.6)
-        # , run_time = 1.7)
-        # self.remove(message)
-        # p_tracker = ValueTracker(0.314)
-        # p_dot = Group(GlowDot(), TrueDot()).set_color(YELLOW)
-        # p_dot.add_updater(lambda m: m.move_to(axes.c2p(p_tracker.get_value(), func(p_tracker.get_value()))))
-        # dashed_line = always_redraw(lambda: DashedLine(p_dot.get_center(), [curve.get_left()[0], p_dot.get_y(), 0]).set_color(YELLOW))
-        # self.play(
-        #     FadeIn(p_dot, suspend_mobject_updating = True), ShowCreation(dashed_line, suspend_mobject_updating = True)
-        # , run_time = 0.9)
-        # bits_text = TexText("(bits)").next_to(information_definition, DOWN, buff = 0.3)
-        # p_display = Tex("p = 0.00", font_size = 38)
-        # bits_display = TexText("Information $=$ 0.00 bits", font_size = 38)
-        # bits_display["Information"].set_color(TEAL)
-        # display_group = VGroup(p_display, bits_display)
-        # display_group.arrange(DOWN)
-        # bits_display.shift(LEFT*(bits_display["="].get_x() - p_display["="].get_x()))
-        # display_group.align_to(axes, UR)
-        # p_value = p_display.make_number_changeable("0.00")
-        # p_value.add_updater(lambda m: m.set_value(p_tracker.get_value()))
-        # bits_value = bits_display.make_number_changeable("0.00")
-        # bits_value.add_updater(lambda m: m.set_value(func(p_tracker.get_value())))
-        # display_opacity_tracker = ValueTracker(0)
-        # display_group.add_updater(lambda m: m.set_opacity(display_opacity_tracker.get_value()))
-        # self.add(display_group)
-        # values = [0.019, 0.789] + [random.random() for _ in range(30)]
-        # for i, value in enumerate(values):
-        #     anims = [p_tracker.animate.set_value(value)]
-        #     if i == 15:
-        #         anims.append(FadeIn(bits_text))
-        #     if i == 23:
-        #         anims.append(display_opacity_tracker.animate.set_value(1))
-        #     self.play(*anims, run_time = 2.5 if i == 0 else 5.5 if i == 1 else 2)
-        #     self.wait(1.5 if i == 0 else 0.8)
-        # self.wait(1)
-
-        # # Bring back the huffman chart to show that it's a perfect encoding
-        # p_dot.clear_updaters()
-        # dashed_line.clear_updaters()
-        # full_huffman_chart = EntropyChart(
-        #     distribution,
-        #     event_labels = VGroup(*[InstructionArrow([UP, DOWN, LEFT, RIGHT][i]) for i in range(4)]).set_color(PINK),
-        #     probability_labels = [
-        #         Tex(R"\frac{1}{" + ["2", "4", "8", "8"][i] + "}", font_size = 40)
-        #         for i in range(4)
-        #     ],
-        #     bar_labels = [
-        #         Tex(encoding[i], font_size = 40)
-        #         for i in range(4)
-        #     ],
-        #     bar_heights = [1, 2, 3, 3],
-        #     width = 10,
-        #     height = 4,
-        #     segments_height = 1,
-        #     fill_colors = [RED, LIGHT_PINK]
-        # ).center().shift(UP*0.5)
-        # full_huffman_chart.bar_labels.set_color(WHITE)
-        # self.play(
-        #     FadeOut(
-        #         Group(information_definition, bits_text, axes, curve, p_label, p_dot, dashed_line, display_group)
-        #     , shift = UP*6),
-        #     FadeIn(full_huffman_chart.shift(DOWN), shift = UP*6)
-        # , run_time = 1.5)
-        # self.wait(1.5)
-        # self.play(
-        #     AnimationGroup(*[
-        #         Indicate(VGroup(bar, label), suspend_mobject_updating = True)
-        #         for bar, label in zip(full_huffman_chart.bars, full_huffman_chart.bar_labels)
-        #     ], lag_ratio = 0.2),
-        #     full_huffman_chart.bar_labels.animate.shift(0)
-        # , run_time = 3)
-        # self.wait(3)
-
-        # # Generalize 
-        # distribution = random_distribution(7)
-        # general_chart = EntropyChart(
-        #     random_distribution(7),
-        #     event_labels = VGroup(*[
-        #         Tex(
-        #             (("m_" + str(i)) if i < len(distribution) - 2 else R"\ldots" if i == len(distribution) - 2 else "m_n")
-        #         ).scale(0.8).set_color(BLACK)
-        #         for i in range(len(distribution))
-        #     ]),
-        #     probability_labels = VGroup(*[
-        #         Tex(
-        #             (("p_" + str(i)) if i < len(distribution) - 2 else R"\ldots" if i == len(distribution) - 2 else "p_n")
-        #         )
-        #         for i in range(len(distribution))
-        #     ]),
-        #     width = 10,
-        #     height = 4,
-        #     segments_height = 0.4,
-        #     fit_event_labels_to_height = False,
-        #     fill_colors = [YELLOW_B, YELLOW_D]
-        # ).match_width(full_huffman_chart).match_x(full_huffman_chart).align_to(full_huffman_chart, UP)
-        # self.camera.frame.save_state()
-        # self.play(
-        #     self.camera.frame.animate(run_time = 5).match_x(general_chart.segments),
-        #     AnimationGroup(
-        #         FadeOut(VGroup(full_huffman_chart, full_huffman_chart.event_labels), suspend_mobject_updating = True),
-        #         AnimationGroup(*[
-        #             AnimationGroup(GrowFromCenter(segment), FadeIn(e_label), FadeIn(p_label))
-        #             for segment, e_label, p_label in zip(
-        #                 general_chart.segments.bars, general_chart.event_labels, general_chart.probability_labels
-        #             )
-        #         ], lag_ratio = 0.2, suspend_mobject_updating = True)
-        #     , lag_ratio = 0.5, run_time = 2.5)
-        # )
-
-        # # Move around the probabilities and write the definition of entropy
-        # self.add(general_chart)
-        # general_chart.save_state()
-        # bars_opacity_tracker = ValueTracker(0)
-        # general_chart.bars.add_updater(lambda m: m.set_opacity(bars_opacity_tracker.get_value()))
-        # general_chart.bars.add_updater(lambda m: self.bring_to_front(m))
-        # general_chart.vertical_axis.set_opacity(0)
-        # general_chart.vertical_axis_label.set_opacity(0)
-        # general_chart.reference_lines.set_opacity(0)
-        # for i in range(26):
-        #     anims = [general_chart.set_distribution(random_distribution(7))]
-        #     if i == 2:
-        #         brace = Brace(general_chart.segments, UP)
-        #         total_width_text = brace.get_tex(R"\text{Total width} = 1")
-        #         anims.append(
-        #             AnimationGroup(
-        #                 GrowFromEdge(brace, DOWN),
-        #                 Write(total_width_text)
-        #             , run_time = 2)
-        #         )
-        #     if i == 3:
-        #         anims.append(
-        #             AnimationGroup(
-        #                 FadeOut(VGroup(brace, total_width_text)),
-        #                 bars_opacity_tracker.animate.set_value(1)
-        #             )
-        #         )
-        #     if i == 4:
-        #         anims.append(
-        #             AnimationGroup(
-        #                 self.camera.frame.animate.restore().shift(UP*0.5),
-        #                 VGroup(
-        #                     general_chart.vertical_axis,
-        #                     general_chart.vertical_axis_label,
-        #                     general_chart.reference_lines
-        #                 ).animate.set_opacity(1)
-        #             )
-        #         )
-        #     if i == 8:
-        #         weighted_sum_formula = Tex(
-        #             R"\text{Area}() = \text{Avg. information} = \sum_i p_i \cdot -\log_2 p_i"
-        #         ).next_to(general_chart, UP)
-        #         bars_copy = general_chart.bars.copy()
-        #         bars_copy.clear_updaters().set_opacity(1)
-        #         bars_copy.generate_target()
-        #         bars_copy.target.stretch(0.5, 0).match_height(weighted_sum_formula[4]).next_to(weighted_sum_formula[4], RIGHT)
-        #         weighted_sum_formula[5:].next_to(bars_copy.target, RIGHT)
-        #         weighted_sum_formula[5:].shift(DOWN*(weighted_sum_formula[5].get_y() - weighted_sum_formula[4].get_y()))
-        #         VGroup(weighted_sum_formula, bars_copy.target).set_x(0)
-        #         part1 = weighted_sum_formula[R"\text{Area}() = \text{Avg. information}"]
-        #         part2 = weighted_sum_formula[R"= \sum_i p_i \cdot -\log_2 p_i"]
-        #         part1.save_state()
-        #         VGroup(part1, bars_copy.target).match_x(general_chart.reference_lines)
-        #         anims.append(
-        #             AnimationGroup(
-        #                 Write(part1),
-        #                 MoveToTarget(bars_copy)
-        #             , run_time = 4)
-        #         )
-        #     if i == 10:
-        #         part1.generate_target()
-        #         part1.target.restore()
-        #         bars_copy.generate_target()
-        #         bars_copy.target.shift(part1.target.get_center() - part1.get_center())
-        #         anims.append(
-        #             AnimationGroup(
-        #                 AnimationGroup(MoveToTarget(part1), MoveToTarget(bars_copy)),
-        #                 Write(part2, run_time = 2.5)
-        #             , lag_ratio = 0.6)
-        #         )
-        #     if i == 18:
-        #         entropy_text = TexText(
-        #             "Shannon Entropy ($H$)"
-        #         ).next_to(
-        #             weighted_sum_formula[R"\text{Avg. information}"], DOWN, buff = 1
-        #         )
-        #         entropy_text["H"].set_color(BLUE)
-        #         rect = BackgroundRectangle(entropy_text["Entropy"], buff = 0.2)
-        #         rect2 = BackgroundRectangle(entropy_text["Shannon Entropy"], buff = 0.2)
-        #         rect3 = BackgroundRectangle(entropy_text, buff = 0.2)
-        #         arrow = always_redraw(
-        #             lambda: Arrow(
-        #                 entropy_text["Entropy"].get_top() + UP*0.1,
-        #                 weighted_sum_formula[R"\text{Avg. information}"].get_bottom() + DOWN*0.1
-        #             , buff = 0.1)
-        #         )
-        #         arrow.suspend_updating()
-        #         anims.append(
-        #             AnimationGroup(
-        #                 FadeIn(rect, run_time = 1),
-        #                 Write(entropy_text["Entropy"], run_time = 1),
-        #                 GrowArrow(arrow, run_time = 1.2)
-        #             )
-        #         )
-        #     if i == 19:
-        #         anims.append(
-        #             AnimationGroup(
-        #                 rect.animate(run_time = 0.7).become(rect2),
-        #                 FadeIn(entropy_text["Shannon"]),
-        #                 entropy_text["Entropy"].animate.shift(0),
-        #                 arrow.animate.shift(0)
-        #             , lag_ratio = 0.4)
-        #         )
-        #     if i == 20:
-        #         anims.append(
-        #             AnimationGroup(
-        #                 rect.animate.become(rect3),
-        #                 FadeIn(entropy_text["($H$)"]),
-        #                 entropy_text["Shannon Entropy"].animate.shift(0),
-        #                 arrow.animate.shift(0)
-        #             , lag_ratio = 0.6)
-        #         )
-        #     if i == 24:
-        #         arrow.resume_updating()
-        #         entropy_display = Tex(R"\text{Entropy} = 0.00 \text{ bits}").next_to(general_chart.reference_lines.get_corner(UL), DR)
-        #         entropy_display_opacity_tracker = ValueTracker(0)
-        #         entropy_display.add_updater(lambda m: m[7:].set_opacity(entropy_display_opacity_tracker.get_value()))
-        #         self.add(entropy_display[7:])
-        #         entropy_display[:7].set_opacity(0)
-        #         entropy_value = entropy_display.make_number_changeable("0.00")
-        #         entropy_value.add_updater(
-        #             lambda m: m.set_value(
-        #                 sum([t.get_value()*-math.log2(t.get_value()) for t in general_chart.distribution_trackers])
-        #             )
-        #         )
-        #         entropy_text.add_updater(lambda m: self.bring_to_front(m))
-        #         entropy_display.add_updater(lambda m: self.bring_to_front(m))
-        #         arrow.add_updater(lambda m: self.bring_to_front(m))
-        #         rect4 = BackgroundRectangle(entropy_display, buff = 0.2)
-        #         anims.append(
-        #             AnimationGroup(
-        #                 AnimationGroup(
-        #                     rect.animate.become(rect4),
-        #                     entropy_text["Entropy"].animate.match_width(entropy_display[:7]).move_to(entropy_display[:7]),
-        #                     FadeOut(VGroup(entropy_text["Shannon"], entropy_text["($H$)"]), shift = LEFT, run_time = 0.6)
-        #                 ),
-        #                 entropy_display_opacity_tracker.animate.set_value(1)
-        #             , lag_ratio = 0.6)
-        #         )
-
-        #     self.play(*anims, run_time = 3)
-        # self.remove(entropy_text)
-        # self.add(entropy_display.set_opacity(1))
-
-        # # Show a uniform distribution
-        # event_labels_opacity_tracker = ValueTracker(1)
-        # general_chart.segments.add_updater(lambda m: m.labels.set_opacity(event_labels_opacity_tracker.get_value()))
-        # self.play(
-        #     general_chart.probability_labels.animate.set_opacity(0),
-        #     event_labels_opacity_tracker.animate.set_value(0),
-        #     general_chart.set_distribution([1/7 for _ in range(7)])
-        # , run_time = 3)
-        # self.wait(2)
-
-        # # Show a squished distribution
-        # big_prob = 0.789
-        # leftover = 1 - big_prob
-        # leftover_distibution = random_distribution(6, thresh = (2**-7)/leftover)
-        # leftover_distibution = [p*leftover for p in leftover_distibution]
-        # distribution = [big_prob] + leftover_distibution
-        # self.play(general_chart.set_distribution(distribution), run_time = 6)
-        # self.wait(4)
-
-        # # Divide the probability space into more chunks
-        # entropy_value.clear_updaters()
-        # entropy_display.add_updater(lambda m: self.bring_to_front(m))
-        # prev_chart = general_chart
-        # for i in range(1, 3):
-        #     new_distribution = []
-        #     for p in distribution:
-        #         new_distribution += [p/2**i for _ in range(2**i)]
-        #     new_chart = EntropyChart(
-        #         new_distribution,
-        #         event_labels = None,
-        #         probability_labels = None,
-        #         width = 10,
-        #         height = 4,
-        #         segments_height = 0.4,
-        #         fit_event_labels_to_height = False,
-        #         fill_colors = [YELLOW_B, YELLOW_D]
-        #     ).match_width(general_chart).match_x(general_chart).align_to(general_chart, UP)
-        #     new_chart.bars.add_updater(lambda m: m.set_stroke(width = 1))
-        #     new_chart.segments.bars.add_updater(lambda m: m.set_stroke(width = 1))
-        #     general_chart.clear_updaters()
-        #     self.play(
-        #         FadeOut(prev_chart, suspend_mobject_updating = True, run_time = 3),
-        #         FadeIn(new_chart, suspend_mobject_updating = True, run_time = 3),
-        #         VGroup(rect, arrow).animate.shift(0),
-        #         entropy_value.animate(run_time = 1.3).set_value(
-        #             sum([t.get_value()*-math.log2(t.get_value()) for t in new_chart.distribution_trackers])
-        #         )
-        #     )
-        #     self.wait(2)
-        #     prev_chart = new_chart
-
-        # # Squish and then spread out the new distribution
-        # entropy_value.add_updater(
-        #     lambda m: m.set_value(
-        #         sum([t.get_value()*-math.log2(t.get_value()) for t in new_chart.distribution_trackers])
-        #     )
-        # )
-        # big_prob_1 = 0.42
-        # big_prob_2 = 0.178
-        # big_prob_3 = 0.32
-        # leftover = 1 - big_prob_1 - big_prob_2 - big_prob_3
-        # leftover_distibution = random_distribution(25, thresh = (2**-10)/leftover)
-        # leftover_distibution = [p*leftover for p in leftover_distibution]
-        # distribution = [big_prob_1, big_prob_2, big_prob_3] + leftover_distibution
-        # self.play(new_chart.set_distribution(distribution), run_time = 6)
-        # self.wait(1)
-
-        # uniform_distribution = [1/28 for _ in range(28)]
-        # self.play(new_chart.set_distribution(uniform_distribution), run_time = 6)
-        # self.wait(1)
-
-        # # Show some more random distributions
-        # for _ in range(5):
-        #     self.play(new_chart.set_distribution(random_distribution(28, thresh = 2**-8)), run_time = 3)
-
 
 class RobotEncodingsV2(InteractiveScene):
     def construct(self):
@@ -2078,7 +1661,7 @@ class RobotEncodingsV2(InteractiveScene):
             height = 6,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).match_width(naive_chart)
         huffman_chart.bar_labels.set_color(WHITE)
         huffman_chart.update()
@@ -2514,7 +2097,7 @@ class RobotEncodingsV2(InteractiveScene):
             height = 13.5,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         fifth_instruction_chart.clear_updaters()
         fifth_instruction_chart.fix_in_frame().match_width(huffman_chart).match_x(huffman_chart).align_to(huffman_chart, UP)
@@ -3077,7 +2660,7 @@ class PerfectEncodingsAndEntropyDefinition(InteractiveScene):
             width = 10,
             height = 4,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).move_to(self.camera.frame).shift(DOWN*0.5)
         full_huffman_chart.bar_labels.set_color(WHITE)
         self.add(full_huffman_chart)
@@ -3450,7 +3033,7 @@ class PerfectEncodingsAndEntropyDefinitionV2(InteractiveScene):
             width = 9,
             height = 3,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).center().shift(DOWN*0.7)
         full_huffman_chart.bar_labels.set_color(WHITE)
         full_huffman_chart.vertical_axis.set_opacity(0)
@@ -3891,7 +3474,7 @@ class CrossEntropyDefinition(InteractiveScene):
             height = 4.5,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.3).to_corner(UL, buff = 0.7).shift(DOWN*0.7)
         first_distribution_chart.update()
         first_distribution_chart.clear_updaters()
@@ -3920,7 +3503,7 @@ class CrossEntropyDefinition(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 1,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.3).to_edge(UP, buff = 1.4).set_x(FRAME_WIDTH*0.25)
         second_distribution_chart.update()
         second_distribution_chart.clear_updaters()
@@ -4048,7 +3631,7 @@ class CrossEntropyDefinition(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.5,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         p_chart.suspend_updating()
         p_chart.bar_labels.set_color(WHITE)
@@ -4066,7 +3649,7 @@ class CrossEntropyDefinition(InteractiveScene):
             height = 3,
             include_vertical_axis = False,
             segments_height = 0.5,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         q_chart.suspend_updating()
         q_chart.bar_labels.set_color(WHITE)
@@ -4176,7 +3759,7 @@ class CrossEntropyDefinition(InteractiveScene):
             height = 3.5,
             include_vertical_axis = False,
             segments_height = 0.2,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
         )
         p_cross_entropy_chart = EntropyChart(
@@ -4196,7 +3779,7 @@ class CrossEntropyDefinition(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
         )
         q_entropy_chart.generate_target()
@@ -4259,7 +3842,7 @@ class KLDivergenceDefinition(InteractiveScene):
             height = 3.6,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.38)
         first_distribution_chart.update()
         first_distribution_chart.clear_updaters()
@@ -4284,7 +3867,7 @@ class KLDivergenceDefinition(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 1,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.38)
         second_distribution_chart.update()
         second_distribution_chart.clear_updaters()
@@ -4490,7 +4073,7 @@ class KLDivergenceDefinition(InteractiveScene):
             height = 2.5,
             include_vertical_axis = False,
             segments_height = 0.2,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).next_to(Q_label, UP, buff = 0.5)
         p_cross_entropy_chart = EntropyChart(
             P,
@@ -4503,7 +4086,7 @@ class KLDivergenceDefinition(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).next_to(P_label, UP, buff = 0.5)
         p_entropy_chart = EntropyChart(
             P,
@@ -4549,7 +4132,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             height = 4.5,
             include_vertical_axis = False,
             segments_height = 1,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.3).to_corner(UL, buff = 0.7).shift(DOWN*0.7)
         first_distribution_chart.update()
         first_distribution_chart.clear_updaters()
@@ -4578,7 +4161,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 1,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).scale(0.3).to_edge(UP, buff = 1.4).set_x(FRAME_WIDTH*0.25)
         second_distribution_chart.update()
         second_distribution_chart.clear_updaters()
@@ -4706,7 +4289,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.4,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         p_chart.suspend_updating()
         p_chart.bar_labels.set_color(WHITE)
@@ -4723,7 +4306,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             height = 2.3,
             include_vertical_axis = False,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         q_chart.suspend_updating()
         q_chart.bar_labels.set_color(WHITE)
@@ -4764,7 +4347,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_font_size = 30,
             segments_height = 0.4,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         p_chart_general.suspend_updating()
 
@@ -4791,7 +4374,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         q_chart_general.suspend_updating()
 
@@ -5250,7 +4833,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             bar_fill_colors = [GREEN_B, GREEN_D]
         ).move_to(q_entropy_chart)
         q_entropy_text = entropy_text
@@ -5527,7 +5110,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).move_to(q_entropy_chart)
         q_entropy_chart_two_events.suspend_updating()
 
@@ -5550,7 +5133,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_font_size = 30,
             segments_height = 0.4,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).move_to(qp_cross_entropy_chart)
         qp_cross_entropy_chart_two_events.suspend_updating()
 
@@ -5594,7 +5177,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             bar_fill_colors = [GREEN_B, GREEN_D]
         ).move_to(pq_cross_entropy_chart)
         pq_cross_entropy_chart_two_events.suspend_updating()
@@ -5631,7 +5214,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
         self.play(self.camera.frame.animate.scale(0.5).move_to(group1).shift(RIGHT*0.4), run_time = 2)
         information_1 = Tex(
             R"-\log_2 0.5 = 1", font_size = 30
-        ).set_color(RED).next_to(q_entropy_chart_two_events.bars[0], UP, buff = 0.1)
+        ).set_color(PURE_MAGENTA).next_to(q_entropy_chart_two_events.bars[0], UP, buff = 0.1)
         information_2 = Tex(
             R"-\log_2 0.5 = 1", font_size = 30
         ).set_color(LIGHT_PINK).next_to(q_entropy_chart_two_events.bars[1], UP, buff = 0.1)
@@ -5735,7 +5318,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).move_to(q_entropy_chart)
 
         qp_cross_entropy_chart_two_events_general = EntropyChart(
@@ -5757,7 +5340,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_font_size = 30,
             segments_height = 0.4,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).move_to(qp_cross_entropy_chart)
 
         p_entropy_chart_two_events_general = EntropyChart(
@@ -5799,7 +5382,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
             segments_height = 0.4,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             bar_fill_colors = [GREEN_B, GREEN_D]
         ).move_to(pq_cross_entropy_chart)
         q_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
@@ -5886,13 +5469,13 @@ class CrossEntropyDefinitionV2(InteractiveScene):
                     width = q_entropy_chart.segments.get_width()
                 ).next_to(q_entropy_chart.bars, DOWN, buff = 1.6)
                 self.add(number_line_q)
-                q1_dot = Group(TrueDot(), GlowDot()).set_color(RED)
+                q1_dot = Group(TrueDot(), GlowDot()).set_color(PURE_MAGENTA)
                 q1_dot.add_updater(lambda m: m.move_to(number_line_q.n2p(q_entropy_chart.distribution_trackers[0].get_value())))
-                q1_triangle = Triangle(fill_opacity = 0.7, fill_color = RED, stroke_width = 0).stretch(1.5, 1).set_width(0.15)
+                q1_triangle = Triangle(fill_opacity = 0.7, fill_color = PURE_MAGENTA, stroke_width = 0).stretch(1.5, 1).set_width(0.15)
                 q1_triangle.add_updater(
                     lambda m: m.next_to(number_line_q.n2p(q_entropy_chart.distribution_trackers[0].get_value()), DOWN, buff = 0)
                 )
-                q1_label = Tex("q_1", font_size = 42).set_color(RED)
+                q1_label = Tex("q_1", font_size = 42).set_color(PURE_MAGENTA)
                 q1_label.add_updater(lambda m: m.next_to(q1_triangle, DOWN, buff = 0.1))
                 number_line_q_group = Group(number_line_q, q1_dot, q1_triangle, q1_label)
                 number_line_q_opacity_tracker = ValueTracker(0)
@@ -6134,7 +5717,7 @@ class CrossEntropyDefinitionV2(InteractiveScene):
         graph = always_redraw(get_curve)
         graph.suspend_updating()
         graph.insert_n_curves(10000)
-        f_of_q_dot = Group(TrueDot(radius = 0.1), GlowDot(glow_factor = 1)).set_color(RED)
+        f_of_q_dot = Group(TrueDot(radius = 0.1), GlowDot(glow_factor = 1)).set_color(PURE_MAGENTA)
         f_of_q_dot.add_updater(
             lambda m: m.move_to(
                 axes.c2p(
@@ -6354,7 +5937,7 @@ class CrossEntropyIsAsymmetric(InteractiveScene):
             height = 3,
             include_vertical_axis = False,
             segments_height = 0.3,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).to_corner(UL, buff = 0.5)
         Q_entropy_chart.clear_updaters()
 
@@ -6369,7 +5952,7 @@ class CrossEntropyIsAsymmetric(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.3,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK]
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).to_corner(UR, buff = 0.5)
         QP_cross_entropy_chart.clear_updaters()
 
@@ -6408,7 +5991,7 @@ class CrossEntropyIsAsymmetric(InteractiveScene):
             height = 3,
             include_vertical_axis = False,
             segments_height = 0.3,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             bar_fill_colors = [GREEN_B, GREEN_D]
         ).to_corner(DL, buff = 0.5)
         PQ_cross_entropy_chart.clear_updaters()
@@ -6626,7 +6209,7 @@ class EntropyChartTest(InteractiveScene):
             #     for i in range(4)
             # ],
             width = 5,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         ).to_edge(DOWN, buff = 1)
         self.add(chart)
         self.play(chart.set_distribution([1/4, 1/8, 1/2, 1/8]))
@@ -7042,7 +6625,7 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             height = 3.5,
             include_vertical_axis = False,
             segments_height = 0.2,
-            fill_colors = [RED, LIGHT_PINK],
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
         )
         qp_cross_entropy_chart = EntropyChart(
@@ -7062,7 +6645,7 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [RED, LIGHT_PINK],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
         )
         VGroup(q_entropy_chart, qp_cross_entropy_chart).arrange(buff = 1.5)
@@ -7308,7 +6891,7 @@ class KLDivergenceDemo(InteractiveScene):
             height = 3.5,
             include_vertical_axis = False,
             segments_height = 0.2,
-            fill_colors = [RED, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
         )
         q_entropy_chart.set_stroke(width = 1)
         q_entropy_chart.add_updater(lambda m: m.bars.set_stroke(width = 1))
@@ -7406,20 +6989,23 @@ class KLDivergenceDemo(InteractiveScene):
             self.wait(1)
 
 
-class InsertsTest(InteractiveScene):
+class DistanceBetweenDistributions(InteractiveScene):
     def construct(self):
-        # Add a circle
-        circ = Circle()
-        self.play(ShowCreation(circ))
-        self.wait(2)
-
-        # Add a square
-        square = Square()
-        self.play(ShowCreation(square))
-        self.wait(2)
-
-        # Move the circle
-        self.play(circ.animate.shift(LEFT*2))
-
-        # Move the square
-        self.play(square.animate.shift(RIGHT*2))
+        # Add the two distributions
+        Q = StackedProbDistribution(
+            random_distribution(7),
+            labels = None,
+            width = 8,
+            height = 0.4,
+            fill_colors = (LIGHT_PINK, PURE_MAGENTA)
+        ).to_edge(LEFT, buff = 1.5)
+        probability_labels = VGroup(*[
+            Tex(
+                (("q_" + str(i + 1)) if i < len(Q.bars) - 2 else R"\ldots" if i == len(Q.bars) - 2 else "q_n"),
+                font_size = 35
+            ).set_color(interpolate_color(LIGHT_PINK, PURE_MAGENTA, i//(len(Q.bars) - 1)))
+            for i in range(len(Q.bars))
+        ])
+        for label, segment in zip(probability_labels, Q.bars):
+            label.add_updater(lambda m, segment = segment: m.next_to(segment, DOWN))
+        self.add(Q, probability_labels)
