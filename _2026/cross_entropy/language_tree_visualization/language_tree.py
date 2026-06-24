@@ -516,7 +516,7 @@ class BasicIdea(InteractiveScene):
         new_doc.target[0].stretch(0.15, 1)
         new_doc.target[1].stretch(0.25, 1)
         new_doc.target.arrange(DOWN, buff = 0).set_width(2.2).move_to(new_doc)
-        gzip_ab = TexText("GZIP(AB)", font_size = 35, tex_to_color_map = {"A": BLUE, "B": GREEN}).next_to(new_doc.target, UP)
+        gzip_ab = TexText("GZIP(AB)", font_size = 35, tex_to_color_map = {"A": TEAL, "B": GREEN}).next_to(new_doc.target, UP)
         self.play(AnimationGroup(MoveToTarget(new_doc), Write(gzip_ab), lag_ratio = 0.8))
         self.wait(1)
 
@@ -529,7 +529,7 @@ class BasicIdea(InteractiveScene):
         self.wait(0.5)
         a_copy_2.generate_target()
         a_copy_2.target.set_stroke(width = 0).stretch(0.15, 1).set_width(2.2)
-        gzip_a = TexText("GZIP(A)", font_size = 35, tex_to_color_map = {"A": BLUE, "B": TEAL}).next_to(a_copy_2.target, UP)
+        gzip_a = TexText("GZIP(A)", font_size = 35, tex_to_color_map = {"A": TEAL, "B": GREEN}).next_to(a_copy_2.target, UP)
         self.play(AnimationGroup(MoveToTarget(a_copy_2), Write(gzip_a), lag_ratio = 0.8))
         self.wait(2)
 
@@ -565,7 +565,7 @@ class BasicIdea(InteractiveScene):
         new_doc.target[1].stretch(0.75, 1).next_to(new_doc.target[0], DOWN, buff = 0)
         for rect in new_doc.target[1]:
             rect.set_fill(color = interpolate_color(BLUE_A, BLUE_E, random.random()))
-        self.play(MoveToTarget(new_doc), run_time = 2)
+        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = BLUE), run_time = 2)
         self.wait(2)
 
         # Increase the "linguistic difference"
@@ -573,7 +573,7 @@ class BasicIdea(InteractiveScene):
         new_doc.target[1].stretch(3, 1).next_to(new_doc.target[0], DOWN, buff = 0)
         for rect in new_doc.target[1]:
             rect.set_fill(color = interpolate_color(RED_A, RED_E, random.random()))
-        self.play(MoveToTarget(new_doc), run_time = 2)
+        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = RED), run_time = 2)
         self.wait(2)
 
 

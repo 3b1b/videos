@@ -2462,7 +2462,7 @@ class RobotEncodingsV2(InteractiveScene):
             FadeOut(VGroup(log_of_both_sides[R"\log_2(2"], log_of_both_sides[")"][1])),
             ReplacementTransform(log_of_both_sides["-n"], log_of_both_sides_simplified["-n"])
         , run_time = 1)
-        negated = Tex(R"\text{Information} = -\log_2(p) = {n}").match_y(log_of_both_sides_simplified)
+        negated = Tex(R"\text{Information} =  -\log_2(p) = {n}").match_y(log_of_both_sides_simplified)
         negated["Information"].set_color(TEAL)
         negated.shift(RIGHT*(log_of_both_sides_simplified["="].get_x() - negated["="][1].get_x()))
         self.play(
@@ -6992,20 +6992,121 @@ class KLDivergenceDemo(InteractiveScene):
 class DistanceBetweenDistributions(InteractiveScene):
     def construct(self):
         # Add the two distributions
+        distribution = random_distribution(7)
         Q = StackedProbDistribution(
-            random_distribution(7),
+            distribution,
             labels = None,
             width = 8,
             height = 0.4,
-            fill_colors = (LIGHT_PINK, PURE_MAGENTA)
-        ).to_edge(LEFT, buff = 1.5)
-        probability_labels = VGroup(*[
+            fill_colors = (LIGHT_PINK, PURE_MAGENTA),
+            stroke_width = 3
+        ).to_edge(LEFT, buff = 1.5).shift(UP*1.2)
+        probability_labels_1 = VGroup(*[
             Tex(
                 (("q_" + str(i + 1)) if i < len(Q.bars) - 2 else R"\ldots" if i == len(Q.bars) - 2 else "q_n"),
                 font_size = 35
             ).set_color(interpolate_color(LIGHT_PINK, PURE_MAGENTA, i//(len(Q.bars) - 1)))
             for i in range(len(Q.bars))
         ])
-        for label, segment in zip(probability_labels, Q.bars):
+        for label, segment in zip(probability_labels_1, Q.bars):
             label.add_updater(lambda m, segment = segment: m.next_to(segment, DOWN))
-        self.add(Q, probability_labels)
+
+        P = StackedProbDistribution(
+            distribution,
+            labels = None,
+            width = 8,
+            height = 0.4,
+            fill_colors = (GREEN_B, GREEN_D),
+            stroke_width = 3
+        ).to_edge(LEFT, buff = 1.5).shift(DOWN*1.2)
+        probability_labels_2 = VGroup(*[
+            Tex(
+                (("p_" + str(i + 1)) if i < len(P.bars) - 2 else R"\ldots" if i == len(Q.bars) - 2 else "p_n"),
+                font_size = 35
+            ).set_color(interpolate_color(GREEN_B, GREEN_D, i//(len(Q.bars) - 1)))
+            for i in range(len(P.bars))
+        ])
+        for label, segment in zip(probability_labels_2, P.bars):
+            label.add_updater(lambda m, segment = segment: m.next_to(segment, DOWN))
+
+        self.add(Q, probability_labels_1, P, probability_labels_2)
+
+        # Add Q and P symbols
+        def get_kl_divergence(Q, P):
+            Q_total_width = Q.get_width()
+            Q_current_distribution = [bar.get_width()/Q_total_width for bar in Q.bars]
+            P_total_width = P.get_width()
+            P_current_distribution = [bar.get_width()/P_total_width for bar in P.bars]
+            return sum([p*math.log2(p/q) for q, p in zip(Q_current_distribution, P_current_distribution)])
+        multiplier = 30
+        Q_symbol = VGroup(Tex("Q", font_size = 60), Tex("-").stretch(0.5, 0)).arrange(RIGHT).set_color(PINK)
+        P_symbol = VGroup(Tex("P", font_size = 60), Tex("-").stretch(0.5, 0)).arrange(LEFT).set_color(GREEN)
+        VGroup(Q_symbol, P_symbol).arrange(buff = 0).to_edge(RIGHT, buff = 2)
+        self.add(Q_symbol, P_symbol)
+
+        # Add Dashed lines
+        dashed_lines = VGroup(*[
+            DashedLine(P.bars.get_bottom(), Q.bars.get_top())
+            for _ in range(len(distribution) + 1)
+        ]).set_color(GREY).set_opacity(0.6).align_to(P.bars, DOWN)
+        for line, bar in zip(dashed_lines, P.bars):
+            line.set_x(bar.get_left()[0])
+        dashed_lines[-1].set_x(P.bars[-1].get_right()[0])
+        self.add(dashed_lines)
+
+        # Change Q to be closer / further away from P
+        for _ in range(15):
+            Q.generate_target()
+            Q.target.set_distribution(random_distribution(7, thresh = 1/10))
+            self.play(
+                MoveToTarget(Q),
+                Q_symbol.animate.set_y(multiplier*get_kl_divergence(Q.target, P)),
+                P_symbol.animate.set_y(-multiplier*get_kl_divergence(Q.target, P))
+            , run_time = 1.5)
+            self.wait(0.5)
+
+class WaysToMeasureProbabilityDistributionDifferences(InteractiveScene):
+    def construct(self):
+        # Pi creature is confused thinking about many different possible formulas for measuring sorts of "distance" between distributions
+        randy = Randolph(flip_at_start = True).to_edge(RIGHT, buff = 1).look(LEFT)
+        self.add(randy)
+        self.wait(1)
+
+        # Add the list of formulas
+        formulas = BulletedList(
+            R"L1: $\sum_i |p_i - q_i|$",
+            R"L2: $\sum_i (p_i - q_i)^2$",
+            R"Bhattacharyya: $-\ln \sum_i \sqrt{p_i q_i}$",
+            R"Hellinger: $\frac{1}{2} \sum_i \left(\sqrt{p_i} - \sqrt{q_i}\right)^2$",
+            R"Cross Entropy: $\sum_i p_i (-\log_2 q_i)$",
+            R"KL Divergence: $\sum_i p_i \left(\log_2\frac{p_i}{q_i}\right)$",
+            font_size = 45,
+            tex_to_color_map = {"p_i": GREEN, "q_i": PINK}
+        ).to_edge(LEFT, buff = 1)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(*[FadeIn(formula, shift = DOWN*0.4) for formula in formulas], lag_ratio = 0.2, run_time = 2.5),
+                randy.change("confused")
+            , lag_ratio = 0.2)
+        )
+        self.wait(1)
+        self.play(Blink(randy))
+        self.wait(1)
+
+        self.play(randy.change("pondering", formulas[-2:]), FancyCircumscribe(formulas[-2:], run_time = 5))
+
+        # Focus on Cross Entropy and KL Divergence
+        self.play(
+            AnimationGroup(
+                AnimationGroup(*[
+                    FadeOut(formula, shift = UP)
+                    for formula in formulas[:-2]
+                ], lag_ratio = 0.1),
+                AnimationGroup(
+                    formulas[-2:].animate.scale(1.1).set_y(0).to_edge(LEFT, buff = 1),
+                    randy.change("thinking", LEFT)
+                )
+            , lag_ratio = 0.32)
+        , run_time = 2)
+        self.play(Blink(randy))
+        self.wait(2)
