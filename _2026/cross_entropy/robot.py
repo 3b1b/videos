@@ -5866,6 +5866,1439 @@ class CrossEntropyDefinitionV2(InteractiveScene):
             self.play(*anims, run_time = 4)
 
 
+class CrossEntropyDefinitionV3(InteractiveScene):
+    def construct(self):
+        # Show the chart for the first distribution
+        encoding = ["0", "10", "110", "111"]
+        first_distribution = [1/2, 1/4, 1/8, 1/8]
+        first_distribution_chart = EntropyChart(
+            first_distribution,
+            event_labels = VGroup(*[InstructionArrow([UP, DOWN, LEFT, RIGHT][i]) for i in range(4)]),
+            probability_labels = [
+                Tex(R"\frac{1}{" + ["2", "4", "8", "8"][i] + "}", font_size = 65)
+                for i in range(4)
+            ],
+            bar_labels = [
+                Tex(encoding[i], font_size = 57)
+                for i in range(4)
+            ],
+            bar_heights = [1, 2, 3, 3],
+            width = 12,
+            height = 4.5,
+            include_vertical_axis = False,
+            segments_height = 1,
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).scale(0.3).to_corner(UL, buff = 0.7).shift(DOWN*0.7)
+        first_distribution_chart.update()
+        first_distribution_chart.clear_updaters()
+        first_distribution_chart.bar_labels.set_color(WHITE)
+        self.play(first_distribution_chart.create(), run_time = 2)
+        self.wait(2)
+        self.play(first_distribution_chart.animate.set_x(-FRAME_WIDTH*0.25), run_time = 2.5)
+        self.wait(2)
+
+        # Build the segments for the second chart
+        second_distribution = [1/8, 1/8, 1/4, 1/2]
+        second_distribution_chart = EntropyChart(
+            second_distribution,
+            event_labels = VGroup(*[InstructionArrow([UP, DOWN, LEFT, RIGHT][i]) for i in range(4)]),
+            probability_labels = [
+                Tex(R"\frac{1}{" + ["8", "8", "4", "2"][i] + "}", font_size = 65)
+                for i in range(4)
+            ],
+            bar_labels = [
+                Tex(encoding[i], font_size = 57)
+                for i in range(4)
+            ],
+            bar_heights = [1, 2, 3, 3],
+            width = 12,
+            height = 4.5,
+            include_vertical_axis = False,
+            segments_height = 1,
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).scale(0.3).to_edge(UP, buff = 1.4).set_x(FRAME_WIDTH*0.25)
+        second_distribution_chart.update()
+        second_distribution_chart.clear_updaters()
+        second_distribution_chart.bar_labels.set_color(WHITE)
+        for segment, e_label, p_label in list(zip(
+            second_distribution_chart.segments.bars,
+            second_distribution_chart.event_labels,
+            second_distribution_chart.probability_labels
+        )):
+            self.play(
+                AnimationGroup(
+                    GrowFromCenter(segment),
+                    FadeIn(e_label),
+                    FadeIn(p_label),
+                    suspend_mobject_updating = True
+                , run_time = 2)
+            )
+            self.wait(2)
+        self.wait(4)
+
+        # The bars hop over from the old distribution to the new one
+        self.play(
+            AnimationGroup(*[
+                TransformFromCopy(VGroup(bar1, label1), VGroup(bar2, label2), run_time = 3)
+                for bar1, label1, bar2, label2 in list(zip(
+                    first_distribution_chart.bars,
+                    first_distribution_chart.bar_labels,
+                    second_distribution_chart.bars,
+                    second_distribution_chart.bar_labels
+                ))[::-1]
+            ], lag_ratio = 0.3)
+        )
+        self.wait(2)
+
+        # Center everything
+        self.play(
+            VGroup(first_distribution_chart, second_distribution_chart).animate.scale(1.3).arrange(buff = 2).shift(DOWN*0.5)
+        , run_time = 2.5)
+
+        # Calculate the cross entropy
+        weighted_sum_lines = VGroup(
+            Tex(R"\frac{1}{8} \cdot 1", font_size = 23).next_to(second_distribution_chart.bars[0], UP),
+            Tex(R"\frac{1}{8} \cdot 2", font_size = 23).next_to(second_distribution_chart.bars[1], UP),
+            Tex(R"\frac{1}{4} \cdot 3", font_size = 23).next_to(second_distribution_chart.bars[2], UP),
+            Tex(R"\frac{1}{2} \cdot 3", font_size = 23).next_to(second_distribution_chart.bars[3], UP)
+        )
+        for line in weighted_sum_lines:
+            line[:3].set_color(GREEN)
+            line[4:].set_color(PINK)
+
+        self.play(
+            AnimationGroup(
+                TransformFromCopy(second_distribution_chart.probability_labels[0], weighted_sum_lines[0][:-2]),
+                FadeIn(weighted_sum_lines[0][-2:], shift = UP*0.1)
+            , run_time = 1.5)
+        )
+        self.wait(1.5)
+        self.play(
+            AnimationGroup(
+                TransformFromCopy(second_distribution_chart.probability_labels[1], weighted_sum_lines[1][:-2]),
+                FadeIn(weighted_sum_lines[1][-2:], shift = UP*0.1)
+            , run_time = 1.5)
+        )
+        self.wait(2.5)
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    TransformFromCopy(label, line[:-2]),
+                    FadeIn(line[-2:], shift = UP*0.1)
+                , run_time = 1.5)
+                for label, line in zip(second_distribution_chart.probability_labels[2:], weighted_sum_lines[2:])
+            ], lag_ratio = 0.3)
+        )
+
+        self.wait(1)
+        sum_result = Tex(
+            R"\frac{1}{8} \cdot 1 + \frac{1}{8} \cdot 2 + \frac{1}{4} \cdot 3 + \frac{1}{2} \cdot 3 \\ = 2.625 \text{ bits}",
+            font_size = 32,
+            tex_to_color_map = {
+                R"\frac{1}{8}": GREEN,
+                R"\frac{1}{4}": GREEN,
+                R"\frac{1}{2}": GREEN,
+                " 1 ": PINK,
+                " 2 ": PINK,
+                " 3 ": PINK
+            }
+        ).next_to(second_distribution_chart, UP, buff = 0.3)
+
+        self.play(TransformMatchingShapes(weighted_sum_lines, sum_result[:-10], path_arc = PI*0.2, run_time = 1.5))
+        self.wait(0.5)
+        self.play(FadeIn(sum_result[R"= 2.625 \text{ bits}"]))
+        self.wait(2)
+
+        # Write "cross entropy"
+        cross_entropy_text = TexText("Cross Entropy:").set_fill(color = [PINK, GREEN]).next_to(sum_result, UP)
+        for i, letter in enumerate(cross_entropy_text):
+            letter.set_color(interpolate_color(PINK, GREEN, i/(len(cross_entropy_text) - 1)))
+        self.play(Write(cross_entropy_text, run_time = 2.5))
+        self.wait(0.5)
+        rect1 = SurroundingRectangle(
+            first_distribution_chart.probability_labels, stroke_width = 2, stroke_color = PINK
+        ).stretch_to_fit_width(first_distribution_chart.bars.get_width()).match_x(first_distribution_chart.bars)
+        self.play(FadeIn(rect1), run_time = 1.5)
+        self.wait(3)
+        rect2 = SurroundingRectangle(
+            second_distribution_chart.probability_labels, stroke_width = 2, stroke_color = GREEN
+        ).stretch_to_fit_width(second_distribution_chart.bars.get_width()).match_x(second_distribution_chart.bars)
+        self.play(ReplacementTransform(rect1, rect2), run_time = 2.5)
+        self.wait(2)
+        self.play(FadeOut(rect2))
+        self.wait(2)
+
+        # Label the two charts with p and q
+        p_chart = EntropyChart(
+            second_distribution,
+            event_labels = VGroup(*[InstructionArrow([UP, DOWN, LEFT, RIGHT][i]).scale(0.6) for i in range(4)]),
+            probability_labels = VGroup(*[Tex(f"p_{i + 1}", font_size = 42) for i in range(4)]),
+            bar_labels = [
+                Tex(encoding[i], font_size = 27)
+                for i in range(4)
+            ],
+            bar_heights = [1, 2, 3, 3],
+            width = second_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = False,
+            segments_height = 0.4,
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        )
+        p_chart.suspend_updating()
+        p_chart.bar_labels.set_color(WHITE)
+
+        q_chart = EntropyChart(
+            first_distribution,
+            event_labels = VGroup(*[InstructionArrow([UP, DOWN, LEFT, RIGHT][i]).scale(0.6) for i in range(4)]),
+            probability_labels = VGroup(*[Tex(f"q_{i + 1}", font_size = 42) for i in range(4)]),
+            bar_labels = [
+                Tex(encoding[i], font_size = 27)
+                for i in range(4)
+            ],
+            width = first_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = False,
+            segments_height = 0.4,
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        )
+        q_chart.suspend_updating()
+        q_chart.bar_labels.set_color(WHITE)
+
+        p_chart.match_x(second_distribution_chart).align_to(second_distribution_chart.bars, UP)
+        q_chart.match_x(first_distribution_chart).align_to(first_distribution_chart.bars, UP)
+        self.play(
+            FadeOut(VGroup(cross_entropy_text, sum_result)),
+            ReplacementTransform(second_distribution_chart, p_chart, suspend_mobject_updating = True)
+        , run_time = 2)
+        self.wait(2)
+        self.play(ReplacementTransform(first_distribution_chart, q_chart, suspend_mobject_updating = True), run_time = 2)
+        self.wait(3)
+
+        # Generalize the charts
+        p_chart_general = EntropyChart(
+            second_distribution,
+            event_labels = VGroup(*[
+                Tex(
+                    (("s_" + str(i + 1)) if i < len(second_distribution) - 2 else R"\ldots" if i == len(second_distribution) - 2 else "s_n"),
+                    font_size = 35
+                ).set_color(BLACK)
+                for i in range(len(second_distribution))
+            ]),
+            probability_labels = VGroup(*[
+                Tex(
+                    (("p_" + str(i + 1)) if i < len(second_distribution) - 2 else R"\ldots" if i == len(second_distribution) - 2 else "p_n"),
+                    font_size = 42
+                )
+                for i in range(len(second_distribution))
+            ]),
+            bar_labels = VMobject(),
+            bar_heights = [1, 2, 3, 3],
+            width = second_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        )
+        p_chart_general.suspend_updating()
+
+        q_chart_general = EntropyChart(
+            first_distribution,
+            event_labels = VGroup(*[
+                Tex(
+                    (("s_" + str(i + 1)) if i < len(first_distribution) - 2 else R"\ldots" if i == len(first_distribution) - 2 else "s_n"),
+                    font_size = 35
+                ).set_color(BLACK)
+                for i in range(len(first_distribution))
+            ]),
+            probability_labels = VGroup(*[
+                Tex(
+                    (("q_" + str(i + 1)) if i < len(first_distribution) - 2 else R"\ldots" if i == len(first_distribution) - 2 else "q_n"),
+                    font_size = 42
+                )
+                for i in range(len(first_distribution))
+            ]),
+            bar_labels = VMobject(),
+            width = first_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        )
+        q_chart_general.suspend_updating()
+
+        p_chart_general.shift(p_chart.bars.get_center() - p_chart_general.bars.get_center())
+        q_chart_general.shift(q_chart.bars.get_center() - q_chart_general.bars.get_center())
+        self.play(
+            ReplacementTransform(
+                VGroup(q_chart.bars, q_chart.segments, q_chart.probability_labels),
+                VGroup(q_chart_general.bars, q_chart_general.segments, q_chart_general.probability_labels)
+            , suspend_mobject_updating = True),
+            ReplacementTransform(
+                VGroup(p_chart.bars, p_chart.segments, p_chart.probability_labels),
+                VGroup(p_chart_general.bars, p_chart_general.segments, p_chart_general.probability_labels)
+            , suspend_mobject_updating = True),
+            FadeOut(VGroup(q_chart.bar_labels, p_chart.bar_labels))
+        , run_time = 2)
+        self.wait(2)
+
+        self.remove(q_chart, p_chart)
+        self.add(q_chart_general, p_chart_general)
+        VGroup(
+            q_chart_general.vertical_axis,
+            q_chart_general.vertical_axis_label,
+            q_chart_general.reference_lines,
+            p_chart_general.vertical_axis,
+            p_chart_general.vertical_axis_label,
+            p_chart_general.reference_lines
+        ).set_opacity(0)
+
+        # Show different possibilities for what the symbols could mean
+        alternate_symbols_q_1 = VGroup(*[
+            InstructionArrow([UP, DOWN, LEFT, RIGHT][i]).scale(0.08)
+            for i in range(4)
+        ])
+        alternate_symbols_p_1 = alternate_symbols_q_1.copy()
+        for i, (q_symb, p_symb) in enumerate(zip(alternate_symbols_q_1, alternate_symbols_p_1)):
+            q_symb.move_to(q_chart_general.event_labels[i])
+            p_symb.move_to(p_chart_general.event_labels[i])
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(q_chart_general.event_labels, alternate_symbols_q_1)
+            ], lag_ratio = 0.2),
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(p_chart_general.event_labels, alternate_symbols_p_1)
+            ], lag_ratio = 0.2)
+        )
+        self.wait(0.8)
+
+        alternate_symbols_q_2 = VGroup(*[
+            TexText(["a", "b", "c", "d"][i], font_size = 35).set_color(BLACK)
+            for i in range(4)
+        ])
+        alternate_symbols_p_2 = alternate_symbols_q_2.copy()
+        for i, (q_symb, p_symb) in enumerate(zip(alternate_symbols_q_2, alternate_symbols_p_2)):
+            q_symb.next_to(q_chart_general.probability_labels[0], UP, buff = 0.345).match_x(q_chart_general.probability_labels[i])
+            p_symb.next_to(p_chart_general.probability_labels[0], UP, buff = 0.345).match_x(p_chart_general.probability_labels[i])
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(alternate_symbols_q_1, alternate_symbols_q_2)
+            ], lag_ratio = 0.2),
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(alternate_symbols_p_1, alternate_symbols_p_2)
+            ], lag_ratio = 0.2)
+        )
+        self.wait(0.8)
+
+        alternate_symbols_q_3 = VGroup(*[
+            Tex(["e", R"\wedge", R"\pi", "i"][i], font_size = 40 if i != 1 else 20).set_color(BLACK)
+            for i in range(4)
+        ])
+        alternate_symbols_p_3 = alternate_symbols_q_3.copy()
+        for i, (q_symb, p_symb) in enumerate(zip(alternate_symbols_q_3, alternate_symbols_p_3)):
+            q_symb.next_to(q_chart_general.probability_labels[0], UP, buff = 0.33 if i != 1 else 0.455).match_x(q_chart_general.probability_labels[i])
+            p_symb.next_to(p_chart_general.probability_labels[0], UP, buff = 0.33 if i != 1 else 0.455).match_x(p_chart_general.probability_labels[i])
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(alternate_symbols_q_2, alternate_symbols_q_3)
+            ], lag_ratio = 0.2),
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(label),
+                    FadeIn(alternate_label)
+                )
+                for label, alternate_label in zip(alternate_symbols_p_2, alternate_symbols_p_3)
+            ], lag_ratio = 0.2)
+        )
+        self.wait(0.8)
+
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(alternate_label),
+                    FadeIn(label)
+                )
+                for alternate_label, label in zip(alternate_symbols_q_3, q_chart_general.event_labels)
+            ], lag_ratio = 0.2),
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeOut(alternate_label),
+                    FadeIn(label)
+                )
+                for alternate_label, label in zip(alternate_symbols_p_3, p_chart_general.event_labels)
+            ], lag_ratio = 0.2)
+        )
+        self.wait(0.8)
+
+
+        # Show bar heights for q chart
+        q_chart = q_chart_general
+        p_chart = p_chart_general
+        q_chart.resume_updating()
+        p_chart.resume_updating()
+        self.play(
+            q_chart.segments.bars.animate.stretch(0.2, 1).align_to(q_chart.segments.bars, DOWN),
+            p_chart.segments.bars.animate.stretch(0.2, 1).align_to(p_chart.segments.bars, DOWN),
+            AnimationGroup(*[label.animate.scale(0.01).shift(DOWN*0.2).set_opacity(0) for label in q_chart.event_labels]),
+            AnimationGroup(*[label.animate.scale(0.01).shift(DOWN*0.2).set_opacity(0) for label in p_chart.event_labels])
+        , run_time = 1)
+        self.remove(q_chart.event_labels, p_chart.event_labels)
+        VGroup(
+            q_chart.vertical_axis, q_chart.vertical_axis_label, q_chart.reference_lines
+        ).shift(
+            DOWN*(q_chart.reference_lines[0][0].get_y() - q_chart.segments.bars.get_top()[1])
+        )
+        VGroup(
+            p_chart.vertical_axis, p_chart.vertical_axis_label, p_chart.reference_lines
+        ).shift(
+            DOWN*(p_chart.reference_lines[0][0].get_y() - p_chart.segments.bars.get_top()[1])
+        )
+        q_chart.suspend_updating()
+        p_chart.suspend_updating()
+
+        self.play(FancyCircumscribe(VGroup(q_chart.bars, q_chart.probability_labels)))
+
+        p_chart.save_state()
+        self.play(
+            self.camera.frame.animate.match_x(VGroup(q_chart, p_chart)).shift(UP*0.7),
+            AnimationGroup(
+                p_chart.animate.fade(0.9),
+                AnimationGroup(
+                    Write(q_chart.vertical_axis_label.set_opacity(1), run_time = 2),
+                    ShowCreation(q_chart.vertical_axis.set_opacity(1)),
+                    AnimationGroup(*[
+                        ShowCreation(line.set_opacity(1))
+                        for line in q_chart.reference_lines
+                    ], lag_ratio = 0.1)
+                )
+            , lag_ratio = 0.3)
+        , run_time = 2)
+        self.wait(1)
+        Group(*self.mobjects).shift(-self.camera.frame.get_center())
+        self.camera.frame.center()
+
+        # Show the avg. bits per instruction for Q
+        q_bits_per_instruction = TexText(
+            R"Avg. bits per instruction: \\[0.1in] $\displaystyle\sum_i q_i (-\log_2 q_i)$",
+            font_size = 35,
+            tex_to_color_map = {
+                "q_i": PINK
+            }
+        ).next_to(q_chart.bars, UP, buff = 1)
+        self.play(Write(q_bits_per_instruction), run_time = 3)
+        self.wait(1.5)
+
+        q_bits_per_instruction.save_state()
+        q_chart.save_state()
+        for i in range(4):
+            anims = [
+                AnimationGroup(
+                    VGroup(
+                        q_chart.segments.bars[i + 1:],
+                        q_chart.event_labels[i + 1:],
+                        q_chart.probability_labels[i + 1:],
+                        q_chart.segments.bars[:i],
+                        q_chart.event_labels[:i],
+                        q_chart.probability_labels[:i]
+                    ).animate.set_opacity(0.2),
+                    VGroup(
+                        q_chart.segments.bars[i],
+                        q_chart.event_labels[i],
+                        q_chart.probability_labels[i]
+                    ).animate.set_opacity(1),
+                )
+            ]
+            if i == 0:
+                anims.append(
+                    AnimationGroup(
+                        q_bits_per_instruction.animate.fade(0.8),
+                        q_bits_per_instruction["q_i"][0].animate.set_opacity(1),
+                        q_chart.bars.animate.fade(0.8)
+                    )
+                )
+            self.play(AnimationGroup(*anims))
+
+        for i in range(4):
+            anims = [
+                AnimationGroup(
+                    VGroup(
+                        q_chart.bars[i + 1:],
+                        q_chart.bars[:i],
+                        q_chart.bar_labels[:i],
+                    ).animate.set_opacity(0.2),
+                    q_chart.bars[i].animate.set_opacity(1),
+                )
+            ]
+            if i == 0:
+                anims.append(
+                    AnimationGroup(
+                        q_bits_per_instruction[-8:-1].animate.set_opacity(1),
+                        q_bits_per_instruction["q_i"][0].animate.fade(0.8),
+                        VGroup(
+                            q_chart.segments.bars[3],
+                            q_chart.event_labels[3],
+                            q_chart.probability_labels[3]
+                        ).animate.fade(0.8)
+                    )
+                )
+            self.play(AnimationGroup(*anims))
+        self.play(q_chart.animate.restore(), q_bits_per_instruction.animate.restore(), run_time = 2)
+        self.wait(2)
+
+        # Label the equation with "entropy"
+        entropy_text = TexText(
+            "Entropy of Q",
+            tex_to_color_map = {"Q": PINK}
+        ).match_height(
+            q_bits_per_instruction["Avg. bits per instruction:"]
+        ).move_to(
+            q_bits_per_instruction["Avg. bits per instruction:"]
+        )
+        self.play(FadeOut(q_bits_per_instruction["Avg. bits per instruction:"]), FadeIn(entropy_text))
+        self.wait(2)
+
+        # Highlight the area of the diagram
+        q_entropy_formula = q_bits_per_instruction[len("Avg.bitsperinstruction:"):]
+        self.play(AnimationGroup(*[Indicate(bar, scale_factor = 1.1) for bar in q_chart.bars], lag_ratio = 0.1, run_time = 2.5))
+
+        # Show why the area represents the expression
+        entropy_text.save_state()
+        q_entropy_formula.save_state()
+        q_chart.save_state()
+        for i in range(4):
+            anims = [
+                AnimationGroup(
+                    VGroup(
+                        q_chart.segments.bars[i + 1:],
+                        q_chart.event_labels[i + 1:],
+                        q_chart.probability_labels[i + 1:],
+                        q_chart.segments.bars[:i],
+                        q_chart.event_labels[:i],
+                        q_chart.probability_labels[:i]
+                    ).animate.set_opacity(0.2),
+                    VGroup(
+                        q_chart.segments.bars[i],
+                        q_chart.event_labels[i],
+                        q_chart.probability_labels[i]
+                    ).animate.set_opacity(1),
+                )
+            ]
+            if i == 0:
+                anims.append(
+                    AnimationGroup(
+                        entropy_text.animate.fade(0.8),
+                        q_entropy_formula.animate.fade(0.8),
+                        q_bits_per_instruction["q_i"][0].animate.set_opacity(1),
+                        q_chart.bars.animate.fade(0.8)
+                    )
+                )
+            self.play(AnimationGroup(*anims), run_time = 0.62)
+
+        for i in range(4):
+            anims = [
+                AnimationGroup(
+                    VGroup(
+                        q_chart.bars[i + 1:],
+                        q_chart.bars[:i],
+                        q_chart.bar_labels[:i],
+                    ).animate.set_opacity(0.2),
+                    q_chart.bars[i].animate.set_opacity(1),
+                )
+            ]
+            if i == 0:
+                anims.append(
+                    AnimationGroup(
+                        q_bits_per_instruction[-8:-1].animate.set_opacity(1),
+                        q_bits_per_instruction["q_i"][0].animate.fade(0.8),
+                        VGroup(
+                            q_chart.segments.bars[3],
+                            q_chart.event_labels[3],
+                            q_chart.probability_labels[3]
+                        ).animate.fade(0.8)
+                    )
+                )
+            self.play(AnimationGroup(*anims), run_time = 0.62)
+        self.play(q_chart.animate.restore(), q_entropy_formula.animate.restore(), entropy_text.animate.restore(), run_time = 1.2)
+        self.bring_to_back(q_chart.reference_lines, p_chart.reference_lines)
+
+        # Switch focus to the p chart
+        self.play(VGroup(p_chart.segments, p_chart.probability_labels).animate.set_opacity(1))
+
+        # Show the encoding and the original distribution
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    Write(p_chart.vertical_axis_label.set_opacity(1), run_time = 2),
+                    ShowCreation(p_chart.vertical_axis.set_opacity(1)),
+                    AnimationGroup(*[
+                        ShowCreation(line.set_opacity(1))
+                        for line in p_chart.reference_lines
+                    ], lag_ratio = 0.1)
+                ),
+                AnimationGroup(*[
+                    TransformFromCopy(bar1, bar2, run_time = 3)
+                    for bar1, bar2 in list(zip(
+                        q_chart.bars.copy().set_opacity(0.8),
+                        p_chart.bars.copy().set_opacity(0.8),
+                    ))[::-1]
+                ], lag_ratio = 0.3)
+            , lag_ratio = 0.7)
+        )
+        self.clear()
+        p_chart.bars.set_opacity(0.8)
+        self.add(q_chart, p_chart, entropy_text, q_entropy_formula)
+        self.bring_to_back(q_chart.reference_lines, p_chart.reference_lines)
+
+        # Write cross entropy equation
+        general_equation = TexText(
+            R"Avg. bits per instruction: \\[0.1in] $\displaystyle\sum_i p_i (-\log_2 q_i)$",
+            font_size = 35,
+            tex_to_color_map = {
+                "p_i": GREEN,
+                "q_i": PINK
+            }
+        ).next_to(p_chart.bars, UP, buff = 1)
+        self.play(Write(general_equation), run_time = 3)
+        self.wait(2)
+        self.play(Flash(general_equation["p_i"], flash_radius = 0.5))
+
+        # Replace "Avg. bits per instruction" with "Cross Entropy(Q, P)"
+        self.play(FancyCircumscribe(general_equation))
+        cross_entropy_text = TexText(
+            "Cross Entropy of Q relative to P",
+            tex_to_color_map = {"Q": PINK, "P": GREEN}
+        ).match_height(
+            general_equation["Avg. bits per instruction:"]
+        ).move_to(
+            general_equation["Avg. bits per instruction:"]
+        )
+        self.play(FadeOut(general_equation["Avg. bits per instruction:"]), FadeIn(cross_entropy_text), run_time = 2)
+        self.wait(3)
+
+        # Show special notation
+        full_sum = general_equation[len("Avg.bitsperinstruction:"):]
+        cross_entropy_group = VGroup(cross_entropy_text, full_sum)
+        cross_entropy_group.save_state()
+        self.play(
+            FadeOut(
+                VGroup(
+                    q_chart,
+                    p_chart,
+                    entropy_text,
+                    q_bits_per_instruction[len("Avg.bitsperinstruction:"):]
+                )
+            , run_time = 1.6, shift = DOWN*3),
+            cross_entropy_group.animate(run_time = 2, path_arc = PI*0.2).set_y(0).to_edge(LEFT, buff = 2)
+        )
+        notations = BulletedList(
+            R"$H(P, Q)$",
+            R"$H(P \parallel Q)$",
+            R"$H_Q(P)$",
+            R"$\mathbb{E}_P[-\log Q]$",
+            R"$\langle -\log Q \rangle_P$",
+            tex_to_color_map = {"Q": PINK, "P": GREEN}
+        ).to_edge(RIGHT, buff = 2.2)
+        brace = Brace(notations, LEFT)
+        self.play(
+            GrowFromEdge(brace, RIGHT),
+            AnimationGroup(*[FadeIn(line, shift = DOWN*0.3) for line in notations], lag_ratio = 0.2)
+        , run_time = 3)
+        self.wait(1)
+
+        # Put everything back
+        self.play(
+            FadeOut(VGroup(brace, notations), shift = RIGHT*5, run_time = 1.5),
+            FadeIn(
+                VGroup(
+                    q_chart,
+                    p_chart,
+                    entropy_text,
+                    q_bits_per_instruction[len("Avg.bitsperinstruction:"):]
+                )
+            , run_time = 2, shift = UP*3),
+            cross_entropy_group.animate(run_time = 2, path_arc = -PI*0.2).restore()
+        )
+        self.bring_to_back(q_chart.reference_lines, p_chart.reference_lines)
+        self.wait(1)
+
+        # Highlight the diagram
+        self.play(FancyCircumscribe(p_chart, run_time=5))
+
+        # Show the widths and heights of each bar in the cross entropy diagram
+        self.play(FancyCircumscribe(p_chart.probability_labels), FancyCircumscribe(general_equation["p_i"]))
+        self.play(FancyCircumscribe(p_chart.vertical_axis_label, run_time = 5), FancyCircumscribe(general_equation[-8:-1], run_time = 5))
+        self.wait(3)
+
+
+        # Change the distribution q
+        q_entropy_chart = q_chart
+        qp_cross_entropy_chart = p_chart
+        q_entropy_chart.remove(q_entropy_chart.event_labels)
+        qp_cross_entropy_chart.remove(qp_cross_entropy_chart.event_labels)
+        q_entropy_chart.resume_updating()
+        qp_cross_entropy_chart.resume_updating()
+        for i in range(5):
+            new_distribution = random_distribution(4, thresh = 1/8)
+            anims = [
+                AnimationGroup(
+                    q_entropy_chart.set_distribution(new_distribution),
+                    AnimationGroup(*[
+                        h.animate.set_value(-math.log2(q))
+                        for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution)
+                    ])
+                , run_time = 2)
+            ]
+            self.play(*anims)
+        self.wait(2)
+
+
+        # Simplify to distributions over two events
+        distribution_1 = [0.5, 0.5]
+        distribution_2 = [0.9, 0.1]
+        q_entropy_chart_two_events = EntropyChart(
+            distribution_1,
+            event_labels = None,
+            probability_labels = VGroup(*[
+                Tex(str(distribution_1[i]), font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            width = first_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = q_entropy_chart.segments.get_height(),
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).move_to(q_entropy_chart)
+        q_entropy_chart_two_events.suspend_updating()
+
+        qp_cross_entropy_chart_two_events = EntropyChart(
+            distribution_2,
+            event_labels = None,
+            probability_labels = VGroup(*[
+                Tex(str(distribution_2[i]), font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            bar_heights = [-math.log2(q) for q in distribution_1],
+            width = second_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = qp_cross_entropy_chart.segments.get_height(),
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).move_to(qp_cross_entropy_chart)
+        qp_cross_entropy_chart_two_events.suspend_updating()
+
+        # Replace the charts
+        self.play(
+            FadeOut(VGroup(q_entropy_chart, qp_cross_entropy_chart), suspend_mobject_updating = True),
+            FadeIn(VGroup(q_entropy_chart_two_events, qp_cross_entropy_chart_two_events))
+        )
+        self.wait(2)
+        self.play(FancyCircumscribe(q_entropy_chart_two_events.probability_labels, run_time = 5))
+        self.wait(1)
+        self.play(FancyCircumscribe(qp_cross_entropy_chart_two_events.probability_labels, run_time = 5))
+        self.wait(2)
+
+        # Explain the entropy of Q
+        self.camera.frame.save_state()
+        group1 = VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart_two_events)
+        group2 = VGroup(qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart_two_events)
+        group3 = VGroup(p_entropy_text, p_entropy_formula, p_entropy_chart_two_events)
+        group4 = VGroup(pq_cross_entropy_text, pq_cross_entropy_formula, pq_cross_entropy_chart_two_events)
+        self.play(self.camera.frame.animate.scale(0.5).move_to(group1).shift(RIGHT*0.4), run_time = 2)
+        information_1 = Tex(
+            R"-\log_2 0.5 = 1", font_size = 30
+        ).set_color(PURE_MAGENTA).next_to(q_entropy_chart_two_events.bars[0], UP, buff = 0.1)
+        information_2 = Tex(
+            R"-\log_2 0.5 = 1", font_size = 30
+        ).set_color(LIGHT_PINK).next_to(q_entropy_chart_two_events.bars[1], UP, buff = 0.1)
+        self.play(Write(information_1), Write(information_2))
+        self.wait(2)
+
+        # Explain the entropy of P
+        v = group3.get_center() - group1.get_center()
+        v_perp = [-v[1], v[0], 0]
+        self.play(
+            self.camera.frame.animate(path_arc = PI*0.8, path_arc_axis = v_perp).move_to(
+                group3
+            )
+        , run_time = 2.5)
+        information_3 = Tex(
+            R"-\log_2 0.9 \approx 0.15", font_size = 30
+        ).set_color(GREEN_B).next_to(p_entropy_chart_two_events.bars[0], UP, buff = 0.1)
+        information_4 = Tex(
+            R"-\log_2 0.1 \approx 3.32", font_size = 30
+        ).set_color(GREEN_D).next_to(p_entropy_chart_two_events.bars[1], UP, buff = 0.1).align_to(p_entropy_chart_two_events.bars[1], RIGHT)
+        self.play(Write(information_3))
+        self.wait(2)
+        self.play(Write(information_4))
+
+        # Prepare for calculation
+        self.play(FadeOut(VGroup(information_1, information_2, information_3, information_4)), self.camera.frame.animate.restore(), run_time = 2)
+        dividing_line = Line(self.camera.frame.get_left(), self.camera.frame.get_right())
+        self.play(FadeOut(VGroup(group1, group3)), ShowCreation(dividing_line))
+
+        # Calculate cross entropy of Q relative to P
+        calculation_1 = Tex(
+            R"0.9(-\log_2 0.5) \\ +\ 0.1(-\log_2 0.5) \\ \approx " +
+            str(round(sum([p*-math.log2(q) for q, p in zip(distribution_1, distribution_2)]), 2)),
+            font_size = 80,
+            tex_to_color_map = {"0.9": GREEN, "0.1": GREEN, "0.5": PINK}
+        ).match_y(VGroup(qp_cross_entropy_text, qp_cross_entropy_chart)).match_x(pq_cross_entropy_chart).shift(RIGHT*2)
+        calculation_1[28:].set_color(TEAL)
+        self.play(Write(calculation_1), run_time = 3)
+        self.wait(0.5)
+        self.play(FancyCircumscribe(VGroup(calculation_1["0.9"], calculation_1["0.1"]), run_time = 5))
+
+
+        # Calculate cross entropy of P relative to Q
+        calculation_2 = Tex(
+            R"0.5(-\log_2 0.9) \\ +\ 0.5(-\log_2 0.1) \\ \approx " +
+            str(round(sum([q*-math.log2(p) for q, p in zip(distribution_1, distribution_2)]), 2)),
+            font_size = 80,
+            tex_to_color_map = {"0.9": GREEN, "0.1": GREEN, "0.5": PINK}
+        ).match_y(VGroup(pq_cross_entropy_text, pq_cross_entropy_chart)).match_x(qp_cross_entropy_chart).shift(LEFT*2)
+        calculation_2[28:].set_color(TEAL)
+        self.play(Write(calculation_2), run_time = 3)
+
+        # Compare the results
+        comparision = Tex(
+            R"1.0 \neq 1.74", font_size = 80
+        ).set_color(
+            TEAL
+        ).set_color_by_tex(
+            R"\neq", PURE_RED
+        )
+        background = VGroup(group2, group4, calculation_1, calculation_2)
+        background.save_state()
+        self.play(
+            dividing_line.animate.set_opacity(0.15),
+            background.animate.fade(0.8),
+            AnimationGroup(
+                AnimationGroup(
+                    TransformFromCopy(calculation_1["1.0"], comparision["1.0"], path_arc = -PI*0.2),
+                    TransformFromCopy(calculation_2["1.74"], comparision["1.74"], path_arc = PI*0.2)
+                ),
+                FadeIn(comparision[R"\neq"])
+            , lag_ratio = 0.8)
+        )
+        self.wait(1)
+        self.play(
+            FadeOut(dividing_line, run_time = 1),
+            FadeOut(comparision, run_time = 1),
+            FadeIn(group1, run_time = 2),
+            FadeIn(group3, run_time = 2),
+            background.animate(run_time = 2).restore(),
+            FadeOut(calculation_1, run_time = 1.5),
+            FadeOut(calculation_2, run_time = 1.5)
+        )
+        self.wait(2)
+
+        # Generalize the two-event distributions
+        q_entropy_chart_two_events_general = EntropyChart(
+            distribution_1,
+            event_labels = VGroup(*[
+                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
+                for i in range(2)
+            ]),
+            probability_labels = VGroup(*[
+                Tex(F"q_{str(i + 1)}", font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            width = first_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
+        ).move_to(q_entropy_chart)
+
+        qp_cross_entropy_chart_two_events_general = EntropyChart(
+            distribution_2,
+            event_labels = VGroup(*[
+                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
+                for i in range(2)
+            ]),
+            probability_labels = VGroup(*[
+                Tex(F"p_{str(i + 1)}", font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            bar_heights = [-math.log2(q) for q in distribution_1],
+            width = second_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
+        ).move_to(qp_cross_entropy_chart)
+
+        p_entropy_chart_two_events_general = EntropyChart(
+            distribution_2,
+            event_labels = VGroup(*[
+                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
+                for i in range(2)
+            ]),
+            probability_labels = VGroup(*[
+                Tex(F"p_{str(i + 1)}", font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            width = second_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [GREEN_B, GREEN_D],
+            bar_fill_colors = [GREEN_B, GREEN_D]
+        ).move_to(p_entropy_chart)
+
+        pq_cross_entropy_chart_two_events_general = EntropyChart(
+            distribution_1,
+            event_labels = VGroup(*[
+                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
+                for i in range(2)
+            ]),
+            probability_labels = VGroup(*[
+                Tex(F"q_{str(i + 1)}", font_size = 42)
+                for i in range(2)
+            ]),
+            bar_labels = None,
+            bar_heights = [-math.log2(p) for p in distribution_2],
+            width = first_distribution_chart.get_width(),
+            height = 2.3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
+            vertical_axis_font_size = 30,
+            segments_height = 0.4,
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            bar_fill_colors = [GREEN_B, GREEN_D]
+        ).move_to(pq_cross_entropy_chart)
+        q_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
+        qp_cross_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
+        p_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
+        pq_cross_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
+
+        self.play(
+            AnimationGroup(
+                FadeIn(
+                    VGroup(
+                        q_entropy_chart_two_events_general,
+                        qp_cross_entropy_chart_two_events_general,
+                        p_entropy_chart_two_events_general,
+                        pq_cross_entropy_chart_two_events_general
+                    )
+                , suspend_mobject_updating = True),
+                FadeOut(
+                    VGroup(
+                        q_entropy_chart_two_events,
+                        qp_cross_entropy_chart_two_events,
+                        p_entropy_chart_two_events,
+                        pq_cross_entropy_chart_two_events
+                    )
+                )
+            , lag_ratio = 0.2)
+        )
+        q_entropy_chart = q_entropy_chart_two_events_general
+        qp_cross_entropy_chart = qp_cross_entropy_chart_two_events_general
+        p_entropy_chart = p_entropy_chart_two_events_general
+        pq_cross_entropy_chart = pq_cross_entropy_chart_two_events_general
+
+        # Play around with the distrbutions
+        for i in range(20):
+            new_distribution_1 = random_distribution(2, thresh = 1/8) if i % 2 == 1 else [t.get_value() for t in q_entropy_chart.distribution_trackers]
+            new_distribution_2 = random_distribution(2, thresh = 1/8) if i % 2 == 0 else [t.get_value() for t in p_entropy_chart.distribution_trackers]
+            anims = [
+                AnimationGroup(
+                    q_entropy_chart.set_distribution(new_distribution_1),
+                    qp_cross_entropy_chart.set_distribution(new_distribution_2),
+                    p_entropy_chart.set_distribution(new_distribution_2),
+                    pq_cross_entropy_chart.set_distribution(new_distribution_1),
+                    AnimationGroup(*[
+                        h.animate.set_value(-math.log2(q))
+                        for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution_1)
+                    ]),
+                    AnimationGroup(*[
+                        h.animate.set_value(-math.log2(p))
+                        for h, p in zip(pq_cross_entropy_chart.bar_heights, new_distribution_2)
+                    ])
+                , run_time = 2)
+            ]
+
+            if i == 3:
+                # Highlight q_1 and add the number line
+                circ_opacity_tracker_1 = ValueTracker(0)
+                circ1 = always_redraw(
+                    lambda: Circle(
+                        stroke_width = 2,
+                        stroke_color = YELLOW,
+                        stroke_opacity = circ_opacity_tracker_1.get_value()
+                    ).surround(
+                        q_entropy_chart.probability_labels[0],
+                        buff = 0.2
+                    )
+                )
+                circ2 = always_redraw(
+                    lambda: Circle(
+                        stroke_width = 2,
+                        stroke_color = YELLOW,
+                        stroke_opacity = circ_opacity_tracker_1.get_value()
+                    ).surround(
+                        pq_cross_entropy_chart.probability_labels[0],
+                        buff = 0.2
+                    )
+                )
+                self.add(circ1, circ2)
+                anims.append(circ_opacity_tracker_1.animate.set_value(1))
+
+                number_line_q = NumberLine(
+                    [0, 1, 0.1],
+                    include_numbers = True,
+                    numbers_to_exclude = [0.1*i for i in range(1, 10)],
+                    width = q_entropy_chart.segments.get_width()
+                ).next_to(q_entropy_chart.bars, DOWN, buff = 1.6)
+                self.add(number_line_q)
+                q1_dot = Group(TrueDot(), GlowDot()).set_color(PURE_MAGENTA)
+                q1_dot.add_updater(lambda m: m.move_to(number_line_q.n2p(q_entropy_chart.distribution_trackers[0].get_value())))
+                q1_triangle = Triangle(fill_opacity = 0.7, fill_color = PURE_MAGENTA, stroke_width = 0).stretch(1.5, 1).set_width(0.15)
+                q1_triangle.add_updater(
+                    lambda m: m.next_to(number_line_q.n2p(q_entropy_chart.distribution_trackers[0].get_value()), DOWN, buff = 0)
+                )
+                q1_label = Tex("q_1", font_size = 42).set_color(PURE_MAGENTA)
+                q1_label.add_updater(lambda m: m.next_to(q1_triangle, DOWN, buff = 0.1))
+                number_line_q_group = Group(number_line_q, q1_dot, q1_triangle, q1_label)
+                number_line_q_opacity_tracker = ValueTracker(0)
+                number_line_q_group.add_updater(lambda m: m.set_opacity(number_line_q_opacity_tracker.get_value()))
+                self.add(number_line_q_group)
+                anims.append(number_line_q_opacity_tracker.animate.set_value(1))
+            if i == 4:
+                # Highlight q_2
+                anims.append(circ_opacity_tracker_1.animate.set_value(0))
+
+                circ_opacity_tracker_2 = ValueTracker(0)
+                circ3 = always_redraw(
+                    lambda: Circle(
+                        stroke_width = 2,
+                        stroke_color = YELLOW,
+                        stroke_opacity = circ_opacity_tracker_2.get_value()
+                    ).surround(
+                        q_entropy_chart.probability_labels[1],
+                        buff = 0.2
+                    )
+                )
+                circ4 = always_redraw(
+                    lambda: Circle(
+                        stroke_width = 2,
+                        stroke_color = YELLOW,
+                        stroke_opacity = circ_opacity_tracker_2.get_value()
+                    ).surround(
+                        pq_cross_entropy_chart.probability_labels[1],
+                        buff = 0.2
+                    )
+                )
+                self.add(circ3, circ4)
+                anims.append(circ_opacity_tracker_2.animate.set_value(1))
+            if i == 5:
+                # Replace q_2 with 1 - q_1
+                anims.append(circ_opacity_tracker_2.animate.set_value(0))
+
+                new_q2_label_1 = always_redraw(
+                    lambda: Tex(
+                        "1 - q_1", font_size = 42
+                    ).set_color(
+                        LIGHT_PINK
+                    ).move_to(
+                        q_entropy_chart.probability_labels[1]
+                    ).set_opacity(
+                        1 - circ_opacity_tracker_2.get_value()
+                    )
+                )
+                self.add(new_q2_label_1)
+                q_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(circ_opacity_tracker_2.get_value()))
+
+                new_q2_label_2 = always_redraw(
+                    lambda: Tex(
+                        "1 - q_1", font_size = 42
+                    ).set_color(
+                        LIGHT_PINK
+                    ).move_to(
+                        pq_cross_entropy_chart.probability_labels[1]
+                    ).set_opacity(
+                        1 - circ_opacity_tracker_2.get_value()
+                    )
+                )
+                self.add(new_q2_label_2)
+                pq_cross_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(circ_opacity_tracker_2.get_value()))
+            if i == 7:
+                # Highlight the p distirbution
+                rect_opacity_tracker = ValueTracker(0)
+                rect1 = always_redraw(
+                    lambda: SurroundingRectangle(
+                        qp_cross_entropy_chart.probability_labels,
+                        buff = 0.1,
+                        stroke_width = 1.5,
+                        stroke_color = YELLOW,
+                        stroke_opacity = rect_opacity_tracker.get_value()
+                    )
+                )
+                rect2 = always_redraw(
+                    lambda: SurroundingRectangle(
+                        p_entropy_chart.probability_labels,
+                        buff = 0.1,
+                        stroke_width = 1.5,
+                        stroke_color = YELLOW,
+                        stroke_opacity = rect_opacity_tracker.get_value()
+                    )
+                )
+                self.add(rect1, rect2)
+                anims.append(rect_opacity_tracker.animate.set_value(1))
+
+                number_line_p = NumberLine(
+                    [0, 1, 0.1],
+                    include_numbers = True,
+                    numbers_to_exclude = [0.1*i for i in range(1, 10)],
+                    width = qp_cross_entropy_chart.segments.get_width()
+                ).next_to(qp_cross_entropy_chart.bars, DOWN, buff = 1.6)
+                self.add(number_line_p)
+                p1_dot = Group(TrueDot(), GlowDot()).set_color(GREEN_B)
+                p1_dot.add_updater(lambda m: m.move_to(number_line_p.n2p(qp_cross_entropy_chart.distribution_trackers[0].get_value())))
+                p1_triangle = Triangle(
+                    fill_opacity = 0.7, fill_color = GREEN_B, stroke_width = 0
+                ).stretch(1.5, 1).set_width(0.15).flip(axis = RIGHT)
+                p1_triangle.add_updater(
+                    lambda m: m.next_to(number_line_p.n2p(qp_cross_entropy_chart.distribution_trackers[0].get_value()), UP, buff = 0)
+                )
+                p1_label = Tex("p_1", font_size = 42).set_color(GREEN_B)
+                p1_label.add_updater(lambda m: m.next_to(p1_triangle, UP, buff = 0.1))
+                number_line_p_group = Group(number_line_p, p1_dot, p1_triangle, p1_label)
+                number_line_p_opacity_tracker = ValueTracker(0)
+                number_line_p_group.add_updater(lambda m: m.set_opacity(number_line_p_opacity_tracker.get_value()))
+                self.add(number_line_p_group)
+                anims.append(number_line_p_opacity_tracker.animate.set_value(1))
+            if i == 9:
+                # Replace the p_2 labels with 1 - p_1
+                anims.append(rect_opacity_tracker.animate.set_value(0))
+
+                dummy_p = Tex("p", font_size = 42)
+                new_p2_label_1 = always_redraw(
+                    lambda: Tex(
+                        "1 - p_1", font_size = 42
+                    ).set_color(
+                        GREEN_D
+                    ).move_to(
+                        qp_cross_entropy_chart.probability_labels[1]
+                    ).set_opacity(
+                        1 - rect_opacity_tracker.get_value()
+                    ).scale(qp_cross_entropy_chart.probability_labels[0][0].get_height()/dummy_p.get_height())
+                )
+                self.add(new_p2_label_1)
+                qp_cross_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(rect_opacity_tracker.get_value()))
+
+                new_p2_label_2 = always_redraw(
+                    lambda: Tex(
+                        "1 - p_1", font_size = 42
+                    ).set_color(
+                        GREEN_D
+                    ).move_to(
+                        p_entropy_chart.probability_labels[1]
+                    ).set_opacity(
+                        1 - rect_opacity_tracker.get_value()
+                    )
+                )
+                self.add(new_p2_label_2)
+                p_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(rect_opacity_tracker.get_value()))
+            self.play(*anims)
+            if i == 4:
+                self.remove(circ1, circ2)
+            if i == 5:
+                self.remove(circ3, circ4)
+            if i == 9:
+                self.remove(rect1, rect2)
+        self.wait(1)
+
+        # Switch to graphs
+        q1_dot.add_updater(lambda m: self.bring_to_front(m))
+        p1_dot.add_updater(lambda m: self.bring_to_front(m))
+        max_y = 4
+        axes = Axes(
+            x_range = [0, 1, 0.1],
+            y_range = [0, max_y],
+            width = number_line_q.get_width(),
+            height = 5
+        )
+        coordinate_labels_x = axes.add_coordinate_labels(
+            x_values = [0, 1],
+            y_values = [],
+            excluding = []
+        ),
+        coordinate_labels_y = axes.add_coordinate_labels(
+            x_values = [],
+            y_values = [i for i in range(max_y + 1)],
+            excluding = [],
+            direction = LEFT
+        )
+        axes.scale(1.3).align_to(number_line_q, RIGHT).shift(RIGHT*2.3).align_to(self.camera.frame.get_bottom(), DOWN).shift(UP*2)
+        axes.get_x_axis().set_opacity(0)
+
+        group1 = VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart)
+        group2 = VGroup(qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart)
+        group3 = VGroup(p_entropy_text, p_entropy_formula, p_entropy_chart)
+        group4 = VGroup(pq_cross_entropy_text, pq_cross_entropy_formula, pq_cross_entropy_chart)
+        number_line_q.generate_target()
+        number_line_q.target.match_width(axes.get_x_axis()).move_to(axes.get_x_axis())
+        y_axis_label = qp_cross_entropy_formula.copy().scale(1.3).next_to(axes.get_y_axis(), LEFT, buff = 0.3)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    FadeOut(VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart, new_q2_label_1), run_time = 1, suspend_mobject_updating = True),
+                    FadeOut(VGroup(new_q2_label_2, new_p2_label_2, group3, group4), shift = DOWN*4, run_time = 1, suspend_mobject_updating = True),
+                    AnimationGroup(
+                        AnimationGroup(
+                            MoveToTarget(number_line_q, run_time = 2),
+                            VGroup(
+                                qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart, number_line_p, new_p2_label_1
+                            ).animate(run_time = 2).scale(1.3).shift(RIGHT*0.5).align_to(axes, DOWN),
+                            TransformFromCopy(qp_cross_entropy_formula, y_axis_label, run_time = 1.5)
+                        ),
+                        FadeIn(axes, shift = DOWN*5 + LEFT, run_time = 1.5)
+                    , lag_ratio = 0.2)
+                )
+            , lag_ratio = 0.8)
+        )
+        self.remove(new_q2_label_1, new_q2_label_2, new_p2_label_2)
+        self.wait(2)
+
+        # Fix P in place
+        pin = SVGMobject("push_pin.svg").rotate(35 * DEG).scale(0.325).set_color(GREY).align_to(
+            number_line_p.n2p(qp_cross_entropy_chart.distribution_trackers[0].get_value()), DR
+        )
+        pin.set_fill([GREY_D, GREY_B], 1)
+        self.play(FadeIn(pin, shift=RIGHT * 0.25 + DOWN * 0.125, run_time = 2))
+        self.wait(2)
+
+        # Create the graph
+        # epsilon = 5.6e-17
+        epsilon = 1e-2
+        infinity = 10
+        def f(q1):
+            if q1 < epsilon:
+                f_of_epsilon = f(epsilon)
+                return ((f_of_epsilon - infinity)/epsilon)*(q1 - epsilon) + f_of_epsilon
+            if q1 > 1 - epsilon:
+                f_of_1_minus_epsilon = f(1 - epsilon)
+                return ((infinity - f_of_1_minus_epsilon)/epsilon)*(q1 - (1 - epsilon)) + f_of_1_minus_epsilon
+            return sum([t.get_value()*-math.log2(q) for t, q in zip(qp_cross_entropy_chart.distribution_trackers, [q1, 1 - q1])])
+
+        min_step = 0.001
+        max_step = 0.01
+        def calculate_step(p):
+            # return -4*max_step*(p - 0.5)**2 + max_step
+            if 0 <= p < 0.5:
+                return 2*max_step*(p - 0.5) + max_step
+            return -2*max_step*(p - 0.5) + max_step
+        def get_curve():
+            step = clip(calculate_step(qp_cross_entropy_chart.distribution_trackers[0].get_value()), min_step, max_step)
+            return axes.get_graph(
+                f, x_range = [0, 1, step]
+            ).set_stroke(
+                width = 2, color = PINK
+            ).insert_n_curves(100)
+        graph = always_redraw(get_curve)
+        graph.suspend_updating()
+        graph.insert_n_curves(10000)
+        f_of_q_dot = Group(TrueDot(radius = 0.1), GlowDot(glow_factor = 1)).set_color(PURE_MAGENTA)
+        f_of_q_dot.add_updater(
+            lambda m: m.move_to(
+                axes.c2p(
+                    q_entropy_chart.distribution_trackers[0].get_value(),
+                    f(q_entropy_chart.distribution_trackers[0].get_value())
+                )
+            )
+        )
+        self.play(
+            AnimationGroup(
+                ShowCreation(graph, suspend_mobject_updating = True, run_time = 3),
+                FadeIn(f_of_q_dot, suspend_mobject_updating = True)
+            , lag_ratio = 0.8)
+        )
+        f_of_q_dot.add_updater(lambda m: self.bring_to_front(m))
+
+        # Change q_1
+        for i in range(17):
+            if i == 2:
+                q1 = 0.2718
+            elif i == 3:
+                q1 = 0.123
+            elif i == 4 or i == 10 or i == 16:
+                q1 = qp_cross_entropy_chart.distribution_trackers[0].get_value()
+            else:
+                q1 = random.uniform(1/32, 1)
+            distribution = [q1, 1 - q1]
+            anims = [
+                AnimationGroup(
+                    q_entropy_chart.set_distribution(distribution),
+                    AnimationGroup(*[
+                        h.animate.set_value(-math.log2(q))
+                        for h, q in zip(qp_cross_entropy_chart.bar_heights, distribution)
+                    ])
+                , run_time = 2)
+            ]
+            if i == 1:
+                min_value_arrow = Arrow(ORIGIN, DOWN*1.8, thickness = 5).next_to(
+                    axes.c2p(
+                        qp_cross_entropy_chart.distribution_trackers[0].get_value(),
+                        f(qp_cross_entropy_chart.distribution_trackers[0].get_value())
+                    ),
+                    UP, buff = 0
+                )
+                min_value_text = Tex(R"\text{min} = \displaystyle\sum_i p_i (-\log_2 p_i)", font_size = 35).next_to(min_value_arrow, UP, buff = -0.1)
+                min_value_text["p_i"].set_color(GREEN)
+                min_text = min_value_text["min"]
+                min_value_text.shift(RIGHT*(min_value_arrow.get_x() - min_text.get_x()))
+                anims.append(
+                    AnimationGroup(
+                        FadeIn(min_value_arrow, shift = DOWN*0.3, run_time = 1.5),
+                        Write(min_text, run_time = 1.5)
+                    , lag_ratio = 0.2)
+                )
+            if i == 3:
+                number_line_p_group_copy = Group(number_line_p, pin, p1_dot, p1_triangle, p1_label).copy().clear_updaters()
+                number_line_p_copy = number_line_p_group_copy[0]
+                pin_copy = number_line_p_group_copy[1]
+                p1_dot_copy = number_line_p_group_copy[2]
+                p1_triangle_copy = number_line_p_group_copy[3]
+                p1_label_copy = number_line_p_group_copy[4]
+                p1_dot_copy.add_updater(
+                    lambda m: m.move_to(number_line_p_copy.n2p(qp_cross_entropy_chart.distribution_trackers[0].get_value()))
+                )
+                p1_triangle_copy.add_updater(
+                    lambda m: m.next_to(number_line_p_copy.n2p(qp_cross_entropy_chart.distribution_trackers[0].get_value()), UP, buff = 0)
+                )
+                p1_label_copy.add_updater(lambda m: m.next_to(p1_triangle_copy, UP, buff = 0.1))
+                number_line_p_group_copy.suspend_updating()
+
+                anims.append(
+                    number_line_p_group_copy.animate(
+                        run_time = 2, path_arc = PI*0.2
+                    ).match_width(
+                        number_line_q
+                    ).match_x(
+                        number_line_q.align_to(number_line_q, DOWN)
+                    )
+                )
+            if i == 4:
+                anims.append(FadeOut(number_line_p_group_copy[0]))
+            # if i == 16:
+            #     anims.append(Write(min_value_text[len("min"):], run_time = 2))
+
+            self.play(*anims)
+
+        # Clean up
+        epsilon_2 = 0.001
+        def g(p1):
+            if p1 < epsilon_2 or p1 > 1 - epsilon_2:
+                return 0
+            return sum([p*-math.log2(p) for p in [p1, 1 - p1]])
+        min_value_dot = f_of_q_dot.copy().clear_updaters().set_color(GREEN).set_opacity(0.5)
+        min_value_dot.add_updater(
+            lambda m: m.move_to(
+                axes.c2p(
+                    qp_cross_entropy_chart.distribution_trackers[0].get_value(),
+                    g(qp_cross_entropy_chart.distribution_trackers[0].get_value())
+                )
+            )
+        )
+        q1_label.clear_updaters()
+        f_of_q_dot.clear_updaters()
+        self.remove(q1_dot)
+        self.play(
+            FadeOut(Group(min_text, min_value_arrow, f_of_q_dot, q1_triangle), suspend_mobject_updating = True),
+            FadeOut(Group(pin, pin_copy), shift=LEFT * 0.25 + UP * 0.125),
+            q1_label.animate.next_to(axes.get_x_axis()[0], RIGHT),
+            FadeIn(min_value_dot, suspend_mobject_updating = True)
+        )
+
+        # Trace the minimum value of the graph
+        number_line_p_group_copy.resume_updating()
+        path = TracingTail(min_value_dot, time_traced = 5, stroke_color = GREEN)
+        self.add(path)
+        self.wait(3)
+        graph.resume_updating()
+        self.play(qp_cross_entropy_chart.set_distribution([1 - epsilon_2, epsilon_2]), run_time = 4)
+        self.play(qp_cross_entropy_chart.set_distribution([epsilon_2, 1 - epsilon_2]), run_time = 4)
+        graph.suspend_updating()
+
+        # Replace the traced path with the full graph of the entropy of P
+        p_entropy_graph = axes.get_graph(
+            g, x_range = [0, 1, 0.01]
+        ).set_stroke(
+            width = 2, color = GREEN
+        ).insert_n_curves(100)
+        # self.wait(1)
+        # self.remove(path)
+        self.play(FadeIn(p_entropy_graph), run_time = 2)
+        # self.wait(1)
+
+        # Move around the distribution some more and write the entropy formula for p next to the new graph
+        graph.resume_updating()
+        for i in range(20):
+            anims = [qp_cross_entropy_chart.set_distribution(random_distribution(2, thresh = 1/8))]
+            if i == 0:
+                entropy_of_p = min_value_text[len("min="):].scale(0.85).next_to(
+                    p_entropy_graph, RIGHT, buff = -1
+                ).shift(
+                    UP*0.7
+                ).set_stroke(
+                    width = 3, color = BLACK, behind = True
+                )
+                self.play(Write(entropy_of_p, stroke_color = WHITE))
+            self.play(*anims, run_time = 4)
+
+
 
 
 
