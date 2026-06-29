@@ -6316,7 +6316,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             tex_to_color_map = {
                 "q_i": PINK
             }
-        ).next_to(q_chart.bars, UP, buff = 1)
+        ).next_to(q_chart.bars, UP, buff = 1.4)
         self.play(Write(q_bits_per_instruction), run_time = 3)
         self.wait(1.5)
 
@@ -6489,7 +6489,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 "p_i": GREEN,
                 "q_i": PINK
             }
-        ).next_to(p_chart.bars, UP, buff = 1)
+        ).next_to(p_chart.bars, UP, buff = 1.4)
         self.play(Write(general_equation), run_time = 3)
         self.wait(2)
         self.play(Flash(general_equation["p_i"], flash_radius = 0.5))
@@ -6562,25 +6562,24 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         self.wait(3)
 
 
-        # Change the distribution q
+        # Change the distribution Q
         q_entropy_chart = q_chart
         qp_cross_entropy_chart = p_chart
         q_entropy_chart.remove(q_entropy_chart.event_labels)
         qp_cross_entropy_chart.remove(qp_cross_entropy_chart.event_labels)
         q_entropy_chart.resume_updating()
         qp_cross_entropy_chart.resume_updating()
-        for i in range(5):
+
+        def update_qp_cross_entropy_bar_heights(m):
+            for t, h in zip(q_entropy_chart.distribution_trackers, m.bar_heights):
+                h.set_value(-math.log2(t.get_value()))
+        qp_cross_entropy_chart.add_updater(update_qp_cross_entropy_bar_heights)
+        self.add(q_entropy_chart, qp_cross_entropy_chart)
+
+
+        for _ in range(5):
             new_distribution = random_distribution(4, thresh = 1/8)
-            anims = [
-                AnimationGroup(
-                    q_entropy_chart.set_distribution(new_distribution),
-                    AnimationGroup(*[
-                        h.animate.set_value(-math.log2(q))
-                        for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution)
-                    ])
-                , run_time = 2)
-            ]
-            self.play(*anims)
+            self.play(q_entropy_chart.set_distribution(new_distribution), run_time = 2)
         self.wait(2)
 
 
@@ -6591,7 +6590,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             distribution_1,
             event_labels = None,
             probability_labels = VGroup(*[
-                Tex(str(distribution_1[i]), font_size = 42)
+                DecimalNumber(distribution_1[i], font_size = 30)
                 for i in range(2)
             ]),
             bar_labels = None,
@@ -6610,7 +6609,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             distribution_2,
             event_labels = None,
             probability_labels = VGroup(*[
-                Tex(str(distribution_2[i]), font_size = 42)
+                DecimalNumber(distribution_2[i], font_size = 30)
                 for i in range(2)
             ]),
             bar_labels = None,
@@ -6638,108 +6637,263 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         self.play(FancyCircumscribe(qp_cross_entropy_chart_two_events.probability_labels, run_time = 5))
         self.wait(2)
 
-        # Explain the entropy of Q
-        self.camera.frame.save_state()
-        group1 = VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart_two_events)
-        group2 = VGroup(qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart_two_events)
-        group3 = VGroup(p_entropy_text, p_entropy_formula, p_entropy_chart_two_events)
-        group4 = VGroup(pq_cross_entropy_text, pq_cross_entropy_formula, pq_cross_entropy_chart_two_events)
-        self.play(self.camera.frame.animate.scale(0.5).move_to(group1).shift(RIGHT*0.4), run_time = 2)
+        # Calculate the entropy of Q
+        q_entropy_text = entropy_text
         information_1 = Tex(
-            R"-\log_2 0.5 = 1", font_size = 30
+            R"-\log_2 0.50 = 1", font_size = 30
         ).set_color(PURE_MAGENTA).next_to(q_entropy_chart_two_events.bars[0], UP, buff = 0.1)
         information_2 = Tex(
-            R"-\log_2 0.5 = 1", font_size = 30
+            R"-\log_2 0.50 = 1", font_size = 30
         ).set_color(LIGHT_PINK).next_to(q_entropy_chart_two_events.bars[1], UP, buff = 0.1)
         self.play(Write(information_1), Write(information_2))
         self.wait(2)
 
-        # Explain the entropy of P
-        v = group3.get_center() - group1.get_center()
-        v_perp = [-v[1], v[0], 0]
+        q_entropy_formula_extension = Tex(R"0.50 \cdot 1 + 0.50 \cdot 1 = 1", font_size = 35).next_to(q_entropy_formula, DOWN)
+        q_entropy_formula_extension["0.50"][0].set_color(PURE_MAGENTA)
+        q_entropy_formula_extension["1"][0].set_color(PURE_MAGENTA)
+        q_entropy_formula_extension["0.50"][1].set_color(LIGHT_PINK)
+        q_entropy_formula_extension["1"][1].set_color(LIGHT_PINK)
         self.play(
-            self.camera.frame.animate(path_arc = PI*0.8, path_arc_axis = v_perp).move_to(
-                group3
-            )
-        , run_time = 2.5)
-        information_3 = Tex(
-            R"-\log_2 0.9 \approx 0.15", font_size = 30
-        ).set_color(GREEN_B).next_to(p_entropy_chart_two_events.bars[0], UP, buff = 0.1)
-        information_4 = Tex(
-            R"-\log_2 0.1 \approx 3.32", font_size = 30
-        ).set_color(GREEN_D).next_to(p_entropy_chart_two_events.bars[1], UP, buff = 0.1).align_to(p_entropy_chart_two_events.bars[1], RIGHT)
-        self.play(Write(information_3))
-        self.wait(2)
-        self.play(Write(information_4))
-
-        # Prepare for calculation
-        self.play(FadeOut(VGroup(information_1, information_2, information_3, information_4)), self.camera.frame.animate.restore(), run_time = 2)
-        dividing_line = Line(self.camera.frame.get_left(), self.camera.frame.get_right())
-        self.play(FadeOut(VGroup(group1, group3)), ShowCreation(dividing_line))
-
-        # Calculate cross entropy of Q relative to P
-        calculation_1 = Tex(
-            R"0.9(-\log_2 0.5) \\ +\ 0.1(-\log_2 0.5) \\ \approx " +
-            str(round(sum([p*-math.log2(q) for q, p in zip(distribution_1, distribution_2)]), 2)),
-            font_size = 80,
-            tex_to_color_map = {"0.9": GREEN, "0.1": GREEN, "0.5": PINK}
-        ).match_y(VGroup(qp_cross_entropy_text, qp_cross_entropy_chart)).match_x(pq_cross_entropy_chart).shift(RIGHT*2)
-        calculation_1[28:].set_color(TEAL)
-        self.play(Write(calculation_1), run_time = 3)
-        self.wait(0.5)
-        self.play(FancyCircumscribe(VGroup(calculation_1["0.9"], calculation_1["0.1"]), run_time = 5))
-
-
-        # Calculate cross entropy of P relative to Q
-        calculation_2 = Tex(
-            R"0.5(-\log_2 0.9) \\ +\ 0.5(-\log_2 0.1) \\ \approx " +
-            str(round(sum([q*-math.log2(p) for q, p in zip(distribution_1, distribution_2)]), 2)),
-            font_size = 80,
-            tex_to_color_map = {"0.9": GREEN, "0.1": GREEN, "0.5": PINK}
-        ).match_y(VGroup(pq_cross_entropy_text, pq_cross_entropy_chart)).match_x(qp_cross_entropy_chart).shift(LEFT*2)
-        calculation_2[28:].set_color(TEAL)
-        self.play(Write(calculation_2), run_time = 3)
-
-        # Compare the results
-        comparision = Tex(
-            R"1.0 \neq 1.74", font_size = 80
-        ).set_color(
-            TEAL
-        ).set_color_by_tex(
-            R"\neq", PURE_RED
-        )
-        background = VGroup(group2, group4, calculation_1, calculation_2)
-        background.save_state()
-        self.play(
-            dividing_line.animate.set_opacity(0.15),
-            background.animate.fade(0.8),
             AnimationGroup(
                 AnimationGroup(
-                    TransformFromCopy(calculation_1["1.0"], comparision["1.0"], path_arc = -PI*0.2),
-                    TransformFromCopy(calculation_2["1.74"], comparision["1.74"], path_arc = PI*0.2)
-                ),
-                FadeIn(comparision[R"\neq"])
-            , lag_ratio = 0.8)
+                    TransformMatchingShapes(
+                        q_entropy_chart_two_events.probability_labels[0].copy(),
+                        q_entropy_formula_extension["0.50"][0],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(q_entropy_formula_extension[R"\cdot"][0]),
+                    TransformMatchingShapes(information_1[-1].copy(), q_entropy_formula_extension["1"][0], path_arc = PI*0.1, run_time = 1.3),
+                    Write(q_entropy_formula_extension["+"]),
+                    TransformMatchingShapes(
+                        q_entropy_chart_two_events.probability_labels[1].copy(),
+                        q_entropy_formula_extension["0.50"][1],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(q_entropy_formula_extension[R"\cdot"][1]),
+                    TransformMatchingShapes(information_2[-1].copy(), q_entropy_formula_extension["1"][1], path_arc = PI*0.1, run_time = 1.3)
+                , lag_ratio = 0.3),
+                Write(q_entropy_formula_extension[-2:])
+            , lag_ratio = 0.85)
+        )
+
+        # Calculate the cross entropy of Q relative to P
+        qp_cross_entropy_text = cross_entropy_text
+        qp_cross_entropy_formula = full_sum
+        info_copy_1 = Tex("1", font_size = 30).set_color(PURE_MAGENTA).next_to(qp_cross_entropy_chart_two_events.bars[0], UP, buff = 0.1)
+        info_copy_2 = Tex("1", font_size = 30).set_color(LIGHT_PINK).next_to(qp_cross_entropy_chart_two_events.bars[1], UP, buff = 0.1)
+        self.play(
+            AnimationGroup(*[
+                TransformMatchingShapes(info["1"].copy(), info_copy)
+                for info, info_copy in zip([information_2, information_1], [info_copy_2, info_copy_1])
+            ], lag_ratio = 0.5)
+        , run_time = 2)
+        self.wait(2)
+
+        qp_cross_entropy_formula_extension = Tex(R"0.90 \cdot 1 + 0.10 \cdot 1 = 1", font_size = 35).next_to(qp_cross_entropy_formula, DOWN)
+        qp_cross_entropy_formula_extension["0.90"].set_color(GREEN_B)
+        qp_cross_entropy_formula_extension["1"][0].set_color(PURE_MAGENTA)
+        qp_cross_entropy_formula_extension["0.10"].set_color(GREEN_D)
+        qp_cross_entropy_formula_extension["1"][2].set_color(LIGHT_PINK)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    TransformMatchingShapes(
+                        qp_cross_entropy_chart_two_events.probability_labels[0].copy(),
+                        qp_cross_entropy_formula_extension["0.90"],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(qp_cross_entropy_formula_extension[R"\cdot"][0]),
+                    TransformMatchingShapes(info_copy_1.copy(), qp_cross_entropy_formula_extension["1"][0], path_arc = PI*0.1, run_time = 1.3),
+                    Write(qp_cross_entropy_formula_extension["+"]),
+                    TransformMatchingShapes(
+                        qp_cross_entropy_chart_two_events.probability_labels[1].copy(),
+                        qp_cross_entropy_formula_extension["0.10"],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(qp_cross_entropy_formula_extension[R"\cdot"][1]),
+                    TransformMatchingShapes(info_copy_2.copy(), qp_cross_entropy_formula_extension["1"][2], path_arc = PI*0.1, run_time = 1.3)
+                , lag_ratio = 0.2),
+                Write(qp_cross_entropy_formula_extension[-2:])
+            , lag_ratio = 0.85)
         )
         self.wait(1)
         self.play(
-            FadeOut(dividing_line, run_time = 1),
-            FadeOut(comparision, run_time = 1),
-            FadeIn(group1, run_time = 2),
-            FadeIn(group3, run_time = 2),
-            background.animate(run_time = 2).restore(),
-            FadeOut(calculation_1, run_time = 1.5),
-            FadeOut(calculation_2, run_time = 1.5)
+            FadeOut(
+                VGroup(
+                    information_1,
+                    information_2,
+                    q_entropy_formula_extension,
+                    info_copy_1,
+                    info_copy_2,
+                    qp_cross_entropy_formula_extension
+                )
+            )
         )
+
+        # Swap the distributions
+        q_entropy_chart_two_events.resume_updating()
+        qp_cross_entropy_chart_two_events.resume_updating()
+        for label, t in zip(q_entropy_chart_two_events.probability_labels, q_entropy_chart_two_events.distribution_trackers):
+            label.add_updater(lambda m, t = t: m.set_value(t.get_value()))
+        for label, t in zip(qp_cross_entropy_chart_two_events.probability_labels, qp_cross_entropy_chart_two_events.distribution_trackers):
+            label.add_updater(lambda m, t = t: m.set_value(t.get_value()))
+
+        def update_qp_cross_entropy_bar_heights(m):
+            for t, h in zip(q_entropy_chart_two_events.distribution_trackers, m.bar_heights):
+                h.set_value(-math.log2(t.get_value()))
+        qp_cross_entropy_chart_two_events.add_updater(update_qp_cross_entropy_bar_heights)
+
+        self.play(
+            q_entropy_chart_two_events.set_distribution([0.9, 0.1]),
+            qp_cross_entropy_chart_two_events.set_distribution([0.5, 0.5]),
+            AnimationGroup(*[h.animate.set_value(-math.log2(q)) for h, q in zip(qp_cross_entropy_chart_two_events.bar_heights, [0.9, 0.1])])
+        , run_time = 2)
         self.wait(2)
 
+
+        # Calculate the new entropy of Q
+        q_entropy_text = entropy_text
+        information_1_value = round(-math.log2(0.9), 2)
+        information_2_value = round(-math.log2(0.1), 2)
+        entropy_value = round(0.9*-math.log2(0.9) + 0.1*-math.log2(0.1), 2)
+        information_1 = Tex(
+            RF"-\log_2 0.90 = {information_1_value}", font_size = 30
+        ).set_color(PURE_MAGENTA).next_to(q_entropy_chart_two_events.bars[0], UP, buff = 0.07)
+        information_2 = Tex(
+            RF"-\log_2 0.10 = {information_2_value}", font_size = 30
+        ).set_color(LIGHT_PINK).next_to(q_entropy_chart_two_events.bars[1], UP, buff = 0).align_to(q_entropy_chart_two_events.bars[1], RIGHT)
+        self.play(Write(information_1, run_time = 2))
+        self.wait(1)
+        self.play(Write(information_2, run_time = 2))
+        self.wait(2)
+
+        q_entropy_formula_extension = Tex(
+            RF"0.90 \cdot {information_1_value} + 0.10 \cdot {information_2_value} = {entropy_value}",
+            font_size = 35
+        ).next_to(q_entropy_formula, DOWN)
+        q_entropy_formula_extension["0.90"].set_color(PURE_MAGENTA)
+        q_entropy_formula_extension[str(information_1_value)].set_color(PURE_MAGENTA)
+        q_entropy_formula_extension["0.10"].set_color(LIGHT_PINK)
+        q_entropy_formula_extension[str(information_2_value)].set_color(LIGHT_PINK)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    TransformMatchingShapes(
+                        q_entropy_chart_two_events.probability_labels[0].copy(),
+                        q_entropy_formula_extension["0.90"],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(q_entropy_formula_extension[R"\cdot"][0]),
+                    TransformMatchingShapes(
+                        information_1[-4:].copy(),
+                        q_entropy_formula_extension[str(information_1_value)],
+                        path_arc = PI*0.1,
+                        run_time = 1.3
+                    ),
+                    Write(q_entropy_formula_extension["+"]),
+                    TransformMatchingShapes(
+                        q_entropy_chart_two_events.probability_labels[1].copy(),
+                        q_entropy_formula_extension["0.10"],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(q_entropy_formula_extension[R"\cdot"][1]),
+                    TransformMatchingShapes(
+                        information_2[-4:].copy(),
+                        q_entropy_formula_extension[str(information_2_value)],
+                        path_arc = PI*0.1,
+                        run_time = 1.3
+                    )
+                , lag_ratio = 0.2),
+                Write(q_entropy_formula_extension[-5:])
+            , lag_ratio = 0.85)
+        )
+        self.play(FancyCircumscribe(q_entropy_formula_extension[-4:]))
+
+        # Calculate the new cross entropy of Q relative to P
+        qp_cross_entropy_text = cross_entropy_text
+        qp_cross_entropy_formula = full_sum
+        info_copy_1 = Tex(
+            str(information_1_value), font_size = 30
+        ).set_color(
+            PURE_MAGENTA
+        ).next_to(
+            qp_cross_entropy_chart_two_events.bars[0], UP, buff = 0.1
+        )
+        info_copy_2 = Tex(
+            str(information_2_value), font_size = 30
+        ).set_color(
+            LIGHT_PINK
+        ).next_to(
+            qp_cross_entropy_chart_two_events.bars[1], UP, buff = 0.1
+        )
+        self.play(
+            AnimationGroup(*[
+                TransformMatchingShapes(info[-4:].copy(), info_copy)
+                for info, info_copy in zip([information_2, information_1], [info_copy_2, info_copy_1])
+            ], lag_ratio = 0.5)
+        , run_time = 2)
+        self.wait(2)
+
+        cross_entropy_value = round(-math.log2(0.9)*0.5 + -math.log2(0.1)*0.5, 2)
+        qp_cross_entropy_formula_extension = Tex(
+            RF"0.50 \cdot {information_1_value} + 0.50 \cdot {information_2_value} = {cross_entropy_value}",
+            font_size = 35
+        ).next_to(qp_cross_entropy_formula, DOWN)
+        qp_cross_entropy_formula_extension["0.50"].set_color(GREEN_B)
+        qp_cross_entropy_formula_extension[str(information_1_value)].set_color(PURE_MAGENTA)
+        qp_cross_entropy_formula_extension["0.50"].set_color(GREEN_D)
+        qp_cross_entropy_formula_extension[str(information_2_value)].set_color(LIGHT_PINK)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    TransformMatchingShapes(
+                        qp_cross_entropy_chart_two_events.probability_labels[0].copy(),
+                        qp_cross_entropy_formula_extension["0.50"][0],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(qp_cross_entropy_formula_extension[R"\cdot"][0]),
+                    TransformMatchingShapes(
+                        info_copy_1.copy(),
+                        qp_cross_entropy_formula_extension[str(information_1_value)],
+                        path_arc = PI*0.1,
+                        run_time = 1.3
+                    ),
+                    Write(qp_cross_entropy_formula_extension["+"]),
+                    TransformMatchingShapes(
+                        qp_cross_entropy_chart_two_events.probability_labels[1].copy(),
+                        qp_cross_entropy_formula_extension["0.50"][1],
+                        path_arc = PI*0.1
+                    , run_time = 1.3),
+                    GrowFromCenter(qp_cross_entropy_formula_extension[R"\cdot"][1]),
+                    TransformMatchingShapes(
+                        info_copy_2.copy(),
+                        qp_cross_entropy_formula_extension[str(information_2_value)],
+                        path_arc = PI*0.1,
+                        run_time = 1.3
+                    )
+                , lag_ratio = 0.2),
+                Write(qp_cross_entropy_formula_extension[-5:])
+            , lag_ratio = 0.85)
+        )
+        self.wait(1)
+        self.play(
+            FadeOut(
+                VGroup(
+                    information_1,
+                    information_2,
+                    q_entropy_formula_extension,
+                    info_copy_1,
+                    info_copy_2,
+                    qp_cross_entropy_formula_extension
+                )
+            )
+        )
+
         # Generalize the two-event distributions
+        distribution_1 = [t.get_value() for t in q_entropy_chart_two_events.distribution_trackers]
         q_entropy_chart_two_events_general = EntropyChart(
             distribution_1,
-            event_labels = VGroup(*[
-                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
-                for i in range(2)
-            ]),
+            event_labels = None,
             probability_labels = VGroup(*[
                 Tex(F"q_{str(i + 1)}", font_size = 42)
                 for i in range(2)
@@ -6750,16 +6904,14 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             include_vertical_axis = True,
             vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
-            segments_height = 0.4,
-            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
-        ).move_to(q_entropy_chart)
+            segments_height = q_entropy_chart_two_events.segments.get_height(),
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).move_to(q_entropy_chart_two_events)
 
         qp_cross_entropy_chart_two_events_general = EntropyChart(
             distribution_2,
-            event_labels = VGroup(*[
-                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
-                for i in range(2)
-            ]),
+            event_labels = None,
             probability_labels = VGroup(*[
                 Tex(F"p_{str(i + 1)}", font_size = 42)
                 for i in range(2)
@@ -6771,108 +6923,59 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             include_vertical_axis = True,
             vertical_axis_label_text = R"\begin{gathered}-\log_2 q_i \\ \ (\text{bits})\end{gathered}",
             vertical_axis_font_size = 30,
-            segments_height = 0.4,
+            segments_height = q_entropy_chart_two_events.segments.get_height(),
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK]
-        ).move_to(qp_cross_entropy_chart)
-
-        p_entropy_chart_two_events_general = EntropyChart(
-            distribution_2,
-            event_labels = VGroup(*[
-                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
-                for i in range(2)
-            ]),
-            probability_labels = VGroup(*[
-                Tex(F"p_{str(i + 1)}", font_size = 42)
-                for i in range(2)
-            ]),
-            bar_labels = None,
-            width = second_distribution_chart.get_width(),
-            height = 2.3,
-            include_vertical_axis = True,
-            vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
-            vertical_axis_font_size = 30,
-            segments_height = 0.4,
-            fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [GREEN_B, GREEN_D]
-        ).move_to(p_entropy_chart)
-
-        pq_cross_entropy_chart_two_events_general = EntropyChart(
-            distribution_1,
-            event_labels = VGroup(*[
-                Tex("s_" + str(i + 1), font_size = 35).set_color(BLACK)
-                for i in range(2)
-            ]),
-            probability_labels = VGroup(*[
-                Tex(F"q_{str(i + 1)}", font_size = 42)
-                for i in range(2)
-            ]),
-            bar_labels = None,
-            bar_heights = [-math.log2(p) for p in distribution_2],
-            width = first_distribution_chart.get_width(),
-            height = 2.3,
-            include_vertical_axis = True,
-            vertical_axis_label_text = R"\begin{gathered}-\log_2 p_i \\ \ (\text{bits})\end{gathered}",
-            vertical_axis_font_size = 30,
-            segments_height = 0.4,
-            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
-            bar_fill_colors = [GREEN_B, GREEN_D]
-        ).move_to(pq_cross_entropy_chart)
+            bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
+        ).move_to(qp_cross_entropy_chart_two_events)
         q_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
         qp_cross_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
-        p_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
-        pq_cross_entropy_chart_two_events_general.add_updater(lambda m: m.set_stroke(width = 0.5))
 
         self.play(
             AnimationGroup(
                 FadeIn(
                     VGroup(
                         q_entropy_chart_two_events_general,
-                        qp_cross_entropy_chart_two_events_general,
-                        p_entropy_chart_two_events_general,
-                        pq_cross_entropy_chart_two_events_general
+                        qp_cross_entropy_chart_two_events_general
                     )
                 , suspend_mobject_updating = True),
                 FadeOut(
                     VGroup(
                         q_entropy_chart_two_events,
-                        qp_cross_entropy_chart_two_events,
-                        p_entropy_chart_two_events,
-                        pq_cross_entropy_chart_two_events
+                        qp_cross_entropy_chart_two_events
                     )
-                )
+                , suspend_mobject_updating = True)
             , lag_ratio = 0.2)
         )
         q_entropy_chart = q_entropy_chart_two_events_general
         qp_cross_entropy_chart = qp_cross_entropy_chart_two_events_general
-        p_entropy_chart = p_entropy_chart_two_events_general
-        pq_cross_entropy_chart = pq_cross_entropy_chart_two_events_general
 
         # Play around with the distrbutions
-        for i in range(20):
-            new_distribution_1 = random_distribution(2, thresh = 1/8) if i % 2 == 1 else [t.get_value() for t in q_entropy_chart.distribution_trackers]
-            new_distribution_2 = random_distribution(2, thresh = 1/8) if i % 2 == 0 else [t.get_value() for t in p_entropy_chart.distribution_trackers]
+        def update_qp_cross_entropy_bar_heights(m):
+            for t, h in zip(q_entropy_chart.distribution_trackers, m.bar_heights):
+                h.set_value(-math.log2(t.get_value()))
+        qp_cross_entropy_chart.add_updater(update_qp_cross_entropy_bar_heights)        
+
+        for i in range(12):
+            new_distribution_1 = (
+                random_distribution(2, thresh = 1/8) if i % 2 == 1 else
+                [t.get_value() for t in q_entropy_chart.distribution_trackers]
+            )
+            new_distribution_2 = (
+                random_distribution(2, thresh = 1/8) if i % 2 == 0 else
+                [t.get_value() for t in qp_cross_entropy_chart.distribution_trackers]
+            )
             anims = [
                 AnimationGroup(
                     q_entropy_chart.set_distribution(new_distribution_1),
-                    qp_cross_entropy_chart.set_distribution(new_distribution_2),
-                    p_entropy_chart.set_distribution(new_distribution_2),
-                    pq_cross_entropy_chart.set_distribution(new_distribution_1),
-                    AnimationGroup(*[
-                        h.animate.set_value(-math.log2(q))
-                        for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution_1)
-                    ]),
-                    AnimationGroup(*[
-                        h.animate.set_value(-math.log2(p))
-                        for h, p in zip(pq_cross_entropy_chart.bar_heights, new_distribution_2)
-                    ])
+                    qp_cross_entropy_chart.set_distribution(new_distribution_2)
                 , run_time = 2)
             ]
 
             if i == 3:
                 # Highlight q_1 and add the number line
                 circ_opacity_tracker_1 = ValueTracker(0)
-                circ1 = always_redraw(
+                circ = always_redraw(
                     lambda: Circle(
                         stroke_width = 2,
                         stroke_color = YELLOW,
@@ -6882,17 +6985,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                         buff = 0.2
                     )
                 )
-                circ2 = always_redraw(
-                    lambda: Circle(
-                        stroke_width = 2,
-                        stroke_color = YELLOW,
-                        stroke_opacity = circ_opacity_tracker_1.get_value()
-                    ).surround(
-                        pq_cross_entropy_chart.probability_labels[0],
-                        buff = 0.2
-                    )
-                )
-                self.add(circ1, circ2)
+                self.add(circ)
                 anims.append(circ_opacity_tracker_1.animate.set_value(1))
 
                 number_line_q = NumberLine(
@@ -6915,12 +7008,13 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 number_line_q_group.add_updater(lambda m: m.set_opacity(number_line_q_opacity_tracker.get_value()))
                 self.add(number_line_q_group)
                 anims.append(number_line_q_opacity_tracker.animate.set_value(1))
+                anims.append(self.camera.frame.animate.shift(DOWN*0.5))
             if i == 4:
                 # Highlight q_2
                 anims.append(circ_opacity_tracker_1.animate.set_value(0))
 
                 circ_opacity_tracker_2 = ValueTracker(0)
-                circ3 = always_redraw(
+                circ2 = always_redraw(
                     lambda: Circle(
                         stroke_width = 2,
                         stroke_color = YELLOW,
@@ -6930,23 +7024,13 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                         buff = 0.2
                     )
                 )
-                circ4 = always_redraw(
-                    lambda: Circle(
-                        stroke_width = 2,
-                        stroke_color = YELLOW,
-                        stroke_opacity = circ_opacity_tracker_2.get_value()
-                    ).surround(
-                        pq_cross_entropy_chart.probability_labels[1],
-                        buff = 0.2
-                    )
-                )
-                self.add(circ3, circ4)
+                self.add(circ2)
                 anims.append(circ_opacity_tracker_2.animate.set_value(1))
             if i == 5:
                 # Replace q_2 with 1 - q_1
                 anims.append(circ_opacity_tracker_2.animate.set_value(0))
 
-                new_q2_label_1 = always_redraw(
+                new_q2_label = always_redraw(
                     lambda: Tex(
                         "1 - q_1", font_size = 42
                     ).set_color(
@@ -6957,26 +7041,12 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                         1 - circ_opacity_tracker_2.get_value()
                     )
                 )
-                self.add(new_q2_label_1)
+                self.add(new_q2_label)
                 q_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(circ_opacity_tracker_2.get_value()))
-
-                new_q2_label_2 = always_redraw(
-                    lambda: Tex(
-                        "1 - q_1", font_size = 42
-                    ).set_color(
-                        LIGHT_PINK
-                    ).move_to(
-                        pq_cross_entropy_chart.probability_labels[1]
-                    ).set_opacity(
-                        1 - circ_opacity_tracker_2.get_value()
-                    )
-                )
-                self.add(new_q2_label_2)
-                pq_cross_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(circ_opacity_tracker_2.get_value()))
             if i == 7:
                 # Highlight the p distirbution
                 rect_opacity_tracker = ValueTracker(0)
-                rect1 = always_redraw(
+                rect = always_redraw(
                     lambda: SurroundingRectangle(
                         qp_cross_entropy_chart.probability_labels,
                         buff = 0.1,
@@ -6985,16 +7055,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                         stroke_opacity = rect_opacity_tracker.get_value()
                     )
                 )
-                rect2 = always_redraw(
-                    lambda: SurroundingRectangle(
-                        p_entropy_chart.probability_labels,
-                        buff = 0.1,
-                        stroke_width = 1.5,
-                        stroke_color = YELLOW,
-                        stroke_opacity = rect_opacity_tracker.get_value()
-                    )
-                )
-                self.add(rect1, rect2)
+                self.add(rect)
                 anims.append(rect_opacity_tracker.animate.set_value(1))
 
                 number_line_p = NumberLine(
@@ -7024,7 +7085,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 anims.append(rect_opacity_tracker.animate.set_value(0))
 
                 dummy_p = Tex("p", font_size = 42)
-                new_p2_label_1 = always_redraw(
+                new_p2_label = always_redraw(
                     lambda: Tex(
                         "1 - p_1", font_size = 42
                     ).set_color(
@@ -7035,29 +7096,15 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                         1 - rect_opacity_tracker.get_value()
                     ).scale(qp_cross_entropy_chart.probability_labels[0][0].get_height()/dummy_p.get_height())
                 )
-                self.add(new_p2_label_1)
+                self.add(new_p2_label)
                 qp_cross_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(rect_opacity_tracker.get_value()))
-
-                new_p2_label_2 = always_redraw(
-                    lambda: Tex(
-                        "1 - p_1", font_size = 42
-                    ).set_color(
-                        GREEN_D
-                    ).move_to(
-                        p_entropy_chart.probability_labels[1]
-                    ).set_opacity(
-                        1 - rect_opacity_tracker.get_value()
-                    )
-                )
-                self.add(new_p2_label_2)
-                p_entropy_chart.probability_labels[1].add_updater(lambda m: m.set_opacity(rect_opacity_tracker.get_value()))
             self.play(*anims)
             if i == 4:
-                self.remove(circ1, circ2)
+                self.remove(circ)
             if i == 5:
-                self.remove(circ3, circ4)
+                self.remove(circ2)
             if i == 9:
-                self.remove(rect1, rect2)
+                self.remove(rect)
         self.wait(1)
 
         # Switch to graphs
@@ -7081,27 +7128,34 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             excluding = [],
             direction = LEFT
         )
-        axes.scale(1.3).align_to(number_line_q, RIGHT).shift(RIGHT*2.3).align_to(self.camera.frame.get_bottom(), DOWN).shift(UP*2)
+        axes.align_to(number_line_q, RIGHT).to_edge(DOWN, buff = 1).to_edge(RIGHT, buff = -0.5)
         axes.get_x_axis().set_opacity(0)
 
         group1 = VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart)
         group2 = VGroup(qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart)
-        group3 = VGroup(p_entropy_text, p_entropy_formula, p_entropy_chart)
-        group4 = VGroup(pq_cross_entropy_text, pq_cross_entropy_formula, pq_cross_entropy_chart)
         number_line_q.generate_target()
         number_line_q.target.match_width(axes.get_x_axis()).move_to(axes.get_x_axis())
-        y_axis_label = qp_cross_entropy_formula.copy().scale(1.3).next_to(axes.get_y_axis(), LEFT, buff = 0.3)
+        y_axis_label = qp_cross_entropy_formula.copy().next_to(axes.get_y_axis(), LEFT, buff = 0.3)
         self.play(
+            self.camera.frame.animate(run_time = 2).scale(1.2).center(),
             AnimationGroup(
                 AnimationGroup(
-                    FadeOut(VGroup(q_entropy_text, q_entropy_formula, q_entropy_chart, new_q2_label_1), run_time = 1, suspend_mobject_updating = True),
-                    FadeOut(VGroup(new_q2_label_2, new_p2_label_2, group3, group4), shift = DOWN*4, run_time = 1, suspend_mobject_updating = True),
+                    FadeOut(
+                        VGroup(
+                            q_entropy_text,
+                            q_entropy_formula,
+                            q_entropy_chart,
+                            new_q2_label
+                        ),
+                        shift = UL*2
+                    , run_time = 1, suspend_mobject_updating = True),
+                    FadeOut(new_q2_label, shift = UL*2, run_time = 1, suspend_mobject_updating = True),
                     AnimationGroup(
                         AnimationGroup(
-                            MoveToTarget(number_line_q, run_time = 2),
+                            MoveToTarget(number_line_q, run_time = 2, path_arc = PI*0.4),
                             VGroup(
-                                qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart, number_line_p, new_p2_label_1
-                            ).animate(run_time = 2).scale(1.3).shift(RIGHT*0.5).align_to(axes, DOWN),
+                                qp_cross_entropy_text, qp_cross_entropy_formula, qp_cross_entropy_chart, number_line_p, new_p2_label
+                            ).animate(run_time = 2).align_to(axes, DOWN).to_edge(LEFT, buff = -0.5),
                             TransformFromCopy(qp_cross_entropy_formula, y_axis_label, run_time = 1.5)
                         ),
                         FadeIn(axes, shift = DOWN*5 + LEFT, run_time = 1.5)
@@ -7109,7 +7163,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 )
             , lag_ratio = 0.8)
         )
-        self.remove(new_q2_label_1, new_q2_label_2, new_p2_label_2)
+        self.remove(new_q2_label)
         self.wait(2)
 
         # Fix P in place
@@ -7173,19 +7227,15 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 q1 = 0.2718
             elif i == 3:
                 q1 = 0.123
-            elif i == 4 or i == 10 or i == 16:
+            elif i == 4 or i == 14 or i == 16:
                 q1 = qp_cross_entropy_chart.distribution_trackers[0].get_value()
+            elif i == 5:
+                q1 = 0.789
             else:
                 q1 = random.uniform(1/32, 1)
             distribution = [q1, 1 - q1]
             anims = [
-                AnimationGroup(
-                    q_entropy_chart.set_distribution(distribution),
-                    AnimationGroup(*[
-                        h.animate.set_value(-math.log2(q))
-                        for h, q in zip(qp_cross_entropy_chart.bar_heights, distribution)
-                    ])
-                , run_time = 2)
+                q_entropy_chart.set_distribution(distribution)
             ]
             if i == 1:
                 min_value_arrow = Arrow(ORIGIN, DOWN*1.8, thickness = 5).next_to(
@@ -7235,7 +7285,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             # if i == 16:
             #     anims.append(Write(min_value_text[len("min"):], run_time = 2))
 
-            self.play(*anims)
+            self.play(*anims, run_time = 2)
 
         # Clean up
         epsilon_2 = 0.001
@@ -7263,13 +7313,25 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         )
 
         # Trace the minimum value of the graph
+        VGroup(qp_cross_entropy_text, qp_cross_entropy_formula).add_updater(lambda m: self.bring_to_front(m))
+        def update_qp_cross_entropy_bar_heights(m):
+            for t, h in zip(q_entropy_chart.distribution_trackers, m.bar_heights):
+                h.set_value(-math.log2(t.get_value()))
+        qp_cross_entropy_chart.add_updater(update_qp_cross_entropy_bar_heights)
+
         number_line_p_group_copy.resume_updating()
         path = TracingTail(min_value_dot, time_traced = 5, stroke_color = GREEN)
         self.add(path)
         self.wait(3)
         graph.resume_updating()
-        self.play(qp_cross_entropy_chart.set_distribution([1 - epsilon_2, epsilon_2]), run_time = 4)
-        self.play(qp_cross_entropy_chart.set_distribution([epsilon_2, 1 - epsilon_2]), run_time = 4)
+        self.play(
+            qp_cross_entropy_chart.set_distribution([1 - epsilon_2, epsilon_2]),
+            q_entropy_chart.set_distribution([1 - epsilon_2, epsilon_2])
+        , run_time = 4)
+        self.play(
+            qp_cross_entropy_chart.set_distribution([epsilon_2, 1 - epsilon_2]),
+            q_entropy_chart.set_distribution([epsilon_2, 1 - epsilon_2])
+        , run_time = 4)
         graph.suspend_updating()
 
         # Replace the traced path with the full graph of the entropy of P
@@ -7286,16 +7348,24 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         # Move around the distribution some more and write the entropy formula for p next to the new graph
         graph.resume_updating()
         for i in range(20):
-            anims = [qp_cross_entropy_chart.set_distribution(random_distribution(2, thresh = 1/8))]
+            distribution = random_distribution(2, thresh = 1/8)
+            anims = [
+                AnimationGroup(
+                    qp_cross_entropy_chart.set_distribution(distribution),
+                    q_entropy_chart.set_distribution(distribution)
+                )
+            ]
             if i == 0:
                 entropy_of_p = min_value_text[len("min="):].scale(0.85).next_to(
-                    p_entropy_graph, RIGHT, buff = -1
+                    p_entropy_graph, RIGHT, buff = -1.3
                 ).shift(
-                    UP*0.7
+                    UP*0.9
                 ).set_stroke(
                     width = 3, color = BLACK, behind = True
                 )
+                graph.suspend_updating()
                 self.play(Write(entropy_of_p, stroke_color = WHITE))
+                graph.resume_updating()
             self.play(*anims, run_time = 4)
 
 

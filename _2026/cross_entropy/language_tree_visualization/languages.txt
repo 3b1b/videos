@@ -11,7 +11,7 @@ Catalan
 Occitan
 Asturian
 Spanish
-Galican
+Galician
 Portuguese
 Sardinian
 Romanian
