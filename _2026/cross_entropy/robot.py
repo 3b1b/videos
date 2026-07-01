@@ -3701,7 +3701,7 @@ class CrossEntropyDefinition(InteractiveScene):
 
         # Replace "Avg. bits per instruction" with "Cross Entropy(Q, P)"
         cross_entropy_text = TexText(
-            "``cross entropy of Q relative to P''",
+            "``Cross Entropy of Q relative to P''",
             tex_to_color_map = {"Q": PINK, "P": GREEN}
         ).match_height(
             general_equation["Avg. bits per instruction:"]
@@ -6749,6 +6749,10 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             AnimationGroup(*[h.animate.set_value(-math.log2(q)) for h, q in zip(qp_cross_entropy_chart_two_events.bar_heights, [0.9, 0.1])])
         , run_time = 2)
         self.wait(2)
+        self.play(FancyCircumscribe(q_entropy_chart_two_events.probability_labels, run_time = 5))
+        self.wait(1)
+        self.play(FancyCircumscribe(qp_cross_entropy_chart_two_events.probability_labels, run_time = 5))
+        self.wait(2)
 
 
         # Calculate the new entropy of Q
@@ -6891,6 +6895,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
 
         # Generalize the two-event distributions
         distribution_1 = [t.get_value() for t in q_entropy_chart_two_events.distribution_trackers]
+        distribution_2 = [t.get_value() for t in qp_cross_entropy_chart_two_events.distribution_trackers]
         q_entropy_chart_two_events_general = EntropyChart(
             distribution_1,
             event_labels = None,
@@ -7632,7 +7637,7 @@ class EntropyChart(VGroup):
             self.add(self.probability_labels)
 
         if self.include_vertical_axis:
-            self.vertical_axis = Line(ORIGIN, UP*self.height).align_to(self.segments.get_corner(UL), DL)
+            self.vertical_axis = Line(ORIGIN, UP*self.height, stroke_width = self.stroke_width).align_to(self.segments.get_corner(UL), DL)
             self.vertical_axis_label = Tex(
                 vertical_axis_label_text, font_size = vertical_axis_font_size
             ).next_to(self.vertical_axis, LEFT)
@@ -8125,8 +8130,9 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             ]),
             bar_labels = None,
             width = 5,
-            height = 3.5,
-            include_vertical_axis = False,
+            height = 3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"-\log_2 q_i",
             segments_height = 0.2,
             fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
@@ -8144,18 +8150,19 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             bar_labels = None,
             bar_heights = [-math.log2(q) for q in Q],
             width = 5,
-            height = 3.5,
-            include_vertical_axis = False,
+            height = 3,
+            include_vertical_axis = True,
+            vertical_axis_label_text = R"-\log_2 q_i",
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
             bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
             stroke_width = 1
-        )
-        VGroup(q_entropy_chart, qp_cross_entropy_chart).arrange(buff = 1.5)
+        ).shift(UP*1.2)
+        VGroup(qp_cross_entropy_chart, q_entropy_chart).set_y(0)
+        self.camera.frame.save_state()
+        self.camera.frame.match_y(qp_cross_entropy_chart.segments)
 
         # Add P
-        self.camera.frame.save_state()
-        self.camera.frame.match_x(qp_cross_entropy_chart.segments.bars)
         self.play(
             AnimationGroup(*[
                 AnimationGroup(GrowFromCenter(segment), FadeIn(p_label))
@@ -8167,7 +8174,6 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
 
         # Add Q
         self.play(
-            self.camera.frame.animate.restore(),
             AnimationGroup(*[
                 AnimationGroup(GrowFromCenter(segment), FadeIn(p_label))
                 for segment, p_label in zip(
@@ -8185,14 +8191,37 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
                 q_entropy_chart.segments.animate.set_distribution(
                     random_distribution(5) if i < num_wiggles - 1 else Q
                 ).set_stroke(width = 3 if i < num_wiggles - 1 else 1)
-            , run_time = 0.35)
+            , run_time = 0.25)
         q_entropy_chart.resume_updating()
 
         # Add the bars and write the cross entropy formula
+        number_line = NumberLine(
+            [0, 5, 1],
+            include_numbers = True,
+            numbers_to_exclude = [1, 2, 3, 4],
+            line_to_number_direction = UP,
+            width = q_entropy_chart.segments.get_width()
+        ).rotate(PI*0.5).to_edge(RIGHT, buff = 1).shift(DOWN*0.5)
+        for num in number_line.numbers:
+            num.rotate(-90 * DEGREES)
         cross_entropy_formula = Tex(
-            R"\sum_i p_i(-\log_2 q_i) \approx 0.00 \text{bits}", font_size = 40, tex_to_color_map = {"p_i": GREEN, "q_i": PINK}
-        ).to_edge(UP, buff = 0.8).match_x(qp_cross_entropy_chart.bars)
-        cross_entropy_value = cross_entropy_formula.make_number_changeable("0.00")
+            R"\sum_i p_i(-\log_2 q_i)", font_size = 40, tex_to_color_map = {"p_i": GREEN, "q_i": PINK}
+        ).next_to(number_line, UP)
+        cross_entropy_triangle = Triangle().set_width(0.2).set_color(GREY).set_opacity(0.8).rotate(PI*0.5).stretch(1.4, 0)
+        cross_entropy_triangle.align_to(number_line[0].get_center(), LEFT)
+        cross_entropy_triangle.add_updater(
+            lambda m: m.set_y(
+                number_line.n2p(
+                    sum([
+                        p.get_value()*-math.log2(q.get_value())
+                        for p, q in zip(qp_cross_entropy_chart.distribution_trackers, q_entropy_chart.distribution_trackers)
+                    ])
+                )[1]
+            )
+        )
+        cross_entropy_display = Tex(R"0.00 \text{ bits}", font_size = 30)
+        cross_entropy_value = cross_entropy_display.make_number_changeable("0.00")
+        cross_entropy_display.add_updater(lambda m: m.next_to(cross_entropy_triangle, RIGHT))
         cross_entropy_value.add_updater(
             lambda m: m.set_value(
                 sum([
@@ -8201,67 +8230,76 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
                 ])
             )
         )
-        self.play(q_entropy_chart.create_bars(), qp_cross_entropy_chart.create_bars(), FadeIn(cross_entropy_formula))
-        self.add(q_entropy_chart, qp_cross_entropy_chart)
+        self.play(
+            self.camera.frame.animate(run_time = 1).restore().align_to(qp_cross_entropy_chart, LEFT).shift(LEFT*0.7),
+            qp_cross_entropy_chart.create_bars(),
+            ShowCreation(number_line),
+            FadeIn(VGroup(cross_entropy_triangle, cross_entropy_display)),
+            AnimationGroup(
+                Write(qp_cross_entropy_chart.vertical_axis_label, run_time = 2),
+                ShowCreation(qp_cross_entropy_chart.vertical_axis),
+                AnimationGroup(*[
+                    ShowCreation(line)
+                    for line in qp_cross_entropy_chart.reference_lines
+                ], lag_ratio = 0.1)
+            ),
+            FadeIn(cross_entropy_formula)
+        )
+        VGroup(
+            q_entropy_chart.vertical_axis,
+            q_entropy_chart.vertical_axis_label,
+            q_entropy_chart.reference_lines,
+            q_entropy_chart.bars
+        ).set_opacity(0)
+        q_entropy_chart.bars.add_updater(lambda m: m.set_opacity(0))
+        self.add(
+            q_entropy_chart,
+            qp_cross_entropy_chart
+        )
 
-        # Change the distribution Q to be more similar to P
-        # Almost_P = [0.06, 0.24, 0.3, 0.3, 0.1]
-        # self.play(
-        #     q_entropy_chart.set_distribution(Almost_P),
-        #     AnimationGroup(*[
-        #         h.animate.set_value(-math.log2(q))
-        #         for h, q in zip(qp_cross_entropy_chart.bar_heights, Almost_P)
-        #     ])
-        # , run_time = 2)
-        # self.wait(2)
-
-        # Change P
-        num_changes = 2
+        # Change Q
+        def update_qp_cross_entropy_bar_heights(m):
+            for t, h in zip(q_entropy_chart.distribution_trackers, m.bar_heights):
+                h.set_value(-math.log2(t.get_value()))
+        qp_cross_entropy_chart.add_updater(update_qp_cross_entropy_bar_heights)
+        num_changes = 3
         for i in range(num_changes):
             new_distribution = random_distribution(5) if i < num_changes - 1 else P
-            self.play(
-                q_entropy_chart.set_distribution(new_distribution),
-                AnimationGroup(*[
-                    h.animate.set_value(-math.log2(q))
-                    for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution)
-                ])
-            , run_time = 1.5)
+            self.play(q_entropy_chart.set_distribution(new_distribution), run_time = 0.8 if i < 2 else 1.5)
 
-        # q_i changes to p_i
-        p_i = Tex("p_i", font_size = 40).set_color(GREEN).move_to(cross_entropy_formula["q_i"])
-        rect = SurroundingRectangle(cross_entropy_formula, stroke_width = 2, stroke_color = YELLOW)
-        entropy_of_p = TexText("Entropy of P", font_size = 30).set_color_by_tex("P", GREEN).next_to(rect, DOWN)
+        # Show that the distributions are now equal
+        dashed_lines = Group(*[
+            DashedLine(q_entropy_chart.segments.bars.get_bottom(), qp_cross_entropy_chart.segments.bars.get_top(), stroke_width = 3)
+            for _ in range(len(q_entropy_chart.segments.bars) + 1)
+        ]).set_color(GREY).set_opacity(0.8).align_to(q_entropy_chart.segments.bars, DOWN)
+        for line, bar in zip(dashed_lines, q_entropy_chart.segments.bars):
+            line.set_x(bar.get_left()[0])
+        dashed_lines[-1].set_x(q_entropy_chart.segments.bars[-1].get_right()[0])
+        self.play(AnimationGroup(*[ShowCreation(line) for line in dashed_lines]), run_time = 0.6)
+        self.wait(0.1)
+        self.play(AnimationGroup(*[Uncreate(line) for line in dashed_lines]), run_time = 0.6)
+
+        # Show how the expression for cross entropy is the same as that for the entropy of P when Q = P
+        entropy_of_p_triangle = cross_entropy_triangle.copy().set_color(GREEN).flip().next_to(cross_entropy_triangle, LEFT, buff = 0)
+        entropy_of_p_triangle.clear_updaters()
+        entropy_formula = Tex(
+            R"\sum_i p_i (-\log_2 p_i)",
+            font_size = 27,
+            tex_to_color_map = {"p_i": GREEN}
+        ).next_to(entropy_of_p_triangle, LEFT)
+        entropy_formula.shift(DOWN*(entropy_formula[-1].get_y() - entropy_of_p_triangle.get_y()))
         self.play(
             AnimationGroup(
-                self.camera.frame.animate.scale(0.75, about_point = self.camera.frame.get_corner(UR)),
-                AnimationGroup(
-                    FadeOut(cross_entropy_formula["q_i"]),
-                    FadeIn(p_i)
-                )
-            , lag_ratio = 0.5),
-            FadeIn(rect), Write(entropy_of_p)
-        , run_time = 2.5)
+                TransformFromCopy(cross_entropy_formula, entropy_formula, path_arc = PI*0.2),
+                GrowFromEdge(entropy_of_p_triangle, RIGHT)
+            , lag_ratio = 0.5)
+        , run_time = 2)
 
-        # Zoom back out and show some more random distributions
-        for i in range(8):
-            new_distribution = random_distribution(5)
-            anims = [
-                AnimationGroup(
-                    q_entropy_chart.set_distribution(new_distribution),
-                    AnimationGroup(*[
-                        h.animate.set_value(-math.log2(q))
-                        for h, q in zip(qp_cross_entropy_chart.bar_heights, new_distribution)
-                    ])
-                )
-            ]
-            if i == 0:
-                anims.append(
-                    AnimationGroup(
-                        self.camera.frame.animate.restore(),
-                        FadeOut(VGroup(rect, entropy_of_p, p_i)),
-                        FadeIn(cross_entropy_formula["q_i"])
-                    )
-                )
+
+        # Show some more random distributions
+        for i in range(7):
+            new_distribution = random_distribution(5, thresh = 0)
+            anims = [q_entropy_chart.set_distribution(new_distribution)]
             self.play(*anims, run_time = 3)
             self.wait(0.75)
 
@@ -8271,14 +8309,33 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             font_size = 45, tex_to_color_map = {"p_i": GREEN, "q_i": PINK}
         )
         self.play(
+            self.camera.frame.animate(run_time = 2).center(),
             FadeOut(cross_entropy_formula[-9:], run_time = 2),
-            FadeOut(VGroup(q_entropy_chart, qp_cross_entropy_chart), shift = DOWN*4, suspend_mobject_updating = True, run_time = 2),
+            FadeOut(
+                VGroup(
+                    q_entropy_chart,
+                    qp_cross_entropy_chart,
+                    number_line,
+                    entropy_of_p_triangle,
+                    cross_entropy_display,
+                    cross_entropy_triangle
+                ),
+                shift = DOWN*4,
+                suspend_mobject_updating = True,
+                run_time = 2
+            ),
             AnimationGroup(
-                TransformMatchingShapes(
-                    cross_entropy_formula[R"\sum_i p_i(-\log_2 q_i)"],
-                    kl_divergence_formula[R"\left(\sum_i p_i(-\log_2 q_i)\right)"]
-                , run_time = 2),
-                Write(kl_divergence_formula[R"- \left(\sum_i p_i(-\log_2 p_i)\right)"], run_time = 2)
+                AnimationGroup(
+                    TransformMatchingShapes(
+                        cross_entropy_formula[R"\sum_i p_i(-\log_2 q_i)"],
+                        kl_divergence_formula[R"\left(\sum_i p_i(-\log_2 q_i)\right)"]
+                    , run_time = 2),
+                    TransformMatchingShapes(
+                        entropy_formula,
+                        kl_divergence_formula[R"\left(\sum_i p_i(-\log_2 p_i)\right)"]
+                    , run_time = 2)
+                ),
+                Write(kl_divergence_formula["-"][1])
             , lag_ratio = 0.7)
         )
         self.add(kl_divergence_formula)
@@ -8373,9 +8430,9 @@ class KLDivergenceDemo(InteractiveScene):
             include_vertical_axis = False,
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
-            bar_fill_colors = [YELLOW_B, YELLOW_B]
-        )
-        p_entropy_chart.set_stroke(width = 1)
+            bar_fill_colors = [YELLOW_B, YELLOW_B],
+            stroke_width = 1
+        ).shift(UP*1.2)
         p_entropy_chart.add_updater(lambda m: m.bars.set_fill(opacity = 0.1).set_stroke(width = 1))
         self.add(p_entropy_chart)
 
@@ -8384,24 +8441,22 @@ class KLDivergenceDemo(InteractiveScene):
             event_labels = None,
             probability_labels = VGroup(*[
                 Tex(
-                    (("q_" + str(i + 1)) if i < len(P) - 2 else R"\ldots" if i == len(P) - 2 else "q_n"),
+                    (("q_" + str(i + 1)) if i < len(Q) - 2 else R"\ldots" if i == len(P) - 2 else "q_n"),
                     font_size = 40
                 )
-                for i in range(len(P))
+                for i in range(len(Q))
             ]),
             bar_labels = None,
             width = 5,
             height = 3.5,
             include_vertical_axis = False,
             segments_height = 0.2,
-            fill_colors = [PURE_MAGENTA, LIGHT_PINK]
+            fill_colors = [PURE_MAGENTA, LIGHT_PINK],
+            stroke_width = 1
         )
-        q_entropy_chart.set_stroke(width = 1)
-        q_entropy_chart.add_updater(lambda m: m.bars.set_stroke(width = 1))
+        q_entropy_chart.bars.add_updater(lambda m: m.set_opacity(0))
         self.add(q_entropy_chart)
-        VGroup(q_entropy_chart, p_entropy_chart).arrange(buff = 2)
-        q_entropy_chart.to_edge(DOWN, buff = 0.7)
-        p_entropy_chart.to_edge(DOWN, buff = 0.7)
+        VGroup(p_entropy_chart, q_entropy_chart).to_edge(DOWN, buff = 0.4).to_edge(LEFT, buff = 2)
 
         def get_kl_divergence_bars():
             current_distribution = [t.get_value() for t in p_entropy_chart.distribution_trackers]
@@ -8431,29 +8486,90 @@ class KLDivergenceDemo(InteractiveScene):
         # Add the equation
         kl_divergence_formula = Tex(
             R"\begin{gathered}\text{KL Divergence of Q relative to P:} \\ \left(\sum_i p_i(-\log_2 q_i)\right) - \left(\sum_i p_i(-\log_2 p_i)\right)\end{gathered}",
-            font_size = 30, tex_to_color_map = {"Q": PINK, "P": GREEN, "p_i": GREEN, "q_i": PINK}
-        ).next_to(p_entropy_chart, UP, buff = 1.2)
+            font_size = 26, tex_to_color_map = {"Q": PINK, "P": GREEN, "p_i": GREEN, "q_i": PINK}
+        ).next_to(p_entropy_chart, UP, buff = 0.9)
         self.add(kl_divergence_formula)
 
+        # Add Q and P symbols
+        def get_kl_divergence(Q, P):
+            return sum([p*math.log2(p/q) for q, p in zip(Q, P)])
+        Q_symbol = Tex("Q", font_size = 80).set_color(PINK).set_stroke(width = 15, color = BLACK, behind = True)
+        P_symbol = Tex("P", font_size = 80).set_color(GREEN).set_stroke(width = 15, color = BLACK, behind = True)
+        VGroup(Q_symbol, P_symbol).to_edge(RIGHT, buff = 3)
+        multiplier = 3
+        kl_divergence = get_kl_divergence(
+            [t.get_value() for t in q_entropy_chart.distribution_trackers],
+            [t.get_value() for t in p_entropy_chart.distribution_trackers]
+        )
+        Q_symbol.set_y(-multiplier*kl_divergence)
+        P_symbol.set_y(multiplier*kl_divergence)
+        self.add(Q_symbol, P_symbol)
+
+        # Add the connecting line
+        connecting_line = always_redraw(
+            lambda:
+            Line(
+                Q_symbol,
+                P_symbol,
+                stroke_width = clip(
+                    1/(
+                        get_kl_divergence(
+                            [t.get_value() for t in q_entropy_chart.distribution_trackers],
+                            [t.get_value() for t in p_entropy_chart.distribution_trackers]
+                        )
+                    ),
+                    0.2,
+                    9
+                ),
+                stroke_color = BLUE_B,
+                stroke_opacity = 0.5
+            )
+        )
+        self.add(connecting_line)
+        connecting_line.add_updater(lambda m: self.bring_to_back(m))
+
+        # Add Dashed lines
+        dashed_lines = VGroup(*[
+            DashedLine(q_entropy_chart.segments.bars.get_bottom(), p_entropy_chart.segments.bars.get_top(), stroke_width = 3)
+            for _ in range(len(p_entropy_chart.segments.bars) + 1)
+        ]).set_color(GREY).set_opacity(0.5).align_to(q_entropy_chart.segments.bars, DOWN)
+        for line, bar in zip(dashed_lines, p_entropy_chart.segments.bars):
+            line.set_x(bar.get_left()[0])
+        dashed_lines[-1].set_x(p_entropy_chart.segments.bars[-1].get_right()[0])
+        self.add(dashed_lines)
+        self.bring_to_back(dashed_lines)
+
+
         # Change the distribution a little
+        np.random.seed(10)
         for i in range(15):
             new_distribution = random_distribution(5) if i != 1 else P
-            anims = [q_entropy_chart.set_distribution(new_distribution)]
+            anims = [
+                AnimationGroup(
+                    q_entropy_chart.set_distribution(new_distribution),
+                    Q_symbol.animate.set_y(-multiplier*get_kl_divergence(new_distribution, P)),
+                    P_symbol.animate.set_y(multiplier*get_kl_divergence(new_distribution, P))
+                )
+            ]
             if i == 3:
                 kl_divergence_formula.save_state()
                 kl_divergence_formula_2 = Tex(
                     R"\begin{gathered}\text{KL Divergence of P relative to Q:} \\ \left(\sum_i q_i(-\log_2 p_i)\right) - \left(\sum_i q_i(-\log_2 q_i)\right)\end{gathered}",
-                    font_size = 30, tex_to_color_map = {"Q": PINK, "P": GREEN, "p_i": GREEN, "q_i": PINK}
+                    font_size = 26, tex_to_color_map = {"Q": PINK, "P": GREEN, "p_i": GREEN, "q_i": PINK}
                 ).next_to(p_entropy_chart, UP, buff = 1.2)
                 kl_divergence_formula.generate_target()
                 VGroup(kl_divergence_formula.target, kl_divergence_formula_2).scale(1.05).arrange(buff = 1.3)
                 rect = SurroundingRectangle(kl_divergence_formula_2, buff = 0.2, stroke_width = 3, stroke_color = YELLOW)
                 p_entropy_chart.suspend_updating()
-                charts_group = VGroup(q_entropy_chart, p_entropy_chart, kl_divergence_chart_bars)
+                charts_group = VGroup(q_entropy_chart, p_entropy_chart, kl_divergence_chart_bars, dashed_lines)
                 charts_group.save_state()
                 charts_group.suspend_updating()
+                symbols_group = VGroup(connecting_line, Q_symbol, P_symbol)
+                symbols_group.save_state()
+                symbols_group.suspend_updating()
                 self.play(
                     charts_group.animate(run_time = 1.5).shift(DL*2).set_opacity(0),
+                    symbols_group.animate(run_time = 1.5).shift(RIGHT*2).set_opacity(0),
                     AnimationGroup(
                         MoveToTarget(kl_divergence_formula),
                         Write(kl_divergence_formula_2, run_time = 2),
@@ -8461,15 +8577,17 @@ class KLDivergenceDemo(InteractiveScene):
                     , lag_ratio = 0.6, run_time = 4)
                 )
                 self.wait(1)
-                not_equal = Tex(R"\neq", font_size = 50).move_to(VGroup(kl_divergence_formula, kl_divergence_formula_2))
+                not_equal = Tex(R"\neq", font_size = 50).set_color(RED).move_to(VGroup(kl_divergence_formula, kl_divergence_formula_2))
                 self.play(FadeOut(rect), FadeIn(not_equal))
                 self.wait(2)
                 self.play(
                     FadeOut(VGroup(not_equal, kl_divergence_formula_2), shift = UP*3 + RIGHT*5),
                     kl_divergence_formula.animate.restore(),
-                    charts_group.animate(run_time = 2).shift(UR*2).restore()
+                    charts_group.animate(run_time = 2).shift(UR*2).restore(),
+                    symbols_group.animate(run_time = 2).restore()
                 , run_time = 2)
                 charts_group.resume_updating()
+                symbols_group.resume_updating()
             if i == 5:
                 kl_divergence_formula_compact = Tex(
                     R"= \displaystyle\sum_i p_i \left(\log_2 \frac{p_i}{q_i}\right)",
@@ -8477,17 +8595,23 @@ class KLDivergenceDemo(InteractiveScene):
                 ).next_to(kl_divergence_formula, DOWN, buff = 0.25).align_to(kl_divergence_formula, LEFT)
                 anims.append(Write(kl_divergence_formula_compact))
             if i == 8:
-                rect = SurroundingRectangle(
-                    VGroup(
-                        kl_divergence_formula[R"\left(\sum_i p_i(-\log_2 q_i)\right) - \left(\sum_i p_i(-\log_2 p_i)\right)"],
-                        kl_divergence_formula_compact
-                    ), buff = 0.1, stroke_width = 3, stroke_color = YELLOW
+                rect1 = SurroundingRectangle(
+                    kl_divergence_formula[R"\left(\sum_i p_i(-\log_2 q_i)\right) - \left(\sum_i p_i(-\log_2 p_i)\right)"],
+                    buff = 0.07,
+                    stroke_width = 2,
+                    stroke_color = YELLOW
                 )
-                anims.append(FadeIn(rect))
+                rect2 = SurroundingRectangle(
+                    kl_divergence_formula_compact,
+                    buff = 0.07,
+                    stroke_width = 2,
+                    stroke_color = YELLOW
+                )
+                anims.append(FadeIn(VGroup(rect1, rect2)))
             if i == 10:
-                anims.append(FadeOut(VGroup(kl_divergence_formula_compact, rect)))
+                anims.append(FadeOut(VGroup(kl_divergence_formula_compact, rect1, rect2)))
             if i == 11:
-                anims.append(FancyCircumscribe(VGroup(p_entropy_chart, kl_divergence_chart_bars)))
+                anims.append(FancyCircumscribe(VGroup(p_entropy_chart, kl_divergence_chart_bars, q_entropy_chart)))
             self.play(*anims, run_time = 2)
             self.wait(1)
 
@@ -8495,38 +8619,39 @@ class KLDivergenceDemo(InteractiveScene):
 class DistanceBetweenDistributions(InteractiveScene):
     def construct(self):
         # Add the two distributions
-        distribution = random_distribution(7)
+        distribution1 = random_distribution(7)
+        distribution2 = random_distribution(7)
         Q = StackedProbDistribution(
-            distribution,
+            distribution1,
             labels = None,
             width = 8,
             height = 0.4,
             fill_colors = (LIGHT_PINK, PURE_MAGENTA),
             stroke_width = 3
-        ).to_edge(LEFT, buff = 1.5).shift(UP*1.2)
+        ).to_edge(LEFT, buff = 1.5).shift(DOWN*1.2)
         probability_labels_1 = VGroup(*[
             Tex(
                 (("q_" + str(i + 1)) if i < len(Q.bars) - 2 else R"\ldots" if i == len(Q.bars) - 2 else "q_n"),
                 font_size = 35
-            ).set_color(interpolate_color(LIGHT_PINK, PURE_MAGENTA, i//(len(Q.bars) - 1)))
+            ).set_color(interpolate_color(LIGHT_PINK, PURE_MAGENTA, i//(len(Q.bars) - 1))).set_stroke(width = 15, color = BLACK, behind = True)
             for i in range(len(Q.bars))
         ])
         for label, segment in zip(probability_labels_1, Q.bars):
             label.add_updater(lambda m, segment = segment: m.next_to(segment, DOWN))
 
         P = StackedProbDistribution(
-            distribution,
+            distribution2,
             labels = None,
             width = 8,
             height = 0.4,
             fill_colors = (GREEN_B, GREEN_D),
             stroke_width = 3
-        ).to_edge(LEFT, buff = 1.5).shift(DOWN*1.2)
+        ).to_edge(LEFT, buff = 1.5).shift(UP*1.2)
         probability_labels_2 = VGroup(*[
             Tex(
                 (("p_" + str(i + 1)) if i < len(P.bars) - 2 else R"\ldots" if i == len(Q.bars) - 2 else "p_n"),
                 font_size = 35
-            ).set_color(interpolate_color(GREEN_B, GREEN_D, i//(len(Q.bars) - 1)))
+            ).set_color(interpolate_color(GREEN_B, GREEN_D, i//(len(Q.bars) - 1))).set_stroke(width = 15, color = BLACK, behind = True)
             for i in range(len(P.bars))
         ])
         for label, segment in zip(probability_labels_2, P.bars):
@@ -8541,30 +8666,47 @@ class DistanceBetweenDistributions(InteractiveScene):
             P_total_width = P.get_width()
             P_current_distribution = [bar.get_width()/P_total_width for bar in P.bars]
             return sum([p*math.log2(p/q) for q, p in zip(Q_current_distribution, P_current_distribution)])
-        multiplier = 30
-        Q_symbol = VGroup(Tex("Q", font_size = 60), Tex("-").stretch(0.5, 0)).arrange(RIGHT).set_color(PINK)
-        P_symbol = VGroup(Tex("P", font_size = 60), Tex("-").stretch(0.5, 0)).arrange(LEFT).set_color(GREEN)
-        VGroup(Q_symbol, P_symbol).arrange(buff = 0).to_edge(RIGHT, buff = 2)
+        Q_symbol = Tex("Q", font_size = 60).set_color(PINK).set_stroke(width = 15, color = BLACK, behind = True)
+        P_symbol = Tex("P", font_size = 60).set_color(GREEN).set_stroke(width = 15, color = BLACK, behind = True)
+        VGroup(Q_symbol, P_symbol).to_edge(RIGHT, buff = 2)
+        multiplier = 20
+        Q_symbol.set_y(-multiplier*get_kl_divergence(Q, P))
+        P_symbol.set_y(multiplier*get_kl_divergence(Q, P))
         self.add(Q_symbol, P_symbol)
+
+        # Add the connecting line
+        connecting_line = always_redraw(
+            lambda:
+            Line(
+                Q_symbol,
+                P_symbol,
+                stroke_width = clip(1/(3*get_kl_divergence(Q, P)), 0.2, 9),
+                stroke_color = BLUE_B,
+                stroke_opacity = 0.5
+            )
+        )
+        self.add(connecting_line)
+        connecting_line.add_updater(lambda m: self.bring_to_back(m))
 
         # Add Dashed lines
         dashed_lines = VGroup(*[
-            DashedLine(P.bars.get_bottom(), Q.bars.get_top())
-            for _ in range(len(distribution) + 1)
-        ]).set_color(GREY).set_opacity(0.6).align_to(P.bars, DOWN)
+            DashedLine(Q.bars.get_bottom(), P.bars.get_top(), stroke_width = 3)
+            for _ in range(len(P.bars) + 1)
+        ]).set_color(GREY).set_opacity(0.5).align_to(Q.bars, DOWN)
         for line, bar in zip(dashed_lines, P.bars):
             line.set_x(bar.get_left()[0])
         dashed_lines[-1].set_x(P.bars[-1].get_right()[0])
         self.add(dashed_lines)
+        self.bring_to_back(dashed_lines)
 
         # Change Q to be closer / further away from P
-        for _ in range(15):
+        for i in range(15):
             Q.generate_target()
-            Q.target.set_distribution(random_distribution(7, thresh = 1/10))
+            Q.target.set_distribution(random_distribution(7, thresh = 1/10) if i != 3 else distribution2)
             self.play(
                 MoveToTarget(Q),
-                Q_symbol.animate.set_y(multiplier*get_kl_divergence(Q.target, P)),
-                P_symbol.animate.set_y(-multiplier*get_kl_divergence(Q.target, P))
+                Q_symbol.animate.set_y(-multiplier*get_kl_divergence(Q.target, P)),
+                P_symbol.animate.set_y(multiplier*get_kl_divergence(Q.target, P))
             , run_time = 1.5)
             self.wait(0.5)
 

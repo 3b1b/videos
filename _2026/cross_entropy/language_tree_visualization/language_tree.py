@@ -1,10 +1,14 @@
 from manim_imports_ext import *
 import json
 
+class FileIcon(SVGMobject):
+    def __init__(self):
+        super().__init__("../images/file_icon.svg")
+
 class LanguageTextExample(VGroup):
     def __init__(self, example_text = "Lorem Ipsum"):
         super().__init__()
-        self.file_icon = SVGMobject("../images/file_icon.svg").set_width(1)
+        self.file_icon = FileIcon().set_width(1)
         self.example_text = Text(
             example_text, font = "CMU Serif", font_size = 25
         ).next_to(self.file_icon, DOWN).set_color("#BBBBBB").set_stroke(width = 4, color = BLACK, behind = True)
@@ -468,6 +472,7 @@ class LanguageTree(VGroup):
     #     , lag_ratio=0.4)
 
 
+PURE_MAGENTA = "#FF00FF"
 class BasicIdea(InteractiveScene):
     def construct(self):
         # Add two documents
@@ -476,7 +481,7 @@ class BasicIdea(InteractiveScene):
                 width = 5,
                 height = 1,
                 fill_opacity = 1,
-                fill_color = interpolate_color(TEAL_B, TEAL_E, random.random()),
+                fill_color = interpolate_color(LIGHT_PINK, PURE_MAGENTA, random.random()),
                 stroke_width = 1,
                 stroke_color = WHITE
             )
@@ -497,7 +502,7 @@ class BasicIdea(InteractiveScene):
                 for doc in documents
             ], lag_ratio = 0.4)
         )
-        self.play(documents.animate.scale(0.9).to_edge(LEFT, buff = 1))
+        self.play(documents.animate.scale(0.9).to_edge(LEFT, buff = 2.3))
 
         # Take a small snippet of B and append it to a copy of A
         a_copy = document1.copy()
@@ -514,9 +519,9 @@ class BasicIdea(InteractiveScene):
         new_doc.generate_target()
         new_doc.target.set_stroke(width = 0)
         new_doc.target[0].stretch(0.15, 1)
-        new_doc.target[1].stretch(0.25, 1)
+        new_doc.target[1].stretch(0.4, 1)
         new_doc.target.arrange(DOWN, buff = 0).set_width(2.2).move_to(new_doc)
-        gzip_ab = TexText("GZIP(AB)", font_size = 35, tex_to_color_map = {"A": TEAL, "B": GREEN}).next_to(new_doc.target, UP)
+        gzip_ab = TexText("GZIP(AB)", font_size = 35, tex_to_color_map = {"A": PINK, "B": GREEN}).next_to(new_doc.target, UP)
         self.play(AnimationGroup(MoveToTarget(new_doc), Write(gzip_ab), lag_ratio = 0.8))
         self.wait(1)
 
@@ -529,7 +534,7 @@ class BasicIdea(InteractiveScene):
         self.wait(0.5)
         a_copy_2.generate_target()
         a_copy_2.target.set_stroke(width = 0).stretch(0.15, 1).set_width(2.2)
-        gzip_a = TexText("GZIP(A)", font_size = 35, tex_to_color_map = {"A": TEAL, "B": GREEN}).next_to(a_copy_2.target, UP)
+        gzip_a = TexText("GZIP(A)", font_size = 35, tex_to_color_map = {"A": PINK, "B": GREEN}).next_to(a_copy_2.target, UP)
         self.play(AnimationGroup(MoveToTarget(a_copy_2), Write(gzip_a), lag_ratio = 0.8))
         self.wait(2)
 
@@ -564,16 +569,16 @@ class BasicIdea(InteractiveScene):
         new_doc.generate_target()
         new_doc.target[1].stretch(0.75, 1).next_to(new_doc.target[0], DOWN, buff = 0)
         for rect in new_doc.target[1]:
-            rect.set_fill(color = interpolate_color(BLUE_A, BLUE_E, random.random()))
-        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = BLUE), run_time = 2)
+            rect.set_fill(color = interpolate_color(RED_A, RED_E, random.random()))
+        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = RED), run_time = 2)
         self.wait(2)
 
         # Increase the "linguistic difference"
         new_doc.generate_target()
-        new_doc.target[1].stretch(3, 1).next_to(new_doc.target[0], DOWN, buff = 0)
+        new_doc.target[1].stretch(2.5, 1).next_to(new_doc.target[0], DOWN, buff = 0)
         for rect in new_doc.target[1]:
-            rect.set_fill(color = interpolate_color(RED_A, RED_E, random.random()))
-        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = RED), run_time = 2)
+            rect.set_fill(color = interpolate_color(PURE_GREEN, "#296633", random.random()))
+        self.play(MoveToTarget(new_doc), gzip_ab["B"].animate.set_fill(color = PURE_GREEN), run_time = 2)
         self.wait(2)
 
 
@@ -761,6 +766,23 @@ class DistancesBetweenDocuments(InteractiveScene):
             file.macro_category = macro_groups.get(file.category, "Other")
             file.velocity = np.zeros(3)
 
+        # Create lines linking documents together dynamically
+        connection_lines = VGroup()
+        line_pairs = []
+        n_files = len(files)
+        
+        for i in range(n_files):
+            for j in range(i + 1, n_files):
+                if files[i].category == files[j].category:
+                    line = Line(files[i].get_center(), files[j].get_center())
+                    line.set_stroke(color=BLUE_A, width=1.5)
+                    line.set_opacity(0)
+                    connection_lines.add(line)
+                    line_pairs.append((line, files[i], files[j]))
+
+        self.add(connection_lines)
+        self.bring_to_back(connection_lines)
+
         def update_physics(mobjects, dt):
             if dt == 0:
                 return
@@ -829,6 +851,15 @@ class DistancesBetweenDocuments(InteractiveScene):
                 mob.velocity += forces[i] * dt
                 mob.velocity *= 0.55
                 mob.shift(mob.velocity * dt)
+
+            # Synchronize connecting line metrics seamlessly
+            for line, mob_i, mob_j in line_pairs:
+                p_i = mob_i.get_center()
+                p_j = mob_j.get_center()
+                line.set_points_by_ends(p_i, p_j)
+                distance = np.linalg.norm(p_j - p_i)
+                opacity = np.exp(-1.2 * (distance - 0.5))
+                line.set_opacity(np.clip(opacity, 0.0, 0.75))
 
         self.add(files)
         files.add_updater(update_physics)
@@ -958,6 +989,7 @@ class DistancesBetweenDocuments(InteractiveScene):
                     self.camera.frame.animate(run_time = 1.5).center(),
                     FadeOut(ellipses, run_time = 0.8),
                     FadeOut(remaining_labels),
+                    FadeOut(connection_lines, run_time = 0.8),
                     AnimationGroup(*text_transforms, run_time = 1.5),
                     AnimationGroup(*label_transforms, run_time = 1.5)
                 ),
@@ -977,3 +1009,135 @@ class DistancesBetweenDocuments(InteractiveScene):
             )
         )
         self.wait(2)
+
+
+class MakingFilesABitSmaller(InteractiveScene):
+    def construct(self):
+        # Draw an arrow to a file icon
+        arrow = Arrow(LEFT*1.5, RIGHT*1.5, thickness = 7).set_color(YELLOW)
+        file = FileIcon().set_width(3).set_x(0.5*(arrow.get_right()[0] + FRAME_WIDTH*0.5))
+        self.play(AnimationGroup(GrowArrow(arrow), GrowFromCenter(file), lag_ratio = 0.3))
+
+        # Make the file smaller
+        self.play(file.animate.scale(0.5), run_time = 2)
+
+
+class CodeOptimizedForOneSetting(InteractiveScene):
+    def construct(self):
+        # Add the documents
+        num_docs = 20
+        documents1 = VGroup(*[
+            VGroup(*[
+                Rectangle(
+                    width = 5,
+                    height = 1,
+                    fill_opacity = 1,
+                    fill_color = interpolate_color(LIGHT_PINK, PURE_MAGENTA, random.random()),
+                    stroke_width = 0.7,
+                    stroke_color = WHITE
+                ).scale(0.22)
+                for _ in range(8)
+            ]).arrange(DOWN, buff = 0)
+            for _ in range(num_docs)
+        ]).arrange(buff = 0.75).to_edge(LEFT, buff = 3.5).to_edge(UP, buff = 1.1)
+
+        documents2 = documents1.copy().to_edge(DOWN, buff = 1.1)
+        for doc in documents2:
+            for rect in doc:
+                rect.set_fill(color = interpolate_color(GREEN_B, GREEN_E, random.random()))
+
+        self.add(documents1, documents2)
+
+        # Add the compression arrows
+        arrow1 = SVGMobject(
+            "../images/arrow.svg",
+            fill_opacity = 1,
+            fill_color = PINK
+        ).rotate(-PI*0.5).scale(0.18).next_to(documents1[0], UP, buff = 0.1)
+        arrow2 = arrow1.copy().flip(axis = RIGHT).next_to(documents1[0], DOWN, buff = 0.1)
+        arrow3 = arrow1.copy().next_to(documents2[0], UP, buff = 0.1)
+        arrow4 = arrow2.copy().next_to(documents2[0], DOWN, buff = 0.1)
+        self.add(arrow1, arrow2, arrow3, arrow4)
+
+        # Compress the documents one by one
+        for i in range(15):
+            arrow1.save_state()
+            arrow2.save_state()
+            arrow3.save_state()
+            arrow4.save_state()
+            self.play(
+                AnimationGroup(
+                    AnimationGroup(
+                        arrow1.animate.shift(DOWN*0.65).set_color(interpolate_color(LIGHT_PINK, YELLOW, 0.3)),
+                        arrow2.animate.shift(UP*0.65).set_color(interpolate_color(LIGHT_PINK, YELLOW, 0.3)),
+                        documents1[i].animate.scale(1.2).stretch(0.3, 1)
+                    ),
+                    AnimationGroup(
+                        arrow3.animate.shift(DOWN*0.4).set_color(interpolate_color(GREEN, YELLOW, 0.3)),
+                        arrow4.animate.shift(UP*0.4).set_color(interpolate_color(GREEN, YELLOW, 0.3)),
+                        documents2[i].animate.scale(1.2).stretch(0.55, 1)
+                    )
+                , lag_ratio = 0.2)
+            , run_time = 0.9)
+            self.play(
+                AnimationGroup(
+                    AnimationGroup(
+                        arrow1.animate.restore(),
+                        arrow2.animate.restore()
+                    ),
+                    AnimationGroup(
+                        arrow3.animate.restore(),
+                        arrow4.animate.restore()
+                    )
+                , lag_ratio = 0.2)
+            , run_time = 0.9)
+            self.play(VGroup(documents1, documents2).animate.shift(LEFT*(documents1[1].get_x() - documents1[0].get_x())), run_time = 0.8)
+
+
+class RepeatedTextSegments(InteractiveScene):
+    def construct(self):
+        # Add the text
+        text = Text(
+            """
+                In the dark, dark
+                wood, there was a dark, dark
+                house. And in that dark, dark
+                house, there was a dark, dark
+                room. And in that dark, dark
+                room, there was a dark, dark
+                cupboard. And in that dark, dark
+                cupboard, there was a dark, dark
+                shelf. And on that dark, dark
+                shelf, there was a dark, dark
+                box. And in that dark, dark
+                box, there was a ghost.
+                Hoo-hoo-hoo! Haa-haa-boo!
+            """,
+            font_size = 35
+        ).to_edge(RIGHT, buff = 1)
+        self.add(text)
+
+        # Highlight the repeated segments
+        self.wait(1)
+        self.play(text["dark, dark"].animate.set_color(TEAL), run_time = 1, lag_ratio = 0.2)
+        self.wait(2)
+
+        # Replace them with pointers
+        dots = VGroup(*[
+            Dot().set_color(TEAL).move_to(darkdark)
+            for darkdark in text["dark, dark"][1:]
+        ])
+        pointers = VGroup(*[
+            CurvedArrow(dot.get_center(), text["dark, dark"][0].get_right(), angle = 0.3*PI + PI*i*0.05).set_color(YELLOW).set_stroke(opacity = 0.7)
+            for i, dot in enumerate(dots)
+        ])
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    FadeIn(darkdark.copy().set_opacity(0.2), run_time = 0.4),
+                    TransformMatchingShapes(darkdark, dot)
+                )
+                for darkdark, dot in zip(text["dark, dark"][1:], dots)
+            ], lag_ratio = 0.1)
+        , run_time = 1.5)
+        self.play(AnimationGroup(*[GrowArrow(pointer) for pointer in pointers], lag_ratio = 0.1), run_time = 2)
