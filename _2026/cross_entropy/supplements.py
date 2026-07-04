@@ -1054,5 +1054,17 @@ class EntropyRate(InteractiveScene):
         self.wait()
 
 
+class SimpleBits(InteractiveScene):
+    def construct(self):
+        # Test
+        bits = bit_string_mobject("0100100001010000")
+        bits.set_width(5)
+        bits.space_out_submobjects(1.2)
+        bits.center()
+        for bit in bits:
+            bit.set_opacity(clip(inverse_interpolate(2.5, 1.75, abs(bit.get_x())), 0, 1))
+        self.add(bits)
+
+
 class EndScreen(SideScrollEndScreen):
     pass
