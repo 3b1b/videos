@@ -6453,6 +6453,33 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         self.play(q_chart.animate.restore(), q_entropy_formula.animate.restore(), entropy_text.animate.restore(), run_time = 1.2)
         self.bring_to_back(q_chart.reference_lines, p_chart.reference_lines)
 
+        # Show non clean powers of 2
+        if False:
+            q_chart.resume_updating()
+            q_chart.segments.add_updater(lambda m: m.labels.set_opacity(0))
+            for i in range(6):
+                anims = [q_chart.set_distribution(random_distribution(4))]
+                if i == 2:
+                    information_displays = VGroup(*[
+                        DecimalNumber(0, font_size = 21)
+                        for _ in range(4)
+                    ]).set_stroke(width = 5, color = BLACK, behind = True)
+                    information_displays_opacity_tracker = ValueTracker(0)
+                    for j, display in enumerate(information_displays):
+                        display.add_updater(
+                            lambda m, j = j: m.set_value(
+                                -math.log2(q_chart.distribution_trackers[j].get_value())
+                            ).next_to(
+                                q_chart.bars[j], UP
+                            ).set_opacity(
+                                information_displays_opacity_tracker.get_value()
+                            )
+                        )
+                    self.add(information_displays)
+                    anims.append(information_displays_opacity_tracker.animate.set_value(1))
+                self.play(*anims, run_time = 2)
+
+
         # Switch focus to the p chart
         self.play(VGroup(p_chart.segments, p_chart.probability_labels).animate.set_opacity(1))
 
@@ -6961,7 +6988,8 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 h.set_value(-math.log2(t.get_value()))
         qp_cross_entropy_chart.add_updater(update_qp_cross_entropy_bar_heights)        
 
-        for i in range(12):
+        num_changes = 12
+        for i in range(num_changes):
             new_distribution_1 = (
                 random_distribution(2, thresh = 1/8) if i % 2 == 1 else
                 [t.get_value() for t in q_entropy_chart.distribution_trackers]
@@ -6969,7 +6997,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
             new_distribution_2 = (
                 random_distribution(2, thresh = 1/8) if i % 2 == 0 else
                 [t.get_value() for t in qp_cross_entropy_chart.distribution_trackers]
-            )
+            ) if i < num_changes - 2 else [0.23, 0.77]
             anims = [
                 AnimationGroup(
                     q_entropy_chart.set_distribution(new_distribution_1),
@@ -7209,7 +7237,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
         graph = always_redraw(get_curve)
         graph.suspend_updating()
         graph.insert_n_curves(10000)
-        f_of_q_dot = Group(TrueDot(radius = 0.1), GlowDot(glow_factor = 1)).set_color(PURE_MAGENTA)
+        f_of_q_dot = Group(TrueDot(radius = 0.08), GlowDot(glow_factor = 2)).set_color(PINK)
         f_of_q_dot.add_updater(
             lambda m: m.move_to(
                 axes.c2p(
@@ -7352,7 +7380,7 @@ class CrossEntropyDefinitionV3(InteractiveScene):
 
         # Move around the distribution some more and write the entropy formula for p next to the new graph
         graph.resume_updating()
-        for i in range(20):
+        for i in range(10):
             distribution = random_distribution(2, thresh = 1/8)
             anims = [
                 AnimationGroup(
@@ -7372,6 +7400,201 @@ class CrossEntropyDefinitionV3(InteractiveScene):
                 self.play(Write(entropy_of_p, stroke_color = WHITE))
                 graph.resume_updating()
             self.play(*anims, run_time = 4)
+
+        # Create the graph
+        self.set_floor_plane("xz")
+        graph.clear_updaters()
+        three_d_axes = ThreeDAxes(
+            x_range = [0, 1],
+            y_range = [0, 1],
+            z_range = [0, 4],
+            width = axes.get_x_axis().get_width()*0.98,
+            height = axes.get_x_axis().get_width()*0.98,
+            depth = axes.get_y_axis().get_height()*0.96
+        )
+        three_d_axes.add_axis_labels()
+        epsilon = 1e-10
+        infinity = 10
+        def cross_entropy(q1, p1):
+            q1 = np.clip(q1, epsilon, 1 - epsilon)
+            p1 = np.clip(p1, epsilon, 1 - epsilon)
+
+            return -(p1*np.log2(q1) + (1-p1)*np.log2(1-q1))
+        def f(q1, p1):
+            f_val = -(p1 * np.log2(q1) + (1 - p1) * np.log2(1 - q1))
+            
+            f_of_epsilon = -(p1 * np.log2(epsilon) + (1 - p1) * np.log2(1 - epsilon))
+            low_extrap = ((f_of_epsilon - infinity) / epsilon) * (q1 - epsilon) + f_of_epsilon
+            
+            f_of_1_minus_epsilon = - (p1 * np.log2(1 - epsilon) + (1 - p1) * np.log2(epsilon))
+            high_extrap = ((infinity - f_of_1_minus_epsilon) / epsilon) * (q1 - (1 - epsilon)) + f_of_1_minus_epsilon
+            
+            result = np.where(q1 < epsilon, low_extrap, f_val)
+            result = np.where(q1 > 1 - epsilon, high_extrap, result)
+            
+            return result
+
+        surface = three_d_axes.get_graph(
+            cross_entropy,
+            u_range=[0, 1],
+            v_range=[0, 1],
+        ).set_opacity(0.4)
+
+        Group(three_d_axes, surface).rotate(
+            axis = LEFT, angle = PI*0.5
+        ).shift(
+            axes[1][0][0].get_center() - three_d_axes[1][0][0].get_center()
+        )
+        three_d_axes.get_x_axis().rotate(axis = RIGHT, angle = PI*0.5)
+        three_d_axes.get_y_axis()[0].rotate(axis = IN, angle = PI*0.5)
+        three_d_axes.get_y_axis()[1].rotate(axis = RIGHT, angle = PI*0.5).shift(LEFT*0.5)
+        y_axis = number_line_q.copy()
+        y_axis[1][0].rotate(axis = UP, angle = -PI*0.5)
+        y_axis[1][1].rotate(axis = UP, angle = -PI*0.5)
+        p1_axis_label = Tex("p_1").match_height(q1_label).set_color(GREEN).move_to(three_d_axes.get_y_axis()[1])
+
+        p1_dot.clear_updaters()
+        p1_triangle.clear_updaters()
+        new_p2_label.clear_updaters()
+        p1_label_copy.clear_updaters()
+
+        # Shift everything so that the surface is at the origin
+        p1_dot_copy.clear_updaters()
+        p1_triangle_copy.clear_updaters()
+        Group(
+            cross_entropy_text,
+            qp_cross_entropy_formula,
+            qp_cross_entropy_chart,
+            number_line_p,
+            p1_dot,
+            p1_triangle,
+            p1_label,
+            new_p2_label,
+            y_axis_label,
+            graph,
+            p1_dot_copy,
+            p1_triangle_copy,
+            p1_label_copy,
+            min_value_dot,
+            p_entropy_graph,
+            entropy_of_p,
+            axes,
+            q1_label,
+            number_line_q,
+            self.camera.frame,
+            surface,
+            three_d_axes,
+            p1_axis_label,
+            y_axis
+        ).shift([-surface.get_x(), -surface.get_y()*0.2, -surface.get_z()])
+
+        # Introduce the graph
+        def get_cross_section_q(q1):
+            step = 0.01
+            return ParametricCurve(
+                lambda p1: three_d_axes.c2p(q1, p1, f(q1, p1)),
+                t_range = [0.0001, 0.9999, step]
+            ).set_stroke(
+                width = 5, color = GREEN
+            ).insert_n_curves(10000)
+        def get_cross_section_p(p1):
+            step = clip(calculate_step(p1), min_step, max_step)
+            return ParametricCurve(
+                lambda q1: three_d_axes.c2p(q1, p1, f(q1, p1)),
+                t_range = [0.0001, 0.9999, step]
+            ).set_stroke(
+                width = 5, color = PINK
+            ).insert_n_curves(10000)
+        current_cross_section = get_cross_section_p(qp_cross_entropy_chart.distribution_trackers[0].get_value())
+        self.play(
+            self.camera.frame.animate(run_time = 2).move_to(axes).scale(0.8),
+            FadeOut(
+                Group(
+                    cross_entropy_text,
+                    qp_cross_entropy_formula,
+                    qp_cross_entropy_chart,
+                    number_line_p,
+                    p1_dot,
+                    p1_triangle,
+                    p1_label,
+                    new_p2_label
+                ),
+                shift = LEFT,
+                suspend_mobject_updating = True,
+                run_time = 2
+            ),
+            FadeOut(
+                Group(p1_dot_copy, p1_triangle_copy, min_value_dot, p_entropy_graph, entropy_of_p),
+                suspend_mobject_updating = True,
+                run_time = 2
+            ),
+            ReplacementTransform(p1_label_copy, p1_axis_label, run_time = 2),
+            y_axis.animate(run_time = 2).rotate(axis = UP, angle = PI*0.5, about_point = three_d_axes.c2p(0, 0, 0)),
+            graph.animate(run_time = 2).become(current_cross_section),
+            y_axis_label.animate(run_time = 1.5, path_arc = -PI*0.3).to_edge(UR, buff = 2).shift(UP*0.5).scale(0.8).fix_in_frame(),
+            ShowCreation(surface, run_time = 2),
+            q1_label.animate.shift(OUT*0.3)
+        )
+        self.play(FadeOut(graph), surface.animate.set_opacity(0.7))
+
+        # Move the camera around a bit
+        def look_at_camera(m):
+            m.save_state()
+            def update_m(m):
+                m.restore()
+                m.rotate(self.camera.frame.get_phi(), axis=RIGHT)
+                m.rotate(self.camera.frame.get_theta(), axis=UP)
+            m.add_updater(update_m)
+
+        look_at_camera(p1_axis_label)
+        look_at_camera(q1_label)
+        # look_at_camera(number_line_q[1][0])
+        # look_at_camera(number_line_q[1][1])
+        # look_at_camera(y_axis[1][0])
+        for num in axes.get_y_axis()[2]:
+            look_at_camera(num)
+
+        self.play(self.camera.frame.animate.reorient(13, -6, 0, (np.float32(0.69), np.float32(-3.79), np.float32(1.5)), 7.68), run_time = 5)
+        self.play(self.camera.frame.animate.reorient(-21, -6, 0, (np.float32(0.11), np.float32(-4.07), np.float32(1.09)), 8.11), run_time = 5)
+        self.camera.frame.save_state()
+
+        # Show the entropy graph for P hidden underneath
+        q_tracker = ValueTracker(0.999999)
+        p_entropy_graph = always_redraw(lambda: get_cross_section_q(q_tracker.get_value()))
+        self.add(p_entropy_graph)
+        tail = TracingTail(
+            lambda: p_entropy_graph.get_start() + (p_entropy_graph.get_end() - p_entropy_graph.get_start())*q_tracker.get_value(),
+            stroke_color = GREEN,
+            time_traced = 30, 
+            stroke_width = 6
+        )
+        self.add(tail)
+
+        self.play(
+            surface.animate(run_time = 1).set_opacity(0.4),
+            q_tracker.animate(run_time = 3).set_value(0.000001),
+            self.camera.frame.animate(run_time = 3).reorient(-90, -2, 0, (np.float32(0.72), np.float32(-4.8), np.float32(0.18)), 7.68).set_focal_distance(50),
+            y_axis_label.animate(run_time = 3).scale(1/0.8).to_edge(UR, buff = 1)
+        )
+        p_entropy_graph.suspend_updating()
+        self.play(
+            FadeOut(p_entropy_graph),
+            Write(entropy_of_p.next_to(tail, IN, buff = 2).rotate(axis = UP, angle = -PI*0.5))
+        )
+        self.wait(2)
+        p_entropy_graph = always_redraw(lambda: get_cross_section_q(q_tracker.get_value()))
+        self.add(p_entropy_graph)
+        self.play(
+            FadeOut(entropy_of_p),
+            q_tracker.animate(run_time = 6).set_value(0.999999),
+            self.camera.frame.animate(run_time = 6).restore(),
+            y_axis_label.animate(run_time = 6).to_edge(UR, buff = 2).shift(UP*0.5).scale(0.8)
+        )
+        p_entropy_graph.suspend_updating()
+        self.play(FadeOut(p_entropy_graph), surface.animate.set_opacity(0.8))
+        self.play(self.camera.frame.animate.reorient(13, -6, 0, (np.float32(0.69), np.float32(-3.79), np.float32(1.5)), 7.68), run_time = 9)
+        self.play(self.camera.frame.animate.reorient(-21, -6, 0, (np.float32(0.11), np.float32(-4.07), np.float32(1.09)), 8.11), run_time = 9)
+
 
 
 
@@ -8135,7 +8358,7 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             vertical_axis_label_text = R"-\log_2 q_i",
             segments_height = 0.2,
             fill_colors = [PURE_MAGENTA, LIGHT_PINK],
-            stroke_width = 1
+            stroke_width = 1.5
         )
         qp_cross_entropy_chart = EntropyChart(
             P,
@@ -8156,43 +8379,35 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
             segments_height = 0.2,
             fill_colors = [GREEN_B, GREEN_D],
             bar_fill_colors = [PURE_MAGENTA, LIGHT_PINK],
-            stroke_width = 1
+            stroke_width = 1.5
         ).shift(UP*1.2)
         VGroup(qp_cross_entropy_chart, q_entropy_chart).set_y(0)
         self.camera.frame.save_state()
-        self.camera.frame.match_y(qp_cross_entropy_chart.segments)
+        self.camera.frame.match_y(VGroup(qp_cross_entropy_chart.segments, q_entropy_chart.segments))
 
-        # Add P
-        self.play(
-            AnimationGroup(*[
-                AnimationGroup(GrowFromCenter(segment), FadeIn(p_label))
-                for segment, p_label in zip(
-                    qp_cross_entropy_chart.segments.bars, qp_cross_entropy_chart.probability_labels
+        self.add(qp_cross_entropy_chart.segments, qp_cross_entropy_chart.probability_labels)
+        self.add(q_entropy_chart.segments, q_entropy_chart.probability_labels)
+
+        # Fix P and move around Q
+        num_changes = 2
+        for i in range(num_changes):
+            anims = [q_entropy_chart.set_distribution(random_distribution(5) if i < num_changes - 1 else Q)]
+            if i == 0:
+                pins = VGroup(*[
+                    SVGMobject("push_pin.svg").rotate(35 * DEG).scale(0.25).set_fill([GREY_D, GREY_B], 1)
+                    for _ in range(len(qp_cross_entropy_chart.segments.bars))
+                ])
+                for pin, segment in zip(pins, qp_cross_entropy_chart.segments.bars):
+                    pin.align_to(segment.get_center(), DR)
+                self.bring_to_back(qp_cross_entropy_chart.segments)
+                anims.append(
+                    AnimationGroup(*[
+                        FadeIn(pin, shift = DR*0.25)
+                        for pin in pins
+                    ], lag_ratio = 0.15)
                 )
-            ], lag_ratio = 0.2, suspend_mobject_updating = True)
-        , run_time = 2)
+            self.play(*anims, run_time = 2.125)
 
-        # Add Q
-        self.play(
-            AnimationGroup(*[
-                AnimationGroup(GrowFromCenter(segment), FadeIn(p_label))
-                for segment, p_label in zip(
-                    q_entropy_chart.segments.bars, q_entropy_chart.probability_labels
-                )
-            ], lag_ratio = 0.2, suspend_mobject_updating = True)
-        , run_time = 1.5)
-
-        # Wiggle around Q
-        q_entropy_chart.suspend_updating()
-        self.add(q_entropy_chart.segments)
-        num_wiggles = 3
-        for i in range(num_wiggles):
-            self.play(
-                q_entropy_chart.segments.animate.set_distribution(
-                    random_distribution(5) if i < num_wiggles - 1 else Q
-                ).set_stroke(width = 3 if i < num_wiggles - 1 else 1)
-            , run_time = 0.25)
-        q_entropy_chart.resume_updating()
 
         # Add the bars and write the cross entropy formula
         number_line = NumberLine(
@@ -8233,6 +8448,7 @@ class MoreComplicatedCrossEntropyExampleAndKLDivergence(InteractiveScene):
         self.play(
             self.camera.frame.animate(run_time = 1).restore().align_to(qp_cross_entropy_chart, LEFT).shift(LEFT*0.7),
             qp_cross_entropy_chart.create_bars(),
+            FadeOut(pins),
             ShowCreation(number_line),
             FadeIn(VGroup(cross_entropy_triangle, cross_entropy_display)),
             AnimationGroup(
@@ -8497,12 +8713,24 @@ class KLDivergenceDemo(InteractiveScene):
         P_symbol = Tex("P", font_size = 80).set_color(GREEN).set_stroke(width = 15, color = BLACK, behind = True)
         VGroup(Q_symbol, P_symbol).to_edge(RIGHT, buff = 3)
         multiplier = 3
-        kl_divergence = get_kl_divergence(
-            [t.get_value() for t in q_entropy_chart.distribution_trackers],
-            [t.get_value() for t in p_entropy_chart.distribution_trackers]
+        Q_symbol.add_updater(
+            lambda m:
+            m.set_y(
+                -multiplier*get_kl_divergence(
+                    [t.get_value() for t in q_entropy_chart.distribution_trackers],
+                    [t.get_value() for t in p_entropy_chart.distribution_trackers]
+                )
+            )
         )
-        Q_symbol.set_y(-multiplier*kl_divergence)
-        P_symbol.set_y(multiplier*kl_divergence)
+        P_symbol.add_updater(
+            lambda m:
+            m.set_y(
+                multiplier*get_kl_divergence(
+                    [t.get_value() for t in q_entropy_chart.distribution_trackers],
+                    [t.get_value() for t in p_entropy_chart.distribution_trackers]
+                )
+            )
+        )
         self.add(Q_symbol, P_symbol)
 
         # Add the connecting line
@@ -8539,18 +8767,11 @@ class KLDivergenceDemo(InteractiveScene):
         self.add(dashed_lines)
         self.bring_to_back(dashed_lines)
 
-
-        # Change the distribution a little
+        # Change the distribution
         np.random.seed(10)
         for i in range(15):
             new_distribution = random_distribution(5) if i != 1 else P
-            anims = [
-                AnimationGroup(
-                    q_entropy_chart.set_distribution(new_distribution),
-                    Q_symbol.animate.set_y(-multiplier*get_kl_divergence(new_distribution, P)),
-                    P_symbol.animate.set_y(multiplier*get_kl_divergence(new_distribution, P))
-                )
-            ]
+            anims = [q_entropy_chart.set_distribution(new_distribution)]
             if i == 3:
                 kl_divergence_formula.save_state()
                 kl_divergence_formula_2 = Tex(
@@ -8670,8 +8891,8 @@ class DistanceBetweenDistributions(InteractiveScene):
         P_symbol = Tex("P", font_size = 60).set_color(GREEN).set_stroke(width = 15, color = BLACK, behind = True)
         VGroup(Q_symbol, P_symbol).to_edge(RIGHT, buff = 2)
         multiplier = 20
-        Q_symbol.set_y(-multiplier*get_kl_divergence(Q, P))
-        P_symbol.set_y(multiplier*get_kl_divergence(Q, P))
+        Q_symbol.add_updater(lambda m: m.set_y(-multiplier*get_kl_divergence(Q, P)))
+        P_symbol.add_updater(lambda m: m.set_y(multiplier*get_kl_divergence(Q, P)))
         self.add(Q_symbol, P_symbol)
 
         # Add the connecting line
@@ -8701,13 +8922,7 @@ class DistanceBetweenDistributions(InteractiveScene):
 
         # Change Q to be closer / further away from P
         for i in range(15):
-            Q.generate_target()
-            Q.target.set_distribution(random_distribution(7, thresh = 1/10) if i != 3 else distribution2)
-            self.play(
-                MoveToTarget(Q),
-                Q_symbol.animate.set_y(-multiplier*get_kl_divergence(Q.target, P)),
-                P_symbol.animate.set_y(multiplier*get_kl_divergence(Q.target, P))
-            , run_time = 1.5)
+            self.play(Q.animate.set_distribution(random_distribution(7, thresh = 1/10) if i != 3 else distribution2), run_time = 1.5)
             self.wait(0.5)
 
 class WaysToMeasureProbabilityDistributionDifferences(InteractiveScene):
