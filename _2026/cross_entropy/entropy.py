@@ -5,6 +5,7 @@ from _2026.cross_entropy.distribution import StackedProbDistribution
 from _2026.cross_entropy.next_char import CHAR_ALPHABET
 from _2026.cross_entropy.next_char import get_next_char_distribution
 from _2026.cross_entropy.next_char import load_huffman_table
+from scipy.special import gamma
 
 
 def bit_string_mobject(
@@ -1148,6 +1149,7 @@ class RandomNoiseIsIncompressible(SpaceOfCodewords):
 class InformationGraph(InteractiveScene):
     prob_color = TEAL_D
     info_color = BLUE
+    input_var = "x"
 
     def construct(self):
         # Add split diagrams
@@ -1211,13 +1213,13 @@ class InformationGraph(InteractiveScene):
         )
         axes.add(bit_lines, bit_labels)
 
-        p_label = Tex(R"p").set_color(self.prob_color)
+        p_label = Tex(self.input_var).set_color(self.prob_color)
         p_label.next_to(axes.x_axis.get_end(), RIGHT)
         axes.add(p_label)
 
         info_label = Tex(
-            R"-\log_2(p)",
-            t2c={R"-\log_2": self.info_color, "p": self.prob_color}
+            Rf"-\log_2({self.input_var})",
+            t2c={R"-\log_2": self.info_color, self.input_var: self.prob_color}
         )
         info_label.next_to(axes.c2p(0, max_y), UR)
 
@@ -1324,8 +1326,11 @@ class InformationGraph(InteractiveScene):
         self.play_with_prob(p_tracker, [0.2, 0.9, 0.1])
 
         # Show as information definition
-        lhs = Tex(R"\text{Information} :=")
+        # lhs = Tex(R"\text{Information} :=")
+        lhs = Tex(R"\text{Loss} =")
+        lhs["Loss"].set_color(RED)
         lhs.move_to(info_label, UL)
+        lhs.shift((equals.get_y() - lhs["="].get_y()) * UP)
 
         self.play(FlashAround(info_label, run_time=2))
         self.play(
@@ -1347,7 +1352,7 @@ class InformationGraph(InteractiveScene):
         info_bar.add_updater(lambda m: m.match_height(v_line, stretch=True).align_to(v_line, DOWN))
 
         brace = always_redraw(lambda: Brace(info_bar, RIGHT, SMALL_BUFF))
-        log_label = Tex(R"-\log_2(p)")
+        log_label = Tex(Rf"-\log_2({self.input_var})")
         log_label.always.next_to(brace, RIGHT, SMALL_BUFF)
 
         prob_icon = ProbIcon(p_tracker.get_value(), radius=0.5)
@@ -1367,7 +1372,59 @@ class InformationGraph(InteractiveScene):
         self.play_with_prob(p_tracker, [0.25, 0.1, 0.01])
         self.wait()
         self.play(p_tracker.animate.set_value(0.9), run_time=5)
-        self.play_with_prob(p_tracker, [0.15, 0.05, 0.6])
+        self.wait()
+
+        # Compare to other graphs
+        log_graph = graph
+        top_to_fade = VGroup(lhs, equals, log_p_dec)
+        side_to_fade = Group(info_bar, brace, log_label, prob_icon, p_tip, p_dec, h_line, v_line, graph_dot)
+        side_to_fade.clear_updaters()
+
+        x_range = (1e-2, 1, 1e-2)
+        alt_graphs = VGroup(
+            axes.get_graph(lambda x: (1.0 / (x)) - 1, x_range=x_range),
+            axes.get_graph(lambda x: np.tan((PI / 2) * (1 - x)), x_range=x_range),
+            axes.get_graph(lambda x: gamma(x) - 1, x_range=x_range),
+        )
+        alt_graph_labels = VGroup(
+            Tex(R"{1 \over x} - 1"),
+            Tex(R"\tan\left({\pi \over 2}(1 - x)\right)"),
+            Tex(R"\Gamma(x) - 1"),
+        )
+        colors = [YELLOW, GREEN, RED]
+        xs = [0.15, 0.2, 0.3]
+        for label, alt_graph, color, x in zip(alt_graph_labels, alt_graphs, colors, xs):
+            alt_graph.set_color(color)
+            label.set_color(color)
+            label.next_to(axes.i2gp(x, alt_graph), UR, buff=0.05)
+            label.set_z_index(1)
+
+        self.play(
+            frame.animate.to_default_state(),
+            FadeOut(top_to_fade),
+            FadeOut(side_to_fade),
+            info_label.animate.set_x(axes.y_axis.get_x(), RIGHT).shift(SMALL_BUFF * UP),
+        )
+
+        curr_graphs = VGroup(log_graph)
+        curr_labels = VGroup(info_label)
+        for label, graph in zip(alt_graph_labels, alt_graphs):
+            self.play(
+                curr_graphs.animate.set_stroke(opacity=0.2),
+                curr_labels.animate.set_fill(opacity=0.2),
+                ShowCreation(graph),
+                FadeIn(label, 0.5 * UP)
+            )
+            self.wait()
+            curr_graphs.add(graph)
+            curr_labels.add(label)
+        self.wait()
+        self.play(
+            log_graph.animate.set_stroke(opacity=1),
+            info_label.animate.set_fill(opacity=1),
+            curr_graphs[1:].animate.set_stroke(opacity=0.2),
+            curr_labels[1:].animate.set_fill(opacity=0.2),
+        )
         self.wait()
 
     def play_with_prob(self, p_tracker, values, run_time_each=3):
