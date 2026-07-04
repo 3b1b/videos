@@ -123,6 +123,32 @@ def gpt2_predict_next_token(text: str, n_shown: int = 7):
     return tokens, top_probs.numpy()
 
 
+def gpt2_token_probability(text: str, token: str) -> float:
+    """
+    Probability GPT-2 assigns to `token` following `text`.
+
+    `token` is a raw string, which may encode to one or more GPT-2 tokens.
+    When it spans multiple tokens, the joint probability of the continuation
+    is returned (the product of successive next-token probabilities).
+    """
+    _ensure_gpt2_loaded()
+
+    input_ids = _gpt2_tokenizer.encode(
+        text, add_special_tokens=False, return_tensors="pt"
+    )
+    token_ids = _gpt2_tokenizer.encode(token, add_special_tokens=False)
+
+    probability = 1.0
+    with torch.no_grad():
+        for token_id in token_ids:
+            logits = _gpt2_model(input_ids).logits[0, -1, :]
+            probs = torch.softmax(logits, dim=-1)
+            probability *= probs[token_id].item()
+            next_id = torch.tensor([[token_id]])
+            input_ids = torch.cat([input_ids, next_id], dim=1)
+    return probability
+
+
 HUFFMAN_TABLE_PATH = os.path.join(
     os.path.dirname(__file__), "huffman_table.json"
 )
