@@ -1,6 +1,32 @@
 from manim_imports_ext import *
 
 
+class CrossEntropyKLDivergenceTitles(InteractiveScene):
+    def construct(self):
+        # Test
+        titles = VGroup(
+            Text("Cross-Entropy", font_size=60),
+            Text("KL Divergence", font_size=60),
+        )
+        titles.to_edge(UP)
+        kw = dict(t2c={"p_i": GREEN, "q_i": PINK})
+        formulas = VGroup(
+            Tex(R"\sum_i p_i \big(-\log(q_i)\big)", **kw),
+            Tex(R"\sum_i p_i \log\left({p_i / q_i}\right)", **kw),
+        )
+
+        for x, title, formula in zip([-1, 1], titles, formulas):
+            title.set_x(x * FRAME_WIDTH / 4)
+            formula.next_to(title, DOWN)
+
+            self.play(LaggedStart(
+                Write(title),
+                FadeIn(formula, 0.5 * DOWN),
+                lag_ratio=0.25
+            ))
+            self.wait()
+
+
 class AskWhyLogs(InteractiveScene):
     def construct(self):
         # Test
@@ -73,12 +99,12 @@ class YouTheEngineer(InteractiveScene):
 class BillionsOfInputs(InteractiveScene):
     def construct(self):
         # Simple function
-        func = Tex(R"f(x, y)", font_size=90)
+        func = Tex(R"L(x, y)", font_size=90, t2c={"L": RED})
         self.play(Write(func))
         self.wait()
 
         # Many labels
-        lp = func["f("][0]
+        lp = func["L("][0]
         rp = func[")"][0]
         xy = func["x, y"][0]
 
@@ -89,16 +115,16 @@ class BillionsOfInputs(InteractiveScene):
         min_x = lp.target.get_x(RIGHT)
         max_x = rp.target.get_x(LEFT)
 
-        x_i_template = Tex(R"x_{0}", font_size=48)
-        subscr = x_i_template.make_number_changeable("0", edge_to_fix=LEFT)
-        all_xs = VGroup()
+        w_i_template = Tex(R"w_{0}", font_size=48)
+        subscr = w_i_template.make_number_changeable("0", edge_to_fix=LEFT)
+        all_ws = VGroup()
         n_terms = 200
         for n in range(n_terms):
             subscr.set_value(n)
-            all_xs.add(x_i_template.copy())
-        all_xs[-1].remove(all_xs[-1][-1])
-        all_xs.arrange(RIGHT)
-        for mob in all_xs:
+            all_ws.add(w_i_template.copy())
+        all_ws[-1].remove(all_ws[-1][-1])
+        all_ws.arrange(RIGHT)
+        for mob in all_ws:
             mob.add(Text(",").next_to(mob, RIGHT, buff=0.05).match_y(mob.get_corner(DL)))
 
         def update_opacities(xs):
@@ -110,17 +136,17 @@ class BillionsOfInputs(InteractiveScene):
                 )
                 mob.set_fill(opacity=alpha)
 
-        all_xs.add_updater(update_opacities)
-        all_xs.next_to(lp.target, RIGHT, SMALL_BUFF)
+        all_ws.add_updater(update_opacities)
+        all_ws.next_to(lp.target, RIGHT, SMALL_BUFF)
 
         self.play(
             MoveToTarget(lp),
             MoveToTarget(rp),
             FadeOut(xy),
-            VFadeIn(all_xs, suspend_mobject_updating=True),
+            VFadeIn(all_ws, suspend_mobject_updating=True),
         )
         self.play(
-            all_xs.animate.next_to(rp, LEFT),
+            all_ws.animate.next_to(rp, LEFT),
             run_time=20,
             rate_func=lambda t: t**3,
         )

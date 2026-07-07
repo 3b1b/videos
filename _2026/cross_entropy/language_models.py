@@ -106,7 +106,7 @@ class NextTokenPredictions(InteractiveScene):
             for rect in rects
         )
         pred_mobs = VGroup(
-            self.get_next_token_prediction_mob(prefix)
+            self.prediction_mob_from_text(prefix)
             for prefix in prefixes
         )
         for pred_mob, arrow in zip(pred_mobs, arrows):
@@ -163,9 +163,12 @@ class NextTokenPredictions(InteractiveScene):
         ))
         self.wait()
 
-    def get_next_token_prediction_mob(
-        self,
-        text,
+    def prediction_mob_from_text(self, text, *args, **kwargs):
+        tokens, probs = gpt2_predict_next_token(text, n_shown=n_shown)
+        return self.get_prediction_distribution(token_mobs, probs, *args, **kwargs)
+
+    def get_prediction_distribution(
+        self, tokens, probs,
         bar_buff=0.3,
         font_size=40,
         n_shown=8,
@@ -173,7 +176,6 @@ class NextTokenPredictions(InteractiveScene):
         prob_bar_height=0.4,
         prob_bar_colors=(BLUE_D, TEAL_D),
     ):
-        tokens, probs = gpt2_predict_next_token(text, n_shown=n_shown)
         prob_bars = VGroup(
             Rectangle(prob * prob_1_width, prob_bar_height)
             for prob in probs
@@ -230,7 +232,7 @@ class NextTokenPredictions(InteractiveScene):
             for r1, r2 in zip(rects, rects[1:])
         )
         pred_mobs = VGroup(
-            self.get_next_token_prediction_mob(prefix).next_to(VGroup(arrow), UP, index_of_submobject_to_align=-1)
+            self.prediction_mob_from_text(prefix).next_to(VGroup(arrow), UP, index_of_submobject_to_align=-1)
             for prefix, arrow in zip(prefixes, arrows)
         )
         for pred_mob in pred_mobs:
@@ -325,7 +327,7 @@ class TokensAndPredictions2(NextTokenPredictions):
         # Show arrow and output
         arrow = Vector(3 * RIGHT, thickness=6, fill_color=TEAL)
         pred_mob_kw = dict(n_shown=12, prob_1_width=8, font_size=30)
-        pred_mob = self.get_next_token_prediction_mob(text, **pred_mob_kw)
+        pred_mob = self.prediction_mob_from_text(text, **pred_mob_kw)
         pred_mob.set_max_height(FRAME_HEIGHT - 1)
         pred_mob.next_to(arrow, RIGHT)
         model_placeholder = Square(side_length=3)
@@ -347,7 +349,7 @@ class TokensAndPredictions2(NextTokenPredictions):
         self.wait()
 
         # Show bad predictions
-        bad_pred_mob = self.get_next_token_prediction_mob("Hello world", **pred_mob_kw)
+        bad_pred_mob = self.prediction_mob_from_text("Hello world", **pred_mob_kw)
         for row in bad_pred_mob:
             row[1].set_fill(RED_D)
 
@@ -579,12 +581,15 @@ class PileOfTrainingExamples(InteractiveScene):
         examples.arrange(DOWN, aligned_edge=LEFT)
         examples.to_edge(DOWN)
 
+        def camera_rate_func(t):
+            return np.mean([smooth(t), t])
+
         frame.set_height(16)
         frame.move_to(examples, UP).shift(0.25 * UP)
         self.add(examples)
         self.play(
             LaggedStartMap(Write, examples, lag_ratio=0.08),
-            frame.animate.move_to(examples, DOWN).shift(DOWN).set_anim_args(time_span=(1, 25)),
+            frame.animate.move_to(examples, DOWN).shift(DOWN).set_anim_args(time_span=(1, 25), rate_func=camera_rate_func),
             run_time=25
         )
         self.wait()
@@ -665,7 +670,7 @@ class LossFunction(NextTokenPredictions, InformationOfLanguage):
         arrow = Vector(RIGHT, fill_color=TEAL)
         arrow.next_to(model_placeholder, RIGHT)
 
-        pred_mob = self.get_next_token_prediction_mob(
+        pred_mob = self.prediction_mob_from_text(
             prefixes[idx - 1],
             n_shown=8,
             font_size=20,
@@ -987,11 +992,328 @@ class LossFunction(NextTokenPredictions, InformationOfLanguage):
         return token_mobs
 
 
-class MyNameIsExample(InteractiveScene):
+class MyNameIsExample(NextTokenPredictions):
+    loss_func_tex = R"-\log"
+    loss_func_tex_in_sum = R"\big(-\log(q_i)\big)"
+    # loss_func_tex = R"f"
+    # loss_func_tex_in_sum = R"\cdot f(q_i)"
+
+
     def construct(self):
+        # Show multiple instances
+        frame = self.frame
+        in_text = "My name is"
+        names = ["Alice", "Bob", "Charlie", "Dora"]
+        multiplicities = [4, 3, 2, 1]
+        colors = color_gradient([BLUE, TEAL, GREEN], 4, interp_by_hsl=True)
+        t2c = dict(zip(names, colors))
+        training_data = VGroup(
+            Text(f"{in_text} {name}", t2c=t2c)
+            for name, mult in zip(names, multiplicities)
+            for n in range(mult)
+        )
+        training_data.arrange(DOWN, aligned_edge=LEFT)
+        training_data.set_height(FRAME_HEIGHT - 1.5)
+        training_data.to_edge(RIGHT)
+        frame.move_to(training_data)
+
+        underline = Underline(training_data[0][names[0]], buff=0)
+        underline.set_stroke(WHITE, 3)
+        blank_example = VGroup(*training_data[0][in_text][0], underline).copy()
+        blank_example.scale(1.5)
+        blank_example.move_to(frame)
+
+        top_brace = Brace(training_data[:multiplicities[0]], LEFT, SMALL_BUFF)
+        low_brace = Brace(training_data[-multiplicities[-1]], LEFT, SMALL_BUFF)
+        low_cover_rect = BackgroundRectangle(training_data[multiplicities[0]:], buff=SMALL_BUFF)
+        top_cover_rect = BackgroundRectangle(training_data[:-multiplicities[-1]], buff=SMALL_BUFF)
+
+        self.play(Write(blank_example))
+        self.wait()
+        self.remove(blank_example)
+        self.play(LaggedStart(
+            (FadeTransform(blank_example.copy(), example)
+            for example in training_data),
+            group_type=Group,
+            lag_ratio=0.1,
+        ))
+        self.wait()
+        self.play(
+            GrowFromCenter(top_brace),
+            FadeIn(low_cover_rect)
+        )
+        self.wait()
+        self.play(
+            ReplacementTransform(top_brace, low_brace),
+            FadeOut(low_cover_rect),
+            FadeIn(top_cover_rect),
+        )
+        self.wait()
+
         # Feed in "My name is"
-        model_placeholder = Square(side_length=3)
+        pred = gpt2_predict_next_token(in_text)
+        probs = np.array([0.1, 0.3, 0.4, 0.2])
+        prefix = Text(in_text)
+        prefix.to_edge(LEFT)
 
-        # Show statistical distribution
-        pred = gpt2_predict_next_token("My name is")
+        tokens = break_into_tokens(prefix)
+        rects = get_piece_rectangles(tokens, h_buff=0, leading_spaces=True)
+        token_mobs = VGroup(VGroup(*pair) for pair in zip(rects, tokens))
+        token_mobs.save_state()
+        token_mobs.shift(training_data[-1][in_text][0].get_center() - tokens.get_center())
+        rects.fade(1)
 
+        model = Square(side_length=3)  # Placeholder
+        model.next_to(prefix, RIGHT)
+
+        for mob in training_data:
+            mob.save_state()
+            mob.generate_target()
+            mob.target.scale(0.5, about_edge=LEFT)
+        training_targets = VGroup(td.target for td in training_data)
+        training_targets.to_edge(RIGHT)
+
+        pred_mob = self.get_prediction_distribution(
+            names,
+            probs,
+            prob_1_width=3,
+            bar_buff=0.5
+        )
+        pred_mob.next_to(model, RIGHT)
+        q_terms = VGroup()
+        for row, name, color in zip(pred_mob, names, colors):
+            row.remove(row[-1])
+            row[1].set_fill(color)
+            q_term = Tex(fR"q_{{{name[0]}}}")
+            q_term.next_to(row[1], RIGHT, SMALL_BUFF).shift(0.05 * DOWN)
+            q_term.set_color(row[1].get_fill_color())
+            q_term[1].scale(0.5, about_edge=DL)
+            q_terms.add(q_term)
+
+        pre_pred_mob = pred_mob.copy()
+        token_mobs_target = token_mobs.copy()
+        for group in [token_mobs_target, pre_pred_mob]:
+            for part in group.family_members_with_points():
+                part.scale(0.1).set_opacity(0).move_to(model)
+
+        self.remove(top_cover_rect)
+        self.play(
+            frame.animate.center(),
+            FadeOut(low_brace),
+            Restore(token_mobs, path_arc=-60 * DEG),
+            LaggedStartMap(MoveToTarget, training_data, lag_ratio=1e-2),
+            FadeOut(top_cover_rect),
+            run_time=2
+        )
+        self.play(TransformFromCopy(token_mobs, token_mobs_target, path_arc=-120 * DEG, lag_ratio=0.05))
+        self.play(TransformFromCopy(pre_pred_mob, pred_mob, path_arc=120 * DEG, lag_ratio=0.005))
+        self.wait()
+        self.play(LaggedStartMap(FadeIn, q_terms, shift=0.2 * RIGHT, lag_ratio=0.5))
+        self.wait()
+
+        # Ask about loss
+        pred_rect = SurroundingRectangle(VGroup(pred_mob, q_terms))
+        pred_rect.set_stroke(RED, 2)
+        loss_word = Text("Loss?").set_color(RED)
+        loss_word.next_to(pred_rect, UP)
+        loss_question_group = VGroup(pred_rect, loss_word, pred_mob, q_terms)
+
+        self.play(ShowCreation(pred_rect), Write(loss_word))
+        self.wait()
+        self.play(
+            Restore(training_data[0]),
+            loss_question_group.animate.to_edge(LEFT),
+            FadeOut(token_mobs, LEFT),
+            training_data[1:].animate.set_fill(opacity=0.2),
+        )
+        self.wait()
+
+        # Show loss on the one example
+        left_arrows = VGroup(
+            Tex(R"\longleftarrow").next_to(example.saved_state, LEFT)
+            for example in training_data
+        )
+        log_q_terms = VGroup(
+            Tex(Rf"{self.loss_func_tex}({q_tex})", t2c={q_tex: color})
+            for name, color, mult in zip(names, colors, multiplicities)
+            for q_tex in [Rf"q_{{{name[0]}}}"]
+            for n in range(mult)
+        )
+        for log_q_term, arrow in zip(log_q_terms, left_arrows):
+            log_q_term.next_to(arrow, LEFT)
+
+        self.play(
+            Write(left_arrows[0]),
+            Write(log_q_terms[0]),
+            FadeTransform(q_terms[0].copy(), log_q_terms[0][q_terms[0].get_tex()])
+        )
+        self.wait()
+        N = multiplicities[1] + 1
+        self.play(
+            *(
+                LaggedStart(
+                    (TransformFromCopy(group[0], part)
+                    for part in group[:N]),
+                    lag_ratio=0.1,
+                )
+                for group in [log_q_terms, left_arrows]
+            ),
+            LaggedStartMap(Restore, training_data[1:multiplicities[1] + 1]),
+        )
+        self.wait()
+
+        # Show the other names
+        bounds = np.cumsum(multiplicities)
+        h_line = Line(log_q_terms.get_x(LEFT) * RIGHT, training_data.get_x(RIGHT) * RIGHT)
+        h_line.set_stroke(WHITE, 1, 0)
+        y_values = [log_q_terms[idx].get_y(UP) + 0.05 for idx in [0, *bounds[:-1]]]
+        y_values.append(log_q_terms[-1].get_y(DOWN) - 0.05)
+        h_lines = VGroup(h_line.copy().set_y(y) for y in y_values)
+
+        for n in range(1, len(bounds)):
+            start = bounds[n - 1]
+            end = bounds[n]
+            q_term = q_terms[n]
+            kw = dict(lag_ratio=0.1)
+            self.play(
+                LaggedStartMap(Write, log_q_terms[start:end], **kw),
+                LaggedStartMap(Write, left_arrows[start:end], **kw),
+                LaggedStartMap(Restore, training_data[start:end], **kw),
+                LaggedStart(
+                    (FadeTransform(q_term.copy(), log_q_term[q_term.get_tex()])
+                    for log_q_term in log_q_terms[start:end]),
+                    group_type=Group,
+                    **kw
+                ),
+                h_lines[:n + 1].animate.set_stroke(opacity=1),
+            )
+            self.wait()
+
+        # Show p values
+        braces = VGroup(
+            Brace(VGroup(h_lines[n:n + 2]), LEFT, SMALL_BUFF)
+            for n in range(len(h_lines) - 1)
+        )
+        p_terms = VGroup()
+        for name, color, brace in zip(names, colors, braces):
+            char = name[0]
+            p_term = Tex(Rf"p_{{{char}}}")
+            p_term[1].scale(0.75, about_edge=DL)
+            p_term.next_to(brace, LEFT, SMALL_BUFF)
+            p_terms.add(p_term)
+
+        self.add(h_lines)
+        self.play(
+            LaggedStartMap(GrowFromCenter, braces),
+            Write(p_terms),
+            h_lines.animate.set_stroke(WHITE, 1)
+        )
+        self.wait()
+
+        # Show the full loss
+        top_equation = Tex(
+            Rf"\text{{Average Loss}} = \sum_i p_i {self.loss_func_tex_in_sum}",
+            font_size=72,
+            t2c={
+                R"\text{Average Loss}": RED,
+                "q_i": BLUE,
+            }
+        )
+        top_equation.next_to(braces, UP, buff=0.75).shift(2 * LEFT)
+
+        for part in loss_question_group:
+            part.fix_in_frame()
+
+        self.play(LaggedStart(
+            frame.animate.set_height(10, about_edge=DR),
+            VGroup(pred_mob, q_terms).animate.shift(DOWN),
+            FadeOut(loss_word, DOWN),
+            FadeOut(pred_rect, DOWN),
+            FadeTransformPieces(loss_word["Loss"].copy(), top_equation[R"Loss"]),
+            FadeTransformPieces(loss_word["Loss"].copy(), top_equation[R"Average"]),
+            Write(top_equation[R"= \sum_i"]),
+            Write(top_equation[R"\big("]),
+            Write(top_equation[R"\big)"]),
+            Write(top_equation[R"\cdot"]),
+            FadeTransformPieces(p_terms[0].copy(), top_equation["p_i"][0]),
+            FadeTransformPieces(log_q_terms[0].copy(), top_equation[Rf"{self.loss_func_tex}(q_i)"][0]),
+            run_time=2.5,
+            lag_ratio=0.05,
+        ))
+        self.wait()
+
+        # Highlight terms
+        log_q_rects = VGroup(
+            SurroundingRectangle(log_q, buff=0.05).set_stroke(PINK, 1)
+            for log_q in (top_equation[Rf"{self.loss_func_tex}(q_i)"], *log_q_terms)
+        )
+        p_rects = VGroup(
+            SurroundingRectangle(p_term, buff=0.05).set_stroke(YELLOW, 1)
+            for p_term in [top_equation["p_i"]] + [
+                p_term for p_term, mult in zip(p_terms, multiplicities)
+                for n in range(mult)
+            ]
+        )
+        top_rect = SurroundingRectangle(top_equation[re.compile(r"\\sum.*")])
+        top_rect.set_stroke(BLUE, 2)
+
+        self.play(Write(log_q_rects, lag_ratio=0.1, stroke_color=PINK))
+        self.wait()
+        self.play(ReplacementTransform(log_q_rects, p_rects))
+        self.wait()
+        self.play(ReplacementTransform(p_rects[0], top_rect), FadeOut(p_rects[1:]))
+        self.wait()
+        self.play(FadeOut(top_rect))
+        self.wait()
+
+        # Describe property we want
+        top_rect.surround(top_equation, buff=MED_LARGE_BUFF)
+        top_rect.stretch(0.9, 1, about_edge=UP)
+        top_rect.set_stroke(WHITE, 2)
+        goal = TexText("Goal: This is minimized when $q_i = p_i$", font_size=72, t2c={"q_i": BLUE, "Goal": YELLOW})
+        goal.next_to(top_rect, UP, MED_LARGE_BUFF)
+
+        self.play(
+            frame.animate.set_height(12, about_edge=DOWN),
+            VGroup(pred_mob, q_terms).animate.shift(0.5 * DOWN),
+            FadeIn(top_rect),
+            FadeIn(goal, UP),
+            run_time=1.5
+        )
+
+        pred_mob.target = pred_mob.generate_target()
+        q_terms.target = q_terms.generate_target()
+        for row, q_term, mult in zip(pred_mob.target, q_terms.target, multiplicities):
+            row[1].set_width(mult * 0.5, about_edge=LEFT, stretch=True)
+            q_term.next_to(row[1], RIGHT, SMALL_BUFF, DOWN)
+
+        self.play(LaggedStart(
+            MoveToTarget(q_terms, lag_ratio=0.025),
+            MoveToTarget(pred_mob, lag_ratio=0.025),
+            run_time=2,
+            lag_ratio=0.05,
+        ))
+        self.wait()
+
+        # Show implication
+        top_group = VGroup(goal, top_rect, top_equation)
+        top_group.target = top_group.generate_target()
+        top_group.target.shift(4 * LEFT)
+        implies = Tex(R"\Rightarrow", font_size=120)
+        implies.next_to(top_group.target[0], RIGHT, MED_LARGE_BUFF)
+        rhs = Tex(R"f(q) = -\lambda \log(q)", font_size=90, t2c={"q": BLUE})
+        rhs.next_to(implies)
+        subtext = TexText(R"For some constant $\lambda$")
+        subtext.set_color(GREY_A)
+        subtext.next_to(rhs, DOWN, MED_LARGE_BUFF, aligned_edge=RIGHT)
+
+        self.play(
+            MoveToTarget(top_group),
+            Write(implies),
+        )
+        self.play(LaggedStart(
+            FadeTransformPieces(top_equation["f(q_i)"][0].copy(), rhs["f(q)"][0]),
+            Write(rhs[re.compile(r"=.*")]),
+        ))
+        self.play(FadeIn(subtext, DOWN))
+        self.wait()
