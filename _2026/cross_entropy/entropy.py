@@ -1377,7 +1377,8 @@ class InformationGraph(InteractiveScene):
         # Compare to other graphs
         log_graph = graph
         top_to_fade = VGroup(lhs, equals, log_p_dec)
-        side_to_fade = Group(info_bar, brace, log_label, prob_icon, p_tip, p_dec, h_line, v_line, graph_dot)
+        value_indicators = Group(p_tip, bit_tip, graph_dot, v_line, h_line, p_dec)
+        side_to_fade = VGroup(info_bar, brace, log_label, prob_icon)
         side_to_fade.clear_updaters()
 
         x_range = (1e-2, 1, 1e-2)
@@ -1402,21 +1403,22 @@ class InformationGraph(InteractiveScene):
         self.play(
             frame.animate.to_default_state(),
             FadeOut(top_to_fade),
+            FadeOut(value_indicators),
             FadeOut(side_to_fade),
             info_label.animate.set_x(axes.y_axis.get_x(), RIGHT).shift(SMALL_BUFF * UP),
         )
 
         curr_graphs = VGroup(log_graph)
         curr_labels = VGroup(info_label)
-        for label, graph in zip(alt_graph_labels, alt_graphs):
+        for label, alt_graph in zip(alt_graph_labels, alt_graphs):
             self.play(
                 curr_graphs.animate.set_stroke(opacity=0.2),
                 curr_labels.animate.set_fill(opacity=0.2),
-                ShowCreation(graph),
+                ShowCreation(alt_graph),
                 FadeIn(label, 0.5 * UP)
             )
             self.wait()
-            curr_graphs.add(graph)
+            curr_graphs.add(alt_graph)
             curr_labels.add(label)
         self.wait()
         self.play(
@@ -1425,6 +1427,15 @@ class InformationGraph(InteractiveScene):
             curr_graphs[1:].animate.set_stroke(opacity=0.2),
             curr_labels[1:].animate.set_fill(opacity=0.2),
         )
+        self.wait()
+
+        # More ambient motion to discuss generality
+        self.remove(alt_graphs, alt_graph_labels, info_label)
+        self.add(p_tracker, *value_indicators)
+        p_tracker.set_value(0.5)
+
+        for value in [0.02, 0.9, 0.5]:
+            self.play(p_tracker.animate.set_value(value), run_time=6)
         self.wait()
 
     def play_with_prob(self, p_tracker, values, run_time_each=3):
