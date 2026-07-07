@@ -149,6 +149,78 @@ def gpt2_token_probability(text: str, token: str) -> float:
     return probability
 
 
+_qwen_tokenizer = None
+_qwen_model = None
+
+# Modern (2024) open-source stand-in for GPT-2. At ~0.5B params it is a few
+# times larger than GPT-2 base (124M), but still small enough to run on CPU,
+# and it uses a byte-level BPE tokenizer analogous to GPT-2's. This is the
+# *base* model (raw next-token prediction over natural text), matching how the
+# gpt2_* functions above behave.
+QWEN_MODEL_NAME = "Qwen/Qwen2.5-0.5B"
+
+
+def _ensure_qwen_loaded():
+    global _qwen_tokenizer, _qwen_model
+    if _qwen_model is not None:
+        return
+    from transformers import AutoTokenizer, AutoModelForCausalLM  # noqa: PLC0415
+    _qwen_tokenizer = AutoTokenizer.from_pretrained(QWEN_MODEL_NAME)
+    _qwen_model = AutoModelForCausalLM.from_pretrained(
+        QWEN_MODEL_NAME, dtype=torch.float32
+    )
+    _qwen_model.eval()
+
+
+def qwen_predict_next_token(text: str, n_shown: int = 7):
+    """
+    Top-`n_shown` next-token predictions from a local Qwen2.5-0.5B instance.
+    Returns (tokens, probs) where tokens is a list of decoded strings and
+    probs is a numpy array of their probabilities.
+
+    Drop-in replacement for gpt2_predict_next_token using a modern model.
+    """
+    _ensure_qwen_loaded()
+
+    input_ids = _qwen_tokenizer.encode(
+        text, add_special_tokens=False, return_tensors="pt"
+    )
+    with torch.no_grad():
+        logits = _qwen_model(input_ids).logits[0, -1, :]
+    probs = torch.softmax(logits, dim=-1)
+    top_probs, top_indices = torch.topk(probs, n_shown)
+    tokens = [_qwen_tokenizer.decode([i]) for i in top_indices.tolist()]
+    return tokens, top_probs.numpy()
+
+
+def qwen_token_probability(text: str, token: str) -> float:
+    """
+    Probability Qwen2.5-0.5B assigns to `token` following `text`.
+
+    `token` is a raw string, which may encode to one or more Qwen tokens.
+    When it spans multiple tokens, the joint probability of the continuation
+    is returned (the product of successive next-token probabilities).
+
+    Drop-in replacement for gpt2_token_probability using a modern model.
+    """
+    _ensure_qwen_loaded()
+
+    input_ids = _qwen_tokenizer.encode(
+        text, add_special_tokens=False, return_tensors="pt"
+    )
+    token_ids = _qwen_tokenizer.encode(token, add_special_tokens=False)
+
+    probability = 1.0
+    with torch.no_grad():
+        for token_id in token_ids:
+            logits = _qwen_model(input_ids).logits[0, -1, :]
+            probs = torch.softmax(logits, dim=-1)
+            probability *= probs[token_id].item()
+            next_id = torch.tensor([[token_id]])
+            input_ids = torch.cat([input_ids, next_id], dim=1)
+    return probability
+
+
 HUFFMAN_TABLE_PATH = os.path.join(
     os.path.dirname(__file__), "huffman_table.json"
 )
