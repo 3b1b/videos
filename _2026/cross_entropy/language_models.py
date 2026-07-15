@@ -4,6 +4,8 @@ from _2026.cross_entropy.distribution import StackedProbDistribution
 from _2026.cross_entropy.next_char import CHAR_ALPHABET
 from _2026.cross_entropy.next_char import get_next_char_distribution
 from _2026.cross_entropy.next_char import gpt2_predict_next_token
+from _2026.cross_entropy.next_char import qwen_predict_next_token
+from _2026.cross_entropy.next_char import qwen_sample_completions
 from _2026.cross_entropy.next_char import gpt2_token_probability
 from _2024.transformers.helpers import MachineWithDials
 from _2024.transformers.embedding import get_token_encoding
@@ -11,9 +13,28 @@ from _2024.transformers.embedding import break_into_tokens
 from _2024.transformers.embedding import get_piece_rectangles
 
 
-def get_training_text_examples():
-    data_file = Path(__file__).parent / "text_data" / "training_data_examples.txt"
+def get_training_text_examples(file_name="training_data_examples.txt"):
+    data_file = Path(__file__).parent / "text_data" / file_name
     return data_file.read_text().splitlines()
+
+
+def get_token_groups(text):
+    text_mob = Text(text)
+    tokens = break_into_tokens(text_mob)
+    rects = get_piece_rectangles(tokens, h_buff=0, leading_spaces=True)
+    return VGroup(VGroup(*pair) for pair in zip(rects, tokens))
+
+
+def get_tokens(text):
+    tokenizer = get_token_encoding()
+    token_indices = tokenizer.encode(text)
+    _, offsets = tokenizer.decode_with_offsets(token_indices)
+    offsets.append(len(text))
+    return [text[o1:o2] for o1, o2 in zip(offsets, offsets[1:])]
+
+
+def get_prefixes(tokens):
+    return ["".join(tokens[:n]) for n in range(1, len(tokens))]
 
 
 class LanguageModel(VGroup):
@@ -163,9 +184,9 @@ class NextTokenPredictions(InteractiveScene):
         ))
         self.wait()
 
-    def prediction_mob_from_text(self, text, *args, **kwargs):
+    def prediction_mob_from_text(self, text, n_shown=8, *args, **kwargs):
         tokens, probs = gpt2_predict_next_token(text, n_shown=n_shown)
-        return self.get_prediction_distribution(token_mobs, probs, *args, **kwargs)
+        return self.get_prediction_distribution(tokens, probs, *args, **kwargs)
 
     def get_prediction_distribution(
         self, tokens, probs,
@@ -359,6 +380,175 @@ class TokensAndPredictions2(NextTokenPredictions):
             Transform(pred_mob, bad_pred_mob, run_time=5, rate_func=there_and_back_with_pause)
         )
         self.wait()
+
+
+class AmbientPretraining(NextTokenPredictions):
+    def construct(self):
+        # Set up tokens
+        text = "Once upon a time, there was a tiny pi creature who lived between 3rd and 4th street"
+        input_x = 0
+        tokens = get_token_groups(text)
+        tokens.to_edge(UP)
+        tokens.shift((input_x - tokens[0].get_x()) * RIGHT)
+        text_tokens = get_tokens(text)
+        prefixes = get_prefixes(text_tokens)
+
+        self.add(tokens)
+
+        # Process
+        arrow = Vector(1.5 * DOWN, thickness=5, fill_color=TEAL)
+        arrow.next_to(tokens[0], DOWN)
+        for mob in tokens[1:]:
+            mob.save_state()
+            mob.fade(0.8)
+
+        self.add(arrow)
+
+        for n, next_token in enumerate(tokens[1:-1], start=1):
+            in_tokens = tokens[:n]
+            prefix = "".join(text_tokens[:n])
+            pred_mob = self.prediction_mob_from_text(prefix, prob_1_width=7)
+            pred_mob.set_height(4)
+            pred_mob.next_to(arrow, DOWN)
+
+            pre_pred_mob = pred_mob.copy()
+            trg_in_tokens = in_tokens.copy()
+            for part in (*pre_pred_mob, *trg_in_tokens):
+                part.fade(1).scale(0.1).move_to(arrow.get_center() + LEFT)
+
+            next_text_token = text_tokens[n]
+            highlight_rect = Rectangle().set_stroke(YELLOW, 2)
+            for row in pred_mob:
+                start = row[0]
+                if isinstance(start, Text):
+                    if start.get_text() == next_text_token:
+                        highlight_rect.surround(row)
+                        break
+                else:
+                    highlight_rect.surround(row)
+
+            next_token.target = next_token.generate_target()
+            next_token.target.match_style(next_token.saved_state)
+            next_token.target[0].set_color(YELLOW)
+
+            self.play(LaggedStart(
+                Transform(in_tokens.copy(), trg_in_tokens, remover=True, lag_ratio=0.01, path_arc=45 * DEG),
+                TransformFromCopy(pre_pred_mob, pred_mob, lag_ratio=0.001, path_arc=45 * DEG),
+                lag_ratio=0.8
+            ))
+            self.play(
+                FadeIn(highlight_rect),
+                MoveToTarget(next_token),
+                run_time=0.25,
+            )
+            self.wait(0.75)
+
+            tokens.target = tokens.generate_target()
+            tokens.target.shift((input_x - next_token.get_x()) * RIGHT)
+            tokens.target[n].match_style(next_token.saved_state)
+
+            self.play(
+                MoveToTarget(tokens),
+                FadeOut(pred_mob, shift=0.25 * LEFT, lag_ratio=0.01),
+                FadeOut(highlight_rect, shift=0.25 * LEFT)
+            )
+
+
+class PredictionToCompression(NextTokenPredictions):
+    def construct(self):
+        # Test
+        phrase = "You can reframe the way you think about training large language models to not be about next token prediction,"
+        prefixes = get_prefixes(get_tokens(phrase))
+        tokens = get_token_groups(phrase)
+        tokens.save_state()
+        time_per_token = 0.1
+
+        arrow = Vector(2 * RIGHT, thickness=6, fill_color=TEAL)
+        self.add(arrow)
+
+        for n, prefix in enumerate(prefixes):
+            next_tokens, probs = qwen_predict_next_token(prefix, n_shown=10)
+            pred_mob = self.get_prediction_distribution(next_tokens, probs, font_size=30)
+            pred_mob.shift((arrow.get_x(RIGHT) + 1 - pred_mob[0][1].get_x(LEFT)) * RIGHT)
+
+            tokens.restore()
+            tokens[:n + 1].next_to(arrow, LEFT)
+
+            self.clear()
+            self.add(arrow, tokens[:n + 1], pred_mob)
+            self.wait(time_per_token)
+        tokens = tokens[:n + 1]
+
+        # Switch to compression
+        frame = self.frame
+        right_arrow = arrow
+        left_arrow = arrow.copy()
+        left_arrow.next_to(tokens, LEFT)
+
+        rects = VGroup(t[0] for t in tokens)
+        texts = VGroup(t[1] for t in tokens)
+        rects.target = rects.generate_target()
+        texts.target = texts.generate_target()
+        rects.target.stretch(0.3, 0)
+        for text, rect in zip(texts.target, rects.target):
+            for char in text:
+                char.set_opacity(0.1)
+                char.move_to(rect)
+
+        self.play(
+            FadeOut(pred_mob),
+            FadeIn(left_arrow),
+            Rotate(right_arrow, PI),
+            frame.animate.set_width(tokens.get_width() + 2 * arrow.get_width() + 1).move_to(tokens),
+            run_time=2
+        )
+        self.play(
+            MoveToTarget(rects),
+            MoveToTarget(texts),
+            left_arrow.animate.next_to(rects.target, LEFT),
+            right_arrow.animate.next_to(rects.target, RIGHT),
+            run_time=2
+        )
+        self.wait()
+
+
+class SamplingForLanguage2(InteractiveScene):
+    def construct(self):
+        # Test
+        text = get_training_text_examples("rights_of_man.txt")[0][:500]
+        text_mob = Text(text, font="Consolas")
+
+        a_to_z = "".join([chr(n) for n in range(ord("a"), ord("z") + 1)])
+        chars = sorted(list(set(text.lower() + a_to_z)))
+        char_blocks = Square().get_grid(1, len(chars), buff=0)
+        char_blocks.set_stroke(WHITE, 1)
+        char_blocks.set_width(FRAME_WIDTH - 1)
+        char_blocks.move_to(UP)
+        char_syms = Text("_" + "".join(chars[1:]), font="Consolas", font_size=30)
+        char_syms.move_to(char_blocks)
+        for sym, block in zip(char_syms, char_blocks):
+            sym.match_x(block)
+            char_syms.add(sym)
+
+        self.add(char_blocks, char_syms)
+        self.add(text_mob)
+
+        # Generate
+        time_per_char = 1 / 15
+        space_free_text = text.replace(" ", "").lower()
+        for n in range(1, len(text_mob)):
+            text_mob.set_fill(WHITE)
+            text_mob[n].set_color(YELLOW)
+            text_mob[:n + 1].set_opacity(1)
+            text_mob[n + 1:].set_opacity(0)
+            text_mob.shift(-text_mob[n].get_x() * RIGHT)
+            char_indx = chars.index(space_free_text[n])
+            char_blocks.set_fill(opacity=0)
+            char_syms.set_fill(opacity=0.5)
+            char_blocks[char_indx].set_fill(YELLOW, 0.5)
+            char_syms[char_indx].set_fill(WHITE, 1)
+            self.wait(time_per_char)
+
 
 
 class AbstractGraphOfLossFunction(InteractiveScene):
@@ -992,12 +1182,266 @@ class LossFunction(NextTokenPredictions, InformationOfLanguage):
         return token_mobs
 
 
+class CrossEntropyWithOneHot(NextTokenPredictions):
+    def construct(self):
+        # Set up tokens
+        text = "It is not the critic who counts: not the man who points out how the strong man stumbles or where the doer of deeds could have done better."
+        token_idx = 5
+        input_x = -3
+        tokens = get_token_groups(text)
+        tokens.to_edge(UP)
+        tokens.shift((input_x - tokens[token_idx - 1].get_x()) * RIGHT)
+        text_tokens = get_tokens(text)
+        prefixes = get_prefixes(text_tokens)
+
+        self.add(tokens)
+
+        # Process
+        arrow = Vector(1.5 * DOWN, thickness=5, fill_color=TEAL)
+        arrow.next_to(tokens[token_idx - 1], DOWN)
+        for mob in tokens[token_idx:]:
+            mob.save_state()
+            mob.fade(0.8)
+
+        self.add(arrow)
+
+        # Show output
+        in_tokens = tokens[:token_idx]
+        prefix = "".join(text_tokens[:token_idx])
+        prob_1_width = 7
+        pred_mob = self.prediction_mob_from_text(prefix, prob_1_width=prob_1_width)
+        pred_mob.set_height(4)
+        pred_mob.next_to(arrow, DOWN)
+        pred_mob[-1].next_to(pred_mob[-2][1], DOWN, SMALL_BUFF)
+
+        pre_pred_mob = pred_mob.copy()
+        trg_in_tokens = in_tokens.copy()
+        for part in (*pre_pred_mob, *trg_in_tokens):
+            part.fade(1).scale(0.1).move_to(arrow.get_center() + LEFT)
+
+        next_text_token = text_tokens[token_idx]
+        highlight_rect = Rectangle().set_stroke(PINK, 2)
+        for row in pred_mob:
+            start = row[0]
+            if isinstance(start, Text):
+                if start.get_text() == next_text_token:
+                    highlight_rect.surround(row)
+                    break
+            else:
+                highlight_rect.surround(row)
+
+        next_token = tokens[token_idx]
+        next_token.target = next_token.generate_target()
+        next_token.target.match_style(next_token.saved_state)
+        next_token.target[0].set_color(PINK)
+
+        q_label = Tex(R"q").next_to(highlight_rect, RIGHT)
+        q_label.set_color(PINK)
+
+        loss_eq = Tex(R"\text{Loss} = -\log(q)", t2c={"q": PINK}, font_size=72)
+        loss_eq.next_to(tokens, DOWN, LARGE_BUFF).to_edge(RIGHT, buff=1.5)
+
+        self.add(loss_eq)
+
+        self.play(LaggedStart(
+            Transform(in_tokens.copy(), trg_in_tokens, remover=True, lag_ratio=0.01, path_arc=45 * DEG),
+            TransformFromCopy(pre_pred_mob, pred_mob, lag_ratio=0.001, path_arc=45 * DEG),
+            lag_ratio=0.8
+        ))
+        self.play(
+            FadeIn(highlight_rect),
+            FadeIn(q_label),
+            MoveToTarget(next_token),
+            run_time=0.25,
+        )
+        self.wait()
+        self.play(
+            TransformFromCopy(q_label, loss_eq["q"][0], path_arc=20 * DEG)
+        )
+        self.wait()
+
+        # Show a few names
+        names = VGroup(
+            Text("“Information loss”").set_fill(GREY_A),
+            Text("“Log loss”").set_fill(GREY_A),
+            Text("“Cross entropy loss”").set_fill(YELLOW),
+        )
+        for name in names:
+            name.scale(1.25)
+            name.next_to(loss_eq, DOWN, MED_LARGE_BUFF)
+
+        self.play(FadeIn(names[0], lag_ratio=0.1))
+        self.wait()
+        self.remove(names[0])
+        self.play(
+            *(
+                TransformFromCopy(names[0][part][0], names[1][part][0])
+                for part in ["“", "loss”"]
+            ),
+            FadeTransformPieces(names[0]["Information"][0], names[1]["Log"][0])
+        )
+        self.wait()
+        self.play(LaggedStart(
+            FadeIn(names[2], 0.5 * DOWN),
+            FadeOut(names[1], 0.5 * DOWN),
+            lag_ratio=0.25,
+        ))
+        self.wait()
+
+        # Wonder about it
+        randy = Randolph().flip()
+        randy.set_height(2).to_corner(DR)
+        formula = Tex(R"\sum_i p_i (-\log q_i)", t2c={"p_i": GREEN, "q_i": PINK})
+
+        bubble = randy.get_bubble(formula)
+        bubble.scale(0.5, about_edge=DR)
+
+        self.play(
+            randy.change("confused", names[2]),
+            Write(bubble),
+            names[2].animate.shift(0.1 * UP),
+        )
+        self.play(Blink(randy))
+        self.wait()
+
+        # Move into position
+        lhs = loss_eq[re.compile(r".*=")][0]
+        rhs = loss_eq[re.compile(r"=.*")][0][1:]
+        lhs.target = lhs.generate_target()
+        lhs.target.shift(3.0 * LEFT + 0.5 * UP)
+        bubble.remove(formula)
+
+        self.play(
+            MoveToTarget(lhs),
+            FadeOut(rhs),
+            formula.animate.set_height(1).next_to(lhs.target[-1:], RIGHT, SMALL_BUFF, index_of_submobject_to_align=0),
+            randy.change("pondering", lhs.target),
+            FadeOut(names[2]),
+            FadeOut(bubble)
+        )
+        self.wait()
+
+        # Show full distributions
+        percentages = VGroup(row[2] for row in pred_mob[:-1])
+        q_terms = VGroup(
+            Tex(Rf"q_{n}", font_size=30).set_color(PINK).move_to(percentage, LEFT)
+            for n, percentage in enumerate(percentages)
+        )
+        self.play(
+            highlight_rect.animate.surround(pred_mob),
+            Transform(percentages, q_terms, lag_ratio=0.01),
+            FadeOut(q_label),
+            FadeOut(randy)
+        )
+        self.wait()
+
+        # Show one hot
+        key_index = 1
+        p_dist = VGroup(row[:2].copy() for row in pred_mob)
+        p_dist.next_to(pred_mob, RIGHT, buff=3.0)
+        p_labels = VGroup()
+        for n, row in enumerate(p_dist[:-1]):
+            if n == key_index:
+                trg_width = 4.5
+                p_value = 1
+            else:
+                trg_width = 1e-2
+                p_value = 0
+            row[1].set_width(trg_width, stretch=True, about_edge=LEFT)
+            p_label = Integer(p_value, font_size=30)
+            p_label.set_color(GREEN)
+            p_label.next_to(row, RIGHT, SMALL_BUFF)
+            row.add(p_label)
+            p_labels.add(p_label)
+
+        p_dist_rect = SurroundingRectangle(p_dist)
+        p_dist_rect.set_stroke(GREEN, 2)
+
+        self.play(
+            TransformFromCopy(pred_mob, p_dist),
+            TransformFromCopy(highlight_rect, p_dist_rect),
+            next_token[0].animate.set_color(GREEN)
+        )
+        self.wait()
+        self.play(FlashAround(next_token, buff=0, time_width=1.5, run_time=2))
+        self.wait()
+
+        # Highlight formula
+        rect = SurroundingRectangle(formula)
+        rect.set_stroke(YELLOW, 2)
+        self.play(ShowCreationThenFadeOut(rect))
+
+        # Expand the sum
+        summands = VGroup(
+            Tex(
+                Rf"{p} \cdot (-\log q_{n})",
+                t2c={str(p): GREEN, f"q_{n}": PINK},
+                font_size=30,
+            ).next_to(highlight_rect, buff=0).match_y(row, RIGHT)
+            for n, row in enumerate(pred_mob[:-1])
+            for p in [int(n == key_index)]
+        )
+
+        kw = dict(lag_ratio=0.1, run_time=3)
+        self.play(
+            VGroup(pred_mob, highlight_rect).animate.shift(1.5 * LEFT),
+            VGroup(lhs, formula).animate.shift(1.0 * LEFT),
+            VGroup(tokens, arrow).animate.shift(0.5 * LEFT),
+            LaggedStart(
+                (TransformFromCopy(q, summand[-3:-1], path_arc=30 * DEG)
+                for q, summand in zip(q_terms, summands)),
+                **kw
+            ),
+            LaggedStart(
+                (TransformFromCopy(p, summand[0], path_arc=30 * DEG)
+                for p, summand in zip(p_labels, summands)),
+                **kw
+            ),
+            LaggedStart(
+                (Write(summand[1:-3]) for summand in summands), **kw
+            ),
+            LaggedStart(
+                (Write(summand[-1:]) for summand in summands), **kw
+            ),
+        )
+        self.wait()
+
+        # Fade all but the key term
+        for mob in pred_mob, summands:
+            mob.target = mob.generate_target()
+            for n, part in enumerate(mob.target):
+                if n != key_index:
+                    part.fade(0.75)
+
+        self.play(
+            MoveToTarget(pred_mob),
+            MoveToTarget(summands),
+        )
+        self.wait()
+
+        # Ask why
+        rect.surround(formula)
+        why_word = Text("Why?")
+        why_word.set_color(YELLOW)
+        why_word.next_to(rect, RIGHT)
+        randy.set_height(1.5)
+        randy.next_to(why_word, RIGHT)
+
+        self.play(
+            VFadeIn(randy),
+            randy.change("confused"),
+            ShowCreation(rect),
+            Write(why_word),
+        )
+        self.play(Blink(randy))
+        self.wait()
+
+
 class MyNameIsExample(NextTokenPredictions):
     loss_func_tex = R"-\log"
     loss_func_tex_in_sum = R"\big(-\log(q_i)\big)"
     # loss_func_tex = R"f"
     # loss_func_tex_in_sum = R"\cdot f(q_i)"
-
 
     def construct(self):
         # Show multiple instances
@@ -1266,6 +1710,44 @@ class MyNameIsExample(NextTokenPredictions):
         self.play(FadeOut(top_rect))
         self.wait()
 
+        # Label as cross-entropy
+        lhs = top_equation[re.compile(r".*=")][0][:-1]
+        rhs = top_equation[re.compile(r"=.*")][0][1:]
+        log_part = top_equation[Rf"{self.loss_func_tex}(q_i)"]
+        p_part = top_equation[Rf"p_i"]
+        ce_name = Text("Cross Entropy")
+        ce_name.match_height(lhs)
+        ce_name.move_to(lhs, RIGHT)
+        ce_name.set_color(YELLOW)
+        lhs.save_state()
+
+        rhs_rect = SurroundingRectangle(rhs).set_stroke(YELLOW, 2)
+        output_rect = SurroundingRectangle(VGroup(pred_mob, q_terms)).set_stroke(PINK, 2)
+        ps_rect = SurroundingRectangle(p_terms).set_stroke(GREEN, 2)
+
+        self.play(ShowCreation(rhs_rect))
+        self.wait()
+        self.remove(lhs)
+        self.play(FadeTransformPieces(lhs.copy(), ce_name))
+        self.wait()
+        self.play(
+            ShowCreation(output_rect),
+            rhs_rect.animate.surround(log_part).set_stroke(PINK, 1)
+        )
+        self.wait()
+        self.play(
+            ReplacementTransform(output_rect, ps_rect),
+            rhs_rect.animate.surround(p_part).set_stroke(GREEN, 1)
+        )
+        self.wait()
+        self.play(
+            FadeOut(ps_rect),
+            FadeOut(rhs_rect),
+        )
+        self.wait()
+        self.play(LaggedStart(FadeIn(lhs, 0.25 * UP), FadeOut(ce_name, 0.25 * UP), lag_ratio=0.25))
+        self.wait()
+
         # Describe property we want
         top_rect.surround(top_equation, buff=MED_LARGE_BUFF)
         top_rect.stretch(0.9, 1, about_edge=UP)
@@ -1294,6 +1776,7 @@ class MyNameIsExample(NextTokenPredictions):
             lag_ratio=0.05,
         ))
         self.wait()
+        return
 
         # Show implication
         top_group = VGroup(goal, top_rect, top_equation)
@@ -1317,3 +1800,201 @@ class MyNameIsExample(NextTokenPredictions):
         ))
         self.play(FadeIn(subtext, DOWN))
         self.wait()
+
+
+class ExampleTokenGenerationBig(InteractiveScene):
+    time_per_token = 1.25
+
+    def construct(self):
+        # Test
+        tokens = get_token_groups("int fibonacci(int n){if(n<=1){return n;}return fibonacci(n-1)+fibonacci(n-2);}")
+        tokens.scale(0.7)
+        tokens.save_state()
+        for n in range(len(tokens)):
+            tokens.restore()
+            tokens[:n].next_to(ORIGIN, LEFT)
+            self.add(tokens[:n])
+            self.wait(self.time_per_token)
+            self.remove(tokens)
+
+
+class ExampleTokenGenerationSmall(ExampleTokenGenerationBig):
+    time_per_token = 11 / 30
+
+
+class DistillationTrainingIdea(NextTokenPredictions):
+    # final_example = None
+    # n_prefix_tokens = 4
+    final_example = "My name is Grant Sanderson. Videos here cover a variety of topics in math"
+    n_prefix_tokens = 3
+
+    def construct(self):
+        # Add arrows
+        curved_arrows = VGroup(
+            CubicBezier(UP, DOWN, UL, DL),
+            CubicBezier(UP, DOWN, UR, DR),
+        )
+        curved_arrows.stretch(4, 0)
+        curved_arrows.arrange(RIGHT, SMALL_BUFF)
+        curved_arrows.center().to_edge(UP, buff=1.2)
+        curved_arrows.set_stroke(TEAL, 8)
+        for arrow in curved_arrows:
+            tip = ArrowTip(-90 * DEG)
+            tip.move_to(arrow.get_end() + 0.1 * UP, UP)
+            tip.set_fill(TEAL)
+            arrow.add(tip)
+
+        self.add(curved_arrows)
+
+        # Pre-generate many examples
+        examples = get_training_text_examples("quotes.txt")
+        if self.final_example is not None:
+            examples.append(self.final_example)
+        example_tokens = VGroup(*map(get_token_groups, examples))
+        example_tokens.to_edge(UP)
+        n_prefix_tokens = self.n_prefix_tokens
+        for tokens in example_tokens:
+            tokens[n_prefix_tokens:].fade(0.85)
+            tokens.shift(-tokens[n_prefix_tokens - 1].get_x() * RIGHT)
+
+        lil_pred_mobs = VGroup()
+        big_pred_mobs = VGroup()
+        for text in examples:
+            prefix = "".join(get_tokens(text)[:n_prefix_tokens])
+            tokens, probs = qwen_predict_next_token(prefix)
+            mod_probs = interpolate(np.random.random(len(probs)), probs, 0.8)
+            # mod_probs *= 0.9 / sum(mod_probs)
+
+            big_pred_mob = self.get_prediction_distribution(tokens, probs)
+            lil_pred_mob = self.get_prediction_distribution(tokens, mod_probs)
+            for pred_mob, arrow in zip([lil_pred_mob, big_pred_mob], curved_arrows):
+                for row in pred_mob[:-1]:
+                    row[-1].scale(0.5, about_edge=LEFT)
+                pred_mob.set_height(4)
+                pred_mob.shift(arrow.get_end() + 0.4 * DOWN - pred_mob[0][1].get_corner(UL))
+
+            lil_pred_mobs.add(lil_pred_mob)
+            big_pred_mobs.add(big_pred_mob)
+
+        for tokens, big_pred, lil_pred in zip(example_tokens, big_pred_mobs, lil_pred_mobs):
+            self.clear()
+            self.add(tokens, curved_arrows, big_pred, lil_pred)
+            self.wait(0.5)
+
+        self.wait()
+
+        # Highlight predictions
+        next_token = tokens[n_prefix_tokens]
+        next_token.save_state()
+        next_token.generate_target()
+        next_token.target.set_fill(opacity=1).set_stroke(opacity=1)
+        next_token.target[0].set_fill(YELLOW, 0.2)
+        next_token.target[0].set_stroke(YELLOW, 1)
+
+        lil_pred_rect = SurroundingRectangle(lil_pred_mob)
+        lil_pred_rect.set_stroke(PINK, 2)
+        next_token_rect = SurroundingRectangle(next_token, buff=0)
+        next_token_rect.set_stroke(YELLOW, 2)
+        big_pred_rect = SurroundingRectangle(big_pred_mob)
+        big_pred_rect.set_stroke(GREEN, 2)
+
+        self.play(ShowCreation(lil_pred_rect))
+        self.wait()
+        self.play(
+            TransformFromCopy(lil_pred_rect, next_token_rect),
+            MoveToTarget(next_token)
+        )
+        self.wait()
+        self.play(
+            Restore(next_token),
+            ReplacementTransform(next_token_rect, big_pred_rect),
+        )
+        self.wait()
+
+        # Show loss function
+        loss_eq = Tex(R"\text{Loss} = \sum_i p_i (-\log q_i)", t2c={"p_i": GREEN, "q_i": PINK})
+        loss_eq.move_to(VGroup(big_pred_rect, lil_pred_rect))
+        loss_eq.shift(UP)
+
+        lil_percentages, big_percentages = percentages_group = [
+            VGroup(row[2] for row in pred_mob[:-1])
+            for pred_mob in [lil_pred_mob, big_pred_mob]
+        ]
+        qs, ps = [
+            VGroup(
+                Tex(Rf"{char}_{n}").match_height(term).scale(1.5).move_to(term, LEFT).set_color(color)
+                for n, term in enumerate(percentages)
+            )
+            for percentages, color, char in zip(percentages_group, [PINK, GREEN], "qp")
+        ]
+
+        self.play(LaggedStart(
+            FadeIn(loss_eq, UP),
+            Transform(lil_percentages, qs, path_arc=10 * DEG, lag_ratio=0.01),
+            Transform(big_percentages, ps, path_arc=10 * DEG, lag_ratio=0.01),
+            lag_ratio=0.5
+        ))
+        self.wait()
+
+        self.remove(lil_pred_rect, big_pred_rect)
+        self.play(ShowCreation(lil_pred_rect))
+        self.wait()
+        self.play(TransformFromCopy(lil_pred_rect, big_pred_rect))
+        self.wait()
+
+        # Contrast with pretraining
+        faders = VGroup(
+            loss_eq[R"\sum_i p_i ("][0],
+            loss_eq[")"][0],
+            big_pred_mob,
+            big_pred_rect,
+            curved_arrows[1],
+            lil_pred_mob[:2],
+            lil_pred_mob[3:],
+        )
+
+        self.play(
+            faders.animate.fade(0.9),
+            MoveToTarget(next_token),
+        )
+        self.wait()
+
+
+class ManyMyNameIsExamples(InteractiveScene):
+    def construct(self):
+        prefix = "My name is"
+        n_examples = 200
+        # Each string is `prefix` continued by tokens sampled from Qwen2.5-0.5B.
+        # Generated once and cached to disk, so this is cheap on re-render.
+        examples = qwen_sample_completions(prefix, n=n_examples)
+        token_groups = VGroup(map(get_token_groups, examples))
+        for group in token_groups:
+            group.shift(-group[2].get_right())
+
+        prefix_len = len(get_tokens(prefix))
+        prefix = token_groups[0][:prefix_len]
+        prefix.save_state()
+        prefix_rects = VGroup(mob[0] for mob in prefix)
+        prefix_rects.set_opacity(0)
+
+        underline = Line(LEFT, RIGHT)
+        underline.next_to(prefix[-1][-1], RIGHT, aligned_edge=DOWN)
+
+        self.add(prefix, underline)
+        self.wait()
+
+        # Show all completions
+        suffixes = VGroup(group[prefix_len:] for group in token_groups)
+        suffixes.arrange(UP, buff=0.5, aligned_edge=LEFT)
+        suffixes.save_state()
+
+        prefix.restore()
+        self.remove(underline)
+
+        for n in range(len(suffixes) - 1):
+            suffixes.restore()
+            suffixes[:n].fade(0.9)
+            suffixes[n + 1:].fade(0.9)
+            suffixes.shift(-suffixes[n].get_left())
+            self.add(suffixes)
+            self.wait(0.1)

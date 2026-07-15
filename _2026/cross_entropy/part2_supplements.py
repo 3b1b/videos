@@ -27,6 +27,41 @@ class CrossEntropyKLDivergenceTitles(InteractiveScene):
             self.wait()
 
 
+class MovingBrace(InteractiveScene):
+    def construct(self):
+        # Test
+        brace = Brace(ScreenRectangle(height=FRAME_HEIGHT / 2), UP)
+        brace.set_y(2.5).to_edge(LEFT, buff=0.75)
+
+        self.play(GrowFromCenter(brace))
+        self.wait()
+        self.play(brace.animate.to_edge(RIGHT, buff=0.75))
+        self.wait()
+
+
+class AcknowledgeContrived(InteractiveScene):
+    def construct(self):
+        # Test
+        morty = Mortimer().flip()
+        self.play(morty.says("Contrived? Yes. \n But bear with me..."))
+        self.play(morty.change("shruggie"))
+        self.wait()
+
+
+class AskAboutGreenGraph(InteractiveScene):
+    def construct(self):
+        morty = Mortimer().flip()
+        morty.to_edge(LEFT).shift(DOWN)
+        morty.body.insert_n_curves(1000)
+        self.play(
+            morty.says("What is this\nnew curve?", "speaking", look_at=3 * RIGHT),
+        )
+        self.play(Blink(morty))
+        self.play(morty.change("tease"))
+        self.play(Blink(morty))
+        self.wait(5)
+
+
 class AskWhyLogs(InteractiveScene):
     def construct(self):
         # Test
@@ -39,6 +74,26 @@ class AskWhyLogs(InteractiveScene):
         self.wait()
         self.play(randy.change("confused"))
         self.wait()
+
+
+class AssumingFamiliarity(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        morty = self.teacher
+        morty.body.insert_n_curves(500)
+
+        self.play(
+            morty.change("raise_right_hand", 3 * UP),
+            self.change_students("tease", "well", "happy", look_at=3 * UP)
+        )
+        self.wait()
+        self.play(self.change_students("tease", "well", "thinking", look_at=3 * UP), run_time=2)
+        self.wait(2)
+        self.play(
+            morty.says("Quick recaps\nnever hurt"),
+            self.change_students("hesitant", "tease", "well")
+        )
+        self.wait(3)
 
 
 class PreviousVideos(InteractiveScene):
@@ -220,3 +275,424 @@ class KeyFact(InteractiveScene):
         for fact in facts:
             self.play(FadeIn(fact, DOWN))
             self.wait()
+
+
+class ThreeDEntropyGraph(InteractiveScene):
+    graph_resolution = (101, 101)
+
+    def construct(self):
+        # Test
+        frame = self.frame
+        epsilon = 1e-8
+        axes = ThreeDAxes(
+            (0, 1, 0.1), (0, 1, 0.1), (0, 5, 1),
+            width=10,
+            height=10,
+            depth=10,
+        )
+        plane = NumberPlane((0, 1), (0, 1), width=10, height=10)
+        plane.shift(axes.get_origin() - plane.get_origin())
+
+        p_tracker = ValueTracker(np.array([0.1, 0.2, 0.7]))
+
+        p_labels = VGroup(Tex(R"p_1"), Tex(R"p_2"))
+        p_labels.rotate(90 * DEG, RIGHT)
+        p_labels.scale(2)
+        p_labels.set_color(GREEN)
+        p_labels[0].next_to(axes.x_axis, RIGHT, SMALL_BUFF)
+        p_labels[1].next_to(axes.y_axis.get_top(), LEFT, SMALL_BUFF)
+
+        self.add(axes, plane, p_labels)
+
+        # Add graph
+        def ce_func(q1, q2):
+            ps = p_tracker.get_value()
+            qs = (q1, q2, 1 - q1 - q2)
+            return sum([-p * np.log2(abs(q)) for p, q in zip(ps, qs)])
+
+        def ent_func(p1, p2):
+            # Do a check on domain?
+            probs = (p1, p2, 1 - p1 - p2)
+            return sum([-p * np.log2(abs(p)) for p in probs])
+
+        ce_graph = always_redraw(lambda: self.get_simplex_graph(ce_func, axes, PINK))
+        ent_graph = self.get_simplex_graph(ent_func, axes, GREEN)
+
+        frame.reorient(-30, 85, 0, (-3.28, 0.09, 2.49), 15.68)
+        self.add(ent_graph)
+        self.add(ce_graph)
+
+        # Add line
+        v_line = Line(IN, OUT)
+        v_line.set_stroke(GREEN, 2)
+
+        def update_line(line):
+            x, y = p_tracker.get_value()[:2]
+            z = ent_func(x, y)
+            v_line.put_start_and_end_on(
+                axes.c2p(x, y, 0),
+                axes.c2p(x, y, z),
+            )
+            return v_line
+
+        v_line.add_updater(update_line)
+        dot = GlowDot().set_color(GREEN)
+        dot.f_always.move_to(v_line.get_end)
+
+        self.add(v_line)
+        self.add(dot)
+
+        # Animate
+        self.play(
+            frame.animate.reorient(34, 90, 0, (-3.28, 0.09, 2.49), 15.68),
+            p_tracker.animate.set_value([0.7, 0.1, 0.2]),
+            run_time=12
+        )
+        ce_graph.clear_updaters()
+
+    def get_simplex_graph(self, func, axes, color, opacity=0.5, epsilon=1e-8):
+        x_range = (epsilon, 1 - epsilon)
+        matrix = np.array([
+            axes.x_axis.n2p(1) - axes.x_axis.n2p(0),
+            axes.y_axis.n2p(1) - axes.y_axis.n2p(0),
+            axes.z_axis.n2p(1) - axes.z_axis.n2p(0),
+        ]).T
+        graph = ParametricSurface(
+            lambda u, v: [u, (1 - u) * v, func(u, (1 - u) * v)],
+            u_range=x_range,
+            v_range=x_range,
+            color=color,
+            opacity=opacity,
+            resolution=self.graph_resolution
+        )
+        graph.apply_matrix(matrix, about_point=ORIGIN)
+        graph.shift(axes.c2p(0, 0, 0))
+        graph.sort_faces_back_to_front(DOWN)
+        return graph
+
+
+class NeglectedFacts(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        morty = self.teacher
+        stds = self.students
+
+        neglected_facts = VGroup(
+            Text("Batch size scheduling"),
+            Text("Optimizer choice and tuning"),
+            Text("Learning rate schedules"),
+            Text("Gradient clipping"),
+            Text("Compute-optimal scaling laws"),
+            Tex(R"\vdots")
+        )
+        neglected_facts.arrange(DOWN, aligned_edge=LEFT)
+        neglected_facts[-1].set_x(neglected_facts.get_x() - 1)
+        neglected_facts.to_corner(UR)
+
+        self.add(neglected_facts)
+
+        self.play(
+            morty.change("raise_left_hand", look_at=5 * UR),
+            self.change_students("sassy", "hesitant", "guilty", look_at=5 * UR),
+            LaggedStartMap(FadeIn, neglected_facts, shift=0.5 * DOWN, lag_ratio=0.7, run_time=5)
+        )
+        self.wait(3)
+        self.play(
+            morty.change("tease", stds),
+            self.change_students("pondering", "sassy", "pondering"),
+            LaggedStartMap(FadeOut, neglected_facts, shift=RIGHT, lag_ratio=0.1),
+        )
+        self.wait()
+
+
+class Lame(TeacherStudentsScene):
+    def construct(self):
+        morty = self.teacher
+        self.play(
+            morty.says("Lame!", mode="angry"),
+            self.change_students("guilty", "confused", "erm", look_at=self.screen)
+        )
+        self.wait(5)
+
+
+class DistillationArrow(InteractiveScene):
+    def construct(self):
+        # Test
+        arrow = Line(3 * UP, 4 * LEFT, path_arc=90 * DEG, buff=0.1, stroke_width=10)
+        arrow.add_tip()
+        arrow.set_color(TEAL)
+        word = Text("Distillation", font_size=72)
+        word.set_backstroke(BLACK, 5)
+        word.next_to(arrow.pfp(0.5), UL)
+
+        self.play(
+            ShowCreation(arrow),
+            FadeIn(word, 0.5 * LEFT, lag_ratio=0.05),
+        )
+        self.wait()
+
+
+class AutoregressionArrow2(InteractiveScene):
+    dims = (1, 1)
+
+    def construct(self):
+        # Test
+        curve = Rectangle(*self.dims).round_corners().rotate(-90 * DEG)
+        line = curve.copy().pointwise_become_partial(curve, 0.05, 0.675)
+        line.set_stroke(TEAL, 5)
+        tip = ArrowTip(-90 * DEG)
+        tip.move_to(line.get_end(), UP).shift(1e-2 * UP)
+        tip.match_color(line)
+        line.add(tip)
+
+        self.add(line)
+
+
+class AskWhy(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.remove(self.background)
+        stds = self.students
+        morty = self.teacher
+
+        self.play(
+            stds[1].says("Wait, why?", mode="confused", look_at=self.screen),
+            stds[0].change("pondering", self.screen),
+            stds[2].change("pondering", self.screen),
+            morty.change("tease")
+        )
+        self.wait(1)
+        self.play(
+            morty.change("raise_left_hand", 6 * UR),
+            FadeOut(stds[1].bubble),
+            self.change_students("pondering", "erm", "thinking", look_at=6 * UR)
+        )
+        self.wait(5)
+        self.play(LaggedStartMap(FadeOut, self.pi_creatures, shift=DOWN, lag_ratio=0.1))
+        self.wait()
+
+
+class ShowGradientEquation(InteractiveScene):
+    def construct(self):
+        # Test
+        kw = dict(t2c={"q": PINK, "q_i": PINK, "p_i": GREEN, R"\lambda": BLUE})
+        equations = VGroup(
+            Tex(R"\nabla_q \left(\sum_i p_i f(q_i) \right) = \lambda \nabla_q \left(\sum_i q_i \right)", **kw),
+            Tex(R"p_i f'(q_i) = \lambda", **kw),
+            Tex(R"q_i f'(q_i) = \lambda", **kw),
+            Tex(R"f'(q) = {\lambda \over q}", **kw),
+        )
+        equations.arrange(DOWN, buff=MED_LARGE_BUFF)
+        equations[1:].shift(LEFT)
+        annotations = VGroup(
+            TexText("for all $i$"),
+            TexText(R"Assuming minimum $\Leftrightarrow q_i = p_i$", **kw),
+            Tex(R"f(q) = \lambda \log(q)", **kw),
+        )
+        for annotation, equation in zip(annotations, equations[1:]):
+            arrow = Vector(0.75 * LEFT).next_to(equation, RIGHT)
+            if equation is equations[-1]:
+                arrow.flip()
+            annotation.scale(0.8)
+            annotation.next_to(arrow, RIGHT)
+            annotation.add_to_back(arrow)
+            equation.add(annotation)
+
+        self.play(FadeIn(equations[0], DOWN))
+        self.wait()
+        self.play(LaggedStartMap(FadeIn, equations[1:], shift=DOWN, lag_ratio=0.25))
+        self.wait(4)
+
+
+class FootnoteDifferneceMeasure(InteractiveScene):
+    def construct(self):
+        # Test
+        footnote = TexText(R"""
+            $^*$ The difference metric the authors defined is slightly \\
+            more complicated. Define the expression above to be $\Delta_{Ab}$, \\
+            for text $A$ and a small sample $b$ from text $B$. The full \\
+            difference between documents was defined as
+            $$S_{AB} := (\Delta_{Ab} - \Delta_{Bb}) / |b|$$
+        """, alignment="")
+        footnote[R"S_{AB} := (\Delta_{Ab} - \Delta_{Bb}) / |b|"].match_x(footnote).scale(1.5, about_edge=UP)
+        footnote.scale(0.5)
+        self.add(footnote)
+
+
+class DifferenceLine(InteractiveScene):
+    def construct(self):
+        # Test
+        line = Line(UP, DOWN).set_height(1).set_stroke(RED, 6)
+        diff_word = Text("Difference")
+        diff_word.next_to(line, RIGHT, SMALL_BUFF).shift(0.1 * DOWN)
+        diff_word.set_color(RED)
+
+        self.play(
+            ShowCreation(line),
+            FadeIn(diff_word, lag_ratio=0.1)
+        )
+        self.wait()
+
+
+class ArrowsToFormula(InteractiveScene):
+    def construct(self):
+        # Test
+        formula = Tex(R"\sum_i p_i (-\log q_i)", t2c={"p_i": GREEN, "q_i": PINK})
+        formula.scale(1.5).to_edge(RIGHT, LARGE_BUFF)
+
+        screens = ScreenRectangle().get_grid(2, 1, buff=0.5)
+        screens.set_height(FRAME_HEIGHT - 1).to_edge(LEFT)
+        screens.stretch(0.9, 0, about_edge=LEFT)
+
+        path_arc = 90 * DEG
+        arrows = VGroup(
+            Arrow(screens[0].get_right() + UP, formula.get_top() + LEFT, path_arc=-path_arc, thickness=5),
+            Arrow(screens[1].get_right() + DOWN, formula.get_bottom() + LEFT, path_arc=path_arc, thickness=5),
+        )
+        arrows.set_fill(WHITE)
+
+        # Animate
+        formula.save_state()
+        for part in formula:
+            part.set_opacity(0).move_to(arrows[1].get_start())
+        self.play(
+            Write(arrows[1]),
+            Restore(formula, lag_ratio=0.01),
+            run_time=2
+        )
+        self.wait()
+        self.play(Write(arrows[0]))
+        self.wait()
+
+
+class PiAndCircleAnalogy2(InteractiveScene):
+    def construct(self):
+        # Show sum
+        sum_expr = Tex(R"\sqrt{6 \sum_{n = 1}^{100} \frac{1}{n^2}}", isolate=["100"])
+        rhs = Tex(R"= 3.1415926\dots")
+        VGroup(sum_expr, rhs).arrange(RIGHT, buff=SMALL_BUFF).center()
+        top_bound = sum_expr.make_number_changeable("100", group_with_commas=True, edge_to_fix=ORIGIN)
+        top_bound.set_color(YELLOW)
+        rhs_value = rhs.make_number_changeable("3.1415926", edge_to_fix=LEFT)
+        sigma = sum_expr[7]
+        sigma_width = sigma.get_width()
+
+        n_tracker = ValueTracker(1)
+        get_n = n_tracker.get_value
+        top_bound.f_always.set_value(n_tracker.get_value)
+        top_bound.always.set_max_width(sigma_width)
+        rhs_value.add_updater(lambda m: m.set_value(
+            math.sqrt(6 * sum(1 / n**2 for n in range(1, int(get_n()))))
+        ))
+        inf = Tex(R"\infty", font_size=36)
+        inf.move_to(top_bound).set_color(YELLOW)
+
+        circle = Circle(radius=0.49 * FRAME_HEIGHT)
+        circle.rotate(45 * DEG)
+        circle.set_stroke(WHITE, 3, 0.5)
+        lights = Group(
+            Group(
+                GlowDot(circle.pfp(a), glow_factor=1, radius=radius, opacity=0.8 / (n + 2)**2)
+                for n, radius in enumerate(np.arange(0.25, 5.25, 0.25))
+            )
+            for a in np.arange(0, 1, 1 / 16)
+        )
+
+        self.add(sum_expr, rhs)
+        self.play(
+            n_tracker.animate.set_value(10000).set_anim_args(run_time=6),
+            FadeIn(circle, time_span=(3, 5)),
+            FadeIn(lights, time_span=(4, 6)),
+        )
+        rhs_value.clear_updaters()
+        self.play(
+            n_tracker.animate.set_value(20000),
+            VFadeOut(top_bound),
+            FadeIn(inf),
+            ChangeDecimalToValue(rhs_value, PI),
+        )
+        self.wait()
+
+        # Transition to cross-entropy
+        ce_formula = Tex(R"\sum_i p_i (-\log q_i)", t2c={"p_i": GREEN, "q_i": PINK}, font_size=60)
+        compression_rects = Rectangle().get_grid(15, 1, buff=0)
+        compression_rects.set_shape(3, 8)
+        compression_rects.next_to(ce_formula, RIGHT, LARGE_BUFF)
+        compression_rects.set_stroke(WHITE, 1, 0.25)
+        compression_rects.set_z_index(-1)
+        for rect in compression_rects:
+            rect.set_fill(random_bright_color(hue_range=(0.1, 0.2)), 0.2)
+        big_rect = SurroundingRectangle(compression_rects, buff=0)
+        big_rect.set_stroke(WHITE, 2, 0)
+        arrows = VGroup(Vector(0.5 * DOWN, thickness=5), Vector(0.5 * UP, thickness=5))
+        arrows.set_fill(YELLOW)
+        arrows[0].always.next_to(compression_rects, UP, SMALL_BUFF)
+        arrows[1].always.next_to(compression_rects, DOWN, SMALL_BUFF)
+
+        sum_expr.remove(sigma)
+        sum_expr.remove(top_bound)
+        sum_expr.add(inf)
+        self.play(
+            FadeOut(sum_expr, 0.2 * LEFT, lag_ratio=0.05),
+            FadeOut(rhs, 0.2 * RIGHT, lag_ratio=0.05),
+            ReplacementTransform(sigma, ce_formula[0]),
+            Write(ce_formula[1:], time_span=(0.5, 2.0), stroke_color=WHITE),
+            ReplacementTransform(circle, big_rect),
+            FadeIn(compression_rects),
+            FadeOut(lights),
+        )
+        self.wait()
+        self.add(arrows)
+        self.play(compression_rects.animate.stretch(0.3, 1), run_time=3)
+        self.play(FadeOut(arrows))
+
+
+class PredictorCompressorTitle(InteractiveScene):
+    def construct(self):
+        group = VGroup(
+            Text("Predictor", font_size=72, fill_color="#951FF4").set_x(-FRAME_WIDTH / 4),
+            Tex(R"\longleftrightarrow", font_size=120),
+            Text("Compressor", font_size=72, fill_color="#74F9BB").set_x(FRAME_WIDTH / 4),
+        )
+        group.to_edge(UP)
+        self.add(group[::2])
+        self.wait()
+        self.play(GrowFromCenter(group[1]))
+        self.wait()
+
+
+class AskAboutKLDivergence(TeacherStudentsScene):
+    def construct(self):
+        # Test
+        self.remove(self.background)
+        morty = self.teacher
+        morty.body.insert_n_curves(1000)
+        stds = self.students
+
+        self.play(
+            stds[2].says("What about\nKL Divergence?", bubble_direction=LEFT),
+            stds[0].change("erm", look_at=stds[2].eyes),
+            stds[1].change("confused", look_at=stds[2].eyes),
+            morty.change("tease")
+        )
+        self.wait(3)
+        self.play(
+            morty.change('raise_right_hand', self.screen),
+            self.change_students("pondering", "thinking", "pondering", look_at=self.screen),
+            FadeOut(stds[2].bubble)
+        )
+        self.wait(3)
+
+        # Transition elsewhere
+        frame = self.frame
+        self.play(
+            self.change_students("bump", "hesitant", "well"),
+            frame.animate.align_to(morty, LEFT).shift(MED_LARGE_BUFF * LEFT),
+            morty.change("raise_left_hand", 8 * RIGHT),
+            run_time=2
+        )
+        self.wait()
+
+
+class EndScreen(SideScrollEndScreen):
+    pass

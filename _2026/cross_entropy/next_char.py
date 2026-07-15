@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import heapq
 import json
 import os
@@ -219,6 +220,84 @@ def qwen_token_probability(text: str, token: str) -> float:
             next_id = torch.tensor([[token_id]])
             input_ids = torch.cat([input_ids, next_id], dim=1)
     return probability
+
+
+def qwen_sample_completions(
+    prefix: str,
+    n: int = 200,
+    max_new_tokens: int = 8,
+    temperature: float = 0.9,
+    top_p: float = 0.95,
+    seed: int = 0,
+    stop_at_newline: bool = True,
+    use_cache: bool = True,
+) -> list[str]:
+    """
+    Sample `n` completions of `prefix` from Qwen2.5-0.5B, each returned as the
+    full string (prefix included) continued by up to `max_new_tokens` sampled
+    tokens.
+
+    Results are deterministic given `seed` and cached to a JSON file next to
+    this module (keyed by all sampling parameters), so repeated scene renders
+    don't re-run the model. Pass use_cache=False to force regeneration.
+    """
+    key = (prefix, n, max_new_tokens, temperature, top_p, seed, stop_at_newline)
+    digest = hashlib.md5(repr(key).encode()).hexdigest()[:10]
+    cache_path = os.path.join(
+        os.path.dirname(__file__), f"qwen_completions_{digest}.json"
+    )
+    if use_cache and os.path.exists(cache_path):
+        with open(cache_path) as f:
+            return json.load(f)["completions"]
+
+    _ensure_qwen_loaded()
+    torch.manual_seed(seed)
+
+    input_ids = _qwen_tokenizer.encode(
+        prefix, add_special_tokens=False, return_tensors="pt"
+    )
+    pad_id = _qwen_tokenizer.pad_token_id
+    if pad_id is None:
+        pad_id = _qwen_tokenizer.eos_token_id
+
+    completions: list[str] = []
+    batch_size = 50
+    with torch.no_grad():
+        while len(completions) < n:
+            k = min(batch_size, n - len(completions))
+            batch_ids = input_ids.repeat(k, 1)
+            outputs = _qwen_model.generate(
+                batch_ids,
+                attention_mask=torch.ones_like(batch_ids),
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                temperature=temperature,
+                top_p=top_p,
+                pad_token_id=pad_id,
+            )
+            for row in outputs:
+                text = _qwen_tokenizer.decode(row, skip_special_tokens=True)
+                if stop_at_newline:
+                    text = text.split("\n")[0]
+                completions.append(text.rstrip())
+
+    completions = completions[:n]
+
+    if use_cache:
+        payload = {
+            "model": QWEN_MODEL_NAME,
+            "prefix": prefix,
+            "params": {
+                "n": n, "max_new_tokens": max_new_tokens,
+                "temperature": temperature, "top_p": top_p, "seed": seed,
+                "stop_at_newline": stop_at_newline,
+            },
+            "completions": completions,
+        }
+        with open(cache_path, "w") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    return completions
 
 
 HUFFMAN_TABLE_PATH = os.path.join(

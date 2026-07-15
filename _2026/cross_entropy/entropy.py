@@ -1147,7 +1147,8 @@ class RandomNoiseIsIncompressible(SpaceOfCodewords):
 
 
 class InformationGraph(InteractiveScene):
-    prob_color = TEAL_D
+    # prob_color = TEAL_D
+    prob_color = WHITE
     info_color = BLUE
     input_var = "x"
 
@@ -1429,8 +1430,79 @@ class InformationGraph(InteractiveScene):
         )
         self.wait()
 
-        # More ambient motion to discuss generality
+        # Contrast with natural log
+        info_label.save_state()
+        ln_graph = axes.get_graph(lambda x: -math.log(x), x_range=(1e-4, 1, 1e-2))
+        ln_graph.set_stroke(GREEN, 3)
+        ln_label = Tex(R"-\ln(x)", t2c={self.input_var: self.prob_color, R"-\ln": GREEN})
+        ln_label.next_to(info_label, DOWN, MED_LARGE_BUFF)
+
+        equation = Tex(
+            R"-\log_2(x) \cdot \ln(2) = -\ln(x)",
+            t2c={R"-\log_2": BLUE, R"-\ln": GREEN}
+        )
+        equation.to_edge(UP)
+        equation.next_to(info_label, RIGHT, buff=2)
+
+        deriv_arrow = Vector(DOWN)
+        deriv_arrow.next_to(equation[ln_label.get_tex()], DOWN, SMALL_BUFF)
+        deriv_arrow_label = Tex(R"d / dx", font_size=36)
+        deriv_arrow_label.next_to(deriv_arrow.get_center(), RIGHT, SMALL_BUFF)
+        deriv_value = Tex(R"1 / x")
+        deriv_value.next_to(deriv_arrow, DOWN, SMALL_BUFF)
+
+        self.play(
+            TransformFromCopy(log_graph, ln_graph),
+            TransformMatchingTex(info_label.copy(), ln_label, run_time=1),
+            FadeOut(curr_labels[1:]),
+            FadeOut(bit_labels),
+        )
+        self.wait()
+        self.play(
+            info_label.animate.set_fill(opacity=0.1),
+            ln_label.animate.set_fill(opacity=0.1),
+            *(
+                TransformFromCopy(label, equation[label.get_tex()][0], path_arc=30 * DEG)
+                for label in [info_label, ln_label]
+            ),
+            Write(equation[R"\cdot \ln(2) ="][0], time_span=(0.5, 1.5))
+        )
+        self.wait()
+        self.play(
+            GrowArrow(deriv_arrow),
+            FadeIn(deriv_arrow_label, DOWN),
+        )
+        self.play(
+            TransformFromCopy(equation["x"][-1], deriv_value["x"][0]),
+            Write(deriv_value["1 / "][0])
+        )
+        self.wait()
+        self.play(
+            Restore(info_label),
+            FadeOut(VGroup(ln_graph, ln_label, equation, deriv_arrow, deriv_arrow_label, deriv_value))
+        )
+
+        # Cycle between graph shapes
         self.remove(alt_graphs, alt_graph_labels, info_label)
+        graph.save_state()
+        f_name = Tex(R"f(x)", font_size=72)
+        f_name.move_to(axes.c2p(0.3, 5.5))
+
+        n_iterations = 100
+
+        for n in range(n_iterations):
+            new_graph = random.choice(alt_graphs)
+            graph.restore()
+            graph.align_data_and_family(new_graph)
+            graph.interpolate(graph, new_graph, random.random())
+            graph.stretch(random.uniform(0.5, 1), 1, about_edge=DR)
+            graph.set_stroke(BLUE, 3, 1)
+            self.wait(0.1)
+        graph.restore()
+        self.play(FadeIn(f_name))
+        self.wait()
+
+        # More ambient motion to discuss generality
         self.add(p_tracker, *value_indicators)
         p_tracker.set_value(0.5)
 
