@@ -550,7 +550,6 @@ class SamplingForLanguage2(InteractiveScene):
             self.wait(time_per_char)
 
 
-
 class AbstractGraphOfLossFunction(InteractiveScene):
     xy_init = (1.5, -3.75)
     # xy_init = (1.9, 3.75)

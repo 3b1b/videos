@@ -315,7 +315,7 @@ class ThreeDEntropyGraph(InteractiveScene):
             probs = (p1, p2, 1 - p1 - p2)
             return sum([-p * np.log2(abs(p)) for p in probs])
 
-        ce_graph = always_redraw(lambda: self.get_simplex_graph(ce_func, axes, PINK))
+        ce_graph = always_redraw(lambda: self.get_simplex_graph(ce_func, axes, "#6B81FF"))
         ent_graph = self.get_simplex_graph(ent_func, axes, GREEN)
 
         frame.reorient(-30, 85, 0, (-3.28, 0.09, 2.49), 15.68)
