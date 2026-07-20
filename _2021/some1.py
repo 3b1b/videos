@@ -1167,7 +1167,7 @@ class BadManimExample(Scene):
             "Does any of this ",
             "need to be ",
             "animated?\\\\",
-            "Much less programatically?"
+            "Much less programmatically?"
         )
         words[-1].shift(MED_SMALL_BUFF * DOWN)
         words.set_width(FRAME_WIDTH - 2)
