@@ -47,8 +47,8 @@ def _ensure_nano_loaded():
         meta = pickle.load(f)
     stoi = meta["stoi"]
     itos = meta["itos"]
-    _nano_encode = lambda s: [stoi[c] for c in s if c in stoi]
-    _nano_decode = lambda ids: "".join(itos[i] for i in ids)
+    def _nano_encode(s): return [stoi[c] for c in s if c in stoi]
+    def _nano_decode(ids): return "".join(itos[i] for i in ids)
     _nano_vocab = [itos[i] for i in range(len(itos))]
 
 

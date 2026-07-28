@@ -18,7 +18,7 @@ class StackedProbDistribution(VGroup):
         labels=None,
         label_height_ratio=0.7,
         label_width_ratio=0.8,
-        fit_labels_to_height = True,
+        fit_labels_to_height=True,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -44,7 +44,6 @@ class StackedProbDistribution(VGroup):
         self.fit_labels_to_height = fit_labels_to_height
         if labels is not None:
             self.set_labels(labels)
-
 
     def set_labels(self, labels: VMobject):
         self.labels.set_submobjects(labels)
