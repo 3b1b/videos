@@ -1,0 +1,204 @@
+import math
+import random
+from manim_imports_ext import *
+
+class Tile(Rectangle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 4, stroke_color = WHITE, **kwargs)
+        self.round_corners(0.05)
+
+class Hole(VGroup):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.square = Square(
+            side_length = 1, fill_opacity = 1, fill_color = "#444444", stroke_width = 4, stroke_color = YELLOW, stroke_opacity = 0.8
+        )
+        self.cross = Cross(self.square, stroke_width = 2).scale(0.95)
+        self.add(self.square, self.cross)
+
+class OptimalArrangement(InteractiveScene):
+    def construct(self):
+        # Add a bunch of tiles
+        self.camera.frame.save_state()
+        self.camera.frame.scale(2)
+        tiles = VGroup(*[Tile(random.randint(2, 4), random.randint(2, 4)) for _ in range(5)])
+        tiles[0].shift(LEFT*8 + UP*5)
+        tiles[1].shift(RIGHT*8 + UP*5)
+        tiles[3].shift(LEFT*8 + DOWN*5)
+        tiles[4].shift(RIGHT*8 + DOWN*5)
+
+        for i, tile in enumerate(tiles):
+            tile.w_val = tile.get_width()
+            tile.h_val = tile.get_height()
+            phase = random.uniform(0, 2 * math.pi)
+            amplitude = math.radians(random.uniform(3, 6))
+            frequency = random.uniform(1, 1.2)
+
+            init_angle = amplitude * math.sin(phase)
+            tile.angle_tracker = ValueTracker(init_angle)
+            tile.current_angle = init_angle
+            tile.rotate(init_angle)
+
+            def make_tile_updater(p, amp, freq):
+                def updater(m, dt):
+                    t = self.time
+                    target_angle = amp * math.sin(freq * t + p)
+                    m.angle_tracker.set_value(target_angle)
+                    
+                    d_theta = target_angle - m.current_angle
+                    m.rotate(d_theta)
+                    m.current_angle = target_angle
+                return updater
+
+            tile.add_updater(make_tile_updater(phase, amplitude, frequency))
+
+        shuffled_tiles = list(tiles)
+        random.shuffle(shuffled_tiles)
+
+        self.play(
+            AnimationGroup(
+                *[GrowFromCenter(tile) for tile in shuffled_tiles],
+                lag_ratio=0.25
+            )
+        )
+        self.wait(1.5)
+
+        # Add some holes sliding around the sides
+        holes = VGroup()
+        for tile in tiles:
+            w_val = tile.w_val
+            h_val = tile.h_val
+
+            for side_idx in range(4):
+                hole = Hole()
+                hole.phase = random.uniform(0, 2 * math.pi)
+                hole.freq = random.uniform(0.8, 1.5)
+
+                if side_idx < 2:
+                    L = max(0.1, (w_val - 1) / 2)
+                else:
+                    L = max(0.1, (h_val - 1) / 2)
+
+                s = L * math.sin(hole.phase)
+                if side_idx == 0:
+                    local_pos = np.array([s, h_val / 2 + 0.5, 0])
+                elif side_idx == 1:
+                    local_pos = np.array([s, -h_val / 2 - 0.5, 0])
+                elif side_idx == 2:
+                    local_pos = np.array([-w_val / 2 - 0.5, s, 0])
+                else:
+                    local_pos = np.array([w_val / 2 + 0.5, s, 0])
+
+                init_angle = tile.angle_tracker.get_value()
+                world_pos = tile.get_center() + rotate_vector(local_pos, init_angle)
+
+                hole.rotate(init_angle)
+                hole.current_angle = init_angle
+                hole.move_to(world_pos)
+
+                def make_hole_updater(t_ref, s_idx, l_val, p_val, f_val, w_v, h_v):
+                    def updater(h, dt):
+                        t = self.time
+                        s_t = l_val * math.sin(f_val * t + p_val)
+                        if s_idx == 0:
+                            loc = np.array([s_t, h_v / 2 + 0.5, 0])
+                        elif s_idx == 1:
+                            loc = np.array([s_t, -h_v / 2 - 0.5, 0])
+                        elif s_idx == 2:
+                            loc = np.array([-w_v / 2 - 0.5, s_t, 0])
+                        else:
+                            loc = np.array([w_v / 2 + 0.5, s_t, 0])
+
+                        target_angle = t_ref.angle_tracker.get_value()
+                        w_pos = t_ref.get_center() + rotate_vector(loc, target_angle)
+                        d_theta = target_angle - h.current_angle
+                        h.rotate(d_theta)
+                        h.current_angle = target_angle
+                        h.move_to(w_pos)
+                    return updater
+
+                hole.add_updater(make_hole_updater(tile, side_idx, L, hole.phase, hole.freq, w_val, h_val))
+                holes.add(hole)
+
+        shuffled_holes = list(holes)
+        random.shuffle(shuffled_holes)
+        self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_holes], lag_ratio = 0.05))
+        self.wait(3)
+
+        # Focus on one of them
+        tiles[2].clear_updaters()
+
+        def make_tracker_listener():
+            def updater(m, dt):
+                target_angle = m.angle_tracker.get_value()
+                d_theta = target_angle - m.current_angle
+                m.rotate(d_theta)
+                m.current_angle = target_angle
+            return updater
+
+        tiles[2].add_updater(make_tracker_listener())
+
+        self.play(
+            self.camera.frame.animate.scale(0.8),
+            VGroup(tiles[:2], tiles[3:], holes[:8], holes[12:]).animate.set_opacity(0),
+            tiles[2].angle_tracker.animate.set_value(0)
+        , run_time = 2)
+        self.remove(tiles[:2], tiles[3:], holes[:8], holes[12:])
+        tile = tiles[2]
+        holes = holes[8:12]
+
+        # Let the holes naturally slide into a cleaned up position
+        damp_tracker = ValueTracker(1.0)
+
+        for side_idx, hole in enumerate(holes):
+            w_val = tile.w_val
+            h_val = tile.h_val
+
+            if side_idx < 2:
+                L = max(0.1, (w_val - 1) / 2)
+            else:
+                L = max(0.1, (h_val - 1) / 2)
+
+            hole.clear_updaters()
+
+            def make_dampening_hole_updater(t_ref, s_idx, l_val, p_val, f_val, w_v, h_v):
+                def updater(h, dt):
+                    t = self.time
+                    scale = damp_tracker.get_value()
+                    s_t = scale * l_val * math.sin(f_val * t + p_val)
+
+                    if s_idx == 0:
+                        loc = np.array([s_t, h_v / 2 + 0.5, 0])
+                    elif s_idx == 1:
+                        loc = np.array([s_t, -h_v / 2 - 0.5, 0])
+                    elif s_idx == 2:
+                        loc = np.array([-w_v / 2 - 0.5, s_t, 0])
+                    else:
+                        loc = np.array([w_v / 2 + 0.5, s_t, 0])
+
+                    target_angle = t_ref.angle_tracker.get_value()
+                    w_pos = t_ref.get_center() + rotate_vector(loc, target_angle)
+                    d_theta = target_angle - h.current_angle
+                    h.rotate(d_theta)
+                    h.current_angle = target_angle
+                    h.move_to(w_pos)
+                return updater
+
+            hole.add_updater(make_dampening_hole_updater(tile, side_idx, L, hole.phase, hole.freq, w_val, h_val))
+
+        self.play(damp_tracker.animate.set_value(0), run_time = 3)
+        tile.clear_updaters()
+        holes.clear_updaters()
+
+        # Add tiles above and below the hole on the right
+        right_hole = holes[3]
+        tile_above = Tile(3, 5).align_to(right_hole.get_corner(UL), DL)
+        tile_below = Tile(4, 5).align_to(right_hole.get_corner(DL), UL)
+        self.play(FadeIn(tile_above, shift = DOWN), FadeIn(tile_below, shift = UP), holes[:3].animate.set_opacity(0.2))
+        hole_above = Hole().next_to(tile_above, LEFT, buff = 0).shift(UP*0.8)
+        hole_below = Hole().next_to(tile_below, LEFT, buff = 0).shift(DOWN*0.8)
+        self.play(FadeIn(hole_above, shift = DOWN*0.3), FadeIn(hole_below, shift = UP*0.3))
+        dashed_line = DashedLine(hole_below, hole_above, dash_length = 0.2, stroke_width = 6).set_color(PURE_RED)
+        self.play(ShowCreation(dashed_line), run_time = 1)
+        self.wait(1)
+        self.play(FadeOut(dashed_line))
