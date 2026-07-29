@@ -5,13 +5,14 @@ from manim_imports_ext import *
 class Grid(VGroup):
     def __init__(self, n, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.grid = Square(side_length = 1, stroke_width = 0.1, stroke_color = WHITE, stroke_opacity = 0.4).get_grid(n, n, buff = 0)
+        self.vertical_lines = VGroup(*[Line(RIGHT*i, RIGHT*i + DOWN*n) for i in range(n + 1)])
+        self.horizontal_lines = VGroup(*[Line(DOWN*i, DOWN*i + RIGHT*n) for i in range(n + 1)])
+        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 0.3, color = WHITE, opacity = 0.5)
         self.add(self.grid)
         self.n = n
 
     def position_at_coordinates(self, tile_or_hole, i, j):
-        cell = self.grid[self.n*j + i]
-        tile_or_hole.align_to(cell, UL)
+        tile_or_hole.align_to(self.vertical_lines[i], LEFT).align_to(self.horizontal_lines[j], UP)
 
 class Tile(Rectangle):
     def __init__(self, *args, **kwargs):
@@ -293,7 +294,7 @@ class WindmillTilings(InteractiveScene):
 
         # Add a grid
         min_k = 2
-        max_k = 15
+        max_k = 45
 
         k_tracker = ValueTracker(min_k)
         k_tracker.current_k = int(k_tracker.get_value())
@@ -332,7 +333,7 @@ class WindmillTilings(InteractiveScene):
         self.camera.frame.save_state()
         self.play(
             k_tracker.animate(run_time = 3).set_value(max_k),
-            self.camera.frame.animate(run_time = 5).reorient(-14, 57, 0, (np.float32(110.7), np.float32(9.71), np.float32(33.65)), 131.68)
+            self.camera.frame.animate(run_time = 5).reorient(-13, 56, 0, (np.float32(785.65), np.float32(19.73), np.float32(292.74)), 896.12)
         )
         k_tracker.suspend_updating()
         self.wait(2)
