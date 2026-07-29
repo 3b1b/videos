@@ -286,6 +286,9 @@ class WindmillTilings(InteractiveScene):
                 grid.position_at_coordinates(tile, 0, n - (i + 2)*k)
 
             all_tiles = VGroup(*main_tiles, *ur_tiles, *dr_tiles, *dl_tiles, *ul_tiles)
+            grid.set_scale_stroke_with_zoom(True)
+            all_tiles.set_scale_stroke_with_zoom(True)
+            holes.set_scale_stroke_with_zoom(True)
             return VGroup(grid, all_tiles, holes)
 
         # Add a grid
@@ -314,7 +317,7 @@ class WindmillTilings(InteractiveScene):
         k_triangle.add_updater(lambda m: m.set_x(k_slider.n2p(round(k_tracker.get_value()))[0]))
         rect = BackgroundRectangle(VGroup(k_slider, k_display, k_triangle), buff = 0.1).round_corners(0.2)
         k_slider_group = VGroup(rect, k_slider, k_display, k_triangle)
-        k_slider_group.fix_in_frame().to_corner(UL, buff = 0.2)
+        k_slider_group.fix_in_frame().set_anti_alias_width(0).to_corner(UL, buff = 0.2).set_scale_stroke_with_zoom(True)
         self.play(FadeIn(k_slider_group))
 
         # Adjust the value of k
