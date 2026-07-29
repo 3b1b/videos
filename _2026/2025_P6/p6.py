@@ -289,15 +289,54 @@ class WindmillTilings(InteractiveScene):
             return VGroup(grid, holes, all_tiles)
 
         # Add a grid
-        k_tracker = ValueTracker(2)
-        grid = always_redraw(lambda: get_optimal_grid(int(k_tracker.get_value())).align_to(ORIGIN, DL))
-        self.add(grid)
-        self.camera.frame.move_to(grid)
-        grid.suspend_updating()
+        min_k = 2
+        max_k = 5
+
+        k_tracker = ValueTracker(min_k)
+        k_tracker.current_k = int(k_tracker.get_value())
+        grid_container = VGroup(get_optimal_grid(k_tracker.current_k).align_to(ORIGIN, DL))
+        self.add(grid_container)
+        self.camera.frame.move_to(grid_container)
         self.wait(2)
-        grid.resume_updating()
+
+        # Add a slider
+        k_slider = NumberLine(
+            x_range = [1, max_k],
+            width = 3.5,
+            include_numbers = True
+        )
+        k_display = Tex("k = 2").next_to(k_slider, UP, buff = 0.7)
+        k_value = k_display.make_number_changeable("2")
+        k_value.add_updater(lambda m: m.set_value(round(k_tracker.get_value())))
+        k_triangle = Triangle(fill_opacity = 1, fill_color = TEAL, stroke_width = 0).stretch(1.5, 1).set_width(0.2).rotate(PI)
+        k_triangle.align_to(k_slider[0].get_center(), DOWN)
+        k_triangle.add_updater(lambda m: m.set_x(k_slider.n2p(round(k_tracker.get_value()))[0]))
+        rect = BackgroundRectangle(VGroup(k_slider, k_display, k_triangle), buff = 0.3).round_corners(0.2)
+        k_slider_group = VGroup(rect, k_slider, k_display, k_triangle)
+        k_slider_group.fix_in_frame().to_corner(UL, buff = 0.2)
+        self.play(FadeIn(k_slider_group))
+
+        # Adjust the value of k
+        def update_grid(m):
+            new_k = round(m.get_value())
+            if abs(new_k - m.current_k) == 1:
+                print("HELLO", new_k, m.current_k)
+                m.current_k = new_k
+                grid_container.set_submobjects([get_optimal_grid(m.current_k).align_to(ORIGIN, DL)])
+
+        k_tracker.add_updater(update_grid)
+
+        self.camera.frame.save_state()
         self.play(
-            k_tracker.animate.set_value(25),
-            self.camera.frame.animate.reorient(-11, 49, 0, (np.float32(21.5), np.float32(6.78), np.float32(4.34)), 30.68)
-        , run_time = 2)
-        grid.suspend_updating()
+            k_tracker.animate(run_time = 3).set_value(max_k),
+            self.camera.frame.animate(run_time = 5).reorient(-14, 57, 0, (np.float32(110.7), np.float32(9.71), np.float32(33.65)), 131.68)
+        )
+        k_tracker.suspend_updating()
+        self.wait(2)
+        k_tracker.resume_updating()
+        self.play(
+            k_tracker.animate(run_time = 2).set_value(5),
+            self.camera.frame.animate(run_time = 4).reorient(0, 0, 0, (np.float32(12), np.float32(12), np.float32(0.0)), 30)
+        )
+        k_tracker.suspend_updating()
+        self.wait(3)
