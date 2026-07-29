@@ -286,11 +286,11 @@ class WindmillTilings(InteractiveScene):
                 grid.position_at_coordinates(tile, 0, n - (i + 2)*k)
 
             all_tiles = VGroup(*main_tiles, *ur_tiles, *dr_tiles, *dl_tiles, *ul_tiles)
-            return VGroup(grid, holes, all_tiles)
+            return VGroup(grid, all_tiles, holes)
 
         # Add a grid
         min_k = 2
-        max_k = 5
+        max_k = 15
 
         k_tracker = ValueTracker(min_k)
         k_tracker.current_k = int(k_tracker.get_value())
@@ -302,8 +302,9 @@ class WindmillTilings(InteractiveScene):
         # Add a slider
         k_slider = NumberLine(
             x_range = [1, max_k],
-            width = 3.5,
-            include_numbers = True
+            width = 3,
+            include_numbers = True,
+            numbers_to_exclude = [i for i in range(1, max_k + 1) if 1 < i < max_k]
         )
         k_display = Tex("k = 2").next_to(k_slider, UP, buff = 0.7)
         k_value = k_display.make_number_changeable("2")
@@ -311,7 +312,7 @@ class WindmillTilings(InteractiveScene):
         k_triangle = Triangle(fill_opacity = 1, fill_color = TEAL, stroke_width = 0).stretch(1.5, 1).set_width(0.2).rotate(PI)
         k_triangle.align_to(k_slider[0].get_center(), DOWN)
         k_triangle.add_updater(lambda m: m.set_x(k_slider.n2p(round(k_tracker.get_value()))[0]))
-        rect = BackgroundRectangle(VGroup(k_slider, k_display, k_triangle), buff = 0.3).round_corners(0.2)
+        rect = BackgroundRectangle(VGroup(k_slider, k_display, k_triangle), buff = 0.1).round_corners(0.2)
         k_slider_group = VGroup(rect, k_slider, k_display, k_triangle)
         k_slider_group.fix_in_frame().to_corner(UL, buff = 0.2)
         self.play(FadeIn(k_slider_group))
@@ -320,7 +321,6 @@ class WindmillTilings(InteractiveScene):
         def update_grid(m):
             new_k = round(m.get_value())
             if abs(new_k - m.current_k) == 1:
-                print("HELLO", new_k, m.current_k)
                 m.current_k = new_k
                 grid_container.set_submobjects([get_optimal_grid(m.current_k).align_to(ORIGIN, DL)])
 
