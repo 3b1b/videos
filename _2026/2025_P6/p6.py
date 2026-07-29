@@ -2,6 +2,17 @@ import math
 import random
 from manim_imports_ext import *
 
+class Grid(VGroup):
+    def __init__(self, n, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.grid = Square(side_length = 1, stroke_width = 0.1, stroke_color = WHITE, stroke_opacity = 0.4).get_grid(n, n, buff = 0)
+        self.add(self.grid)
+        self.n = n
+
+    def position_at_coordinates(self, tile_or_hole, i, j):
+        cell = self.grid[self.n*j + i]
+        tile_or_hole.align_to(cell, UL)
+
 class Tile(Rectangle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 4, stroke_color = WHITE, **kwargs)
@@ -16,7 +27,7 @@ class Hole(VGroup):
         self.cross = Cross(self.square, stroke_width = 2).scale(0.95)
         self.add(self.square, self.cross)
 
-class OptimalArrangement(InteractiveScene):
+class OptimalArrangementMotivation(InteractiveScene):
     def construct(self):
         # Add a bunch of tiles
         self.camera.frame.save_state()
@@ -189,16 +200,104 @@ class OptimalArrangement(InteractiveScene):
         self.play(damp_tracker.animate.set_value(0), run_time = 3)
         tile.clear_updaters()
         holes.clear_updaters()
+        self.wait(2)
 
-        # Add tiles above and below the hole on the right
+        # Add tiles above and below the hole on the right and show the conflict
         right_hole = holes[3]
         tile_above = Tile(3, 5).align_to(right_hole.get_corner(UL), DL)
         tile_below = Tile(4, 5).align_to(right_hole.get_corner(DL), UL)
         self.play(FadeIn(tile_above, shift = DOWN), FadeIn(tile_below, shift = UP), holes[:3].animate.set_opacity(0.2))
+        self.wait(2)
         hole_above = Hole().next_to(tile_above, LEFT, buff = 0).shift(UP*0.8)
         hole_below = Hole().next_to(tile_below, LEFT, buff = 0).shift(DOWN*0.8)
         self.play(FadeIn(hole_above, shift = DOWN*0.3), FadeIn(hole_below, shift = UP*0.3))
+        self.wait(2)
         dashed_line = DashedLine(hole_below, hole_above, dash_length = 0.2, stroke_width = 6).set_color(PURE_RED)
         self.play(ShowCreation(dashed_line), run_time = 1)
         self.wait(1)
-        self.play(FadeOut(dashed_line))
+        self.play(FadeOut(VGroup(dashed_line, holes[:3], hole_above, hole_below)))
+
+        # Slide the hole up and down the side of the tile
+        self.play(VGroup(right_hole, tile_above, tile_below).animate.shift(UP*0.3), run_time = 1.5)
+        self.play(VGroup(right_hole, tile_above, tile_below).animate.shift(DOWN*0.6), run_time = 1.5)
+        right_hole.generate_target()
+        right_hole.target.align_to(tile, UP)
+        tile_above.generate_target()
+        tile_above.target.align_to(right_hole.target.get_top(), DOWN)
+        tile_below.generate_target()
+        tile_below.target.align_to(right_hole.target.get_bottom(), UP)
+        self.play(
+            MoveToTarget(right_hole),
+            MoveToTarget(tile_above),
+            MoveToTarget(tile_below),
+            self.camera.frame.animate.move_to(right_hole.target)
+        , run_time = 1.5)
+        new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
+        self.play(
+            AnimationGroup(
+                tile_above.animate.align_to(right_hole, RIGHT),
+                FadeIn(new_tile, shift = LEFT)
+            , lag_ratio = 0.4)
+        )
+
+        # Change the tiles into squares
+        hole = right_hole
+        tiles = VGroup(*[Tile(3, 3) for _ in range(4)])
+        tiles[0].align_to(tile, UR)
+        tiles[1].align_to(tile_above, DR)
+        tiles[2].align_to(new_tile, DL)
+        tiles[3].align_to(tile_below, UL)
+        self.play(
+            AnimationGroup(*[
+                ReplacementTransform(tile1, tile2)
+                for tile1, tile2 in zip([tile, tile_above, new_tile, tile_below], tiles)
+            ])
+        , run_time = 2)
+
+class WindmillTilings(InteractiveScene):
+    def construct(self):
+        # Define a function to generate the optimal grid based on k
+        def get_optimal_grid(k):
+            n = k*k
+            grid = Grid(n)
+
+            holes = VGroup(*[Hole() for _ in range(n)])
+            for i, hole in enumerate(holes):
+                grid.position_at_coordinates(hole, k - 1 - i//k + (i % k)*k, i)
+
+            main_tiles = VGroup(*[Tile(k, k) for _ in range((k - 1)*(k - 1))])
+            for i, tile in enumerate(main_tiles):
+                grid.position_at_coordinates(tile, k - 1 - i//(k - 1) + (i % (k - 1))*k, i + i//(k - 1) + 1)
+
+            ur_tiles = VGroup(*[Tile(k, j) for j in range(1, k)])
+            for i, tile in enumerate(ur_tiles):
+                grid.position_at_coordinates(tile, (i + 1)*k, 0)
+
+            dr_tiles = VGroup(*[Tile(j, k) for j in range(1, k)])
+            for i, tile in enumerate(dr_tiles):
+                grid.position_at_coordinates(tile, n - i - 1, (i + 1)*k)
+
+            dl_tiles = VGroup(*[Tile(k, j) for j in range(1, k)])
+            for i, tile in enumerate(dl_tiles):
+                grid.position_at_coordinates(tile, n - (i + 2)*k, n - i - 1)
+
+            ul_tiles = VGroup(*[Tile(j, k) for j in range(1, k)])
+            for i, tile in enumerate(ul_tiles):
+                grid.position_at_coordinates(tile, 0, n - (i + 2)*k)
+
+            all_tiles = VGroup(*main_tiles, *ur_tiles, *dr_tiles, *dl_tiles, *ul_tiles)
+            return VGroup(grid, holes, all_tiles)
+
+        # Add a grid
+        k_tracker = ValueTracker(2)
+        grid = always_redraw(lambda: get_optimal_grid(int(k_tracker.get_value())).align_to(ORIGIN, DL))
+        self.add(grid)
+        self.camera.frame.move_to(grid)
+        grid.suspend_updating()
+        self.wait(2)
+        grid.resume_updating()
+        self.play(
+            k_tracker.animate.set_value(25),
+            self.camera.frame.animate.reorient(-11, 49, 0, (np.float32(21.5), np.float32(6.78), np.float32(4.34)), 30.68)
+        , run_time = 2)
+        grid.suspend_updating()
