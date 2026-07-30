@@ -258,10 +258,10 @@ class OptimalArrangementMotivation(InteractiveScene):
         new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
         self.play(
             FadeOut(dashed_line, shift = LEFT*1.7),
-            VGroup(tile_above, hole_above, hole_below).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
+            VGroup(tile_above, hole_above).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
         , run_time = 2.5)
         self.wait(2)
-        self.play(FadeIn(new_tile, shift = LEFT), FadeOut(VGroup(hole_above, hole_below)))
+        self.play(FadeIn(new_tile, shift = LEFT), ShrinkToCenter(hole_above), ShrinkToCenter(hole_below))
 
         # Change the tiles into squares
         hole = right_hole
