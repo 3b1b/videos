@@ -237,30 +237,31 @@ class OptimalArrangementMotivation(InteractiveScene):
         self.wait(3)
 
         # Slide the hole up and down the side of the tile
-        extra_tiles_and_holes = VGroup(dashed_line, hole_above, hole_below, extra_holes_above, extra_holes_below)
-        self.play(VGroup(right_hole, tile_above, tile_below, extra_tiles_and_holes).animate.shift(UP*0.3), run_time = 3)
-        self.play(VGroup(right_hole, tile_above, tile_below, extra_tiles_and_holes).animate.shift(DOWN*0.6), run_time = 3)
-        self.play(FadeOut(VGroup(holes[:3], extra_tiles_and_holes)))
+        extra_tiles_and_holes_group = VGroup(tile_above, tile_below, extra_holes_above, extra_holes_below, dashed_line)
+        self.play(VGroup(right_hole, extra_tiles_and_holes_group).animate.shift(UP*0.3), run_time = 3)
+        self.play(VGroup(right_hole, extra_tiles_and_holes_group).animate.shift(DOWN*0.6), run_time = 3)
+        self.play(FadeOut(VGroup(holes[:3], extra_holes_above[1:], extra_holes_below[1:])))
         self.wait(1)
-        right_hole.generate_target()
-        right_hole.target.align_to(tile, UP)
+        holes_group = VGroup(right_hole, hole_above, hole_below, dashed_line)
+        holes_group.generate_target()
+        holes_group.target.shift(UP*(tile.get_top()[1] - right_hole.get_top()[1]))
         tile_above.generate_target()
-        tile_above.target.align_to(right_hole.target.get_top(), DOWN)
+        tile_above.target.align_to(holes_group.target[0].get_top(), DOWN)
         tile_below.generate_target()
-        tile_below.target.align_to(right_hole.target.get_bottom(), UP)
+        tile_below.target.align_to(holes_group.target[0].get_bottom(), UP)
         self.play(
-            MoveToTarget(right_hole),
+            MoveToTarget(holes_group),
             MoveToTarget(tile_above),
             MoveToTarget(tile_below),
-            self.camera.frame.animate.move_to(right_hole.target)
+            self.camera.frame.animate.move_to(holes_group.target[0])
         , run_time = 3)
         new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
         self.play(
-            AnimationGroup(
-                tile_above.animate.align_to(right_hole, RIGHT),
-                FadeIn(new_tile, shift = LEFT)
-            , lag_ratio = 0.4)
+            FadeOut(dashed_line, shift = LEFT*1.7),
+            VGroup(tile_above, hole_above, hole_below).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
         , run_time = 2.5)
+        self.wait(2)
+        self.play(FadeIn(new_tile, shift = LEFT), FadeOut(VGroup(hole_above, hole_below)))
 
         # Change the tiles into squares
         hole = right_hole
