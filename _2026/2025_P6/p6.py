@@ -10,6 +10,7 @@ class Grid(VGroup):
         self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 0.3, color = WHITE, opacity = 0.5)
         self.add(self.grid)
         self.n = n
+        self.set_scale_stroke_with_zoom(True)
 
     def position_at_coordinates(self, tile_or_hole, i, j):
         tile_or_hole.align_to(self.vertical_lines[i], LEFT).align_to(self.horizontal_lines[j], UP)
@@ -18,6 +19,7 @@ class Tile(Rectangle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 4, stroke_color = WHITE, **kwargs)
         self.round_corners(0.05)
+        self.set_scale_stroke_with_zoom(True)
 
 class Hole(VGroup):
     def __init__(self, *args, **kwargs):
@@ -27,6 +29,7 @@ class Hole(VGroup):
         )
         self.cross = Cross(self.square, stroke_width = 2).scale(0.95)
         self.add(self.square, self.cross)
+        self.set_scale_stroke_with_zoom(True)
 
 class OptimalArrangementMotivation(InteractiveScene):
     def construct(self):
@@ -73,7 +76,7 @@ class OptimalArrangementMotivation(InteractiveScene):
                 lag_ratio=0.25
             )
         )
-        self.wait(1.5)
+        self.wait(3)
 
         # Add some holes sliding around the sides
         holes = VGroup()
@@ -135,7 +138,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         shuffled_holes = list(holes)
         random.shuffle(shuffled_holes)
         self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_holes], lag_ratio = 0.05))
-        self.wait(3)
+        self.wait(9)
 
         # Focus on one of them
         tiles[2].clear_updaters()
@@ -151,7 +154,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         tiles[2].add_updater(make_tracker_listener())
 
         self.play(
-            self.camera.frame.animate.scale(0.8),
+            self.camera.frame.animate.scale(0.87),
             VGroup(tiles[:2], tiles[3:], holes[:8], holes[12:]).animate.set_opacity(0),
             tiles[2].angle_tracker.animate.set_value(0)
         , run_time = 2)
@@ -201,26 +204,44 @@ class OptimalArrangementMotivation(InteractiveScene):
         self.play(damp_tracker.animate.set_value(0), run_time = 3)
         tile.clear_updaters()
         holes.clear_updaters()
-        self.wait(2)
 
-        # Add tiles above and below the hole on the right and show the conflict
+        # Add tiles above and below the hole
         right_hole = holes[3]
         tile_above = Tile(3, 5).align_to(right_hole.get_corner(UL), DL)
         tile_below = Tile(4, 5).align_to(right_hole.get_corner(DL), UL)
-        self.play(FadeIn(tile_above, shift = DOWN), FadeIn(tile_below, shift = UP), holes[:3].animate.set_opacity(0.2))
+        self.add(tile_above, tile_below, holes)
+        self.play(FadeIn(tile_above, shift = DOWN), FadeIn(tile_below, shift = UP), holes[:3].animate.set_opacity(0.2), run_time = 2)
         self.wait(2)
-        hole_above = Hole().next_to(tile_above, LEFT, buff = 0).shift(UP*0.8)
-        hole_below = Hole().next_to(tile_below, LEFT, buff = 0).shift(DOWN*0.8)
-        self.play(FadeIn(hole_above, shift = DOWN*0.3), FadeIn(hole_below, shift = UP*0.3))
+
+        # Add holes to those tiles
+        extra_holes_above = VGroup(*[
+            Hole().next_to(tile_above, [LEFT, UP, RIGHT][i], buff = 0).shift(UP*0.8 if i == 0 else 0)
+            for i in range(3)
+        ])
+        extra_holes_below = VGroup(*[
+            Hole().next_to(tile_below, [LEFT, RIGHT, DOWN][i], buff = 0).shift(DOWN*0.8 if i == 0 else 0)
+            for i in range(3)
+        ])
+        hole_above = extra_holes_above[0]
+        hole_below = extra_holes_below[0]
+        shuffled_extra_holes = list(extra_holes_above) + list(extra_holes_below)
+        random.shuffle(shuffled_extra_holes)
+        self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_extra_holes], lag_ratio = 0.2))
         self.wait(2)
         dashed_line = DashedLine(hole_below, hole_above, dash_length = 0.2, stroke_width = 6).set_color(PURE_RED)
-        self.play(ShowCreation(dashed_line), run_time = 1)
-        self.wait(1)
-        self.play(FadeOut(VGroup(dashed_line, holes[:3], hole_above, hole_below)))
+        self.play(
+            ShowCreation(dashed_line),
+            extra_holes_above[1:].animate.set_opacity(0.2),
+            extra_holes_below[1:].animate.set_opacity(0.2)
+        )
+        self.wait(3)
 
         # Slide the hole up and down the side of the tile
-        self.play(VGroup(right_hole, tile_above, tile_below).animate.shift(UP*0.3), run_time = 1.5)
-        self.play(VGroup(right_hole, tile_above, tile_below).animate.shift(DOWN*0.6), run_time = 1.5)
+        extra_tiles_and_holes = VGroup(dashed_line, hole_above, hole_below, extra_holes_above, extra_holes_below)
+        self.play(VGroup(right_hole, tile_above, tile_below, extra_tiles_and_holes).animate.shift(UP*0.3), run_time = 3)
+        self.play(VGroup(right_hole, tile_above, tile_below, extra_tiles_and_holes).animate.shift(DOWN*0.6), run_time = 3)
+        self.play(FadeOut(VGroup(holes[:3], extra_tiles_and_holes)))
+        self.wait(1)
         right_hole.generate_target()
         right_hole.target.align_to(tile, UP)
         tile_above.generate_target()
@@ -232,14 +253,14 @@ class OptimalArrangementMotivation(InteractiveScene):
             MoveToTarget(tile_above),
             MoveToTarget(tile_below),
             self.camera.frame.animate.move_to(right_hole.target)
-        , run_time = 1.5)
+        , run_time = 3)
         new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
         self.play(
             AnimationGroup(
                 tile_above.animate.align_to(right_hole, RIGHT),
                 FadeIn(new_tile, shift = LEFT)
             , lag_ratio = 0.4)
-        )
+        , run_time = 2.5)
 
         # Change the tiles into squares
         hole = right_hole
@@ -287,9 +308,6 @@ class WindmillTilings(InteractiveScene):
                 grid.position_at_coordinates(tile, 0, n - (i + 2)*k)
 
             all_tiles = VGroup(*main_tiles, *ur_tiles, *dr_tiles, *dl_tiles, *ul_tiles)
-            grid.set_scale_stroke_with_zoom(True)
-            all_tiles.set_scale_stroke_with_zoom(True)
-            holes.set_scale_stroke_with_zoom(True)
             return VGroup(grid, all_tiles, holes)
 
         # Add a grid
