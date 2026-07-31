@@ -7,7 +7,7 @@ class Grid(VGroup):
         super().__init__(*args, **kwargs)
         self.vertical_lines = VGroup(*[Line(RIGHT*i, RIGHT*i + DOWN*n) for i in range(n + 1)])
         self.horizontal_lines = VGroup(*[Line(DOWN*i, DOWN*i + RIGHT*n) for i in range(n + 1)])
-        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 0.3, color = WHITE, opacity = 0.5)
+        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 2, color = WHITE, opacity = 0.6)
         self.add(self.grid)
         self.n = n
         self.set_scale_stroke_with_zoom(True)
@@ -19,7 +19,7 @@ class Tile(Rectangle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 4, stroke_color = WHITE, **kwargs)
         self.round_corners(0.05)
-        self.set_scale_stroke_with_zoom(True)
+        self.set_scale_stroke_with_zoom(False)
 
 class Hole(VGroup):
     def __init__(self, *args, **kwargs):
@@ -29,7 +29,7 @@ class Hole(VGroup):
         )
         self.cross = Cross(self.square, stroke_width = 2).scale(0.95)
         self.add(self.square, self.cross)
-        self.set_scale_stroke_with_zoom(True)
+        self.set_scale_stroke_with_zoom(False)
 
 class OptimalArrangementMotivation(InteractiveScene):
     def construct(self):
@@ -311,23 +311,110 @@ class WindmillTilings(InteractiveScene):
             all_tiles = VGroup(*main_tiles, *ur_tiles, *dr_tiles, *dl_tiles, *ul_tiles)
             return VGroup(grid, all_tiles, holes)
 
-        # Add a grid
-        min_k = 2
+        # Add a grid with k = 5
+        min_k = 5
         max_k = 45
 
         k_tracker = ValueTracker(min_k)
         k_tracker.current_k = int(k_tracker.get_value())
         grid_container = VGroup(get_optimal_grid(k_tracker.current_k).align_to(ORIGIN, DL))
         self.add(grid_container)
-        self.camera.frame.move_to(grid_container)
+        self.camera.frame.move_to(grid_container).set_height(grid_container.get_height()*1.4)
+        self.camera.frame.save_state()
         self.wait(2)
+
+        # Change it to k = 4
+        def update_grid(m):
+            new_k = round(m.get_value())
+            if abs(new_k - m.current_k) == 1:
+                m.current_k = new_k
+                grid_container.set_submobjects([get_optimal_grid(m.current_k).align_to(ORIGIN, DL)])
+
+        k_tracker.add_updater(update_grid)
+
+        k_tracker.set_value(4)
+        k_tracker.update()
+        self.play(self.camera.frame.animate.move_to(grid_container).set_height(grid_container.get_height()*1.4))
+        self.wait(2)
+
+        # Show the new dimensions
+        x_length_label = Tex("16", font_size = 180).next_to(grid_container, DOWN, buff = 1)
+        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 1)
+        brace1 = Brace(grid_container, DOWN)
+        brace2 = Brace(grid_container, LEFT)
+        self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), FadeIn(VGroup(x_length_label, y_length_label)))
+        self.wait(2)
+
+        # Count the holes
+        circles = VGroup(*[
+            Circle(radius = 0.8, stroke_width = 3, stroke_color = PURE_GREEN).move_to(hole)
+            for hole in grid_container[0][2]
+        ])
+        hole_numbers = VGroup(*[
+            Tex(str(i + 1), font_size = 90).next_to(hole, UP, buff = 0.7)
+            for i, hole in enumerate(grid_container[0][2])
+        ])
+        grid_container.save_state()
+        self.play(
+            AnimationGroup(
+                grid_container.animate.set_opacity(0.2),
+                AnimationGroup(*[
+                    AnimationGroup(
+                        ShowCreation(circle),
+                        FadeIn(num, shift = UP*0.4)
+                    , lag_ratio = 0.1)
+                    for circle, num in zip(circles, hole_numbers)
+                ], lag_ratio = 0.05),
+                grid_container[0][2].animate.shift(0)
+            , lag_ratio = 0.1)
+        )
+        self.wait(2)
+        self.play(
+            FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2, circles, hole_numbers)),
+            grid_container.animate.restore()
+        )
+
+        # Change it to k = 3
+        k_tracker.set_value(3)
+        k_tracker.update()
+        self.play(self.camera.frame.animate.move_to(grid_container).set_height(grid_container.get_height()*1.4))
+        self.wait(2)
+
+        # Show the new dimensions again
+        x_length_label = Tex("9", font_size = 100).next_to(grid_container, DOWN, buff = 0.7)
+        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 0.7)
+        brace1 = Brace(grid_container, DOWN)
+        brace2 = Brace(grid_container, LEFT)
+        self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), FadeIn(VGroup(x_length_label, y_length_label)))
+        self.wait(2)
+        self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
+
+        # Generalize
+        tile = grid_container[0][1][2]
+        grid_container.save_state()
+        k_label_1 = Tex("k", font_size = 100).next_to(tile, DOWN, buff = 0.7)
+        k_label_2 = k_label_1.copy().next_to(tile, LEFT, buff = 0.7)
+        brace1 = Brace(tile, DOWN)
+        brace2 = Brace(tile, LEFT)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    grid_container.animate.set_opacity(0.1),
+                    tile.animate.shift(0)
+                ),
+                AnimationGroup(
+                    GrowFromEdge(brace1, UP),
+                    GrowFromEdge(brace2, RIGHT),
+                    FadeIn(VGroup(k_label_1, k_label_2))
+                )
+            , lag_ratio = 0.4)
+        )
 
         # Add a slider
         k_slider = NumberLine(
-            x_range = [1, max_k],
+            x_range = [0, 50, 10],
             width = 3,
-            include_numbers = True,
-            numbers_to_exclude = [i for i in range(1, max_k + 1) if 1 < i < max_k]
+            include_numbers = True
         )
         k_display = Tex("k = 2").next_to(k_slider, UP, buff = 0.7)
         k_value = k_display.make_number_changeable("2")
@@ -339,27 +426,249 @@ class WindmillTilings(InteractiveScene):
         k_slider_group = VGroup(rect, k_slider, k_display, k_triangle)
         k_slider_group.fix_in_frame().set_anti_alias_width(0).to_corner(UL, buff = 0.2).set_scale_stroke_with_zoom(True)
         self.play(FadeIn(k_slider_group))
-
-        # Adjust the value of k
-        def update_grid(m):
-            new_k = round(m.get_value())
-            if abs(new_k - m.current_k) == 1:
-                m.current_k = new_k
-                grid_container.set_submobjects([get_optimal_grid(m.current_k).align_to(ORIGIN, DL)])
-
-        k_tracker.add_updater(update_grid)
-
-        self.camera.frame.save_state()
         self.play(
-            k_tracker.animate(run_time = 3).set_value(max_k),
-            self.camera.frame.animate(run_time = 5).reorient(-13, 56, 0, (np.float32(785.65), np.float32(19.73), np.float32(292.74)), 896.12)
+            grid_container.animate.restore(),
+            FadeOut(VGroup(k_label_1, k_label_2, brace1, brace2))
+        )
+        self.remove(grid_container)
+        self.add(grid_container, k_slider_group)
+
+        # Increase k incrementally up to 45
+        self.play(
+            k_tracker.animate(run_time = 5).set_value(10),
+            self.camera.frame.animate(run_time = 5).reorient(-6, 30, 0, (np.float32(43.11), np.float32(30.29), np.float32(14.27)), 85.80)
         )
         k_tracker.suspend_updating()
         self.wait(2)
         k_tracker.resume_updating()
         self.play(
-            k_tracker.animate(run_time = 2).set_value(5),
-            self.camera.frame.animate(run_time = 4).reorient(0, 0, 0, (np.float32(12), np.float32(12), np.float32(0.0)), 30)
+            k_tracker.animate(run_time = 5).set_value(max_k),
+            self.camera.frame.animate(run_time = 5).reorient(-13, 40, 0, (np.float32(654.42), np.float32(252.66), np.float32(461.53)), 1315.09)
         )
         k_tracker.suspend_updating()
-        self.wait(3)
+        self.wait(2)
+
+        # Show the new size
+        x_length_label = Tex(R"2025\\=45^2", font_size = 12000).next_to(grid_container, DOWN, buff = 50)
+        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 60)
+        brace1 = Brace(grid_container, DOWN)
+        brace2 = Brace(grid_container, LEFT)
+        self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), Write(x_length_label["2025"]), Write(y_length_label["2025"]))
+        self.wait(2)
+        self.play(
+            FadeIn(
+                x_length_label["=45^2"].set_color(
+                    YELLOW
+                ).next_to(
+                    x_length_label["2025"], RIGHT, buff = 30
+                ).align_to(
+                    x_length_label["2025"], DOWN
+                )
+            ),
+            FadeIn(
+                y_length_label["=45^2"].set_color(
+                    YELLOW
+                ).next_to(
+                    y_length_label["2025"], DOWN, buff = 40
+                )
+            )
+        )
+        self.wait(2)
+        self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
+
+        # Pan the camera around
+        self.play(
+            self.camera.frame.animate.reorient(7, 46, 0, (np.float32(1110.17), np.float32(171.23), np.float32(372.81)), 1109.67)
+        , run_time = 10)
+        self.play(
+            self.camera.frame.animate.reorient(-24, 62, 0, (np.float32(215.15), np.float32(285.09), np.float32(-107.24)), 249.79)
+        , run_time = 10)
+        self.play(
+            self.camera.frame.animate.reorient(-27, 65, 0, (np.float32(631.07), np.float32(270.25), np.float32(216.58)), 180.95)
+        , run_time = 10)
+        self.play(
+            self.camera.frame.animate.reorient(-18, 58, 0, (np.float32(973.79), np.float32(650.28), np.float32(-62.57)), 1754.60)
+        , run_time = 10)
+
+        # Set k back to 5
+        self.wait(2)
+        k_tracker.resume_updating()
+        self.play(
+            k_tracker.animate(run_time = 5).set_value(5),
+            self.camera.frame.animate(run_time = 5).restore()
+        )
+        k_tracker.suspend_updating()
+        self.wait(1)
+
+        # Count the number of square tiles
+        all_tiles = grid_container[0][1]
+        square_tiles = all_tiles[:16]
+        square_tile_numbers = VGroup(*[
+            Tex(str(i + 1), font_size = 150).set_color(BLACK).move_to(tile)
+            for i, tile in enumerate(square_tiles)
+        ])
+        grid_container.save_state()
+        holes = grid_container[0][2]
+        self.play(
+            grid_container.animate.set_opacity(0.1),
+            holes.animate.shift(0),
+            AnimationGroup(*[
+                AnimationGroup(
+                    tile.animate(rate_func = there_and_back).set_color(YELLOW).scale(1.1).set_fill(opacity = 0.5),
+                    GrowFromCenter(num, run_time = 0.8)
+                )
+                for tile, num in zip(square_tiles, square_tile_numbers)
+            ], lag_ratio = 0.1)
+        )
+        self.wait(2)
+
+        # Generalize
+        self.play(
+            AnimationGroup(*[
+                num.animate.become(
+                    Dot(radius = 0.2).set_color(BLACK).move_to(tile) if i < 16 - 1 - 3 else
+                    Tex("(k - 1)^2", font_size = 120).set_color(BLACK).move_to(tile)
+                )
+                for i, (tile, num) in enumerate(zip(square_tiles[3:], square_tile_numbers[3:]))
+            ]),
+            holes.animate.shift(0)
+        )
+        self.wait(1)
+
+        # Save the value (k - 1)^2
+        square_tile_count = square_tile_numbers[-1].copy().scale(
+            1.9
+        ).align_to(
+            grid_container, UP
+        ).set_x(
+            0.5*(grid_container.get_right()[0] + self.camera.frame.get_right()[0])
+        ).set_color(
+            TEAL_A
+        )
+        self.play(TransformFromCopy(square_tile_numbers[-1], square_tile_count, path_arc = -PI*0.2), run_time = 1.5)
+        self.wait(1)
+
+        # Switch focus to the tiles around the edges
+        self.play(
+            grid_container.animate.restore(),
+            square_tiles.animate.set_opacity(0.5),
+            FadeOut(square_tile_numbers)
+        , run_time = 2)
+        self.wait(2)
+
+        # Count the edge tiles
+        edge_tiles = all_tiles[16:]
+        edge_tile_numbers = VGroup(*[
+            Tex(str(i % 4 + 1), font_size = 100).set_color(BLACK).move_to(tile)
+            for i, tile in enumerate(edge_tiles)
+        ])
+        self.play(
+            AnimationGroup(*[
+                AnimationGroup(
+                    tile.animate(rate_func = there_and_back).set_color(YELLOW).scale(1.1).set_fill(opacity = 0.5),
+                    GrowFromCenter(num, run_time = 0.8)
+                )
+                for tile, num in zip(edge_tiles, edge_tile_numbers)
+            ], lag_ratio = 0.2)
+        )
+        self.wait(2)
+
+        # Generalize the edge tile count
+        self.play(
+            AnimationGroup(*[
+                num.animate.become(
+                    Tex(R"\cdots", font_size = 100).set_color(BLACK).move_to(tile) if i % 4 == 2 else
+                    Tex("k - 1", font_size = 100).set_color(BLACK).move_to(tile) if i % 4 == 3 else
+                    num
+                )
+                for i, (tile, num) in enumerate(zip(edge_tiles, edge_tile_numbers))
+            ]),
+            holes.animate.shift(0),
+        )
+        self.wait(1)
+
+        # Save the value 4(k - 1)
+        edge_tile_count = Tex(
+            R"+4(k - 1)"
+        )
+        edge_tile_count[1:].set_color(TEAL_D)
+        edge_tile_count.scale(
+            square_tile_count[0].get_height()/edge_tile_count[2].get_height()
+        ).next_to(
+            square_tile_count, DOWN, buff = 0.6
+        ).align_to(
+            square_tile_count[-2], RIGHT
+        )
+        edge_tile_count[0].shift(LEFT*0.16)
+        k_minus_1_copies = VGroup(*[edge_tile_count[3:-1].copy() for _ in range(4)])
+        self.play(
+            AnimationGroup(*[
+                TransformMatchingShapes(
+                    edge_tile_numbers[4*i + 3].copy(),
+                    k_minus_1_copies[i],
+                    path_arc = -PI*0.2
+                )
+                for i in range(4)
+            ])
+        , run_time = 1.5)
+        self.play(FadeIn(VGroup(edge_tile_count[:3], edge_tile_count[-1])))
+        self.play(FadeOut(k_minus_1_copies[1:]))
+        self.remove(k_minus_1_copies)
+        self.add(edge_tile_count)
+        self.wait(1)
+
+        # Focus on the formula
+        formula_group = VGroup(square_tile_count, edge_tile_count)
+        formula_group.generate_target()
+        formula_group.target.arrange(buff = 0.4)
+        formula_group.target[1].align_to(formula_group.target[0], DOWN)
+        formula_group.target.move_to(self.camera.frame).scale(1.2).shift(UP*5)
+        self.play(
+            FadeOut(k_slider_group, shift = LEFT*5),
+            FadeOut(VGroup(grid_container, edge_tile_numbers), shift = LEFT*20),
+            MoveToTarget(formula_group, path_arc = PI*0.2)
+        , run_time = 2)
+
+        # Expand it
+        expanded_version_intermediate = Tex("= k^2 - 2k + 1 + 4k - 4")
+        expanded_version_intermediate.scale(
+            formula_group[0][1].get_height()/expanded_version_intermediate[1].get_height()
+        ).next_to(
+            formula_group, DOWN, buff = 0.8
+        )
+        expanded_version_intermediate[:8].align_to(formula_group[0], RIGHT).set_color(TEAL_A)
+        expanded_version_intermediate[0].set_color(WHITE)
+        expanded_version_intermediate[8].match_x(formula_group[1][0])
+        expanded_version_intermediate[9:].align_to(formula_group[1][1:], LEFT).set_color(TEAL_D)
+        self.play(
+            AnimationGroup(
+                FadeIn(expanded_version_intermediate[0]),
+                TransformMatchingShapes(formula_group[0].copy(), expanded_version_intermediate[1:8], run_time = 1.2),
+                TransformMatchingShapes(formula_group[1][0].copy(), expanded_version_intermediate[8], run_time = 1),
+                TransformMatchingShapes(formula_group[1][1:].copy(), expanded_version_intermediate[9:], run_time = 1.2)
+            , lag_ratio = 0.2)
+        )
+        self.wait(1)
+
+        # Simplify
+        expanded_version = Tex("= k^2 + 2k - 3")
+        expanded_version.match_height(
+            expanded_version_intermediate
+        ).next_to(
+            expanded_version_intermediate, DOWN, buff = 0.8
+        ).align_to(
+            expanded_version_intermediate, LEFT
+        )
+        self.play(
+            AnimationGroup(
+                TransformMatchingShapes(expanded_version_intermediate[:3].copy(), expanded_version[:3], run_time = 1.2),
+                TransformMatchingShapes(
+                    VGroup(expanded_version_intermediate[3:6], expanded_version_intermediate[9:11]).copy(),
+                    expanded_version[3:6]
+                , run_time = 1.2),
+                TransformMatchingShapes(
+                    VGroup(expanded_version_intermediate[6:8], expanded_version_intermediate[11:13]).copy(),
+                    expanded_version[6:8]
+                , run_time = 1.2)
+            , lag_ratio = 0.2)
+        )
