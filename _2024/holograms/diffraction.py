@@ -2861,8 +2861,6 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         dash_circle = DashedVMobject(Arc(angle=(23 / 24) * TAU), num_dashes=12)
         dash_circle.set_stroke(YELLOW, 3)
         dash_circle.replace(obj_dot).set_width(0.2)
-        for part in dash_circle:
-            dash_circle.set_joint_type("no_joint")
         had_been_words = Text("Where the object\nhad been", font_size=36)
         had_been_words.next_to(dash_circle, UP, buff=0, aligned_edge=LEFT)
 

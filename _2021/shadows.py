@@ -1986,7 +1986,6 @@ class AmbientShapeRotationPreimage(ShadowScene):
                     1, rotated.get_points()
                 )
             )
-            shadow.refresh_triangulation()
             return shadow
 
         shadow.add_updater(update_shadow)
@@ -1998,7 +1997,6 @@ class AmbientShapeRotationPreimage(ShadowScene):
         def update_rotated(mob, dt):
             mob.set_points(preimage.get_points())
             mob.shift(fc)
-            mob.refresh_triangulation()
             axis = mob.axis_tracker.get_location()
             angle = mob.angle_tracker.get_value()
             speed = mob.rot_speed_tracker.get_value()

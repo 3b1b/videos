@@ -822,7 +822,6 @@ class SingleNullPointHairyBall(InteractiveScene):
         for lines in fields:
             lines.set_stroke(BLUE_E, opacity=0.75)
             lines.data['stroke_width'] = 0.5
-            lines.note_changed_data()
 
         q_marks = Tex(R"???", font_size=72)
         q_marks.rotate(-90 * DEG)
