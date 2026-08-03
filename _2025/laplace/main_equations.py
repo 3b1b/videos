@@ -188,7 +188,7 @@ class TranslateToNewLanguage(InteractiveScene):
             ])
             return min(100, result)
 
-        lt_graph = get_complex_graph(s_plane, Func, resolution=self.graph_resolution, face_sort_direction=DOWN)
+        lt_graph = get_complex_graph(s_plane, Func, resolution=self.graph_resolution)
         lt_graph.stretch(0.25, 2, about_point=s_plane.n2p(0))
         lt_graph.save_state()
         lt_graph.stretch(0, 2, about_point=s_plane.n2p(0))
@@ -2142,7 +2142,7 @@ class SimplePolesOverImaginaryLine(InteractiveScene):
             lambda s: (s**2) / (s**2 + omega**2 + 1e-6),
             resolution=(301, 301)
         )
-        graph[0].sort_faces_back_to_front(DOWN)
+        graph[0].set_sort_to_camera()
         graph[1].set_clip_plane(OUT, 0)
         self.add(s_plane, graph)
 

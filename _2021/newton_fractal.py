@@ -394,7 +394,7 @@ class SphereExample(Scene):
         sphere.move_to(axes.c2p(0, 0, 0))
         sphere.set_gloss(1.0)
         sphere.set_opacity(0.5)
-        sphere.sort_faces_back_to_front(DOWN)
+        sphere.set_sort_to_camera()
         mesh = SurfaceMesh(sphere, resolution=(21, 11))
         mesh.set_stroke(BLUE, 0.5, 0.5)
         sphere = Group(sphere, mesh)

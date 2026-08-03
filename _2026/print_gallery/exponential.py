@@ -50,7 +50,7 @@ def get_image_slice(image: TexturedSurface, delta_u: float, u_min: float):
     Think of 'u' as the coordinate for the horizontal direction.
     delta_u gives the width of the slice, u_min gives its position
     """
-    nu, nv = image.resolution
+    nu, nv = image.get_resolution()
     image_slice = TexturedSurface(
         Square3D(resolution=(int(delta_u * nu) + 1, nv)),
         image.texture_paths["LightTexture"]
