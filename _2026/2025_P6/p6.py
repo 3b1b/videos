@@ -672,3 +672,173 @@ class WindmillTilings(InteractiveScene):
                 , run_time = 1.2)
             , lag_ratio = 0.2)
         )
+
+
+class ErdosSzekeres(InteractiveScene):
+    def construct(self):
+        # Pop up n numbers
+        numbers_color = BLUE_B
+        values_messy = [9.99, 7, -2.71, 3.14, -4, 21, 42, 10, 0]
+        nums_messy = VGroup(*[
+            Tex(str(v), font_size = 43).set_color(numbers_color)
+            for v in values_messy
+        ]).arrange(buff = 0.9)
+
+        self.play(AnimationGroup(*[FadeIn(num, shift = UP*0.5) for num in nums_messy], lag_ratio = 0.2))
+        brace = Brace(nums_messy, DOWN)
+        label = brace.get_tex("n", font_size = 65).shift(DOWN*0.2)
+        self.play(GrowFromEdge(brace, UP), Write(label))
+
+        # Change them all into positive integers
+        values = [sorted(values_messy).index(v) + 1 for v in values_messy]
+        nums = VGroup(*[
+            Tex(str(v), font_size = 45).set_color(numbers_color)
+            for v in values
+        ]).arrange(buff = 0.9).match_width(nums_messy).align_to(nums_messy, DOWN)
+
+        self.play(AnimationGroup(*[ReplacementTransform(num_messy, num) for num_messy, num in zip(nums_messy, nums)]))
+        self.wait(2)
+        self.play(FadeOut(VGroup(brace, label)))
+
+        # Make the bar chart
+        base = Line(LEFT, RIGHT).set_width(nums.get_width()*1.1)
+        bars = VGroup(*[
+            Rectangle(
+                width = 2,
+                height = v,
+                fill_opacity = 1,
+                fill_color = BLUE,
+                stroke_width = 0
+            )
+            for v in values
+        ]).arrange(
+            buff = 0.5
+        ).set_width(
+            nums.get_width()*1.07
+        )
+        for bar in bars:
+            bar.align_to(base, DOWN)
+        chart = VGroup(base, bars)
+        chart.center()
+
+        for num, bar in zip(nums, bars):
+            num.generate_target()
+            num.target.next_to(bar, UP, buff = 0.3)
+            bar.save_state()
+            bar.stretch_to_fit_height(0.001).align_to(base, DOWN)
+        self.play(
+            ShowCreation(base, run_time = 1),
+            AnimationGroup(*[
+                AnimationGroup(
+                    MoveToTarget(num),
+                    bar.animate.restore()
+                , lag_ratio = 0.1)
+                for num, bar in zip(nums, bars)
+            ], run_time = 1.5)
+        )
+
+        # Show example increasing and decreasing subsequences
+        increasing_sequence_color = GREEN_D
+        decreasing_sequence_color = RED_D
+        increasing_sequence = VGroup(*[
+            bars[i]
+            for i in [2, 3, 5, 6]
+        ])
+        bars.save_state()
+        self.play(
+            AnimationGroup(*[
+                bar.animate.set_color(increasing_sequence_color)
+                for bar in increasing_sequence
+            ], lag_ratio = 0.3)
+        )
+        self.wait(1)
+        self.play(bars.animate.restore())
+        self.wait(1)
+        decreasing_sequence = VGroup(*[
+            bars[i]
+            for i in [0, 1, 3, 8]
+        ])
+        bars.save_state()
+        self.play(
+            AnimationGroup(*[
+                bar.animate.set_color(decreasing_sequence_color)
+                for bar in decreasing_sequence
+            ], lag_ratio = 0.3)
+        )
+        self.wait(1)
+        self.play(bars.animate.restore())
+        self.wait(1)
+
+        # Focus on one of the bars
+        focus_index = 3
+        focus_bar = bars[focus_index]
+        arrow = Arrow(ORIGIN, DOWN*1.5, thickness = 5).set_color(YELLOW).next_to(focus_bar, UP, buff = 1.5)
+        self.play(
+            AnimationGroup(*[
+                VGroup(bar, num).animate.set_opacity(0.1)
+                for bar, num in zip(bars[focus_index + 1:], nums[focus_index + 1:])
+            ]),
+            GrowArrow(arrow)
+        )
+
+        # Highlight its longest increasing and decreasing subsequences
+        increasing_sequence = VGroup(*[
+            bars[i]
+            for i in [2, 3]
+        ])
+        bars.save_state()
+        self.play(
+            AnimationGroup(*[
+                bar.animate.set_color(increasing_sequence_color)
+                for bar in increasing_sequence
+            ], lag_ratio = 0.3)
+        )
+        self.wait(1)
+        lis_text = Tex(R"\text{LIS}: 2", font_size = 110).set_color(increasing_sequence_color)
+        lds_text = Tex(R"\text{LDS}: 3", font_size = 110).set_color(decreasing_sequence_color)
+        lds_text.next_to(lis_text, DOWN, buff = 0.6).align_to(lis_text, LEFT)
+        VGroup(lis_text, lds_text).set_y(0).to_edge(RIGHT, buff = 2.5)
+        self.play(Write(lis_text), run_time = 1.5)
+        self.wait(1)
+
+
+        self.play(bars.animate.restore())
+        self.wait(1)
+        decreasing_sequence = VGroup(*[
+            bars[i]
+            for i in [0, 1, 3]
+        ])
+        bars.save_state()
+        self.play(
+            AnimationGroup(*[
+                bar.animate.set_color(decreasing_sequence_color)
+                for bar in decreasing_sequence
+            ], lag_ratio = 0.3)
+        )
+        self.wait(1)
+        self.play(Write(lds_text), run_time = 1.5)
+        self.wait(1)
+
+        self.play(bars.animate.restore())
+        self.wait(1)
+
+        # Save the values as a pair of numbers below the bar
+        pair = Tex("(2, 3)").next_to(focus_bar, DOWN)
+        pair[1].set_color(increasing_sequence_color)
+        pair[3].set_color(decreasing_sequence_color)
+        self.play(
+            AnimationGroup(
+                FadeOut(VGroup(lis_text[:4], lds_text[:4])),
+                AnimationGroup(
+                    AnimationGroup(
+                        TransformMatchingShapes(lis_text[-1], pair[1]),
+                        TransformMatchingShapes(lds_text[-1], pair[3])                        
+                    ),
+                    FadeIn(VGroup(pair[0], pair[2], pair[4]))
+                , lag_ratio = 0.7)
+            , lag_ratio = 0.4)
+        )
+        self.play(
+            FadeOut(arrow),
+            bars.animate.set_opacity(1)
+        )
