@@ -12,11 +12,21 @@ class Tile(Rectangle):
 class Hole(VGroup):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.square = Square(
-            side_length = 1, fill_opacity = 1, fill_color = "#444444", stroke_width = 4, stroke_color = YELLOW, stroke_opacity = 0.8
+        self.background = Square(
+            side_length = 1,
+            fill_opacity = 1,
+            fill_color = "#444444",
+            stroke_width = 0
         )
-        self.cross = Cross(self.square, stroke_width = 2).scale(0.95)
-        self.add(self.square, self.cross)
+        self.cross = Cross(self.background, stroke_width = 2).scale(0.95)
+        self.border = Square(
+            side_length = 1,
+            fill_opacity = 0,
+            stroke_width = 4,
+            stroke_color = YELLOW,
+            stroke_opacity = 1
+        )
+        self.add(self.background, self.cross, self.border)
         self.set_scale_stroke_with_zoom(False)
 
 class Grid(VGroup):
@@ -25,7 +35,7 @@ class Grid(VGroup):
         self.n = n
         self.vertical_lines = VGroup(*[Line(RIGHT*i, RIGHT*i + DOWN*n) for i in range(n + 1)])
         self.horizontal_lines = VGroup(*[Line(DOWN*i, DOWN*i + RIGHT*n) for i in range(n + 1)])
-        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 2, color = WHITE, opacity = 0.6)
+        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 4, color = WHITE, opacity = 0.7)
         self.grid.set_scale_stroke_with_zoom(True)
         
         self.tiles = VGroup()
@@ -61,22 +71,27 @@ class OptimalGrid(Grid):
         # Main tiles
         for i in range((k - 1)*(k - 1)):
             self.add_tile(k, k, k - 1 - i//(k - 1) + (i % (k - 1))*k, i + i//(k - 1) + 1)
+        self.main_tiles = VGroup(*self.tiles)
 
         # Upper-right tiles
         for j in range(1, k):
             self.add_tile(k, j, j*k, 0)
+        self.ur_tiles = VGroup(*self.tiles[len(self.main_tiles):])
 
         # Lower-right tiles
         for j in range(1, k):
             self.add_tile(j, k, n - j, j*k)
+        self.dr_tiles = VGroup(*self.tiles[len(self.main_tiles) + len(self.ur_tiles):])
 
         # Lower-left tiles
         for j in range(1, k):
             self.add_tile(k, j, n - (j + 1)*k, n - j)
+        self.dl_tiles = VGroup(*self.tiles[len(self.main_tiles) + len(self.ur_tiles) + len(self.dr_tiles):])
 
         # Upper-left tiles
         for j in range(1, k):
             self.add_tile(j, k, 0, n - (j + 1)*k)
+        self.ul_tiles = VGroup(*self.tiles[len(self.main_tiles) + len(self.ur_tiles) + len(self.dr_tiles) + len(self.dl_tiles):])
 
 class OptimalArrangementMotivation(InteractiveScene):
     def construct(self):
@@ -330,49 +345,48 @@ class WindmillTilings(InteractiveScene):
         min_k = 5
         max_k = 45
 
-        k_tracker = ValueTracker(min_k)
-        k_tracker.current_k = int(k_tracker.get_value())
-        grid_container = VGroup(OptimalGrid(k_tracker.current_k).align_to(ORIGIN, DL))
-        self.add(grid_container)
-        self.camera.frame.move_to(grid_container).set_height(grid_container.get_height()*1.4)
+        grid = OptimalGrid(min_k).align_to(ORIGIN, DL)
+        self.add(grid)
+        self.camera.frame.move_to(grid).set_height(grid.get_height()*1.4)
         self.camera.frame.save_state()
         self.wait(2)
 
         # Change it to k = 4
-        def update_grid(m):
-            new_k = round(m.get_value())
-            if abs(new_k - m.current_k) == 1:
-                m.current_k = new_k
-                grid_container.set_submobjects([OptimalGrid(m.current_k).align_to(ORIGIN, DL)])
-
-        k_tracker.add_updater(update_grid)
-
-        k_tracker.set_value(4)
-        k_tracker.update()
-        self.play(self.camera.frame.animate.move_to(grid_container).set_height(grid_container.get_height()*1.4))
+        new_grid = OptimalGrid(4).align_to(ORIGIN, DL)
+        self.play(
+            self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
+            ReplacementTransform(grid.grid, new_grid.grid),
+            ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
+            ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
+            ReplacementTransform(grid.dr_tiles, new_grid.dr_tiles),
+            ReplacementTransform(grid.dl_tiles, new_grid.dl_tiles),
+            ReplacementTransform(grid.ul_tiles, new_grid.ul_tiles),
+            ReplacementTransform(grid.holes, new_grid.holes)
+        )
+        grid = new_grid
         self.wait(2)
 
         # Show the new dimensions
-        x_length_label = Tex("16", font_size = 180).next_to(grid_container, DOWN, buff = 1)
-        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 1)
-        brace1 = Brace(grid_container, DOWN)
-        brace2 = Brace(grid_container, LEFT)
+        x_length_label = Tex("16", font_size = 180).next_to(grid, DOWN, buff = 1)
+        y_length_label = x_length_label.copy().next_to(grid, LEFT, buff = 1)
+        brace1 = Brace(grid, DOWN)
+        brace2 = Brace(grid, LEFT)
         self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), FadeIn(VGroup(x_length_label, y_length_label)))
         self.wait(2)
 
         # Count the holes
         circles = VGroup(*[
             Circle(radius = 0.8, stroke_width = 3, stroke_color = PURE_GREEN).move_to(hole)
-            for hole in grid_container[0][2]
+            for hole in grid.holes
         ])
         hole_numbers = VGroup(*[
             Tex(str(i + 1), font_size = 90).next_to(hole, UP, buff = 0.7)
-            for i, hole in enumerate(grid_container[0][2])
+            for i, hole in enumerate(grid.holes)
         ])
-        grid_container.save_state()
+        grid.save_state()
         self.play(
             AnimationGroup(
-                grid_container.animate.set_opacity(0.2),
+                grid.animate.set_opacity(0.2),
                 AnimationGroup(*[
                     AnimationGroup(
                         ShowCreation(circle),
@@ -380,33 +394,42 @@ class WindmillTilings(InteractiveScene):
                     , lag_ratio = 0.1)
                     for circle, num in zip(circles, hole_numbers)
                 ], lag_ratio = 0.05),
-                grid_container[0][2].animate.shift(0)
+                grid.holes.animate.shift(0)
             , lag_ratio = 0.1)
         )
         self.wait(2)
         self.play(
             FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2, circles, hole_numbers)),
-            grid_container.animate.restore()
+            grid.animate.restore()
         )
 
         # Change it to k = 3
-        k_tracker.set_value(3)
-        k_tracker.update()
-        self.play(self.camera.frame.animate.move_to(grid_container).set_height(grid_container.get_height()*1.4))
+        new_grid = OptimalGrid(3).align_to(ORIGIN, DL)
+        self.play(
+            self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
+            ReplacementTransform(grid.grid, new_grid.grid),
+            ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
+            ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
+            ReplacementTransform(grid.dr_tiles, new_grid.dr_tiles),
+            ReplacementTransform(grid.dl_tiles, new_grid.dl_tiles),
+            ReplacementTransform(grid.ul_tiles, new_grid.ul_tiles),
+            ReplacementTransform(grid.holes, new_grid.holes)
+        )
+        grid = new_grid
         self.wait(2)
 
         # Show the new dimensions again
-        x_length_label = Tex("9", font_size = 100).next_to(grid_container, DOWN, buff = 0.7)
-        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 0.7)
-        brace1 = Brace(grid_container, DOWN)
-        brace2 = Brace(grid_container, LEFT)
+        x_length_label = Tex("9", font_size = 100).next_to(grid, DOWN, buff = 0.7)
+        y_length_label = x_length_label.copy().next_to(grid, LEFT, buff = 0.7)
+        brace1 = Brace(grid, DOWN)
+        brace2 = Brace(grid, LEFT)
         self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), FadeIn(VGroup(x_length_label, y_length_label)))
         self.wait(2)
         self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
 
         # Generalize
-        tile = grid_container[0][1][2]
-        grid_container.save_state()
+        tile = grid[1][2]
+        grid.save_state()
         k_label_1 = Tex("k", font_size = 100).next_to(tile, DOWN, buff = 0.7)
         k_label_2 = k_label_1.copy().next_to(tile, LEFT, buff = 0.7)
         brace1 = Brace(tile, DOWN)
@@ -414,8 +437,9 @@ class WindmillTilings(InteractiveScene):
         self.play(
             AnimationGroup(
                 AnimationGroup(
-                    grid_container.animate.set_opacity(0.1),
-                    tile.animate.shift(0)
+                    grid.grid.animate.set_opacity(0.1),
+                    *[t.animate.set_opacity(0.1 if t != tile else t.get_opacity()) for t in grid.tiles],
+                    grid.holes.animate.set_opacity(0.1)
                 ),
                 AnimationGroup(
                     GrowFromEdge(brace1, UP),
@@ -426,6 +450,7 @@ class WindmillTilings(InteractiveScene):
         )
 
         # Add a slider
+        k_tracker = ValueTracker(3)
         k_slider = NumberLine(
             x_range = [0, 50, 10],
             width = 3,
@@ -442,11 +467,22 @@ class WindmillTilings(InteractiveScene):
         k_slider_group.fix_in_frame().set_anti_alias_width(0).to_corner(UL, buff = 0.2).set_scale_stroke_with_zoom(True)
         self.play(FadeIn(k_slider_group))
         self.play(
-            grid_container.animate.restore(),
+            grid.animate.restore(),
             FadeOut(VGroup(k_label_1, k_label_2, brace1, brace2))
         )
-        self.remove(grid_container)
-        self.add(grid_container, k_slider_group)
+
+        # Switch to dynamic updating
+        k_tracker.current_k = int(k_tracker.get_value())
+        grid_container = VGroup(OptimalGrid(k_tracker.current_k).align_to(ORIGIN, DL))
+        self.clear()
+        self.add(grid_container)
+        def update_grid(m):
+            new_k = round(m.get_value())
+            if abs(new_k - m.current_k) == 1:
+                m.current_k = new_k
+                grid_container.set_submobjects([OptimalGrid(m.current_k).align_to(ORIGIN, DL)])
+        k_tracker.add_updater(update_grid)
+
 
         # Increase k incrementally up to 45
         self.play(
