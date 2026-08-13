@@ -475,19 +475,23 @@ class WindmillTilings(InteractiveScene):
         k_tracker.current_k = int(k_tracker.get_value())
         grid_container = VGroup(OptimalGrid(k_tracker.current_k).align_to(ORIGIN, DL))
         self.clear()
-        self.add(grid_container)
+        self.add(grid_container, k_slider_group)
         def update_grid(m):
             new_k = round(m.get_value())
             if abs(new_k - m.current_k) == 1:
                 m.current_k = new_k
                 grid_container.set_submobjects([OptimalGrid(m.current_k).align_to(ORIGIN, DL)])
+
+            for hole in grid_container[0].holes:
+                hole.border.set_stroke(width = 10/new_k)
         k_tracker.add_updater(update_grid)
 
 
         # Increase k incrementally up to 45
+        next_k = 10
         self.play(
-            k_tracker.animate(run_time = 5).set_value(10),
-            self.camera.frame.animate(run_time = 5).reorient(-6, 30, 0, (np.float32(43.11), np.float32(30.29), np.float32(14.27)), 85.80)
+            k_tracker.animate(run_time = 5).set_value(next_k),
+            self.camera.frame.animate(run_time = 5).move_to([next_k*next_k*0.5, next_k*next_k*0.5, 0]).set_height(1.4*next_k*next_k)
         )
         k_tracker.suspend_updating()
         self.wait(2)
