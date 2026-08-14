@@ -5,9 +5,9 @@ from manim_imports_ext import *
 
 class Tile(Rectangle):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 4, stroke_color = WHITE, **kwargs)
+        super().__init__(*args, fill_opacity = 0.9, fill_color = BLUE, stroke_width = 8, stroke_color = WHITE, **kwargs)
         self.round_corners(0.05)
-        self.set_scale_stroke_with_zoom(False)
+        self.set_scale_stroke_with_zoom(True)
 
 class Hole(VGroup):
     def __init__(self, *args, **kwargs):
@@ -49,7 +49,7 @@ class Grid(VGroup):
         self.tiles = VGroup()
         self.holes = VGroup()
 
-        self.add(self.lines, self.tiles, self.holes)
+        self.add(self.background, self.lines, self.tiles, self.holes)
         self.center()
 
     def position_at_coordinates(self, tile_or_hole, i, j):
@@ -217,7 +217,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_holes], lag_ratio = 0.05))
         self.wait(9)
 
-        # Focus on one of them
+        # Focus on one of the tiles
         tiles[2].clear_updaters()
 
         def make_tracker_listener():
@@ -485,7 +485,7 @@ class WindmillTilings(InteractiveScene):
     def construct(self):
         # Add a grid with k = 5
         min_k = 5
-        max_k = 15
+        max_k = 45
 
         grid = OptimalGrid(min_k).align_to(ORIGIN, DL)
         self.add(grid)
@@ -495,8 +495,11 @@ class WindmillTilings(InteractiveScene):
 
         # Change it to k = 4
         new_grid = OptimalGrid(4).align_to(ORIGIN, DL)
+        grid.holes.set_z_index(100)
+        self.add(grid)
         self.play(
             self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
+            ReplacementTransform(grid.background, new_grid.background),
             ReplacementTransform(grid.lines, new_grid.lines),
             ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
             ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
@@ -528,15 +531,19 @@ class WindmillTilings(InteractiveScene):
         grid.save_state()
         self.play(
             AnimationGroup(
-                grid.animate.set_opacity(0.2),
+                AnimationGroup(
+                    grid.background.animate.set_opacity(0.2),
+                    grid.lines.animate.set_opacity(0.2),
+                    grid.tiles.animate.set_opacity(0.2),
+                    grid.holes.animate.shift(0)
+                ),
                 AnimationGroup(*[
                     AnimationGroup(
                         ShowCreation(circle),
                         FadeIn(num, shift = UP*0.4)
                     , lag_ratio = 0.1)
                     for circle, num in zip(circles, hole_numbers)
-                ], lag_ratio = 0.05),
-                grid.holes.animate.shift(0)
+                ], lag_ratio = 0.05)
             , lag_ratio = 0.1)
         )
         self.wait(2)
@@ -547,8 +554,11 @@ class WindmillTilings(InteractiveScene):
 
         # Change it to k = 3
         new_grid = OptimalGrid(3).align_to(ORIGIN, DL)
+        grid.holes.set_z_index(100)
+        self.add(grid)
         self.play(
             self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
+            ReplacementTransform(grid.background, new_grid.background),
             ReplacementTransform(grid.lines, new_grid.lines),
             ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
             ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
@@ -570,7 +580,7 @@ class WindmillTilings(InteractiveScene):
         self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
 
         # Generalize
-        tile = grid[1][2]
+        tile = grid.tiles[1]
         grid.save_state()
         k_label_1 = Tex("k", font_size = 100).next_to(tile, DOWN, buff = 0.7)
         k_label_2 = k_label_1.copy().next_to(tile, LEFT, buff = 0.7)
@@ -579,6 +589,7 @@ class WindmillTilings(InteractiveScene):
         self.play(
             AnimationGroup(
                 AnimationGroup(
+                    grid.background.animate.set_opacity(0.1),
                     grid.lines.animate.set_opacity(0.1),
                     *[t.animate.set_opacity(0.1 if t != tile else t.get_opacity()) for t in grid.tiles],
                     grid.holes.animate.set_opacity(0.1)
@@ -593,11 +604,17 @@ class WindmillTilings(InteractiveScene):
 
         # Add a slider
         k_tracker = ValueTracker(3)
+        x_range = [0, 50, 1]
         k_slider = NumberLine(
-            x_range = [0, 50, 10],
+            x_range = x_range,
             width = 3,
-            include_numbers = True
+            include_numbers = True,
+            numbers_to_exclude = [x for x in range(x_range[0], x_range[1], x_range[2]) if x % 10 != 0],
+            longer_tick_multiple = 10
         )
+        for i, tick in enumerate(k_slider.ticks):
+            if i % 10 != 0:
+                tick.scale(0.4).set_stroke(width = 1.5)
         k_display = Tex("k = 2").next_to(k_slider, UP, buff = 0.7)
         k_value = k_display.make_number_changeable("2")
         k_value.add_updater(lambda m: m.set_value(round(k_tracker.get_value())))
@@ -618,27 +635,35 @@ class WindmillTilings(InteractiveScene):
             new_k = round(k_tracker.get_value())
             if new_k - grid.k != 0:
                 grid.k = new_k
-                grid.set_submobjects(OptimalGrid(new_k).align_to(ORIGIN, DL))
+                grid.become(OptimalGrid(new_k).align_to(ORIGIN, DL))
 
             for hole in grid.holes:
-                hole.border.set_stroke(width = 10/new_k)
+                hole.border.set_stroke(width = 10/new_k, color = interpolate_color(YELLOW, RED, min(1, (new_k - 3)/7)))
         grid.add_updater(update_grid)
 
 
-        # Increase k incrementally up to 45
+        # Increase k to 10
         next_k = 10
         self.play(
             k_tracker.animate(run_time = 5).set_value(next_k),
             self.camera.frame.animate(run_time = 5).move_to([next_k*next_k*0.5, next_k*next_k*0.5, 0]).set_height(1.4*next_k*next_k)
         )
-        k_tracker.suspend_updating()
+        grid.suspend_updating()
+
+        # Show the new size: k^2 x k^2
+        x_length_label = Tex(R"k^2", font_size = 900).next_to(grid, DOWN, buff = 5)
+        y_length_label = x_length_label.copy().next_to(grid, LEFT, buff = 5)
+        self.play(Write(x_length_label), Write(y_length_label), run_time = 2)
         self.wait(2)
-        k_tracker.resume_updating()
+        self.play(FadeOut(VGroup(brace1, brace2, x_length_label, y_length_label)))
+
+        # Increase k to 45
+        grid.resume_updating()
         self.play(
             k_tracker.animate(run_time = 5).set_value(max_k),
             self.camera.frame.animate(run_time = 5).reorient(-13, 40, 0, (np.float32(654.42), np.float32(252.66), np.float32(461.53)), 1315.09)
         )
-        k_tracker.suspend_updating()
+        grid.suspend_updating()
         self.wait(2)
 
         # Show the new size
@@ -670,33 +695,66 @@ class WindmillTilings(InteractiveScene):
         self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
 
         # Pan the camera around
+        self.add(k_slider_group)
+        grid.save_state()
+        grid.holes.set_scale_stroke_with_zoom(False)
+        grid.resume_updating()
         self.play(
-            self.camera.frame.animate.reorient(7, 46, 0, (np.float32(1110.17), np.float32(171.23), np.float32(372.81)), 1109.67)
+            self.camera.frame.animate.reorient(7, 46, 0, (1110.17, 171.23, 372.81), 1109.67)
         , run_time = 10)
         self.play(
-            self.camera.frame.animate.reorient(-24, 62, 0, (np.float32(215.15), np.float32(285.09), np.float32(-107.24)), 249.79)
+            # grid.tiles.animate.set_stroke(width = 1),
+            self.camera.frame.animate.reorient(-24, 62, 0, (214.22, 294.13, -91.55), 379.46)
         , run_time = 10)
         self.play(
-            self.camera.frame.animate.reorient(-27, 65, 0, (np.float32(631.07), np.float32(270.25), np.float32(216.58)), 180.95)
-        , run_time = 10)
-        self.play(
-            self.camera.frame.animate.reorient(-18, 58, 0, (np.float32(973.79), np.float32(650.28), np.float32(-62.57)), 1754.60)
+            self.camera.frame.animate.reorient(-27, 65, 0, (631.07, 270.25, 216.58), 180.95)
         , run_time = 10)
 
-        # Set k back to 5
-        self.wait(2)
-        k_tracker.resume_updating()
+        # Reset the camera to the original position and show the labels for k
+        tile = grid.tiles[1596]
+        grid.save_state()
+        k_label_1 = Tex("k", font_size = 5000).next_to(tile, DOWN, buff = 20)
+        k_label_2 = k_label_1.copy().next_to(tile, LEFT, buff = 20)
+
+        x_length_label = Tex(R"k^2", font_size = 12000).next_to(grid, DOWN, buff = 50)
+        y_length_label = x_length_label.copy().next_to(grid, LEFT, buff = 50)
+        self.add(x_length_label, y_length_label)
+
+        k_slider_group.set_z_index(1000)
+        self.add(k_slider_group)
         self.play(
-            k_tracker.animate(run_time = 5).set_value(5),
-            self.camera.frame.animate(run_time = 5).restore()
+            AnimationGroup(
+                self.camera.frame.animate(run_time = 10).reorient(-18, 58, 0, (973.79, 650.28, -62.57), 1754.60),
+                AnimationGroup(
+                    AnimationGroup(
+                        grid.background.animate.set_opacity(0.1),
+                        grid.lines.animate.set_opacity(0.1),
+                        *[t.animate.set_opacity(0.1 if t != tile else t.get_opacity()) for t in grid.tiles],
+                        grid.holes.animate.set_opacity(0.1)
+                    ),
+                    FadeIn(VGroup(k_label_1, k_label_2))
+                , lag_ratio = 0.4, run_time = 2.5)
+            , lag_ratio = 0.15)
         )
-        k_tracker.suspend_updating()
+        grid.holes.set_scale_stroke_with_zoom(True)
+
+        # Set k back to 5
+        self.play(
+            grid.animate.restore(),
+            FadeOut(VGroup(k_label_1, k_label_2, x_length_label, y_length_label))
+        )
+        self.play(
+            k_tracker.animate(run_time = 2).set_value(5),
+            self.camera.frame.animate(run_time = 2).restore()
+        )
+        grid.suspend_updating()
         self.wait(1)
 
         # Count the number of square tiles
         new_grid = OptimalGrid(k = 5).match_width(grid).move_to(grid)
         self.remove(grid)
         grid = new_grid
+        update_grid(grid)
         self.add(grid)
         main_tiles = grid.main_tiles
         edge_tiles = VGroup(
@@ -914,27 +972,31 @@ class ErdosSzekeres(InteractiveScene):
         bar_color = BLUE
         column_highlights = VGroup(*[
             VGroup(*[
-                Tile(1, 1).match_width(grid.holes[0]).set_color(bar_color) for _ in range(height)
-            ]).arrange(UP, buff = 0).match_x(hole).align_to(hole, UP)
+                Tile(1, 1).match_width(grid.holes[0])
+                    .set_fill(bar_color, opacity=0)
+                    .set_stroke(bar_color, opacity=0)
+                for _ in range(height)
+            ]).arrange(UP, buff=0).match_x(hole).align_to(hole, UP)
             for height, hole in zip(values, grid.holes)
         ])
-        column_highlights.set_opacity(0)
         self.add(column_highlights)
         self.play(
+            grid.background.animate.fade(0.9),
+            grid.lines.animate.fade(0.9),
             grid.tiles.animate.fade(0.9),
             AnimationGroup(*[
                 AnimationGroup(
                     Succession(
                         AnimationGroup(*[
-                            square.animate(rate_func = there_and_back).set_opacity(1).set_color(GREEN)
+                            square.copy().animate(rate_func=there_and_back).set_fill(GREEN, opacity=1)
                             for square in column
-                        ], lag_ratio = 0.1),
+                        ], lag_ratio=0.1),
                         FadeOut(column)
-                    ) if len(column) > 0 else Point().animate.shift(0),
-                    FadeIn(num, shift = UP*0.2, run_time = 0.7)
-                , lag_ratio = 0.1)
+                    ),
+                    FadeIn(num, shift=UP*0.2, run_time=0.7)
+                , lag_ratio=0.1)
                 for num, column in zip(nums, column_highlights)
-            ], lag_ratio = 0.2)
+            ], lag_ratio=0.2)
         )
         self.remove(column_highlights)
 
