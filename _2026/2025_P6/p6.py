@@ -35,13 +35,21 @@ class Grid(VGroup):
         self.n = n
         self.vertical_lines = VGroup(*[Line(RIGHT*i, RIGHT*i + DOWN*n) for i in range(n + 1)])
         self.horizontal_lines = VGroup(*[Line(DOWN*i, DOWN*i + RIGHT*n) for i in range(n + 1)])
-        self.grid = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 4, color = WHITE, opacity = 0.7)
-        self.grid.set_scale_stroke_with_zoom(True)
+        self.lines = VGroup(self.vertical_lines, self.horizontal_lines).set_stroke(width = 4, color = WHITE, opacity = 0.7)
+        self.lines.set_scale_stroke_with_zoom(True)
         
+        self.background = Square(
+            side_length = self.horizontal_lines.get_width(),
+            fill_opacity = 1,
+            fill_color = GREY_D,
+            stroke_width = 0
+        ).move_to(
+            self.lines
+        )
         self.tiles = VGroup()
         self.holes = VGroup()
 
-        self.add(self.grid, self.tiles, self.holes)
+        self.add(self.lines, self.tiles, self.holes)
         self.center()
 
     def position_at_coordinates(self, tile_or_hole, i, j):
@@ -61,6 +69,7 @@ class Grid(VGroup):
 
 class OptimalGrid(Grid):
     def __init__(self, k, *args, **kwargs):
+        self.k = k
         n = k*k
         super().__init__(n, *args, **kwargs)
 
@@ -476,7 +485,7 @@ class WindmillTilings(InteractiveScene):
     def construct(self):
         # Add a grid with k = 5
         min_k = 5
-        max_k = 45
+        max_k = 15
 
         grid = OptimalGrid(min_k).align_to(ORIGIN, DL)
         self.add(grid)
@@ -488,7 +497,7 @@ class WindmillTilings(InteractiveScene):
         new_grid = OptimalGrid(4).align_to(ORIGIN, DL)
         self.play(
             self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
-            ReplacementTransform(grid.grid, new_grid.grid),
+            ReplacementTransform(grid.lines, new_grid.lines),
             ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
             ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
             ReplacementTransform(grid.dr_tiles, new_grid.dr_tiles),
@@ -540,7 +549,7 @@ class WindmillTilings(InteractiveScene):
         new_grid = OptimalGrid(3).align_to(ORIGIN, DL)
         self.play(
             self.camera.frame.animate(run_time = 1).move_to(new_grid).set_height(new_grid.get_height()*1.4),
-            ReplacementTransform(grid.grid, new_grid.grid),
+            ReplacementTransform(grid.lines, new_grid.lines),
             ReplacementTransform(grid.main_tiles, new_grid.main_tiles),
             ReplacementTransform(grid.ur_tiles, new_grid.ur_tiles),
             ReplacementTransform(grid.dr_tiles, new_grid.dr_tiles),
@@ -570,7 +579,7 @@ class WindmillTilings(InteractiveScene):
         self.play(
             AnimationGroup(
                 AnimationGroup(
-                    grid.grid.animate.set_opacity(0.1),
+                    grid.lines.animate.set_opacity(0.1),
                     *[t.animate.set_opacity(0.1 if t != tile else t.get_opacity()) for t in grid.tiles],
                     grid.holes.animate.set_opacity(0.1)
                 ),
@@ -605,19 +614,15 @@ class WindmillTilings(InteractiveScene):
         )
 
         # Switch to dynamic updating
-        k_tracker.current_k = int(k_tracker.get_value())
-        grid_container = VGroup(OptimalGrid(k_tracker.current_k).align_to(ORIGIN, DL))
-        self.clear()
-        self.add(grid_container, k_slider_group)
-        def update_grid(m):
-            new_k = round(m.get_value())
-            if abs(new_k - m.current_k) == 1:
-                m.current_k = new_k
-                grid_container.set_submobjects([OptimalGrid(m.current_k).align_to(ORIGIN, DL)])
+        def update_grid(grid):
+            new_k = round(k_tracker.get_value())
+            if new_k - grid.k != 0:
+                grid.k = new_k
+                grid.set_submobjects(OptimalGrid(new_k).align_to(ORIGIN, DL))
 
-            for hole in grid_container[0].holes:
+            for hole in grid.holes:
                 hole.border.set_stroke(width = 10/new_k)
-        k_tracker.add_updater(update_grid)
+        grid.add_updater(update_grid)
 
 
         # Increase k incrementally up to 45
@@ -637,10 +642,10 @@ class WindmillTilings(InteractiveScene):
         self.wait(2)
 
         # Show the new size
-        x_length_label = Tex(R"2025\\=45^2", font_size = 12000).next_to(grid_container, DOWN, buff = 50)
-        y_length_label = x_length_label.copy().next_to(grid_container, LEFT, buff = 60)
-        brace1 = Brace(grid_container, DOWN)
-        brace2 = Brace(grid_container, LEFT)
+        x_length_label = Tex(R"2025\\=45^2", font_size = 12000).next_to(grid, DOWN, buff = 50)
+        y_length_label = x_length_label.copy().next_to(grid, LEFT, buff = 60)
+        brace1 = Brace(grid, DOWN)
+        brace2 = Brace(grid, LEFT)
         self.play(GrowFromEdge(brace1, UP), GrowFromEdge(brace2, RIGHT), Write(x_length_label["2025"]), Write(y_length_label["2025"]))
         self.wait(2)
         self.play(
@@ -689,22 +694,26 @@ class WindmillTilings(InteractiveScene):
         self.wait(1)
 
         # Count the number of square tiles
-        main_tiles = grid_container[0].main_tiles
+        new_grid = OptimalGrid(k = 5).match_width(grid).move_to(grid)
+        self.remove(grid)
+        grid = new_grid
+        self.add(grid)
+        main_tiles = grid.main_tiles
         edge_tiles = VGroup(
-            *grid_container[0].ul_tiles,
-            *grid_container[0].ur_tiles,
-            *grid_container[0].dr_tiles,
-            *grid_container[0].dl_tiles
+            *grid.ul_tiles,
+            *grid.ur_tiles,
+            *grid.dr_tiles,
+            *grid.dl_tiles
         )
         main_tile_numbers = VGroup(*[
             Tex(str(i + 1), font_size = 150).set_color(BLACK).move_to(tile)
             for i, tile in enumerate(main_tiles)
         ])
-        grid_container.save_state()
-        holes = grid_container[0].holes
+        grid.save_state()
+        holes = grid.holes
         holes.add_updater(lambda m: self.bring_to_front(m))
         self.play(
-            VGroup(grid_container[0].grid, *[tile for tile in edge_tiles]).animate.set_opacity(0.1),
+            VGroup(grid.lines, *[tile for tile in edge_tiles]).animate.set_opacity(0.1),
             AnimationGroup(*[
                 AnimationGroup(
                     tile.animate(rate_func = there_and_back).set_color(YELLOW).scale(1.1).set_fill(opacity = 0.5),
@@ -732,9 +741,9 @@ class WindmillTilings(InteractiveScene):
         main_tile_count = main_tile_numbers[-1].copy().scale(
             1.9
         ).align_to(
-            grid_container, UP
+            grid, UP
         ).set_x(
-            0.5*(grid_container.get_right()[0] + self.camera.frame.get_right()[0])
+            0.5*(grid.get_right()[0] + self.camera.frame.get_right()[0])
         ).set_color(
             TEAL_A
         )
@@ -744,7 +753,7 @@ class WindmillTilings(InteractiveScene):
         # Switch focus to the tiles around the edges
         holes.resume_updating()
         self.play(
-            grid_container.animate.restore(),
+            grid.animate.restore(),
             main_tiles.animate.set_opacity(0.5),
             FadeOut(main_tile_numbers)
         , run_time = 2)
@@ -813,14 +822,14 @@ class WindmillTilings(InteractiveScene):
         # Focus on the formula
         formula_group = VGroup(main_tile_count, edge_tile_count)
         self.clear()
-        self.add(k_slider_group, grid_container, edge_tile_numbers, formula_group)
+        self.add(k_slider_group, grid, edge_tile_numbers, formula_group)
         formula_group.generate_target()
         formula_group.target.arrange(buff = 0.4)
         formula_group.target.match_y(self.camera.frame).shift(UP*4).align_to(formula_group, RIGHT).shift(LEFT)
         formula_group.target[1].align_to(formula_group.target[0], DOWN)
         self.play(
             FadeOut(k_slider_group, shift = LEFT*3),
-            VGroup(grid_container, edge_tile_numbers).animate.shift(LEFT*14),
+            VGroup(grid, edge_tile_numbers).animate.shift(LEFT*14),
             MoveToTarget(formula_group, path_arc = PI*0.2)
         , run_time = 2)
 
