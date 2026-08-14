@@ -98,11 +98,17 @@ class OptimalArrangementMotivation(InteractiveScene):
         # Add a bunch of tiles
         self.camera.frame.save_state()
         self.camera.frame.scale(2)
-        tiles = VGroup(*[Tile(random.randint(2, 4), random.randint(2, 4)) for _ in range(5)])
-        tiles[0].shift(LEFT*8 + UP*5)
-        tiles[1].shift(RIGHT*8 + UP*5)
-        tiles[3].shift(LEFT*8 + DOWN*5)
-        tiles[4].shift(RIGHT*8 + DOWN*5)
+        tiles = VGroup(
+            Tile(4, 2),
+            Tile(2, 3),
+            Tile(4, 3),
+            Tile(1, 5),
+            Tile(3, 3)
+        )
+        tiles[0].shift(LEFT*8 + UP*4.5)
+        tiles[1].shift(RIGHT*8 + UP*4.5)
+        tiles[3].shift(LEFT*8 + DOWN*3.5)
+        tiles[4].shift(RIGHT*8 + DOWN*4.5)
 
         for i, tile in enumerate(tiles):
             tile.w_val = tile.get_width()
@@ -325,7 +331,7 @@ class OptimalArrangementMotivation(InteractiveScene):
             VGroup(tile_above, hole_above).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
         , run_time = 2.5)
         self.wait(2)
-        new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
+        new_tile = Tile(5, 3).align_to(hole.get_corner(DR), DL)
         self.play(FadeIn(new_tile, shift = LEFT))
         right_hole.clear_updaters()
 
@@ -392,6 +398,29 @@ class OptimalArrangementMotivation(InteractiveScene):
 
         # Focus on one of the puzzle pieces
         puzzle_piece = VGroup(square_tiles[2], middle_hole, inner_holes[2], outer_holes[2], inner_holes[3])
+
+        time_start = self.time
+        single_phase = 0
+        single_amplitude = math.radians(4.5)
+        single_frequency = 1.1
+
+        single_init_angle = single_amplitude * math.sin(single_phase)
+        puzzle_piece.angle_tracker = ValueTracker(single_init_angle)
+        puzzle_piece.current_angle = single_init_angle
+        puzzle_piece.rotate(single_init_angle)
+
+        def make_piece_updater(p, amp, freq):
+            def updater(m, dt):
+                t = self.time - time_start
+                target_angle = amp * math.sin(freq * t + p)
+                m.angle_tracker.set_value(target_angle)
+                
+                d_theta = target_angle - m.current_angle
+                m.rotate(d_theta)
+                m.current_angle = target_angle
+            return updater
+
+        puzzle_piece.add_updater(make_piece_updater(single_phase, single_amplitude, single_frequency))
         self.play(
             FadeOut(
                 VGroup(
@@ -403,8 +432,7 @@ class OptimalArrangementMotivation(InteractiveScene):
             ),
             self.camera.frame.animate.scale(0.9).move_to(puzzle_piece),
             puzzle_piece.animate.shift(0)
-        , run_time = 3)
-        self.wait(2)
+        , run_time = 2)
 
         # Show floating copies of the puzzle piece
         self.camera.frame.center()
@@ -416,9 +444,9 @@ class OptimalArrangementMotivation(InteractiveScene):
         puzzle_pieces[3].move_to(LEFT*7.5 + DOWN*4.5)
         puzzle_pieces[4].move_to(RIGHT*7.5 + DOWN*4.5)
 
-        time_start = self.time
-        for i, piece in enumerate(puzzle_pieces):
-            phase = random.uniform(0, 2 * math.pi) if i > 0 else 0
+        for i in range(1, len(puzzle_pieces)):
+            piece = puzzle_pieces[i]
+            phase = random.uniform(0, 2 * math.pi)
             amplitude = math.radians(random.uniform(3, 6))
             frequency = random.uniform(1, 1.2)
 
@@ -426,17 +454,6 @@ class OptimalArrangementMotivation(InteractiveScene):
             piece.angle_tracker = ValueTracker(init_angle)
             piece.current_angle = init_angle
             piece.rotate(init_angle)
-
-            def make_piece_updater(p, amp, freq):
-                def updater(m, dt):
-                    t = self.time - time_start
-                    target_angle = amp * math.sin(freq * t + p)
-                    m.angle_tracker.set_value(target_angle)
-                    
-                    d_theta = target_angle - m.current_angle
-                    m.rotate(d_theta)
-                    m.current_angle = target_angle
-                return updater
 
             piece.add_updater(make_piece_updater(phase, amplitude, frequency))
         
@@ -451,7 +468,9 @@ class OptimalArrangementMotivation(InteractiveScene):
             ),
             run_time=2.5
         )
-        self.wait(2)
+        self.wait(10)
+
+
 
 class WindmillTilings(InteractiveScene):
     def construct(self):
