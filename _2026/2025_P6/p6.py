@@ -269,6 +269,7 @@ class OptimalArrangementMotivation(InteractiveScene):
 
         # Add tiles above and below the hole
         right_hole = holes[3]
+        right_hole.add_updater(lambda m: self.bring_to_front(m))
         tile_above = Tile(3, 5).align_to(right_hole.get_corner(UL), DL)
         tile_below = Tile(4, 5).align_to(right_hole.get_corner(DL), UL)
         self.add(tile_above, tile_below, holes)
@@ -276,33 +277,34 @@ class OptimalArrangementMotivation(InteractiveScene):
         self.wait(2)
 
         # Add holes to those tiles
-        extra_holes_above = VGroup(*[
+        inner_holes_above = VGroup(*[
             Hole().next_to(tile_above, [LEFT, UP, RIGHT][i], buff = 0).shift(UP*0.8 if i == 0 else 0)
             for i in range(3)
         ])
-        extra_holes_below = VGroup(*[
+        inner_holes_below = VGroup(*[
             Hole().next_to(tile_below, [LEFT, RIGHT, DOWN][i], buff = 0).shift(DOWN*0.8 if i == 0 else 0)
             for i in range(3)
         ])
-        hole_above = extra_holes_above[0]
-        hole_below = extra_holes_below[0]
-        shuffled_extra_holes = list(extra_holes_above) + list(extra_holes_below)
-        random.shuffle(shuffled_extra_holes)
-        self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_extra_holes], lag_ratio = 0.2))
+        hole_above = inner_holes_above[0]
+        hole_below = inner_holes_below[0]
+        shuffled_inner_holes = list(inner_holes_above) + list(inner_holes_below)
+        random.shuffle(shuffled_inner_holes)
+        self.play(AnimationGroup(*[FadeIn(hole) for hole in shuffled_inner_holes], lag_ratio = 0.2))
         self.wait(2)
         dashed_line = DashedLine(hole_below, hole_above, dash_length = 0.2, stroke_width = 6).set_color(PURE_RED)
         self.play(
             ShowCreation(dashed_line),
-            extra_holes_above[1:].animate.set_opacity(0.2),
-            extra_holes_below[1:].animate.set_opacity(0.2)
+            inner_holes_above[1:].animate.set_opacity(0.2),
+            inner_holes_below[1:].animate.set_opacity(0.2)
         )
         self.wait(3)
 
         # Slide the hole up and down the side of the tile
-        extra_tiles_and_holes_group = VGroup(tile_above, tile_below, extra_holes_above, extra_holes_below, dashed_line)
-        self.play(VGroup(right_hole, extra_tiles_and_holes_group).animate.shift(UP*0.3), run_time = 3)
-        self.play(VGroup(right_hole, extra_tiles_and_holes_group).animate.shift(DOWN*0.6), run_time = 3)
-        self.play(FadeOut(VGroup(holes[:3], extra_holes_above[1:], extra_holes_below[1:])))
+        extra_tiles_and_holes_group = VGroup(tile_above, tile_below, inner_holes_above, inner_holes_below, dashed_line)
+        right_hole.clear_updaters()
+        self.play(VGroup(extra_tiles_and_holes_group, right_hole).animate.shift(UP*0.3), run_time = 3)
+        self.play(VGroup(extra_tiles_and_holes_group, right_hole).animate.shift(DOWN*0.6), run_time = 3)
+        self.play(FadeOut(VGroup(holes[:3], inner_holes_above[1:], inner_holes_below[1:])))
         self.wait(1)
         holes_group = VGroup(right_hole, hole_above, hole_below, dashed_line)
         holes_group.generate_target()
@@ -317,27 +319,139 @@ class OptimalArrangementMotivation(InteractiveScene):
             MoveToTarget(tile_below),
             self.camera.frame.animate.move_to(holes_group.target[0])
         , run_time = 3)
-        new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
+        right_hole.add_updater(lambda m: self.bring_to_front(m))
         self.play(
             FadeOut(dashed_line, shift = LEFT*1.7),
             VGroup(tile_above, hole_above).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
         , run_time = 2.5)
         self.wait(2)
-        self.play(FadeIn(new_tile, shift = LEFT), ShrinkToCenter(hole_above), ShrinkToCenter(hole_below))
+        new_tile = Tile(5, 2).align_to(hole.get_corner(DR), DL)
+        self.play(FadeIn(new_tile, shift = LEFT))
+        right_hole.clear_updaters()
+
+        # Add some extra holes around the outer tiles
+        outer_tiles = VGroup(tile, tile_above, new_tile, tile_below)
+        outer_tiles.add_updater(lambda m: self.bring_to_back(m))
+        middle_hole = right_hole
+        inner_holes = VGroup(*[
+            Hole().align_to(outer_tile.get_corner(direction1), direction2)
+            for outer_tile, direction1, direction2 in zip(outer_tiles, [DR, DL, UL, UR], [UR, DR, DL, UL])
+        ])
+        self.play(
+            ReplacementTransform(hole_below, inner_holes[0]),
+            ReplacementTransform(hole_above, inner_holes[1]),
+            AnimationGroup(*[
+                FadeIn(hole, shift = direction)
+                for hole, direction in zip(inner_holes[2:], [DL, UL])
+            ]
+            , lag_ratio = 0.1)
+        , run_time = 1.5)
+        outer_holes = VGroup(*[
+            Hole().align_to(outer_tile.get_corner(direction1), direction2)
+            for outer_tile, direction1, direction2 in zip(outer_tiles, [DL, UL, UR, DR], [DR, DL, UL, UR])
+        ])
+        self.play(AnimationGroup(*[FadeIn(hole) for hole in outer_holes], lag_ratio = 0.1))
+        self.wait(0.5)
+        checkmarks = VGroup(*[
+            Checkmark().scale(1.5).set_color(PURE_GREEN).move_to(hole)
+            for hole in [middle_hole] + list(inner_holes) + list(outer_holes)
+        ])
+        self.play(AnimationGroup(*[GrowFromCenter(checkmark) for checkmark in checkmarks], lag_ratio = 0.2))
+        self.wait(2)
+        self.play(FadeOut(checkmarks))
 
         # Change the tiles into squares
-        hole = right_hole
-        tiles = VGroup(*[Tile(3, 3) for _ in range(4)])
-        tiles[0].align_to(tile, UR)
-        tiles[1].align_to(tile_above, DR)
-        tiles[2].align_to(new_tile, DL)
-        tiles[3].align_to(tile_below, UL)
+        square_tiles = VGroup(*[Tile(3, 3) for _ in range(4)])
+        for square_tile, outer_tile, direction in zip(square_tiles, outer_tiles, [UR, DR, DL, UL]):
+            square_tile.align_to(outer_tile, direction)
+        for hole, square_tile, direction1, direction2 in zip(inner_holes, square_tiles, [DR, DL, UL, UR], [UR, DR, DL, UL]):
+            hole.generate_target()
+            hole.target.align_to(square_tile.get_corner(direction1), direction2)
+        for hole, square_tile, direction1, direction2 in zip(outer_holes, square_tiles, [DL, UL, UR, DR], [DR, DL, UL, UR]):
+            hole.generate_target()
+            hole.target.align_to(square_tile.get_corner(direction1), direction2)
+        middle_hole.add_updater(lambda m: self.bring_to_front(m))
         self.play(
             AnimationGroup(*[
-                ReplacementTransform(tile1, tile2)
-                for tile1, tile2 in zip([tile, tile_above, new_tile, tile_below], tiles)
+                ReplacementTransform(outer_tile, square_tile)
+                for outer_tile, square_tile in zip(outer_tiles, square_tiles)
+            ]),
+            AnimationGroup(*[
+                MoveToTarget(hole)
+                for hole in inner_holes
+            ]),
+            AnimationGroup(*[
+                MoveToTarget(hole)
+                for hole in outer_holes
             ])
         , run_time = 2)
+        middle_hole.clear_updaters()
+        self.clear()
+        self.add(square_tiles, middle_hole, inner_holes, outer_holes)
+        self.wait(2)
+
+        # Focus on one of the puzzle pieces
+        puzzle_piece = VGroup(square_tiles[2], middle_hole, inner_holes[2], outer_holes[2], inner_holes[3])
+        self.play(
+            FadeOut(
+                VGroup(
+                    square_tiles[:2], square_tiles[3],
+                    inner_holes[:2],
+                    outer_holes[:2], outer_holes[3]
+                ),
+                shift = DL*2
+            ),
+            self.camera.frame.animate.scale(0.9).move_to(puzzle_piece),
+            puzzle_piece.animate.shift(0)
+        , run_time = 3)
+        self.wait(2)
+
+        # Show floating copies of the puzzle piece
+        self.camera.frame.center()
+        puzzle_piece.center()
+        
+        puzzle_pieces = VGroup(puzzle_piece, *[puzzle_piece.copy() for _ in range(4)])
+        puzzle_pieces[1].move_to(LEFT*7.5 + UP*4.5)
+        puzzle_pieces[2].move_to(RIGHT*7.5 + UP*4.5)
+        puzzle_pieces[3].move_to(LEFT*7.5 + DOWN*4.5)
+        puzzle_pieces[4].move_to(RIGHT*7.5 + DOWN*4.5)
+
+        time_start = self.time
+        for i, piece in enumerate(puzzle_pieces):
+            phase = random.uniform(0, 2 * math.pi) if i > 0 else 0
+            amplitude = math.radians(random.uniform(3, 6))
+            frequency = random.uniform(1, 1.2)
+
+            init_angle = amplitude * math.sin(phase)
+            piece.angle_tracker = ValueTracker(init_angle)
+            piece.current_angle = init_angle
+            piece.rotate(init_angle)
+
+            def make_piece_updater(p, amp, freq):
+                def updater(m, dt):
+                    t = self.time - time_start
+                    target_angle = amp * math.sin(freq * t + p)
+                    m.angle_tracker.set_value(target_angle)
+                    
+                    d_theta = target_angle - m.current_angle
+                    m.rotate(d_theta)
+                    m.current_angle = target_angle
+                return updater
+
+            piece.add_updater(make_piece_updater(phase, amplitude, frequency))
+        
+        shuffled_pieces = list(puzzle_pieces)
+        random.shuffle(shuffled_pieces)
+
+        self.play(
+            self.camera.frame.animate.scale(1.35),
+            AnimationGroup(
+                *[GrowFromCenter(piece) for piece in shuffled_pieces if piece != puzzle_piece],
+                lag_ratio=0.25
+            ),
+            run_time=2.5
+        )
+        self.wait(2)
 
 class WindmillTilings(InteractiveScene):
     def construct(self):
@@ -556,25 +670,31 @@ class WindmillTilings(InteractiveScene):
         self.wait(1)
 
         # Count the number of square tiles
-        all_tiles = grid_container[0][1]
-        square_tiles = all_tiles[:16]
-        square_tile_numbers = VGroup(*[
+        main_tiles = grid_container[0].main_tiles
+        edge_tiles = VGroup(
+            *grid_container[0].ul_tiles,
+            *grid_container[0].ur_tiles,
+            *grid_container[0].dr_tiles,
+            *grid_container[0].dl_tiles
+        )
+        main_tile_numbers = VGroup(*[
             Tex(str(i + 1), font_size = 150).set_color(BLACK).move_to(tile)
-            for i, tile in enumerate(square_tiles)
+            for i, tile in enumerate(main_tiles)
         ])
         grid_container.save_state()
-        holes = grid_container[0][2]
+        holes = grid_container[0].holes
+        holes.add_updater(lambda m: self.bring_to_front(m))
         self.play(
-            grid_container.animate.set_opacity(0.1),
-            holes.animate.shift(0),
+            VGroup(grid_container[0].grid, *[tile for tile in edge_tiles]).animate.set_opacity(0.1),
             AnimationGroup(*[
                 AnimationGroup(
                     tile.animate(rate_func = there_and_back).set_color(YELLOW).scale(1.1).set_fill(opacity = 0.5),
                     GrowFromCenter(num, run_time = 0.8)
                 )
-                for tile, num in zip(square_tiles, square_tile_numbers)
+                for tile, num in zip(main_tiles, main_tile_numbers)
             ], lag_ratio = 0.1)
         )
+        holes.suspend_updating()
         self.wait(2)
 
         # Generalize
@@ -584,14 +704,13 @@ class WindmillTilings(InteractiveScene):
                     Dot(radius = 0.2).set_color(BLACK).move_to(tile) if i < 16 - 1 - 3 else
                     Tex("(k - 1)^2", font_size = 120).set_color(BLACK).move_to(tile)
                 )
-                for i, (tile, num) in enumerate(zip(square_tiles[3:], square_tile_numbers[3:]))
-            ]),
-            holes.animate.shift(0)
+                for i, (tile, num) in enumerate(zip(main_tiles[3:], main_tile_numbers[3:]))
+            ])
         )
         self.wait(1)
 
         # Save the value (k - 1)^2
-        square_tile_count = square_tile_numbers[-1].copy().scale(
+        main_tile_count = main_tile_numbers[-1].copy().scale(
             1.9
         ).align_to(
             grid_container, UP
@@ -600,19 +719,20 @@ class WindmillTilings(InteractiveScene):
         ).set_color(
             TEAL_A
         )
-        self.play(TransformFromCopy(square_tile_numbers[-1], square_tile_count, path_arc = -PI*0.2), run_time = 1.5)
+        self.play(TransformFromCopy(main_tile_numbers[-1], main_tile_count, path_arc = -PI*0.2), run_time = 1.5)
         self.wait(1)
 
         # Switch focus to the tiles around the edges
+        holes.resume_updating()
         self.play(
             grid_container.animate.restore(),
-            square_tiles.animate.set_opacity(0.5),
-            FadeOut(square_tile_numbers)
+            main_tiles.animate.set_opacity(0.5),
+            FadeOut(main_tile_numbers)
         , run_time = 2)
+        holes.suspend_updating()
         self.wait(2)
 
         # Count the edge tiles
-        edge_tiles = all_tiles[16:]
         edge_tile_numbers = VGroup(*[
             Tex(str(i % 4 + 1), font_size = 100).set_color(BLACK).move_to(tile)
             for i, tile in enumerate(edge_tiles)
@@ -637,8 +757,7 @@ class WindmillTilings(InteractiveScene):
                     num
                 )
                 for i, (tile, num) in enumerate(zip(edge_tiles, edge_tile_numbers))
-            ]),
-            holes.animate.shift(0),
+            ])
         )
         self.wait(1)
 
@@ -648,11 +767,11 @@ class WindmillTilings(InteractiveScene):
         )
         edge_tile_count[1:].set_color(TEAL_D)
         edge_tile_count.scale(
-            square_tile_count[0].get_height()/edge_tile_count[2].get_height()
+            main_tile_count[0].get_height()/edge_tile_count[2].get_height()
         ).next_to(
-            square_tile_count, DOWN, buff = 0.6
+            main_tile_count, DOWN, buff = 0.6
         ).align_to(
-            square_tile_count[-2], RIGHT
+            main_tile_count[-2], RIGHT
         )
         edge_tile_count[0].shift(LEFT*0.16)
         k_minus_1_copies = VGroup(*[edge_tile_count[3:-1].copy() for _ in range(4)])
@@ -673,14 +792,16 @@ class WindmillTilings(InteractiveScene):
         self.wait(1)
 
         # Focus on the formula
-        formula_group = VGroup(square_tile_count, edge_tile_count)
+        formula_group = VGroup(main_tile_count, edge_tile_count)
+        self.clear()
+        self.add(k_slider_group, grid_container, edge_tile_numbers, formula_group)
         formula_group.generate_target()
         formula_group.target.arrange(buff = 0.4)
+        formula_group.target.match_y(self.camera.frame).shift(UP*4).align_to(formula_group, RIGHT).shift(LEFT)
         formula_group.target[1].align_to(formula_group.target[0], DOWN)
-        formula_group.target.move_to(self.camera.frame).scale(1.2).shift(UP*5)
         self.play(
-            FadeOut(k_slider_group, shift = LEFT*5),
-            FadeOut(VGroup(grid_container, edge_tile_numbers), shift = LEFT*20),
+            FadeOut(k_slider_group, shift = LEFT*3),
+            VGroup(grid_container, edge_tile_numbers).animate.shift(LEFT*14),
             MoveToTarget(formula_group, path_arc = PI*0.2)
         , run_time = 2)
 
