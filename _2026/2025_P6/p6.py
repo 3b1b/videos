@@ -963,6 +963,7 @@ class ErdosSzekeres(InteractiveScene):
         )
 
         # Show example increasing and decreasing subsequences
+        base.add_updater(lambda m: self.bring_to_front(m))
         increasing_sequence_color = GREEN_D
         decreasing_sequence_color = RED_D
         increasing_sequence = VGroup(*[
@@ -1022,12 +1023,14 @@ class ErdosSzekeres(InteractiveScene):
         lds_text = Tex(R"\text{LDS}: 3", font_size = 110).set_color(decreasing_sequence_color)
         lds_text.next_to(lis_text, DOWN, buff = 0.6).align_to(lis_text, LEFT)
         VGroup(lis_text, lds_text).set_y(0).to_edge(RIGHT, buff = 1.5)
+        base.suspend_updating()
         self.play(
             AnimationGroup(
                 VGroup(chart, nums, arrow).animate.to_edge(LEFT, buff = 1.5),
                 Write(lis_text)
             , lag_ratio = 0.6, run_time = 1.5)
         )
+        base.resume_updating()
         self.wait(1)
 
 
@@ -1067,6 +1070,7 @@ class ErdosSzekeres(InteractiveScene):
         self.wait(2)
 
         # Switch focus back to the full chart
+        base.clear_updaters()
         chart.generate_target()
         chart.target.set_opacity(1).stretch(1.5, 0).center()
         nums.generate_target()
@@ -1082,6 +1086,7 @@ class ErdosSzekeres(InteractiveScene):
             MoveToTarget(nums, run_time = 2),
             MoveToTarget(pair, run_time = 2)
         )
+        base.add_updater(lambda m: self.bring_to_front(m))
         self.wait(2)
 
         # Add the (LIS, LDS) pair for each bar
@@ -1295,9 +1300,11 @@ class ErdosSzekeres(InteractiveScene):
         case2 = VGroup(tail, bar1, bar2, base, pair, brace, label, extended_brace, extended_label, cdots)
 
         # Show both examples side by side
-        case1[1:3].set_stroke(width = 4, color = YELLOW)
+        case1.clear_updaters()
+        base.clear_updaters()
+        case1[1:3].set_stroke(width = 3, color = YELLOW)
         case2.generate_target()
-        case2.target[1:3].set_stroke(width = 4, color = YELLOW)
+        case2.target[1:3].set_stroke(width = 3, color = YELLOW)
         VGroup(case1, case2.target).scale(0.65).arrange(buff = 0.5).shift(RIGHT*0.5)
         case2.target.align_to(case1, DOWN)
         self.play(
@@ -1307,6 +1314,7 @@ class ErdosSzekeres(InteractiveScene):
         self.wait(2)
 
         # Bring back the original chart
+        original_chart_group.clear_updaters()
         self.play(
             FadeOut(VGroup(case1, case2), shift = DOWN*7),
             FadeIn(original_chart_group, shift = DOWN*7)
@@ -1370,13 +1378,41 @@ class ErdosSzekeres(InteractiveScene):
         # Show the dimensions
         width_brace = Brace(rect, DOWN, buff = 0.5)
         width_label = width_brace.get_tex(R"\text{LIS}").set_color(increasing_sequence_color)
-        self.play(GrowFromEdge(width_brace, UP), Write(width_label))
+        bars, base = chart
+        bars.save_state()
+        base.add_updater(lambda m: self.bring_to_front(m))
+        increasing_sequence = VGroup(*[
+            bars[i]
+            for i in [2, 3, 7]
+        ])
+        self.play(
+            GrowFromEdge(width_brace, UP),
+            Write(width_label),
+            AnimationGroup(*[
+                bar.animate.set_color(increasing_sequence_color)
+                for bar in increasing_sequence
+            ], lag_ratio = 0.1)
+        )
         self.wait(1)
 
         height_brace = Brace(rect, LEFT, buff = 0.5)
         height_label = height_brace.get_tex(R"\text{LDS}").set_color(decreasing_sequence_color)
-        self.play(GrowFromEdge(height_brace, RIGHT), Write(height_label))
-        self.wait(2)
+        decreasing_sequence = VGroup(*[
+            bars[i]
+            for i in [0, 1, 3, 8]
+        ])
+        self.play(
+            GrowFromEdge(height_brace, UP),
+            Write(height_label),
+            AnimationGroup(*[
+                bar.animate.set_color(
+                    decreasing_sequence_color if bar in decreasing_sequence else bar_color
+                )
+                for bar in bars if bar in decreasing_sequence or bar in increasing_sequence
+            ], lag_ratio = 0.1)
+        )
+        self.wait(1)
+        self.play(bars.animate.restore())
 
         # Write the final inequality up top
         final_inequality = Tex(
