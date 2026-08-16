@@ -637,8 +637,10 @@ class WindmillTilings(InteractiveScene):
                 grid.k = new_k
                 grid.become(OptimalGrid(new_k).align_to(ORIGIN, DL))
 
-            for hole in grid.holes:
-                hole.border.set_stroke(width = 10/new_k, color = interpolate_color(YELLOW, RED, min(1, (new_k - 3)/7)))
+                for hole in grid.holes:
+                    hole.border.set_stroke(width = 5*new_k**(-1/3), color = interpolate_color(YELLOW, RED, min(1, (new_k - 3)/7)))
+                for tile in grid.tiles:
+                    tile.add_updater(lambda m: m.set_stroke(width = 1.5*new_k**1.5))
         grid.add_updater(update_grid)
 
 
@@ -661,7 +663,7 @@ class WindmillTilings(InteractiveScene):
         grid.resume_updating()
         self.play(
             k_tracker.animate(run_time = 5).set_value(max_k),
-            self.camera.frame.animate(run_time = 5).reorient(-13, 40, 0, (np.float32(654.42), np.float32(252.66), np.float32(461.53)), 1315.09)
+            self.camera.frame.animate(run_time = 5).reorient(-13, 40, 0, (654.42, 252.66, 461.53), 1315.09)
         )
         grid.suspend_updating()
         self.wait(2)
@@ -695,24 +697,24 @@ class WindmillTilings(InteractiveScene):
         self.play(FadeOut(VGroup(x_length_label, y_length_label, brace1, brace2)))
 
         # Pan the camera around
-        self.add(k_slider_group)
         grid.save_state()
+        self.add(k_slider_group)
         grid.holes.set_scale_stroke_with_zoom(False)
-        grid.resume_updating()
         self.play(
             self.camera.frame.animate.reorient(7, 46, 0, (1110.17, 171.23, 372.81), 1109.67)
         , run_time = 10)
         self.play(
-            # grid.tiles.animate.set_stroke(width = 1),
+            grid.tiles.animate.set_stroke(width = 1),
+            grid.holes.animate.set_stroke(width = 0.5),
             self.camera.frame.animate.reorient(-24, 62, 0, (214.22, 294.13, -91.55), 379.46)
         , run_time = 10)
         self.play(
-            self.camera.frame.animate.reorient(-27, 65, 0, (631.07, 270.25, 216.58), 180.95)
+            grid.animate.restore(),
+            self.camera.frame.animate.reorient(-13, 40, 0, (654.42, 252.66, 461.53), 1315.09)
         , run_time = 10)
 
         # Reset the camera to the original position and show the labels for k
         tile = grid.tiles[1596]
-        grid.save_state()
         k_label_1 = Tex("k", font_size = 5000).next_to(tile, DOWN, buff = 20)
         k_label_2 = k_label_1.copy().next_to(tile, LEFT, buff = 20)
 
@@ -730,7 +732,7 @@ class WindmillTilings(InteractiveScene):
                         grid.background.animate.set_opacity(0.1),
                         grid.lines.animate.set_opacity(0.1),
                         *[t.animate.set_opacity(0.1 if t != tile else t.get_opacity()) for t in grid.tiles],
-                        grid.holes.animate.set_opacity(0.1)
+                        grid.holes.animate.set_opacity(0.1).set_stroke(width = 0.5)
                     ),
                     FadeIn(VGroup(k_label_1, k_label_2))
                 , lag_ratio = 0.4, run_time = 2.5)
@@ -743,6 +745,7 @@ class WindmillTilings(InteractiveScene):
             grid.animate.restore(),
             FadeOut(VGroup(k_label_1, k_label_2, x_length_label, y_length_label))
         )
+        grid.resume_updating()
         self.play(
             k_tracker.animate(run_time = 2).set_value(5),
             self.camera.frame.animate(run_time = 2).restore()
