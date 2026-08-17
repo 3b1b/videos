@@ -704,13 +704,15 @@ class WindmillTilings(InteractiveScene):
             self.camera.frame.animate.reorient(7, 46, 0, (1110.17, 171.23, 372.81), 1109.67)
         , run_time = 10)
         self.play(
-            grid.tiles.animate.set_stroke(width = 1),
+            grid.tiles.animate.set_stroke(width = 40),
             grid.holes.animate.set_stroke(width = 0.5),
             self.camera.frame.animate.reorient(-24, 62, 0, (214.22, 294.13, -91.55), 379.46)
         , run_time = 10)
         self.play(
-            grid.animate.restore(),
-            self.camera.frame.animate.reorient(-13, 40, 0, (654.42, 252.66, 461.53), 1315.09)
+            # grid.animate.restore(),
+            grid.tiles.animate.set_stroke(width = 80),
+            grid.holes.animate.set_stroke(width = 4),
+            self.camera.frame.animate.reorient(-27, 65, 0, (631.07, 270.25, 216.58), 180.95)
         , run_time = 10)
 
         # Reset the camera to the original position and show the labels for k
