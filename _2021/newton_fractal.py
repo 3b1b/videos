@@ -328,7 +328,6 @@ class AskAboutComplexity(Scene):
 
 class WhoCares(TeacherStudentsScene):
     def construct(self):
-        self.students.refresh_triangulation()
         screen = self.screen
         screen.set_height(4, about_edge=UL)
         screen.set_fill(BLACK, 1)
@@ -395,7 +394,7 @@ class SphereExample(Scene):
         sphere.move_to(axes.c2p(0, 0, 0))
         sphere.set_gloss(1.0)
         sphere.set_opacity(0.5)
-        sphere.sort_faces_back_to_front(DOWN)
+        sphere.set_sort_to_camera()
         mesh = SurfaceMesh(sphere, resolution=(21, 11))
         mesh.set_stroke(BLUE, 0.5, 0.5)
         sphere = Group(sphere, mesh)
@@ -502,7 +501,6 @@ class CurvesDefiningFonts(Scene):
 
         chars = OldTexText("When a computer\\\\renders text...")[0]
         chars.set_width(FRAME_WIDTH - 3)
-        chars.refresh_triangulation()
         filled_chars = chars.copy()
         filled_chars.insert_n_curves(50)
         chars.set_stroke(WHITE, 0.5)
@@ -708,7 +706,6 @@ class RasterizingBezier(Scene):
         pixel = pixels[725].deepcopy()
         pixel.set_fill(opacity=0)
         label = OldTexText("Pixel $\\vec{\\textbf{p}}$")
-        label.refresh_triangulation()
         label.set_fill(YELLOW)
         label.set_stroke(BLACK, 4, background=True)
         label.next_to(pixel, UL, buff=LARGE_BUFF)
@@ -1960,7 +1957,6 @@ class FasterNewtonExample(RealNewtonsMethod):
 
 class AssumingItsGood(TeacherStudentsScene):
     def construct(self):
-        self.pi_creatures.refresh_triangulation()
         self.teacher_says(
             OldTexText("Assuming this\\\\approximation\\\\is decent...", font_size=42),
             bubble_config={
@@ -1971,7 +1967,6 @@ class AssumingItsGood(TeacherStudentsScene):
             "pondering", "pondering", "tease",
             look_at=self.screen
         )
-        self.pi_creatures.refresh_triangulation()
         self.wait(3)
 
 

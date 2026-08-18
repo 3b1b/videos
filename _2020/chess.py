@@ -42,7 +42,7 @@ def get_bit_string(bit_coords):
     return result
 
 
-class Chessboard(SGroup):
+class Chessboard(Group):
     CONFIG = {
         "shape": (8, 8),
         "height": 7,
@@ -2386,7 +2386,7 @@ class ShowCube(ThreeDScene):
         ]
 
         # Vertex and edge drawings
-        spheres = SGroup()
+        spheres = Group()
         for vert in verts:
             sphere = Sphere(
                 radius=0.1,
@@ -2397,7 +2397,7 @@ class ShowCube(ThreeDScene):
             sphere.move_to(vert)
             spheres.add(sphere)
 
-        edges = SGroup()
+        edges = Group()
         for i, j in edge_indices:
             edge = Line3D(
                 verts[i], verts[j],
@@ -3020,7 +3020,7 @@ class AttemptAColoring(ThreeDScene):
         vert_coords = vert_coords * 4
         vert_coords[:, 2] *= 1.25  # Stretch in the z
         cube = Group()
-        cube.verts = SGroup()
+        cube.verts = Group()
         cube.edges = VGroup()
         cube.add(cube.verts, cube.edges)
         for n, coords in enumerate(vert_coords):
@@ -3054,7 +3054,7 @@ class AttemptAColoring(ThreeDScene):
         def get_colored_vertices(values, verts=cube.verts):
             color_choices = [RED, GREEN, BLUE_D]
             color_label_choices = ["R", "G", "B"]
-            vert_targets = SGroup()
+            vert_targets = Group()
             labels = VGroup()
             for n, vert in zip(values, verts):
                 color = color_choices[n]
@@ -3430,7 +3430,7 @@ class AttemptAColoring(ThreeDScene):
         self.wait()
 
         # Show red corners
-        r_verts = SGroup(cube.verts[3], cube.verts[4]).copy()
+        r_verts = Group(cube.verts[3], cube.verts[4]).copy()
         r_labels = VGroup()
         r_edge_groups = VGroup()
         for r_vert in r_verts:
@@ -3572,7 +3572,7 @@ class HighDimensionalCount(ThreeDScene):
         vert_board = get_board_with_highlights(0)
         vert_label.next_to(vert, LEFT)
         vert_board.next_to(vert_label, DOWN, MED_LARGE_BUFF)
-        neighbors = SGroup()
+        neighbors = Group()
         for color in colors:
             neighbors.add(get_vert(color=color))
         neighbors.arrange(DOWN, buff=0.75)
@@ -3982,16 +3982,16 @@ class FourDCubeColoringFromTrees(ThreeDScene):
     def get_hypercube(self, dim=4, width=4):
         hc_points = self.get_hypercube_points(dim, width)
         cube = Group()
-        cube.verts = SGroup()
-        cube.edges = SGroup()
+        cube.verts = Group()
+        cube.edges = Group()
         cube.add(cube.verts, cube.edges)
         for point in hc_points:
             vert = get_vertex_sphere(resolution=(25, 13))
             vert.rotate(PI / 2, UP)
             vert.move_to(point)
             cube.verts.add(vert)
-            vert.edges = SGroup()
-            vert.neighbors = SGroup()
+            vert.edges = Group()
+            vert.neighbors = Group()
         for n in range(2**dim):
             for power in range(dim):
                 k = n ^ (1 << power)

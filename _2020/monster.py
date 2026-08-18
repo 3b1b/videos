@@ -775,7 +775,7 @@ class ZooOfGroups(ThreeDScene):
         sphere[1].set_stroke(WHITE, 0.5, 0.5)
         sphere.rotate(90 * DEGREES, LEFT)
         sphere.rotate(0.2 * DEGREES, RIGHT)
-        sphere[0].sort_faces_back_to_front()
+        sphere[0].set_sort_to_camera()
         sphere.rotate(90 * DEGREES, UP)
         sphere.set_height(3)
 
