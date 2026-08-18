@@ -1,6 +1,7 @@
 import math
 import random
 from manim_imports_ext import *
+from scipy.spatial.transform import Slerp
 
 
 class Tile(Rectangle):
@@ -966,6 +967,7 @@ class ErdosSzekeres(InteractiveScene):
         grid.add_tile(1, 2, 8, 7)
         grid.add_tile(3, 1, 1, 8)
         grid.add_tile(3, 1, 5, 8)
+        grid.tiles.set_stroke(width = 3)
 
         # Number the holes according to their height
         nums_color = BLUE_B
@@ -985,23 +987,36 @@ class ErdosSzekeres(InteractiveScene):
             for height, hole in zip(values, grid.holes)
         ])
         self.add(column_highlights)
+        n_color = YELLOW
+        brace = Brace(grid, UP, buff = 0.8).set_color(n_color)
+        label = brace.get_tex("N", font_size = 60).set_color(n_color)
+        self.camera.frame.save_state()
         self.play(
             grid.background.animate.fade(0.9),
             grid.lines.animate.fade(0.9),
             grid.tiles.animate.fade(0.9),
-            AnimationGroup(*[
+            AnimationGroup(
+                AnimationGroup(*[
+                    AnimationGroup(
+                        Succession(
+                            AnimationGroup(*[
+                                square.copy().animate(rate_func=there_and_back).set_fill(GREEN, opacity=1)
+                                for square in column
+                            ], lag_ratio=0.1),
+                            FadeOut(column)
+                        ),
+                        FadeIn(num, shift=UP*0.2, run_time=0.7)
+                    , lag_ratio=0.1)
+                    for num, column in zip(nums, column_highlights)
+                ], lag_ratio=0.2),
                 AnimationGroup(
-                    Succession(
-                        AnimationGroup(*[
-                            square.copy().animate(rate_func=there_and_back).set_fill(GREEN, opacity=1)
-                            for square in column
-                        ], lag_ratio=0.1),
-                        FadeOut(column)
-                    ),
-                    FadeIn(num, shift=UP*0.2, run_time=0.7)
-                , lag_ratio=0.1)
-                for num, column in zip(nums, column_highlights)
-            ], lag_ratio=0.2)
+                    self.camera.frame.animate(run_time = 1.5).scale(1.1).shift(UP*0.7),
+                    AnimationGroup(
+                        GrowFromEdge(brace, DOWN),
+                        Write(label)
+                    )
+                , lag_ratio = 0.2)
+            , lag_ratio = 0.5)
         )
         self.remove(column_highlights)
 
@@ -1027,6 +1042,8 @@ class ErdosSzekeres(InteractiveScene):
             bar.save_state()
             bar.stretch_to_fit_height(0.001).align_to(base, DOWN)
         self.play(
+            self.camera.frame.animate.restore(),
+            FadeOut(VGroup(brace, label)),
             FadeOut(grid, run_time = 3),
             AnimationGroup(*[
                 AnimationGroup(
@@ -1037,38 +1054,253 @@ class ErdosSzekeres(InteractiveScene):
             ]),
             ShowCreation(base, run_time = 1)
         )
+        self.wait(2)
 
-        # Show example increasing and decreasing subsequences
-        base.add_updater(lambda m: self.bring_to_front(m))
+        # Define helpers for indicating LIS/LDS
         increasing_sequence_color = GREEN_D
         decreasing_sequence_color = RED_D
+        marker_thickness = 0.5 * min(bar.get_height() for bar in bars)
+
+        def marker_rect(bar, color, level):
+            r = Rectangle(
+                width=bar.get_width(), height=marker_thickness,
+                fill_opacity=1, fill_color=color, stroke_width=0
+            )
+            r.match_x(bar)
+            top = bar.get_top()[1]
+            r.set_y(top - marker_thickness * (level + 0.5))
+            return r
+
+        # Show a permutation with a long increasing subsequence
+        bars.save_state()
+        nums.save_state()
+        permutation = [4, 2, 3, 8, 0, 7, 1, 6, 5]
+        for i, (bar, num) in enumerate(zip(bars, nums)):
+            bars[permutation[i]].generate_target()
+            nums[permutation[i]].generate_target()
+            bars[permutation[i]].target.match_x(bar)
+            nums[permutation[i]].target.match_x(bars[permutation[i]].target)
+        self.play(
+            AnimationGroup(*[MoveToTarget(bar) for bar in bars]),
+            AnimationGroup(*[MoveToTarget(num) for num in nums])
+        )
+
+        # Highlight the increasing subsequence, then the decreasing one
+        bars_left_to_right = VGroup(*sorted(bars, key = lambda bar: bar.get_x()))
+        nums_left_to_right = VGroup(*sorted(nums, key = lambda num: num.get_x()))
+        base.add_updater(lambda m: self.bring_to_front(m))
+        increasing_indices = [0, 1, 2, 4, 5, 7, 8]
         increasing_sequence = VGroup(*[
-            bars[i]
-            for i in [2, 3, 7]
+            bars_left_to_right[i]
+            for i in increasing_indices
         ])
-        bars.save_state()
+        increasing_markers = VGroup(*[
+            marker_rect(bar, increasing_sequence_color, 0)
+            for bar in increasing_sequence
+        ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(increasing_sequence_color)
-                for bar in increasing_sequence
+                FadeIn(marker, run_time = 0.3)
+                for marker in increasing_markers
             ], lag_ratio = 0.3)
         )
-        self.wait(1)
-        self.play(bars.animate.restore())
-        self.wait(1)
+        self.wait(0.4)
+        decreasing_indices = [5, 6]
         decreasing_sequence = VGroup(*[
-            bars[i]
-            for i in [0, 1, 3, 8]
+            bars_left_to_right[i]
+            for i in decreasing_indices
         ])
-        bars.save_state()
+        decreasing_markers = VGroup(*[
+            marker_rect(bar, decreasing_sequence_color, 1 if i in increasing_indices else 0)
+            for i, bar in zip(decreasing_indices, decreasing_sequence)
+        ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(decreasing_sequence_color)
-                for bar in decreasing_sequence
+                FadeIn(marker, run_time = 0.7)
+                for marker in decreasing_markers
             ], lag_ratio = 0.3)
         )
         self.wait(1)
-        self.play(bars.animate.restore())
+        self.play(FadeOut(increasing_markers), FadeOut(decreasing_markers))
+
+        # Show a permutation with a long decreasing subsequence
+        permutation = [7, 8, 5, 4, 6, 1, 3, 2, 0]
+        for i, (bar, num) in enumerate(zip(bars_left_to_right, nums_left_to_right)):
+            bars_left_to_right[permutation[i]].generate_target()
+            nums_left_to_right[permutation[i]].generate_target()
+            bars_left_to_right[permutation[i]].target.match_x(bar)
+            nums_left_to_right[permutation[i]].target.match_x(bars_left_to_right[permutation[i]].target)
+        self.play(
+            AnimationGroup(*[MoveToTarget(bar) for bar in bars_left_to_right]),
+            AnimationGroup(*[MoveToTarget(num) for num in nums_left_to_right])
+        )
+
+        # Highlight the decreasing subsequence, then the increasing one
+        bars_left_to_right = VGroup(*sorted(bars, key = lambda bar: bar.get_x()))
+        decreasing_indices = [1, 2, 3, 4, 7, 8]
+        decreasing_sequence = VGroup(*[
+            bars_left_to_right[i]
+            for i in decreasing_indices
+        ])
+        decreasing_markers_dict = {
+            i: marker_rect(bars_left_to_right[i], decreasing_sequence_color, 0)
+            for i in decreasing_indices
+        }
+        decreasing_markers = VGroup(*decreasing_markers_dict.values())
+        self.play(
+            AnimationGroup(*[
+                FadeIn(marker, run_time = 0.3)
+                for marker in decreasing_markers
+            ], lag_ratio = 0.3)
+        )
+        self.wait(0.4)
+        increasing_indices = [5, 6, 7]
+        increasing_sequence = VGroup(*[
+            bars_left_to_right[i]
+            for i in increasing_indices
+        ])
+        increasing_markers = VGroup(*[
+            marker_rect(bar, increasing_sequence_color, 0)
+            for bar in increasing_sequence
+        ])
+        shared_indices = [i for i in increasing_indices if i in decreasing_indices]
+        self.play(
+            AnimationGroup(*[
+                FadeIn(marker, run_time = 0.3)
+                for marker in increasing_markers
+            ], lag_ratio = 0.3),
+            AnimationGroup(*[
+                decreasing_markers_dict[i].animate.shift(DOWN * marker_thickness)
+                for i in shared_indices
+            ])
+        )
+        self.wait(1)
+
+        # Flash through many other permutations, highlighting their LIS and LDS
+        self.remove(increasing_markers, decreasing_markers)
+        slot_xs = sorted(bar.get_x() for bar in bars)
+
+        def get_extreme_subsequence_slots(seq, increasing=True):
+            n = len(seq)
+            lengths = [1] * n
+            prev = [-1] * n
+            for i in range(n):
+                for j in range(i):
+                    better = (seq[j] < seq[i]) if increasing else (seq[j] > seq[i])
+                    if better and lengths[j] + 1 > lengths[i]:
+                        lengths[i] = lengths[j] + 1
+                        prev[i] = j
+            end = max(range(n), key=lambda i: lengths[i])
+            slots = []
+            while end != -1:
+                slots.append(end)
+                end = prev[end]
+            return set(slots)
+
+        n_flashes = 30
+        prev_perm = None
+        markers = VGroup()
+        self.add(markers)
+        camera_shift_iter = 5
+        inequality = Tex(
+            R"\text{LIS} \cdot \text{LDS} \ge N",
+            font_size = 80,
+            tex_to_color_map = {"LIS": increasing_sequence_color, "LDS": decreasing_sequence_color, "N": n_color}
+        ).shift(RIGHT*7 + UP*1)
+
+        value_font_size = 80
+        value_row_y = inequality.get_bottom()[1] - 1
+        lis_value = None
+        lds_value = None
+
+        def make_lis_value(val):
+            mob = Integer(val, font_size = value_font_size).set_color(increasing_sequence_color)
+            mob.match_x(inequality["LIS"])
+            mob.set_y(value_row_y)
+            return mob
+
+        def make_lds_value(val):
+            mob = Integer(val, font_size = value_font_size).set_color(decreasing_sequence_color)
+            mob.match_x(inequality["LDS"])
+            mob.set_y(value_row_y)
+            return mob
+
+        for i in range(n_flashes):
+            perm = np.random.permutation(9).tolist()
+            while perm == prev_perm:
+                perm = np.random.permutation(9).tolist()
+            prev_perm = perm
+
+            for slot, bar_index in enumerate(perm):
+                bars[bar_index].set_x(slot_xs[slot])
+                nums[bar_index].set_x(slot_xs[slot])
+
+            heights_in_order = [values[bar_index] for bar_index in perm]
+            lis_slots = get_extreme_subsequence_slots(heights_in_order, increasing=True)
+            lds_slots = get_extreme_subsequence_slots(heights_in_order, increasing=False)
+            lis_val = len(lis_slots)
+            lds_val = len(lds_slots)
+
+            self.remove(markers)
+            markers = VGroup()
+            for slot, bar_index in enumerate(perm):
+                bar = bars[bar_index]
+                is_lis = slot in lis_slots
+                is_lds = slot in lds_slots
+                if is_lis:
+                    markers.add(marker_rect(bar, increasing_sequence_color, 0))
+                if is_lds:
+                    markers.add(marker_rect(bar, decreasing_sequence_color, 1 if is_lis else 0))
+            self.add(markers)
+
+            if lis_value is not None:
+                self.remove(lis_value)
+                lis_value = make_lis_value(lis_val)
+                self.add(lis_value)
+            if lds_value is not None:
+                self.remove(lds_value)
+                lds_value = make_lds_value(lds_val)
+                self.add(lds_value)
+
+            if i == camera_shift_iter:
+                self.set_camera_target_position(0, 0, 0, (3.35, 0.38, 0.00), 9.25)
+                lis_value = make_lis_value(lis_val)
+                self.play(FadeIn(inequality["LIS"]), FadeIn(lis_value))
+            elif i == camera_shift_iter + 3:
+                cdot_value = Tex(R"\cdot", font_size = value_font_size)
+                cdot_value.match_x(inequality[R"\cdot"])
+                cdot_value.set_y(value_row_y)
+                lds_value = make_lds_value(lds_val)
+                self.play(
+                    FadeIn(inequality[R"\cdot"]),
+                    FadeIn(cdot_value),
+                    FadeIn(inequality["LDS"]),
+                    FadeIn(lds_value)
+                )
+            elif i == camera_shift_iter + 8:
+                geq_value = Tex(R"\ge", font_size = value_font_size)
+                geq_value.match_x(inequality[-2])
+                geq_value.set_y(value_row_y)
+                n_value = Tex(str(n), font_size = value_font_size).set_color(n_color)
+                n_value.match_x(inequality[-1])
+                n_value.set_y(value_row_y)
+                self.play(
+                    FadeIn(inequality[-2:]),
+                    FadeIn(geq_value),
+                    FadeIn(n_value),
+                    GrowFromEdge(brace, UP),
+                    Write(label)
+                )
+            else:
+                self.wait(1)
+
+        # Switch to the main example for the rest of the scene
+        self.clear()
+        self.camera.frame.restore()
+        self.add(chart, nums)
+        bars.restore()
+        nums.restore()
+        base.add_updater(lambda m: self.bring_to_front(m))
         self.wait(1)
 
         # Focus on one of the bars
@@ -1084,14 +1316,19 @@ class ErdosSzekeres(InteractiveScene):
         )
 
         # Highlight its longest increasing and decreasing subsequences
+        increasing_indices = [2, 3]
         increasing_sequence = VGroup(*[
             bars[i]
-            for i in [2, 3]
+            for i in increasing_indices
+        ])
+        increasing_markers = VGroup(*[
+            marker_rect(bar, increasing_sequence_color, 0)
+            for bar in increasing_sequence
         ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(increasing_sequence_color)
-                for bar in increasing_sequence
+                FadeIn(marker)
+                for marker in increasing_markers
             ], lag_ratio = 0.3)
         )
         self.wait(1)
@@ -1102,33 +1339,31 @@ class ErdosSzekeres(InteractiveScene):
         base.suspend_updating()
         self.play(
             AnimationGroup(
-                VGroup(chart, nums, arrow).animate.to_edge(LEFT, buff = 1.5),
+                VGroup(chart, nums, arrow, increasing_markers).animate.to_edge(LEFT, buff = 1.5),
                 Write(lis_text)
             , lag_ratio = 0.6, run_time = 1.5)
         )
         base.resume_updating()
         self.wait(1)
-
-
-        self.play(bars.animate.set_color(bar_color))
-        self.wait(1)
+        decreasing_indices = [0, 1, 3]
         decreasing_sequence = VGroup(*[
             bars[i]
-            for i in [0, 1, 3]
+            for i in decreasing_indices
         ])
-        bars.save_state()
+        decreasing_markers = VGroup(*[
+            marker_rect(bar, decreasing_sequence_color, 1 if i in increasing_indices else 0)
+            for i, bar in zip(decreasing_indices, decreasing_sequence)
+        ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(decreasing_sequence_color)
-                for bar in decreasing_sequence
+                FadeIn(marker)
+                for marker in decreasing_markers
             ], lag_ratio = 0.3)
         )
         self.wait(1)
         self.play(Write(lds_text), run_time = 1.5)
         self.wait(1)
-
-        self.play(bars.animate.restore())
-        self.wait(1)
+        self.wait(2)
 
         # Save the values as a pair of numbers below the bar
         pair = Tex("(2, 3)", font_size = 30).next_to(focus_bar, DOWN)
@@ -1156,14 +1391,25 @@ class ErdosSzekeres(InteractiveScene):
         pair.generate_target()
         pair.target.match_x(chart.target[0][3]).scale(1.3)
 
+        increasing_markers.set_z_index(100)
+        decreasing_markers.set_z_index(100)
         self.play(
             FadeOut(VGroup(arrow, lis_text, lds_text), run_time = 1),
             MoveToTarget(chart, run_time = 2),
             MoveToTarget(nums, run_time = 2),
-            MoveToTarget(pair, run_time = 2)
+            MoveToTarget(pair, run_time = 2),
+            FadeOut(increasing_markers, shift = RIGHT*0.08, run_time = 0.6),
+            FadeOut(decreasing_markers, shift = RIGHT*0.08, run_time = 0.6)
         )
         base.add_updater(lambda m: self.bring_to_front(m))
         self.wait(2)
+
+        # Show that all the numbers are distinct
+        if False:
+            self.remove(pair)
+            self.wait(1)
+            circles = VGroup(*[Circle(radius = 0.35, fill_opacity = 0, stroke_width = 3, stroke_color = YELLOW).move_to(num) for num in nums])
+            self.play(AnimationGroup(*[ShowCreation(circle) for circle in circles], lag_ratio = 0.1))
 
         # Add the (LIS, LDS) pair for each bar
         lis_lds_lengths = [(1, 1), (1, 2), (1, 3), (2, 3), (1, 4), (3, 1), (3, 2), (3, 3), (2, 4)]
@@ -1194,7 +1440,6 @@ class ErdosSzekeres(InteractiveScene):
         bars.save_state()
         nums.save_state()
         pairs.save_state()
-
         focus_index = 6
         focus_bar = bars[focus_index]
         arrow = Arrow(ORIGIN, DOWN*1.1, thickness = 4).set_color(YELLOW).next_to(focus_bar, UP, buff = 0.85)
@@ -1209,35 +1454,43 @@ class ErdosSzekeres(InteractiveScene):
             ).animate.set_opacity(0.1),
             GrowArrow(arrow)
         )
-
+        increasing_indices = [2, 3, 6]
         increasing_sequence = VGroup(*[
             bars[i]
-            for i in [2, 3, 6]
+            for i in increasing_indices
+        ])
+        increasing_markers = VGroup(*[
+            marker_rect(bar, increasing_sequence_color, 0)
+            for bar in increasing_sequence
         ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(increasing_sequence_color)
-                for bar in increasing_sequence
+                FadeIn(marker)
+                for marker in increasing_markers
             ], lag_ratio = 0.3)
         )
         self.wait(1)
-        self.play(bars.animate.set_color(bar_color))
-        self.wait(1)
-
+        decreasing_indices = [5, 6]
         decreasing_sequence = VGroup(*[
             bars[i]
-            for i in [5, 6]
+            for i in decreasing_indices
+        ])
+        decreasing_markers = VGroup(*[
+            marker_rect(bar, decreasing_sequence_color, 1 if i in increasing_indices else 0)
+            for i, bar in zip(decreasing_indices, decreasing_sequence)
         ])
         self.play(
             AnimationGroup(*[
-                bar.animate.set_color(decreasing_sequence_color)
-                for bar in decreasing_sequence
+                FadeIn(marker)
+                for marker in decreasing_markers
             ], lag_ratio = 0.3)
         )
         self.wait(1)
-        self.play(bars.animate.restore(), nums.animate.restore(), pairs.animate.restore(), FadeOut(arrow), run_time = 2)
+        self.play(
+            bars.animate.restore(), nums.animate.restore(), pairs.animate.restore(),
+            FadeOut(arrow), FadeOut(increasing_markers), FadeOut(decreasing_markers), run_time = 2
+        )
         self.wait(1)
-
 
         # Indicate pairs to show uniqueness
         self.play(AnimationGroup(*[Indicate(pair) for pair in pairs], lag_ratio = 0.1), run_time = 3)
@@ -1308,14 +1561,27 @@ class ErdosSzekeres(InteractiveScene):
         )
         self.wait(2)
 
+        # Recompute marker thickness
+        marker_thickness = 0.5 * min(
+            b.get_height() for b in [tail[0], tail[1], tail[2], tail[3], bar1]
+        )
+
         # Show the increasing subsequence of length x
         increasing_sequence = VGroup(tail[0], tail[3], bar1)
+        increasing_markers = VGroup(*[
+            marker_rect(bar, increasing_sequence_color, 0)
+            for bar in increasing_sequence
+        ])
         brace = Brace(increasing_sequence, UP).shift(UP*0.1)
         label = brace.get_tex("x", font_size = 60).set_color(increasing_sequence_color).shift(UP*0.2)
         self.play(
             AnimationGroup(*[
-                bar.animate.set_opacity(1).set_color(increasing_sequence_color)
+                bar.animate.set_opacity(1)
                 for bar in increasing_sequence
+            ], lag_ratio = 0.1),
+            AnimationGroup(*[
+                FadeIn(marker)
+                for marker in increasing_markers
             ], lag_ratio = 0.1),
             GrowFromEdge(brace, DOWN),
             Write(label)
@@ -1327,33 +1593,48 @@ class ErdosSzekeres(InteractiveScene):
         label.generate_target()
         extended_brace = Brace(VGroup(increasing_sequence, bar2), UP).shift(UP*0.1)
         extended_label = extended_brace.get_tex("x + 1", font_size = 60).set_color(increasing_sequence_color).shift(UP*0.2)
+        bar2_increasing_marker = marker_rect(bar2, increasing_sequence_color, 0)
+        increasing_markers.add(bar2_increasing_marker)
         self.play(
             TransformFromCopy(brace, extended_brace),
             TransformMatchingShapes(label.copy(), extended_label),
-            bar2.animate.set_color(increasing_sequence_color)
+            FadeIn(bar2_increasing_marker)
         , run_time = 2)
         self.wait(2)
 
         # Save the example
-        case1 = VGroup(tail, bar1, bar2, base, pair, brace, label, extended_brace, extended_label, cdots).copy()
+        case1 = VGroup(
+            tail, bar1, bar2, increasing_markers, base, pair,
+            brace, label, extended_brace, extended_label, cdots
+        ).copy()
 
         # Make the second bar shorter
+        increasing_markers.set_z_index(100)
         self.play(
             FadeOut(VGroup(brace, label, extended_brace, extended_label)),
-            tail.animate.set_color(bar_color).set_opacity(tail_opacity),
-            bar1.animate.set_color(bar_color),
-            bar2.animate.set_color(bar_color).stretch_to_fit_height(0.6*bar1.get_height()).align_to(bar2, DOWN)
+            FadeOut(increasing_markers[:-1]),
+            FadeOut(increasing_markers[-1], shift = DOWN*3),
+            tail.animate.set_opacity(tail_opacity),
+            bar2.animate.stretch_to_fit_height(0.6*bar1.get_height()).align_to(bar2, DOWN)
         )
         self.wait(2)
 
         # Show the decreasing subsequence of length 7
         decreasing_sequence = VGroup(tail[1], tail[2], bar1)
+        decreasing_markers = VGroup(*[
+            marker_rect(bar, decreasing_sequence_color, 0)
+            for bar in decreasing_sequence
+        ])
         brace = Brace(decreasing_sequence, UP)
         label = brace.get_tex("y", font_size = 60).set_color(decreasing_sequence_color)
         self.play(
             AnimationGroup(*[
-                bar.animate.set_opacity(1).set_color(decreasing_sequence_color)
+                bar.animate.set_opacity(1)
                 for bar in decreasing_sequence
+            ], lag_ratio = 0.1),
+            AnimationGroup(*[
+                FadeIn(marker)
+                for marker in decreasing_markers
             ], lag_ratio = 0.1),
             GrowFromEdge(brace, DOWN),
             Write(label)
@@ -1365,22 +1646,28 @@ class ErdosSzekeres(InteractiveScene):
         label.generate_target()
         extended_brace = Brace(VGroup(decreasing_sequence, bar2), UP).align_to(case1[-3], UP)
         extended_label = extended_brace.get_tex("y + 1", font_size = 60).set_color(decreasing_sequence_color).align_to(case1[-2], UP)
+        bar2_decreasing_marker = marker_rect(bar2, decreasing_sequence_color, 0)
+        decreasing_markers.add(bar2_decreasing_marker)
         self.play(
             TransformFromCopy(brace, extended_brace),
             TransformMatchingShapes(label.copy(), extended_label),
-            bar2.animate.set_color(decreasing_sequence_color)
+            FadeIn(bar2_decreasing_marker)
         , run_time = 2)
         self.wait(2)
 
-        # Save the example
-        case2 = VGroup(tail, bar1, bar2, base, pair, brace, label, extended_brace, extended_label, cdots)
+        # Save the second example
+        case2 = VGroup(
+            tail, bar1, bar2, decreasing_markers, base, pair,
+            brace, label, extended_brace, extended_label, cdots
+        )
 
         # Show both examples side by side
         case1.clear_updaters()
         base.clear_updaters()
-        case1[1:3].set_stroke(width = 3, color = YELLOW)
+        case1[1:3].set_stroke(width = 6, color = YELLOW, behind = True)
         case2.generate_target()
-        case2.target[1:3].set_stroke(width = 3, color = YELLOW)
+        case2.target[1:3].set_stroke(width = 6, color = YELLOW)
+        case2.set_stroke(behind = True)
         VGroup(case1, case2.target).scale(0.65).arrange(buff = 0.5).shift(RIGHT*0.5)
         case2.target.align_to(case1, DOWN)
         self.play(
@@ -1412,9 +1699,8 @@ class ErdosSzekeres(InteractiveScene):
         y_labels = number_plane.add_coordinate_labels(x_values = [], y_values = [1, 2, 3, 4, 5], font_size = 30, direction = LEFT)
         x_labels.set_color(increasing_sequence_color)
         y_labels.set_color(decreasing_sequence_color)
-        points_color = YELLOW
         points = Group(*[
-            Group(GlowDot(), TrueDot()).set_color(points_color).move_to(number_plane.c2p(x, y))
+            Group(GlowDot(), TrueDot()).set_color(n_color).move_to(number_plane.c2p(x, y))
             for (x, y) in lis_lds_lengths
         ])
         point_labels = pairs.copy()
@@ -1445,8 +1731,6 @@ class ErdosSzekeres(InteractiveScene):
         ).align_to(number_plane.c2p(0, 0), DL)
         self.bring_to_back(rect)
         self.play(
-            # self.camera.frame.animate.move_to(number_plane),
-            # FadeOut(original_chart_group, shift = LEFT*5),
             DrawBorderThenFill(rect, stroke_width = 6)
         , run_time = 2)
         self.wait(2)
@@ -1455,52 +1739,92 @@ class ErdosSzekeres(InteractiveScene):
         width_brace = Brace(rect, DOWN, buff = 0.5)
         width_label = width_brace.get_tex(R"\text{LIS}").set_color(increasing_sequence_color)
         bars, base = chart
-        bars.save_state()
         base.add_updater(lambda m: self.bring_to_front(m))
-        increasing_sequence = VGroup(*[
-            bars[i]
-            for i in [2, 3, 7]
+        # Bars have since been scaled down (coordinate-grid step), so
+        # recompute the marker thickness to match their current size.
+        marker_thickness = 0.5 * min(bar.get_height() for bar in bars)
+
+        increasing_indices = [2, 3, 7]
+        decreasing_indices = [0, 1, 3, 8]
+        increasing_markers = VGroup(*[
+            marker_rect(bars[i], increasing_sequence_color, 0)
+            for i in increasing_indices
         ])
         self.play(
             GrowFromEdge(width_brace, UP),
             Write(width_label),
             AnimationGroup(*[
-                bar.animate.set_color(increasing_sequence_color)
-                for bar in increasing_sequence
+                FadeIn(marker)
+                for marker in increasing_markers
             ], lag_ratio = 0.1)
         )
         self.wait(1)
 
         height_brace = Brace(rect, LEFT, buff = 0.5)
         height_label = height_brace.get_tex(R"\text{LDS}").set_color(decreasing_sequence_color)
-        decreasing_sequence = VGroup(*[
-            bars[i]
-            for i in [0, 1, 3, 8]
+        decreasing_markers = VGroup(*[
+            marker_rect(bars[i], decreasing_sequence_color, 1 if i in increasing_indices else 0)
+            for i in decreasing_indices
         ])
         self.play(
-            GrowFromEdge(height_brace, UP),
+            GrowFromEdge(height_brace, RIGHT),
             Write(height_label),
             AnimationGroup(*[
-                bar.animate.set_color(
-                    decreasing_sequence_color if bar in decreasing_sequence else bar_color
-                )
-                for bar in bars if bar in decreasing_sequence or bar in increasing_sequence
+                FadeIn(marker)
+                for marker in decreasing_markers
             ], lag_ratio = 0.1)
         )
         self.wait(1)
-        self.play(bars.animate.restore())
 
-        # Write the final inequality up top
-        final_inequality = Tex(
-            R"\text{LIS} \cdot \text{LDS} \ge N",
-            font_size = 60,
-            tex_to_color_map = {"LIS": increasing_sequence_color, "LDS": decreasing_sequence_color, "N": points_color}
-        ).to_edge(UP, buff = 0.6)
+        # Write the inequality up top
+        inequality.scale(0.8).set_x(0).to_edge(UP, buff = 0.6)
         self.play(
             AnimationGroup(
-                TransformMatchingShapes(width_label.copy(), final_inequality["LIS"], path_arc = -PI*0.35),
-                TransformMatchingShapes(height_label.copy(), final_inequality["LDS"], path_arc = -PI*0.2),
-                GrowFromCenter(final_inequality[R"\cdot"], path_arc = -PI*0.3),
-                Write(final_inequality[R"\ge N"])
+                TransformMatchingShapes(width_label.copy(), inequality["LIS"], path_arc = -PI*0.35),
+                TransformMatchingShapes(height_label.copy(), inequality["LDS"], path_arc = -PI*0.2),
+                GrowFromCenter(inequality[R"\cdot"], path_arc = -PI*0.3),
+                Write(inequality[R"\ge N"])
             , lag_ratio = 0.3, run_time = 2)
         )
+
+    def set_camera_target_position(
+        self,
+        theta_degrees=None,
+        phi_degrees=None,
+        gamma_degrees=None,
+        center=None,
+        height=None,
+        drift_time=2.0,
+    ):
+        frame = self.camera.frame
+        frame.clear_updaters()
+        initial_orientation = frame.get_orientation()
+        initial_height = frame.get_height()
+        initial_eye = frame.get_implied_camera_location()
+        target_frame = frame.copy()
+        target_frame.reorient(theta_degrees, phi_degrees, gamma_degrees, center, height)
+        target_orientation = target_frame.get_orientation()
+        target_height = target_frame.get_height()
+        target_eye = target_frame.get_implied_camera_location()
+        fovy = frame.get_field_of_view()
+        slerp = Slerp([0, 1], Rotation.concatenate([initial_orientation, target_orientation]))
+        drift_time = max(drift_time, 1e-4)
+        elapsed = 0.0
+
+        def update_camera(f, dt):
+            nonlocal elapsed
+            elapsed += dt
+            t = min(elapsed / drift_time, 1.0)
+            alpha = smooth(t)
+            current_orientation = slerp(alpha)
+            current_height = interpolate(initial_height, target_height, alpha)
+            current_eye = interpolate(initial_eye, target_eye, alpha)
+            focal_distance = 0.5 * current_height / np.tan(0.5 * fovy)
+            to_camera = current_orientation.as_matrix().T[2]
+            current_center = current_eye - focal_distance * to_camera
+            f.set_orientation(current_orientation)
+            f.move_to(current_center)
+            f.set_height(current_height)
+            if t >= 1.0:
+                f.remove_updater(update_camera)
+        frame.add_updater(update_camera)
