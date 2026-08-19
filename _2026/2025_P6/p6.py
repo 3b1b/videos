@@ -1528,7 +1528,9 @@ class ErdosSzekeres(InteractiveScene):
             bar1.animate.stretch(1/stretch_factor**3, 1).align_to(bar1, DOWN),
             bar2.animate.stretch(stretch_factor**3, 1).align_to(bar2, DOWN)
         , run_time = 2)
-        self.wait(2)
+        pair2 = Tex("(x', y')", tex_to_color_map = {"x'": increasing_sequence_color, "y'": decreasing_sequence_color}).match_height(pairs[0]).match_y(pairs[0]).match_x(bar2)
+        self.play(FadeIn(pair2))
+        self.wait(1)
 
         # Show a generic tail of bars behind the first bar
         heights = [2, 6, 5, 3]
@@ -1588,23 +1590,28 @@ class ErdosSzekeres(InteractiveScene):
         )
         self.wait(2)
 
-        # Extend it to the second bar
+        # Extend the increasing sequence to the second bar
         brace.generate_target()
         label.generate_target()
         extended_brace = Brace(VGroup(increasing_sequence, bar2), UP).shift(UP*0.1)
-        extended_label = extended_brace.get_tex("x + 1", font_size = 60).set_color(increasing_sequence_color).shift(UP*0.2)
+        extended_label = extended_brace.get_tex(R"x' \ge x + 1", font_size = 60).set_color(increasing_sequence_color).shift(UP*0.2)
+        part1 = extended_label[:3]
+        part2 = extended_label[3:]
+        part2.save_state()
+        part2.match_x(extended_brace)
         bar2_increasing_marker = marker_rect(bar2, increasing_sequence_color, 0)
         increasing_markers.add(bar2_increasing_marker)
         self.play(
             TransformFromCopy(brace, extended_brace),
-            TransformMatchingShapes(label.copy(), extended_label),
+            TransformMatchingShapes(label.copy(), part2),
             FadeIn(bar2_increasing_marker)
         , run_time = 2)
-        self.wait(2)
+        self.wait(1)
+        self.play(part2.animate.restore(), FadeIn(part1, shift = RIGHT*0.5))
 
         # Save the example
         case1 = VGroup(
-            tail, bar1, bar2, increasing_markers, base, pair,
+            tail, bar1, bar2, increasing_markers, base, pair, pair2,
             brace, label, extended_brace, extended_label, cdots
         ).copy()
 
@@ -1641,45 +1648,58 @@ class ErdosSzekeres(InteractiveScene):
         )
         self.wait(2)
 
-        # Extend it to the second bar
+        # Extend the decreasing sequence to the second bar
         brace.generate_target()
         label.generate_target()
         extended_brace = Brace(VGroup(decreasing_sequence, bar2), UP).align_to(case1[-3], UP)
-        extended_label = extended_brace.get_tex("y + 1", font_size = 60).set_color(decreasing_sequence_color).align_to(case1[-2], UP)
+        extended_label = extended_brace.get_tex(R"y' \ge y + 1", font_size = 60).set_color(decreasing_sequence_color).align_to(case1[-2], UP)
+        part1 = extended_label[:3]
+        part2 = extended_label[3:]
+        part2.save_state()
+        part2.match_x(extended_brace)
         bar2_decreasing_marker = marker_rect(bar2, decreasing_sequence_color, 0)
         decreasing_markers.add(bar2_decreasing_marker)
         self.play(
             TransformFromCopy(brace, extended_brace),
-            TransformMatchingShapes(label.copy(), extended_label),
+            TransformMatchingShapes(label.copy(), part2),
             FadeIn(bar2_decreasing_marker)
         , run_time = 2)
-        self.wait(2)
+        self.wait(1)
+        self.play(part2.animate.restore(), FadeIn(part1, shift = RIGHT*0.5))
 
         # Save the second example
         case2 = VGroup(
-            tail, bar1, bar2, decreasing_markers, base, pair,
+            tail, bar1, bar2, decreasing_markers, base, pair, pair2,
             brace, label, extended_brace, extended_label, cdots
         )
 
         # Show both examples side by side
         case1.clear_updaters()
         base.clear_updaters()
-        case1[1:3].set_stroke(width = 6, color = YELLOW, behind = True)
+        case1[1:3].set_stroke(width = 3, color = YELLOW, behind = True)
+        case1[1:4].set_z_index(400)
         case2.generate_target()
-        case2.target[1:3].set_stroke(width = 6, color = YELLOW)
+        case2.target[1:3].set_stroke(width = 3, color = YELLOW)
         case2.set_stroke(behind = True)
-        VGroup(case1, case2.target).scale(0.65).arrange(buff = 0.5).shift(RIGHT*0.5)
+        VGroup(case1, case2.target).scale(0.63).arrange(buff = 0.7)
         case2.target.align_to(case1, DOWN)
+        case2[1:4].set_z_index(400)
+        case1_label = TexText("Case 1").next_to(case1, DOWN, buff = 1)
+        case2_label = TexText("Case 2").next_to(case2.target, DOWN, buff = 1)
         self.play(
-            FadeIn(case1, shift = RIGHT*5),
-            MoveToTarget(case2)
-        , run_time = 2)
-        self.wait(2)
+            AnimationGroup(
+                AnimationGroup(
+                    FadeIn(case1, shift = RIGHT*5),
+                    MoveToTarget(case2)
+                ),
+                LaggedStartMap(FadeIn, VGroup(case1_label, case2_label), lag_ratio = 0.2, shift = UP*1.5, run_time = 0.8)
+            , lag_ratio = 0.1)
+        , run_time = 3)
 
         # Bring back the original chart
         original_chart_group.clear_updaters()
         self.play(
-            FadeOut(VGroup(case1, case2), shift = DOWN*7),
+            FadeOut(VGroup(case1, case2, case1_label, case2_label), shift = DOWN*7),
             FadeIn(original_chart_group, shift = DOWN*7)
         , run_time = 1.5)
         chart, nums, pairs = original_chart_group[0], original_chart_group[1], original_chart_group[2]
@@ -1776,6 +1796,16 @@ class ErdosSzekeres(InteractiveScene):
         )
         self.wait(1)
 
+        # Circle the lattice points
+        lattice_points = VGroup()
+        for i in range(3):
+            for j in range(4):
+                point = Circle(
+                    radius = 0.15, stroke_width = 3, stroke_color = WHITE
+                ).move_to(number_plane.c2p(i + 1, j + 1))
+                lattice_points.add(point)
+        self.play(AnimationGroup(*[ShowCreation(point) for point in lattice_points], lag_ratio = 0.15))
+
         # Write the inequality up top
         inequality.scale(0.8).set_x(0).to_edge(UP, buff = 0.6)
         self.play(
@@ -1828,3 +1858,303 @@ class ErdosSzekeres(InteractiveScene):
             if t >= 1.0:
                 f.remove_updater(update_camera)
         frame.add_updater(update_camera)
+
+
+class OptimalErdosSzekeres(InteractiveScene):
+    def construct(self):
+        # Add a grid
+        k = 3
+        grid = OptimalGrid(k).set_width(6)
+        self.add(grid)
+        grid.tiles.set_stroke(width = 3)
+
+        # Label N = k^2
+        n_color = YELLOW
+        k_color = TEAL
+        brace = Brace(grid, UP).set_color(n_color)
+        label = brace.get_tex("N = k^2", font_size = 60, tex_to_color_map = {"N": n_color, "k": k_color}).shift(UP*0.2)
+        self.camera.frame.save_state()
+        self.play(
+            AnimationGroup(
+                self.camera.frame.animate(run_time = 1.5).scale(1.1).shift(UP*0.5),
+                AnimationGroup(
+                    GrowFromEdge(brace, DOWN),
+                    Write(label)
+                , lag_ratio = 0.2)
+            , lag_ratio = 0.2)
+        )
+
+        # Focus on the Xs
+        self.play(
+            grid.background.animate.fade(0.9),
+            grid.lines.animate.fade(0.9),
+            grid.tiles.animate.fade(0.9),
+         run_time = 2)
+        self.wait(2)
+
+        # Show all possible LISs
+        increasing_sequence_color = GREEN_D
+        decreasing_sequence_color = RED_D
+        increasing_sequences = [
+            [6, 3, 0],
+            [6, 3, 1],
+            [6, 3, 2],
+            [6, 4, 1],
+            [6, 4, 2],
+            [6, 5, 2]
+        ]
+        paths = VGroup()
+        for s in increasing_sequences:
+            path = VMobject()
+            for i in range(len(s) - 1):
+                path.append_vectorized_mobject(Line(grid.holes[s[i]].get_center(), grid.holes[s[i + 1]].get_center()))
+            paths.add(path)
+            path.set_stroke(width = 6, color = increasing_sequence_color)
+        for path, s in zip(paths, increasing_sequences):
+            self.add(path)
+            grid.holes.save_state()
+            for i in s:
+                grid.holes[i].border.set_stroke(color = increasing_sequence_color)
+            self.wait(1)
+            self.remove(path)
+            grid.holes.restore()
+        self.wait(2)
+
+
+        # Increase the size of the grid
+        for k in range(4, 7):
+            self.remove(grid)
+            grid = OptimalGrid(k).set_width(6)
+            grid.background.fade(0.9)
+            grid.lines.fade(0.9)
+            grid.tiles.fade(0.9)
+            grid.tiles.set_stroke(width = 3)
+            grid.holes.set_stroke(width = 2)
+            self.add(grid)
+            self.wait(0.1)
+        self.wait(2)
+        grid.save_state()
+
+        # Divide the holes up into k groups of k
+        holes_sorted_by_y = VGroup(*sorted(grid.holes, key = lambda hole: hole.get_y()))
+        groups_increasing = VGroup(*[
+            holes_sorted_by_y[i*k:(i + 1)*k]
+            for i in range(k)
+        ])
+        rect = Rectangle(
+            width = 5.5,
+            height = 0.45,
+            fill_opacity = 0,
+            stroke_width = 3,
+            stroke_color = k_color
+        ).round_corners(0.2)
+        x, y, _ = groups_increasing[0][-1].get_center() - groups_increasing[0][0].get_center()
+        group_rects_increasing = VGroup(*[rect.copy().rotate(np.arctan2(y, x)).move_to(group) for group in groups_increasing])
+        self.remove(grid.holes)
+        self.add(grid.holes)
+        self.play(AnimationGroup(*[FadeIn(rect) for rect in group_rects_increasing], lag_ratio = 0.2))
+
+        # Label the groups
+        brace1 = Brace(groups_increasing, np.array([x, y, 0])).set_color(k_color)
+        label1 = brace1.get_tex("k").set_color(k_color)
+        brace_1_group = VGroup(brace1, label1)
+        brace_1_group.save_state()
+        self.play(FadeIn(brace_1_group))
+        self.wait(1)
+        brace2 = Brace(groups_increasing, np.array([-y, x, 0])).set_color(k_color)
+        label2 = brace2.get_tex("k").set_color(k_color)
+        brace_2_group = VGroup(brace2, label2)
+        brace_2_group.save_state()
+        self.play(FadeIn(brace_2_group))
+        self.wait(2)
+        self.play(brace_2_group.animate.fade(1))
+
+        # Build up an increasing subsequence
+        increasing_sequence = [30, 25, 21, 15, 9, 5]
+        increasing_path = VGroup()
+        for i in range(len(increasing_sequence) - 1):
+            increasing_path.add(
+                Line(
+                    grid.holes[increasing_sequence[i]].get_center(), grid.holes[increasing_sequence[i + 1]].get_center()
+                ).set_stroke(
+                    width = 5, color = increasing_sequence_color
+                )
+            )
+
+        for line in increasing_path[:-1]:
+            self.play(ShowCreation(line), run_time = 2)
+            self.wait(0.5)
+        self.wait(2)
+
+        # # Show a decreasing segment
+        # decreasing_segment = Line(
+        #     grid.holes[increasing_sequence[-2]].get_center(), grid.holes[increasing_sequence[-2] + 1].get_center()
+        # ).set_stroke(
+        #     width = 5, color = decreasing_sequence_color
+        # )
+        # self.play(ShowCreation(decreasing_segment), run_time = 2.2)
+        # self.wait(1.5)
+
+        # Complete the real path
+        self.play(ShowCreation(increasing_path[-1]), run_time = 2)
+        self.wait(1)
+
+        # Add labels of 1 through k on top of the holes
+        labels_increasing = VGroup(*[
+            Tex(
+                str(i) if i < k - 1 else R"\cdots" if i == k - 1 else "k"
+            ).next_to(
+                grid.holes[increasing_sequence[i - 1]], UP + LEFT*0.1 if i < k - 1 else UP, buff = 0.2
+            ).set_color(
+                k_color
+            ).set_stroke(
+                width = 10, color = BLACK, behind = True
+            )
+            for i in range(1, k + 1)
+        ])
+        brace_label_group = VGroup(brace, label)
+        brace_label_group.save_state()
+        self.play(
+            grid.animate.fade(0.8),
+            brace_label_group.animate.fade(0.8),
+            group_rects_increasing.animate.fade(0.8),
+            AnimationGroup(*[FadeIn(label, shift = UP*0.2) for label in labels_increasing], lag_ratio = 0.2)
+        )
+        self.wait(2)
+
+        # Show the decreasing subsequence case
+        holes_sorted_by_x = VGroup(*sorted(grid.holes, key = lambda hole: hole.get_x()))
+        groups_decreasing = VGroup(*[
+            holes_sorted_by_x[i*k:(i + 1)*k]
+            for i in range(k)
+        ])
+        x, y, _ = groups_decreasing[0][-1].get_center() - groups_decreasing[0][0].get_center()
+        group_rects_decreasing = VGroup(*[rect.copy().rotate(np.arctan2(y, x)).move_to(group) for group in groups_decreasing])
+        increasing_path_group = VGroup(increasing_path, labels_increasing)
+        increasing_path_group.save_state()
+        self.remove(grid.holes)
+        self.add(grid.holes)
+        self.play(
+            brace_label_group.animate.restore(),
+            grid.animate.restore(),
+            FadeOut(group_rects_increasing),
+            brace_1_group.animate.fade(1),
+            increasing_path_group.animate.fade(1),
+            brace_2_group.animate.restore(),
+            AnimationGroup(*[FadeIn(rect) for rect in group_rects_decreasing], lag_ratio = 0.2)
+        )
+
+        # Build up an decreasing subsequence
+        decreasing_sequence = [6, 7, 14, 27, 34, 35]
+        decreasing_path = VMobject()
+        for i in range(len(decreasing_sequence) - 1):
+            decreasing_path.append_vectorized_mobject(
+                Line(
+                    grid.holes[decreasing_sequence[i]].get_center(), grid.holes[decreasing_sequence[i + 1]].get_center()
+                )
+            )
+            decreasing_path.set_stroke(
+                width = 5, color = decreasing_sequence_color
+            )
+
+        labels_decreasing = VGroup(*[
+            Tex(
+                str(i) if i < k - 1 else R"\cdots" if i == k - 1 else "k"
+            ).next_to(
+                grid.holes[decreasing_sequence[i - 1]], UP + RIGHT*0.1
+            ).set_color(
+                k_color
+            ).set_stroke(
+                width = 10, color = BLACK, behind = True
+            )
+            for i in range(1, k + 1)
+        ])
+        self.play(
+            ShowCreation(decreasing_path, run_time = 3),
+            grid.animate.fade(0.8),
+            brace_label_group.animate.fade(0.8),
+            group_rects_decreasing.animate.fade(0.8),
+            AnimationGroup(*[FadeIn(label, shift = UP*0.2) for label in labels_decreasing], lag_ratio = 0.2, run_time = 3)
+        )
+        self.wait(2)
+
+        # Show the product
+        equation = Tex(R"k \cdot k = k^2 = N", font_size = 80).shift(RIGHT*7 + UP*0.7)
+        equation["k"][0].set_color(increasing_sequence_color)
+        equation["k"][1].set_color(decreasing_sequence_color)
+        equation["k"][2].set_color(k_color)
+        equation["N"].set_color(n_color)
+
+        increasing_path_group.generate_target()
+        increasing_path_group.target.restore()
+        increasing_path_group.target[1].set_fill(color = increasing_sequence_color)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    FadeOut(VGroup(brace_1_group, brace_2_group)),
+                    FadeOut(group_rects_decreasing),
+                    brace_label_group.animate.restore(),
+                    MoveToTarget(increasing_path_group),
+                    labels_decreasing.animate.set_fill(color = decreasing_sequence_color),
+                    grid.animate.restore(),
+                    self.camera.frame.animate.shift(RIGHT*3.2)
+                , run_time = 2),
+                AnimationGroup(
+                    ReplacementTransform(labels_increasing[-1].copy().set_stroke(width = 0), equation[0]),
+                    GrowFromCenter(equation[1]),
+                    ReplacementTransform(labels_decreasing[-1].copy().set_stroke(width = 0), equation[2]),
+                    FadeIn(equation[3:6]),
+                    FadeIn(equation[6:])
+                , lag_ratio = 0.4)
+            , lag_ratio = 0.3)
+        )
+
+
+class LISEqualsK(InteractiveScene):
+    def construct(self):
+        # Write the equation
+        increasing_sequence_color = GREEN_D
+        k_color = TEAL
+        equation = Tex(
+            R"\text{LIS} = 3 = k", font_size = 70, tex_to_color_map = {"LIS": increasing_sequence_color, "k": k_color}
+        ).to_edge(RIGHT, buff = 1)
+        self.play(Write(equation), run_time = 2)
+        self.wait(2)
+
+        # Generalize
+        generalized_equation = Tex(
+            R"\text{LIS} = k", font_size = 70, tex_to_color_map = {"LIS": increasing_sequence_color, "k": k_color}
+        ).move_to(equation)
+        self.play(TransformMatchingShapes(equation, generalized_equation))
+
+class PiCreatureReactions(InteractiveScene):
+    def construct(self):
+        # Add a pi creature
+        randy = Randolph(flip_at_start = True)
+        self.add(randy)
+        self.play(FadeIn(randy, shift = LEFT))
+
+        # React to things
+        self.play(randy.change("hooray"), run_time = 1)
+        self.wait(2)
+        self.play(Blink(randy))
+        self.wait(4)
+        self.play(Blink(randy))
+        self.wait(2)
+        self.play(randy.change("confused", UP*4 + LEFT))
+        self.wait(1)
+        self.play(Blink(randy))
+        self.wait(1)
+        self.play(randy.change("pondering", LEFT*3))
+        self.wait(2)
+        self.play(randy.change("thinking", LEFT*3))
+        self.wait(1)
+        self.play(Blink(randy))
+        self.wait(3)
+
+class PassingFlashes(InteractiveScene):
+    def construct(self):
+        # Do some passing flashes
+        self.play(VShowPassingFlash(Rectangle(width = 4, height = 1, stroke_width = 4, stroke_color = YELLOW).insert_n_curves(100), time_width = 3), run_time = 4)
+        self.wait(1)
+        self.play(VShowPassingFlash(Rectangle(width = 4.5, height = 1, stroke_width = 4, stroke_color = YELLOW).insert_n_curves(100), time_width = 3), run_time = 4)
