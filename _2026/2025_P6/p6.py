@@ -20,13 +20,11 @@ class Hole(VGroup):
             stroke_width = 0
         )
         self.cross = Cross(self.background, stroke_width = 2).scale(0.95)
-        self.border = Square(
-            side_length = 1,
-            fill_opacity = 0,
-            stroke_width = 4,
-            stroke_color = YELLOW,
-            stroke_opacity = 1
-        )
+        points = [ORIGIN, RIGHT, UR, UP]
+        self.border = VGroup(*[
+            Line(points[i], points[(i + 1) % 4], stroke_width = 4, stroke_color = YELLOW).scale(1.06)
+            for i in range(len(points))
+        ]).match_width(self.cross).scale(1.06).move_to(self.cross)
         self.add(self.background, self.cross, self.border)
         self.set_scale_stroke_with_zoom(False)
 
@@ -164,10 +162,13 @@ class OptimalArrangementMotivation(InteractiveScene):
 
             for side_idx in range(4):
                 hole = Hole()
+                for i in range(len(hole.border)):
+                    if i != side_idx:
+                        hole.border[i].set_color(WHITE)
                 hole.phase = random.uniform(0, 2 * math.pi)
                 hole.freq = random.uniform(0.8, 1.5)
 
-                if side_idx < 2:
+                if side_idx == 0 or side_idx == 2:
                     L = max(0.1, (w_val - 1) / 2)
                 else:
                     L = max(0.1, (h_val - 1) / 2)
@@ -176,9 +177,9 @@ class OptimalArrangementMotivation(InteractiveScene):
                 if side_idx == 0:
                     local_pos = np.array([s, h_val / 2 + 0.5, 0])
                 elif side_idx == 1:
-                    local_pos = np.array([s, -h_val / 2 - 0.5, 0])
-                elif side_idx == 2:
                     local_pos = np.array([-w_val / 2 - 0.5, s, 0])
+                elif side_idx == 2:
+                    local_pos = np.array([s, -h_val / 2 - 0.5, 0])
                 else:
                     local_pos = np.array([w_val / 2 + 0.5, s, 0])
 
@@ -196,9 +197,9 @@ class OptimalArrangementMotivation(InteractiveScene):
                         if s_idx == 0:
                             loc = np.array([s_t, h_v / 2 + 0.5, 0])
                         elif s_idx == 1:
-                            loc = np.array([s_t, -h_v / 2 - 0.5, 0])
-                        elif s_idx == 2:
                             loc = np.array([-w_v / 2 - 0.5, s_t, 0])
+                        elif s_idx == 2:
+                            loc = np.array([s_t, -h_v / 2 - 0.5, 0])
                         else:
                             loc = np.array([w_v / 2 + 0.5, s_t, 0])
 
@@ -247,7 +248,7 @@ class OptimalArrangementMotivation(InteractiveScene):
             w_val = tile.w_val
             h_val = tile.h_val
 
-            if side_idx < 2:
+            if side_idx == 0 or side_idx == 2:
                 L = max(0.1, (w_val - 1) / 2)
             else:
                 L = max(0.1, (h_val - 1) / 2)
@@ -263,9 +264,9 @@ class OptimalArrangementMotivation(InteractiveScene):
                     if s_idx == 0:
                         loc = np.array([s_t, h_v / 2 + 0.5, 0])
                     elif s_idx == 1:
-                        loc = np.array([s_t, -h_v / 2 - 0.5, 0])
-                    elif s_idx == 2:
                         loc = np.array([-w_v / 2 - 0.5, s_t, 0])
+                    elif s_idx == 2:
+                        loc = np.array([s_t, -h_v / 2 - 0.5, 0])
                     else:
                         loc = np.array([w_v / 2 + 0.5, s_t, 0])
 
@@ -289,7 +290,12 @@ class OptimalArrangementMotivation(InteractiveScene):
         tile_above = Tile(3, 5).align_to(right_hole.get_corner(UL), DL)
         tile_below = Tile(4, 5).align_to(right_hole.get_corner(DL), UL)
         self.add(tile_above, tile_below, holes)
-        self.play(FadeIn(tile_above, shift = DOWN), FadeIn(tile_below, shift = UP), holes[:3].animate.set_opacity(0.2), run_time = 2)
+        self.play(
+            FadeIn(tile_above, shift = DOWN),
+            FadeIn(tile_below, shift = UP),
+            holes[:3].animate.set_opacity(0.2),
+            VGroup(right_hole.border[0], right_hole.border[2]).animate.set_color(YELLOW)
+        , run_time = 2)
         self.wait(2)
 
         # Add holes to those tiles
@@ -297,10 +303,18 @@ class OptimalArrangementMotivation(InteractiveScene):
             Hole().next_to(tile_above, [LEFT, UP, RIGHT][i], buff = 0).shift(UP*0.8 if i == 0 else 0)
             for i in range(3)
         ])
+        for i, hole in enumerate(inner_holes_above):
+            for j in range(len(hole.border)):
+                if (-j + 1) % 4 != i:
+                    hole.border[j].set_color(WHITE)
         inner_holes_below = VGroup(*[
             Hole().next_to(tile_below, [LEFT, RIGHT, DOWN][i], buff = 0).shift(DOWN*0.8 if i == 0 else 0)
             for i in range(3)
         ])
+        for i, hole in enumerate(inner_holes_below):
+            for j in range(len(hole.border)):
+                if not (i == 0 and j == 1 or i == 1 and j == 3 or i == 2 and j == 2):
+                    hole.border[j].set_color(WHITE)
         hole_above = inner_holes_above[0]
         hole_below = inner_holes_below[0]
         shuffled_inner_holes = list(inner_holes_above) + list(inner_holes_below)
@@ -341,8 +355,8 @@ class OptimalArrangementMotivation(InteractiveScene):
             VGroup(tile_above, hole_above).animate.shift(LEFT*(tile_above.get_right()[0] - right_hole.get_right()[0]))
         , run_time = 2.5)
         self.wait(2)
-        new_tile = Tile(5, 3).align_to(hole.get_corner(DR), DL)
-        self.play(FadeIn(new_tile, shift = LEFT))
+        new_tile = Tile(5, 3).align_to(right_hole.get_corner(DR), DL)
+        self.play(FadeIn(new_tile, shift = LEFT), right_hole.border[1].animate.set_color(YELLOW))
         right_hole.clear_updaters()
 
         # Add some extra holes around the outer tiles
@@ -353,6 +367,8 @@ class OptimalArrangementMotivation(InteractiveScene):
             Hole().align_to(outer_tile.get_corner(direction1), direction2)
             for outer_tile, direction1, direction2 in zip(outer_tiles, [DR, DL, UL, UR], [UR, DR, DL, UL])
         ])
+        for i in range(len(inner_holes)):
+            VGroup(inner_holes[i].border[-i - 1 % 4], inner_holes[i].border[(-i) % 4]).set_color(WHITE)
         self.play(
             ReplacementTransform(hole_below, inner_holes[0]),
             ReplacementTransform(hole_above, inner_holes[1]),
@@ -366,6 +382,10 @@ class OptimalArrangementMotivation(InteractiveScene):
             Hole().align_to(outer_tile.get_corner(direction1), direction2)
             for outer_tile, direction1, direction2 in zip(outer_tiles, [DL, UL, UR, DR], [DR, DL, UL, UR])
         ])
+        for i in range(len(inner_holes)):
+            for j in range(4):
+                if (-j + 1) % 4 != i:
+                    outer_holes[i].border[j].set_color(WHITE)
         self.play(AnimationGroup(*[FadeIn(hole) for hole in outer_holes], lag_ratio = 0.1))
         self.wait(0.5)
         checkmarks = VGroup(*[
@@ -428,6 +448,12 @@ class OptimalArrangementMotivation(InteractiveScene):
                 d_theta = target_angle - m.current_angle
                 m.rotate(d_theta)
                 m.current_angle = target_angle
+
+                yellow_to_white_fade_color = interpolate_color(YELLOW, WHITE, t/3)
+                for i in range(len(m[1:])):
+                    for j in range(4):
+                        if (-j + 1) % 4 != i:
+                            m[1:][i].border[j].set_color(interpolate_color(m[1:][i].border[j].get_color(), WHITE, 0.01))
             return updater
 
         puzzle_piece.add_updater(make_piece_updater(single_phase, single_amplitude, single_frequency))
@@ -489,6 +515,8 @@ class WindmillTilings(InteractiveScene):
         max_k = 45
 
         grid = OptimalGrid(min_k).align_to(ORIGIN, DL)
+        for hole in grid.holes:
+            hole.border.set_color(WHITE)
         self.add(grid)
         self.camera.frame.move_to(grid).set_height(grid.get_height()*1.4)
         self.camera.frame.save_state()
@@ -496,6 +524,8 @@ class WindmillTilings(InteractiveScene):
 
         # Change it to k = 4
         new_grid = OptimalGrid(4).align_to(ORIGIN, DL)
+        for hole in new_grid.holes:
+            hole.border.set_color(WHITE)
         grid.holes.set_z_index(100)
         self.add(grid)
         self.play(
@@ -555,6 +585,8 @@ class WindmillTilings(InteractiveScene):
 
         # Change it to k = 3
         new_grid = OptimalGrid(3).align_to(ORIGIN, DL)
+        for hole in new_grid.holes:
+            hole.border.set_color(WHITE)
         grid.holes.set_z_index(100)
         self.add(grid)
         self.play(
@@ -637,13 +669,14 @@ class WindmillTilings(InteractiveScene):
             if new_k - grid.k != 0:
                 grid.k = new_k
                 grid.become(OptimalGrid(new_k).align_to(ORIGIN, DL))
+                for hole in grid.holes:
+                    hole.border.set_color(WHITE)
 
                 for hole in grid.holes:
-                    hole.border.set_stroke(width = 5*new_k**(-1/3), color = interpolate_color(YELLOW, RED, min(1, (new_k - 3)/7)))
+                    hole.border.set_stroke(width = 5*new_k**(-1/3), color = interpolate_color(WHITE, RED, min(1, (new_k - 3)/7)))
                 for tile in grid.tiles:
                     tile.add_updater(lambda m: m.set_stroke(width = 1.5*new_k**1.5))
         grid.add_updater(update_grid)
-
 
         # Increase k to 10
         next_k = 10
@@ -758,6 +791,8 @@ class WindmillTilings(InteractiveScene):
 
         # Count the number of square tiles
         new_grid = OptimalGrid(k = 5).match_width(grid).move_to(grid)
+        for hole in new_grid.holes:
+            hole.border.set_color(WHITE)
         self.remove(grid)
         grid = new_grid
         update_grid(grid)
@@ -968,6 +1003,8 @@ class ErdosSzekeres(InteractiveScene):
         grid.add_tile(3, 1, 1, 8)
         grid.add_tile(3, 1, 5, 8)
         grid.tiles.set_stroke(width = 3)
+        for hole in grid.holes:
+            hole.border.set_color(WHITE)
 
         # Number the holes according to their height
         nums_color = BLUE_B
@@ -988,7 +1025,7 @@ class ErdosSzekeres(InteractiveScene):
         ])
         self.add(column_highlights)
         n_color = YELLOW
-        brace = Brace(grid, UP, buff = 0.8).set_color(n_color)
+        brace = Brace(grid, UP, buff = 0.8)
         label = brace.get_tex("N", font_size = 60).set_color(n_color)
         self.camera.frame.save_state()
         self.play(
@@ -1867,11 +1904,13 @@ class OptimalErdosSzekeres(InteractiveScene):
         grid = OptimalGrid(k).set_width(6)
         self.add(grid)
         grid.tiles.set_stroke(width = 3)
+        for hole in grid.holes:
+            hole.border.set_color(WHITE)
 
         # Label N = k^2
         n_color = YELLOW
         k_color = TEAL
-        brace = Brace(grid, UP).set_color(n_color)
+        brace = Brace(grid, UP)
         label = brace.get_tex("N = k^2", font_size = 60, tex_to_color_map = {"N": n_color, "k": k_color}).shift(UP*0.2)
         self.camera.frame.save_state()
         self.play(
@@ -1930,6 +1969,8 @@ class OptimalErdosSzekeres(InteractiveScene):
             grid.tiles.fade(0.9)
             grid.tiles.set_stroke(width = 3)
             grid.holes.set_stroke(width = 2)
+            for hole in grid.holes:
+                hole.border.set_color(WHITE)
             self.add(grid)
             self.wait(0.1)
         self.wait(2)
@@ -2158,3 +2199,5 @@ class PassingFlashes(InteractiveScene):
         self.play(VShowPassingFlash(Rectangle(width = 4, height = 1, stroke_width = 4, stroke_color = YELLOW).insert_n_curves(100), time_width = 3), run_time = 4)
         self.wait(1)
         self.play(VShowPassingFlash(Rectangle(width = 4.5, height = 1, stroke_width = 4, stroke_color = YELLOW).insert_n_curves(100), time_width = 3), run_time = 4)
+
+
