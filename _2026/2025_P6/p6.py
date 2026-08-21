@@ -2201,3 +2201,73 @@ class PassingFlashes(InteractiveScene):
         self.play(VShowPassingFlash(Rectangle(width = 4.5, height = 1, stroke_width = 4, stroke_color = YELLOW).insert_n_curves(100), time_width = 3), run_time = 4)
 
 
+
+
+class IMODetails(InteractiveScene):
+    def construct(self):
+        # Write "International Math Olympiad"
+        imo_text = TexText("International Math Olympiad", font_size = 70).set_opacity(0.9).set_stroke(width = 7, color = BLACK, behind = True)
+        imo_logo = ImageMobject("IMO_logo").set_opacity(0.9)
+        self.play(FadeIn(imo_logo, shift = OUT*2), Write(imo_text, stroke_color = WHITE))
+        self.wait(2)
+        imo_text_shortened = TexText("IMO", font_size = 100).set_stroke(width = 7, color = BLACK, behind = True)
+        self.play(TransformMatchingShapes(imo_text, imo_text_shortened), run_time = 1.5)
+        self.wait(2)
+
+        # Shift it up to the top
+        self.play(Group(imo_logo, imo_text_shortened).animate.scale(0.3).to_edge(UP, buff = 0.4))
+        self.wait(1)
+
+        # Fade in boxes for the problems underneath
+        problems = VGroup()
+        for i in range(6):
+            rect = Rectangle(width = 6, height = 1.5, fill_opacity = 1, fill_color = TEAL_A, stroke_width = 0).round_corners(0.2)
+            label = TexText(R"\text{Problem }" + str(i + 1)).set_color(BLACK)
+            label.set_z_index(1)
+            problem = VGroup(rect, label)
+            problems.add(problem)
+        problems.arrange_in_grid(n_cols = 2, h_buff = 2, v_buff = 0.5, fill_rows_first = False).set_width(10).to_edge(DOWN, buff = 1)
+        self.play(LaggedStartMap(FadeIn, problems, shift = UP*0.2, lag_ratio = 0.1))
+
+        # Write labels for days underneath
+        day1_label = TexText("Day 1").next_to(problems[:3], UP, buff = 0.4)
+        day2_label = TexText("Day 2").next_to(problems[3:], UP, buff = 0.4)
+        self.play(Write(day1_label), Write(day2_label))
+        self.wait(2)
+
+        # Pi Creatures react to each one's difficulty
+        creatures = VGroup(*[
+            PiCreature("pondering").match_height(problem).next_to(problem, LEFT).look_at(problem)
+            for problem in problems
+        ])
+        self.play(LaggedStartMap(FadeIn, creatures, shift = RIGHT*0.2, lag_ratio = 0.1))
+        self.wait(2)
+
+        expressions = ["pondering", "confused", "horrified"]
+        colors = [RED_B, interpolate_color(RED_B, RED_E, 0.5), RED_E]
+        hard = TexText("Hard").set_color(colors[0]).match_y(problems[0])
+        brutal = TexText("Brutal").set_color(colors[2]).match_y(problems[2])
+        arrow = Arrow(ORIGIN, DOWN*2.2, thickness = 3).move_to(VGroup(hard, brutal))
+        VGroup(hard, arrow, brutal).next_to(problems, RIGHT)
+        self.play(
+            AnimationGroup(*[
+                creature.change(expressions[i % 3]).look_at(problem)
+                for i, (creature, problem) in enumerate(zip(creatures, problems))
+            ]),
+            AnimationGroup(
+                Write(hard),
+                GrowArrow(arrow),
+                Write(brutal)
+            , lag_ratio = 0.4),
+            AnimationGroup(*[
+                problem[0].animate.set_color(colors[i % 3])
+                for i, problem in enumerate(problems)
+            ], run_time = 2)
+        )
+        self.wait(2)
+
+        # Change the label to "2025 IMO"
+        year_label = TexText("2025").match_height(imo_text_shortened).set_stroke(width = 7, color = BLACK, behind = True)
+        imo_text_shortened.generate_target()
+        VGroup(year_label, imo_text_shortened.target).arrange(buff = 1.7).match_y(imo_text_shortened)
+        self.play(MoveToTarget(imo_text_shortened), FadeIn(year_label, shift = RIGHT*0.3), run_time = 2)
