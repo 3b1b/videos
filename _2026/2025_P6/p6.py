@@ -162,9 +162,7 @@ class OptimalArrangementMotivation(InteractiveScene):
 
             for side_idx in range(4):
                 hole = Hole()
-                for i in range(len(hole.border)):
-                    if i != side_idx:
-                        hole.border[i].set_color(WHITE)
+                hole.border[side_idx].set_color(WHITE)
                 hole.phase = random.uniform(0, 2 * math.pi)
                 hole.freq = random.uniform(0.8, 1.5)
 
@@ -294,7 +292,7 @@ class OptimalArrangementMotivation(InteractiveScene):
             FadeIn(tile_above, shift = DOWN),
             FadeIn(tile_below, shift = UP),
             holes[:3].animate.set_opacity(0.2),
-            VGroup(right_hole.border[0], right_hole.border[2]).animate.set_color(YELLOW)
+            VGroup(right_hole.border[0], right_hole.border[2]).animate.set_color(WHITE)
         , run_time = 2)
         self.wait(2)
 
@@ -305,7 +303,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         ])
         for i, hole in enumerate(inner_holes_above):
             for j in range(len(hole.border)):
-                if (-j + 1) % 4 != i:
+                if (-j + 1) % 4 == i:
                     hole.border[j].set_color(WHITE)
         inner_holes_below = VGroup(*[
             Hole().next_to(tile_below, [LEFT, RIGHT, DOWN][i], buff = 0).shift(DOWN*0.8 if i == 0 else 0)
@@ -313,7 +311,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         ])
         for i, hole in enumerate(inner_holes_below):
             for j in range(len(hole.border)):
-                if not (i == 0 and j == 1 or i == 1 and j == 3 or i == 2 and j == 2):
+                if (i == 0 and j == 1 or i == 1 and j == 3 or i == 2 and j == 2):
                     hole.border[j].set_color(WHITE)
         hole_above = inner_holes_above[0]
         hole_below = inner_holes_below[0]
@@ -356,7 +354,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         , run_time = 2.5)
         self.wait(2)
         new_tile = Tile(5, 3).align_to(right_hole.get_corner(DR), DL)
-        self.play(FadeIn(new_tile, shift = LEFT), right_hole.border[1].animate.set_color(YELLOW))
+        self.play(FadeIn(new_tile, shift = LEFT), right_hole.border[1].animate.set_color(WHITE))
         right_hole.clear_updaters()
 
         # Add some extra holes around the outer tiles
@@ -368,7 +366,7 @@ class OptimalArrangementMotivation(InteractiveScene):
             for outer_tile, direction1, direction2 in zip(outer_tiles, [DR, DL, UL, UR], [UR, DR, DL, UL])
         ])
         for i in range(len(inner_holes)):
-            VGroup(inner_holes[i].border[-i - 1 % 4], inner_holes[i].border[(-i) % 4]).set_color(WHITE)
+            VGroup(inner_holes[i].border[(-i + 1) % 4], inner_holes[i].border[(-i + 2) % 4]).set_color(WHITE)
         self.play(
             ReplacementTransform(hole_below, inner_holes[0]),
             ReplacementTransform(hole_above, inner_holes[1]),
@@ -384,7 +382,7 @@ class OptimalArrangementMotivation(InteractiveScene):
         ])
         for i in range(len(inner_holes)):
             for j in range(4):
-                if (-j + 1) % 4 != i:
+                if (-j + 1) % 4 == i:
                     outer_holes[i].border[j].set_color(WHITE)
         self.play(AnimationGroup(*[FadeIn(hole) for hole in outer_holes], lag_ratio = 0.1))
         self.wait(0.5)
@@ -449,11 +447,11 @@ class OptimalArrangementMotivation(InteractiveScene):
                 m.rotate(d_theta)
                 m.current_angle = target_angle
 
-                yellow_to_white_fade_color = interpolate_color(YELLOW, WHITE, t/3)
                 for i in range(len(m[1:])):
                     for j in range(4):
                         if (-j + 1) % 4 != i:
-                            m[1:][i].border[j].set_color(interpolate_color(m[1:][i].border[j].get_color(), WHITE, 0.01))
+                            m[1:][i].border[j].set_color(interpolate_color(m[1:][i].border[j].get_color(), YELLOW, 0.03))
+
             return updater
 
         puzzle_piece.add_updater(make_piece_updater(single_phase, single_amplitude, single_frequency))
