@@ -489,7 +489,7 @@ class ProjectionTheorem(InteractiveScene):
         self.add(plane, grid)
 
         # Add sphere
-        sphere = Sphere(true_normals=False)
+        sphere = Sphere()
         sphere.set_color(BLUE_E, 0.5)
         sphere.always_sort_to_camera(self.camera)
         mesh = SurfaceMesh(sphere)

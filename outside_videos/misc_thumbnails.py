@@ -30,7 +30,7 @@ class LinalgThumbnail(ThreeDScene):
             edges.add(face)
         for sm in edges.family_members_with_points():
             sm.flat_stroke = False
-            sm.joint_type = "round"
+            sm.set_joint_roundness(1)
 
         edges.set_stroke(WHITE, 4)
         edges.replace(cube)

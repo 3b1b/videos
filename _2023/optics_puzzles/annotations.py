@@ -1159,7 +1159,7 @@ class SimplerChiralShape(InteractiveScene):
         ribbon.set_color(RED)
         ribbon.set_opacity(0.9)
         ribbon.set_shading(0.5, 0.5, 0.5)
-        always(ribbon.sort_faces_back_to_front, UP)
+        ribbon.set_sort_to_camera()
         ribbon.set_x(-4)
 
         mirror_image = ribbon.copy()

@@ -42,15 +42,12 @@ class S3Viking(TexturedGeometry):
         self.apply_depth_test()
         self.rotate(PI).rotate(PI / 2, LEFT)
 
-        # Trim, a bit hacky
+        # Trim, a bit hacky. Keep the faces whose every corner is a point of the mesh
+        # below the index, vertex_indices saying which point each record came from
         tube_index = 38_950
-        idx = self.triangle_indices
-        idx = idx[idx < tube_index]
-        idx = idx[:-(len(idx) % 3)]
-        self.triangle_indices = idx
-
-        self.data = self.data[:tube_index]
-        self.note_changed_data()
+        keep = (self.vertex_indices < tube_index).reshape((-1, 3)).all(1).repeat(3)
+        self.vertex_indices = self.vertex_indices[keep]
+        self.set_data(self.data[keep])
         self.refresh_bounding_box()
         self.move_to(height * self.offset)
 

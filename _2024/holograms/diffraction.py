@@ -34,16 +34,36 @@ def hsl_to_rgb(hsl):
     return rgb
 
 
+# How many sources the shader has room for, see diffraction.wgsl
+MAX_LIGHT_SOURCES = 32
+
+
 class LightWaveSlice(Mobject):
-    shader_folder: str = str(Path(Path(__file__).parent, "diffraction_shader"))
-    data_dtype: Sequence[Tuple[str, type, Tuple[int]]] = [
+    shader_file: str = str(Path(__file__).with_suffix(".wgsl"))
+    data_dtype: np.dtype = np.dtype([
         ('point', np.float32, (3,)),
-    ]
-    render_primitive: int = moderngl.TRIANGLE_STRIP
+    ])
+    # The four corners are expanded into the two triangles covering them by the vertex
+    # shader, six of the vertices drawn doing that and the rest collapsing
+    verts_per_record: int = 6
+    uniform_dtype: np.dtype = uniform_block_dtype(
+        *COMMON_UNIFORMS,
+        ("color", 3),
+        ("opacity", 1),
+        ("frequency", 1),
+        ("wave_number", 1),
+        ("max_amp", 1),
+        ("decay_factor", 1),
+        ("show_intensity", 1),
+        ("n_sources", 1),
+        ("time", 1),
+        ("time_rate", 1),
+        ("point_sources", 4, MAX_LIGHT_SOURCES),
+    )
 
     def __init__(
         self,
-        point_sources: DotCloud,
+        point_sources: Mobject,
         shape: tuple[float, float] = (8.0, 8.0),
         color: ManimColor = BLUE_D,
         opacity: float = 1.0,
@@ -56,12 +76,11 @@ class LightWaveSlice(Mobject):
     ):
         self.shape = shape
         self.point_sources = point_sources
-        self._is_paused = False
         super().__init__(**kwargs)
 
         if max_amp is None:
             max_amp = point_sources.get_num_points()
-        self.set_uniforms(dict(
+        self.set_uniform(
             frequency=frequency,
             wave_number=wave_number,
             max_amp=max_amp,
@@ -69,7 +88,7 @@ class LightWaveSlice(Mobject):
             decay_factor=decay_factor,
             show_intensity=float(show_intensity),
             time_rate=1.0,
-        ))
+        )
         self.set_color(color, opacity)
 
         self.add_updater(lambda m, dt: m.increment_time(dt))
@@ -78,7 +97,7 @@ class LightWaveSlice(Mobject):
 
     def init_data(self) -> None:
         super().init_data(length=4)
-        self.data["point"][:] = [UL, DL, UR, DR]
+        self.data["point"] = [UL, DL, UR, DR]
 
     def init_points(self) -> None:
         self.set_shape(*self.shape)
@@ -124,10 +143,16 @@ class LightWaveSlice(Mobject):
         return self
 
     def sync_points(self):
-        sources: DotCloud = self.point_sources
-        for n, point in enumerate(sources.get_points()):
-            self.set_uniform(**{f"point_source{n}": point})
-        self.set_uniform(n_sources=sources.get_num_points())
+        """
+        Takes the sources' places as they stand, which an updater does every frame so that
+        moving a source moves the wave it makes.
+        """
+        points = self.point_sources.get_points()[:MAX_LIGHT_SOURCES]
+        # A block holds four floats per array element whatever it is asked for, so a point
+        # sits in the first three of them, see uniform_block_dtype
+        sources = np.zeros((MAX_LIGHT_SOURCES, 4))
+        sources[:len(points), :3] = points
+        self.set_uniform(point_sources=sources, n_sources=len(points))
         return self
 
     def increment_time(self, dt):
@@ -152,8 +177,13 @@ class LightWaveSlice(Mobject):
         alpha: float,
         path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray] = straight_path
     ) -> Self:
-        self.locked_uniform_keys.add("time")
+        # The clock is the updater's to advance, not an animation's to interpolate: both
+        # ends of one were copied at the moment it began, so letting it through would stop
+        # the wave for as long as the animation ran
+        time = self.uniforms["time"]
         super().interpolate(wave1, wave2, alpha, path_func)
+        self.set_uniform(time=time)
+        return self
 
     def wave_func(self, points):
         time = self.uniforms["time"]
@@ -2861,8 +2891,6 @@ class PlaneWaveThroughZonePlate(DiffractionGratingScene):
         dash_circle = DashedVMobject(Arc(angle=(23 / 24) * TAU), num_dashes=12)
         dash_circle.set_stroke(YELLOW, 3)
         dash_circle.replace(obj_dot).set_width(0.2)
-        for part in dash_circle:
-            dash_circle.set_joint_type("no_joint")
         had_been_words = Text("Where the object\nhad been", font_size=36)
         had_been_words.next_to(dash_circle, UP, buff=0, aligned_edge=LEFT)
 

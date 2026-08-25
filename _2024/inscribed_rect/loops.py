@@ -988,7 +988,7 @@ class ChangeTheSurface(ShowTheSurface):
             get_half_parametric_func(surface_func),
             resolution=surface_resolution,
         )
-        surface.sort_faces_back_to_front(self.camera.get_location())
+        surface.set_sort_to_camera()
         surface.set_color(color, opacity)
         return surface
 

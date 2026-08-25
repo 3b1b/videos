@@ -247,8 +247,6 @@ class Thumbnail3(Scene):
         clipback.set_points(clipboard[1].get_subpaths()[0])
         clipback.set_stroke(BLACK, 0)
         clipback.set_fill(GREY_E, 1)
-        clipback.refresh_triangulation()
-        clipboard.refresh_triangulation()
         self.add(clipback, clipboard)
 
         # Title
@@ -270,7 +268,6 @@ class Thumbnail3(Scene):
         words.set_stroke(BLACK, 10, background=True)
         self.add(words)
 
-        VGroup(*[m for m in self.mobjects if isinstance(m, VMobject)]).refresh_triangulation()
 
 
 class Thumbnail4(Scene):

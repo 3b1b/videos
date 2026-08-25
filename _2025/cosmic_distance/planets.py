@@ -306,7 +306,6 @@ class SizeOfEarthRenewed(InteractiveScene):
         earth.save_state()
         earth.stretch(1e-3, 0)
         earth.data["d_normal_point"] = earth.get_points() + 1e-3 * RIGHT
-        earth.note_changed_data()
 
         frame.reorient(5, 0, -90, 2 * RIGHT)
 

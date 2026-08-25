@@ -18,7 +18,6 @@ def get_complex_graph(
     resolution=(301, 301),
     saturation=0.5,
     luminance=0.5,
-    face_sort_direction=UP,
     mesh_resolution=(61, 61),
     mesh_stroke_style=dict(
         color=WHITE,
@@ -50,7 +49,7 @@ def get_complex_graph(
         )
 
     graph.set_opacity(opacity)
-    graph.sort_faces_back_to_front(face_sort_direction)
+    graph.set_sort_to_camera()
 
     # Add mesh
     mesh = SurfaceMesh(graph, resolution=mesh_resolution)

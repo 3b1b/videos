@@ -2140,7 +2140,6 @@ class TryToFindFault(TeacherStudentsScene):
         stars.arrange(RIGHT)
         stars.move_to(self.hold_up_spot, DOWN)
         stars.insert_n_curves(10)
-        stars.refresh_triangulation()
 
         self.play(
             morty.says("I dare you to\nfind a fault", mode="tease"),

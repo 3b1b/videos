@@ -35,7 +35,7 @@ def get_full_surface(band_func, x_range):
     )
     surface.set_color(BLUE_D)
     surface.set_shadow(0.5)
-    surface.add_updater(lambda m: m.sort_faces_back_to_front(DOWN))
+    surface.set_sort_to_camera()
     # surface = TexturedSurface(surface, "EarthTextureMap", "NightEarthTextureMap")
     # surface = TexturedSurface(surface, "WaterColor")
     # inv_surface = ParametricSurface(
