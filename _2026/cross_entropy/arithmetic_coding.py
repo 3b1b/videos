@@ -185,66 +185,226 @@ class ArithmeticCodingDiagram(Group):
         return FadeIn(layer)
 
 
-class ProbababilityOfAWord(InteractiveScene):
-    interval_width = 12
+class IntroduceCharacterModel(InteractiveScene):
 
     def construct(self):
-        # Initialize layers list
-        diagram = ArithmeticCodingDiagram()
+        # Show a few example distributions
+        frame = self.frame
+        input_phrase = "compression is "
+        n_initial_letters = 1
+        char_labels = CHAR_ALPHABET.replace(" ", "_")
+        distribution = get_next_char_distribution(input_phrase[:n_initial_letters])
+        bar_chart = self.get_bar_chart(distribution, char_labels)
 
-        # Show bar chart (TODO, have a model above feeding into this)
-        layer = diagram.layers[0]
-        bars = layer.bars.copy()
-        char_labels = Text(diagram.char_alphabet.replace(" ", "_"), font_size=36)
-        for n, label in enumerate(char_labels):
-            label.set_x(n * 0.4)
-        dec_labels = VGroup(
-            DecimalNumber(100 * x, font_size=16, unit="%", num_decimal_places=1)
-            for x in layer.distribution
+        out_arrow = Line(3 * UP, 3 * RIGHT, path_arc=-90 * DEG, stroke_width=8, buff=0)
+        out_arrow.add_tip(width=0.5, length=0.5)
+        out_arrow.set_color(GREY_B)
+        out_arrow.shift(bar_chart.get_bottom() - out_arrow.get_end() + 5 * UP)
+        model = ImageMobject(Path(
+            self.file_writer.get_output_file_rootname().parent.parent,
+            "Paul Assets", "BigModel.png"
+        ))
+        model.set_height(5)
+        model.rotate(-2 * DEG)
+        model.next_to(out_arrow.get_start(), LEFT)
+        in_arrow = Vector(RIGHT, thickness=5)
+        in_arrow.next_to(model, LEFT)
+        in_arrow.scale(1.5, about_edge=LEFT)
+
+        def get_in_text(s, font_size=72):
+            result = Text(f"“{s}”", font_size=font_size)
+            result.next_to(in_arrow, LEFT, buff=0.15)
+            result.shift(0.05 * UP)
+            return result
+
+        def get_bar_chart(in_text):
+            return self.get_bar_chart(
+                distribution=get_next_char_distribution(in_text),
+                labels=char_labels
+            )
+
+        in_text_mob = get_in_text(input_phrase[:n_initial_letters])
+
+        frame.reorient(0, 0, 0, (-4.50, 2.56, 0.00), 12.89)
+        self.add(model, in_text_mob, in_arrow, out_arrow, bar_chart)
+        self.wait(0.5)
+        for n in range(n_initial_letters + 1, len(input_phrase) + 1):
+            in_text_mob.set_submobjects(get_in_text(input_phrase[:n]))
+            new_chart = get_bar_chart(input_phrase[:n])
+            self.play(ReplacementTransform(bar_chart, new_chart), run_time=0.25)
+            bar_chart = new_chart
+            self.wait(0.5)
+
+        # Highlight distribution and limited vocabulary
+        wide_char_rect = SurroundingRectangle(bar_chart.labels, buff=0.05)
+        wide_char_rect.set_stroke(YELLOW, 2)
+        char_rects = VGroup(
+            wide_char_rect.copy().set_width(label.get_width() + 0.1, stretch=True).match_x(label)
+            for label in bar_chart.labels
         )
-        dec_labels.set_fill(GREY_B)
+        alphabet_rects = char_rects[:26]
+        punc_rects = char_rects[26:]
 
-        char_labels.move_to(2 * DOWN)
+        in_rect = SurroundingRectangle(in_text_mob)
+        out_rect = SurroundingRectangle(bar_chart)
+        in_rect.set_stroke(TEAL, 3)
+        out_rect.set_stroke(TEAL, 3)
+        out_arrow.set_z_index(1)
 
-        for char, bar, dec in zip(char_labels, bars, dec_labels):
-            bar.rotate(90 * DEG)
-            bar.stretch(0.5, 0)
-            bar.stretch(2, 1)
-            bar.match_x(char)
-            bar.align_to(char_labels.get_top(), DOWN).shift(SMALL_BUFF * UP)
-            dec.next_to(bar, UP, SMALL_BUFF)
+        self.play(ShowCreation(in_rect))
+        self.wait()
+        self.play(
+            frame.animate(time_span=(0.5, 2.5)).to_default_state().set_y(-1),
+            ReplacementTransform(in_rect, out_rect, run_time=1)
+        )
+        self.wait()
+        self.play(
+            FadeOut(out_rect),
+            ShowCreation(alphabet_rects, lag_ratio=0.05, run_time=2),
+        )
+        self.wait()
+        self.play(
+            FadeOut(alphabet_rects, lag_ratio=0.01),
+            ShowCreation(punc_rects, lag_ratio=0.1),
+        )
+        self.wait()
+        self.play(
+            frame.animate(run_time=3).reorient(0, 0, 0, (-4.50, 2.56, 0.00), 12.89),
+            FadeOut(punc_rects, time_span=(1, 2)),
+        )
 
-        self.add(bars)
-        self.add(char_labels)
-        self.add(dec_labels)
-        self.wait()  # Do something here?
+        # Show blank space input
+        for n in range(len(input_phrase), -1, -1):
+            in_text_mob.set_submobjects(get_in_text(input_phrase[:n]))
+            new_chart = get_bar_chart(input_phrase[:n] or " ")
+            self.play(ReplacementTransform(bar_chart, new_chart), run_time=0.1)
+            bar_chart = new_chart
+            self.wait(0.1)
+        self.wait()
+
+        self.play(
+            frame.animate.reorient(0, 0, 0, (-1.69, 1.39, 0.00), 9.99),
+            LaggedStart(*(
+                bar.animate(rate_func=there_and_back).set_fill(YELLOW)
+                for bar in bar_chart.bars
+            ), lag_ratio=0.25),
+            LaggedStart(*(
+                FadeIn(rect, rate_func=there_and_back)
+                for rect in char_rects
+            ), lag_ratio=0.25),
+            run_time=7
+        )
 
         # Transition to horizontal stack
-        frame = self.frame
-        new_dec_labels = VGroup(
-            DecimalNumber(x, font_size=12, num_decimal_places=2)
-            for x in layer.distribution
-        )
-        new_dec_labels.set_fill(GREY_B)
-        for dec, bar in zip(new_dec_labels, layer.bars):
-            dec.next_to(bar, DOWN, buff=SMALL_BUFF)
-            if dec.get_width() > bar.get_width():
-                dec.set_opacity(0)
+        diagram = ArithmeticCodingDiagram()
+        layer = diagram.layers[0]
+        new_dec_labels = self.get_stacked_distribution_dec_labels(layer)
+
+        for bar in bar_chart.bars:
+            og = bar.copy()
+            bar.rotate(90 * DEG)
+            bar.replace(og, stretch=True)
 
         kw = dict(run_time=3, lag_ratio=0.05)
         self.play(
             LaggedStart(
                 (FadeTransform(dec1, dec2)
-                for dec1, dec2 in zip(dec_labels, new_dec_labels)),
+                for dec1, dec2 in zip(bar_chart.dec_labels, new_dec_labels)),
                 group_type=Group,
                 **kw
             ),
-            ReplacementTransform(char_labels, layer.labels, **kw),
-            ReplacementTransform(bars, layer.bars, **kw),
-            frame.animate.set_width(12.5).set_anim_args(**kw),
+            ReplacementTransform(bar_chart.bars, layer.bars, **kw),
+            ReplacementTransform(bar_chart.labels, layer.labels, **kw),
+            LaggedStartMap(FadeOut, Group(in_text_mob, in_arrow, model, out_arrow), shift=UP, time_span=(1, 3)),
+            frame.animate(run_time=3).to_default_state().set_y(-1),
         )
         self.add(layer)
         self.wait()
+
+    def get_bar_chart(
+        self,
+        distribution,
+        labels,
+        bar_colors=(BLUE_E, TEAL),
+        spacing=0.15,
+        bar_width=0.25,
+        unit_height=15,
+        max_height=5,
+        label_font_size=36,
+        dec_font_size=16,
+        bottom=2 * DOWN
+    ):
+        bars = VGroup(
+            Rectangle(width=bar_width, height=prob * unit_height)
+            for prob in distribution
+        )
+        bars.arrange(RIGHT, buff=spacing, aligned_edge=DOWN)
+        bars.set_fill(bar_colors, 1, gradient_direction=RIGHT)
+        bars.set_stroke(WHITE, 1)
+        bars.set_max_height(max_height, stretch=True)
+        bars.center()
+
+        dec_labels = VGroup(
+            DecimalNumber(100 * prob, font_size=dec_font_size, unit="%", num_decimal_places=1)
+            for prob in distribution
+        )
+        dec_labels.set_fill(GREY_B)
+        char_labels = Text(labels, font_size=label_font_size)
+        char_labels.next_to(bars, DOWN, SMALL_BUFF)
+
+        for bar, char, dec in zip(bars, char_labels, dec_labels):
+            char.match_x(bar)
+            dec.next_to(bar, UP, SMALL_BUFF)
+
+        result = VGroup(bars, char_labels, dec_labels)
+        result.labels = char_labels
+        result.dec_labels = dec_labels
+        result.bars = bars
+        result.move_to(bottom, DOWN)
+        return result
+
+    def get_stacked_distribution_dec_labels(self, layer, font_size=12, num_decimal_places=2):
+        dec_labels = VGroup(
+            DecimalNumber(x, font_size=font_size, num_decimal_places=num_decimal_places)
+            for x in layer.distribution
+        )
+        dec_labels.set_fill(GREY_B)
+        for dec, bar in zip(dec_labels, layer.bars):
+            dec.next_to(bar, DOWN, buff=SMALL_BUFF)
+            if dec.get_width() > bar.get_width():
+                dec.set_opacity(0)
+        return dec_labels
+
+    def old_animations(self):
+        for group in bar_chart:
+            for mob in group:
+                mob.save_state()
+                mob.scale(0)
+                mob.set_opacity(0)
+                mob.move_to(model.get_right())
+
+        frame.reorient(0, 0, 0, (-3.64, 2.97, 0.00), 11.64)
+        self.add(model, in_text, in_arrow, out_arrow)
+        kw = dict(lag_ratio=0.02, path_arc=-45 * DEG, run_time=2)
+        self.play(*(
+            LaggedStartMap(Restore, group, **kw)
+            for group in bar_chart
+        ))
+        self.wait()
+
+
+class ProbababilityOfAWord(IntroduceCharacterModel):
+    interval_width = 12
+
+    def construct(self):
+        # Add diagram
+        frame = self.frame
+        diagram = ArithmeticCodingDiagram()
+        layer = diagram.layers[0]
+        dec_labels = self.get_stacked_distribution_dec_labels(layer)
+
+        frame.set_y(-1)
+        self.add(layer, dec_labels)
 
         # Show full width
         over_brace = Brace(layer, UP)
@@ -261,7 +421,7 @@ class ProbababilityOfAWord(InteractiveScene):
 
         new_dec_rects = VGroup(
             SurroundingRectangle(dec, buff=0.05).set_stroke(YELLOW, 1, opacity=dec.get_opacity())
-            for dec in new_dec_labels
+            for dec in dec_labels
         )
 
         self.play(
@@ -277,78 +437,90 @@ class ProbababilityOfAWord(InteractiveScene):
         )
         self.wait()
 
-        # Show unit interval (Actually, do this later)
+        # Show unit interval
         brace_group = VGroup(over_brace, width_label)
+        unit_interval = diagram.unit_interval
         self.play(
-            Write(diagram.unit_interval, lag_ratio=0.01),
-            brace_group.animate.next_to(diagram.unit_interval[0], UP, MED_LARGE_BUFF),
-            frame.animate.set_width(13),
+            Write(unit_interval, lag_ratio=0.01),
+            brace_group.animate.next_to(unit_interval[0], UP, MED_LARGE_BUFF),
+            frame.animate.set_width(13).set_y(0),
         )
+        unit_interval.numbers.set_backstroke(BLACK, 3)
         self.play(FadeOut(brace_group))
         self.wait()
 
-        # Highlight "t" and "p" bars
-        def udpate_new_dec_labels(labels):
-            for dec, bar in zip(new_dec_labels, layer.bars):
-                dec.match_x(bar)
+        # Show a value over this interval
+        x_tracker = ValueTracker()
+        get_x = x_tracker.get_value
+        x_arrow = Vector(DOWN, thickness=5)
+        x_arrow.add_updater(lambda m: m.move_to(unit_interval.n2p(get_x()), DOWN))
+        x_arrow.set_z_index(-1)
+        x_dec = DecimalNumber(0, num_decimal_places=3)
+        x_dec.f_always.set_value(get_x)
+        x_dec.always.next_to(x_arrow, UP, SMALL_BUFF)
+        layer.add_updater(lambda m: m.highlight(m.float_to_index(get_x())))
 
-        new_dec_labels.clear_updaters()
-        new_dec_labels.add_updater(udpate_new_dec_labels)
+        self.add(layer)
+        self.play(
+            VFadeIn(x_arrow, time_span=(0, 1)),
+            VFadeIn(x_dec, time_span=(0, 1)),
+            x_tracker.animate.set_value(1),
+            run_time=6
+        )
 
+        # Highlight "t"
         t_bar, p_bar, q_bar = VGroup(
             diagram.get_letter_bar(char)
             for char in "tpq"
         )
 
         t_brace = Brace(t_bar, DOWN)
+        p_brace = Brace(p_bar, DOWN)
+        t_brace_label = DecimalNumber(diagram.get_conditional_probability("t"), font_size=24)
+        t_brace_label.next_to(t_brace, DOWN, SMALL_BUFF)
+        p_brace_label = DecimalNumber(diagram.get_conditional_probability("p"), font_size=24)
+        p_brace_label.next_to(p_brace, DOWN, SMALL_BUFF)
 
-        t_brace_label = DecimalNumber(diagram.get_conditional_probability("t"), font_size=36)
-        t_brace_label.always.next_to(t_brace, DOWN)
+        pre_dec_label = dec_labels[ord("t") - ord("a")]
+        dec_labels.remove(pre_dec_label)
 
-        self.add(new_dec_labels)
-        self.add(t_brace)
         self.play(
-            diagram.renormalize_animation(0.6, 1.0),
-            UpdateFromFunc(t_brace, lambda m: m.become(Brace(t_bar, DOWN))),
-            VFadeIn(t_brace),
-            UpdateFromFunc(new_dec_labels, udpate_new_dec_labels),
-            VFadeOut(new_dec_labels),
-            VFadeIn(t_brace_label),
-            frame.animate.set_width(FRAME_WIDTH),
-            run_time=2,
+            VFadeOut(x_dec),
+            x_tracker.animate.set_value(unit_interval.p2n(layer.bars[19].get_center())),
+            run_time=2
         )
-        self.play(diagram.highlight_letter("t", TEAL, other_bar_opacity=0.5))
+        self.play(
+            x_tracker.animate(rate_func=wiggle, run_time=4).set_value(unit_interval.p2n(layer.bars[19].get_left() + 0.2 * LEFT)),
+            GrowFromCenter(t_brace),
+            TransformFromCopy(pre_dec_label, t_brace_label),
+            FadeOut(dec_labels)
+        )
+        layer.clear_updaters()
+        self.play(FadeOut(x_arrow))
         self.wait()
 
-        p_brace = Brace(p_bar, DOWN)
-        pre_p_brace = t_brace.copy()
-        p_brace_label = t_brace_label.copy()
-        p_brace_label.clear_updaters()
-
+        # Highlight "p"
+        self.add(diagram)
         self.play(
-            ReplacementTransform(pre_p_brace, p_brace),
-            ChangeDecimalToValue(p_brace_label, diagram.get_conditional_probability("p")),
-            UpdateFromFunc(Mobject(), lambda m: p_brace_label.match_x(pre_p_brace)),
-            diagram.highlight_letter("p", TEAL, other_bar_opacity=0.5)
+            diagram.highlight_letter("p", TEAL, other_bar_opacity=0.25),
+            ReplacementTransform(t_brace, p_brace),
+            ReplacementTransform(t_brace_label, p_brace_label),
         )
         self.wait()
 
         # Show q
         self.play(
-            diagram.renormalize_animation(0.6, 0.65),
-            UpdateFromFunc(t_brace, lambda m: m.become(Brace(t_bar, DOWN))),
+            diagram.renormalize_animation(0.6, 0.66),
             UpdateFromFunc(p_brace, lambda m: m.become(Brace(p_bar, DOWN))),
-            UpdateFromFunc(t_brace_label, lambda m: m.match_x(t_brace)),
-            UpdateFromFunc(p_brace_label, lambda m: m.match_x(p_brace)),
+            UpdateFromFunc(p_brace_label, lambda m: m.next_to(p_brace, DOWN, SMALL_BUFF))
         )
-        self.remove(t_brace, t_brace_label)
         self.wait()
 
         q_brace = Brace(q_bar, DOWN)
         q_brace_label = DecimalNumber(
             diagram.get_conditional_probability("q"),
             num_decimal_places=3,
-            font_size=36,
+            font_size=24,
         )
         q_brace_label.next_to(q_brace, DOWN)
 
@@ -363,8 +535,12 @@ class ProbababilityOfAWord(InteractiveScene):
             FadeOut(VGroup(p_brace, q_brace, p_brace_label, q_brace_label)),
             layer.bars.animate.set_fill(opacity=1).set_submobject_colors_by_gradient(BLUE_E, TEAL_E).set_stroke(WHITE, 1),
         )
-        self.play(diagram.renormalize_animation(0, 1), run_time=1)
         self.wait()
+        self.play(diagram.renormalize_animation(0, 1), run_time=2)
+        self.wait()
+
+        # To do, let the x_tracker range over the full bar and add functionality to populate the relevant
+        # stack of letters underneath it.
 
         # Cycle through some letters, ask about P("math")
         def get_letter_prob_label(char):
@@ -424,6 +600,8 @@ class ProbababilityOfAWord(InteractiveScene):
         self.play(diagram.renormalize_animation(0.45, 0.46))
         self.play(diagram.renormalize_animation(0.4, 0.5))
         self.play(diagram.renormalize_animation(0, 1))
+
+
 
 
 class SimpleZoom2(InteractiveScene):

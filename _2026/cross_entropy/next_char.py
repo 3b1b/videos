@@ -12,8 +12,8 @@ import numpy as np
 from collections import Counter
 from functools import lru_cache
 
-# CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?"
-CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?0123456789-"
+CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?"
+# CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?0123456789-"
 
 NANOGPT_DIR = "/Users/grant/cs/nanoGPT"
 NANOGPT_CKPT = "/Users/grant/cs/nanoGPT/out-wiki-char/ckpt.pt"
