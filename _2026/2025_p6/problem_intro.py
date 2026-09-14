@@ -611,3 +611,40 @@ class KScaling(InteractiveScene):
             k_blocks.animate.set_opacity(0.25)
         )
         self.wait(2)
+
+
+class LuongQuote(InteractiveScene):
+    def construct(self):
+        # Add the quote
+        quote = Text(
+            """
+            “We didn’t really have a way to teach
+            the model to be patient. It didn’t take
+            the time to understand the problem,
+            to get a feel for the problem,
+            to not try to solve the problem.”
+            """,
+            alignment="left"
+        ).set_color(YELLOW)
+        quote_bg = quote.copy().set_color("#111111")
+        self.add(quote_bg)
+        self.play(FadeIn(quote["""“We didn’t really have a way to teach
+            the model to be patient."""], lag_ratio=0.1, run_time=3))
+        self.wait(0.2)
+        self.play(FadeIn(quote["""It didn’t take
+            the time to understand the problem,"""], lag_ratio=0.1, run_time=2.5),
+                  quote["""“We didn’t really have a way to teach
+            the model to be patient."""].animate.set_color(WHITE)
+                  )
+        self.play(
+            FadeIn(quote["""to get a feel for the problem,"""], lag_ratio=0.1, run_time=1.5),
+            quote["""It didn’t take
+            the time to understand the problem,"""].animate.set_color(WHITE)
+        )
+        self.wait(0.1)
+        self.play(
+            FadeIn(quote["""to not try to solve the problem.”"""], lag_ratio=0.1, run_time=1.5),
+            quote["""to get a feel for the problem,"""].animate.set_color(WHITE)
+        )
+        self.wait(0.1)
+        self.play(quote["""to not try to solve the problem.”"""].animate.set_color(WHITE))
