@@ -344,6 +344,27 @@ def source_blocks(code):
     return blocks
 
 
+class SourceColumn(VGroup):
+    """
+    Every glyph of a source, which moves as one whether or not all of it is showing.
+
+    An animation which reveals a group a piece at a time takes whatever it has not reached
+    yet out of the group as it goes, see ShowIncreasingSubsets. A group scrolled while that
+    runs would move only what is showing and leave the rest where it stood: each glyph would
+    start moving as it appeared, and every line would break wherever the reveal had got to,
+    its tail a line below its head. So a shift here moves every glyph, showing or not.
+    """
+
+    def __init__(self, *glyphs):
+        super().__init__(*glyphs)
+        self.glyphs = list(glyphs)
+
+    def shift(self, vector):
+        for glyph in self.glyphs:
+            glyph.shift(vector)
+        return self
+
+
 def lean_column(code, font_size=36):
     """
     Lean source as a column of blocks, a paragraph of it to each, rather than as one mobject
@@ -369,7 +390,7 @@ def lean_column(code, font_size=36):
         mob.shift((number - 1) * line_height * DOWN - anchor.get_corner(DL))
         mob.remove(anchor)
         column.add(mob)
-    return VGroup(*column.family_members_with_points())
+    return SourceColumn(*column.family_members_with_points())
 
 
 class Lean(InteractiveScene):
