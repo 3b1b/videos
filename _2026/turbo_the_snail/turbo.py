@@ -177,7 +177,7 @@ class Turbo(Sprite):
         if self.grid.is_monster(*new_position):
             return walk_in
 
-        reveal_anim = self.grid.reveal_tile(*new_position, axis=[new_position[1] - j, new_position[0] - i, 0])
+        reveal_anim = self.grid.reveal_tile(*new_position, axis=[new_position[1] - j, new_position[0] - i, 0], run_time=run_time)
         return AnimationGroup(walk_in, reveal_anim, lag_ratio=0.3)
 
     def bounce_and_die(self):
@@ -273,8 +273,8 @@ class TurboGrid(Group):
             raise IndexError("Tile row index is greater than the number of rows")
         return self.tiles[i + j * (self.n - 1)]
 
-    def reveal_tile(self, i, j, axis=RIGHT):
-        return self.get_tile(i, j).reveal(axis=axis)
+    def reveal_tile(self, i, j, axis=RIGHT, run_time=0.5):
+        return self.get_tile(i, j).reveal(axis=axis, run_time=run_time)
 
     def get_col(self, i):
         return Group(*[self.get_tile(i, j) for j in range(self.n)])
@@ -324,6 +324,7 @@ class TurboController:
     def __init__(self, scene):
         self.scene = scene
         self.n = scene.grid.n
+        self.move_speed = 1
 
     @property
     def position(self):
@@ -339,7 +340,7 @@ class TurboController:
 
     def move(self, direction):
         target = self.scene.turbo.get_neighbor(direction)
-        if not self.scene.move_turbo(direction):
+        if not self.scene.move_turbo(direction, 0.5 / self.move_speed):
             self.last_monster_pos = target
             return False
         return True
@@ -398,7 +399,7 @@ class TurboScene(InteractiveScene):
         self.turbo = self.grid.turbo
 
     def move_turbo(self, direction, *args, **kwargs):
-        self.play(self.turbo.move(direction), *args, **kwargs)
+        self.play(self.turbo.move(direction, *args, **kwargs))
         position = tuple(self.turbo.current_position)
         if not self.grid.is_monster(*position):
             return True
@@ -619,9 +620,6 @@ class GetUnderneath(TurboScene):
         # Add the grid
         self.add(self.grid, self.turbo)
 
-        shuffled_monsters = list(self.grid.monsters)
-        random.shuffle(shuffled_monsters)
-
         # # Show the initial positions of the monsters
         # self.play(
         #     AnimationGroup(
@@ -762,3 +760,23 @@ class GetUnderneath(TurboScene):
         )
 
         get_underneath()
+
+
+class QuadrantExplorer(TurboScene):
+    def __init__(self, *args, **kwargs):
+        random.seed(1)
+        n = 32
+        # super().__init__(n, get_monster_staircase(n), *args, **kwargs)
+        # super().__init__(n, get_monster_staircase_inverted(n), *args, **kwargs)
+        super().__init__(n, get_random_monster_positions(n), *args, **kwargs)
+
+    def construct(self):
+        # Add the grid
+        self.add(self.grid, self.turbo)
+
+        # Turbo tries an arbitrary column
+        turbo = TurboController(self)
+        turbo.move_speed = 3
+        n = self.grid.n
+
+        turbo.try_col((n - 1) // 2)
