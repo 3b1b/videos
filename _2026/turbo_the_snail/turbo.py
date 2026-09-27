@@ -1,7 +1,10 @@
 from manim_imports_ext import *
 import random
 
-SPRITES_DIRECTORY = None
+SPRITES_DIRECTORY = os.path.join(
+    os.path.dirname(manim_config.file_writer.output_directory),
+    "Mitchell-Animations", "Manim Pixel Art v02"
+)
 
 
 class TileFlip(Animation):
@@ -34,6 +37,8 @@ class TileFlip(Animation):
 class Tile(Group):
     def __init__(self, parity=True, finish_line=False, has_monster=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.finish_line = finish_line
+        self.has_monster = has_monster
 
         self.top = TexturedSurface(
             Square3D(side_length=1),
@@ -54,6 +59,20 @@ class Tile(Group):
             return TileFlip(self, axis=axis, run_time=run_time, **kwargs)
         else:
             return Animation(Mobject(), run_time=run_time, **kwargs)
+
+    def set_has_monster(self, has_monster):
+        if has_monster == self.has_monster:
+            return
+        self.has_monster = has_monster
+        new_bot = TexturedSurface(
+            Square3D(side_length=1),
+            os.path.join(SPRITES_DIRECTORY, "MTilv2-4.png" if has_monster else "MTilv2-5.png" if self.finish_line else "MTilv2-2.png"),
+            texture_filter="nearest"
+        )
+        new_bot.data['point'][:] = self.bot.data['point']
+        new_bot.set_shading(0, 0, 0)
+        self.replace_submobject(self.submobjects.index(self.bot), new_bot)
+        self.bot = new_bot
 
 
 class Turbo(Sprite):
@@ -272,6 +291,11 @@ class TurboGrid(Group):
                 return monster
         raise LookupError(F"No monster at position ({i}, {j})")
 
+    def sync_tile_monster_flags(self):
+        for i in range(self.n - 1):
+            for j in range(self.n):
+                self.get_tile(i, j).set_has_monster((i, j) in self.monster_positions)
+
     def reveal_monster(self, i, j, run_time=3):
         monster = self.get_monster(i, j)
         monster_tile = self.get_tile(i, j)
@@ -339,10 +363,18 @@ class TurboController:
         return self.move_to_row(self.n - 1)
 
 
-def get_random_monster_positions(n):
+def get_random_monster_positions(n, hardcoded_monsters=[], free_column=None):
     monster_positions = []
+    remaining_rows = set(range(1, n - 1))
     remaining_columns = set(range(n - 1))
-    for j in range(1, n - 1):
+    for (i, j) in hardcoded_monsters:
+        monster_positions.append((i, j))
+        remaining_columns.remove(i)
+        remaining_rows.remove(j)
+    if free_column is None:
+        free_column = random.choice(list(remaining_columns))
+    remaining_columns.remove(free_column)
+    for j in remaining_rows:
         i = random.choice(list(remaining_columns))
         monster_positions.append((i, j))
         remaining_columns.remove(i)
@@ -360,8 +392,6 @@ def get_monster_staircase_inverted(n):
 class TurboScene(InteractiveScene):
     def __init__(self, n, monster_positions, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        global SPRITES_DIRECTORY
-        SPRITES_DIRECTORY = os.path.join(self.file_writer.output_directory.parent, "Mitchell-Animations", "Manim Pixel Art v02")
 
         self.grid = TurboGrid(n, monster_positions)
         self.grid.set_height(FRAME_HEIGHT * 0.9)
@@ -425,8 +455,8 @@ class TurboTest(TurboScene, ThreeDScene):
 class BruteForce(TurboScene):
     def __init__(self, *args, **kwargs):
         n = 15
-        random.seed(2)
-        super().__init__(n, get_random_monster_positions(n), *args, **kwargs)
+        random.seed(3)
+        super().__init__(n, get_random_monster_positions(n, hardcoded_monsters=[(0, 2)], free_column=10), *args, **kwargs)
 
     def construct(self):
         # Set the camera
@@ -439,28 +469,47 @@ class BruteForce(TurboScene):
 
         # Add the grid
         brace = Brace(self.grid, UP)
+        label = brace.get_tex("N - 1")
         self.play(
             AnimationGroup(
                 AnimationGroup(
                     self.camera.frame.animate(run_time=3.5).restore().scale(1.1, about_point=self.grid.get_bottom()),
                     self.grid.create(run_time=3.5),
                 ),
-                GrowFromEdge(brace, DOWN, run_time=2),
+                AnimationGroup(
+                    GrowFromEdge(brace, DOWN, run_time=2),
+                    Write(label, run_time=1)
+                ),
                 lag_ratio=0.6
             )
         )
-        self.wait(0.5)
 
         # Show the initial positions of the monsters
-        shuffled_monsters = list(self.grid.monsters)
-        random.shuffle(shuffled_monsters)
-        self.play(
-            AnimationGroup(*[
-                monster.animate_set_time(monster.BOB_END)
-                for monster in shuffled_monsters
-            ], lag_ratio=0.1)
-        )
-        self.wait(1)
+        num_monsters = len(self.grid.monsters)
+        monster_numbers = Group()
+        reveal_anims = []
+        for i, monster in enumerate(self.grid.monsters):
+            number = Tex(
+                R"\dots" if i == num_monsters - 2 else
+                "N - 2" if i == num_monsters - 1 else
+                str(i + 1),
+                font_size=40
+            ).set_color(
+                RED_E
+            ).set_stroke(
+                width=5, color=BLACK, behind=True
+            ).next_to(
+                monster, UP, buff=0.275 if i == num_monsters - 2 else 0.15
+            )
+            monster_numbers.add(number)
+            reveal_anims.append(
+                AnimationGroup(
+                    monster.animate_set_time(monster.BOB_END),
+                    FadeIn(number, shift=UP * 0.2)
+                )
+            )
+        self.play(AnimationGroup(*reveal_anims, lag_ratio=0.08))
+        self.wait(0.3)
 
         # Show how each column has at most one monster
         rect = Rectangle(
@@ -474,14 +523,7 @@ class BruteForce(TurboScene):
         ).shift(
             OUT * 0.02
         )
-        self.play(
-            AnimationGroup(
-                FadeOut(brace),
-                self.camera.frame.animate(run_time=2).restore(),
-                FadeIn(rect, run_time=0.6),
-                lag_ratio = 0.6
-            ),
-        )
+        self.play(FadeIn(rect), run_time=0.6)
         free_columns = set(range(self.grid.n - 1))
         for (i, j) in self.grid.monster_positions:
             free_columns.remove(i)
@@ -490,10 +532,22 @@ class BruteForce(TurboScene):
             self.play(rect.animate.match_x(self.grid.get_col(col)), run_time=0.6)
 
         self.play(
-            AnimationGroup(*[
-                monster.animate_set_time(monster.BOB_START)
-                for monster in self.grid.monsters
-            ])
+            AnimationGroup(
+                AnimationGroup(
+                    FadeOut(brace),
+                    FadeOut(label),
+                    FadeOut(monster_numbers),
+                    AnimationGroup(
+                        *[
+                            monster.animate_set_time(monster.BOB_START)
+                            for monster in self.grid.monsters[::-1]
+                        ],
+                        lag_ratio=0.3
+                    )
+                ),
+                self.camera.frame.animate(run_time=2).restore(),
+                lag_ratio=0.6
+            ),
         )
 
         # Execute the strategy
@@ -505,44 +559,90 @@ class BruteForce(TurboScene):
                 if turbo.try_col(col):
                     return
         brute_force()
+        self.wait(2)
+
+        # Change the positions of the monsters and show the new free column
+        new_positions = get_random_monster_positions(n, free_column=n - 2)
+        new_grid = TurboGrid(n, new_positions)
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.remove(self.grid, rect)
+        self.add(new_grid)
+        self.wait(2)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+
+        # Show the monsters and the free column
+        shuffled_monsters = list(self.grid.monsters)
+        random.shuffle(shuffled_monsters)
+        rect.match_x(self.grid.get_col(n - 2))
+        self.play(
+            AnimationGroup(*[
+                monster.animate_set_time(monster.BOB_END)
+                for monster in shuffled_monsters
+            ], lag_ratio=0.1),
+            FadeIn(rect),
+            self.camera.frame.animate(run_time=1).restore().scale(1.1, about_point=self.grid.get_bottom()),
+            AnimationGroup(
+                GrowFromEdge(brace, DOWN, run_time=1),
+                Write(label, run_time=1.5)
+            ),
+        )
+        self.wait(1)
+
+        # Hide the monsters again
+        self.play(
+            AnimationGroup(
+                *[
+                    monster.animate_set_time(monster.BOB_START)
+                    for monster in self.grid.monsters
+                ],
+                lag_ratio=0.2
+            )
+        )
+
+        # Run the strategy again
+        turbo = TurboController(self)
+        brute_force()
+        self.wait(2)
 
 
-class GetUnderneath(TurboScene, ThreeDScene):
+class GetUnderneath(TurboScene):
     def __init__(self, *args, **kwargs):
         random.seed(1)
         n = 15
         # super().__init__(n, get_monster_staircase(n), *args, **kwargs)
         # super().__init__(n, get_monster_staircase_inverted(n), *args, **kwargs)
-        super().__init__(n, get_random_monster_positions(n), *args, **kwargs)
+        super().__init__(n, get_random_monster_positions(n, hardcoded_monsters=[(0, 2)]), *args, **kwargs)
 
     def construct(self):
-        # Set the camera
-        self.camera.frame.reorient(0, 0, 0, (0, 0, 0), 16)
-
         # Add the grid
         self.add(self.grid, self.turbo)
 
         shuffled_monsters = list(self.grid.monsters)
         random.shuffle(shuffled_monsters)
 
-        # Show the initial positions of the monsters
-        shuffled_monsters = list(self.grid.monsters)
-        random.shuffle(shuffled_monsters)
-        self.play(
-            AnimationGroup(*[
-                monster.animate_set_time(monster.BOB_END)
-                for monster in shuffled_monsters
-            ], lag_ratio=0.1),
-            self.camera.frame.animate.reorient(0, 0, 0, (0, 0, 0), 16), run_time=2)
-        self.wait(1)
+        # # Show the initial positions of the monsters
+        # self.play(
+        #     AnimationGroup(
+        #         *[
+        #             monster.animate_set_time(monster.BOB_END)
+        #             for monster in self.grid.monsters
+        #         ],
+        #         lag_ratio=0.3)
+        # )
+        # self.wait(0.3)
 
-        # Hide the monsters again
-        self.play(
-            AnimationGroup(*[
-                monster.animate_set_time(monster.BOB_START)
-                for monster in self.grid.monsters
-            ])
-        )
+        # # Hide the monsters again
+        # self.play(
+        #     AnimationGroup(
+        #         *[
+        #             monster.animate_set_time(monster.BOB_START)
+        #             for monster in self.grid.monsters[::-1]
+        #         ],
+        #         lag_ratio=0.3
+        #     )
+        # )
 
         # Execute the strategy
         turbo = TurboController(self)
@@ -570,5 +670,95 @@ class GetUnderneath(TurboScene, ThreeDScene):
                 if not found_monster:
                     turbo.move_to_row(n - 1)
                     return
+
+        get_underneath()
+        self.wait(2)
+
+        # Change the positions of the monsters
+        new_positions = get_random_monster_positions(n, hardcoded_monsters=[(0, 2), (1, 1)])
+        new_grid = TurboGrid(n, new_positions)
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.remove(self.grid)
+        self.add(new_grid)
+        self.wait(1)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+        for monster in self.grid.monsters:
+            monster.set_time(monster.BOB_END)
+        self.wait(1)
+
+        # Change the positions of the monsters to the second case
+        new_positions = get_random_monster_positions(n, hardcoded_monsters=[(0, 2), (1, 3)])
+        new_grid = TurboGrid(n, new_positions)
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.remove(self.grid)
+        self.add(new_grid)
+        self.wait(1)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+        for monster in self.grid.monsters:
+            monster.set_time(monster.BOB_END)
+        self.wait(1)
+
+        # Hide the monsters
+        for monster in self.grid.monsters:
+            monster.set_time(monster.BOB_START)
+
+        # Try the strategy again
+        get_underneath()
+        self.wait(2)
+
+        # Try the strategy on many random arrangements
+        for _ in range(10):
+            new_positions = get_random_monster_positions(n)
+            new_grid = TurboGrid(n, new_positions)
+            new_grid.match_height(self.grid).move_to(self.grid)
+            self.remove(self.grid)
+            self.add(new_grid)
+
+            self.grid = new_grid
+            self.turbo = new_grid.turbo
+
+            for monster in self.grid.monsters:
+                monster.set_time(monster.BOB_END)
+            self.wait(1)
+
+            get_underneath()
+        self.wait(2)
+
+        # Try the strategy again with a diagonal wall of monsters
+        new_positions = get_monster_staircase(n)
+        new_grid = TurboGrid(n, new_positions)
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.remove(self.grid)
+        self.add(new_grid)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+
+        self.play(
+            AnimationGroup(
+                *[
+                    monster.animate_set_time(monster.BOB_END)
+                    for monster in self.grid.monsters
+                ],
+                lag_ratio=0.3)
+        )
+        self.wait(0.3)
+
+        brace = Brace(self.grid, UP)
+        label = brace.get_tex("N - 1")
+        self.play(
+            AnimationGroup(
+                self.camera.frame.animate(run_time=1).scale(1.1, about_point=self.grid.get_bottom()),
+                AnimationGroup(
+                    GrowFromEdge(brace, DOWN, run_time=1),
+                    Write(label, run_time=1)
+                ),
+                lag_ratio=0.2
+            )
+        )
 
         get_underneath()
