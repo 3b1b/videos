@@ -634,38 +634,54 @@ class KScaling(InteractiveScene):
         self.wait(2)
 
 
-class LuongQuote(InteractiveScene):
+class ProofInsideUnderstanding(InteractiveScene):
     def construct(self):
-        # Add the quote
-        quote = Text(
-            """
-            “We didn’t really have a way to teach
-            the model to be patient. It didn’t take
-            the time to understand the problem,
-            to get a feel for the problem,
-            to not try to solve the problem.”
-            """,
-            alignment="left"
-        ).set_color(YELLOW)
-        quote_bg = quote.copy().set_color("#111111")
-        self.add(quote_bg)
-        self.play(FadeIn(quote["""“We didn’t really have a way to teach
-            the model to be patient."""], lag_ratio=0.1, run_time=3))
-        self.wait(0.2)
-        self.play(FadeIn(quote["""It didn’t take
-            the time to understand the problem,"""], lag_ratio=0.1, run_time=2.5),
-                  quote["""“We didn’t really have a way to teach
-            the model to be patient."""].animate.set_color(WHITE)
-                  )
-        self.play(
-            FadeIn(quote["""to get a feel for the problem,"""], lag_ratio=0.1, run_time=1.5),
-            quote["""It didn’t take
-            the time to understand the problem,"""].animate.set_color(WHITE)
+        # Test
+        Checkmark()
+        frame = self.frame
+        circles = VGroup(
+            Circle(radius=4).set_fill(BLUE_E, 0.5).set_stroke(BLUE_E, 2).center(),
+            Circle(radius=1).set_fill(TEAL, 0.5).set_stroke(TEAL, 2).move_to(2 * LEFT),
         )
-        self.wait(0.1)
-        self.play(
-            FadeIn(quote["""to not try to solve the problem.”"""], lag_ratio=0.1, run_time=1.5),
-            quote["""to get a feel for the problem,"""].animate.set_color(WHITE)
+        titles = VGroup(
+            Text("Understanding", font_size=60).next_to(circles[0].get_top(), DOWN, LARGE_BUFF),
+            Text("Proof", font_size=36).next_to(circles[1].get_top(), DOWN, MED_LARGE_BUFF),
         )
-        self.wait(0.1)
-        self.play(quote["""to not try to solve the problem.”"""].animate.set_color(WHITE))
+
+        frame.set_height(4).move_to(circles[1])
+        self.play(
+            Write(circles[1]),
+            Write(titles[1]),
+            run_time=1
+        )
+        self.wait()
+        self.add(*circles, *titles)
+        self.play(
+            frame.animate.to_default_state(),
+            Write(circles[0]),
+            Write(titles[0]),
+            run_time=2
+        )
+        self.wait()
+
+        # Add words
+        frame.center().set_height(10)
+        text = VGroup(
+            Text("How do we shift\nacademic credit\nfrom here...", font_size=48, alignment="LEFT"),
+            Text("...to here", font_size=48),
+        )
+        text[0].next_to(circles, LEFT).shift(2 * UP)
+        text[1].next_to(circles, RIGHT, LARGE_BUFF).shift(2 * DOWN)
+
+        arrows = VGroup(
+            Arrow(text[0].get_bottom(), circles[1].get_center(), thickness=5, path_arc=90 * DEG, buff=0.5),
+            Arrow(text[1].get_top(), circles[0].get_center() + RIGHT, thickness=5, path_arc=90 * DEG, buff=0.5),
+        )
+
+        VGroup(text, arrows).set_color(YELLOW)
+
+        self.add(text, arrows)
+
+
+class EndScreen(SideScrollEndScreen):
+    pass
