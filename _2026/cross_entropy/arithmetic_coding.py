@@ -55,10 +55,10 @@ class ArithmeticCodingDiagram(Group):
 
         full_context = self.context + self.curr_text
         distribution = get_next_char_distribution(full_context)
-        if len(full_context.strip()) == 0:
-            # Artificially suppress punctuation
-            distribution[26:] *= 1e-3
-            distribution /= sum(distribution)
+        # if len(full_context.strip()) == 0:
+        #     # Artificially suppress punctuation
+        #     distribution[26:] *= 1e-3
+        #     distribution /= sum(distribution)
 
         layer = StackedProbDistribution(
             distribution,
@@ -508,7 +508,7 @@ class ProbababilityOfAWord(IntroduceCharacterModel):
         )
         self.wait()
 
-        # Show q
+        # Show "q"
         self.play(
             diagram.renormalize_animation(0.6, 0.66),
             UpdateFromFunc(p_brace, lambda m: m.become(Brace(p_bar, DOWN))),
@@ -578,14 +578,17 @@ class ProbababilityOfAWord(IntroduceCharacterModel):
         self.play(diagram.fade_in_new_layer())
         self.wait()
 
-        # Earlier tests
+        # Say something to clarify meaning of width of each part of this second layer.
+
+    def old_materal(self):
+        # Earlier tests, just copied down here from construct for reference
         self.add(diagram)
         for letter in "mathematics":
             self.play(diagram.highlight_letter(letter, color=TEAL))
             self.play(diagram.zoom_in_on_letter(letter))
             self.play(
                 diagram.fade_in_new_layer(),
-                self.frame.animate.shift(0.1 * DOWN)
+                self.frame.animate.shift(0.2 * DOWN)
             )
 
         # A few tests
@@ -598,9 +601,9 @@ class ProbababilityOfAWord(IntroduceCharacterModel):
         # Some custom bounds
         self.play(diagram.renormalize_animation(0.4, 0.5))
         self.play(diagram.renormalize_animation(0.45, 0.46))
+        self.play(diagram.renormalize_animation(0.457, 0.458))
         self.play(diagram.renormalize_animation(0.4, 0.5))
         self.play(diagram.renormalize_animation(0, 1))
-
 
 
 
