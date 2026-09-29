@@ -4562,7 +4562,7 @@ class QuoteScene(InteractiveScene):
     def play_quote(self, raw_text, run_times=None, wait_time=None):
         quote, sections, section_texts = self.get_quote_and_sections(raw_text)
 
-        quote_bg = quote.copy().set_color(self.bg_color)
+        quote_bg = quote.copy().set_color(self.bg_color).set_opacity(0)
         self.add(quote_bg)
 
         if run_times is None:
@@ -4600,20 +4600,16 @@ class PatreonQuote(QuoteScene):
     def construct(self):
         # Show the quote
         raw_text = """
-            “This question doesn’t contribute to
-            a deep understanding of mathematics,|
-            nor is it particularly difficult (when
-            compared with mathematical research).|
-            Rather, the value of this question lies
-            in the fact that it warmed my heart when
-            I solved it,| and it still warms my heart
-            more than a year later.| Like a good book or
-            a touching song, the value here is human.|
+            “This question doesn’t contribute to a deep understanding of
+            mathematics,| nor is it particularly difficult (when compared
+            with mathematical research).| Rather, the value of this
+            question lies in the fact that it warmed my heart when I solved
+            it,| and it still warms my heart more than a year later.| Like
+            a good book or a touching song, the value here is human.|
 
-            Call me humanist,| but I truly believe
-            that the value of this question,| as a
-            mathematical discovery,| exceeds that
-            of the average PhD thesis.”
+            Call me humanist,| but I truly believe that the value of this
+            question,| as a mathematical discovery,| exceeds that of the
+            average PhD thesis.”
             """
         self.play_quote(raw_text)
 

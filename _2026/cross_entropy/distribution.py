@@ -23,17 +23,16 @@ class StackedProbDistribution(VGroup):
     ):
         super().__init__(**kwargs)
         self.distribution = distribution
+        self.cdf = np.cumsum(distribution)
         self.bar_color_bounds = fill_colors
         self.label_height_ratio = label_height_ratio
         self.label_width_ratio = label_width_ratio
 
         # Set bars with dummy values
-        self.bars = VGroup(
-            Rectangle().set_stroke(stroke_color, stroke_width).set_fill(color, fill_opacity)
-            for color in fill_colors
-        )
-        self.bars.arrange(RIGHT, buff=0)
+        self.bars = Rectangle().get_grid(1, len(distribution), buff=0)
         self.bars.set_shape(width, height)
+        self.bars.set_fill(fill_colors, 1, gradient_direction=RIGHT)
+        self.bars.set_stroke(stroke_color, stroke_width)
 
         # Initialize labels as empty
         self.labels = VGroup()
@@ -69,16 +68,14 @@ class StackedProbDistribution(VGroup):
         bar_style = self.bars[0].get_style()
 
         if len(self.bars) != n_bars:
-            self.bars.set_submobjects([Rectangle() for n in range(n_bars)])
+            self.bars.set_submobjects(Rectangle().replicate(n_bars))
 
-        color_range = color_gradient(self.bar_color_bounds, len(distribution))
-
-        for bar, prob, color in zip(self.bars, distribution, color_range):
+        for bar, prob in zip(self.bars, distribution):
             bar.set_shape(width * prob, height)
             bar.set_style(**bar_style)
-            bar.set_fill(color)
         self.bars.arrange(RIGHT, buff=0)
         self.bars.move_to(center)
+        self.bars.set_fill(self.bar_color_bounds, gradient_direction=RIGHT)
 
         if len(self.labels) > 0:
             self.reposition_labels()
@@ -86,12 +83,17 @@ class StackedProbDistribution(VGroup):
         return self
 
     def highlight(self, index, color=None, other_bar_opacity=0.35, fade_labels=True):
-        self.bars.set_fill(opacity=other_bar_opacity)
+        self.bars.set_fill(self.bar_color_bounds, opacity=other_bar_opacity, gradient_direction=RIGHT)
         self.bars[index].set_fill(color, opacity=1)
         if fade_labels:
             for idx, label in enumerate(self.labels):
-                if idx != index and label.get_fill_opacity() > 0:
-                    label.set_fill(opacity=other_bar_opacity)
+                if label.get_fill_opacity() == 0:
+                    op = 0
+                elif idx == index:
+                    op = 1
+                else:
+                    op = other_bar_opacity
+                label.set_fill(opacity=op)
         return self
 
     def renormalize_around(self, index: int):
@@ -108,6 +110,17 @@ class StackedProbDistribution(VGroup):
         if dim == 0:
             self.reposition_labels()
         return self
+
+    def float_to_index(self, value: float):
+        """
+        Given a value in [0, 1], returns the index of the
+        corresponding event from the distribution
+        """
+        for idx, upper_value in enumerate(self.cdf):
+            if value < upper_value:
+                return idx
+        # Otherwise, last element
+        return len(self.distribution) - 1
 
 
 class DynamicInterval(UnitInterval):
