@@ -296,7 +296,7 @@ class TurboGrid(Group):
             for j in range(self.n):
                 self.get_tile(i, j).set_has_monster((i, j) in self.monster_positions)
 
-    def reveal_monster(self, i, j, run_time=3):
+    def reveal_monster(self, i, j, run_time=3, reveal_free_alleys=True):
         monster = self.get_monster(i, j)
         monster_tile = self.get_tile(i, j)
 
@@ -306,10 +306,10 @@ class TurboGrid(Group):
         monster_row = sorted(self.get_row(j), key=dist_to_monster_tile)
         monster_col.remove(monster_tile)
         monster_row.remove(monster_tile)
-        monster.set_time(monster.BOB_END)
-        return AnimationGroup(
-            monster_tile.reveal(),
-            AnimationGroup(
+        monster.set_opacity(1).set_time(monster.BOB_END)
+        anims = [monster_tile.reveal()]
+        if reveal_free_alleys:
+            anims.append(
                 AnimationGroup(*[
                     t.reveal()
                     for t in monster_row
@@ -317,7 +317,9 @@ class TurboGrid(Group):
                 AnimationGroup(*[
                     t.reveal()
                     for t in monster_col
-                ], lag_ratio=0.1)), lag_ratio=0.2)
+                ], lag_ratio=0.1)
+            )
+        return AnimationGroup(*anims, lag_ratio=0.2)
 
 
 class TurboController:
@@ -325,6 +327,7 @@ class TurboController:
         self.scene = scene
         self.n = scene.grid.n
         self.move_speed = 1
+        self.reveal_free_alleys = True
 
     @property
     def position(self):
@@ -340,7 +343,7 @@ class TurboController:
 
     def move(self, direction):
         target = self.scene.turbo.get_neighbor(direction)
-        if not self.scene.move_turbo(direction, 0.5 / self.move_speed):
+        if not self.scene.move_turbo(direction, 0.5 / self.move_speed, reveal_free_alleys=self.reveal_free_alleys):
             self.last_monster_pos = target
             return False
         return True
@@ -398,7 +401,7 @@ class TurboScene(InteractiveScene):
         self.grid.set_height(FRAME_HEIGHT * 0.9)
         self.turbo = self.grid.turbo
 
-    def move_turbo(self, direction, *args, **kwargs):
+    def move_turbo(self, direction, *args, reveal_free_alleys=True, **kwargs):
         self.play(self.turbo.move(direction, *args, **kwargs))
         position = tuple(self.turbo.current_position)
         if not self.grid.is_monster(*position):
@@ -407,7 +410,7 @@ class TurboScene(InteractiveScene):
         self.play(
             AnimationGroup(
                 self.turbo.bounce_and_die(),
-                self.grid.reveal_monster(*position)
+                self.grid.reveal_monster(*position, reveal_free_alleys=reveal_free_alleys)
             )
         )
         monster.set_time(monster.X_START)
@@ -451,6 +454,105 @@ class TurboTest(TurboScene, ThreeDScene):
         moves = [RIGHT, RIGHT, RIGHT, DOWN, DOWN, DOWN]
         for direction in moves:
             self.move_turbo(direction)
+
+
+class ProblemStatementPart1(InteractiveScene):
+    def construct(self):
+        # Write the problem statement
+        raw_text = R"""
+            Turbo the snail plays a game on a board \\
+            with $2024$ rows and $2023$ columns.\hfill\break
+
+            There are hidden monsters in $2022$ of \\
+            the cells. Initially, Turbo does not \\
+            know where any of the monsters are, but \\
+            he knows that there is exactly one \\
+            monster in each row except the first \\
+            row and the last row, and that each \\
+            column contains at most one monster.
+        """
+
+        problem_statement = TexText(raw_text, alignment="\\raggedright").set_height(FRAME_HEIGHT * 0.5).set_y(0).to_edge(LEFT, buff=1).set_z_index(1)
+
+        # Split into lines by clustering glyphs on their y-coordinate
+        glyphs = sorted(problem_statement.submobjects, key=lambda m: -m.get_y())
+        tol = 0.5 * np.median([g.get_height() for g in glyphs])
+
+        line_groups = [[glyphs[0]]]
+        for glyph in glyphs[1:]:
+            line_y = np.mean([g.get_y() for g in line_groups[-1]])
+            if abs(glyph.get_y() - line_y) < tol:
+                line_groups[-1].append(glyph)
+            else:
+                line_groups.append([glyph])
+
+        lines = VGroup(
+            VGroup(*sorted(group, key=lambda m: m.get_x()))
+            for group in line_groups
+        )
+
+        self.play(AnimationGroup(*[FadeIn(line, shift=DOWN * 0.3) for line in lines], lag_ratio=0.1), run_time=2)
+
+        # Highlight the number of columns and monsters
+        rect1 = SurroundingRectangle(
+            problem_statement["$2023$ columns."],
+            buff=0.08,
+            stroke_width=0
+        ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        self.play(
+            DrawBorderThenFill(rect1, run_time=1.5),
+            problem_statement["$2023$ columns."].animate(lag_ratio=0.3).set_color(YELLOW)
+        )
+
+        rect2 = SurroundingRectangle(
+            problem_statement[66:88],
+            buff=0.08,
+            stroke_width=0
+        ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        rect3 = SurroundingRectangle(
+            problem_statement[88:97],
+            buff=0.08,
+            stroke_width=0
+        ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    DrawBorderThenFill(rect2, run_time=1.5),
+                    problem_statement[66:88].animate(lag_ratio=0.3).set_color(YELLOW)
+                ),
+                AnimationGroup(
+                    DrawBorderThenFill(rect3, run_time=1.5),
+                    problem_statement[88:97].animate(lag_ratio=0.3).set_color(YELLOW)
+                ),
+                lag_ratio=0.1
+            )
+        )
+        self.wait(1)
+
+        # Highlight the fact that each column has at most one monster
+        rect4 = SurroundingRectangle(
+            problem_statement[233:237],
+            buff=0.08,
+            stroke_width=0
+        ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        rect5 = SurroundingRectangle(
+            problem_statement[237:268],
+            buff=0.08,
+            stroke_width=0
+        ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    DrawBorderThenFill(rect4, run_time=1.5),
+                    problem_statement[233:237].animate(lag_ratio=0.3).set_color(YELLOW)
+                ),
+                AnimationGroup(
+                    DrawBorderThenFill(rect5, run_time=1.5),
+                    problem_statement[237:268].animate(lag_ratio=0.3).set_color(YELLOW)
+                ),
+                lag_ratio=0.1
+            )
+        )
 
 
 class BruteForce(TurboScene):
@@ -538,21 +640,19 @@ class BruteForce(TurboScene):
                     FadeOut(brace),
                     FadeOut(label),
                     FadeOut(monster_numbers),
-                    AnimationGroup(
-                        *[
-                            monster.animate_set_time(monster.BOB_START)
-                            for monster in self.grid.monsters[::-1]
-                        ],
-                        lag_ratio=0.3
-                    )
+                    AnimationGroup(*[
+                        monster.animate.set_opacity(0.7)
+                        for monster in self.grid.monsters[::-1]
+                    ])
                 ),
-                self.camera.frame.animate(run_time=2).restore(),
-                lag_ratio=0.6
+                self.camera.frame.animate(run_time=2).restore()
             ),
         )
 
         # Execute the strategy
         turbo = TurboController(self)
+        turbo.reveal_free_alleys = False
+        turbo.move_speed = 10
         n = self.grid.n
 
         def brute_force():
@@ -593,17 +693,16 @@ class BruteForce(TurboScene):
 
         # Hide the monsters again
         self.play(
-            AnimationGroup(
-                *[
-                    monster.animate_set_time(monster.BOB_START)
-                    for monster in self.grid.monsters
-                ],
-                lag_ratio=0.2
-            )
+            AnimationGroup(*[
+                monster.animate.set_opacity(0.7)
+                for monster in self.grid.monsters[::-1]
+            ])
         )
 
         # Run the strategy again
         turbo = TurboController(self)
+        turbo.reveal_free_alleys = False
+        turbo.move_speed = 25
         brute_force()
         self.wait(2)
 
