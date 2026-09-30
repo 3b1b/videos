@@ -310,14 +310,16 @@ class TurboGrid(Group):
         anims = [monster_tile.reveal()]
         if reveal_free_alleys:
             anims.append(
-                AnimationGroup(*[
-                    t.reveal()
-                    for t in monster_row
-                ], lag_ratio=0.1),
-                AnimationGroup(*[
-                    t.reveal()
-                    for t in monster_col
-                ], lag_ratio=0.1)
+                AnimationGroup(
+                    AnimationGroup(*[
+                        t.reveal()
+                        for t in monster_row
+                    ], lag_ratio=0.1),
+                    AnimationGroup(*[
+                        t.reveal()
+                        for t in monster_col
+                    ], lag_ratio=0.1)
+                )
             )
         return AnimationGroup(*anims, lag_ratio=0.2)
 
@@ -861,21 +863,110 @@ class GetUnderneath(TurboScene):
         get_underneath()
 
 
+def perfect_quadrant_explorer_num_cols(k):
+    return 2**k - 1
+
+
+def perfect_quadrant_explorer_num_rows(k):
+    return perfect_quadrant_explorer_num_cols(k) + 1
+
+
 class QuadrantExplorer(TurboScene):
     def __init__(self, *args, **kwargs):
         random.seed(1)
-        n = 32
+        n = perfect_quadrant_explorer_num_rows(5)
         # super().__init__(n, get_monster_staircase(n), *args, **kwargs)
         # super().__init__(n, get_monster_staircase_inverted(n), *args, **kwargs)
+        random.seed(2)
         super().__init__(n, get_random_monster_positions(n), *args, **kwargs)
 
     def construct(self):
         # Add the grid
         self.add(self.grid, self.turbo)
 
-        # Turbo tries an arbitrary column
+        # Turbo tries the middle column
         turbo = TurboController(self)
-        turbo.move_speed = 3
+        turbo.move_speed = 5
         n = self.grid.n
 
         turbo.try_col((n - 1) // 2)
+        self.wait(2)
+
+        # Highlight the four quadrants
+        colors = [RED, GREEN, YELLOW, BLUE]
+        rectangle_points = [
+            [
+                self.grid.get_tile(
+                    0,
+                    0
+                ).get_corner(UL),
+                self.grid.get_tile(
+                    turbo.last_monster_pos[0] - 1,
+                    turbo.last_monster_pos[1] - 1
+                ).get_corner(DR)
+            ],
+            [
+                self.grid.get_tile(
+                    turbo.last_monster_pos[0] + 1,
+                    0
+                ).get_corner(UL),
+                self.grid.get_tile(
+                    n - 2,
+                    turbo.last_monster_pos[1] - 1
+                ).get_corner(DR)
+            ],
+            [
+                self.grid.get_tile(
+                    0,
+                    turbo.last_monster_pos[1]
+                ).get_corner(UL),
+                self.grid.get_tile(
+                    turbo.last_monster_pos[0] - 1,
+                    n - 1
+                ).get_corner(DR)
+            ],
+            [
+                self.grid.get_tile(
+                    turbo.last_monster_pos[0] + 1,
+                    turbo.last_monster_pos[1]
+                ).get_corner(UL),
+                self.grid.get_tile(
+                    n - 2,
+                    n - 1
+                ).get_corner(DR)
+            ]
+        ]
+        rects = VGroup(*[
+            Rectangle(
+                width=pts[1][0] - pts[0][0],
+                height=pts[1][1] - pts[0][1],
+                fill_opacity=0.4,
+                fill_color=[color],
+                stroke_width=0
+            ).align_to(pts[0], UL)
+            for pts, color in zip(rectangle_points, colors)
+        ]).match_z(self.grid.tiles)
+        self.play(LaggedStartMap(FadeIn, rects, lag_ratio=0.4))
+        self.wait(2)
+
+        # Zoom in on the lower-right quadrant
+        lane = SurroundingRectangle(
+            self.grid.get_row(turbo.last_monster_pos[1])[turbo.last_monster_pos[0] + 1:],
+            fill_opacity=0.5,
+            fill_color=YELLOW,
+            stroke_width=0,
+            buff=0
+        ).match_z(self.grid.tiles)
+        self.play(
+            self.camera.frame.animate.scale(0.4).move_to(rects[3]),
+            FadeOut(rects),
+            self.turbo.move_to_position(turbo.last_monster_pos[0] + 1, turbo.last_monster_pos[1]),
+            FadeIn(lane),
+            run_time=2
+        )
+
+        # Luckily get to the bottom
+        turbo.move_speed = 8
+        moves = [RIGHT, RIGHT, RIGHT, DOWN, DOWN, DOWN, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT, DOWN, DOWN, DOWN, DOWN, LEFT, LEFT, DOWN, DOWN, DOWN]
+        for direction in moves:
+            turbo.move(direction)
