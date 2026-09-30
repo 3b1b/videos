@@ -4036,32 +4036,6 @@ class IMODetailsV2(InteractiveScene):
         self.wait(2)
 
 
-class ThumbnailIdea1(InteractiveScene):
-    def construct(self):
-        # Add problems
-        problems = VGroup()
-        for i in range(6):
-            rect = Rectangle(width=6, height=1.5, fill_opacity=1, fill_color=GREEN, stroke_width=10, stroke_color=BLACK).round_corners(0.3)
-            label = TexText(R"\text{P}" + str(i + 1), font_size=120).set_color(BLACK)
-            label.set_z_index(1)
-            problem = VGroup(rect, label)
-            problems.add(problem)
-        problems[-1][0].set_fill(color=RED)
-        problems.arrange(DOWN, buff=0.2).set_height(FRAME_HEIGHT * 0.9).to_edge(LEFT, buff=1).fix_in_frame().set_z_index(100)
-        self.add(problems)
-
-        # Add a random grid
-        random.seed(2)
-        self.camera.frame.reorient(-28, 55, 0, (-16.09, -0.07, -17.96), 49.76)
-        grid = RandomGrid(100)
-        grid.get_reasonable_tiling()
-        self.add(grid)
-        for hole in grid.holes:
-            hole.border.set_opacity(0)
-            hole.cross.set_opacity(0)
-            hole.background.set_color(RED_D).set_stroke(width=2)
-
-
 _desaturate_cache_dir = os.path.join(tempfile.gettempdir(), "manim_desaturate_cache")
 os.makedirs(_desaturate_cache_dir, exist_ok=True)
 _source_array_cache = {}  # source_path -> float64 rgb(a) array, decoded once per source
@@ -4586,6 +4560,7 @@ class QuoteScene(InteractiveScene):
 class LuongQuote(QuoteScene):
     def construct(self):
         # Show the quote
+        self.bg_color = WHITE
         raw_text = """
             ‘‘We didn’t really have a way to teach
             the model to be patient.| It didn’t take
@@ -4593,7 +4568,7 @@ class LuongQuote(QuoteScene):
             to get a feel for the problem,|
             to not try to solve the problem.”
             """
-        self.play_quote(raw_text)
+        self.play_quote(raw_text, run_times=[10])
 
 
 class PatreonQuote(QuoteScene):
@@ -4612,6 +4587,46 @@ class PatreonQuote(QuoteScene):
             average PhD thesis.”
             """
         self.play_quote(raw_text)
+
+
+class TerrenceTaoQuote(QuoteScene):
+    def construct(self):
+        # Show the quote
+        self.bg_color = WHITE
+        raw_text = """
+            “The failure to differentiate the foundation
+            from that which is built upon it is a failure
+            to understand that human understanding is the
+            basis for all utility deriving engineering,
+            including AI.”
+            """
+        self.play_quote(raw_text, run_times=[10])
+
+
+class JamesMaynardQuote(QuoteScene):
+    def construct(self, run_times=[10]):
+        # Show the quote
+        self.bg_color = WHITE
+        raw_text = """
+            “The primary goal of mathematics has always
+            been about human understanding of ideas.”
+            """
+        self.play_quote(raw_text, run_times=[10])
+
+
+class TimothyGowersQuote(QuoteScene):
+    def construct(self):
+        # Show the quote
+        self.bg_color = WHITE
+        raw_text = """
+            “If a society does not have a significant number
+            of people who understand mathematics at some
+            level, we risk becoming passive consumers under
+            the control of these systems. On the other hand,
+            people who do make the effort to understand
+            mathematics will have a large advantage.”
+            """
+        self.play_quote(raw_text, run_times=[10])
 
 
 class PiCreaturesWatchingPreview(TeacherStudentsScene):
@@ -4638,7 +4653,7 @@ class PiCreaturesWatchingPreview2(TeacherStudentsScene):
         self.wait(3)
 
         # Teacher reminds students to be patient
-        self.teacher_says(Text("You'll need to\nbe patient", font_size=40))
+        self.teacher_says(Text("You’ll need to\nbe patient", font_size=40))
         self.play(
             self.get_students()[0].change("pondering", look_at=DOWN * 2),
             self.get_students()[1].change("thinking", look_at=DOWN * 2),
@@ -4783,3 +4798,37 @@ class Headlines(InteractiveScene):
             )
 
         self.play(*animations)
+
+
+class ThumbnailIdea1(InteractiveScene):
+    def construct(self):
+        # Add problems
+        problems = VGroup()
+        for i in range(6):
+            rect = Rectangle(width=6, height=1.5, fill_opacity=1, fill_color=GREEN, stroke_width=10, stroke_color=BLACK).round_corners(0.3)
+            label = TexText(R"\text{P}" + str(i + 1), font_size=120).set_color(BLACK)
+            label.set_z_index(1)
+            problem = VGroup(rect, label)
+            problems.add(problem)
+        problems[-1][0].set_fill(color=RED)
+        problems.arrange(DOWN, buff=0.2).set_height(FRAME_HEIGHT * 0.9).to_edge(LEFT, buff=1).fix_in_frame().set_z_index(100)
+        self.add(problems)
+
+        # Add a random grid
+        random.seed(2)
+        self.camera.frame.reorient(-28, 55, 0, (-16.09, -0.07, -17.96), 49.76)
+        grid = RandomGrid(100)
+        grid.get_reasonable_tiling()
+        self.add(grid)
+        for hole in grid.holes:
+            hole.border.set_opacity(0)
+            hole.cross.set_opacity(0)
+            hole.background.set_color(RED_D).set_stroke(width=2)
+
+
+class ThumbnailIdea2(InteractiveScene):
+    def construct(self):
+        # Add timeline
+        timeline = Timeline(2010, 2040, 2025).set_y(-3)
+        self.camera.frame.scale(0.8, about_point=timeline.get_bottom())
+        self.add(timeline)
