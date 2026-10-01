@@ -1,5 +1,6 @@
 from manim_imports_ext import *
 import random
+from scipy.spatial.transform import Slerp
 
 SPRITES_DIRECTORY = os.path.join(
     os.path.dirname(manim_config.file_writer.output_directory),
@@ -206,6 +207,7 @@ class Monster(Sprite):
     BURROW_START = 3 * FRAME_DURATION
 
     def __init__(self, grid, i, j, *args, **kwargs):
+        self.position = [i, j]
         self.grid = grid
         super().__init__(
             os.path.join(SPRITES_DIRECTORY, "MMonv2-Monster.gif"),
@@ -221,6 +223,13 @@ class Monster(Sprite):
             OUT * 0.04
         )
         self.set_time(self.BOB_START)
+
+
+class DummyMonster(Monster):
+    def __init__(self, *args, **kwargs):
+        super().__init__(TurboGrid(2), 0, 0, *args, **kwargs)
+        self.set_time(self.BOB_END)
+        self.center()
 
 
 class TurboGrid(Group):
@@ -422,6 +431,60 @@ class TurboScene(InteractiveScene):
         monster.set_time(monster.X_START)
         self.play(self.turbo.move_to_start())
         return False
+
+    def reset_grid(self, n=None, monster_positions=[]):
+        if n is None:
+            n = self.grid.n
+        new_grid = TurboGrid(n, monster_positions)
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.clear()
+        self.add(new_grid)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+
+    def set_camera_target_position(
+        self,
+        theta_degrees=None,
+        phi_degrees=None,
+        gamma_degrees=None,
+        center=None,
+        height=None,
+        drift_time=2.0,
+    ):
+        frame = self.camera.frame
+        self.add(frame)
+        frame.clear_updaters()
+        initial_orientation = frame.get_orientation()
+        initial_height = frame.get_height()
+        initial_eye = frame.get_implied_camera_location()
+        target_frame = frame.copy()
+        target_frame.reorient(theta_degrees, phi_degrees, gamma_degrees, center, height)
+        target_orientation = target_frame.get_orientation()
+        target_height = target_frame.get_height()
+        target_eye = target_frame.get_implied_camera_location()
+        fovy = frame.get_field_of_view()
+        slerp = Slerp([0, 1], Rotation.concatenate([initial_orientation, target_orientation]))
+        drift_time = max(drift_time, 1e-4)
+        elapsed = 0.0
+
+        def update_camera(f, dt):
+            nonlocal elapsed
+            elapsed += dt
+            t = min(elapsed / drift_time, 1.0)
+            alpha = smooth(t)
+            current_orientation = slerp(alpha)
+            current_height = interpolate(initial_height, target_height, alpha)
+            current_eye = interpolate(initial_eye, target_eye, alpha)
+            focal_distance = 0.5 * current_height / np.tan(0.5 * fovy)
+            to_camera = current_orientation.as_matrix().T[2]
+            current_center = current_eye - focal_distance * to_camera
+            f.set_orientation(current_orientation)
+            f.move_to(current_center)
+            f.set_height(current_height)
+            if t >= 1.0:
+                f.remove_updater(update_camera)
+        frame.add_updater(update_camera)
 
 
 class TurboTest(TurboScene, ThreeDScene):
@@ -878,7 +941,7 @@ def perfect_quadrant_explorer_num_rows(k):
     return perfect_quadrant_explorer_num_cols(k) + 1
 
 
-class QuadrantExplorer(TurboScene):
+class QuadrantExplorerPart1(TurboScene):
     def __init__(self, *args, **kwargs):
         random.seed(1)
         n = perfect_quadrant_explorer_num_rows(5)
@@ -929,7 +992,7 @@ class QuadrantExplorer(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     turbo.last_monster_pos[0] - 1,
-                    n - 1
+                    n - 2
                 ).get_corner(DR)
             ],
             [
@@ -939,7 +1002,7 @@ class QuadrantExplorer(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     n - 2,
-                    n - 1
+                    n - 2
                 ).get_corner(DR)
             ]
         ]
@@ -1045,18 +1108,18 @@ class QuadrantExplorer(TurboScene):
                 self.wait(1)
 
         # Highlight the empty column
-        lane1 = SurroundingRectangle(
+        lane3 = SurroundingRectangle(
             self.grid.get_col(turbo.last_monster_pos[0] - 1)[turbo.last_monster_pos[1] + 1:],
             fill_opacity=0.5,
             fill_color=YELLOW,
             stroke_width=0,
             buff=0
         ).match_z(self.grid.tiles)
-        self.play(FadeIn(lane1))
+        self.play(FadeIn(lane3))
         self.wait(2)
 
         # Show the same thing on the right side
-        lane2 = SurroundingRectangle(
+        lane4 = SurroundingRectangle(
             self.grid.get_col(n - 2)[turbo.last_monster_pos[1] + 1:],
             fill_opacity=0.5,
             fill_color=YELLOW,
@@ -1068,7 +1131,7 @@ class QuadrantExplorer(TurboScene):
             RIGHT * (self.grid.get_tile(turbo.last_monster_pos[0] + 1, 0).get_x() - self.grid.monsters[0].get_x())
         )
         self.play(
-            FadeOut(lane1),
+            FadeOut(lane3),
             self.turbo.animate.match_x(self.grid.monsters.target[0]),
             MoveToTarget(self.grid.monsters)
         )
@@ -1085,6 +1148,345 @@ class QuadrantExplorer(TurboScene):
         turbo.move_speed = 1000
         turbo.try_col((n - 1) // 2)
         self.clear()
-        self.add(self.grid, self.turbo, lane2)
+        self.add(self.grid, self.turbo, lane4)
         self.play(self.turbo.move_to_position(turbo.last_monster_pos[0] + 1, turbo.last_monster_pos[1]), run_time=0.001)
         self.wait(1)
+
+        # Show that there are more columns than there are monsters
+        brace1 = Brace(lane1, UP).align_to(self.grid.get_row(turbo.last_monster_pos[1]).get_top(), DOWN)
+        brace2 = Brace(lane2, UP).align_to(self.grid.get_row(turbo.last_monster_pos[1]).get_top(), DOWN)
+        label = Group(Tex(R"\# \text{cols} > \#"), DummyMonster()).arrange(buff=0.1).scale(0.8).next_to(brace1, UP, buff=0.2)
+        label1 = Group(BackgroundRectangle(label, buff=0.15).round_corners(0.2), label)
+        label2 = label1.copy().match_x(brace2)
+        self.play(
+            GrowFromEdge(brace1, DOWN),
+            GrowFromEdge(brace2, DOWN),
+            AnimationGroup(FadeIn(label1[0], run_time=2), Write(label1[1][0]), FadeIn(label1[1][1]), lag_ratio=0.3),
+            AnimationGroup(FadeIn(label2[0], run_time=2), Write(label2[1][0]), FadeIn(label2[1][1]), lag_ratio=0.3)
+        )
+        self.wait(2)
+
+        # Set up the initial monster in the lower half again
+        original_monster_pos = turbo.last_monster_pos
+        for i in [0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3]:
+            hardcoded_monsters = [(original_monster_pos[0], original_monster_pos[1] + i)]
+            new_grid = TurboGrid(n, get_random_monster_positions(n, hardcoded_monsters=hardcoded_monsters))
+            new_grid.match_height(self.grid).move_to(self.grid)
+            self.clear()
+            self.add(new_grid)
+
+            self.grid = new_grid
+            self.turbo = new_grid.turbo
+
+            monster = self.grid.get_monster(*hardcoded_monsters[0])
+            monster.set_time(monster.X_START)
+            self.grid.get_col(hardcoded_monsters[0][0])[1:-1].flip(axis=UP)
+            self.grid.get_row(hardcoded_monsters[0][1]).flip(axis=RIGHT)
+            self.grid.get_tile(*hardcoded_monsters[0]).flip(axis=UP)
+            self.wait(0.1)
+
+        # Turbo tries to get around to the right
+        self.camera.frame.save_state()
+        turbo.move_speed = 5
+        # self.set_camera_target_position(0, 0, 0, (0.03, 1.26, 0.02), 4.82, drift_time=2.5)
+        turbo.move_to_col(hardcoded_monsters[0][0])
+        self.set_camera_target_position(0, 0, 0, (-0.01, -1.64, 0.02), 4.17, drift_time=3)
+        turbo.move_to_row(hardcoded_monsters[0][1] - 1)
+        self.wait(0.5)
+        turbo.move_speed = 1
+        turbo.move(RIGHT)
+        turbo.move(DOWN)
+
+        # Highlight the lane to the right
+        monster_tile = self.grid.get_tile(*hardcoded_monsters[0])
+        lane = lane1.copy().match_y(monster_tile).align_to(monster_tile.get_right(), LEFT)
+        self.play(FadeIn(lane))
+        self.wait(0.5)
+
+        # Highlight the full lower-right quadrant
+        quadrant = lane.copy().stretch_to_fit_height(
+            self.grid.get_col(0)[hardcoded_monsters[0][1]:].get_height()
+        ).align_to(
+            lane, UP
+        ).set_opacity(
+            0.35
+        ).set_fill(
+            opacity=0.1, color=YELLOW
+        ).set_stroke(
+            width=5, color=YELLOW, opacity=1
+        ).scale(1.01)
+        self.play(ReplacementTransform(lane, quadrant))
+        self.wait(1)
+
+        # Show the case where turbo gets blocked
+        hardcoded_monsters += [(hardcoded_monsters[0][0] + 1, hardcoded_monsters[0][1] - 1)]
+        hardcoded_monsters += [
+            (0, 23),
+            (1, 27),
+            (2, 25),
+            (3, 30),
+            (4, 20),
+            (5, 28),
+            (6, 29),
+            (7, 22),
+            (8, 21),
+            (9, 24)
+        ]
+        new_grid = TurboGrid(n, get_random_monster_positions(n, hardcoded_monsters=hardcoded_monsters))
+        new_grid.match_height(self.grid).move_to(self.grid)
+        self.clear()
+        self.add(new_grid)
+
+        self.grid = new_grid
+        self.turbo = new_grid.turbo
+
+        monster = self.grid.get_monster(*hardcoded_monsters[0])
+        monster.set_time(monster.X_START)
+        self.grid.get_col(hardcoded_monsters[0][0])[1:-1].flip(axis=UP)
+        self.grid.get_row(hardcoded_monsters[0][1]).flip(axis=RIGHT)
+        self.grid.get_tile(*hardcoded_monsters[0]).flip(axis=UP)
+        self.play(self.turbo.move_to_position(hardcoded_monsters[0][0], hardcoded_monsters[0][1] - 1, run_time=0.001))
+        self.wait(1)
+
+        turbo.move(RIGHT)
+        turbo.move_speed = 100
+        turbo.move_to_col(hardcoded_monsters[0][0])
+        turbo.move_speed = 3
+        turbo.move_to_row(hardcoded_monsters[0][1] - 1)
+        turbo.move_speed = 1
+        turbo.move(LEFT)
+        turbo.move(DOWN)
+
+        # Highlight the lane to the left
+        lane = lane1.copy().match_y(monster_tile).align_to(monster_tile.get_left(), RIGHT)
+        self.play(FadeIn(lane))
+        self.wait(0.5)
+
+        # Highlight the full lower-left quadrant
+        quadrant = lane.copy().stretch_to_fit_height(
+            self.grid.get_col(0)[hardcoded_monsters[0][1]:].get_height()
+        ).align_to(
+            lane, UP
+        ).set_fill(
+            opacity=0.1, color=YELLOW
+        ).set_stroke(
+            width=5, color=YELLOW, opacity=1
+        ).scale(1.01)
+        self.play(ReplacementTransform(lane, quadrant))
+        self.wait(2)
+
+        # Show the maximum size of the subproblems
+        self.play(self.camera.frame.animate.reorient(0, 0, 0, (-0.64, -1.43, 0.02), 4.99), run_time=2)
+        brace = Brace(quadrant, LEFT)
+        label = brace.get_tex(R"\le \frac{N}{2}", font_size=40)
+        self.play(GrowFromEdge(brace, RIGHT), Write(label))
+
+        # Brute force the left side
+        def brute_force():
+            for col in range(hardcoded_monsters[0][0]):
+                if turbo.try_col(col):
+                    return
+                turbo.move_to_col(hardcoded_monsters[0][0])
+                turbo.move_to_row(hardcoded_monsters[0][1] - 1)
+                turbo.move(LEFT)
+                turbo.move(DOWN)
+        turbo.move_speed = 10
+        brute_force()
+
+
+class QuadrantExplorerPart2(TurboScene):
+    def __init__(self, *args, **kwargs):
+        random.seed(1)
+        n = perfect_quadrant_explorer_num_rows(5)
+        # super().__init__(n, get_monster_staircase(n), *args, **kwargs)
+        # super().__init__(n, get_monster_staircase_inverted(n), *args, **kwargs)
+        random.seed(2)
+        super().__init__(n, get_random_monster_positions(n, free_column=(n - 1) // 2), *args, **kwargs)
+
+    def construct(self):
+        # Add the grid
+        self.add(self.grid, self.turbo)
+
+        # Turbo tries the middle column
+        turbo = TurboController(self)
+        turbo.move_speed = 2
+        n = self.grid.n
+
+        turbo.move_speed = 10
+        turbo.try_col((n - 1) // 2)
+        self.wait(2)
+
+        # Reset and run again, finding a monster in the lower half
+        self.reset_grid(monster_positions=get_random_monster_positions(n, hardcoded_monsters=[((n - 1) // 2, 19)]))
+        turbo.try_col((n - 1) // 2)
+        self.wait(1)
+
+        # Highlight the lower half
+        lower_half_rect = Rectangle(
+            width=self.grid.get_width(),
+            height=self.grid.get_col(0)[n // 2:].get_height(),
+            fill_opacity=0.4,
+            fill_color=YELLOW,
+            stroke_width=0
+        ).match_x(self.grid).align_to(self.grid.get_col(0)[n // 2:], UP)
+        self.play(FadeIn(lower_half_rect))
+        self.play(FadeOut(lower_half_rect))
+
+        # Try getting around the monster on the right
+        turbo.move_to_col((n - 1) // 2)
+        turbo.move_to_row(turbo.last_monster_pos[1] - 1)
+        turbo.move_speed = 2
+        turbo.move(RIGHT)
+        turbo.move(DOWN)
+        self.wait(1)
+
+        # Highlight the lower-right quadrant
+        def get_quadrants(last_monster_pos=turbo.last_monster_pos):
+            rectangle_points = [
+                [
+                    self.grid.get_tile(
+                        0,
+                        0
+                    ).get_corner(UL),
+                    self.grid.get_tile(
+                        last_monster_pos[0] - 1,
+                        last_monster_pos[1] - 1
+                    ).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(
+                        last_monster_pos[0] + 1,
+                        0
+                    ).get_corner(UL),
+                    self.grid.get_tile(
+                        n - 2,
+                        last_monster_pos[1] - 1
+                    ).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(
+                        0,
+                        last_monster_pos[1]
+                    ).get_corner(UL),
+                    self.grid.get_tile(
+                        last_monster_pos[0] - 1,
+                        n - 2
+                    ).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(
+                        last_monster_pos[0] + 1,
+                        last_monster_pos[1]
+                    ).get_corner(UL),
+                    self.grid.get_tile(
+                        n - 2,
+                        n - 2
+                    ).get_corner(DR)
+                ]
+            ]
+            return VGroup(*[
+                Rectangle(
+                    width=pts[1][0] - pts[0][0],
+                    height=pts[1][1] - pts[0][1],
+                    fill_opacity=0.4,
+                    fill_color=YELLOW,
+                    stroke_width=0
+                ).align_to(pts[0], UL)
+                for pts in rectangle_points
+            ]).match_z(self.grid.tiles)
+        quadrants = get_quadrants()
+        self.play(FadeIn(quadrants[3]))
+        self.wait(1)
+
+        # Reset to a version where turbo gets blocked on the right
+        original_monster_pos = turbo.last_monster_pos
+        self.reset_grid(monster_positions=[original_monster_pos, (original_monster_pos[0] + 1, original_monster_pos[1] - 1)])
+
+        monster = self.grid.get_monster(*original_monster_pos)
+        monster.set_time(monster.X_START)
+        self.grid.get_col(original_monster_pos[0])[1:-1].flip(axis=UP)
+        self.grid.get_row(original_monster_pos[1]).flip(axis=RIGHT)
+        self.grid.get_tile(*original_monster_pos).flip(axis=UP)
+        self.play(self.turbo.move_to_position(original_monster_pos[0], original_monster_pos[1] - 1, run_time=0.001))
+        self.wait(0.5)
+
+        turbo.move(RIGHT)
+        turbo.move_speed = 100
+        turbo.move_to_col(original_monster_pos[0])
+        turbo.move_to_row(original_monster_pos[1] - 1)
+        turbo.move_speed = 1
+        turbo.move(LEFT)
+        turbo.move(DOWN)
+
+        # Highlight the lower-left quadrant
+        self.play(FadeIn(quadrants[2]))
+        self.wait(2)
+
+        # Move the initial monster above the halfway point
+        for i in range(7):
+            hardcoded_monsters = [(original_monster_pos[0], original_monster_pos[1] - i)]
+            self.reset_grid(monster_positions=get_random_monster_positions(n, hardcoded_monsters=hardcoded_monsters))
+            monster = self.grid.get_monster(*hardcoded_monsters[0])
+            monster.set_time(monster.X_START)
+            self.grid.get_col(hardcoded_monsters[0][0])[1:-1].flip(axis=UP)
+            self.grid.get_row(hardcoded_monsters[0][1]).flip(axis=RIGHT)
+            self.grid.get_tile(*hardcoded_monsters[0]).flip(axis=UP)
+            self.wait(0.2)
+
+        # Show the key property
+        half_row_1 = self.grid.get_row(hardcoded_monsters[0][1] - 1)[:hardcoded_monsters[0][0]]
+        brace1 = Brace(
+            half_row_1, DOWN
+        ).align_to(
+            half_row_1.get_bottom(), UP
+        )
+        half_row_2 = self.grid.get_row(hardcoded_monsters[0][1] - 1)[hardcoded_monsters[0][0] + 1:]
+        brace2 = Brace(
+            half_row_2, DOWN
+        ).align_to(
+            half_row_2.get_bottom(), UP
+        )
+        label = Group(Tex(R"\# \text{cols} > \#"), DummyMonster()).arrange(buff=0.1).scale(0.8).next_to(brace1, DOWN, buff=0.2)
+        label1 = Group(BackgroundRectangle(label, buff=0.15).round_corners(0.2), label)
+        label2 = label1.copy().match_x(brace2)
+        quadrants = get_quadrants(last_monster_pos=hardcoded_monsters[0])
+        self.play(
+            FadeIn(quadrants[0]),
+            FadeIn(quadrants[1]),
+            GrowFromEdge(brace1, UP),
+            GrowFromEdge(brace2, UP),
+            AnimationGroup(FadeIn(label1[0], run_time=2), Write(label1[1][0]), FadeIn(label1[1][1]), lag_ratio=0.3),
+            AnimationGroup(FadeIn(label2[0], run_time=2), Write(label2[1][0]), FadeIn(label2[1][1]), lag_ratio=0.3)
+        )
+        self.wait(2)
+
+        # Show the monster positions and the free column
+        free_column_1 = 4
+        free_column_2 = 25
+        lane1 = quadrants[0].copy().surround(self.grid.get_col(free_column_1)[:hardcoded_monsters[0][1]], buff=0)
+        lane2 = quadrants[1].copy().surround(self.grid.get_col(free_column_2)[:hardcoded_monsters[0][1]], buff=0)
+        self.play(
+            ReplacementTransform(quadrants[0], lane1),
+            ReplacementTransform(quadrants[1], lane2),
+            AnimationGroup(
+                *[
+                    monster.animate_set_time(monster.BOB_END)
+                    for monster in self.grid.monsters if monster.position[1] < hardcoded_monsters[0][1]
+                ],
+                lag_ratio=0.3
+            )
+        )
+        self.wait(1)
+
+        # Focus back on the quadrants
+        self.play(
+            FadeOut(Group(brace1, label1, brace2, label2, lane1, lane2)),
+            AnimationGroup(
+                *[
+                    monster.animate_set_time(monster.BOB_START)
+                    for monster in self.grid.monsters[::-1] if monster.position[1] < hardcoded_monsters[0][1]
+                ],
+                lag_ratio=0.1
+            ),
+            self.camera.frame.animate(run_time=3).reorient(0, 0, 0, (0.01, 1.79, 0.00), 4.16)
+        )
