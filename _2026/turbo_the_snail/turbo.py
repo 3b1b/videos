@@ -1529,6 +1529,8 @@ class QuadrantExplorerPart2(TurboScene):
         self.wait(1)
 
         # Show the case where no monster is found in the upper left at all
+        monster = self.grid.get_monster(*turbo.last_monster_pos)
+        monster.set_time(monster.BOB_START)
         self.play(
             self.camera.frame.animate(run_time=2).restore(),
             self.grid.animate(run_time=3).restore(),
@@ -1605,6 +1607,146 @@ class QuadrantExplorerPart2(TurboScene):
                     break
         turbo.move_to_col(free_col)
         self.set_camera_target_position(0, 0, 0, (0.03, -1.47, 0.00), 4.47, drift_time=2)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        turbo.move_to_col(turbo.last_monster_pos[0])
+        turbo.move_to_row(n - 1)
+        self.wait(1)
+
+
+class QuadrantExplorerPart3(TurboScene):
+    def __init__(self, *args, **kwargs):
+        random.seed(1)
+        n = perfect_quadrant_explorer_num_rows(5)
+        # super().__init__(n, get_monster_staircase(n), *args, **kwargs)
+        # super().__init__(n, get_monster_staircase_inverted(n), *args, **kwargs)
+        random.seed(2)
+        super().__init__(n, [], *args, **kwargs)
+
+    def construct(self):
+        # Add the grid
+        turbo = TurboController(self)
+        turbo.move_speed = 10
+        n = self.grid.n
+        hardcoded_monsters = [((n - 1) // 2, 12)]
+        hardcoded_monsters += [
+            (0, 4),
+            (1, 5),
+            (2, 3),
+            (3, 7),
+            (4, 9),
+            (5, 6),
+            (6, 8),
+            (7, 11)
+        ]
+        self.reset_grid(monster_positions=get_random_monster_positions(n, hardcoded_monsters=hardcoded_monsters))
+        monster = self.grid.get_monster(*hardcoded_monsters[0])
+        self.play(
+            self.grid.reveal_monster(*hardcoded_monsters[0]),
+            monster.animate_set_time(monster.X_START),
+            run_time=0.001
+        )
+
+        # Highlight the lower half
+        lower_half_rect = Rectangle(
+            width=self.grid.get_width(),
+            height=self.grid.get_col(0)[n // 2:].get_height(),
+            fill_opacity=0.4,
+            fill_color=YELLOW,
+            stroke_width=0
+        ).match_x(self.grid).align_to(self.grid.get_col(0)[n // 2:], UP)
+        self.play(FadeIn(lower_half_rect))
+        self.play(lower_half_rect.animate.set_color(RED))
+        self.play(FadeOut(lower_half_rect))
+        self.wait(2)
+
+        # Try to brute force the upper-left quadrant
+        def brute_force():
+            for col in range(hardcoded_monsters[0][0] - 1):
+                turbo.move_to_col(col)
+                if turbo.move_to_row(hardcoded_monsters[0][1]):
+                    return
+        brute_force()
+        self.wait(2)
+
+        # Get underneath one of the monsters and go to the bottom
+        turbo.move_to_col(3)
+        turbo.move_to_row(n - 1)
+        self.wait(1)
+
+        # Do the case where no monster is found
+        hardcoded_monsters = [((n - 1) // 2, 12), (7, 3)]
+        self.reset_grid(monster_positions=hardcoded_monsters)
+        monster = self.grid.get_monster(*hardcoded_monsters[0])
+        self.play(
+            self.grid.reveal_monster(*hardcoded_monsters[0]),
+            monster.animate_set_time(monster.X_START),
+            run_time=0.001
+        )
+        self.wait(1)
+        turbo.move_to_col(3)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        self.wait(0.5)
+
+        for row in range(hardcoded_monsters[0][1], 0, -1):
+            if not turbo.move_to_row(row):
+                break
+            if row % 2 == 0:
+                if not turbo.move_to_col(0):
+                    break
+            else:
+                if not turbo.move_to_col(hardcoded_monsters[0][0] - 1):
+                    break
+        turbo.move_to_col(3)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        turbo.move_to_col(turbo.last_monster_pos[0])
+        turbo.move_to_row(n - 1)
+
+        # Show the case where no monster is found in the upper left at all
+        self.reset_grid(
+            monster_positions=[hardcoded_monsters[0]] + [(25, 6)] + get_partial_monster_staircase(
+                0, hardcoded_monsters[0][0] - 1, hardcoded_monsters[0][1] + 1, n - 2
+            )
+        )
+        monster = self.grid.get_monster(*hardcoded_monsters[0])
+        self.play(
+            self.grid.reveal_monster(*hardcoded_monsters[0]),
+            monster.animate_set_time(monster.X_START),
+            run_time=0.001
+        )
+
+        turbo.move_to_col(3)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        for row in range(hardcoded_monsters[0][1], 0, -1):
+            if not turbo.move_to_row(row):
+                break
+            if row % 2 == 0:
+                if not turbo.move_to_col(0):
+                    break
+            else:
+                if not turbo.move_to_col(hardcoded_monsters[0][0] - 1):
+                    break
+
+        # Turbo finds the monster in the upper-right instead, and uses it to get to the bottom
+        turbo.move_speed = 4
+        turbo.move(UP)
+        turbo.move(RIGHT)
+        turbo.move(RIGHT)
+
+        free_col = 27
+        turbo.move_speed = 10
+        turbo.move_to_col(free_col)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+
+        for row in range(hardcoded_monsters[0][1], 0, -1):
+            if not turbo.move_to_row(row):
+                break
+            if row % 2 == 0:
+                if not turbo.move_to_col(hardcoded_monsters[0][0] + 1):
+                    break
+            else:
+                if not turbo.move_to_col(n - 2):
+                    break
+        turbo.move_to_col(free_col)
         turbo.move_to_row(hardcoded_monsters[0][1])
         turbo.move_to_col(turbo.last_monster_pos[0])
         turbo.move_to_row(n - 1)
