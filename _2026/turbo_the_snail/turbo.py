@@ -1238,10 +1238,10 @@ class QuadrantExplorerPart1(TurboScene):
         self.wait(2)
 
         # Show the maximum size of the subproblems
-        self.play(self.camera.frame.animate.reorient(0, 0, 0, (0.64, -1.43, 0.02), 4.99), run_time=2)
-        brace = Brace(quadrant, RIGHT)
-        label = brace.get_tex(R"\le \frac{N}{2}", font_size=40)
-        self.play(GrowFromEdge(brace, LEFT), Write(label))
+        self.wait(2)
+        brace = Brace(quadrant, UP, buff=0)
+        label = brace.get_tex(R"\le \frac{N}{2}", font_size=30).set_stroke(width=10, color=BLACK, behind=True)
+        self.play(AnimationGroup(GrowFromEdge(brace, DOWN), Write(label), lag_ratio=0.6), run_time=2)
 
         # Brute force the right side
         def brute_force():
@@ -1496,10 +1496,11 @@ class QuadrantExplorerPart2(TurboScene):
             self.turbo.time_tracker.animate.set_value(self.turbo.RIGHT_START)
         )
         self.wait(1)
-        self.reset_grid(monster_positions=hardcoded_monsters + [(3, 4)])
+        self.reset_grid(monster_positions=hardcoded_monsters + [(3, 7)])
         self.play(self.grid.reveal_monster(*hardcoded_monsters[0]), run_time=0.001)
         monster = self.grid.get_monster(*hardcoded_monsters[0])
         monster.set_time(monster.X_START)
+        self.grid.save_state()
         self.wait(1)
 
         turbo.move_speed = 10
@@ -1525,3 +1526,86 @@ class QuadrantExplorerPart2(TurboScene):
         turbo.move_to_row(hardcoded_monsters[0][1])
         turbo.move_to_col(turbo.last_monster_pos[0])
         turbo.move_to_row(n - 1)
+        self.wait(1)
+
+        # Show the case where no monster is found in the upper left at all
+        self.play(
+            self.camera.frame.animate(run_time=2).restore(),
+            self.grid.animate(run_time=3).restore(),
+            self.turbo.move_to_position(0, 0, path_arc=PI * 0.3, run_time=2.3),
+            self.turbo.time_tracker.animate.set_value(self.turbo.RIGHT_START)
+        )
+        self.reset_grid(
+            monster_positions=hardcoded_monsters + [(25, 6)] + get_partial_monster_staircase(
+                0, hardcoded_monsters[0][0] - 1, hardcoded_monsters[0][1] + 1, n - 2
+            )
+        )
+        monster = self.grid.get_monster(*hardcoded_monsters[0])
+        self.play(
+            self.grid.reveal_monster(*hardcoded_monsters[0]),
+            monster.animate_set_time(monster.X_START),
+            run_time=0.001
+        )
+
+        turbo.move_to_col(free_col)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        for row in range(hardcoded_monsters[0][1], 0, -1):
+            if not turbo.move_to_row(row):
+                break
+            if row % 2 == 0:
+                if not turbo.move_to_col(0):
+                    break
+            else:
+                if not turbo.move_to_col(hardcoded_monsters[0][0] - 1):
+                    break
+        self.wait(2)
+
+        # Show the lower section being blocked off
+        self.play(
+            self.camera.frame.animate.reorient(0, 0, 0, (0.03, -1.47, 0.00), 4.47),
+            AnimationGroup(*[
+                monster.animate_set_time(monster.BOB_END)
+                for monster in self.grid.monsters[2:]
+            ], lag_ratio=0.3),
+            run_time=2
+        )
+        self.wait(1)
+
+        # Focus back on the upper quadrants
+        self.play(
+            self.camera.frame.animate.restore(),
+            AnimationGroup(*[
+                FadeOut(monster)
+                for monster in self.grid.monsters[2:][::-1]
+            ]),
+            run_time=2
+        )
+        self.wait(1)
+
+        # Turbo finds the monster in the upper-right instead, and uses it to get to the bottom
+        turbo.move_speed = 1
+        turbo.move(UP)
+        turbo.move(RIGHT)
+        turbo.move(RIGHT)
+        self.wait(1)
+
+        free_col = 27
+        turbo.move_speed = 10
+        turbo.move_to_col(free_col)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+
+        for row in range(hardcoded_monsters[0][1], 0, -1):
+            if not turbo.move_to_row(row):
+                break
+            if row % 2 == 0:
+                if not turbo.move_to_col(hardcoded_monsters[0][0] + 1):
+                    break
+            else:
+                if not turbo.move_to_col(n - 2):
+                    break
+        turbo.move_to_col(free_col)
+        self.set_camera_target_position(0, 0, 0, (0.03, -1.47, 0.00), 4.47, drift_time=2)
+        turbo.move_to_row(hardcoded_monsters[0][1])
+        turbo.move_to_col(turbo.last_monster_pos[0])
+        turbo.move_to_row(n - 1)
+        self.wait(1)
