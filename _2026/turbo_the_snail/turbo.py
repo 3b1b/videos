@@ -321,11 +321,11 @@ class TurboGrid(Group):
             anims.append(
                 AnimationGroup(
                     AnimationGroup(*[
-                        t.reveal()
+                        t.reveal(axis=UP if t.get_x() > monster_tile.get_x() else DOWN)
                         for t in monster_row
                     ], lag_ratio=0.1),
                     AnimationGroup(*[
-                        t.reveal()
+                        t.reveal(axis=LEFT if t.get_y() > monster_tile.get_y() else RIGHT)
                         for t in monster_col
                     ], lag_ratio=0.1)
                 )
