@@ -98,11 +98,11 @@ class PiCreature(SVGMobject):
         # hardcodes how to extract what we want.
         parts = self.submobjects
         self.eyes: VGroup = self.draw_eyes(
-            original_irises=VGroup(parts[2], parts[6]),
-            original_pupils=VGroup(parts[8], parts[9])
+            original_irises=VGroup(parts[LEFT_EYE_INDEX], parts[RIGHT_EYE_INDEX]),
+            original_pupils=VGroup(parts[LEFT_PUPIL_INDEX], parts[RIGHT_PUPIL_INDEX])
         )
-        self.body: VMobject = parts[10]
-        self.mouth: VMobject = parts[11]
+        self.body: VMobject = parts[BODY_INDEX]
+        self.mouth: VMobject = parts[MOUTH_INDEX]
         self.mouth.insert_n_curves(10)
         self.set_submobjects([self.eyes, self.body, self.mouth])
 
