@@ -1242,20 +1242,71 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             point = n2p(numer / denom)
             tick = Line(point + 0.5 * tick_height * DOWN, point + 0.5 * tick_height * UP)
             tick.set_stroke(GREY_B, 2)
-            label = Tex(get_dyadic_tex(numer, denom), font_size=font_size)
-            label.next_to(tick, UP, SMALL_BUFF)
-            label.set_backstroke(BLACK, 3)
-            mark = VGroup(tick, label)
+            mark = VGroup(tick)
+            if label_style[0] == "fraction":
+                label = Tex(get_dyadic_tex(numer, denom), font_size=font_size)
+                label.next_to(tick, UP, SMALL_BUFF)
+                label.set_backstroke(BLACK, 3)
+                mark.add(label)
             mark.numer = numer
             mark.denom = denom
             mark.value = numer / denom
 
             def update_mark(mark):
                 mark[0].move_to(n2p(mark.value))
-                mark[1].next_to(mark[0], UP, SMALL_BUFF)
+                if len(mark) > 1:
+                    mark[1].next_to(mark[0], UP, SMALL_BUFF)
 
             mark.add_updater(update_mark)
+            mark.set_z_index(1)
             return mark
+
+        def get_width_braces(level, dynamic=True, fade=1, margin=1, max_braces=16, max_opacity=0.75):
+            group = VGroup()
+            group.fade = ValueTracker(fade)
+            group.release = ValueTracker(0)
+            cell_width = 2.0**-level
+            label_template = Tex(Rf"2^{{-{level}}}", font_size=26)
+
+            def update_braces(group):
+                ref_low, ref_high = highlight_range
+                x_ref_low = value_to_x(ref_low)
+                slope = (value_to_x(ref_high) - x_ref_low) / (ref_high - ref_low)
+                frame_left = frame.get_left()[0] - margin
+                frame_right = frame.get_right()[0] + margin
+                opacity = max_opacity * group.fade.get_value()
+                if dynamic:
+                    rel_width = slope * cell_width / frame.get_width()
+                    fade_in = clip((rel_width - 0.2) / 0.1, 0, 1)
+                    fade_out = clip((0.65 - rel_width) / 0.2, 0, 1)
+                    opacity *= fade_in * interpolate(1, fade_out, group.release.get_value())
+                n_used = 0
+                if opacity > 0:
+                    v_left = ref_low + (frame_left - x_ref_low) / slope
+                    v_right = ref_low + (frame_right - x_ref_low) / slope
+                    i_low = max(math.floor(v_left / cell_width), 0)
+                    i_high = min(math.floor(v_right / cell_width), 2**level - 1, i_low + max_braces - 1)
+                    indices = list(range(i_low, i_high + 1))
+                    while len(group) < len(indices):
+                        group.add(VGroup(VMobject(), label_template.copy()))
+                    for i, width_brace in zip(indices, group):
+                        x_low = x_ref_low + (i * cell_width - ref_low) * slope
+                        x_high = x_low + cell_width * slope
+                        if x_high - x_low > 100 * frame.get_width():
+                            width_brace.set_opacity(0)
+                            continue
+                        line = Line(np.array([x_low, line_y, 0]), np.array([x_high, line_y, 0]))
+                        width_brace[0].become(Brace(line, UP, buff=0).stretch(0.7, 1, about_edge=DOWN))
+                        width_brace[1].next_to(width_brace[0], UP, SMALL_BUFF)
+                        width_brace[1].set_backstroke(BLACK, 3)
+                        width_brace.set_opacity(opacity)
+                    n_used = len(indices)
+                for width_brace in group[n_used:]:
+                    width_brace.set_opacity(0)
+
+            group.add_updater(update_braces)
+            group.update()
+            return group
 
         def get_visible_value_range(margin=0.5):
             x0 = n2p(0)[0]
@@ -1272,6 +1323,51 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 for numer in numers
                 if level == 1 or numer % 2 == 1
             )
+
+        def get_dyadic_ruler(fade=0, ref_spacing=0.35, max_height=0.45, height_ratio=0.7, max_depth=5, n_ticks=500, margin=0.5):
+            ticks = VGroup(Line(ORIGIN, UP) for _ in range(n_ticks))
+            ticks.set_stroke(GREY_B, 2)
+            ticks.fade = ValueTracker(fade)
+            ticks.set_z_index(1)
+
+            def update_ruler(ticks):
+                ref_low, ref_high = highlight_range
+                x_ref_low = value_to_x(ref_low)
+                slope = (value_to_x(ref_high) - x_ref_low) / (ref_high - ref_low)
+                frame_width = frame.get_width()
+                v_left = ref_low + (frame.get_left()[0] - margin - x_ref_low) / slope
+                v_right = ref_low + (frame.get_right()[0] + margin - x_ref_low) / slope
+                fade = ticks.fade.get_value()
+                n_used = 0
+                level = 0
+                while n_used < len(ticks):
+                    depth = math.log2(ref_spacing * frame_width / (slope * 2.0**-level))
+                    if depth >= max_depth:
+                        break
+                    opacity = fade * clip(max_depth - depth, 0, 1)
+                    height = max_height * height_ratio**clip(depth, 0, max_depth)
+                    stroke_width = interpolate(1, 2.5, height / max_height)
+                    denom = 2**level
+                    i_low = max(math.ceil(v_left * denom), 0)
+                    i_high = min(math.floor(v_right * denom), denom)
+                    for i in range(i_low, i_high + 1):
+                        if (level > 0 and i % 2 == 0) or n_used >= len(ticks):
+                            continue
+                        x = x_ref_low + (i / denom - ref_low) * slope
+                        tick = ticks[n_used]
+                        tick.put_start_and_end_on(
+                            np.array([x, line_y - height / 2, 0]),
+                            np.array([x, line_y + height / 2, 0]),
+                        )
+                        tick.set_stroke(width=stroke_width, opacity=opacity)
+                        n_used += 1
+                    level += 1
+                for tick in ticks[n_used:]:
+                    tick.set_stroke(opacity=0)
+
+            ticks.add_updater(update_ruler)
+            ticks.update()
+            return ticks
 
         def zoom_to_interval(low, high, screen_fraction=0.7, run_time=2, **kwargs):
             mid = (low + high) / 2
@@ -1298,6 +1394,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             return mob
 
         level_marks = [get_dyadic_marks(1)]
+        brace_levels = []
 
         # Convert everything to binary
         self.play(
@@ -1339,13 +1436,22 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Choose the remaining bits
         for k in range(2, n_bits + 2):
             step_time = 0.75 if k <= 3 else max(0.75 * 0.5**(k - 3), 0.1)
+            if label_style[0] == "power" and k <= n_bits:
+                for group in brace_levels:
+                    group.release.set_value(1)
+                new_braces = get_width_braces(k)
+                brace_levels.append(new_braces)
+                self.add(new_braces)
             self.play(zoom_to_interval(low, high, run_time=2 * step_time))
             if k > n_bits:
                 break
 
-            marks = get_dyadic_marks(k)
-            level_marks.append(marks)
-            self.play(FadeIn(marks), run_time=step_time)
+            if label_style[0] == "fraction":
+                marks = get_dyadic_marks(k)
+                level_marks.append(marks)
+                self.play(FadeIn(marks), run_time=step_time)
+            else:
+                self.wait(step_time)
 
             bit = word_bits[k - 1]
             bits += bit
@@ -1354,18 +1460,21 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             binary_number = get_binary_number(bits)
             self.add(binary_number)
             highlight_range[:] = [low, high]
+            self.wait(0.2)
 
             if k == 3:
                 label_style[0] = "power"
-                new_level_marks = [
-                    VGroup(get_dyadic_mark(mark.numer, mark.denom) for mark in marks)
-                    for marks in level_marks
-                ]
+                old_marks = VGroup(*level_marks)
+                ruler = get_dyadic_ruler(fade=0)
+                new_braces = get_width_braces(k, fade=0)
+                brace_levels.append(new_braces)
+                self.add(ruler, new_braces)
                 self.play(
-                    FadeOut(VGroup(*level_marks)),
-                    FadeIn(VGroup(*new_level_marks)),
+                    UpdateFromAlphaFunc(Mobject(), lambda m, a: old_marks.set_opacity(1 - a)),
+                    ruler.fade.animate.set_value(1),
+                    new_braces.fade.animate.set_value(1),
                 )
-                level_marks = new_level_marks
+                self.remove(*level_marks)
 
         self.remove(binary_number)
         binary_number = get_binary_number(bits, highlight_last=False)
@@ -1486,9 +1595,13 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             for x in (last_bar.get_left()[0], last_bar.get_right()[0])
         )
         target_lines.set_stroke(WHITE, 3)
+        red_brace = get_width_braces(n_bits - 1, dynamic=False, fade=0)
+        self.add(red_brace)
         self.play(
             UpdateFromAlphaFunc(highlight, lambda m, a: m.set_stroke(interpolate_color(YELLOW, RED, a))),
             ShowCreation(target_lines),
+            brace_levels[-1].fade.animate.set_value(0),
+            red_brace.fade.animate.set_value(1),
         )
         self.wait()
 
@@ -1534,6 +1647,8 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         full_brace = Brace(binary_number[1:], DOWN, buff=SMALL_BUFF)
         full_label = full_brace.get_text(f"{n_bits} bits", font_size=30)
         self.play(
+            brace_levels[-1].fade.animate.set_value(1),
+            red_brace.fade.animate.set_value(0),
             UpdateFromAlphaFunc(highlight, update_yellow_highlight),
             binary_number[-1].animate.set_opacity(1),
             ReplacementTransform(bits_brace, full_brace),
@@ -1728,12 +1843,14 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
             for n_shown in range(len(shown_bits) + 1, len(code) + 1):
                 step_bits = code[:n_shown]
-                red_anims = [UpdateFromAlphaFunc(highlight, lambda m, a: m.set_stroke(interpolate_color(YELLOW, RED, a)))]
-                while len(level_marks) < n_shown:
-                    marks = get_dyadic_marks(len(level_marks) + 1)
-                    level_marks.append(marks)
-                    if len(marks) > 0:
-                        red_anims.append(FadeIn(marks))
+                new_braces = get_width_braces(n_shown, fade=0)
+                self.add(new_braces)
+                red_anims = [
+                    UpdateFromAlphaFunc(highlight, lambda m, a: m.set_stroke(interpolate_color(YELLOW, RED, a))),
+                    *(group.release.animate.set_value(1) for group in brace_levels),
+                    new_braces.fade.animate.set_value(1),
+                ]
+                brace_levels.append(new_braces)
                 self.play(*red_anims, run_time=0.5)
 
                 n_same = next(
