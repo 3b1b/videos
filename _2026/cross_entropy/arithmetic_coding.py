@@ -1928,3 +1928,250 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.add(full_avg)
         self.remove(label_copy)
         self.wait()
+
+
+class GeneralizeBitCount(InteractiveScene):
+    def construct(self):
+        # Set up the number line
+        frame = self.frame
+        line_width = 12
+        line_y = 0
+        p = 0.7 * 2**-5
+        hit_level = 4
+        hit_value = 5 / 16
+        slid_low = 10 / 32 + (2**-5 - p) / 2
+
+        view_center = ValueTracker(0.5)
+        view_log_width = ValueTracker(0)
+        k_tracker = ValueTracker(0)
+        target_low = ValueTracker(hit_value - 0.35 * p)
+
+        def get_scale():
+            return line_width / 2**view_log_width.get_value()
+
+        def value_to_x(value):
+            return (value - view_center.get_value()) * get_scale()
+
+        def n2p(value, y=line_y):
+            return np.array([value_to_x(value), y, 0])
+
+        def get_target_bounds():
+            low = target_low.get_value()
+            return low, low + p
+
+        number_line = Line(LEFT, RIGHT).set_stroke(GREY_B, 2)
+
+        def update_number_line(line):
+            left = max(value_to_x(0), frame.get_left()[0] - 1)
+            right = min(value_to_x(1), frame.get_right()[0] + 1)
+            line.put_start_and_end_on(np.array([left, line_y, 0]), np.array([right, line_y, 0]))
+
+        number_line.add_updater(update_number_line)
+        number_line.update()
+
+        def get_end_label(value):
+            label = Tex(str(value))
+            label.add_updater(lambda m: m.move_to(n2p(value) + 0.5 * DOWN))
+            label.update()
+            return label
+
+        end_labels = VGroup(get_end_label(0), get_end_label(1))
+
+        def get_ticks(ref_spacing=0.35, max_height=0.45, height_ratio=0.7, n_ticks=400, margin=0.5):
+            ticks = VGroup(Line(ORIGIN, UP) for _ in range(n_ticks))
+            ticks.set_stroke(GREY_B, 2)
+            ticks.set_z_index(1)
+            ticks.last_key = None
+            ticks.n_used = len(ticks)
+
+            def update_ticks(ticks):
+                key = (view_center.get_value(), view_log_width.get_value(), k_tracker.get_value(), frame.get_width())
+                if key == ticks.last_key:
+                    return
+                ticks.last_key = key
+                scale = get_scale()
+                frame_width = frame.get_width()
+                v_left = view_center.get_value() + (frame.get_left()[0] - margin) / scale
+                v_right = view_center.get_value() + (frame.get_right()[0] + margin) / scale
+                k_value = k_tracker.get_value()
+                n_used = 0
+                for level in range(math.floor(k_value) + 2):
+                    opacity = clip(k_value - level + 1, 0, 1)
+                    if opacity <= 0:
+                        break
+                    depth = math.log2(ref_spacing * frame_width / (scale * 2.0**-level))
+                    height = max_height * height_ratio**clip(depth, 0, 6)
+                    stroke_width = interpolate(1, 2.5, height / max_height)
+                    denom = 2**level
+                    for i in range(max(math.ceil(v_left * denom), 0), min(math.floor(v_right * denom), denom) + 1):
+                        if (level > 0 and i % 2 == 0) or n_used >= len(ticks):
+                            continue
+                        x = value_to_x(i / denom)
+                        tick = ticks[n_used]
+                        tick.put_start_and_end_on(
+                            np.array([x, line_y - height / 2, 0]),
+                            np.array([x, line_y + height / 2, 0]),
+                        )
+                        tick.set_stroke(width=stroke_width, opacity=opacity)
+                        n_used += 1
+                for tick in ticks[n_used:ticks.n_used]:
+                    tick.set_stroke(opacity=0)
+                ticks.n_used = n_used
+
+            ticks.add_updater(update_ticks)
+            ticks.update()
+            return ticks
+
+        ticks = get_ticks()
+
+        self.play(
+            ShowCreation(number_line),
+            FadeIn(ticks),
+            FadeIn(end_labels),
+        )
+        self.wait()
+
+        # Show the target region
+        goalpost_bottom = line_y - 0.75
+        goalposts = VGroup(
+            DashedLine(np.array([0, goalpost_bottom, 0]), np.array([0, line_y + 1.5, 0]))
+            for _ in range(2)
+        )
+        goalposts.set_stroke(WHITE, 3)
+
+        def update_goalposts(group):
+            for post, value in zip(group, get_target_bounds()):
+                post.set_x(value_to_x(value))
+
+        goalposts.add_updater(update_goalposts)
+        goalposts.update()
+
+        def update_brace(group, low, high, direction, buff, y=line_y, grow=1):
+            if not hasattr(group, "label_template"):
+                group.label_template = group[1].copy()
+            ends = (value_to_x(low), value_to_x(high))
+            last_ends = getattr(group, "last_ends", None)
+            last_grow = getattr(group, "last_grow", 1)
+            if last_ends == ends and last_grow == grow:
+                return
+            same_width = last_ends is not None and np.isclose(ends[1] - ends[0], last_ends[1] - last_ends[0])
+            if same_width and grow == 1 and last_grow == 1:
+                group.shift((ends[0] - last_ends[0]) * RIGHT)
+            else:
+                group[0].become(Brace(Line(n2p(low, y), n2p(high, y)), direction, buff=buff))
+                group[1].become(group.label_template)
+                group[1].next_to(group[0], direction, SMALL_BUFF)
+                if grow < 1:
+                    group.scale(max(grow, 1e-3), about_edge=-direction)
+            group.last_ends = ends
+            group.last_grow = grow
+
+        p_brace = VGroup(VMobject(), Tex("p", font_size=36))
+
+        def update_p_brace(group):
+            update_brace(group, *get_target_bounds(), DOWN, 0.1, y=goalpost_bottom)
+
+        p_brace.add_updater(update_p_brace)
+        p_brace.update()
+
+        self.add(goalposts)
+        self.play(AnimationGroup(*[ShowCreation(line) for line in goalposts]), GrowFromEdge(p_brace, UP))
+        self.wait()
+
+        # Bring up the bit count
+        k_label = Tex("k = 0", font_size=60)
+        k_number = k_label.make_number_changeable("0")
+        k_label.to_edge(UP, buff=1)
+        self.play(FadeIn(k_label))
+        self.wait()
+
+        # Helpers for adding bits
+        width_low = ValueTracker(0)
+        width_high = ValueTracker(1)
+        width_brace = VGroup(VMobject(), Tex(R"2^{-k}", font_size=36))
+        width_brace[1].set_backstroke(BLACK, 3)
+        width_grow = ValueTracker(0)
+
+        def update_width_brace(group):
+            update_brace(group, width_low.get_value(), width_high.get_value(), UP, 0.3, grow=width_grow.get_value())
+
+        width_brace.add_updater(update_width_brace)
+
+        def get_closest_interval(level, low, high):
+            spacing = 2.0**-level
+            candidates = range(max(math.floor(low / spacing) - 1, 0), min(math.ceil(high / spacing) + 1, 2**level - 1) + 1)
+            j = min(candidates, key=lambda j: (max(low - j * spacing, j * spacing - high, 0), j))
+            return j * spacing, (j + 1) * spacing
+
+        def get_step_anims(k):
+            log_width = min(0, math.log2(4 * 2.0**-k))
+            low, high = get_target_bounds()
+            focus = (low + high) / 2
+            center = focus + (0.5 - focus) * 4**log_width
+            return [
+                k_tracker.animate.set_value(k),
+                view_log_width.animate.set_value(log_width),
+                view_center.animate.set_value(center),
+            ]
+
+        def get_brace_anims(k):
+            new_low, new_high = get_closest_interval(k, *get_target_bounds())
+            return [width_low.animate.set_value(new_low), width_high.animate.set_value(new_high)]
+
+        # Add bits until a tick lands in the target
+        for k in range(1, hit_level + 1):
+            k_number.set_value(k)
+            anims = get_step_anims(k)
+            if k > 3:
+                anims += get_brace_anims(k)
+            if k == 3:
+                width_low.set_value(get_closest_interval(k, *get_target_bounds())[0])
+                width_high.set_value(get_closest_interval(k, *get_target_bounds())[1])
+                width_brace.update()
+                self.add(width_brace)
+                anims.append(width_grow.animate.set_value(1))
+            self.play(*anims, run_time=1.5 if k >= 3 else 0.1)
+            self.wait(1)
+
+        # Slide the target so no tick lands inside
+        slid_interval = get_closest_interval(hit_level, slid_low, slid_low + p)
+        self.play(
+            target_low.animate.set_value(slid_low),
+            width_low.animate.set_value(slid_interval[0]),
+            width_high.animate.set_value(slid_interval[1]),
+            run_time=3,
+        )
+        self.wait()
+
+        # Keep adding bits until the spacing is at most p
+        k = hit_level
+        while 2.0**-k > p:
+            k += 1
+            k_number.set_value(k)
+            self.play(*get_step_anims(k), *get_brace_anims(k), run_time=1.5)
+            self.wait()
+
+        bound = Tex(R"2^{-k} \le p", font_size=48).to_edge(DOWN, buff=1)
+
+        # Show the inequality
+        self.play(
+            AnimationGroup(
+                TransformMatchingShapes(width_brace[1].copy(), bound["2^{-k}"], path_arc=PI * 0.3),
+                Write(bound[R"\le"]),
+                TransformMatchingShapes(p_brace[1].copy(), bound["p"], path_arc=-PI * 0.3),
+                lag_ratio=0.4,
+                run_time=2
+            )
+        )
+
+        # Do the algebra
+        algebra = Tex(R"2^{-k} \le p\ \implies\ -k \le \log_2 p\ \implies\ k \ge -\log_2 p", font_size=48).move_to(bound)
+        self.play(TransformMatchingShapes(bound, algebra[R"2^{-k} \le p\ "]), run_time=1)
+        self.play(FadeIn(algebra[5:15]))
+        self.wait(1)
+        self.play(FadeIn(algebra[15:]))
+        self.wait(2)
+        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.15)
+        self.play(ShowCreation(rect), run_time=2)
+        information_text = TexText("Information", font_size=34).next_to(algebra[19:], UP, buff=0.32)
+        self.play(Write(information_text))
