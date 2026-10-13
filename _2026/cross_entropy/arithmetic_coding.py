@@ -544,7 +544,8 @@ class IntroduceCharacterModel(InteractiveScene):
     def construct(self):
         # Show a few example distributions
         frame = self.frame
-        input_phrase = "compression is "
+        # input_phrase = "compression is "
+        input_phrase = "mathematics"
         n_initial_letters = 1
         char_labels = CHAR_ALPHABET.replace(" ", "_")
         distribution = get_next_char_distribution(input_phrase[:n_initial_letters])
@@ -1931,20 +1932,102 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
 
 class GeneralizeBitCount(InteractiveScene):
-    def construct(self):
-        # Set up the number line
-        frame = self.frame
-        line_width = 12
-        line_y = 0
-        p = 0.7 * 2**-5
-        hit_level = 4
-        hit_value = 5 / 16
-        slid_low = 10 / 32 + (2**-5 - p) / 2
+    word = "info"
 
+    def construct(self):
+        # Measure the target word
+        frame = self.frame
+        word = self.word
+        line_width = 12
+
+        char_labels_template = Text(CHAR_ALPHABET)
+        layer_cache = dict()
+
+        def get_layer(prefix):
+            if prefix not in layer_cache:
+                layer = StackedProbDistribution(
+                    cached_next_char_distribution(" " + prefix).copy(),
+                    labels=char_labels_template.copy(),
+                    width=line_width,
+                    label_height_ratio=0.5,
+                )
+                bars = layer.bars
+                cdf = np.cumsum(np.array(layer.distribution, dtype=float))
+                cdf /= cdf[-1]
+                layer.edges = list(zip([0.0, *cdf[:-1]], [*cdf[:-1], 1.0]))
+                layer.default_fills = [(bar.get_fill_color(), bar.get_fill_opacity()) for bar in bars]
+                layer.default_stroke_opacities = [bar.get_stroke_opacity() for bar in bars]
+                layer.path_index = None
+                top = layer.get_top()[1]
+                widest = max(bars, key=lambda bar: bar.get_width())
+                unit_points = widest.get_points().astype(float)
+                unit_points[:, 0] = (unit_points[:, 0] - widest.get_left()[0]) / widest.get_width()
+                unit_points[:, 1] -= top
+                layer.bar_unit_points = unit_points
+                layer.label_points = [
+                    [
+                        sm.get_points().astype(float) - np.array([label.get_x(), top, 0])
+                        for sm in label.get_family()
+                    ]
+                    for label in layer.labels
+                ]
+                layer.label_widths = [label.get_width() for label in layer.labels]
+                layer_cache[prefix] = layer
+            return layer_cache[prefix]
+
+        def decode(value, n_chars):
+            ranges = [(0.0, 1.0)]
+            indices = []
+            prefix = ""
+            for _ in range(n_chars):
+                edges = get_layer(prefix).edges
+                low, high = ranges[-1]
+                alpha = (value - low) / (high - low)
+                index = next((i for i, (a, b) in enumerate(edges) if alpha < b), len(edges) - 1)
+                a, b = edges[index]
+                ranges.append((low + (high - low) * a, low + (high - low) * b))
+                indices.append(index)
+                prefix += CHAR_ALPHABET[index]
+            return prefix, ranges, indices
+
+        word_ranges = [(0.0, 1.0)]
+        for i, char in enumerate(word):
+            a, b = get_layer(word[:i]).edges[CHAR_ALPHABET.index(char)]
+            range_low, range_high = word_ranges[-1]
+            word_ranges.append((range_low + (range_high - range_low) * a, range_low + (range_high - range_low) * b))
+        word_low, word_high = word_ranges[-1]
+
+        # Choose target positions based on the word
+        p = word_high - word_low
+        final_level = math.ceil(-math.log2(p) - 1e-9)
+        hit_level = final_level - 2
+        brace_level = min(3, hit_level - 1)
+        word_center = (word_low + word_high) / 2
+
+        hit_denom = 2**hit_level
+        hit_numer = round(word_center * hit_denom)
+        if hit_numer % 2 == 0:
+            hit_numer += 1 if word_center * hit_denom > hit_numer else -1
+        hit_value = hit_numer / hit_denom
+
+        if len(ArithmeticCodingDiagram.get_binary_code(word_low, word_high)) == final_level:
+            slid_low = word_low
+        else:
+            slid_spacing = 2.0**-(final_level - 1)
+            slid_low = math.floor(word_center / slid_spacing) * slid_spacing + (slid_spacing - p) / 2
+
+        # Set up the number line
         view_center = ValueTracker(0.5)
         view_log_width = ValueTracker(0)
         k_tracker = ValueTracker(0)
         target_low = ValueTracker(hit_value - 0.35 * p)
+        p_tracker = ValueTracker(p)
+        p_label_shift = ValueTracker(0)
+        line_y_tracker = ValueTracker(0)
+        ruler_alpha = ValueTracker(0)
+
+        def get_line_y():
+            return line_y_tracker.get_value()
 
         def get_scale():
             return line_width / 2**view_log_width.get_value()
@@ -1952,32 +2035,92 @@ class GeneralizeBitCount(InteractiveScene):
         def value_to_x(value):
             return (value - view_center.get_value()) * get_scale()
 
-        def n2p(value, y=line_y):
-            return np.array([value_to_x(value), y, 0])
+        def n2p(value, y=None):
+            return np.array([value_to_x(value), get_line_y() if y is None else y, 0])
+
+        modes = {"bits": "code", "diagram": "word"}
 
         def get_target_bounds():
-            low = target_low.get_value()
-            return low, low + p
+            if modes["bits"] == "value":
+                return decode(get_arrow_value(), len(word))[1][-1]
+            low = target_low.get_value() - (p_tracker.get_value() - p) / 2
+            return low, low + p_tracker.get_value()
+
+        word_bits = ArithmeticCodingDiagram.get_binary_code(word_low, word_high)
+        value_tracker = ValueTracker(0)
+
+        n_shown_bits = max(final_level, len(word_bits))
+
+        def get_code_bits():
+            if modes["bits"] == "value":
+                return ArithmeticCodingDiagram.get_binary_digits(value_tracker.get_value(), n_shown_bits)
+            return ArithmeticCodingDiagram.get_binary_code(*get_target_bounds())
+
+        def get_shown_bits():
+            return get_code_bits().ljust(n_shown_bits, "0")
+
+        def get_arrow_value():
+            bits = get_shown_bits()
+            return int(bits, 2) / 2**len(bits)
+
+        def set_view(start_center, start_log_width, new_center, new_log_width, focus, alpha):
+            start_x = (focus - start_center) * line_width / 2**start_log_width
+            end_x = (focus - new_center) * line_width / 2**new_log_width
+            log_width = interpolate(start_log_width, new_log_width, alpha)
+            x = interpolate(start_x, end_x, alpha)
+            view_log_width.set_value(log_width)
+            view_center.set_value(focus - x * 2**log_width / line_width)
+
+        def get_view_anim(new_center, new_log_width, focus, **kwargs):
+            start_center = view_center.get_value()
+            start_log_width = view_log_width.get_value()
+
+            def update_view(mob, alpha):
+                set_view(start_center, start_log_width, new_center, new_log_width, focus, alpha)
+
+            return UpdateFromAlphaFunc(view_center, update_view, **kwargs)
 
         number_line = Line(LEFT, RIGHT).set_stroke(GREY_B, 2)
 
         def update_number_line(line):
             left = max(value_to_x(0), frame.get_left()[0] - 1)
             right = min(value_to_x(1), frame.get_right()[0] + 1)
-            line.put_start_and_end_on(np.array([left, line_y, 0]), np.array([right, line_y, 0]))
+            line.put_start_and_end_on(np.array([left, get_line_y(), 0]), np.array([right, get_line_y(), 0]))
 
         number_line.add_updater(update_number_line)
         number_line.update()
 
-        def get_end_label(value):
-            label = Tex(str(value))
-            label.add_updater(lambda m: m.move_to(n2p(value) + 0.5 * DOWN))
-            label.update()
-            return label
+        glyph_template = Text("0.1", font="Consolas", font_size=20)
+        glyph_advance = (glyph_template[2].get_x() - glyph_template[0].get_x()) / 2
+        glyph_height = glyph_template[0].get_height()
+        glyph_origin = glyph_template[0].get_center()
+        glyphs = {
+            char: (glyph, glyph.get_center() - glyph_origin - i * glyph_advance * RIGHT)
+            for i, (char, glyph) in enumerate(zip("0.1", glyph_template))
+        }
+        tick_label_cache = dict()
+        tick_label_fade = ValueTracker(0)
+        tick_label_boost = ValueTracker(0)
+        other_label_fade = ValueTracker(1)
+        tick_labels = VGroup()
 
-        end_labels = VGroup(get_end_label(0), get_end_label(1))
+        def get_tick_label(string):
+            if string not in tick_label_cache:
+                label = VGroup()
+                for i, char in enumerate(string):
+                    glyph, offset = glyphs[char]
+                    label.add(glyph.copy().move_to(offset + (i - (len(string) - 1) / 2) * glyph_advance * RIGHT))
+                label.anchor = np.zeros(3)
+                label.last_opacity = None
+                tick_label_cache[string] = label
+            return tick_label_cache[string]
 
-        def get_ticks(ref_spacing=0.35, max_height=0.45, height_ratio=0.7, n_ticks=400, margin=0.5):
+        def get_tick_string(numer, level):
+            if level == 0:
+                return str(numer)
+            return "." + bin(numer)[2:].zfill(level)
+
+        def get_ticks(ref_spacing=0.35, max_height=0.45, height_ratio=0.7, ruler_depth=5, n_ticks=400, margin=0.5):
             ticks = VGroup(Line(ORIGIN, UP) for _ in range(n_ticks))
             ticks.set_stroke(GREY_B, 2)
             ticks.set_z_index(1)
@@ -1985,21 +2128,35 @@ class GeneralizeBitCount(InteractiveScene):
             ticks.n_used = len(ticks)
 
             def update_ticks(ticks):
-                key = (view_center.get_value(), view_log_width.get_value(), k_tracker.get_value(), frame.get_width())
+                key = (
+                    view_center.get_value(), view_log_width.get_value(), k_tracker.get_value(),
+                    frame.get_width(), get_line_y(), ruler_alpha.get_value(), tick_label_fade.get_value(),
+                    tick_label_boost.get_value(), other_label_fade.get_value(),
+                )
                 if key == ticks.last_key:
                     return
                 ticks.last_key = key
                 scale = get_scale()
                 frame_width = frame.get_width()
+                line_y = get_line_y()
                 v_left = view_center.get_value() + (frame.get_left()[0] - margin) / scale
                 v_right = view_center.get_value() + (frame.get_right()[0] + margin) / scale
                 k_value = k_tracker.get_value()
+                alpha = ruler_alpha.get_value()
+                label_fade = tick_label_fade.get_value()
+                label_boost = tick_label_boost.get_value()
+                label_y = line_y - 0.3 - glyph_height / 2
+                shown_labels = []
                 n_used = 0
-                for level in range(math.floor(k_value) + 2):
-                    opacity = clip(k_value - level + 1, 0, 1)
-                    if opacity <= 0:
-                        break
+                for level in range(64):
                     depth = math.log2(ref_spacing * frame_width / (scale * 2.0**-level))
+                    bit_opacity = clip(k_value - level + 1, 0, 1)
+                    ruler_opacity = clip(ruler_depth - depth, 0, 1)
+                    if bit_opacity <= 0 and (alpha <= 0 or ruler_opacity <= 0):
+                        break
+                    opacity = interpolate(bit_opacity, ruler_opacity, alpha)
+                    if opacity <= 0:
+                        continue
                     height = max_height * height_ratio**clip(depth, 0, 6)
                     stroke_width = interpolate(1, 2.5, height / max_height)
                     denom = 2**level
@@ -2014,68 +2171,121 @@ class GeneralizeBitCount(InteractiveScene):
                         )
                         tick.set_stroke(width=stroke_width, opacity=opacity)
                         n_used += 1
+                        string = get_tick_string(i, level)
+                        label_width = len(string) * glyph_advance
+                        fit = clip((scale * 2.0**-level / label_width - 1.2) / 0.5, 0, 1)
+                        label_opacity = min(opacity * fit * interpolate(1, 20, label_boost), 1) * label_fade
+                        if string != "0":
+                            label_opacity *= other_label_fade.get_value()
+                        if label_opacity <= 0:
+                            continue
+                        label = get_tick_label(string)
+                        position = np.array([x, label_y, 0])
+                        label.shift(position - label.anchor)
+                        label.anchor = position
+                        if label.last_opacity != label_opacity:
+                            label.set_fill(opacity=label_opacity)
+                            label.last_opacity = label_opacity
+                        shown_labels.append(label)
                 for tick in ticks[n_used:ticks.n_used]:
                     tick.set_stroke(opacity=0)
                 ticks.n_used = n_used
+                if tick_labels.submobjects != shown_labels:
+                    tick_labels.set_submobjects(shown_labels)
 
             ticks.add_updater(update_ticks)
             ticks.update()
             return ticks
 
         ticks = get_ticks()
+        self.add(tick_labels)
 
         self.play(
-            ShowCreation(number_line),
+            FadeIn(number_line),
             FadeIn(ticks),
-            FadeIn(end_labels),
+            tick_label_fade.animate.set_value(1),
         )
         self.wait()
 
         # Show the target region
-        goalpost_bottom = line_y - 0.75
-        goalposts = VGroup(
-            DashedLine(np.array([0, goalpost_bottom, 0]), np.array([0, line_y + 1.5, 0]))
-            for _ in range(2)
-        )
-        goalposts.set_stroke(WHITE, 3)
+        goalpost_bottom = ValueTracker(-0.75)
+        goalpost_top = ValueTracker(1.5)
+
+        def get_goalpost(bottom, top):
+            return DashedLine(np.array([0, bottom, 0]), np.array([0, top, 0])).set_stroke(WHITE, 3)
+
+        goalpost_color = ValueTracker(0)
+        target_fade = ValueTracker(0)
+        goalposts = VGroup(get_goalpost(-0.75, 1.5) for _ in range(2))
+        goalposts.set_z_index(2)
+        goalposts.style_key = None
 
         def update_goalposts(group):
+            ends = (goalpost_bottom.get_value(), get_line_y() + goalpost_top.get_value())
+            style_key = (ends, goalpost_color.get_value(), target_fade.get_value())
+            if style_key != group.style_key:
+                for post in group:
+                    post.become(get_goalpost(*ends))
+                    post.set_stroke(interpolate_color(WHITE, GREEN, style_key[1]), opacity=style_key[2])
+                group.style_key = style_key
             for post, value in zip(group, get_target_bounds()):
                 post.set_x(value_to_x(value))
 
         goalposts.add_updater(update_goalposts)
         goalposts.update()
 
-        def update_brace(group, low, high, direction, buff, y=line_y, grow=1):
+        def update_brace(group, low, high, direction, buff, y=None, grow=1, label_shift=0, opacity=1):
             if not hasattr(group, "label_template"):
                 group.label_template = group[1].copy()
+            y = get_line_y() if y is None else y
             ends = (value_to_x(low), value_to_x(high))
+            state = (grow, label_shift, y, opacity)
             last_ends = getattr(group, "last_ends", None)
-            last_grow = getattr(group, "last_grow", 1)
-            if last_ends == ends and last_grow == grow:
+            last_state = getattr(group, "last_state", (1, 0, y, 1))
+            if last_ends == ends and last_state == state:
                 return
             same_width = last_ends is not None and np.isclose(ends[1] - ends[0], last_ends[1] - last_ends[0])
-            if same_width and grow == 1 and last_grow == 1:
+            if same_width and state == last_state and grow == 1:
                 group.shift((ends[0] - last_ends[0]) * RIGHT)
             else:
                 group[0].become(Brace(Line(n2p(low, y), n2p(high, y)), direction, buff=buff))
                 group[1].become(group.label_template)
                 group[1].next_to(group[0], direction, SMALL_BUFF)
+                group[1].shift(label_shift * RIGHT)
+                if opacity < 1:
+                    group.set_opacity(opacity)
                 if grow < 1:
                     group.scale(max(grow, 1e-3), about_edge=-direction)
             group.last_ends = ends
-            group.last_grow = grow
+            group.last_state = state
 
         p_brace = VGroup(VMobject(), Tex("p", font_size=36))
+        p_brace_fade = ValueTracker(1)
 
         def update_p_brace(group):
-            update_brace(group, *get_target_bounds(), DOWN, 0.1, y=goalpost_bottom)
+            update_brace(
+                group, *get_target_bounds(), DOWN, 0.1,
+                y=goalpost_bottom.get_value(),
+                label_shift=p_label_shift.get_value(),
+                opacity=target_fade.get_value() * p_brace_fade.get_value(),
+            )
 
+        target_center = target_low.get_value() + p / 2
+        start_p = min(0.3, 1.8 * min(target_center, 1 - target_center))
+        p_tracker.set_value(start_p)
         p_brace.add_updater(update_p_brace)
         p_brace.update()
+        goalposts.update()
 
-        self.add(goalposts)
-        self.play(AnimationGroup(*[ShowCreation(line) for line in goalposts]), GrowFromEdge(p_brace, UP))
+        def shrink_target(mob, alpha):
+            p_tracker.set_value(start_p * (p / start_p)**alpha)
+
+        self.add(goalposts, p_brace)
+        self.play(
+            UpdateFromAlphaFunc(p_tracker, shrink_target, run_time=6),
+            target_fade.animate(time_span=(0, 1.25)).set_value(1),
+        )
+        p_tracker.set_value(p)
         self.wait()
 
         # Bring up the bit count
@@ -2091,9 +2301,13 @@ class GeneralizeBitCount(InteractiveScene):
         width_brace = VGroup(VMobject(), Tex(R"2^{-k}", font_size=36))
         width_brace[1].set_backstroke(BLACK, 3)
         width_grow = ValueTracker(0)
+        width_fade = ValueTracker(1)
 
         def update_width_brace(group):
-            update_brace(group, width_low.get_value(), width_high.get_value(), UP, 0.3, grow=width_grow.get_value())
+            update_brace(
+                group, width_low.get_value(), width_high.get_value(), UP, 0.3,
+                grow=width_grow.get_value(), opacity=width_fade.get_value(),
+            )
 
         width_brace.add_updater(update_width_brace)
 
@@ -2110,8 +2324,7 @@ class GeneralizeBitCount(InteractiveScene):
             center = focus + (0.5 - focus) * 4**log_width
             return [
                 k_tracker.animate.set_value(k),
-                view_log_width.animate.set_value(log_width),
-                view_center.animate.set_value(center),
+                get_view_anim(center, log_width, focus),
             ]
 
         def get_brace_anims(k):
@@ -2122,25 +2335,20 @@ class GeneralizeBitCount(InteractiveScene):
         for k in range(1, hit_level + 1):
             k_number.set_value(k)
             anims = get_step_anims(k)
-            if k > 3:
+            if k > brace_level:
                 anims += get_brace_anims(k)
-            if k == 3:
+            if k == brace_level:
                 width_low.set_value(get_closest_interval(k, *get_target_bounds())[0])
                 width_high.set_value(get_closest_interval(k, *get_target_bounds())[1])
                 width_brace.update()
                 self.add(width_brace)
                 anims.append(width_grow.animate.set_value(1))
-            self.play(*anims, run_time=1.5 if k >= 3 else 0.1)
-            self.wait(1)
+            self.play(*anims, run_time=1 if k >= brace_level else 0.01)
+            if k < brace_level:
+                self.wait(1)
 
         # Slide the target so no tick lands inside
-        slid_interval = get_closest_interval(hit_level, slid_low, slid_low + p)
-        self.play(
-            target_low.animate.set_value(slid_low),
-            width_low.animate.set_value(slid_interval[0]),
-            width_high.animate.set_value(slid_interval[1]),
-            run_time=3,
-        )
+        self.play(target_low.animate.set_value(slid_low), run_time=3)
         self.wait()
 
         # Keep adding bits until the spacing is at most p
@@ -2150,6 +2358,55 @@ class GeneralizeBitCount(InteractiveScene):
             k_number.set_value(k)
             self.play(*get_step_anims(k), *get_brace_anims(k), run_time=1.5)
             self.wait()
+
+        # Highlight the tick inside the range
+        highlight_level = k
+        tick_highlight_fade = ValueTracker(0)
+        tick_highlights = VGroup(Line(ORIGIN, UP) for _ in range(3))
+        tick_highlights.set_stroke(YELLOW, 4)
+        tick_highlights.set_z_index(2)
+
+        def update_tick_highlights(group):
+            low, high = get_target_bounds()
+            denom = 2**highlight_level
+            scale = get_scale()
+            numers = list(range(math.ceil(low * denom), math.floor(high * denom) + 1))
+            for i, line in enumerate(group):
+                if i >= len(numers):
+                    line.set_stroke(opacity=0)
+                    continue
+                numer, level = numers[i], highlight_level
+                while level > 0 and numer % 2 == 0:
+                    numer //= 2
+                    level -= 1
+                depth = math.log2(0.35 * frame.get_width() / (scale * 2.0**-level))
+                height = 0.45 * 0.7**clip(depth, 0, 6)
+                x = value_to_x(numers[i] / denom)
+                line.put_start_and_end_on(
+                    np.array([x, get_line_y() - height / 2, 0]),
+                    np.array([x, get_line_y() + height / 2, 0]),
+                )
+                line.set_stroke(opacity=tick_highlight_fade.get_value())
+
+        tick_highlights.add_updater(update_tick_highlights)
+        tick_highlights.update()
+        self.add(tick_highlights)
+
+        original_low = target_low.get_value()
+        spacing = 2.0**-highlight_level
+        view_left = view_center.get_value() - 2**view_log_width.get_value() / 2
+        view_right = view_center.get_value() + 2**view_log_width.get_value() / 2
+        right_shift = min(1.5 * spacing, view_right - 0.25 * spacing - (original_low + p))
+        left_shift = min(1.5 * spacing, original_low - view_left - 0.25 * spacing)
+        self.play(
+            target_low.animate(run_time=1.5).set_value(original_low + right_shift),
+            tick_highlight_fade.animate(run_time=0.5).set_value(1)
+        )
+        self.play(target_low.animate.set_value(original_low - left_shift), run_time=1.5)
+        self.play(target_low.animate.set_value(original_low), run_time=1.5)
+        self.play(tick_highlight_fade.animate.set_value(0))
+        self.remove(tick_highlights)
+        self.wait()
 
         bound = Tex(R"2^{-k} \le p", font_size=48).to_edge(DOWN, buff=1)
 
@@ -2166,12 +2423,474 @@ class GeneralizeBitCount(InteractiveScene):
 
         # Do the algebra
         algebra = Tex(R"2^{-k} \le p\ \implies\ -k \le \log_2 p\ \implies\ k \ge -\log_2 p", font_size=48).move_to(bound)
-        self.play(TransformMatchingShapes(bound, algebra[R"2^{-k} \le p\ "]), run_time=1)
-        self.play(FadeIn(algebra[5:15]))
+        self.play(TransformMatchingShapes(bound, algebra[:5]), run_time=1)
+        log_version = Tex(R"\log_2(2^{-k}) \le \log_2 p", font_size=48).match_y(bound).align_to(algebra[7], LEFT)
+        self.play(
+            AnimationGroup(
+                AnimationGroup(
+                    GrowFromEdge(algebra[5:7], LEFT),
+                    TransformFromCopy(algebra[:3], log_version[5:8]),
+                    TransformFromCopy(algebra[3], log_version[9]),
+                    TransformFromCopy(algebra[4], log_version[14]),
+                    run_time=2
+                ),
+                FadeIn(VGroup(log_version[:5], log_version[8], log_version[10:14])),
+                lag_ratio=0.7
+            )
+        )
+        self.play(
+            FadeOut(VGroup(log_version[:6], log_version[8])),
+            TransformMatchingShapes(log_version[6], algebra[7]),
+            TransformMatchingShapes(log_version[7], algebra[8]),
+            TransformMatchingShapes(log_version[8:], algebra[9:15])
+        )
         self.wait(1)
-        self.play(FadeIn(algebra[15:]))
-        self.wait(2)
-        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.15)
+        copy = algebra[9].copy()
+        self.play(
+            GrowFromEdge(algebra[15:17], LEFT),
+            AnimationGroup(
+                TransformFromCopy(algebra[7], algebra[19], path_arc=-PI * 0.3),
+                TransformFromCopy(algebra[8], algebra[17], path_arc=-PI * 0.3),
+                copy.animate(path_arc=-PI * 0.3).move_to(algebra[18]).rotate(PI, axis=UP),
+                TransformFromCopy(algebra[10:15], algebra[20:], path_arc=-PI * 0.3),
+                lag_ratio=0.1,
+                run_time=2
+            )
+        )
+        self.remove(copy)
+        self.add(algebra)
+        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.1)
         self.play(ShowCreation(rect), run_time=2)
         information_text = TexText("Information", font_size=34).next_to(algebra[19:], UP, buff=0.32)
         self.play(Write(information_text))
+        self.wait(2)
+
+        # Bring it to the center
+        inequality = algebra[17:]
+        self.play(
+            FadeOut(algebra[:17], run_time=1),
+            VGroup(inequality, rect, information_text).animate(run_time=1.8).set_x(0).scale(1.2)
+        )
+        self.wait(2)
+        self.play(FadeOut(VGroup(rect, information_text)))
+
+        # Show non-whole numbers of bits
+        p_decimals = max(2, 2 - math.floor(math.log10(p)))
+        p_value = VGroup(Tex("=", font_size=36), DecimalNumber(p, num_decimal_places=p_decimals, font_size=36))
+        p_value.arrange(RIGHT, buff=SMALL_BUFF)
+        label_shift = -(p_value.get_width() + SMALL_BUFF) / 2
+        p_value.next_to(p_brace[1], RIGHT, buff=SMALL_BUFF).shift(label_shift * RIGHT)
+
+        def update_p_value(group):
+            group[1].set_value(p_tracker.get_value())
+            group.next_to(p_brace[1], RIGHT, buff=SMALL_BUFF)
+
+        info_value = VGroup(
+            Tex("="),
+            DecimalNumber(-math.log2(p), num_decimal_places=2),
+            TexText("bits"),
+        )
+        info_value.arrange(RIGHT, buff=0.2)
+        info_value[2].align_to(info_value[1], DOWN)
+        info_value.scale(0.9)
+        info_value.next_to(rect, RIGHT, buff=0.1)
+
+        def update_info_value(group):
+            group[1].set_value(-math.log2(p_tracker.get_value()))
+
+        self.play(
+            p_label_shift.animate.set_value(label_shift),
+            FadeIn(p_value, shift=LEFT * 0.8),
+            FadeIn(info_value),
+        )
+        p_value.add_updater(update_p_value)
+        info_value.add_updater(update_info_value)
+
+        # Explore the range of p values
+        p_max = 0.95 * 2.0**-(k - 1)
+        p_min = 1.05 * 2.0**-k
+        spacing = 2.0**-k
+        rng = random.Random(10)
+        scale = get_scale()
+        screen_margin = 1
+        waypoints = []
+        x = value_to_x(slid_low + p / 2)
+        for _ in range(4):
+            p_value_target = rng.uniform(p_min, p_max)
+            half_width = p_value_target * scale / 2
+            x_min = frame.get_left()[0] + screen_margin + half_width
+            x_max = frame.get_right()[0] - screen_margin - half_width
+            step = rng.choice([-1, 1]) * rng.uniform(1, 3.5)
+            if not x_min <= x + step <= x_max:
+                step = -step
+            x = clip(x + step, x_min, x_max)
+            center = view_center.get_value() + x / scale
+            waypoints.append((p_value_target, center - p / 2, 1.5))
+        waypoints.append((p, slid_low, 1.75))
+        for p_value_target, low_target, run_time in waypoints:
+            self.play(
+                p_tracker.animate.set_value(p_value_target),
+                target_low.animate.set_value(low_target),
+                run_time=run_time,
+            )
+
+        # Round up to a whole number of bits
+        p_value.clear_updaters()
+        info_value.clear_updaters()
+        ceil_inequality = Tex(R"k = \lceil -\log_2 p \rceil", font_size=48).scale(1.2)
+        ceil_inequality.move_to(inequality)
+        self.play(
+            FadeOut(p_value, shift=RIGHT * 0.8),
+            FadeOut(info_value),
+            p_label_shift.animate.set_value(0),
+            TransformMatchingShapes(inequality[0], ceil_inequality[0]),
+            TransformMatchingShapes(inequality[1], ceil_inequality[1]),
+            TransformMatchingShapes(inequality[2:], ceil_inequality[3:-1]),
+            FadeIn(VGroup(ceil_inequality[2], ceil_inequality[-1])),
+            run_time=1.5,
+        )
+        self.wait(2)
+
+        # Helpers for the word diagram
+        layer_buff = 0.1
+        layer_height = get_layer("").get_height()
+        first_layer_gap = 0.75
+        below_word = 0.1 + 0.3 + 0.45
+        stack_height = first_layer_gap + len(word) * (layer_height + layer_buff)
+        new_line_y = frame.get_bottom()[1] + 0.5 + below_word + stack_height
+        bits_bottom_y = new_line_y + 1.2
+        new_goalpost_top = min(1.5, bits_bottom_y - 0.25 - new_line_y)
+        new_goalpost_bottom = new_line_y - stack_height + layer_buff
+
+        def style_layer(layer, index):
+            if layer.path_index == index:
+                return
+            for bar, (color, opacity), stroke_opacity in zip(layer.bars, layer.default_fills, layer.default_stroke_opacities):
+                bar.set_fill(color, opacity)
+                bar.set_stroke(opacity=stroke_opacity)
+            layer.highlight(index, other_bar_opacity=0.35)
+            layer.path_index = index
+            layer.base_opacities = [(bar.get_fill_opacity(), bar.get_stroke_opacity()) for bar in layer.bars]
+            layer.applied_fade = None
+
+        def get_diagram_value():
+            return word_center if modes["diagram"] == "word" else get_arrow_value()
+
+        layers_fade = ValueTracker(0)
+        word_layer_group = VGroup()
+        word_layer_group.last_key = None
+
+        def place_layer(layer, left, right, top, path_index, fade):
+            x_min = frame.get_left()[0] - 1
+            x_max = frame.get_right()[0] + 1
+            unit_points = layer.bar_unit_points
+            gradient_start = np.array([left, top, 0])
+            gradient_end = np.array([max(right, left + 1e-6), top, 0])
+            for j, (bar, label, (a, b)) in enumerate(zip(layer.bars, layer.labels, layer.edges)):
+                bar_left = left + (right - left) * a
+                bar_right = left + (right - left) * b
+                l = clip(bar_left, x_min, x_max)
+                r = clip(bar_right, x_min, x_max)
+                points = unit_points.copy()
+                points[:, 0] = l + (r - l) * unit_points[:, 0]
+                points[:, 1] += top
+                bar.set_points(points)
+                if "gradient_start" in bar.uniforms:
+                    bar.uniforms["gradient_start"] = gradient_start.copy()
+                    bar.uniforms["gradient_end"] = gradient_end.copy()
+                x = (bar_left + bar_right) / 2
+                if j == path_index:
+                    visible_left = max(bar_left, frame.get_x() - line_width / 2)
+                    visible_right = min(bar_right, frame.get_x() + line_width / 2)
+                    if visible_left < visible_right:
+                        x = (visible_left + visible_right) / 2
+                offset = np.array([clip(x, x_min - 1, x_max + 1), top, 0])
+                for sm, base_points in zip(label.get_family(), layer.label_points[j]):
+                    if len(base_points) > 0:
+                        sm.set_points(base_points + offset)
+                fits = layer.label_widths[j] < 0.8 * (bar_right - bar_left)
+                label.set_fill(opacity=fade * float(fits))
+
+        def update_word_layers(group):
+            value = get_diagram_value()
+            key = (
+                value, view_center.get_value(), view_log_width.get_value(),
+                get_line_y(), layers_fade.get_value(), frame.get_x(), frame.get_width(),
+            )
+            if key == group.last_key:
+                return
+            group.last_key = key
+            prefix, ranges, indices = decode(value, len(word))
+            layers = [get_layer(prefix[:i]) for i in range(len(word))]
+            if list(group.submobjects) != layers:
+                group.set_submobjects(layers)
+            fade = layers_fade.get_value()
+            for i, layer in enumerate(layers):
+                style_layer(layer, indices[i])
+                if layer.applied_fade != fade:
+                    for bar, (fill_opacity, stroke_opacity) in zip(layer.bars, layer.base_opacities):
+                        bar.set_fill(opacity=fill_opacity * fade)
+                        bar.set_stroke(opacity=stroke_opacity * fade)
+                    layer.applied_fade = fade
+                top = get_line_y() - first_layer_gap - i * (layer_height + layer_buff)
+                place_layer(
+                    layer,
+                    value_to_x(ranges[i][0]),
+                    value_to_x(ranges[i][1]),
+                    top,
+                    indices[i],
+                    fade,
+                )
+
+        word_layer_group.add_updater(update_word_layers)
+        word_layer_group.update()
+
+        max_bits = n_shown_bits
+        zeros = Text("." + "0" * max_bits, font="Consolas", font_size=48)
+        ones = Text("." + "1" * max_bits, font="Consolas", font_size=48)
+        ones.move_to(zeros)
+        char_advance = zeros[2].get_x() - zeros[1].get_x()
+        bit_slots = VGroup(VGroup(zero, one) for zero, one in zip(zeros[1:], ones[1:]))
+        bit_string = VGroup(zeros[0], bit_slots)
+        bit_string.match_x(k_label)
+        bit_string.set_y(bits_bottom_y + bit_string.get_height() / 2)
+        bit_fade = ValueTracker(0)
+        bit_string.last_key = None
+
+        def update_bit_string(group):
+            bits = get_shown_bits()
+            fade = bit_fade.get_value()
+            key = (bits, fade)
+            if key == group.last_key:
+                return
+            group.last_key = key
+            group.match_x(k_label)
+            group[0].set_opacity(fade)
+            n_significant = bits.rfind("1") + 1
+            for i, (bit, slot) in enumerate(zip(bits, group[1])):
+                slot.set_color(WHITE if i < n_significant else GREY_D)
+                slot[0].set_opacity(fade if bit == "0" else 0)
+                slot[1].set_opacity(fade if bit == "1" else 0)
+
+        bit_string.add_updater(update_bit_string)
+        bit_string.update()
+
+        word_cache = dict()
+        word_fade = ValueTracker(0)
+        word_tracker = VGroup()
+        word_tracker.last_key = None
+        word_tracker.frozen_value = None
+
+        def get_word_text(string):
+            if string not in word_cache:
+                mob = Text(f"|{string.replace(' ', '_')}|").set_height(0.7)
+                mob.next_to(bit_string, UP, buff=MED_SMALL_BUFF)
+                mob.match_x(k_label)
+                mob.remove(mob[0], mob[-1])
+                word_cache[string] = mob
+            return word_cache[string]
+
+        def update_word_tracker(group):
+            value = group.frozen_value if group.frozen_value is not None else get_arrow_value()
+            key = (value, word_fade.get_value())
+            if key == group.last_key:
+                return
+            group.last_key = key
+            mob = get_word_text(decode(key[0], len(word))[0])
+            if group.submobjects != [mob]:
+                group.set_submobjects([mob])
+            mob.set_opacity(key[1])
+
+        word_tracker.add_updater(update_word_tracker)
+        word_tracker.update()
+
+        arrow_opacity = ValueTracker(0)
+        value_arrow = Vector(DOWN, thickness=5)
+        value_arrow.set_z_index(3)
+
+        def update_value_arrow(arrow):
+            arrow.move_to(n2p(get_arrow_value()), DOWN)
+            arrow.set_opacity(arrow_opacity.get_value())
+
+        value_arrow.add_updater(update_value_arrow)
+        value_arrow.update()
+
+        highlight_fade = ValueTracker(0)
+        highlight = Line(LEFT, RIGHT).set_stroke(YELLOW, 5)
+
+        def update_highlight(line):
+            bits = get_code_bits()
+            low = int(bits, 2) / 2**len(bits)
+            high = low + 2.0**-len(bits)
+            left = clip(value_to_x(low), frame.get_left()[0] - 1, frame.get_right()[0] + 1)
+            right = clip(value_to_x(high), frame.get_left()[0] - 1, frame.get_right()[0] + 1)
+            line.put_start_and_end_on(
+                np.array([left, get_line_y(), 0]),
+                np.array([max(right, left + 1e-3), get_line_y(), 0]),
+            )
+            line.set_stroke(opacity=highlight_fade.get_value())
+
+        highlight.add_updater(update_highlight)
+        highlight.update()
+
+        # Show things in terms of the diagram
+        last_low, last_high = word_ranges[-2]
+        self.add(word_layer_group, highlight, value_arrow, bit_string, word_tracker)
+        self.play(
+            ceil_inequality.animate.scale(0.5).to_edge(DOWN, buff=0.4),
+            word_fade.animate(time_span=(2, 3)).set_value(1),
+            line_y_tracker.animate.set_value(new_line_y),
+            goalpost_bottom.animate.set_value(new_goalpost_bottom),
+            goalpost_top.animate.set_value(new_goalpost_top),
+            target_low.animate.set_value(word_low),
+            get_view_anim((last_low + last_high) / 2, math.log2(last_high - last_low), word_center),
+            ruler_alpha.animate.set_value(1),
+            layers_fade.animate.set_value(1),
+            FadeOut(k_label, time_span=(0, 1.5)),
+            width_fade.animate(time_span=(0, 1.5)).set_value(0),
+            arrow_opacity.animate.set_value(1),
+            highlight_fade.animate.set_value(1),
+            tick_label_boost.animate(time_span=(0, 0.3)).set_value(1),
+            bit_fade.animate(time_span=(2, 3)).set_value(1),
+            run_time=3,
+        )
+        self.remove(width_brace)
+        self.wait(2)
+
+        # Show a luckier position
+        scale = get_scale()
+        half_width = p * scale / 2
+        word_x = value_to_x(word_center)
+        x_min = word_x - 6
+        x_max = word_x - 2 * half_width
+        desired_x = interpolate(word_x, x_min, 0.6)
+        candidates = []
+        for level in range(1, len(word_bits)):
+            denom = 2**level
+            for numer in range(math.ceil((view_center.get_value() + x_min / scale) * denom), denom + 1):
+                x = value_to_x(numer / denom)
+                if x > x_max:
+                    break
+                if numer % 2 == 1:
+                    candidates.append((level, numer / denom, x))
+        if not candidates:
+            raise ValueError("No tick with fewer bits is visible to the left of the target")
+        lucky_level, lucky_value, lucky_x = min(
+            candidates,
+            key=lambda c: (abs(c[2] - desired_x) > 1.5, c[0], abs(c[2] - desired_x)),
+        )
+
+        original_arrow = value_arrow.copy().clear_updaters().set_opacity(0.3)
+        self.add(original_arrow)
+        word_tracker.frozen_value = get_arrow_value()
+        self.play(
+            layers_fade.animate(run_time=0.7).set_value(0.2),
+            highlight_fade.animate(run_time=0.7).set_value(0.2),
+            word_fade.animate(run_time=0.7).set_value(0.2),
+            target_low.animate(run_time=2.5).set_value(lucky_value - p / 2),
+            goalpost_color.animate(run_time=1, time_span=(1.5, 2.5)).set_value(1)
+        )
+        self.wait()
+        self.play(
+            target_low.animate.set_value(word_low),
+            goalpost_color.animate.set_value(0),
+            layers_fade.animate.set_value(1),
+            highlight_fade.animate.set_value(1),
+            word_fade.animate.set_value(1),
+            run_time=2,
+        )
+        word_tracker.frozen_value = None
+        self.play(FadeOut(original_arrow))
+
+        # Slide the number down to zero
+        value_tracker.set_value(get_arrow_value())
+        modes["bits"] = "value"
+        modes["diagram"] = "arrow"
+        zero_low, zero_high = decode(0, len(word))[1][-1]
+        start_value = value_tracker.get_value()
+        start_center = view_center.get_value()
+        start_log_width = view_log_width.get_value()
+        final_center = (zero_low + zero_high) / 2
+        final_log_width = math.log2(zero_high - zero_low)
+        zoom_out_time = 3
+        slide_start = 1
+        zoom_in_start = zoom_out_time
+        follow_time = 2.5
+        follow_start = 0.8
+        finish_boost = 15
+        finish_ease = 0.12
+        settle_time = zoom_in_start + follow_time
+        settle_log_width = max(final_log_width, min(6 - n_shown_bits, -2))
+        extra_log_width = settle_log_width - final_log_width
+        follow_speed = (2 - follow_start) * -settle_log_width / follow_time
+        peak_speed = finish_boost * follow_speed
+        if extra_log_width > 0.5:
+            finish_time = extra_log_width / (
+                (1 - finish_ease) * (follow_speed + peak_speed) / 2 + finish_ease * peak_speed / 2
+            )
+        else:
+            settle_log_width = final_log_width
+            finish_time = 0
+        total_time = settle_time + finish_time
+
+        def get_log_width(t):
+            tau = t - zoom_in_start
+            if finish_time == 0:
+                return final_log_width * smooth(clip(tau / follow_time, 0, 1))
+            if tau <= follow_time:
+                x = clip(tau / follow_time, 0, 1)
+                end_slope = 2 - follow_start
+                ramp = 2 * (1 - 1 / end_slope)
+                if ramp <= 0:
+                    return settle_log_width * x
+                if x < ramp:
+                    u = x / ramp
+                    return settle_log_width * end_slope * ramp * (u**3 - u**4 / 2)
+                return settle_log_width * end_slope * (x - ramp / 2)
+            u = min(tau - follow_time, finish_time)
+            ramp_time = (1 - finish_ease) * finish_time
+            if u <= ramp_time:
+                dist = follow_speed * u + (peak_speed - follow_speed) * u**2 / (2 * ramp_time)
+            else:
+                r = u - ramp_time
+                dist = (follow_speed + peak_speed) * ramp_time / 2 + peak_speed * r - peak_speed * r**2 / (2 * finish_ease * finish_time)
+            return settle_log_width - dist
+
+        dots_alpha = ValueTracker(0)
+        bit_dots = VGroup(bit_string[0].copy().set_color(GREY_D) for _ in range(3))
+
+        def update_bit_dots(dots):
+            last_x = bit_slots[-1][0].get_x()
+            for j, dot in enumerate(dots):
+                dot.set_x(last_x + (0.75 + 0.45 * j) * char_advance)
+                dot.match_y(bit_string[0])
+                dot.set_opacity(clip(dots_alpha.get_value() - j, 0, 1))
+
+        bit_dots.add_updater(update_bit_dots)
+        bit_dots.update()
+        self.add(bit_dots)
+
+        def update_slide(mob, alpha):
+            t = alpha * total_time
+            if t < zoom_in_start:
+                set_view(start_center, start_log_width, 0.5, 0, word_center, smooth(min(t / zoom_out_time, 1)))
+                zoom_factor = 1
+            else:
+                set_view(0.5, 0, final_center, final_log_width, 0, get_log_width(t) / final_log_width)
+                zoom_factor = 2**view_log_width.get_value()
+            x = clip((t - slide_start) / (settle_time - slide_start), 0, 1)
+            slide_alpha = 3 * x**2 - 2 * x**3
+            value_tracker.set_value(start_value * (1 - slide_alpha) * zoom_factor)
+            dots_alpha.set_value(3 * clip((t - settle_time + 3.5) / 3.5, 0, 1))
+            other_label_fade.set_value(1 - smooth(clip((t - settle_time + 2) / 2, 0, 1)))
+
+        self.play(
+            UpdateFromAlphaFunc(view_center, update_slide, rate_func=linear, run_time=total_time),
+            tick_label_boost.animate(time_span=(0, 2)).set_value(0),
+            p_brace_fade.animate(time_span=(0, 1.5)).set_value(0),
+            FadeOut(ceil_inequality, time_span=(0, 1.5)),
+        )
+        self.remove(p_brace)
+        dots_alpha.set_value(3)
+        other_label_fade.set_value(0)
+        self.wait(2)
