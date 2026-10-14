@@ -216,3 +216,118 @@ class QAResponses(InteractiveScene):
             )
 
         self.wait(self.FADE_OUT_TOTAL_TIME)
+
+
+class PositionVsVelocity(InteractiveScene):
+    T_MAX = 4.0
+    GROWTH_RATE = 0.7
+    BASE_AMPLITUDE = 0.15
+    PREDICTED_OFFSET = 1.2
+
+    PANEL_WIDTH = 5.0
+    PANEL_HEIGHT = 6.2
+
+    POSITION_COLOR = BLUE
+    VELOCITY_COLOR = GREEN
+
+    RUN_TIME = 6
+
+    def get_position_func(self, position_offset):
+        def y(t):
+            return self.BASE_AMPLITUDE * (np.exp(self.GROWTH_RATE * t) - 1) + position_offset
+        return y
+
+    def get_velocity_func(self):
+        def v(t):
+            return self.BASE_AMPLITUDE * self.GROWTH_RATE * np.exp(self.GROWTH_RATE * t)
+        return v
+
+    def get_panel(self, label_text, x_shift, y_max):
+        axes = Axes(
+            x_range=[0, self.T_MAX * 1.05, self.T_MAX],
+            y_range=[0, y_max, y_max],
+            width=self.PANEL_WIDTH,
+            height=self.PANEL_HEIGHT,
+            axis_config=dict(include_ticks=False, include_tip=False),
+        )
+        axes.move_to(x_shift * RIGHT + DOWN * 0.4)
+
+        axis_labels = VGroup()
+
+        title = Text(label_text, font_size=36)
+        title.move_to(x_shift * RIGHT + UP * 3.2)
+
+        return axes, axis_labels, title
+
+    def construct(self):
+        # Setup
+        t_tracker = ValueTracker(0)
+        v_func = self.get_velocity_func()
+
+        y_max = (
+            self.get_position_func(self.PREDICTED_OFFSET)(self.T_MAX)
+            + v_func(self.T_MAX)
+        )
+
+        left_axes, left_labels, left_title = self.get_panel("Predicted Capability", -FRAME_WIDTH / 4, y_max)
+        right_axes, right_labels, right_title = self.get_panel("Real Capability", FRAME_WIDTH / 4, y_max)
+
+        divider = Line(UP * FRAME_HEIGHT / 2, DOWN * FRAME_HEIGHT / 2, stroke_color=GREY_C, stroke_width=1)
+
+        self.add(left_axes, left_labels, left_title)
+        self.add(right_axes, right_labels, right_title)
+        self.add(divider)
+
+        panels = [
+            (left_axes, self.get_position_func(self.PREDICTED_OFFSET)),
+            (right_axes, self.get_position_func(0)),
+        ]
+
+        for axes, y_func in panels:
+            graph = always_redraw(lambda axes=axes, y_func=y_func: axes.get_graph(
+                y_func,
+                x_range=[0, max(t_tracker.get_value(), 1e-6)],
+                color=self.POSITION_COLOR,
+                stroke_width=4,
+            ))
+            position_arrow = always_redraw(lambda axes=axes, y_func=y_func: Arrow(
+                axes.c2p(t_tracker.get_value(), 0),
+                axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
+                buff=0,
+                stroke_width=3,
+            ).set_color(self.POSITION_COLOR))
+            velocity_arrow = always_redraw(lambda axes=axes, y_func=y_func: Arrow(
+                axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
+                axes.c2p(
+                    t_tracker.get_value(),
+                    y_func(t_tracker.get_value()) + v_func(t_tracker.get_value()),
+                ),
+                buff=0,
+                stroke_width=3,
+            ).set_color(self.VELOCITY_COLOR))
+            glow_dot = always_redraw(lambda axes=axes, y_func=y_func: GlowDot(
+                axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
+                color=self.POSITION_COLOR,
+            ))
+
+            position_label = always_redraw(lambda axes=axes, y_func=y_func: Tex(
+                "x(t)", font_size=30,
+            ).set_color(self.POSITION_COLOR).next_to(
+                axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value()) / 2),
+                LEFT, buff=0.15,
+            ))
+            velocity_label = always_redraw(lambda axes=axes, y_func=y_func: Tex(
+                r"\frac{dx(t)}{dt}", font_size=30,
+            ).set_color(self.VELOCITY_COLOR).next_to(
+                axes.c2p(
+                    t_tracker.get_value(),
+                    y_func(t_tracker.get_value()) + v_func(t_tracker.get_value()) / 2,
+                ),
+                RIGHT, buff=0.15,
+            ))
+
+            self.add(graph, position_arrow, velocity_arrow, glow_dot, position_label, velocity_label)
+
+        # Animate time advancing
+        self.play(t_tracker.animate.set_value(self.T_MAX), run_time=self.RUN_TIME, rate_func=linear)
+        self.wait()
