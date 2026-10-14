@@ -15,6 +15,7 @@ from functools import lru_cache
 CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 # CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?"
 # CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?0123456789-"
+# CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,'!?"
 
 NANOGPT_DIR = R"C:\Users\aaron\3Blue1Brown Dropbox\3Blue1Brown\videos\2026\cross_entropy\nanoGPT"
 NANOGPT_CKPT = R"C:\Users\aaron\3Blue1Brown Dropbox\3Blue1Brown\videos\2026\cross_entropy\nanoGPT\out-wiki-char\ckpt.pt"
@@ -83,11 +84,12 @@ def get_next_char_distribution(prefix: str, alphabet: str = CHAR_ALPHABET) -> np
         probs = np.ones(len(_nano_vocab)) / len(_nano_vocab)
 
     char_probs = np.zeros(len(alphabet))
+    case_sensitive = alphabet != alpha_lower
+    char_probs = np.zeros(len(alphabet))
     for vocab_idx, char in enumerate(_nano_vocab):
-        idx = alpha_lower.find(char.lower())
+        idx = alphabet.find(char) if case_sensitive else alpha_lower.find(char.lower())
         if idx != -1:
             char_probs[idx] += probs[vocab_idx]
-
     total = char_probs.sum()
     if total > 0:
         char_probs /= total

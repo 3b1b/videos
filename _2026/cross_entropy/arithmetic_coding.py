@@ -1,5 +1,6 @@
 import math
 from functools import lru_cache
+from fractions import Fraction
 
 from manim_imports_ext import *
 from _2026.cross_entropy.distribution import DynamicInterval
@@ -2894,3 +2895,334 @@ class GeneralizeBitCount(InteractiveScene):
         dots_alpha.set_value(3)
         other_label_fade.set_value(0)
         self.wait(2)
+
+
+class ShowEncodingScene(InteractiveScene):
+    text = "Euclid's Elements"
+    highlight = None
+    model_name = "qwen"
+    qwen_start_text = "\n"
+    nanogpt_start_text = " "
+    nanogpt_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,'!?"
+    column_width = 6
+    area_top = 2.5
+    area_bottom = -2.6
+    max_raw_font_size = 40
+    max_bit_font_size = 36
+    context_char_time = 0.04
+    highlight_char_time = 0.15
+    plain_char_time = 0.05
+
+    def construct(self):
+        # Compute the encoding
+        text = " ".join(self.text.split())
+        if self.model_name == "qwen":
+            codes, char_ends = self.get_qwen_codes(text)
+        elif self.model_name == "nanogpt":
+            codes, char_ends = self.get_nanogpt_codes(text)
+        else:
+            raise ValueError(f"Unknown model {self.model_name!r}, use 'qwen' or 'nanogpt'")
+        max_bits = max(len(code) for code in codes)
+
+        highlight_start = text.rfind(self.highlight) if self.highlight else -1
+        has_highlight = highlight_start >= 0
+        if has_highlight:
+            highlight_token = max(t for t, end in enumerate(char_ends) if end <= highlight_start)
+        else:
+            highlight_start = len(text)
+            highlight_token = 0
+
+        # Fit the text to the columns
+        area_height = self.area_top - self.area_bottom
+        left_x = -self.column_width - 0.6
+        right_x = 0.6
+
+        raw_glyphs, char_glyphs = self.get_raw_glyphs(text, left_x, area_height, highlight_start)
+
+        probe = Text("00", font="Consolas", font_size=48)
+        advance_48 = probe[1].get_x() - probe[0].get_x()
+        height_48 = probe[0].get_height()
+        bit_size = self.max_bit_font_size
+        while bit_size > 10:
+            bit_advance = advance_48 * bit_size / 48
+            bit_row_height = 1.6 * height_48 * bit_size / 48
+            bits_per_row = int(self.column_width / bit_advance) - 1
+            if math.ceil(max_bits / bits_per_row) * bit_row_height <= area_height:
+                break
+            bit_size -= 1
+        bit_dot, bit_slots = self.get_bit_slots(
+            max_bits, bit_size, right_x, bits_per_row, bit_row_height, height_48 * bit_size / 48,
+        )
+
+        # Set up the columns
+        raw_title = Text("Raw", font_size=48)
+        encoded_title = Text("Encoded", font_size=48)
+        raw_title.move_to(np.array([left_x + self.column_width / 2, 3.25, 0]))
+        encoded_title.move_to(np.array([right_x + self.column_width / 2, 3.25, 0]))
+        divider = Line(FRAME_HEIGHT * 0.5 * UP, FRAME_HEIGHT * 0.5 * DOWN).set_stroke(GREY_B, 2)
+        arrow = Arrow(0.45 * LEFT, 0.45 * RIGHT, buff=0, thickness=4)
+        arrow.set_color(YELLOW)
+        arrow.set_y((self.area_top + self.area_bottom) / 2)
+
+        char_count = VGroup(Integer(0, font_size=36), Text("characters", font_size=36))
+        bit_count = VGroup(Integer(0, font_size=36), Text("bits", font_size=36))
+        counter_y = self.area_bottom - 0.6
+
+        def update_counters(group):
+            for counter in (char_count, bit_count):
+                counter.arrange(RIGHT, buff=0.15, aligned_edge=DOWN)
+            char_count.move_to(np.array([raw_title.get_x(), counter_y, 0]))
+            bit_count.move_to(np.array([encoded_title.get_x(), counter_y, 0]))
+
+        counters = VGroup(char_count, bit_count)
+        counters.add_updater(update_counters)
+        counters.update()
+
+        self.add(raw_title, encoded_title, divider, arrow, counters)
+        self.wait()
+
+        # Type out the text
+        n_tracker = ValueTracker(0)
+        added_start = len(codes[highlight_token]) if has_highlight else None
+        encoding_group = VGroup(raw_glyphs, bit_dot, bit_slots)
+        encoding_group.add_updater(self.get_encoding_updater(
+            n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start,
+        ))
+        encoding_group.update()
+        self.add(encoding_group)
+
+        if highlight_token > 0:
+            self.play(
+                n_tracker.animate.set_value(highlight_token),
+                rate_func=linear,
+                run_time=char_ends[highlight_token] * self.context_char_time,
+            )
+            self.wait()
+        char_time = self.highlight_char_time if has_highlight else self.plain_char_time
+        self.play(
+            n_tracker.animate.set_value(len(codes) - 1),
+            rate_func=linear,
+            run_time=(len(text) - char_ends[highlight_token]) * char_time,
+        )
+        self.wait(2)
+
+    def get_encoding_updater(self, n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start):
+        state = {"n": None}
+
+        def update_encoding(group):
+            n = int(n_tracker.get_value() + 1e-6)
+            if n == state["n"]:
+                return
+            state["n"] = n
+            n_chars = char_ends[n]
+            for i, glyph in enumerate(char_glyphs):
+                if glyph is not None:
+                    glyph.set_fill(opacity=float(i < n_chars))
+            code = codes[n]
+            bit_dot.set_fill(opacity=float(len(code) > 0))
+            for i, (zero, one) in enumerate(bit_slots):
+                bit = code[i] if i < len(code) else None
+                color = YELLOW if added_start is not None and i >= added_start else WHITE
+                zero.set_fill(color, opacity=float(bit == "0"))
+                one.set_fill(color, opacity=float(bit == "1"))
+            char_count[0].set_value(n_chars)
+            bit_count[0].set_value(len(code))
+
+        return update_encoding
+
+    def get_code(self, low, high, n_bits):
+        while True:
+            scale = 2**n_bits
+            numer = math.ceil(low * scale)
+            if numer < high * scale:
+                return (format(numer, "b").zfill(n_bits) if n_bits > 0 else ""), n_bits
+            n_bits += 1
+
+    def get_qwen_codes(self, text):
+        import torch
+        import _2026.cross_entropy.next_char as next_char
+
+        next_char._ensure_qwen_loaded()
+        tokenizer = next_char._qwen_tokenizer
+        model = next_char._qwen_model
+        start_ids = tokenizer.encode(self.qwen_start_text, add_special_tokens=False)
+        text_ids = tokenizer.encode(text, add_special_tokens=False)
+        pieces = [tokenizer.decode([token_id]) for token_id in text_ids]
+        if "".join(pieces) != text:
+            raise ValueError("The tokens do not decode back to the text")
+        char_ends = [0]
+        for piece in pieces:
+            char_ends.append(char_ends[-1] + len(piece))
+
+        low = Fraction(0)
+        width = Fraction(1)
+        codes = [""]
+        n_bits = 0
+        for i, token_id in enumerate(text_ids):
+            input_ids = torch.tensor([start_ids + text_ids[:i]])
+            with torch.no_grad():
+                logits = model(input_ids).logits[0, -1].double()
+            probs = torch.softmax(logits, dim=-1)
+            total = Fraction(float(probs.sum()))
+            low += width * Fraction(float(probs[:token_id].sum())) / total
+            width *= Fraction(float(probs[token_id])) / total
+            code, n_bits = self.get_code(low, low + width, n_bits)
+            codes.append(code)
+        return codes, char_ends
+
+    def get_nanogpt_codes(self, text):
+        alphabet = self.nanogpt_alphabet
+        missing = sorted(set(text) - set(alphabet))
+        if missing:
+            raise ValueError(f"Characters not in the nanoGPT alphabet: {missing}")
+
+        low = Fraction(0)
+        width = Fraction(1)
+        codes = [""]
+        n_bits = 0
+        for i, char in enumerate(text):
+            dist = [Fraction(float(x)) for x in get_next_char_distribution(self.nanogpt_start_text + text[:i], alphabet)]
+            index = alphabet.index(char)
+            if dist[index] == 0:
+                raise ValueError(f"The model gives {char!r} zero probability, so check how next_char.py maps cases")
+            total = sum(dist)
+            low += width * sum(dist[:index]) / total
+            width *= dist[index] / total
+            code, n_bits = self.get_code(low, low + width, n_bits)
+            codes.append(code)
+        return codes, list(range(len(text) + 1))
+
+    def get_raw_glyphs(self, text, left_x, area_height, highlight_start):
+        source = Text(text, font_size=48)
+        glyphs = list(source)
+        words = text.split(" ")
+        if len(glyphs) != sum(len(word) for word in words):
+            raise ValueError("Glyph count does not match the text")
+
+        word_glyphs = []
+        word_starts = []
+        index = 0
+        char_index = 0
+        for word in words:
+            word_glyphs.append(glyphs[index:index + len(word)])
+            word_starts.append(char_index)
+            index += len(word)
+            char_index += len(word) + 1
+        word_lefts = [group[0].get_left()[0] for group in word_glyphs]
+        word_widths = [group[-1].get_right()[0] - group[0].get_left()[0] for group in word_glyphs]
+        gaps = [
+            word_lefts[i + 1] - word_glyphs[i][-1].get_right()[0]
+            for i in range(len(words) - 1)
+        ]
+        space_width = sum(gaps) / len(gaps) if gaps else 0
+        line_height = 1.3 * source.get_height()
+
+        def wrap(scale):
+            lines = [[0]]
+            width = word_widths[0] * scale
+            for i in range(1, len(words)):
+                new_width = width + (space_width + word_widths[i]) * scale
+                if new_width > self.column_width:
+                    lines.append([i])
+                    width = word_widths[i] * scale
+                else:
+                    lines[-1].append(i)
+                    width = new_width
+            return lines
+
+        font_size = self.max_raw_font_size
+        while font_size > 12:
+            scale = font_size / 48
+            lines = wrap(scale)
+            if len(lines) * line_height * scale <= area_height:
+                break
+            font_size -= 1
+        scale = font_size / 48
+
+        source.scale(scale, about_point=ORIGIN)
+        word_lefts = [left * scale for left in word_lefts]
+        word_widths = [width * scale for width in word_widths]
+        top = source.get_top()[1]
+
+        char_glyphs = [None] * len(text)
+        for row, line in enumerate(lines):
+            line_width = sum(word_widths[i] for i in line)
+            gap = space_width * scale
+            if row < len(lines) - 1 and len(line) > 1:
+                gap = (self.column_width - line_width) / (len(line) - 1)
+            x = left_x
+            dy = self.area_top - top - row * line_height * scale
+            for i in line:
+                for j, glyph in enumerate(word_glyphs[i]):
+                    glyph.shift((x - word_lefts[i]) * RIGHT + dy * UP)
+                    color = YELLOW if word_starts[i] + j >= highlight_start else WHITE
+                    glyph.set_fill(color, opacity=0)
+                    char_glyphs[word_starts[i] + j] = glyph
+                x += word_widths[i] + gap
+        return VGroup(*glyphs), char_glyphs
+
+    def get_bit_slots(self, max_bits, font_size, left_x, per_row, row_height, digit_height):
+        zeros = Text("0" * max_bits, font="Consolas", font_size=font_size)
+        ones = Text("1" * max_bits, font="Consolas", font_size=font_size)
+        dot_source = Text(".0", font="Consolas", font_size=font_size)
+        advance = self.column_width / (per_row + 1)
+        top_y = self.area_top - digit_height
+        dot = dot_source[0]
+        dot.move_to(np.array([
+            left_x + 0.5 * advance,
+            top_y + dot_source[0].get_y() - dot_source[1].get_y(),
+            0,
+        ]))
+        dot.set_fill(opacity=0)
+        slots = VGroup()
+        for i in range(max_bits):
+            row, col = divmod(i, per_row)
+            position = np.array([left_x + (col + 1.5) * advance, top_y - row * row_height, 0])
+            zero = zeros[i].move_to(position)
+            one = ones[i].move_to(position)
+            slots.add(VGroup(zero, one))
+        slots.set_fill(opacity=0)
+        return dot, slots
+
+
+class EuclidAloneNanoGPT(ShowEncodingScene):
+    text = "Euclid's Elements"
+    highlight = "Euclid's Elements"
+    model_name = "nanogpt"
+
+
+class EuclidAloneQwen(ShowEncodingScene):
+    text = "Euclid's Elements"
+    highlight = "Euclid's Elements"
+    model_name = "qwen"
+
+
+class EuclidInContextNanoGPT(ShowEncodingScene):
+    text = """
+        The concept of proof and its associated mathematical rigor began in
+        ancient Greek mathematics, exemplified in Euclid's Elements
+    """
+    highlight = "Euclid's Elements"
+    model_name = "nanogpt"
+
+
+class EuclidInContextQwen(ShowEncodingScene):
+    text = """
+        The concept of proof and its associated mathematical rigor began in
+        ancient Greek mathematics, exemplified in Euclid's Elements
+    """
+    highlight = "Euclid's Elements"
+    model_name = "qwen"
+
+
+class USConstitutionQwen(ShowEncodingScene):
+    text = """
+        We the People of the United States,
+        in Order to form a more perfect Union,
+        establish Justice, insure domestic Tranquility,
+        provide for the common defence,
+        promote the general Welfare,
+        and secure the Blessings of Liberty to ourselves and our Posterity,
+        do ordain and establish this Constitution for the United States of America.
+    """
+    model_name = "qwen"
