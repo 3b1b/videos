@@ -305,9 +305,15 @@ class PositionVsVelocity(InteractiveScene):
                 buff=0,
                 stroke_width=3,
             ).set_color(self.VELOCITY_COLOR))
-            glow_dot = always_redraw(lambda axes=axes, y_func=y_func: GlowDot(
-                axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
-                color=self.POSITION_COLOR,
+            glow_dot = always_redraw(lambda axes=axes, y_func=y_func: Group(
+                TrueDot(
+                    axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
+                    color=self.POSITION_COLOR,
+                ),
+                GlowDot(
+                    axes.c2p(t_tracker.get_value(), y_func(t_tracker.get_value())),
+                    color=self.POSITION_COLOR,
+                ),
             ))
 
             position_label = always_redraw(lambda axes=axes, y_func=y_func: Tex(
@@ -331,3 +337,74 @@ class PositionVsVelocity(InteractiveScene):
         # Animate time advancing
         self.play(t_tracker.animate.set_value(self.T_MAX), run_time=self.RUN_TIME, rate_func=linear)
         self.wait()
+
+
+class PositionVsVelocityV2(InteractiveScene):
+    REALITY_COLOR = BLUE
+    MEDIA_COLOR = YELLOW
+
+    AXIS_Y = 2.2
+    AXIS_LEFT = -5.5
+    AXIS_RIGHT = 5.5
+    REALITY_X = -1.0
+    MEDIA_X = 4.0
+
+    ARROW_START_X = -5.0
+    PERCEIVED_ARROW_Y = -1.0
+    REALITY_ARROW_Y = -3.0
+    PERCEIVED_ARROW_LENGTH = 3.0
+    REALITY_ARROW_LENGTH = 7.0
+
+    def construct(self):
+        # Divider separating the capability axis up top from the two arrows below
+        divider = Line(LEFT * FRAME_WIDTH / 2, RIGHT * FRAME_WIDTH / 2, stroke_color=GREY_C, stroke_width=1)
+        self.add(divider)
+
+        # A single axis representing "AI capability in math," increasing to the right
+        axis = Arrow(
+            np.array([self.AXIS_LEFT, self.AXIS_Y, 0.0]),
+            np.array([self.AXIS_RIGHT, self.AXIS_Y, 0.0]),
+            buff=0, stroke_width=3,
+        ).set_color(GREY_B)
+        axis_label = Text("AI Capability in Math", font_size=50)
+        axis_label.to_edge(UP, buff=0.4)
+        self.play(GrowArrow(axis), Write(axis_label))
+
+        # Mark where reality currently sits on that axis
+        reality_dot = GlowDot(np.array([self.REALITY_X, self.AXIS_Y, 0.0]), color=self.REALITY_COLOR)
+        reality_label = Text("Reality", font_size=32, color=self.REALITY_COLOR)
+        reality_label.next_to(reality_dot, DOWN, buff=0.3)
+        self.play(FadeIn(reality_dot), Write(reality_label))
+
+        # Mark where media portrayal sits -- further along, ahead of reality
+        media_dot = GlowDot(np.array([self.MEDIA_X, self.AXIS_Y, 0.0]), color=self.MEDIA_COLOR)
+        media_label = Text("Portrayed in Media", font_size=32, color=self.MEDIA_COLOR)
+        media_label.next_to(media_dot, DOWN, buff=0.3)
+        self.play(FadeIn(media_dot), Write(media_label))
+
+        self.wait()
+
+        # Below: two arrows showing how long each narrative implies progress takes
+        perceived_arrow = Arrow(
+            np.array([self.ARROW_START_X, self.PERCEIVED_ARROW_Y, 0.0]),
+            np.array([self.ARROW_START_X + self.PERCEIVED_ARROW_LENGTH, self.PERCEIVED_ARROW_Y, 0.0]),
+            buff=0,
+            thickness=5
+        ).set_color(self.MEDIA_COLOR)
+
+        reality_arrow = Arrow(
+            np.array([self.ARROW_START_X, self.REALITY_ARROW_Y, 0.0]),
+            np.array([self.ARROW_START_X + self.REALITY_ARROW_LENGTH, self.REALITY_ARROW_Y, 0.0]),
+            buff=0,
+            thickness=5
+        ).set_color(self.REALITY_COLOR)
+        VGroup(perceived_arrow, reality_arrow).set_x(0)
+        perceived_label = Text("Perceived", font_size=28, color=self.MEDIA_COLOR)
+        perceived_label.next_to(perceived_arrow, UP, buff=0.2)
+        reality_arrow_label = Text("Reality", font_size=28, color=self.REALITY_COLOR)
+        reality_arrow_label.next_to(reality_arrow, UP, buff=0.2)
+
+        self.play(GrowArrow(perceived_arrow), Write(perceived_label))
+        self.play(GrowArrow(reality_arrow), Write(reality_arrow_label))
+
+        self.wait(2)
