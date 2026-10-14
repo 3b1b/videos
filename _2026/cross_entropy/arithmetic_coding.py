@@ -2924,7 +2924,8 @@ class ShowEncodingScene(InteractiveScene):
             raise ValueError(f"Unknown model {self.model_name!r}, use 'qwen' or 'nanogpt'")
         max_bits = max(len(code) for code in codes)
 
-        highlight_start = text.rfind(self.highlight) if self.highlight else -1
+        highlight = " ".join(self.highlight.split()) if self.highlight else ""
+        highlight_start = text.rfind(highlight) if highlight else -1
         has_highlight = highlight_start >= 0
         if has_highlight:
             highlight_token = max(t for t, end in enumerate(char_ends) if end <= highlight_start)
@@ -2961,7 +2962,6 @@ class ShowEncodingScene(InteractiveScene):
         encoded_title.move_to(np.array([right_x + self.column_width / 2, 3.25, 0]))
         divider = Line(FRAME_HEIGHT * 0.5 * UP, FRAME_HEIGHT * 0.5 * DOWN).set_stroke(GREY_B, 2)
         arrow = Arrow(0.45 * LEFT, 0.45 * RIGHT, buff=0, thickness=4)
-        arrow.set_color(YELLOW)
         arrow.set_y((self.area_top + self.area_bottom) / 2)
 
         char_count = VGroup(Integer(0, font_size=36), Text("characters", font_size=36))
@@ -3185,16 +3185,16 @@ class ShowEncodingScene(InteractiveScene):
         return dot, slots
 
 
-class EuclidAloneNanoGPT(ShowEncodingScene):
-    text = "Euclid's Elements"
-    highlight = "Euclid's Elements"
-    model_name = "nanogpt"
+# class EuclidAloneNanoGPT(ShowEncodingScene):
+#     text = "Euclid's Elements"
+#     highlight = "Euclid's Elements"
+#     model_name = "nanogpt"
 
 
-class EuclidAloneQwen(ShowEncodingScene):
-    text = "Euclid's Elements"
-    highlight = "Euclid's Elements"
-    model_name = "qwen"
+# class EuclidAloneQwen(ShowEncodingScene):
+#     text = "Euclid's Elements"
+#     highlight = "Euclid's Elements"
+#     model_name = "qwen"
 
 
 class EuclidInContextNanoGPT(ShowEncodingScene):
@@ -3218,6 +3218,14 @@ class EuclidInContextQwen(ShowEncodingScene):
 class USConstitutionQwen(ShowEncodingScene):
     text = """
         We the People of the United States,
+        in Order to form a more perfect Union,
+        establish Justice, insure domestic Tranquility,
+        provide for the common defence,
+        promote the general Welfare,
+        and secure the Blessings of Liberty to ourselves and our Posterity,
+        do ordain and establish this Constitution for the United States of America.
+    """
+    highlight = """
         in Order to form a more perfect Union,
         establish Justice, insure domestic Tranquility,
         provide for the common defence,
