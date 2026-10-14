@@ -7,7 +7,6 @@ class QAResponses(InteractiveScene):
     MARGIN = 0.6
     MIN_WIDTH = 4.0
     MAX_WIDTH = 6
-    MAX_ROTATION = 10 * DEGREES
     GRID_JITTER_FRACTION = 0.4
 
     BORDER_COLOR = WHITE
@@ -20,19 +19,15 @@ class QAResponses(InteractiveScene):
 
     PULSE_AMPLITUDE = 0.01
     PULSE_FREQ_RANGE = (0.25, 0.35)
-    ROTATE_AMPLITUDE = 2 * DEGREES
-    ROTATE_FREQ_RANGE = (0.1, 0.2)
-    ROTATE_RAMP_TIME = 1.5
     BREATHE_TIME = 7
 
-    FADE_OUT_TOTAL_TIME = 2
-    FADE_OUT_LAG_RATIO = 0.2
+    FADE_OUT_TOTAL_TIME = 2.5
+    FADE_OUT_LAG_RATIO = 0.6
 
     def get_image_update_func(self, tiny_image, overshoot_image, final_image,
                                tiny_border, overshoot_border, final_border,
                                start_delay, rise_time, settle_time,
-                               pulse_amplitude, pulse_freq,
-                               rotate_amplitude, rotate_freq, rotate_phase):
+                               pulse_amplitude, pulse_freq):
         rise_end = start_delay + rise_time
         settle_end = rise_end + settle_time
         center = final_image.get_center()
@@ -55,19 +50,15 @@ class QAResponses(InteractiveScene):
             else:
                 breathe_t = t - settle_end
                 scale_factor = 1 / (1 + pulse_amplitude * np.sin(TAU * pulse_freq * breathe_t))
-                ramp = smooth(min(breathe_t / self.ROTATE_RAMP_TIME, 1.0))
-                rotate_angle = rotate_amplitude * ramp * np.sin(TAU * rotate_freq * breathe_t + rotate_phase)
                 for sub, final in [(image_mob, final_image), (border_mob, final_border)]:
                     sub.become(final)
                     sub.scale(scale_factor, about_point=center)
-                    sub.rotate(rotate_angle, about_point=center)
 
         return update_func
 
     def get_fade_out_updater(self, final_image, final_border, center,
                               initial_breathe_t, fade_start_delay, fade_time,
-                              pulse_amplitude, pulse_freq,
-                              rotate_amplitude, rotate_freq, rotate_phase):
+                              pulse_amplitude, pulse_freq):
         state = {"elapsed": 0.0}
 
         def updater(mob, dt):
@@ -77,8 +68,6 @@ class QAResponses(InteractiveScene):
             image_mob, border_mob = mob.submobjects
 
             scale_factor = 1 / (1 + pulse_amplitude * np.sin(TAU * pulse_freq * t))
-            ramp = smooth(min(t / self.ROTATE_RAMP_TIME, 1.0))
-            rotate_angle = rotate_amplitude * ramp * np.sin(TAU * rotate_freq * t + rotate_phase)
 
             if elapsed < fade_start_delay:
                 opacity = 1.0
@@ -87,12 +76,10 @@ class QAResponses(InteractiveScene):
 
             image_mob.become(final_image)
             image_mob.scale(scale_factor, about_point=center)
-            image_mob.rotate(rotate_angle, about_point=center)
             image_mob.set_opacity(opacity)
 
             border_mob.become(final_border)
             border_mob.scale(scale_factor, about_point=center)
-            border_mob.rotate(rotate_angle, about_point=center)
             border_mob.set_stroke(opacity=opacity)
 
         return updater
@@ -133,10 +120,6 @@ class QAResponses(InteractiveScene):
             border.set_fill(opacity=0)
             border.move_to(img.get_center())
 
-            angle = random.uniform(-self.MAX_ROTATION, self.MAX_ROTATION)
-            img.rotate(angle)
-            border.rotate(angle)
-
             half_w = img.get_width() / 2
             half_h = img.get_height() / 2
 
@@ -168,8 +151,6 @@ class QAResponses(InteractiveScene):
         # Add the images
         mobs = []
         pulse_freqs = []
-        rotate_freqs = []
-        rotate_phases = []
         settle_ends = []
         animations = []
         for i, final_target in enumerate(final_targets):
@@ -186,12 +167,8 @@ class QAResponses(InteractiveScene):
             settle_end = start_delay + rise_time + settle_time
 
             pulse_freq = random.uniform(*self.PULSE_FREQ_RANGE)
-            rotate_freq = random.uniform(*self.ROTATE_FREQ_RANGE)
-            rotate_phase = random.uniform(0, TAU)
 
             pulse_freqs.append(pulse_freq)
-            rotate_freqs.append(rotate_freq)
-            rotate_phases.append(rotate_phase)
             settle_ends.append(settle_end)
 
             mob = Group(tiny_image.copy(), tiny_border.copy())
@@ -206,9 +183,6 @@ class QAResponses(InteractiveScene):
                 settle_time,
                 self.PULSE_AMPLITUDE,
                 pulse_freq,
-                self.ROTATE_AMPLITUDE,
-                rotate_freq,
-                rotate_phase,
             )
             animations.append(
                 UpdateFromAlphaFunc(
@@ -238,7 +212,6 @@ class QAResponses(InteractiveScene):
                     final_image, final_border, center,
                     initial_breathe_t, fade_start_delay, fade_time,
                     self.PULSE_AMPLITUDE, pulse_freqs[i],
-                    self.ROTATE_AMPLITUDE, rotate_freqs[i], rotate_phases[i],
                 )
             )
 
