@@ -112,6 +112,7 @@ class ArithmeticCodingDiagram(Group):
             layer.stretch(target_width / layer.bars.get_width(), 0)
             layer.reposition_labels()
         layer.next_to(mob_above, DOWN, buff=buff)
+        layer.shift((mob_above.get_left()[0] - layer.bars.get_left()[0]) * RIGHT)
 
         layer.prefix = prefix
         layer.default_bar_style = [
@@ -762,6 +763,23 @@ class IntroduceCharacterModel(InteractiveScene):
 
 
 class ArithmeticCodingExplanation(IntroduceCharacterModel):
+    def get_decoding_model_group(self, prefix, distribution):
+        chart = self.get_bar_chart(distribution, CHAR_ALPHABET.replace(" ", "_"))
+        model = ImageMobject(Path(
+            self.file_writer.get_output_file_rootname().parent.parent,
+            "Paul Assets", "BigModel.png"
+        ))
+        model.set_height(0.8 * chart.get_height())
+        model.rotate(-2 * DEG)
+        model.next_to(chart, LEFT, buff=2)
+        out_arrow = Arrow(model.get_right(), chart.get_left(), buff=0.3, thickness=5)
+        out_arrow.set_color(GREY_B)
+        in_arrow = Vector(1.5 * RIGHT, thickness=5)
+        in_arrow.next_to(model, LEFT)
+        in_text = Text(f"“{prefix}”", font_size=72)
+        in_text.next_to(in_arrow, LEFT, buff=0.15)
+        return Group(in_text, in_arrow, model, out_arrow, chart)
+
     interval_width = 12
 
     def construct(self):
@@ -1080,6 +1098,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         for layer in diagram.layers:
             layer.add_updater(lambda m: m.highlight(m.x_value_to_index(x_arrow.get_x())))
 
+        self.wait(1)
         self.play(
             VFadeIn(x_arrow, time_span=(0, 1)),
             VFadeIn(x_dec, time_span=(0, 1)),
@@ -1151,7 +1170,51 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         string = "math"
         decoded = VGroup()
         for i, letter in enumerate(string):
-            self.play(diagram.restore_layer(i, get_x()))
+            layer = diagram.layers[i]
+            restyled = diagram.restore_layer(i, get_x()).target_mobject
+            model_group = self.get_decoding_model_group(string[:i], layer.distribution)
+            model_group.set_width(12)
+            if model_group.get_height() > 3.5:
+                model_group.set_height(3.5)
+            model_group.next_to(restyled, DOWN, buff=0.75)
+            model_group.set_x(frame.get_x())
+            in_text, in_arrow, model, out_arrow, chart = model_group
+
+            frame.save_state()
+            frame_top = frame.get_top()[1]
+            frame_bottom = min(frame.get_bottom()[1], model_group.get_bottom()[1] - 0.4)
+            in_text_anims = [FadeIn(VGroup(in_text[0], in_text[-1]))]
+            if len(decoded) > 0:
+                in_text_anims.append(TransformFromCopy(decoded, in_text[1:-1]))
+            self.play(
+                frame.animate.set_height(frame_top - frame_bottom).set_y((frame_top + frame_bottom) / 2),
+                FadeIn(model),
+                GrowArrow(in_arrow),
+                *in_text_anims,
+            )
+            self.play(
+                GrowArrow(out_arrow),
+                LaggedStart(*(GrowFromEdge(bar, DOWN) for bar in chart.bars), lag_ratio=0.02),
+                FadeIn(chart.labels, lag_ratio=0.02),
+                FadeIn(chart.dec_labels, lag_ratio=0.02),
+                run_time=1.5,
+            )
+            self.wait()
+
+            for bar in chart.bars:
+                original = bar.copy()
+                bar.rotate(90 * DEG)
+                bar.replace(original, stretch=True)
+            kw = dict(run_time=2, lag_ratio=0.02)
+            self.play(
+                ReplacementTransform(chart.bars, restyled.bars, **kw),
+                ReplacementTransform(chart.labels, restyled.labels, **kw),
+                FadeOut(chart.dec_labels, run_time=1),
+                FadeOut(Group(in_text, in_arrow, model, out_arrow), shift=DOWN, run_time=1),
+                Restore(frame, run_time=2),
+            )
+            self.remove(restyled.bars, restyled.labels)
+            layer.become(restyled)
             self.wait(0.5)
             new_decoded = get_word_mob(string[:i + 1])
             self.play(
