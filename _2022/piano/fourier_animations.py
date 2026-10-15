@@ -190,7 +190,8 @@ class SumOfWaves(Scene):
 
 
 class DecomposeAudioSegment(Scene):
-    audio_file = os.path.join(DATA_DIR, "audio_clips", "SignalFromSpeech.wav")
+    audio_file = os.path.join(DATA_DIR, "audio_clips", "audio_sample.wav")
+    time_range = (1.0, 2.0)
     sample_density = 1 / 5
     n_sine_waves = 5
     signal_graph_style = dict(
@@ -517,7 +518,14 @@ class DecomposeAudioSegment(Scene):
 
     def get_signal_graph(self):
         sample_rate, signal = wavfile.read(self.audio_file)
-        signal = signal[:, 0] / np.abs(signal).max()
+        if signal.ndim > 1:
+            signal = signal[:, 0]  # Take the first channel
+        if self.time_range is not None:
+            start, end = self.time_range
+            start_index = int(start * sample_rate) if start is not None else None
+            end_index = int(end * sample_rate) if end is not None else None
+            signal = signal[start_index:end_index]
+        signal = signal / np.abs(signal).max()
         signal = signal[::int(1 / self.sample_density)]
 
         axes = Axes(
@@ -575,7 +583,6 @@ class WaveformDescription(DecomposeAudioSegment):
 
 
 class SignalsAsVectors(DecomposeAudioSegment):
-    audio_file = os.path.join(DATA_DIR, "audio_clips", "SignalFromSpeech.wav")  # Change?
     sample_density = 1.0
 
     def construct(self):
@@ -931,6 +938,173 @@ class ThreeDChangeOfBasisExample(Scene):
         return label
 
 
-class ContrastPureToneToPianoKey(Scene):
+class NewThumbnail(InteractiveScene):
+    audio_file = os.path.join(DATA_DIR, "audio_clips", "audio_sample.wav")
+    time_range = (50.0, 52.0)
+    sample_density = 1 / 5
+    graph_point = 0.428
+    zoom_rect_dims = (0.4, 4.0)
+    max_sine_waves = None
+    show_fft_graph = True
+    sample_stride = 1
+    wave_step = 2
+    bg_rect_color = "#222222"
+    bg_rect_opacity = 1
+
+    frame_theta = -45
+    frame_phi = 75
+    frame_height = 12
+
     def construct(self):
-        pass
+        t_axes, graph = self.get_zoomed_signal()
+        self.add(t_axes, graph)
+        f_axes = self.add_fourier_components(t_axes, graph)
+        t_axes.remove(t_axes.y_axis)
+        f_axes.remove(f_axes.y_axis)
+        self.camera.frame.reorient(119, 71, 0, (1.09, 4.72, 1.03), 6.38)
+
+    def get_zoomed_signal(self):
+        axes, graph = self.get_signal_graph()
+        frame = self.camera.frame
+        zoom_width, zoom_height = self.zoom_rect_dims
+
+        point = graph.pfp(self.graph_point)[0] * RIGHT
+        lx = point[0] - zoom_width / 2
+        rx = point[0] + zoom_width / 2
+
+        graph_points = graph.get_anchors()
+        xs = graph_points[:, 0]
+        snippet_points = graph_points[(xs > lx) * (xs < rx)]
+        graph_snippet = VMobject()
+        graph_snippet.set_points_as_corners(snippet_points)
+        graph_snippet.match_style(graph)
+
+        point = graph_snippet.get_center().copy()
+        point[1] = axes.get_origin()[1]
+        graph_snippet.stretch(frame.get_width() / zoom_width, 0, about_point=point)
+        graph_snippet.stretch(frame.get_height() / zoom_height, 1, about_point=point)
+        graph_snippet.shift(-point)
+        graph_snippet.set_stroke(width=5)
+
+        t_axes = Axes((0, 12), (-1, 1, 0.25), width=(FRAME_WIDTH + 1) * 12 / 14)
+        t_axes.shift(LEFT_SIDE + RIGHT - t_axes.get_origin())
+
+        t_start = t_axes.get_origin()[0]
+        t_end = t_axes.c2p(t_axes.x_range[1], 0)[0]
+        anchors = graph_snippet.get_anchors()
+        in_range = (anchors[:, 0] >= t_start) * (anchors[:, 0] <= t_end)
+        graph_snippet.set_points_as_corners(anchors[in_range])
+
+        # Stand everything up in 3d
+        for mob in [t_axes, graph_snippet]:
+            mob.rotate(PI / 2, RIGHT)
+
+        return t_axes, graph_snippet
+
+    def add_fourier_components(self, t_axes, graph):
+        # Take the fourier transform
+        t_max = t_axes.x_range[1]
+        points = graph.get_points()
+        ts, values = t_axes.p2c(points[::self.sample_stride])
+        signal = values[(ts > 0) * (ts < t_max)]
+        signal_fft = np.fft.fft(signal)
+        signal_fft /= len(signal)
+        signal_fft_abs = np.abs(signal_fft)
+        signal_fft_phase = np.log(signal_fft).imag
+
+        base_ts = t_axes.p2c(points[::6])[0]
+        n_base = ((base_ts > 0) * (base_ts < t_max)).sum()
+
+        max_freq = signal.size / t_max
+        t_axis_length = 28
+        f_axes = Axes(
+            (0, max_freq / 2, max_freq / len(signal) / 2),
+            (0, 1, 1 / 8),
+            height=t_axes.get_depth(),
+            width=t_axis_length * len(signal) / n_base,
+        )
+        f_axes.rotate(PI / 2, RIGHT)
+        f_axes.rotate(PI / 2, OUT)
+        f_axes.shift(t_axes.get_origin() - f_axes.get_origin())
+        freqs = np.fft.fftfreq(signal.size, 1 / max_freq) % max_freq
+
+        n_waves = 40
+        if self.max_sine_waves is not None:
+            n_waves = min(self.max_sine_waves, n_waves)
+        sine_waves = VGroup()
+        for index in range(1, n_waves + 1, self.wave_step):
+            freq = freqs[index]
+            amp = signal_fft_abs[index]
+            phase = signal_fft_phase[index]
+            wave = t_axes.get_graph(
+                lambda t: 2 * amp * np.cos(TAU * freq * (t + phase)),
+                x_range=(0, t_max),
+            )
+            wave.match_y(f_axes.c2p(freq, 0))
+            wave.set_stroke(opacity=clip(15 * amp, 0.35, 1))
+            sine_waves.add(wave)
+
+        sine_waves.set_submobject_colors_by_gradient(YELLOW, GREEN, RED, ORANGE)
+        sine_waves.set_stroke(width=2)
+
+        self.add(f_axes, sine_waves)
+
+        if self.show_fft_graph:
+            in_range = freqs <= max_freq / 2
+            fft_graph = VMobject()
+            fft_graph.set_points_as_corners([
+                f_axes.c2p(freq, 2 * value)
+                for freq, value in zip(freqs[in_range], signal_fft_abs[in_range])
+            ])
+            fft_graph.set_stroke(TEAL, 5)
+
+            self.add(fft_graph)
+
+        origin = t_axes.get_origin()
+        heights = [graph.get_z(OUT) - origin[2], origin[2] - graph.get_z(IN)]
+        if self.show_fft_graph:
+            heights.append(fft_graph.get_z(OUT) - origin[2])
+        rect_height = max(heights)
+
+        bg_rects = VGroup(*(
+            Polygon(
+                origin + rect_height * IN,
+                end + rect_height * IN,
+                end + rect_height * OUT,
+                origin + rect_height * OUT,
+            )
+            for end in [t_axes.c2p(t_max, 0), f_axes.c2p(max_freq / 2, 0)]
+        ))
+        bg_rects.set_fill(self.bg_rect_color, self.bg_rect_opacity)
+        bg_rects.set_stroke(width=0)
+        self.add(bg_rects)
+        self.bring_to_back(bg_rects)
+
+        return f_axes
+
+    def get_signal_graph(self):
+        sample_rate, signal = wavfile.read(self.audio_file)
+        if signal.ndim > 1:
+            signal = signal[:, 0]  # Take the first channel
+        if self.time_range is not None:
+            start, end = self.time_range
+            start_index = int(start * sample_rate) if start is not None else None
+            end_index = int(end * sample_rate) if end is not None else None
+            signal = signal[start_index:end_index]
+        signal = signal / np.abs(signal).max()
+        signal = signal[::int(1 / self.sample_density)]
+
+        axes = Axes(
+            (0, len(signal), sample_rate * self.sample_density), (-1, 1, 0.25),
+            height=6,
+            width=15,
+        )
+        axes.to_edge(LEFT)
+
+        xs = np.arange(len(signal))
+        points = axes.c2p(xs, signal)
+        graph = VMobject()
+        graph.set_points_as_corners(points)
+        graph.set_color(BLUE)
+
+        return axes, graph
