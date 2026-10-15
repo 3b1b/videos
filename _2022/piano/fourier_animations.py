@@ -2,6 +2,7 @@ from manim_imports_ext import *
 
 from _2022.piano.wav_to_midi import DATA_DIR
 from scipy.io import wavfile
+from scipy.ndimage import gaussian_filter1d
 
 
 def get_wave_sum(axes, freqs, amplitudes=None, phases=None):
@@ -940,7 +941,9 @@ class ThreeDChangeOfBasisExample(Scene):
 
 class NewThumbnail(InteractiveScene):
     audio_file = os.path.join(DATA_DIR, "audio_clips", "audio_sample.wav")
-    time_range = (50.0, 52.0)
+    duration = 2.0
+    start_time = 50.0
+    time_range = (start_time, start_time + duration)
     sample_density = 1 / 5
     graph_point = 0.428
     zoom_rect_dims = (0.4, 4.0)
@@ -949,7 +952,8 @@ class NewThumbnail(InteractiveScene):
     sample_stride = 1
     wave_step = 2
     bg_rect_color = "#222222"
-    bg_rect_opacity = 1
+    bg_rect_opacity = 0
+    fft_smoothing = 0.8
 
     frame_theta = -45
     frame_phi = 75
@@ -1036,10 +1040,7 @@ class NewThumbnail(InteractiveScene):
             freq = freqs[index]
             amp = signal_fft_abs[index]
             phase = signal_fft_phase[index]
-            wave = t_axes.get_graph(
-                lambda t: 2 * amp * np.cos(TAU * freq * (t + phase)),
-                x_range=(0, t_max),
-            )
+            wave = self.get_component_wave(t_axes, freq, amp, phase)
             wave.match_y(f_axes.c2p(freq, 0))
             wave.set_stroke(opacity=clip(15 * amp, 0.35, 1))
             sine_waves.add(wave)
@@ -1048,13 +1049,17 @@ class NewThumbnail(InteractiveScene):
         sine_waves.set_stroke(width=2)
 
         self.add(f_axes, sine_waves)
+        self.component_waves = sine_waves
 
         if self.show_fft_graph:
             in_range = freqs <= max_freq / 2
+            fft_values = signal_fft_abs[in_range]
+            if self.fft_smoothing > 0:
+                fft_values = gaussian_filter1d(fft_values, self.fft_smoothing, mode="nearest")
             fft_graph = VMobject()
-            fft_graph.set_points_as_corners([
+            fft_graph.set_points_smoothly([
                 f_axes.c2p(freq, 2 * value)
-                for freq, value in zip(freqs[in_range], signal_fft_abs[in_range])
+                for freq, value in zip(freqs[in_range], fft_values)
             ])
             fft_graph.set_stroke(TEAL, 5)
 
@@ -1082,6 +1087,12 @@ class NewThumbnail(InteractiveScene):
 
         return f_axes
 
+    def get_component_wave(self, t_axes, freq, amp, phase):
+        return t_axes.get_graph(
+            lambda t: 2 * amp * np.cos(TAU * freq * (t + phase)),
+            x_range=(0, t_axes.x_range[1]),
+        )
+
     def get_signal_graph(self):
         sample_rate, signal = wavfile.read(self.audio_file)
         if signal.ndim > 1:
@@ -1108,3 +1119,72 @@ class NewThumbnail(InteractiveScene):
         graph.set_color(BLUE)
 
         return axes, graph
+
+
+class WoundThumbnail(NewThumbnail):
+    winding_turns = 1
+    winding_shift = 1.5
+    wound_buff = 2.0
+    wound_square_buff = 0.1
+    wound_scale = 1.0
+    n_winding_samples = 1000
+    fft_smoothing = 0.8
+    duration = 2.0
+    start_time = 160.0
+    time_range = (start_time, start_time + duration)
+
+    def construct(self):
+        super().construct()
+        self.camera.frame.reorient(136, 84, 0, (-4.27, 5.62, 0.90), 9.18)
+
+    def add_fourier_components(self, t_axes, graph):
+        f_axes = super().add_fourier_components(t_axes, graph)
+        waves = self.component_waves
+        origin = t_axes.get_origin()
+        half_widths = [
+            max(
+                np.abs(wave.get_points()[:, 0] - origin[0]).max(),
+                np.abs(wave.get_points()[:, 2] - origin[2]).max(),
+            ) + self.wound_square_buff
+            for wave in waves
+        ]
+        shift = max(half_widths) + self.wound_buff
+        waves.shift(shift * RIGHT)
+
+        center = origin + shift * RIGHT
+        layered = Group()
+        for wave, half_width in zip(waves, half_widths):
+            wave_center = center.copy()
+            wave_center[1] = wave.get_y()
+            square = Polygon(
+                wave_center + half_width * (LEFT + IN),
+                wave_center + half_width * (RIGHT + IN),
+                wave_center + half_width * (RIGHT + OUT),
+                wave_center + half_width * (LEFT + OUT),
+            )
+            square.set_fill(self.bg_rect_color, 0.7)
+            square.set_stroke(WHITE, 2)
+            layered.add(square, wave)
+
+        self.remove(waves)
+        self.add(layered)
+        return f_axes
+
+    def get_component_wave(self, t_axes, freq, amp, phase):
+        t_max = t_axes.x_range[1]
+        winding_freq = self.winding_turns / t_max
+        center = t_axes.get_origin()
+        up_vect = t_axes.c2p(0, 1) - t_axes.c2p(0, 0)
+        right_vect = get_norm(up_vect) * RIGHT
+
+        ts = np.linspace(0, t_max, self.n_winding_samples)
+        values = 2 * amp * (self.winding_shift + np.cos(TAU * freq * (ts + phase)))
+        values /= (1 + self.winding_shift)
+        zs = self.wound_scale * values * np.exp(-TAU * 1j * winding_freq * ts)
+
+        wave = VMobject()
+        wave.set_points_smoothly([
+            center + z.real * right_vect + z.imag * up_vect
+            for z in zs
+        ])
+        return wave
