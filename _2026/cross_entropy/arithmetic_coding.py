@@ -92,6 +92,17 @@ class ArithmeticCodingDiagram(Group):
     def get_distribution(self, prefix):
         return cached_next_char_distribution(self.context + prefix).copy()
 
+    def get_text_range(self, text):
+        low, high = 0.0, 1.0
+        for i, char in enumerate(text):
+            dist = self.get_distribution(text[:i])
+            cdf = np.cumsum(dist) / dist.sum()
+            index = self.char_alphabet.index(char)
+            a = cdf[index - 1] if index > 0 else 0.0
+            b = cdf[index]
+            low, high = low + (high - low) * a, low + (high - low) * b
+        return low, high
+
     def get_new_layer(self, buff=0.1):
         if len(self.layers) == 0:
             mob_above = self.unit_interval[0]
@@ -478,15 +489,21 @@ class ArithmeticCodingDiagram(Group):
         if center_curr_text:
             center_text = self.curr_text
         if center_text is not None:
+            path = []
             for i, char in enumerate(center_text):
                 layer = self.layer_by_prefix.get(center_text[:i])
                 if layer is None or not getattr(layer, "is_visible", True) or id(layer) not in target_of:
                     continue
                 target_layer = target_of[id(layer)]
                 index = self.char_alphabet.index(char)
-                bar = target_layer.bars[index]
-                if bar.get_left()[0] <= center[0] <= bar.get_right()[0]:
-                    target_layer[1][index].match_x(center)
+                path.append((target_layer, index))
+            if path:
+                deepest_layer, deepest_index = path[-1]
+                label_x = deepest_layer.bars[deepest_index].get_center()[0]
+                for target_layer, index in path:
+                    bar = target_layer.bars[index]
+                    if bar.get_left()[0] <= label_x <= bar.get_right()[0]:
+                        target_layer[1][index].set_x(label_x)
 
         for layer in [*self.target.layers, *self.target.branches]:
             if getattr(layer, "is_faded", False):
@@ -1326,53 +1343,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             mark.set_z_index(1)
             return mark
 
-        def get_width_braces(level, dynamic=True, fade=1, margin=1, max_braces=16, max_opacity=0.75):
-            group = VGroup()
-            group.fade = ValueTracker(fade)
-            group.release = ValueTracker(0)
-            cell_width = 2.0**-level
-            label_template = Tex(Rf"2^{{-{level}}}", font_size=26)
-
-            def update_braces(group):
-                ref_low, ref_high = highlight_range
-                x_ref_low = value_to_x(ref_low)
-                slope = (value_to_x(ref_high) - x_ref_low) / (ref_high - ref_low)
-                frame_left = frame.get_left()[0] - margin
-                frame_right = frame.get_right()[0] + margin
-                opacity = max_opacity * group.fade.get_value()
-                if dynamic:
-                    rel_width = slope * cell_width / frame.get_width()
-                    fade_in = clip((rel_width - 0.2) / 0.1, 0, 1)
-                    fade_out = clip((0.65 - rel_width) / 0.2, 0, 1)
-                    opacity *= fade_in * interpolate(1, fade_out, group.release.get_value())
-                n_used = 0
-                if opacity > 0:
-                    v_left = ref_low + (frame_left - x_ref_low) / slope
-                    v_right = ref_low + (frame_right - x_ref_low) / slope
-                    i_low = max(math.floor(v_left / cell_width), 0)
-                    i_high = min(math.floor(v_right / cell_width), 2**level - 1, i_low + max_braces - 1)
-                    indices = list(range(i_low, i_high + 1))
-                    while len(group) < len(indices):
-                        group.add(VGroup(VMobject(), label_template.copy()))
-                    for i, width_brace in zip(indices, group):
-                        x_low = x_ref_low + (i * cell_width - ref_low) * slope
-                        x_high = x_low + cell_width * slope
-                        if x_high - x_low > 100 * frame.get_width():
-                            width_brace.set_opacity(0)
-                            continue
-                        line = Line(np.array([x_low, line_y, 0]), np.array([x_high, line_y, 0]))
-                        width_brace[0].become(Brace(line, UP, buff=0).stretch(0.7, 1, about_edge=DOWN))
-                        width_brace[1].next_to(width_brace[0], UP, SMALL_BUFF)
-                        width_brace[1].set_backstroke(BLACK, 3)
-                        width_brace.set_opacity(opacity)
-                    n_used = len(indices)
-                for width_brace in group[n_used:]:
-                    width_brace.set_opacity(0)
-
-            group.add_updater(update_braces)
-            group.update()
-            return group
-
         def get_visible_value_range(margin=0.5):
             x0 = n2p(0)[0]
             x1 = n2p(1)[0]
@@ -1389,13 +1359,42 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 if level == 1 or numer % 2 == 1
             )
 
+        tick_glyph_template = Text("0.1", font="Consolas", font_size=20)
+        tick_glyph_advance = (tick_glyph_template[2].get_x() - tick_glyph_template[0].get_x()) / 2
+        tick_glyph_height = tick_glyph_template[0].get_height()
+        tick_glyph_origin = tick_glyph_template[0].get_center()
+        tick_glyphs = {
+            char: (glyph, glyph.get_center() - tick_glyph_origin - i * tick_glyph_advance * RIGHT)
+            for i, (char, glyph) in enumerate(zip("0.1", tick_glyph_template))
+        }
+        tick_label_cache = dict()
+
+        def get_tick_label(string):
+            if string not in tick_label_cache:
+                label = VGroup()
+                for i, char in enumerate(string):
+                    glyph, offset = tick_glyphs[char]
+                    label.add(glyph.copy().move_to(offset + (i - (len(string) - 1) / 2) * tick_glyph_advance * RIGHT))
+                label.anchor = np.zeros(3)
+                label.last_opacity = None
+                tick_label_cache[string] = label
+            return tick_label_cache[string]
+
+        def get_tick_string(numer, level):
+            if level == 0:
+                return str(numer)
+            return "." + bin(numer)[2:].zfill(level)
+
         def get_dyadic_ruler(fade=0, ref_spacing=0.35, max_height=0.45, height_ratio=0.7, max_depth=5, n_ticks=500, margin=0.5):
             ticks = VGroup(Line(ORIGIN, UP) for _ in range(n_ticks))
             ticks.set_stroke(GREY_B, 2)
             ticks.fade = ValueTracker(fade)
             ticks.set_z_index(1)
+            ticks.labels = VGroup()
+            ticks.labels.set_z_index(1)
+            ticks.level_fits = dict()
 
-            def update_ruler(ticks):
+            def update_ruler(ticks, dt):
                 ref_low, ref_high = highlight_range
                 x_ref_low = value_to_x(ref_low)
                 slope = (value_to_x(ref_high) - x_ref_low) / (ref_high - ref_low)
@@ -1403,6 +1402,8 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 v_left = ref_low + (frame.get_left()[0] - margin - x_ref_low) / slope
                 v_right = ref_low + (frame.get_right()[0] + margin - x_ref_low) / slope
                 fade = ticks.fade.get_value()
+                label_y = line_y + 0.3 + tick_glyph_height / 2
+                shown_labels = []
                 n_used = 0
                 level = 0
                 while n_used < len(ticks):
@@ -1412,6 +1413,14 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                     opacity = fade * clip(max_depth - depth, 0, 1)
                     height = max_height * height_ratio**clip(depth, 0, max_depth)
                     stroke_width = interpolate(1, 2.5, height / max_height)
+                    spacing = slope * 2.0**-level
+                    label_length = level + 1 if level > 0 else 1
+                    width_fit = clip((spacing / (label_length * tick_glyph_advance) - 1.05) / 0.25, 0, 1)
+                    smooth_fit = width_fit * clip((spacing / frame_width - 0.2) / 0.12, 0, 1)
+                    target_fit = float(smooth_fit >= 0.5)
+                    level_fit = ticks.level_fits.get(level, target_fit)
+                    level_fit += clip(target_fit - level_fit, -dt / 0.4, dt / 0.4)
+                    ticks.level_fits[level] = level_fit
                     denom = 2**level
                     i_low = max(math.ceil(v_left * denom), 0)
                     i_high = min(math.floor(v_right * denom), denom)
@@ -1426,9 +1435,22 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                         )
                         tick.set_stroke(width=stroke_width, opacity=opacity)
                         n_used += 1
+                        label_opacity = opacity * level_fit
+                        if label_opacity <= 1e-3:
+                            continue
+                        label = get_tick_label(get_tick_string(i, level))
+                        position = np.array([x, label_y, 0])
+                        label.shift(position - label.anchor)
+                        label.anchor = position
+                        if label.last_opacity != label_opacity:
+                            label.set_fill(opacity=label_opacity)
+                            label.last_opacity = label_opacity
+                        shown_labels.append(label)
                     level += 1
                 for tick in ticks[n_used:]:
                     tick.set_stroke(opacity=0)
+                if ticks.labels.submobjects != shown_labels:
+                    ticks.labels.set_submobjects(shown_labels)
 
             ticks.add_updater(update_ruler)
             ticks.update()
@@ -1449,9 +1471,22 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         bin_scale = x_dec.get_height() / Text(".0", font="Consolas").get_height()
         bin_center_x = x_dec.get_x()
         bin_bottom_y = x_dec.get_bottom()[1] + UP
+        bin_template = Text("0.1", font="Consolas").scale(bin_scale)
+        bin_advance = (bin_template[2].get_x() - bin_template[0].get_x()) / 2
+        bin_glyphs = {
+            char: (glyph, glyph.get_center() - bin_template[0].get_center() - i * bin_advance * RIGHT)
+            for i, (char, glyph) in enumerate(zip("0.1", bin_template))
+        }
+
+        def get_binary_text(string):
+            mob = VGroup()
+            for i, char in enumerate(string):
+                glyph, offset = bin_glyphs[char]
+                mob.add(glyph.copy().move_to(offset + i * bin_advance * RIGHT))
+            return mob
 
         def get_binary_number(bits, highlight_last=True):
-            mob = Text("." + bits, font="Consolas").scale(bin_scale)
+            mob = get_binary_text("." + bits)
             mob.set_x(bin_center_x)
             mob.shift((bin_bottom_y - mob.get_bottom()[1]) * UP)
             if highlight_last:
@@ -1459,7 +1494,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             return mob
 
         level_marks = [get_dyadic_marks(1)]
-        brace_levels = []
 
         # Convert everything to binary
         self.play(
@@ -1479,8 +1513,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             layer.is_faded = True
             layer.set_opacity(0)
         last_bar = word_path[-1].bars[diagram.char_alphabet.index(word[-1])]
-        word_low = unit_interval.p2n(last_bar.get_left())
-        word_high = unit_interval.p2n(last_bar.get_right())
+        word_low, word_high = diagram.get_text_range(word)
         word_bits = diagram.get_binary_code(word_low, word_high)
         n_bits = len(word_bits)
         self.wait()
@@ -1501,12 +1534,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Choose the remaining bits
         for k in range(2, n_bits + 2):
             step_time = 0.75 if k <= 3 else max(0.75 * 0.5**(k - 3), 0.1)
-            if label_style[0] == "power" and k <= n_bits:
-                for group in brace_levels:
-                    group.release.set_value(1)
-                new_braces = get_width_braces(k)
-                brace_levels.append(new_braces)
-                self.add(new_braces)
             self.play(zoom_to_interval(low, high, run_time=2 * step_time))
             if k > n_bits:
                 break
@@ -1531,13 +1558,10 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 label_style[0] = "power"
                 old_marks = VGroup(*level_marks)
                 ruler = get_dyadic_ruler(fade=0)
-                new_braces = get_width_braces(k, fade=0)
-                brace_levels.append(new_braces)
-                self.add(ruler, new_braces)
+                self.add(ruler, ruler.labels)
                 self.play(
                     UpdateFromAlphaFunc(Mobject(), lambda m, a: old_marks.set_opacity(1 - a)),
                     ruler.fade.animate.set_value(1),
-                    new_braces.fade.animate.set_value(1),
                 )
                 self.remove(*level_marks)
 
@@ -1550,7 +1574,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Show the range of real numbers
         def get_aligned_binary_text(string):
-            text = Text(string, font="Consolas").scale(bin_scale)
+            text = get_binary_text(string)
             text.align_to(binary_number, LEFT).align_to(binary_number, DOWN)
             return text
 
@@ -1660,13 +1684,9 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             for x in (last_bar.get_left()[0], last_bar.get_right()[0])
         )
         target_lines.set_stroke(WHITE, 3)
-        red_brace = get_width_braces(n_bits - 1, dynamic=False, fade=0)
-        self.add(red_brace)
         self.play(
             UpdateFromAlphaFunc(highlight, lambda m, a: m.set_stroke(interpolate_color(YELLOW, RED, a))),
             ShowCreation(target_lines),
-            brace_levels[-1].fade.animate.set_value(0),
-            red_brace.fade.animate.set_value(1),
         )
         self.wait()
 
@@ -1712,8 +1732,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         full_brace = Brace(binary_number[1:], DOWN, buff=SMALL_BUFF)
         full_label = full_brace.get_text(f"{n_bits} bits", font_size=30)
         self.play(
-            brace_levels[-1].fade.animate.set_value(1),
-            red_brace.fade.animate.set_value(0),
             UpdateFromAlphaFunc(highlight, update_yellow_highlight),
             binary_number[-1].animate.set_opacity(1),
             ReplacementTransform(bits_brace, full_brace),
@@ -1767,7 +1785,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Helpers for extending the word
         def get_world_binary(bit_str):
-            text = Text("." + bit_str, font="Consolas").scale(bin_scale)
+            text = get_binary_text("." + bit_str)
             text.match_x(bin_ref).align_to(bin_ref, DOWN)
             return text
 
@@ -1849,14 +1867,8 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             diagram.layers.add(new_layer)
             index = diagram.char_alphabet.index(char)
             target_bar = new_layer.bars[index]
-            x0 = new_layer.bars.get_left()[0]
-            x1 = new_layer.bars.get_right()[0]
-            range_low, range_high = word_range
-            word_range = tuple(
-                range_low + (range_high - range_low) * (x - x0) / (x1 - x0)
-                for x in (target_bar.get_left()[0], target_bar.get_right()[0])
-            )
             prefix += char
+            word_range = diagram.get_text_range(prefix)
             code = diagram.get_binary_code(*word_range)
             needs_bits = len(code) > len(shown_bits)
 
@@ -1884,9 +1896,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             diagram.reset_layer_style(target_layer)
             target_layer.reposition_labels()
             target_layer.highlight(index, other_bar_opacity=0.35)
-            target_bar_copy = target_layer.bars[index]
-            if target_bar_copy.get_left()[0] <= 0 <= target_bar_copy.get_right()[0]:
-                target_layer[1][index].match_x(ORIGIN)
             diagram.update_bar_strokes(target_layer)
 
             line_bars["start"] = line_bars["end"]
@@ -1908,15 +1917,10 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
             for n_shown in range(len(shown_bits) + 1, len(code) + 1):
                 step_bits = code[:n_shown]
-                new_braces = get_width_braces(n_shown, fade=0)
-                self.add(new_braces)
-                red_anims = [
+                self.play(
                     UpdateFromAlphaFunc(highlight, lambda m, a: m.set_stroke(interpolate_color(YELLOW, RED, a))),
-                    *(group.release.animate.set_value(1) for group in brace_levels),
-                    new_braces.fade.animate.set_value(1),
-                ]
-                brace_levels.append(new_braces)
-                self.play(*red_anims, run_time=0.5)
+                    run_time=0.5,
+                )
 
                 n_same = next(
                     (i for i, (a, b) in enumerate(zip(shown_bits, step_bits)) if a != b),
