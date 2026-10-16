@@ -70,6 +70,7 @@ class ArithmeticCodingDiagram(Group):
         self.ids_in_transform = set()
         self.intervals_hidden = False
         self.intervals = VGroup()
+        self.view_half_width = FRAME_WIDTH / 2 + 1
         self.full_width = width
         self.show_decimal_labels = show_decimal_labels
         self.interval_subdivisions = interval_subdivisions
@@ -238,6 +239,25 @@ class ArithmeticCodingDiagram(Group):
         index = self.char_alphabet.index(char)
         return self.layers[layer_index].labels[index]
 
+    def add_interval(self, scale, lower_bound_int):
+        step = self.interval_subdivisions**(scale)
+        interval_key = (step, lower_bound_int)
+        if interval_key in self.interval_keys:
+            return
+        low = lower_bound_int * step
+        high = (lower_bound_int + 1) * step
+        interval = DynamicInterval(
+            x_range=(low, high),
+            width=get_norm(self.unit_interval.n2p(high) - self.unit_interval.n2p(low)),
+            subdivisions=self.interval_subdivisions,
+            include_numbers=self.show_decimal_labels,
+            include_endpoint_numbers=False,
+            number_font_size=24 + scale * 2,
+        )
+        interval.shift(self.unit_interval.n2p(low) - interval.n2p(low))
+        self.intervals.add(interval)
+        self.interval_keys.add(interval_key)
+
     def populate_intervals(self, x_min, x_max):
         log_val = np.log(x_max - x_min) / np.log(self.interval_subdivisions)
         min_scale = int(np.ceil(np.round(log_val, 1)))
@@ -245,22 +265,22 @@ class ArithmeticCodingDiagram(Group):
         for scale in range(-1, min_scale - 1, -1):
             step = self.interval_subdivisions**(scale)
             for lower_bound_int in range(int(x_min / step) - 1, int(x_max / step) + 1):
-                interval_key = (step, lower_bound_int)
-                if interval_key in self.interval_keys:
-                    continue
-                low = lower_bound_int * step
-                high = (lower_bound_int + 1) * step
-                interval = DynamicInterval(
-                    x_range=(low, high),
-                    width=get_norm(self.unit_interval.n2p(high) - self.unit_interval.n2p(low)),
-                    subdivisions=self.interval_subdivisions,
-                    include_numbers=self.show_decimal_labels,
-                    include_endpoint_numbers=False,
-                    number_font_size=24 + scale * 2,
-                )
-                interval.shift(self.unit_interval.n2p(low) - interval.n2p(low))
-                self.intervals.add(interval)
-                self.interval_keys.add(interval_key)
+                self.add_interval(scale, lower_bound_int)
+        return self
+
+    def populate_visible_intervals(self, x_left, x_right):
+        min_width = self.unit_interval.width_fade_range[0]
+        unit_width = x_right - x_left
+        v_left = (-self.view_half_width - x_left) / unit_width
+        v_right = (self.view_half_width - x_left) / unit_width
+        scale = -1
+        while self.interval_subdivisions**scale * unit_width > min_width:
+            step = self.interval_subdivisions**(scale)
+            i_low = max(math.floor(v_left / step) - 1, 0)
+            i_high = min(math.floor(v_right / step) + 1, round(1 / step) - 1)
+            for lower_bound_int in range(i_low, i_high + 1):
+                self.add_interval(scale, lower_bound_int)
+            scale -= 1
         return self
 
     def get_conditional_probability(self, char, layer_index=-1):
@@ -438,6 +458,7 @@ class ArithmeticCodingDiagram(Group):
         center=ORIGIN,
         center_curr_text=False,
         center_text=None,
+        center_on_text_bar=False,
         stretch_factor=None,
         fade_thin_strokes=False,
         point_func=None,
@@ -454,6 +475,10 @@ class ArithmeticCodingDiagram(Group):
 
         if not self.intervals_hidden:
             self.populate_intervals(x_min, x_max)
+            self.populate_visible_intervals(*(
+                (self.unit_interval.n2p(value)[0] + x_shift[0]) * stretch_factor
+                for value in (0, 1)
+            ))
             for interval in self.intervals:
                 interval.update_opacity_from_width()
 
@@ -499,7 +524,10 @@ class ArithmeticCodingDiagram(Group):
                 path.append((target_layer, index))
             if path:
                 deepest_layer, deepest_index = path[-1]
-                label_x = deepest_layer.bars[deepest_index].get_center()[0]
+                if center_on_text_bar:
+                    label_x = deepest_layer.bars[deepest_index].get_center()[0]
+                else:
+                    label_x = center[0]
                 for target_layer, index in path:
                     bar = target_layer.bars[index]
                     if bar.get_left()[0] <= label_x <= bar.get_right()[0]:
@@ -945,7 +973,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Cycle through some letters, ask about P("math")
         def get_letter_prob_label(char):
             brace = Brace(diagram.get_letter_bar(char), DOWN, buff=SMALL_BUFF)
-            label = brace.get_tex(f"P(``{char}\")", font_size=36, buff=SMALL_BUFF)
+            label = brace.get_tex(f"P(``\\text{{{char}}}\")", font_size=36, buff=SMALL_BUFF)
             return VGroup(brace, label)
 
         prob_label = get_letter_prob_label("a")
@@ -963,7 +991,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             prob_label = new_label
         self.wait()
 
-        p_math = Tex("P(``math\")?")
+        p_math = Tex("P(``\\text{math}\")?")
         p_math.to_edge(UP, buff=1)
         self.play(FadeIn(p_math, UP))
         self.wait()
@@ -1010,7 +1038,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Show the width of just the "m"
         new_brace = Brace(diagram.get_letter_bar("m", layer_index=0))
-        label = new_brace.get_tex("P(``m\")", font_size=35)
+        label = new_brace.get_tex("P(``\\text{m}\")", font_size=35)
         self.play(AnimationGroup(brace.animate.become(new_brace), FadeIn(label), lag_ratio=0.6), run_time=2.5)
 
         # Bring back the second layer
@@ -1025,7 +1053,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Renormalize around the "m" again
         renormalize_anim = diagram.zoom_in_on_letter("m", layer_index=0)
         new_brace = Brace(diagram.target.get_letter_bar("m", layer_index=0)).align_to(diagram.layers[1].get_bottom() + DOWN * 0.1, UP)
-        new_label = new_brace.get_tex("P(``m\")", font_size=35)
+        new_label = new_brace.get_tex("P(``\\text{m}\")", font_size=35)
         self.play(
             renormalize_anim,
             brace.animate(run_time=3).become(new_brace),
@@ -1034,7 +1062,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Show the chain rule
         new_brace = Brace(diagram.get_letter_bar("a"), DOWN, buff=SMALL_BUFF)
-        new_label = new_brace.get_tex(f"P(``m\") \\cdot P(``a\" | ``m\")", font_size=36, buff=SMALL_BUFF)
+        new_label = new_brace.get_tex(f"P(``\\text{{m}}\") \\cdot P(``\\text{{a}}\" | ``\\text{{m}}\")", font_size=36, buff=SMALL_BUFF)
         self.play(
             ReplacementTransform(brace, new_brace),
             TransformMatchingShapes(label, new_label),
@@ -1046,7 +1074,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Show the two letter probabilities
         def get_two_letter_prob_label(char):
             brace = Brace(diagram.get_letter_bar(char), DOWN, buff=SMALL_BUFF)
-            label = brace.get_tex(f"P(``m{char}\")", font_size=36, buff=SMALL_BUFF)
+            label = brace.get_tex(f"P(``\\text{{m{char}}}\")", font_size=36, buff=SMALL_BUFF)
             return VGroup(brace, label)
         two_letter_prob_label = get_two_letter_prob_label("a")
         self.play(FadeOut(VGroup(brace, label)), FadeIn(two_letter_prob_label))
@@ -1071,7 +1099,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Show the probabilities for the third layer
         def get_three_letter_prob_label(char):
             brace = Brace(diagram.get_letter_bar(char), DOWN, buff=SMALL_BUFF)
-            label = brace.get_tex(f"P(``ma{char}\")", font_size=36, buff=SMALL_BUFF)
+            label = brace.get_tex(f"P(``\\text{{ma{char}}}\")", font_size=36, buff=SMALL_BUFF)
             return VGroup(brace, label)
         three_letter_prob_label = get_three_letter_prob_label("d")
         self.play(FadeIn(three_letter_prob_label))
@@ -1096,7 +1124,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Attach the probability label
         brace = Brace(diagram.get_letter_bar("h"), DOWN, buff=SMALL_BUFF)
-        label = brace.get_tex(f"P(``math\")", font_size=40, buff=SMALL_BUFF)
+        label = brace.get_tex(f"P(``\\text{{math}}\")", font_size=40, buff=SMALL_BUFF)
         self.play(GrowFromEdge(brace, UP, run_time=2), TransformMatchingShapes(p_math, label, run_time=2))
         self.wait(1)
         self.play(FadeOut(VGroup(brace, label)))
@@ -1668,7 +1696,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         short_brace = Brace(binary_number[1:-1], DOWN, buff=SMALL_BUFF)
         short_label = short_brace.get_text(f"{n_bits - 1} bits", font_size=30)
         self.play(
-            zoom_to_interval(*red_range, run_time=2, center_text=word),
+            zoom_to_interval(*red_range, run_time=2, center_text=word, center_on_text_bar=True),
             UpdateFromAlphaFunc(highlight, update_highlight_range, run_time=2),
             binary_number[-1].animate.set_opacity(0.2),
             ReplacementTransform(bits_brace, short_brace, run_time=2),
@@ -1758,20 +1786,33 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         fix_to_screen(VGroup(bits_brace, bits_label))
 
         # Show the avg bits per character
-        avg_frac = Tex(R"\displaystyle\frac{14 \text{ bits}}{|\text{``math''}|}", font_size=32)
-        avg_value = Tex(R"= 3.5 \text{ bits/char}", font_size=32)
-        avg_value.next_to(avg_frac, DOWN, buff=0.25, aligned_edge=LEFT)
+        def get_avg_bits_mobs(n_bits_used, text):
+            avg_number = n_bits_used / len(text)
+            avg_str = f"{avg_number:.2f}".rstrip("0").rstrip(".")
+            relation = "=" if abs(avg_number - float(avg_str)) < 1e-9 else R"\approx"
+            frac = Tex(
+                Rf"\displaystyle\frac{{{n_bits_used} \text{{ bits}}}}{{|\text{{``{text}''}}|}}",
+                font_size=32,
+            )
+            value = Tex(Rf"{relation} {avg_str} \text{{ bits/char}}", font_size=32)
+            value.next_to(frac, DOWN, buff=0.25, aligned_edge=LEFT)
+            num_end = len(str(n_bits_used)) + 4
+            word_start = num_end + 4
+            word_end = word_start + len(text)
+            return frac, value, num_end, word_start, word_end
+
+        avg_frac, avg_value, num_end, word_start, word_end = get_avg_bits_mobs(n_bits, word)
         avg_bits_per_char = VGroup(avg_frac, avg_value)
         fix_to_screen(avg_bits_per_char)
         avg_bits_per_char.align_to(word_mob, UP).to_edge(RIGHT, buff=1)
         copy = bits_label.copy()
         self.play(
             AnimationGroup(
-                copy.animate(path_arc=PI * 0.3).match_width(avg_frac[:6]).move_to(avg_frac[:6]),
-                GrowFromCenter(avg_frac[6]),
+                copy.animate(path_arc=PI * 0.3).match_width(avg_frac[:num_end]).move_to(avg_frac[:num_end]),
+                GrowFromCenter(avg_frac[num_end]),
                 AnimationGroup(
-                    TransformFromCopy(word_mob, avg_frac[10:14], path_arc=PI * 0.3),
-                    FadeIn(VGroup(avg_frac[7:10], avg_frac[14:17])),
+                    TransformFromCopy(word_mob, avg_frac[word_start:word_end], path_arc=PI * 0.3),
+                    FadeIn(VGroup(avg_frac[num_end + 1:word_start], avg_frac[word_end:])),
                     lag_ratio=0.6
                 ),
                 Write(avg_value),
@@ -1889,7 +1930,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             x_ref["range"] = word_range
             if not needs_bits:
                 view = (word_range, 0.6 * frame_width)
-            layer_zoom = zoom_to_world_width(*view[0], view[1], center_text=prefix)
+            layer_zoom = zoom_to_world_width(*view[0], view[1], center_text=prefix, center_on_text_bar=True)
             target_of = dict(zip(map(id, diagram.get_family()), diagram.target.get_family()))
             target_layer = target_of[id(new_layer)]
             target_layer.set_opacity(1)
@@ -1943,7 +1984,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
             if needs_bits:
                 view = (word_range, 0.6 * frame.get_width())
-                self.play(zoom_to_world_width(*view[0], view[1], center_text=prefix))
+                self.play(zoom_to_world_width(*view[0], view[1], center_text=prefix, center_on_text_bar=True))
             self.wait(0.5)
 
         new_number = get_screen_binary(shown_bits)
@@ -1965,21 +2006,10 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.wait()
 
         # Show the avg bits per character for the full word
-        avg_number = total_bits / len(full_word)
-        avg_str = f"{avg_number:.2f}"
-        relation = "=" if abs(avg_number - float(avg_str)) < 1e-9 else R"\approx"
-        full_frac = Tex(
-            Rf"\displaystyle\frac{{{total_bits} \text{{ bits}}}}{{|\text{{``{full_word}''}}|}}",
-            font_size=32,
-        )
-        full_value = Tex(Rf"{relation} {avg_str} \text{{ bits/char}}", font_size=32)
-        full_value.next_to(full_frac, DOWN, buff=0.25, aligned_edge=LEFT)
+        full_frac, full_value, num_end, word_start, word_end = get_avg_bits_mobs(total_bits, full_word)
         full_avg = VGroup(full_frac, full_value)
         fix_to_screen(full_avg)
         full_avg.align_to(word_mob, UP).to_edge(RIGHT, buff=1)
-        num_end = len(str(total_bits)) + 4
-        word_start = num_end + 4
-        word_end = word_start + len(full_word)
         label_copy = bits_label.copy()
         self.play(
             AnimationGroup(
