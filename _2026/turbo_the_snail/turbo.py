@@ -4,7 +4,7 @@ from scipy.spatial.transform import Slerp
 
 SPRITES_DIRECTORY = os.path.join(
     os.path.dirname(manim_config.file_writer.output_directory),
-    "Mitchell-Animations", "Manim Pixel Art v02"
+    "Mitchell-Animations", "Manim Pixel Art v03"
 )
 
 
@@ -43,7 +43,7 @@ class Tile(Group):
 
         self.top = TexturedSurface(
             Square3D(side_length=1),
-            os.path.join(SPRITES_DIRECTORY, "MTilv2-1.png" if parity else "MTilv2-3.png"),
+            os.path.join(SPRITES_DIRECTORY, "MTilv3-1.png" if parity else "MTilv3-3.png"),
             texture_filter="nearest"
         )
         self.bot = TexturedSurface(
@@ -57,6 +57,10 @@ class Tile(Group):
 
     def reveal(self, axis=RIGHT, run_time=0.5, **kwargs):
         if self.top.get_z() > self.bot.get_z():
+            if abs(axis[0]) > 0:
+                self.rotate(PI * 0.5)
+            else:
+                self.rotate(3 * PI / 2)
             return TileFlip(self, axis=axis, run_time=run_time, **kwargs)
         else:
             return Animation(Mobject(), run_time=run_time, **kwargs)
@@ -94,7 +98,7 @@ class Turbo(Sprite):
         self.current_position = [0, 0]
         self.previous_position = (0, 0)
         super().__init__(
-            os.path.join(SPRITES_DIRECTORY, "MTurbv2-Turbo.gif"),
+            os.path.join(SPRITES_DIRECTORY, "MTurbv3-Turbo.gif"),
             height=grid.get_tile(0, 0).get_height() * 0.8,
             *args,
             **kwargs
@@ -210,7 +214,7 @@ class Monster(Sprite):
         self.position = [i, j]
         self.grid = grid
         super().__init__(
-            os.path.join(SPRITES_DIRECTORY, "MMonv2-Monster.gif"),
+            os.path.join(SPRITES_DIRECTORY, "MMonv3-Monster.gif"),
             height=self.grid.get_tile(i, j).get_height() * 0.8,
             *args,
             **kwargs
@@ -248,8 +252,10 @@ class TurboGrid(Group):
         ]).arrange_in_grid(
             n_rows=n, n_cols=n - 1, buff=0
         ).set_z_index(0)
-        self.get_row(0).flip(axis=RIGHT)
-        self.get_row(self.n - 1).flip(axis=RIGHT)
+        for tile in self.get_row(0):
+            tile.rotate(PI * 0.5).flip(axis=RIGHT)
+        for tile in self.get_row(n - 1):
+            tile.rotate(PI * 0.5).flip(axis=RIGHT)
         self.add(self.tiles)
 
         self.turbo = Turbo(self).set_z_index(100)
