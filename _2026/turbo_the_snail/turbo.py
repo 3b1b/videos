@@ -574,6 +574,7 @@ class ProblemStatementPart1(InteractiveScene):
             buff=0.08,
             stroke_width=0
         ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        rect1.set_opacity(0)
         self.play(
             DrawBorderThenFill(rect1, run_time=1.5),
             problem_statement["$2023$ columns."].animate(lag_ratio=0.3).set_color(YELLOW)
@@ -584,11 +585,13 @@ class ProblemStatementPart1(InteractiveScene):
             buff=0.08,
             stroke_width=0
         ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        rect2.set_opacity(0)
         rect3 = SurroundingRectangle(
             problem_statement[88:97],
             buff=0.08,
             stroke_width=0
         ).set_opacity(0.8).round_corners(0.07).set_color(TEAL_E).set_z_index(0)
+        rect3.set_opacity(0)
         self.play(
             AnimationGroup(
                 AnimationGroup(
@@ -666,7 +669,7 @@ class BruteForce(TurboScene):
         num_monsters = len(self.grid.monsters)
         monster_numbers = Group()
         reveal_anims = []
-        for i, monster in enumerate(self.grid.monsters):
+        for i, monster in enumerate(sorted(self.grid.monsters, key=lambda m: -m.get_y())):
             number = Tex(
                 R"\dots" if i == num_monsters - 2 else
                 "N - 2" if i == num_monsters - 1 else
@@ -969,7 +972,6 @@ class QuadrantExplorerPart1(TurboScene):
         self.wait(2)
 
         # Highlight the four quadrants
-        colors = [RED, GREEN, YELLOW, BLUE]
         rectangle_points = [
             [
                 self.grid.get_tile(
@@ -978,7 +980,7 @@ class QuadrantExplorerPart1(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     turbo.last_monster_pos[0] - 1,
-                    turbo.last_monster_pos[1] - 1
+                    turbo.last_monster_pos[1]
                 ).get_corner(DR)
             ],
             [
@@ -988,7 +990,7 @@ class QuadrantExplorerPart1(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     n - 2,
-                    turbo.last_monster_pos[1] - 1
+                    turbo.last_monster_pos[1]
                 ).get_corner(DR)
             ],
             [
@@ -998,7 +1000,7 @@ class QuadrantExplorerPart1(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     turbo.last_monster_pos[0] - 1,
-                    n - 2
+                    n - 1
                 ).get_corner(DR)
             ],
             [
@@ -1008,7 +1010,7 @@ class QuadrantExplorerPart1(TurboScene):
                 ).get_corner(UL),
                 self.grid.get_tile(
                     n - 2,
-                    n - 2
+                    n - 1
                 ).get_corner(DR)
             ]
         ]
@@ -1017,13 +1019,16 @@ class QuadrantExplorerPart1(TurboScene):
                 width=pts[1][0] - pts[0][0],
                 height=pts[1][1] - pts[0][1],
                 fill_opacity=0.4,
-                fill_color=[color],
+                fill_color=YELLOW,
                 stroke_width=0
             ).align_to(pts[0], UL)
-            for pts, color in zip(rectangle_points, colors)
+            for pts in rectangle_points
         ]).match_z(self.grid.tiles)
-        self.play(LaggedStartMap(FadeIn, rects, lag_ratio=0.4))
-        self.wait(2)
+        prev = VMobject()
+        for rect in rects:
+            self.play(FadeOut(prev), FadeIn(rect))
+            prev = rect
+        self.play(FadeOut(rects[-1]))
 
         # Zoom in on the lower-left quadrant
         self.camera.frame.save_state()
@@ -1036,12 +1041,10 @@ class QuadrantExplorerPart1(TurboScene):
         ).match_z(self.grid.tiles)
         self.play(
             self.camera.frame.animate.scale(0.6).move_to(rects[2]),
-            FadeOut(rects),
             self.turbo.move_to_position(0, turbo.last_monster_pos[1]),
             FadeIn(lane2),
             run_time=2
         )
-        self.wait(1)
 
         # Luckily get to the bottom (lower-left quadrant)
         self.grid.tiles.save_state()
@@ -1210,9 +1213,12 @@ class QuadrantExplorerPart1(TurboScene):
 
         monster = self.grid.get_monster(*hardcoded_monsters[0])
         monster.set_time(monster.X_START)
-        self.grid.get_col(hardcoded_monsters[0][0])[1:-1].flip(axis=UP)
-        self.grid.get_row(hardcoded_monsters[0][1]).flip(axis=RIGHT)
-        self.grid.get_tile(*hardcoded_monsters[0]).flip(axis=UP)
+        for tile in (
+            list(self.grid.get_col(hardcoded_monsters[0][0])[1:-1]) +
+            list(self.grid.get_row(hardcoded_monsters[0][1])) +
+            [self.grid.get_tile(*hardcoded_monsters[0])]
+        ):
+            tile.rotate(PI * 0.5).flip(axis=RIGHT)
         self.play(self.turbo.move_to_position(hardcoded_monsters[0][0], hardcoded_monsters[0][1] - 1, run_time=0.001))
         self.wait(1)
 
@@ -1372,9 +1378,12 @@ class QuadrantExplorerPart2(TurboScene):
 
         monster = self.grid.get_monster(*original_monster_pos)
         monster.set_time(monster.X_START)
-        self.grid.get_col(original_monster_pos[0])[1:-1].flip(axis=UP)
-        self.grid.get_row(original_monster_pos[1]).flip(axis=RIGHT)
-        self.grid.get_tile(*original_monster_pos).flip(axis=UP)
+        for tile in (
+            list(self.grid.get_col(original_monster_pos[0])[1:-1]) +
+            list(self.grid.get_row(original_monster_pos[1])) +
+            [self.grid.get_tile(*original_monster_pos)]
+        ):
+            tile.rotate(PI * 0.5).flip(axis=RIGHT)
         self.play(self.turbo.move_to_position(original_monster_pos[0], original_monster_pos[1] - 1, run_time=0.001))
         self.wait(0.5)
 
@@ -1396,9 +1405,12 @@ class QuadrantExplorerPart2(TurboScene):
             self.reset_grid(monster_positions=get_random_monster_positions(n, hardcoded_monsters=hardcoded_monsters))
             monster = self.grid.get_monster(*hardcoded_monsters[0])
             monster.set_time(monster.X_START)
-            self.grid.get_col(hardcoded_monsters[0][0])[1:-1].flip(axis=UP)
-            self.grid.get_row(hardcoded_monsters[0][1]).flip(axis=RIGHT)
-            self.grid.get_tile(*hardcoded_monsters[0]).flip(axis=UP)
+            for tile in (
+                list(self.grid.get_col(hardcoded_monsters[0][0])[1:-1]) +
+                list(self.grid.get_row(hardcoded_monsters[0][1])) +
+                [self.grid.get_tile(*hardcoded_monsters[0])]
+            ):
+                tile.rotate(PI * 0.5).flip(axis=RIGHT)
             self.wait(0.2)
 
         # Show the key property
@@ -1544,7 +1556,7 @@ class QuadrantExplorerPart2(TurboScene):
             self.turbo.time_tracker.animate.set_value(self.turbo.RIGHT_START)
         )
         self.reset_grid(
-            monster_positions=hardcoded_monsters + [(25, 6)] + get_partial_monster_staircase(
+            monster_positions=hardcoded_monsters + [(25, hardcoded_monsters[0][1] - 1)] + get_partial_monster_staircase(
                 0, hardcoded_monsters[0][0] - 1, hardcoded_monsters[0][1] + 1, n - 2
             )
         )
@@ -1709,7 +1721,7 @@ class QuadrantExplorerPart3(TurboScene):
 
         # Show the case where no monster is found in the upper left at all
         self.reset_grid(
-            monster_positions=[hardcoded_monsters[0]] + [(25, 6)] + get_partial_monster_staircase(
+            monster_positions=[hardcoded_monsters[0]] + [(25, hardcoded_monsters[0][1] - 1)] + get_partial_monster_staircase(
                 0, hardcoded_monsters[0][0] - 1, hardcoded_monsters[0][1] + 1, n - 2
             )
         )
