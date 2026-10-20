@@ -627,7 +627,8 @@ class IntroduceCharacterModel(InteractiveScene):
 
         in_text_mob = get_in_text(input_phrase[:n_initial_letters])
 
-        frame.reorient(0, 0, 0, (-4.50, 2.56, 0.00), 12.89)
+        frame.reorient(0, 0, 0, (-5.60, 2.73, 0.00), 12.89)
+        frame.save_state()
         self.add(model, in_text_mob, in_arrow, out_arrow, bar_chart)
         self.wait(0.5)
         for n in range(n_initial_letters + 1, len(input_phrase) + 1):
@@ -656,13 +657,13 @@ class IntroduceCharacterModel(InteractiveScene):
         self.play(ShowCreation(in_rect))
         self.wait()
         self.play(
-            frame.animate(time_span=(0.5, 4)).to_default_state().set_y(-1),
-            ReplacementTransform(in_rect, out_rect, run_time=2)
+            frame.animate(time_span=(0.5, 5)).to_default_state().set_y(-1),
+            ReplacementTransform(in_rect, out_rect, run_time=3)
         )
         self.wait()
         self.play(
             FadeOut(out_rect),
-            ShowCreation(alphabet_rects, lag_ratio=0.05, run_time=2),
+            ShowCreation(alphabet_rects, lag_ratio=0.05, run_time=3),
         )
         self.wait()
         self.play(
@@ -671,7 +672,7 @@ class IntroduceCharacterModel(InteractiveScene):
         )
         self.wait()
         self.play(
-            frame.animate(run_time=3).reorient(0, 0, 0, (-4.50, 2.56, 0.00), 12.89),
+            frame.animate(run_time=3).restore(),
             FadeOut(punc_rects, time_span=(1, 2)),
         )
 
@@ -855,16 +856,16 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             for dec in dec_labels
         )
 
-        self.play(
-            Restore(over_brace),
-            UpdateFromFunc(width_label, update_width_label),
-            run_time=2
-        )
-        self.wait()
         self.add(layer.bars, Point(), layer.labels)
         self.play(
             layer.bars.animate.set_fill(YELLOW, 0.7).set_anim_args(rate_func=there_and_back, lag_ratio=0.05, run_time=3),
             FadeIn(new_dec_rects, rate_func=there_and_back, lag_ratio=0.05, run_time=3),
+        )
+        self.wait()
+        self.play(
+            Restore(over_brace),
+            UpdateFromFunc(width_label, update_width_label),
+            run_time=2
         )
         self.wait()
 
@@ -874,10 +875,11 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.play(
             Write(unit_interval, lag_ratio=0.01),
             brace_group.animate.next_to(unit_interval[0], UP, MED_LARGE_BUFF),
-            frame.animate.set_width(13).set_y(0),
+            frame.animate.set_width(13).scale(1.1).set_y(0),
+            run_time=2
         )
         unit_interval.numbers.set_backstroke(BLACK, 3)
-        self.play(FadeOut(brace_group))
+        self.play(FadeOut(brace_group), run_time=2)
         self.wait()
 
         # Show a value over this interval
@@ -913,15 +915,15 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         p_brace_label.next_to(p_brace, DOWN, SMALL_BUFF)
 
         pre_dec_label = dec_labels[ord("t") - ord("a")]
-        dec_labels.remove(pre_dec_label)
 
         self.play(
+            frame.animate.scale(1/1.1),
             VFadeOut(x_dec),
             x_tracker.animate.set_value(unit_interval.p2n(layer.bars[19].get_center())),
             run_time=2
         )
         self.play(
-            x_tracker.animate(rate_func=wiggle, run_time=4).set_value(unit_interval.p2n(layer.bars[19].get_left() + 0.2 * LEFT)),
+            x_tracker.animate(rate_func=wiggle, run_time=2).set_value(unit_interval.p2n(layer.bars[19].get_left() + 0.2 * LEFT)),
             GrowFromCenter(t_brace),
             TransformFromCopy(pre_dec_label, t_brace_label),
             FadeOut(dec_labels)
@@ -943,9 +945,9 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.play(
             diagram.zoom_in_on_letter_range(("p", "q"), stretch_factor=18),
             UpdateFromFunc(p_brace, lambda m: m.become(Brace(p_bar, DOWN))),
-            UpdateFromFunc(p_brace_label, lambda m: m.next_to(p_brace, DOWN, SMALL_BUFF))
+            UpdateFromFunc(p_brace_label, lambda m: m.next_to(p_brace, DOWN, SMALL_BUFF)),
+            run_time=1.3
         )
-        self.wait()
 
         q_brace = Brace(q_bar, DOWN)
         q_brace_label = DecimalNumber(
@@ -971,25 +973,25 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.wait()
 
         # Cycle through some letters, ask about P("math")
-        def get_letter_prob_label(char):
-            brace = Brace(diagram.get_letter_bar(char), DOWN, buff=SMALL_BUFF)
-            label = brace.get_tex(f"P(``\\text{{{char}}}\")", font_size=36, buff=SMALL_BUFF)
-            return VGroup(brace, label)
+        # def get_letter_prob_label(char):
+        #     brace = Brace(diagram.get_letter_bar(char), DOWN, buff=SMALL_BUFF)
+        #     label = brace.get_tex(f"P(``\\text{{{char}}}\")", font_size=36, buff=SMALL_BUFF)
+        #     return VGroup(brace, label)
 
-        prob_label = get_letter_prob_label("a")
-        self.play(
-            GrowFromCenter(prob_label[0]),
-            Write(prob_label[1]),
-        )
-        for idx in range(1, 13):
-            char = diagram.char_alphabet[idx]
-            new_label = get_letter_prob_label(char)
-            self.play(
-                ReplacementTransform(prob_label[0], new_label[0]),
-                FadeTransformPieces(prob_label[1], new_label[1]),
-            )
-            prob_label = new_label
-        self.wait()
+        # prob_label = get_letter_prob_label("a")
+        # self.play(
+        #     GrowFromCenter(prob_label[0]),
+        #     Write(prob_label[1]),
+        # )
+        # for idx in range(1, 13):
+        #     char = diagram.char_alphabet[idx]
+        #     new_label = get_letter_prob_label(char)
+        #     self.play(
+        #         ReplacementTransform(prob_label[0], new_label[0]),
+        #         FadeTransformPieces(prob_label[1], new_label[1]),
+        #     )
+        #     prob_label = new_label
+        # self.wait()
 
         p_math = Tex("P(``\\text{math}\")?")
         p_math.to_edge(UP, buff=1)
@@ -998,7 +1000,6 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         # Zoom in on the "m"
         self.play(diagram.highlight_letter("m"))
-        self.play(FadeOut(prob_label))
         self.play(
             diagram.zoom_in_on_letter("m"),
             p_math.animate(path_arc=PI * 0.3).set_opacity(0.5).to_corner(DL, buff=0.5).fix_in_frame(),
@@ -1148,28 +1149,32 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             VFadeIn(x_arrow, time_span=(0, 1)),
             VFadeIn(x_dec, time_span=(0, 1)),
             x_tracker.animate.set_value(h_max),
-            run_time=6
+            run_time=16.25
         )
-        self.play(x_tracker.animate.set_value(h_min), run_time=6)
+        self.play(x_tracker.animate.set_value(h_min), run_time=16.25)
 
         # Track the word as the x value changes
+        word_opacity_tracker = ValueTracker(0)
         def get_word_mob(word):
             mob = Text(f"|{word.replace(" ", "_")}|").set_height(0.7)
             mob.to_edge(UP, buff=1.3)
             mob.remove(mob[0], mob[-1])
+            mob.set_opacity(word_opacity_tracker.get_value())
             return mob
 
         word_tracker = always_redraw(
             lambda: get_word_mob(diagram.get_word_at_value(get_x()).replace(" ", "_"))
         )
-        word_tracker.suspend_updating()
-        self.play(self.camera.frame.animate.shift(UP), FadeIn(word_tracker, shift=DOWN), run_time=2)
-        word_tracker.resume_updating()
+        self.add(word_tracker)
 
-        t_zoom = diagram.zoom_in_on_letter("t", layer_index=2, run_time=2)
+        t_zoom = diagram.zoom_in_on_letter("t", layer_index=2, run_time=1)
         t_min, t_max = diagram.get_sweep_range(diagram.get_letter_bar("t", layer_index=2))
-        self.play(t_zoom, x_tracker.animate(run_time=9).set_value(t_min))
-        self.play(x_tracker.animate(run_time=5).set_value(t_max))
+        self.play(
+            self.camera.frame.animate.shift(UP),
+            word_opacity_tracker.animate.set_value(1),
+            t_zoom,
+            x_tracker.animate(run_time=6).set_value(t_min)
+        )
 
         # Zoom out to the "ma" range
         for layer in diagram.layers:
@@ -1191,18 +1196,20 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             run_time=3,
         )
         a_min, a_max = diagram.get_sweep_range(diagram.get_letter_bar("a", layer_index=1))
-        self.play(a_zoom, move_tracker_through_zoom(diagram, x_tracker, a_min, run_time=6))
-
-        # Sweep across every four letter word starting with "ma"
-        self.play(x_tracker.animate.set_value(a_max), run_time=4)
+        self.play(a_zoom, move_tracker_through_zoom(diagram, x_tracker, a_max, run_time=4))
+        self.play(x_tracker.animate(run_time=3.8).set_value(a_min))
 
         # Zoom all the way out to the unit interval
         full_zoom = diagram.renormalize_animation(0, 1, fade_thin_strokes=True, run_time=2)
-        self.play(full_zoom, move_tracker_through_zoom(diagram, x_tracker, 0, run_time=8))
+        self.play(full_zoom, move_tracker_through_zoom(diagram, x_tracker, 1, run_time=7))
 
         # Sweep across every possible four letter word
-        self.play(x_tracker.animate.set_value(1), run_time=8)
-        self.play(x_tracker.animate.set_value(math_value), run_time=2)
+        self.play(x_tracker.animate(run_time=6).set_value(0))
+        word_tracker.suspend_updating()
+        word_tracker.become(get_word_mob("aaaa"))
+        self.wait(0.3)
+        word_tracker.resume_updating()
+        self.play(x_tracker.animate.set_value(math_value), run_time=4)
         self.wait()
 
         # Clarify the decoding process
