@@ -591,8 +591,8 @@ class IntroduceCharacterModel(InteractiveScene):
     def construct(self):
         # Show a few example distributions
         frame = self.frame
-        # input_phrase = "compression is "
-        input_phrase = "mathematics"
+        input_phrase = "compression is "
+        # input_phrase = "mathematics"
         n_initial_letters = 1
         char_labels = CHAR_ALPHABET.replace(" ", "_")
         distribution = get_next_char_distribution(input_phrase[:n_initial_letters])
@@ -656,8 +656,8 @@ class IntroduceCharacterModel(InteractiveScene):
         self.play(ShowCreation(in_rect))
         self.wait()
         self.play(
-            frame.animate(time_span=(0.5, 2.5)).to_default_state().set_y(-1),
-            ReplacementTransform(in_rect, out_rect, run_time=1)
+            frame.animate(time_span=(0.5, 4)).to_default_state().set_y(-1),
+            ReplacementTransform(in_rect, out_rect, run_time=2)
         )
         self.wait()
         self.play(
