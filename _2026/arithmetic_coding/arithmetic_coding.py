@@ -58,7 +58,6 @@ class ArithmeticCodingDiagram(Group):
         show_decimal_labels=True,
         interval_subdivisions=10,
         char_alphabet=CHAR_ALPHABET,
-        highlight_colors=(GREEN_E, GREEN_D),
         label_to_bar_height_ratio=0.5,
         context=" ",
     ):
@@ -77,8 +76,6 @@ class ArithmeticCodingDiagram(Group):
         self.char_alphabet = char_alphabet
         self.label_to_bar_height_ratio = label_to_bar_height_ratio
         self.context = context
-
-        self.highlight_color_iter = it.cycle(highlight_colors)
 
         self.unit_interval = DynamicInterval(width=width)
         self.intervals.add(self.unit_interval)
@@ -549,8 +546,6 @@ class ArithmeticCodingDiagram(Group):
         other_bar_opacity=0.35,
         add_to_text=False
     ):
-        if color is None:
-            color = next(self.highlight_color_iter)
         index = self.char_alphabet.index(char)
         animation = self.layers[layer_index].animate.highlight(
             index,
@@ -809,6 +804,55 @@ class IntroduceCharacterModel(InteractiveScene):
 
 
 class ArithmeticCodingExplanation(IntroduceCharacterModel):
+    def show_model_producing_layer(self, diagram):
+        frame = self.frame
+        layer = diagram.get_new_layer()
+        diagram.layers.add(layer)
+        target = layer.copy()
+        layer.set_opacity(0)
+
+        end_frame = frame.copy().match_y(diagram)
+        model_group = self.get_decoding_model_group(diagram.curr_text, layer.distribution)
+        model_group.set_width(12)
+        if model_group.get_height() > 3.5:
+            model_group.set_height(3.5)
+        model_group.next_to(target, DOWN, buff=0.75)
+        model_group.set_x(end_frame.get_x())
+        in_text, in_arrow, model, out_arrow, chart = model_group
+
+        frame_top = end_frame.get_top()[1]
+        frame_bottom = min(end_frame.get_bottom()[1], model_group.get_bottom()[1] - 0.4)
+        self.play(
+            frame.animate.set_height(frame_top - frame_bottom).set_y((frame_top + frame_bottom) / 2),
+            FadeIn(model),
+            GrowArrow(in_arrow),
+            FadeIn(in_text),
+        )
+        self.play(
+            GrowArrow(out_arrow),
+            LaggedStart(*(GrowFromEdge(bar, DOWN) for bar in chart.bars), lag_ratio=0.02),
+            FadeIn(chart.labels, lag_ratio=0.02),
+            FadeIn(chart.dec_labels, lag_ratio=0.02),
+            run_time=1.5,
+        )
+        self.wait()
+
+        for bar in chart.bars:
+            original = bar.copy()
+            bar.rotate(90 * DEG)
+            bar.replace(original, stretch=True)
+        kw = dict(run_time=2, lag_ratio=0.02)
+        self.play(
+            ReplacementTransform(chart.bars, target.bars, **kw),
+            ReplacementTransform(chart.labels, target.labels, **kw),
+            FadeOut(chart.dec_labels, run_time=1),
+            FadeOut(Group(in_text, in_arrow, model, out_arrow), shift=DOWN, run_time=1),
+            frame.animate(run_time=2).set_height(end_frame.get_height()).move_to(end_frame),
+        )
+        self.remove(target.bars, target.labels)
+        layer.become(target)
+        self.add(layer)
+
     def get_decoding_model_group(self, prefix, distribution):
         chart = self.get_bar_chart(distribution, CHAR_ALPHABET.replace(" ", "_"))
         model = ImageMobject(Path(
@@ -935,7 +979,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Highlight "p"
         self.add(diagram)
         self.play(
-            diagram.highlight_letter("p", TEAL, other_bar_opacity=0.25),
+            diagram.highlight_letter("p", other_bar_opacity=0.25),
             ReplacementTransform(t_brace, p_brace),
             ReplacementTransform(t_brace_label, p_brace_label),
         )
@@ -960,7 +1004,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.play(
             TransformFromCopy(p_brace, q_brace),
             FadeTransform(p_brace_label.copy(), q_brace_label),
-            diagram.highlight_letter("q", TEAL),
+            diagram.highlight_letter("q"),
         )
         self.wait()
         self.add(layer.bars, Point(), layer.labels)
@@ -998,13 +1042,18 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.play(FadeIn(p_math, UP))
         self.wait()
 
+
         # Zoom in on the "m"
+        show_model = True
         self.play(diagram.highlight_letter("m"))
         self.play(
             diagram.zoom_in_on_letter("m"),
             p_math.animate(path_arc=PI * 0.3).set_opacity(0.5).to_corner(DL, buff=0.5).fix_in_frame(),
         )
-        self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
+        if show_model:
+            self.show_model_producing_layer(diagram)
+        else:
+            self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
         self.wait()
 
         # Show the domination of the vowels
@@ -1095,7 +1144,10 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Zoom in on the "a"
         self.play(diagram.highlight_letter("a"))
         self.play(diagram.zoom_in_on_letter("a"))
-        self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
+        if show_model:
+            self.show_model_producing_layer(diagram)
+        else:
+            self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
 
         # Show the probabilities for the third layer
         def get_three_letter_prob_label(char):
@@ -1117,18 +1169,25 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         # Zoom in on the "t"
         self.play(FadeOut(three_letter_prob_label), diagram.highlight_letter("t"))
         self.play(diagram.zoom_in_on_letter("t"))
-        self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
-
-        # Zoom in on the "h"
-        self.play(diagram.highlight_letter("h"))
-        self.play(diagram.zoom_in_on_letter("h"))
+        if show_model:
+            self.show_model_producing_layer(diagram)
+        else:
+            self.play(diagram.fade_in_new_layer(), self.camera.frame.animate.match_y(diagram))
 
         # Attach the probability label
         brace = Brace(diagram.get_letter_bar("h"), DOWN, buff=SMALL_BUFF)
         label = brace.get_tex(f"P(``\\text{{math}}\")", font_size=40, buff=SMALL_BUFF)
         self.play(GrowFromEdge(brace, UP, run_time=2), TransformMatchingShapes(p_math, label, run_time=2))
-        self.wait(1)
-        self.play(FadeOut(VGroup(brace, label)))
+        self.wait(2)
+
+        # Zoom in on the "h"
+        math_bar = diagram.get_letter_bar("h")
+        brace.add_updater(lambda m: m.become(Brace(math_bar, DOWN, buff=SMALL_BUFF)))
+        label.add_updater(lambda m: brace.put_at_tip(m, buff=SMALL_BUFF))
+        self.play(diagram.highlight_letter("h"))
+        self.play(diagram.zoom_in_on_letter("h"))
+        brace.clear_updaters()
+        label.clear_updaters()
 
         # Show the slider going over the range again
         h_bar = diagram.get_letter_bar("h")
@@ -1170,6 +1229,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         t_zoom = diagram.zoom_in_on_letter("t", layer_index=2, run_time=1)
         t_min, t_max = diagram.get_sweep_range(diagram.get_letter_bar("t", layer_index=2))
         self.play(
+            FadeOut(VGroup(brace, label)),
             self.camera.frame.animate.shift(UP),
             word_opacity_tracker.animate.set_value(1),
             t_zoom,
@@ -1909,7 +1969,9 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         target_bar = last_bar
         shown_bits = word_bits
         view = (tuple(red_range), 0.7 * frame.get_width())
-        for char in full_word[len(word):]:
+        new_chars = full_word[len(word):]
+        for char_index, char in enumerate(new_chars):
+            is_last = char_index == len(new_chars) - 1
             new_layer = diagram.make_layer(prefix, target_bar)
             diagram.align_layer_to_bar(new_layer, target_bar)
             diagram.layers.add(new_layer)
@@ -1935,7 +1997,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             new_layer.highlight_state = index
             x_ref["bar"] = target_bar
             x_ref["range"] = word_range
-            if not needs_bits:
+            if not needs_bits and not is_last:
                 view = (word_range, 0.6 * frame_width)
             layer_zoom = zoom_to_world_width(*view[0], view[1], center_text=prefix, center_on_text_bar=True)
             target_of = dict(zip(map(id, diagram.get_family()), diagram.target.get_family()))
@@ -1989,7 +2051,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 self.add(binary_number)
                 shown_bits = step_bits
 
-            if needs_bits:
+            if needs_bits and not is_last:
                 view = (word_range, 0.6 * frame.get_width())
                 self.play(zoom_to_world_width(*view[0], view[1], center_text=prefix, center_on_text_bar=True))
             self.wait(0.5)
