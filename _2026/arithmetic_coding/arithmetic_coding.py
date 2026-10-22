@@ -3099,8 +3099,8 @@ class ShowEncodingScene(InteractiveScene):
     max_raw_font_size = 40
     max_bit_font_size = 36
     context_char_time = 0.04
-    highlight_char_time = 0.15
     plain_char_time = 0.05
+    highlight_afterwards = False
 
     def construct(self):
         # Compute the encoding
@@ -3127,7 +3127,10 @@ class ShowEncodingScene(InteractiveScene):
         left_x = -self.column_width - 0.6
         right_x = 0.6
 
-        raw_glyphs, char_glyphs = self.get_raw_glyphs(text, left_x, area_height, highlight_start)
+        defer_highlight = has_highlight and self.highlight_afterwards
+        raw_glyphs, char_glyphs = self.get_raw_glyphs(
+            text, left_x, area_height, len(text) if defer_highlight else highlight_start,
+        )
 
         probe = Text("00", font="Consolas", font_size=48)
         advance_48 = probe[1].get_x() - probe[0].get_x()
@@ -3175,25 +3178,40 @@ class ShowEncodingScene(InteractiveScene):
         added_start = len(codes[highlight_token]) if has_highlight else None
         encoding_group = VGroup(raw_glyphs, bit_dot, bit_slots)
         encoding_group.add_updater(self.get_encoding_updater(
-            n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start,
+            n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count,
+            None if defer_highlight else added_start,
         ))
         encoding_group.update()
         self.add(encoding_group)
 
-        if highlight_token > 0:
+        self.highlight_mobs = VGroup()
+        if defer_highlight:
+            self.highlight_mobs.add(*(glyph for glyph in char_glyphs[highlight_start:] if glyph is not None))
+            self.highlight_mobs.add(*bit_slots[added_start:len(codes[-1])])
+
+        char_time = self.context_char_time if has_highlight else self.plain_char_time
+        if highlight_token > 0 and not defer_highlight:
             self.play(
                 n_tracker.animate.set_value(highlight_token),
                 rate_func=linear,
-                run_time=char_ends[highlight_token] * self.context_char_time,
+                run_time=char_ends[highlight_token] * char_time,
             )
             self.wait()
-        char_time = self.highlight_char_time if has_highlight else self.plain_char_time
+        start_token = int(n_tracker.get_value())
         self.play(
             n_tracker.animate.set_value(len(codes) - 1),
             rate_func=linear,
-            run_time=(len(text) - char_ends[highlight_token]) * char_time,
+            run_time=(len(text) - char_ends[start_token]) * char_time,
         )
         self.wait(2)
+        self.finish_encoding(char_count, bit_count)
+
+    def finish_encoding(self, char_count, bit_count):
+        pass
+
+    def play_highlight(self, run_time=1):
+        if len(self.highlight_mobs) > 0:
+            self.play(self.highlight_mobs.animate.set_color(YELLOW), run_time=run_time)
 
     def get_encoding_updater(self, n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start):
         state = {"n": None}
@@ -3393,6 +3411,19 @@ class EuclidInContextNanoGPT(ShowEncodingScene):
     """
     highlight = "Euclid's Elements"
     model_name = "nanogpt"
+    highlight_afterwards = True
+
+    def finish_encoding(self, char_count, bit_count):
+        # Compare the bit count to the character count
+        rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
+        self.play(ShowCreation(rect))
+        char_rect = SurroundingRectangle(char_count, buff=0.15).set_stroke(TEAL, 3)
+        self.play(Transform(rect, char_rect), run_time=1.5)
+        self.wait()
+        self.play(FadeOut(rect))
+        self.wait()
+        self.play_highlight()
+        self.wait()
 
 
 class EuclidInContextQwen(ShowEncodingScene):
@@ -3402,6 +3433,14 @@ class EuclidInContextQwen(ShowEncodingScene):
     """
     highlight = "Euclid's Elements"
     model_name = "qwen"
+
+    def finish_encoding(self, char_count, bit_count):
+        # Compare the bit count to the character count
+        rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
+        self.play(ShowCreation(rect))
+        bits_per_char = Tex(R"\approx 0.75 \text{ bits / char}", font_size=40).next_to(bit_count, UP)
+        self.play(Write(bits_per_char), run_time=2)
+
 
 
 class USConstitutionQwen(ShowEncodingScene):
@@ -3423,3 +3462,43 @@ class USConstitutionQwen(ShowEncodingScene):
         do ordain and establish this Constitution for the United States of America.
     """
     model_name = "qwen"
+
+
+class Alphabets(InteractiveScene):
+    def construct(self):
+        # Show the alphabet with punctuation
+        def get_row(string):
+            return VGroup(*[
+                VGroup(
+                    Square(side_length=0.53, fill_opacity=1, fill_color=BLACK, stroke_width=1.6, stroke_color=WHITE).match_x(c),
+                    c
+                )
+                for c in TexText(string, font_size=45).set_color(GREEN)
+            ]).arrange(buff=0.1)
+
+        lower = get_row("abcdefghijklmnopqrstuvwxyz")
+        upper = get_row("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        punctuation = get_row(R"\_.,'!?")
+        rows = VGroup(lower, upper, punctuation)
+        rows.scale(FRAME_WIDTH * 0.95 / lower.get_width())
+        rows.arrange(DOWN, buff=0.4)
+        lower_position = lower.get_center().copy()
+        others = VGroup(upper, punctuation)
+        self.add(rows)
+        self.wait()
+
+        # Drop the capital letters and punctuation
+        self.play(
+            FadeOut(others, shift=DOWN),
+            lower.animate.center(),
+            run_time=2,
+        )
+        self.wait()
+
+        # Bring them back
+        self.play(
+            FadeIn(others, shift=UP),
+            lower.animate.move_to(lower_position),
+            run_time=2,
+        )
+        self.wait()
