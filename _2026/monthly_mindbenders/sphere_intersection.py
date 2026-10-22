@@ -4,18 +4,23 @@ from scipy.spatial.transform import Rotation, Slerp
 
 class Spheres(InteractiveScene):
     def construct(self):
-        # Add spheres
+        # Set up camera
         self.camera.frame.reorient(-23, 73, 0, (-0.14, -0.02, -0.23), 13.36)
         self.camera.light_source.move_to(OUT * 2 + LEFT * 2)
 
+        # Add spheres
         R = 2
-        sphere1 = SurfaceMesh(Sphere(radius=R), stroke_opacity=0.5, stroke_color=BLUE_D, resolution=(100, 30))
+        sphere_shell_1 = Sphere(radius=R).set_color(BLUE).set_opacity(0.8)
+        sphere_shell_2 = sphere_shell_1.copy()
+        sphere1 = SurfaceMesh(sphere_shell_1, stroke_opacity=0.5, stroke_color=BLUE_D, resolution=(100, 30))
         sphere2 = sphere1.copy()
+        sphere_shell_1.add_updater(lambda m: m.move_to(sphere1))
+        sphere_shell_2.add_updater(lambda m: m.move_to(sphere2))
         Group(sphere1, sphere2).arrange(buff=-0.75)
         self.play(
             AnimationGroup(
-                ShowCreation(sphere1),
-                ShowCreation(sphere2.reverse_points()),
+                ShowCreation(sphere_shell_1),
+                ShowCreation(sphere_shell_2.reverse_points()),
                 lag_ratio=0.2,
                 run_time=2
             ),
@@ -30,7 +35,7 @@ class Spheres(InteractiveScene):
         arrow2 = Arrow(sphere2.get_center(), sphere2.get_center() + R * UR / np.linalg.norm(UR))
         label2 = label1.copy().next_to(arrow2, OUT)
         self.play(
-            VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.2),
+            Group(sphere_shell_1, sphere_shell_2).animate.set_opacity(0.4),
             GrowArrow(arrow1),
             Write(label1),
             GrowArrow(arrow2),
@@ -39,15 +44,17 @@ class Spheres(InteractiveScene):
         self.wait(0.7)
         self.play(
             FadeOut(VGroup(arrow1, label1, arrow2, label2)),
-            VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.5),
+            Group(sphere_shell_1, sphere_shell_2).animate.set_opacity(0.8),
             run_time=0.6
         )
 
         # Move them to random locations
-        self.set_camera_target_position(111, 59, 0, (0.07, 0.28, -0.18), 15.19, drift_time=2.9)
+        self.set_camera_target_position(55, 49, 0, (-0.51, -0.61, -0.09), 13.62, drift_time=2.9)
         def get_random_sphere_location():
             gaussian_point = np.random.normal(0, 1, 3)
             return gaussian_point / np.linalg.norm(gaussian_point) * R * (random.random() ** (1/3))
+        VGroup(sphere1, sphere2).set_opacity(0)
+        np.random.seed(2)
         for _ in range(3):
             self.play(
                 sphere1.animate.move_to(get_random_sphere_location()),
@@ -55,8 +62,8 @@ class Spheres(InteractiveScene):
                 run_time=1
             )
 
-        # Add the caps
-        def get_cap():
+        # Add the intersection region
+        def get_intersection():
             w = sphere2.get_center() - sphere1.get_center()
             d = np.linalg.norm(w)
             w = w / d
@@ -75,25 +82,27 @@ class Spheres(InteractiveScene):
                 get_coords,
                 u_range=(d - R, R),
                 v_range=(0, 2 * PI)
-            ).set_color(YELLOW)
-        cap = always_redraw(get_cap)
-        cap.suspend_updating()
-        self.add(cap, sphere1, sphere2)
+            ).set_color(RED)
+        intersection = always_redraw(get_intersection)
+        intersection.suspend_updating()
+        self.add(intersection, sphere_shell_1, sphere_shell_2, sphere1, sphere2)
         self.play(
-            FadeIn(cap),
+            FadeIn(intersection),
             VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.3),
-            self.camera.frame.animate.reorient(-19, 94, 0, (0.44, 0.07, 0.66), 7.12),
+            FadeOut(Group(sphere_shell_1, sphere_shell_2)),
+            self.camera.frame.animate.reorient(-47, 83, 0, (0.16, -0.09, 0.90), 10.62),
             run_time=2
         )
-        cap.resume_updating()
+        intersection.resume_updating()
 
         # Keep moving them around
-        self.set_camera_target_position(18, 63, 0, (0.01, -0.59, 0.02), 9.32, drift_time=4)
-        for _ in range(2):
+        np.random.seed(0)
+        self.set_camera_target_position(17, 62, 0, (1.17, -0.10, 0.25), 9.32, drift_time=3)
+        for _ in range(3):
             self.play(
                 sphere1.animate.move_to(get_random_sphere_location()),
                 sphere2.animate.move_to(get_random_sphere_location()),
-                run_time=1
+                run_time=1.08
             )
 
         # Add axes
@@ -125,19 +134,68 @@ class Spheres(InteractiveScene):
                 look_at_camera(label)
         self.add(axes, coordinate_labels)
         get_random_sphere_location_2 = lambda: get_random_sphere_location() * 2
+        sphere1, sphere2 = sphere2, sphere1
+        intersection_opacity_tracker = ValueTracker(1)
+        intersection.add_updater(lambda m: m.set_opacity(intersection_opacity_tracker.get_value()))
+        sphere2.add_updater(lambda m: m.set_stroke(opacity=0.5 * intersection_opacity_tracker.get_value()))
         self.play(
+            self.camera.frame.animate.reorient(17, 62, 0, (0.09, -0.33, 0.43), 15.50),
             AnimationGroup(
                 axes_opacity_tracker.animate.set_value(1),
-                sphere2.animate.move_to(axes.c2p(0, 0, 0)),
-                sphere1.animate.move_to(get_random_sphere_location_2()),
+                AnimationGroup(
+                    sphere1.animate.move_to(axes.c2p(0, 0, 0)),
+                    FadeOut(sphere2),
+                    intersection_opacity_tracker.animate.set_value(0)
+                ),
                 lag_ratio=0.3
             )
         )
+        self.remove(intersection)
+
+        # Show the random dot
+        self.set_camera_target_position(49, 48, 0, (0.23, -0.45, 0.32), 9.28, drift_time=30)
+        dot = Sphere(radius=0.1).set_color(YELLOW)
+        dot_opacity_tracker = ValueTracker(1)
+        def get_line():
+            v = sphere2.get_center() - axes.c2p(0, 0, 0)
+            v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
+            return DashedLine(axes.c2p(0, 0, 0), v, buff=0)
+        line = always_redraw(get_line)
+        def get_line_label():
+            v = sphere2.get_center() - axes.c2p(0, 0, 0)
+            v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
+            tex = Tex("2")
+            return tex.next_to(
+                line, v*0.1
+            ).apply_matrix(
+                self.camera.frame.get_orientation().as_matrix(),
+                about_point=tex.get_center(),
+            ).set_opacity(
+                dot_opacity_tracker.get_value()
+            )
+        line_label = always_redraw(get_line_label)
+        dot.add_updater(lambda m: m.move_to(sphere2).set_opacity(dot_opacity_tracker.get_value()))
+        line.add_updater(lambda m: m.set_opacity(dot_opacity_tracker.get_value()))
+        self.play(
+            ShowCreation(line, suspend_mobject_updating=True),
+            GrowFromCenter(dot, suspend_mobject_updating=True),
+            FadeIn(line_label, suspend_mobject_updating=True)
+        )
+
 
         # Keep moving around the second sphere to random locations with the first one centered at the origin
-        self.set_camera_target_position(54, 59, 0, (0.20, -0.13, 0.56), 9.28, drift_time=35.9)
-        for _ in range(18):
-            self.play(sphere1.animate.move_to(get_random_sphere_location_2()), run_time=2)
+        for i in range(6):
+            anims = [sphere2.animate.move_to(get_random_sphere_location_2())]
+            if i == 2:
+                self.add(intersection)
+                anims.append(intersection_opacity_tracker.animate.set_value(1))
+            if i == 4:
+                anims.append(dot_opacity_tracker.animate.set_value(0))
+            self.play(*anims, run_time=1.85)
+
+        for _ in range(60):
+            sphere2.move_to(get_random_sphere_location_2())
+            self.wait(0.3)
 
 
     def set_camera_target_position(
