@@ -19,7 +19,7 @@ class Spheres(InteractiveScene):
                 lag_ratio=0.2,
                 run_time=2
             ),
-            self.camera.frame.animate(run_time=4).reorient(30, 51, 0, (0.05, 0.20, -0.09), 13.62)
+            self.camera.frame.animate(run_time=3).reorient(30, 51, 0, (0.05, 0.20, -0.09), 13.62)
         )
 
         # Show the radii
@@ -36,24 +36,24 @@ class Spheres(InteractiveScene):
             GrowArrow(arrow2),
             Write(label2)
         )
-        self.wait(1)
+        self.wait(0.7)
         self.play(
             FadeOut(VGroup(arrow1, label1, arrow2, label2)),
-            VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.5)
+            VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.5),
+            run_time=0.6
         )
 
         # Move them to random locations
-        self.set_camera_target_position(112, 60, 0, (0.05, 0.20, -0.09), 13.62, drift_time=10)
+        self.set_camera_target_position(111, 59, 0, (0.07, 0.28, -0.18), 15.19, drift_time=2.9)
         def get_random_sphere_location():
             gaussian_point = np.random.normal(0, 1, 3)
             return gaussian_point / np.linalg.norm(gaussian_point) * R * (random.random() ** (1/3))
-        for _ in range(5):
+        for _ in range(3):
             self.play(
                 sphere1.animate.move_to(get_random_sphere_location()),
                 sphere2.animate.move_to(get_random_sphere_location()),
-                run_time=2
+                run_time=1
             )
-            self.wait(0.2)
 
         # Add the caps
         def get_cap():
@@ -83,19 +83,18 @@ class Spheres(InteractiveScene):
             FadeIn(cap),
             VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.3),
             self.camera.frame.animate.reorient(-19, 94, 0, (0.44, 0.07, 0.66), 7.12),
-            run_time=2.5
+            run_time=2
         )
         cap.resume_updating()
 
         # Keep moving them around
-        self.set_camera_target_position(-125, 67, 0, (0.20, -0.13, 0.56), 9.28, drift_time=10)
-        for _ in range(5):
+        self.set_camera_target_position(18, 63, 0, (0.01, -0.59, 0.02), 9.32, drift_time=4)
+        for _ in range(2):
             self.play(
                 sphere1.animate.move_to(get_random_sphere_location()),
                 sphere2.animate.move_to(get_random_sphere_location()),
-                run_time=2
+                run_time=1
             )
-            self.wait(0.2)
 
         # Add axes
         axes = ThreeDAxes(
@@ -129,16 +128,16 @@ class Spheres(InteractiveScene):
         self.play(
             AnimationGroup(
                 axes_opacity_tracker.animate.set_value(1),
-                sphere1.animate.move_to(axes.c2p(0, 0, 0)),
-                sphere2.animate.move_to(get_random_sphere_location_2()),
+                sphere2.animate.move_to(axes.c2p(0, 0, 0)),
+                sphere1.animate.move_to(get_random_sphere_location_2()),
                 lag_ratio=0.3
             )
         )
 
         # Keep moving around the second sphere to random locations with the first one centered at the origin
-        self.set_camera_target_position(159, 62, 0, (0.20, -0.13, 0.56), 9.28)
-        for _ in range(5):
-            self.play(sphere2.animate.move_to(get_random_sphere_location_2()), run_time=2)
+        self.set_camera_target_position(54, 59, 0, (0.20, -0.13, 0.56), 9.28, drift_time=35.9)
+        for _ in range(18):
+            self.play(sphere1.animate.move_to(get_random_sphere_location_2()), run_time=2)
 
 
     def set_camera_target_position(
