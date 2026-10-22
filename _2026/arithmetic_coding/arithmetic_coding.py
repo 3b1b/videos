@@ -2168,7 +2168,8 @@ class GeneralizeBitCount(InteractiveScene):
         p = word_high - word_low
         final_level = math.ceil(-math.log2(p) - 1e-9)
         hit_level = final_level - 2
-        brace_level = min(3, hit_level - 1)
+        brace_level = min(3, hit_level)
+        region_level = min(brace_level + 4, hit_level)
         word_center = (word_low + word_high) / 2
 
         hit_denom = 2**hit_level
@@ -2187,6 +2188,7 @@ class GeneralizeBitCount(InteractiveScene):
         view_center = ValueTracker(0.5)
         view_log_width = ValueTracker(0)
         k_tracker = ValueTracker(0)
+        label_k_tracker = ValueTracker(0)
         target_low = ValueTracker(hit_value - 0.35 * p)
         p_tracker = ValueTracker(p)
         p_label_shift = ValueTracker(0)
@@ -2298,7 +2300,7 @@ class GeneralizeBitCount(InteractiveScene):
                 key = (
                     view_center.get_value(), view_log_width.get_value(), k_tracker.get_value(),
                     frame.get_width(), get_line_y(), ruler_alpha.get_value(), tick_label_fade.get_value(),
-                    tick_label_boost.get_value(), other_label_fade.get_value(),
+                    tick_label_boost.get_value(), other_label_fade.get_value(), label_k_tracker.get_value(),
                 )
                 if key == ticks.last_key:
                     return
@@ -2326,6 +2328,7 @@ class GeneralizeBitCount(InteractiveScene):
                         continue
                     height = max_height * height_ratio**clip(depth, 0, 6)
                     stroke_width = interpolate(1, 2.5, height / max_height)
+                    level_label_fade = interpolate(clip(label_k_tracker.get_value() - level + 1, 0, 1), 1, alpha)
                     denom = 2**level
                     for i in range(max(math.ceil(v_left * denom), 0), min(math.floor(v_right * denom), denom) + 1):
                         if (level > 0 and i % 2 == 0) or n_used >= len(ticks):
@@ -2341,7 +2344,7 @@ class GeneralizeBitCount(InteractiveScene):
                         string = get_tick_string(i, level)
                         label_width = len(string) * glyph_advance
                         fit = clip((scale * 2.0**-level / label_width - 1.2) / 0.5, 0, 1)
-                        label_opacity = min(opacity * fit * interpolate(1, 20, label_boost), 1) * label_fade
+                        label_opacity = min(opacity * fit * interpolate(1, 20, label_boost), 1) * label_fade * level_label_fade
                         if string != "0":
                             label_opacity *= other_label_fade.get_value()
                         if label_opacity <= 0:
@@ -2367,6 +2370,7 @@ class GeneralizeBitCount(InteractiveScene):
         ticks = get_ticks()
         self.add(tick_labels)
 
+        # Create number line
         self.play(
             FadeIn(number_line),
             FadeIn(ticks),
@@ -2374,7 +2378,7 @@ class GeneralizeBitCount(InteractiveScene):
         )
         self.wait()
 
-        # Show the target region
+        # Set up goal posts and bit count
         goalpost_bottom = ValueTracker(-0.75)
         goalpost_top = ValueTracker(1.5)
 
@@ -2428,41 +2432,27 @@ class GeneralizeBitCount(InteractiveScene):
 
         p_brace = VGroup(VMobject(), Tex("p", font_size=36))
         p_brace_fade = ValueTracker(1)
+        p_label_fade = ValueTracker(0)
 
         def update_p_brace(group):
+            opacity = target_fade.get_value() * p_brace_fade.get_value()
             update_brace(
                 group, *get_target_bounds(), DOWN, 0.1,
                 y=goalpost_bottom.get_value(),
                 label_shift=p_label_shift.get_value(),
-                opacity=target_fade.get_value() * p_brace_fade.get_value(),
+                opacity=opacity,
             )
+            group[1].set_opacity(opacity * p_label_fade.get_value())
 
-        target_center = target_low.get_value() + p / 2
-        start_p = min(0.3, 1.8 * min(target_center, 1 - target_center))
-        p_tracker.set_value(start_p)
-        p_brace.add_updater(update_p_brace)
-        p_brace.update()
-        goalposts.update()
-
-        def shrink_target(mob, alpha):
-            p_tracker.set_value(start_p * (p / start_p)**alpha)
-
-        self.add(goalposts, p_brace)
-        self.play(
-            UpdateFromAlphaFunc(p_tracker, shrink_target, run_time=6),
-            target_fade.animate(time_span=(0, 1.25)).set_value(1),
-        )
-        p_tracker.set_value(p)
-        self.wait()
-
-        # Bring up the bit count
         k_label = Tex("k = 0", font_size=60)
         k_number = k_label.make_number_changeable("0")
         k_label.to_edge(UP, buff=1)
-        self.play(FadeIn(k_label))
-        self.wait()
+        k_label.fade_time = 0
 
-        # Helpers for adding bits
+        def fade_in_k_label(mob, dt):
+            mob.fade_time += dt
+            mob.set_opacity(clip(mob.fade_time / 2, 0, 1))
+
         width_low = ValueTracker(0)
         width_high = ValueTracker(1)
         width_brace = VGroup(VMobject(), Tex(R"2^{-k}", font_size=36))
@@ -2492,6 +2482,7 @@ class GeneralizeBitCount(InteractiveScene):
             return [
                 k_tracker.animate.set_value(k),
                 get_view_anim(center, log_width, focus),
+                label_k_tracker.animate.set_value(k),
             ]
 
         def get_brace_anims(k):
@@ -2499,20 +2490,53 @@ class GeneralizeBitCount(InteractiveScene):
             return [width_low.animate.set_value(new_low), width_high.animate.set_value(new_high)]
 
         # Add bits until a tick lands in the target
+        k_label.add_updater(fade_in_k_label)
+        k_label.update(0)
+        self.add(k_label)
         for k in range(1, hit_level + 1):
             k_number.set_value(k)
             anims = get_step_anims(k)
             if k > brace_level:
-                anims += get_brace_anims(k)
+                self.play(*anims, *get_brace_anims(k), run_time=2.5)
+                self.wait(0.5)
+            else:
+                self.play(
+                    anims[1],
+                    k_tracker.animate(time_span=(0, 1)).set_value(k),
+                    label_k_tracker.animate(time_span=(0, 1)).set_value(k),
+                    run_time=2,
+                )
+
             if k == brace_level:
+                k_label.remove_updater(fade_in_k_label)
+                k_label.set_opacity(1)
                 width_low.set_value(get_closest_interval(k, *get_target_bounds())[0])
                 width_high.set_value(get_closest_interval(k, *get_target_bounds())[1])
                 width_brace.update()
                 self.add(width_brace)
-                anims.append(width_grow.animate.set_value(1))
-            self.play(*anims, run_time=1 if k >= brace_level else 0.01)
-            if k < brace_level:
+                self.play(width_grow.animate.set_value(1), run_time=1)
+                self.wait()
+
+            if k == region_level:
+                target_center = target_low.get_value() + p / 2
+                start_p = min(0.3 * 2**view_log_width.get_value(), 1.8 * min(target_center, 1 - target_center))
+
+                def shrink_target(mob, alpha):
+                    p_tracker.set_value(start_p * (p / start_p)**alpha)
+
+                p_tracker.set_value(start_p)
+                p_brace.add_updater(update_p_brace)
+                p_brace.update()
+                goalposts.update()
+                self.add(goalposts, p_brace)
+                self.play(
+                    UpdateFromAlphaFunc(p_tracker, shrink_target, run_time=5),
+                    target_fade.animate(time_span=(0, 1.5)).set_value(1),
+                )
+                p_tracker.set_value(p)
                 self.wait(1)
+                self.play(p_label_fade.animate.set_value(1))
+                self.wait()
 
         # Slide the target so no tick lands inside
         self.play(target_low.animate.set_value(slid_low), run_time=3)
@@ -2523,8 +2547,7 @@ class GeneralizeBitCount(InteractiveScene):
         while 2.0**-k > p:
             k += 1
             k_number.set_value(k)
-            self.play(*get_step_anims(k), *get_brace_anims(k), run_time=1.5)
-            self.wait()
+            self.play(*get_step_anims(k), *get_brace_anims(k), run_time=1)
 
         # Highlight the tick inside the range
         highlight_level = k
