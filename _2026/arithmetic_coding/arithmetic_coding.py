@@ -1889,6 +1889,21 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         self.add(avg_bits_per_char)
         self.remove(copy)
         self.wait(1)
+
+        # Show the width of the target region for "math"
+        if False:
+            brace = Brace(target_lines, DOWN, buff=0.1)
+            label = brace.get_tex(R"< 2^{-10}", font_size=30)
+            self.play(
+                AnimationGroup(
+                    GrowFromEdge(brace, UP, run_time=1.4),
+                    Write(label, run_time=1.4),
+                    lag_ratio=0.2
+                )
+            )
+            self.wait()
+
+
         self.play(FadeOut(VGroup(bits_brace, bits_label, avg_bits_per_char)))
 
         # Helpers for extending the word
@@ -2095,6 +2110,22 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         )
         self.add(full_avg)
         self.remove(label_copy)
+        self.wait()
+
+        # Show the width of the target region for "mathematics"
+        brace = Brace(target_lines, DOWN)
+        label = brace.get_tex(R"\approx 2^{-18}")
+        self.play(
+            AnimationGroup(
+                self.camera.frame.animate(run_time=1).scale(1.035).shift(DOWN*0.6),
+                AnimationGroup(
+                    GrowFromEdge(brace, UP, run_time=1.4),
+                    Write(label, run_time=1.4),
+                    lag_ratio=0.2
+                ),
+                lag_ratio=0.2
+            )
+        )
         self.wait()
 
 
@@ -3485,20 +3516,37 @@ class Alphabets(InteractiveScene):
         lower_position = lower.get_center().copy()
         others = VGroup(upper, punctuation)
         self.add(rows)
-        self.wait()
 
         # Drop the capital letters and punctuation
+        self.wait(0.6)
+        others.save_state()
+        lower.save_state()
         self.play(
-            FadeOut(others, shift=DOWN),
-            lower.animate.center(),
-            run_time=2,
+            others.animate.shift(DOWN * 0.2).fade(0.4).set_stroke(color=GREY),
+            # FadeOut(others, shift=DOWN),
+            # lower.animate.center(),
+            run_time=2
         )
         self.wait()
 
         # Bring them back
         self.play(
-            FadeIn(others, shift=UP),
-            lower.animate.move_to(lower_position),
-            run_time=2,
+            others.animate.restore(),
+            lower.animate.restore(),
+            run_time=2
         )
         self.wait()
+
+class LuckyAndVeryLucky(InteractiveScene):
+    def construct(self):
+        # Write "Lucky" and "Very Lucky"
+        lucky = TexText("Lucky", font_size=55).set_color(GREEN)
+        very_lucky = TexText("Very Lucky", font_size=55).set_color(PURE_GREEN)
+        VGroup(lucky, very_lucky).arrange(DOWN, buff=3)
+        very_lucky.to_edge(LEFT, buff=1)
+        lucky.align_to(very_lucky, RIGHT)
+
+        self.play(Write(lucky))
+        self.wait(1)
+        self.play(Write(very_lucky))
+        self.wait(1)
