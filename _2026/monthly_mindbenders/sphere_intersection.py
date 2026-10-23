@@ -12,7 +12,9 @@ class Spheres(InteractiveScene):
         R = 2
         sphere_shell_1 = Sphere(radius=R).set_color(BLUE).set_opacity(0.8)
         sphere_shell_2 = sphere_shell_1.copy()
-        sphere1 = SurfaceMesh(sphere_shell_1, stroke_opacity=0.5, stroke_color=BLUE_D, resolution=(100, 30))
+        sphere_mesh_opacity = 0.3
+        sphere1 = SurfaceMesh(sphere_shell_1, stroke_width=0.4, stroke_opacity=sphere_mesh_opacity, stroke_color=WHITE, resolution=(100, 30))
+        sphere1.remove(sphere1[0])
         sphere2 = sphere1.copy()
         sphere_shell_1.add_updater(lambda m: m.move_to(sphere1))
         sphere_shell_2.add_updater(lambda m: m.move_to(sphere2))
@@ -88,7 +90,7 @@ class Spheres(InteractiveScene):
         self.add(intersection, sphere_shell_1, sphere_shell_2, sphere1, sphere2)
         self.play(
             FadeIn(intersection),
-            VGroup(sphere1, sphere2).animate.set_stroke(opacity=0.3),
+            VGroup(sphere1, sphere2).animate.set_stroke(opacity=sphere_mesh_opacity),
             FadeOut(Group(sphere_shell_1, sphere_shell_2)),
             self.camera.frame.animate.reorient(-47, 83, 0, (0.16, -0.09, 0.90), 10.62),
             run_time=2
@@ -137,7 +139,7 @@ class Spheres(InteractiveScene):
         sphere1, sphere2 = sphere2, sphere1
         intersection_opacity_tracker = ValueTracker(1)
         intersection.add_updater(lambda m: m.set_opacity(intersection_opacity_tracker.get_value()))
-        sphere2.add_updater(lambda m: m.set_stroke(opacity=0.5 * intersection_opacity_tracker.get_value()))
+        sphere2.add_updater(lambda m: m.set_stroke(opacity=sphere_mesh_opacity * intersection_opacity_tracker.get_value()))
         self.play(
             self.camera.frame.animate.reorient(17, 62, 0, (0.09, -0.33, 0.43), 15.50),
             AnimationGroup(
@@ -159,7 +161,7 @@ class Spheres(InteractiveScene):
         def get_line():
             v = sphere2.get_center() - axes.c2p(0, 0, 0)
             v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
-            return DashedLine(axes.c2p(0, 0, 0), v, buff=0)
+            return DashedLine(axes.c2p(0, 0, 0), v, buff=0, stroke_width=1)
         line = always_redraw(get_line)
         def get_line_label():
             v = sphere2.get_center() - axes.c2p(0, 0, 0)
@@ -182,16 +184,26 @@ class Spheres(InteractiveScene):
             FadeIn(line_label, suspend_mobject_updating=True)
         )
 
+        # The dot moves back and forth along the line
+        v = sphere2.get_center() - axes.c2p(0, 0, 0)
+        v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
+        sphere2.save_state()
+        self.play(sphere2.animate.shift(v * 0.3), run_time=0.8)
+        self.play(sphere2.animate.shift(v * -0.6), run_time=0.8)
+        self.play(sphere2.animate.shift(v * 0.45), run_time=0.8)
+
 
         # Keep moving around the second sphere to random locations with the first one centered at the origin
-        for i in range(6):
+        for i in range(5):
             anims = [sphere2.animate.move_to(get_random_sphere_location_2())]
-            if i == 2:
-                self.add(intersection)
+            if i == 0:
+                self.add(intersection, sphere1, sphere2)
                 anims.append(intersection_opacity_tracker.animate.set_value(1))
-            if i == 4:
+            if i == 2:
                 anims.append(dot_opacity_tracker.animate.set_value(0))
             self.play(*anims, run_time=1.85)
+            if i == 2:
+                self.remove(dot, line, line_label)
 
         for _ in range(60):
             sphere2.move_to(get_random_sphere_location_2())
