@@ -122,6 +122,17 @@ class StackedProbDistribution(VGroup):
         # Otherwise, last element
         return len(self.distribution) - 1
 
+    def x_value_to_index(self, x_value: float):
+        """
+        Given an x value, returns the index of the
+        corresponding event from the distribution
+        """
+        for idx, bar in enumerate(self.bars):
+            if bar.get_right()[0] > x_value:
+                return idx
+        # Otherwise, last element
+        return len(self.distribution) - 1
+
 
 class DynamicInterval(UnitInterval):
     def __init__(
