@@ -154,9 +154,24 @@ class Spheres(InteractiveScene):
         )
         self.remove(intersection)
 
-        # Show the random dot
+        # Show a cloud of dots
         self.set_camera_target_position(49, 48, 0, (0.23, -0.45, 0.32), 9.28, drift_time=30)
-        dot = Sphere(radius=0.1).set_color(YELLOW)
+        dot = Sphere(radius=0.025).set_color(YELLOW)
+
+        cloud = Group(dot, *[dot.copy().move_to(get_random_sphere_location_2()) for _ in range(1500)]).set_opacity(0.4)
+        self.play(
+            AnimationGroup(
+                *[
+                    GrowFromCenter(dot)
+                    for dot in cloud
+                ],
+                lag_ratio=0.001
+            ),
+            run_time=1.5
+        )
+
+        # Pick one of them
+        sphere2.move_to([1.7, 1.6, 1.2])
         dot_opacity_tracker = ValueTracker(1)
         def get_line():
             v = sphere2.get_center() - axes.c2p(0, 0, 0)
@@ -166,9 +181,9 @@ class Spheres(InteractiveScene):
         def get_line_label():
             v = sphere2.get_center() - axes.c2p(0, 0, 0)
             v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
-            tex = Tex("2")
+            tex = Tex(R"d \leq 2").set_z_index(100)
             return tex.next_to(
-                line, v*0.1
+                line.get_end(), OUT, buff=0.43
             ).apply_matrix(
                 self.camera.frame.get_orientation().as_matrix(),
                 about_point=tex.get_center(),
@@ -179,19 +194,12 @@ class Spheres(InteractiveScene):
         dot.add_updater(lambda m: m.move_to(sphere2).set_opacity(dot_opacity_tracker.get_value()))
         line.add_updater(lambda m: m.set_opacity(dot_opacity_tracker.get_value()))
         self.play(
+            FadeOut(cloud[1:]),
+            dot.animate.scale(2).set_opacity(1),
             ShowCreation(line, suspend_mobject_updating=True),
-            GrowFromCenter(dot, suspend_mobject_updating=True),
-            FadeIn(line_label, suspend_mobject_updating=True)
+            Write(line_label, suspend_mobject_updating=True),
+            run_time=1.9
         )
-
-        # The dot moves back and forth along the line
-        v = sphere2.get_center() - axes.c2p(0, 0, 0)
-        v = v / np.linalg.norm(v) * np.linalg.norm(axes.c2p(2, 0, 0))
-        sphere2.save_state()
-        self.play(sphere2.animate.shift(v * 0.3), run_time=0.8)
-        self.play(sphere2.animate.shift(v * -0.6), run_time=0.8)
-        self.play(sphere2.animate.shift(v * 0.45), run_time=0.8)
-
 
         # Keep moving around the second sphere to random locations with the first one centered at the origin
         for i in range(5):
