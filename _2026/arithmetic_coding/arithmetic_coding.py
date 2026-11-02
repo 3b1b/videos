@@ -4702,7 +4702,8 @@ class USConstitutionWithDiagram(InteractiveScene):
 
 
 class InitialConstitutionExample(InteractiveScene):
-    n_first_bits = 31
+    bits_per_row = 10
+    n_white_rows = 2
 
     def construct(self):
         # Write the first part of the preamble
@@ -4757,12 +4758,28 @@ class InitialConstitutionExample(InteractiveScene):
         # Show the probability of the yellow part
         brace = Brace(rest_part, RIGHT, buff=0.25 * para_scale)
         brace.stretch(para_scale, 0)
-        chance_label = Tex(R"\approx 50\% \text{ chance}", font_size=48 * para_scale)
-        chance_label.next_to(brace, RIGHT, buff=0.25 * para_scale)
-        bit_label = Tex(R"\approx 1 \text{ bit}", font_size=48 * para_scale)
-        bit_label.next_to(chance_label, DOWN, buff=0.5 * para_scale, aligned_edge=LEFT)
+        label_size = 48 * para_scale
 
-        full_group = Group(paragraph, brace, chance_label, bit_label)
+        def get_chance_label(tex):
+            label = Tex(Rf"\approx\ {tex} \text{{ chance}}", font_size=label_size, isolate=[R"\approx", tex, R"\text{ chance}"])
+            label.next_to(brace, RIGHT, buff=0.25 * para_scale)
+            label.prob_part = label[tex]
+            return label
+
+        def get_bit_equation(frac_tex, relation_tex, unit_tex):
+            pieces = [R"-\log_2\Big(", frac_tex, R"\Big)", relation_tex, unit_tex]
+            equation = Tex(" ".join(pieces), font_size=label_size, isolate=pieces)
+            equation.next_to(chance_label, DOWN, buff=0.5 * para_scale, aligned_edge=LEFT)
+            equation.pieces = [equation[piece] for piece in pieces]
+            return equation
+
+        chance_label = get_chance_label(R"50\%")
+        half_label = get_chance_label(R"\frac{1}{2}")
+        small_label = get_chance_label(R"\frac{1}{1000}")
+        half_equation = get_bit_equation(R"\frac{1}{2}", R"= 1", R"\text{ bit}")
+        small_equation = get_bit_equation(R"\frac{1}{1000}", R"\approx 10", R"\text{ bits}")
+
+        full_group = Group(paragraph, brace, chance_label, half_label, small_label, half_equation, small_equation)
         full_scale = get_fit_scale(full_group, margin=0.75)
         self.play(
             frame.animate.set_height(full_scale * FRAME_HEIGHT).move_to(full_group),
@@ -4772,9 +4789,54 @@ class InitialConstitutionExample(InteractiveScene):
             run_time=1.5,
         )
         self.wait()
-        self.play(FadeIn(bit_label, shift=0.25 * para_scale * DOWN))
+
+        # Switch to a fraction
+        self.play(
+            ReplacementTransform(chance_label[R"\approx"], half_label[R"\approx"]),
+            ReplacementTransform(chance_label[R"\text{ chance}"], half_label[R"\text{ chance}"]),
+            FadeOut(chance_label.prob_part),
+            FadeIn(half_label.prob_part)
+        )
+        self.remove(chance_label)
+        self.add(half_label)
+        self.wait()
+
+        # Write the number of bits
+        frac_ids = {id(mob) for mob in half_equation.pieces[1].family_members_with_points()}
+        written_part = VGroup(*(mob for mob in half_equation if id(mob) not in frac_ids))
+        frac_start = next(i for i, mob in enumerate(half_equation) if id(mob) in frac_ids)
+        write_time = 2.0
+        frac_time = write_time * frac_start / len(half_equation)
+        self.play(
+            Write(written_part, run_time=write_time),
+            TransformFromCopy(
+                half_label.prob_part, half_equation.pieces[1],
+                time_span=(max(frac_time - 0.3, 0), frac_time + 0.9),
+            ),
+        )
+        self.remove(written_part, half_equation.pieces[1])
+        self.add(half_equation)
         self.wait(2)
-        self.play(FadeOut(VGroup(brace, chance_label, bit_label)))
+
+        # Make the probability much smaller
+        self.play(
+            ReplacementTransform(half_label[R"\approx"], small_label[R"\approx"]),
+            ReplacementTransform(half_label[R"\text{ chance}"], small_label[R"\text{ chance}"]),
+            FadeOut(half_label.prob_part),
+            FadeIn(small_label.prob_part),
+            ReplacementTransform(half_equation.pieces[0], small_equation.pieces[0]),
+            FadeOut(half_equation.pieces[1]),
+            FadeIn(small_equation.pieces[1]),
+            ReplacementTransform(half_equation.pieces[2], small_equation.pieces[2]),
+            FadeOut(half_equation.pieces[3]),
+            FadeIn(small_equation.pieces[3]),
+            FadeOut(half_equation.pieces[4]),
+            FadeIn(small_equation.pieces[4])
+        )
+        self.remove(half_label, half_equation)
+        self.add(small_label, small_equation)
+        self.wait(2)
+        self.play(FadeOut(VGroup(brace, small_label, small_equation)))
 
         # Move the text to the left
         frame_width = frame.get_width()
@@ -4799,20 +4861,26 @@ class InitialConstitutionExample(InteractiveScene):
         )
 
         # Turn the text into bits
-        n_bits = self.n_first_bits + 1
+        row_length = self.bits_per_row
+        n_white = row_length * self.n_white_rows
+        n_bits = n_white + row_length
         zeros = Text("0" * n_bits, font="Consolas")
         ones = Text("1" * n_bits, font="Consolas")
         bit_area_left = arrow.get_right()[0] + 0.03 * frame_width
         bit_area_width = frame.get_right()[0] - 0.04 * frame_width - bit_area_left
-        split = (n_bits + 1) // 2
-        row_shift = (zeros[split].get_x() - zeros[0].get_x()) * LEFT + 1.6 * zeros.get_height() * DOWN
+        char_advance = zeros[1].get_x() - zeros[0].get_x()
+        row_height = 1.6 * zeros.get_height()
         for mob in (zeros, ones):
-            mob[split:].shift(row_shift)
+            for index, glyph in enumerate(mob):
+                row, col = divmod(index, row_length)
+                glyph.shift((col - index) * char_advance * RIGHT + row * row_height * DOWN)
             mob.refresh_bounding_box(recurse_down=True)
-            mob.set_width(bit_area_width)
+            mob.set_width(0.6 * bit_area_width)
             mob.move_to(np.array([bit_area_left + bit_area_width / 2, frame.get_y(), 0]))
         slots = VGroup(VGroup(zero, one) for zero, one in zip(zeros, ones))
-        slots[-1].set_color(YELLOW)
+        white_slots = slots[:n_white]
+        yellow_slots = slots[n_white:]
+        yellow_slots.set_color(YELLOW)
         bits = slots
 
         rng = np.random.default_rng(0)
@@ -4867,8 +4935,8 @@ class InitialConstitutionExample(InteractiveScene):
                 for k in range(n)
             ]
 
-        white_arrivals = get_arrivals(paragraph[:n_first], slots[:-1])
-        yellow_arrivals = get_arrivals(paragraph[n_first:], slots[-1:])
+        white_arrivals = get_arrivals(paragraph[:n_first], white_slots)
+        yellow_arrivals = get_arrivals(paragraph[n_first:], yellow_slots[:1])
         bits.add_updater(update_bits)
         self.add(bits)
         self.play(
@@ -4876,7 +4944,14 @@ class InitialConstitutionExample(InteractiveScene):
             AnimationGroup(*yellow_arrivals, run_time=2),
         )
         self.remove(*(anim.mobject for anim in [*white_arrivals, *yellow_arrivals]))
-        self.wait(10)
+        self.wait(3.8)
+
+        # Fill out the yellow row
+        for slot in yellow_slots[1:]:
+            slot.revealed = True
+            show_slot(slot)
+            self.wait(0.13)
+        self.wait(8)
 
 
 class CharacterCodeScene(InteractiveScene):
@@ -4975,7 +5050,14 @@ class CharacterCodeScene(InteractiveScene):
         for glyph, char_index in zip(bit_glyphs, bit_char_index):
             glyph.set_color(self.bit_colors[char_index % 2])
         glyph_lines = [i for i, line in enumerate(bit_lines) for _ in line]
-        max_lines = int((bits_top - (-3.8)) / line_step)
+        bit_count = Integer(0, font_size=30)
+        bit_label = Text("bits", font_size=30)
+        count_group = VGroup(bit_count, bit_label)
+        count_group.arrange(RIGHT, buff=0.15, aligned_edge=DOWN)
+        count_group.move_to(np.array([right_center, -FRAME_HEIGHT / 2 + 0.45, 0]))
+        count_baseline = bit_count[0].get_bottom()[1]
+        bits_bottom = count_group.get_top()[1] + 0.3
+        max_lines = int((bits_top - bits_bottom) / line_step)
 
         char_tracker = ValueTracker(0)
         scroll = dict(offset=0.0)
@@ -5002,11 +5084,15 @@ class CharacterCodeScene(InteractiveScene):
             for line in bit_lines[first_line:first_line + 2]:
                 line.set_opacity(clip((bits_top + 0.5 * line_step - line.get_y()) / line_step, 0, 1))
             mob.set_submobjects(visible)
+            bit_count.set_value(n_bits)
+            bit_count.shift((count_baseline - bit_count[0].get_bottom()[1]) * UP)
+            bit_label.next_to(bit_count, RIGHT, buff=0.15)
+            bit_label.shift((count_baseline - bit_label[0].get_bottom()[1]) * UP)
+            count_group.set_x(right_center)
 
         text_display.add_updater(update_text)
         bits_display.add_updater(update_bits)
-        self.add(text_display, bits_display)
-        self.play(GrowArrow(arrow))
+        self.add(text_display, bits_display, count_group, arrow)
 
         # Encode the text
         def get_highlight(char_index):
@@ -5021,11 +5107,9 @@ class CharacterCodeScene(InteractiveScene):
         highlight = get_highlight(0)
         highlight.add_updater(update_highlight)
         self.add(highlight)
-        self.play(
-            char_tracker.animate.set_value(len(text)),
-            rate_func=linear,
-            run_time=len(text) / self.chars_per_second,
-        )
+        for n_chars in range(1, len(text) + 1):
+            char_tracker.set_value(n_chars)
+            self.wait(1 / self.chars_per_second)
         highlight.clear_updaters()
         self.play(FadeOut(highlight))
         self.wait(3)
