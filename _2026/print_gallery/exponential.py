@@ -53,7 +53,7 @@ def get_image_slice(image: TexturedSurface, delta_u: float, u_min: float):
     nu, nv = image.get_resolution()
     image_slice = TexturedSurface(
         Square3D(resolution=(int(delta_u * nu) + 1, nv)),
-        image.texture_paths["LightTexture"]
+        image.textures["LightTexture"].path
     )
     image_slice.set_shading(0, 0, 0)
     image_slice.deactivate_depth_test()
