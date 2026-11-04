@@ -2350,6 +2350,304 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         )
         self.wait()
 
+        # Show the all a's string
+        n_rows = len(diagram.layers)
+        n_bits_shown = len(shown_bits)
+        n_letters = 60
+        n_long_bits = 60
+        letter_fade_width = 6
+        line_width = diagram.full_width
+        row_tops = [layer.get_top()[1] for layer in diagram.layers]
+        alphabet = diagram.char_alphabet
+
+        ref_bars = diagram.layers[0].bars
+        ref_slope = ref_bars.get_width()
+        view = dict(
+            center=-ref_bars.get_left()[0] / ref_slope,
+            log_width=math.log2(line_width / ref_slope),
+        )
+
+        def get_scale():
+            return line_width / 2**view["log_width"]
+
+        def value_to_x(value):
+            return (value - view["center"]) * get_scale()
+
+        def n2p(value):
+            return np.array([value_to_x(value), line_y, 0])
+
+        def set_view(start_center, start_log_width, new_center, new_log_width, focus, alpha):
+            start_x = (focus - start_center) * line_width / 2**start_log_width
+            end_x = (focus - new_center) * line_width / 2**new_log_width
+            log_width = interpolate(start_log_width, new_log_width, alpha)
+            x = interpolate(start_x, end_x, alpha)
+            view["log_width"] = log_width
+            view["center"] = focus - x * 2**log_width / line_width
+
+        layer_cache = dict()
+
+        def get_layer(prefix):
+            if prefix not in layer_cache:
+                layer = StackedProbDistribution(
+                    diagram.get_distribution(prefix),
+                    labels=diagram.char_labels_template.copy(),
+                    width=line_width,
+                    label_height_ratio=diagram.label_to_bar_height_ratio,
+                )
+                bars = layer.bars
+                cdf = np.cumsum(np.array(layer.distribution, dtype=float))
+                cdf /= cdf[-1]
+                layer.edges = list(zip([0.0, *cdf[:-1]], [*cdf[:-1], 1.0]))
+                layer.default_fills = [(bar.get_fill_color(), bar.get_fill_opacity()) for bar in bars]
+                layer.path_index = None
+                top = layer.get_top()[1]
+                widest = max(bars, key=lambda bar: bar.get_width())
+                unit_points = widest.get_points().astype(float)
+                unit_points[:, 0] = (unit_points[:, 0] - widest.get_left()[0]) / widest.get_width()
+                unit_points[:, 1] -= top
+                layer.bar_unit_points = unit_points
+                layer.label_points = [
+                    [sm.get_points().astype(float) - np.array([label.get_x(), top, 0]) for sm in label.get_family()]
+                    for label in layer.labels
+                ]
+                layer.label_widths = [label.get_width() for label in layer.labels]
+                layer_cache[prefix] = layer
+            return layer_cache[prefix]
+
+        def decode(value, n_chars):
+            ranges = [(0.0, 1.0)]
+            indices = []
+            prefix = ""
+            for _ in range(n_chars):
+                edges = get_layer(prefix).edges
+                low, high = ranges[-1]
+                alpha = (value - low) / (high - low)
+                index = next((i for i, (a, b) in enumerate(edges) if alpha < b), len(edges) - 1)
+                a, b = edges[index]
+                ranges.append((low + (high - low) * a, low + (high - low) * b))
+                indices.append(index)
+                prefix += alphabet[index]
+            return prefix, ranges, indices
+
+        def style_layer(layer, index):
+            if layer.path_index == index:
+                return
+            for bar, (color, opacity) in zip(layer.bars, layer.default_fills):
+                bar.set_fill(color, opacity)
+            layer.highlight(index, other_bar_opacity=0.35)
+            layer.path_index = index
+
+        def place_layer(layer, left, right, top, path_index, path_x):
+            x_min = frame.get_left()[0] - 1
+            x_max = frame.get_right()[0] + 1
+            unit_points = layer.bar_unit_points
+            for j, (bar, label, (a, b)) in enumerate(zip(layer.bars, layer.labels, layer.edges)):
+                bar_left = left + (right - left) * a
+                bar_right = left + (right - left) * b
+                l = clip(bar_left, x_min, x_max)
+                r = clip(bar_right, x_min, x_max)
+                points = unit_points.copy()
+                points[:, 0] = l + (r - l) * unit_points[:, 0]
+                points[:, 1] += top
+                bar.set_points(points)
+                if "gradient_start" in bar.uniforms:
+                    bar.uniforms["gradient_start"] = np.array([left, top, 0])
+                    bar.uniforms["gradient_end"] = np.array([max(right, left + 1e-6), top, 0])
+                sliver_alpha = clip((bar_right - bar_left) / 0.05, 0, 1)
+                bar.set_stroke(
+                    interpolate_color(bar.get_fill_color(), WHITE, sliver_alpha),
+                    opacity=interpolate(bar.get_fill_opacity(), 1, sliver_alpha),
+                )
+                x = (bar_left + bar_right) / 2
+                if j == path_index:
+                    visible_left = max(bar_left, frame.get_left()[0])
+                    visible_right = min(bar_right, frame.get_right()[0])
+                    if bar_left <= path_x <= bar_right and visible_left <= path_x <= visible_right:
+                        x = path_x
+                    elif visible_left < visible_right:
+                        x = (visible_left + visible_right) / 2
+                    half_label = layer.label_widths[j] / 2 + 0.15
+                    if visible_right - visible_left > 2 * half_label:
+                        x = clip(x, visible_left + half_label, visible_right - half_label)
+                offset = np.array([clip(x, x_min - 1, x_max + 1), top, 0])
+                for sm, base_points in zip(label.get_family(), layer.label_points[j]):
+                    if len(base_points) > 0:
+                        sm.set_points(base_points + offset)
+                fits = layer.label_widths[j] < 0.8 * (bar_right - bar_left)
+                label.set_fill(opacity=float(fits) * (1 if j == path_index else 0.35))
+
+        word_layers = VGroup()
+
+        def update_word_layers(group):
+            prefix, ranges, indices = decode(arrow_value.get_value(), n_rows)
+            layers = [get_layer(prefix[:i]) for i in range(n_rows)]
+            if list(group.submobjects) != layers:
+                group.set_submobjects(layers)
+            path_x = (value_to_x(ranges[-1][0]) + value_to_x(ranges[-1][1])) / 2
+            for i, layer in enumerate(layers):
+                style_layer(layer, indices[i])
+                place_layer(layer, value_to_x(ranges[i][0]), value_to_x(ranges[i][1]), row_tops[i], indices[i], path_x)
+            keep = {layer for layer in layers}
+            for key in list(layer_cache):
+                if len(key) > 4 and layer_cache[key] not in keep:
+                    del layer_cache[key]
+
+        def get_n_significant(value, max_bits=40):
+            low, high = decode(value, n_rows)[1][-1]
+            low -= 1e-9 * (high - low)
+            n_bits = 0
+            while math.floor(value * 2**n_bits) / 2**n_bits < low and n_bits < max_bits:
+                n_bits += 1
+            return n_bits
+
+        def update_highlight(line):
+            value = arrow_value.get_value()
+            n_bits = get_n_significant(value)
+            low = math.floor(value * 2**n_bits) / 2**n_bits
+            highlight_range[:] = [low, low + 2.0**-n_bits]
+            put_on_value_range(line, *highlight_range)
+
+        def decode_word(value, n_chars):
+            low = Fraction(0)
+            width = Fraction(1)
+            value = Fraction(value)
+            result = ""
+            for _ in range(n_chars):
+                cdf = np.cumsum(diagram.get_distribution(result))
+                cdf /= cdf[-1]
+                alpha = float((value - low) / width)
+                index = int(min(np.searchsorted(cdf, alpha, side="right"), len(cdf) - 1))
+                start = Fraction(cdf[index - 1]) if index > 0 else Fraction(0)
+                low += width * start
+                width *= Fraction(cdf[index]) - start
+                result += alphabet[index]
+            return result
+
+        extend_tracker = ValueTracker(0)
+        align_tracker = ValueTracker(0)
+        long_fade = ValueTracker(0)
+        word_center_x = word_mob.get_x()
+        word_y = word_mob.get_y()
+        bits_center_x = binary_number[:n_bits_shown + 1].get_x()
+        bits_y = binary_number.get_y()
+        screen_left = -FRAME_WIDTH / 2 + 0.3
+
+        def get_extension_opacity(index, n_fixed, n_total):
+            if index < n_fixed:
+                return 1
+            progress = extend_tracker.get_value() * (n_total - n_fixed + letter_fade_width)
+            return clip((progress - (index - n_fixed)) / letter_fade_width, 0, 1)
+
+        def align_long_mob(mob, n_fixed, center_x, y):
+            mob.set_y(y)
+            centered_shift = center_x - mob[:n_fixed].get_x()
+            left_shift = screen_left - mob[0].get_left()[0]
+            mob.shift(interpolate(centered_shift, left_shift, align_tracker.get_value()) * RIGHT)
+
+        def get_long_word():
+            mob = Text("|" + decode_word(arrow_value.get_value(), n_letters) + "|", font="Consolas")
+            mob.set_height(0.5)
+            mob.remove(mob[0], mob[-1])
+            align_long_mob(mob, len(full_word), word_center_x, word_y)
+            for index, glyph in enumerate(mob):
+                glyph.set_opacity(long_fade.get_value() * get_extension_opacity(index, len(full_word), len(mob)))
+            return mob.fix_in_frame()
+
+        def get_long_bits():
+            value = arrow_value.get_value()
+            bits = diagram.get_binary_digits(value, n_long_bits)
+            mob = get_screen_binary(bits)
+            align_long_mob(mob, n_bits_shown + 1, bits_center_x, bits_y)
+            n_significant = get_n_significant(value)
+            for index, glyph in enumerate(mob):
+                glyph.set_color(WHITE if index <= n_significant else GREY_D)
+                glyph.set_opacity(get_extension_opacity(index, n_bits_shown + 1, len(mob)))
+            return mob
+
+        long_word = get_long_word()
+        long_word.add_updater(lambda m: m.become(get_long_word()))
+        long_bits = get_long_bits()
+        long_bits.add_updater(lambda m: m.become(get_long_bits()))
+
+        dots_opacity = ValueTracker(0)
+        dots = Tex(R"\vdots", font_size=60)
+
+        def update_dots(mob):
+            low, high = decode(arrow_value.get_value(), n_rows)[1][-1]
+            left = max(value_to_x(low), frame.get_left()[0])
+            right = min(value_to_x(high), frame.get_right()[0])
+            x = (left + right) / 2 if left < right else n2p(arrow_value.get_value())[0]
+            mob.move_to(np.array([x, row_tops[-1] - 0.75, 0]), UP)
+            mob.set_fill(opacity=dots_opacity.get_value())
+
+        dots.add_updater(update_dots)
+        dots.update()
+
+        # Swap in the zoomable diagram
+        old_mobs = {id(mob): mob for mob in diagram.get_family()}
+        for layer in diagram.layer_by_prefix.values():
+            for part in [layer, *getattr(layer, "stashed_submobjects", [])]:
+                for mob in part.get_family():
+                    old_mobs[id(mob)] = mob
+        self.remove(*old_mobs.values())
+        word_layers.add_updater(update_word_layers)
+        word_layers.update()
+        self.remove(binary_number)
+        highlight.clear_updaters()
+        highlight.add_updater(update_highlight)
+        target_lines.clear_updaters()
+        self.add(word_layers, long_bits, long_word, dots)
+        number_line_mobs = [binary_line, ruler, ruler.labels, highlight, range_arrow]
+        for mob in number_line_mobs:
+            mob.resume_updating()
+        self.add(*number_line_mobs)
+        self.play(
+            FadeOut(VGroup(brace, label, cell_brace, cell_label, full_avg, bits_brace, bits_label, target_lines)),
+            FadeOut(word_mob),
+            long_fade.animate.set_value(1),
+            run_time=1.5,
+        )
+
+        # Zoom out, then in on the all a's string
+        start_value = arrow_value.get_value()
+        start_center = view["center"]
+        start_log_width = view["log_width"]
+        zero_low, zero_high = decode(0, n_rows)[1][-1]
+        final_center = (zero_low + zero_high) / 2
+        final_log_width = math.log2(zero_high - zero_low)
+        out_scale = 0.85 * frame.get_width()
+        out_log_width = math.log2(line_width / out_scale)
+        out_center = 0.5 - frame.get_x() / out_scale
+        zoom_out_time = 3
+        zoom_in_time = 6.2
+        zoom_in_start = zoom_out_time
+        total_time = zoom_in_start + zoom_in_time
+
+        def update_slide(mob, alpha):
+            t = alpha * total_time
+            if t < zoom_in_start:
+                set_view(start_center, start_log_width, out_center, out_log_width, start_value, smooth(min(t / zoom_out_time, 1)))
+                zoom_factor = 1
+            else:
+                x = clip((t - zoom_in_start) / zoom_in_time, 0, 1)
+                set_view(out_center, out_log_width, final_center, final_log_width, 0, 3 * x**4 - 2 * x**6)
+                zoom_factor = 2**(view["log_width"] - out_log_width)
+            x = clip(t / total_time, 0, 1)
+            slide_alpha = 3 * x**4 - 2 * x**6
+            arrow_value.set_value(start_value * (1 - slide_alpha) * zoom_factor)
+
+        frame_bottom = frame.get_y() - frame.get_height() / 2
+        needed_bottom = row_tops[-1] - 1.6
+        self.play(
+            UpdateFromAlphaFunc(Mobject(), update_slide, rate_func=linear, run_time=total_time),
+            frame.animate(run_time=zoom_out_time).shift(min(needed_bottom - frame_bottom, 0) * UP),
+            align_tracker.animate(time_span=(0, 1.5)).set_value(1),
+            extend_tracker.animate(time_span=(0.5, 2.5), rate_func=linear).set_value(1),
+            dots_opacity.animate(time_span=(1, 2)).set_value(1),
+        )
+        arrow_value.set_value(0)
+        self.wait(2)
+
 
 class GeneralizeBitCount(InteractiveScene):
     word = "info"
@@ -2421,8 +2719,9 @@ class GeneralizeBitCount(InteractiveScene):
         p = word_high - word_low
         final_level = math.ceil(-math.log2(p) - 1e-9)
         hit_level = final_level - 2
-        brace_level = min(3, hit_level)
-        region_level = min(brace_level + 4, hit_level)
+        intro_level = min(2, hit_level)
+        k_label_level = min(3, hit_level)
+        region_level = min(k_label_level + 4, hit_level)
         word_center = (word_low + word_high) / 2
 
         hit_denom = 2**hit_level
@@ -2700,16 +2999,12 @@ class GeneralizeBitCount(InteractiveScene):
         k_label = Tex("k = 0", font_size=60)
         k_number = k_label.make_number_changeable("0")
         k_label.to_edge(UP, buff=1)
-        k_label.fade_time = 0
-
-        def fade_in_k_label(mob, dt):
-            mob.fade_time += dt
-            mob.set_opacity(clip(mob.fade_time / 2, 0, 1))
 
         width_low = ValueTracker(0)
         width_high = ValueTracker(1)
         width_brace = VGroup(VMobject(), Tex(R"2^{-k}", font_size=36))
         width_brace[1].set_backstroke(BLACK, 3)
+        width_brace[1].set_opacity(0)
         width_grow = ValueTracker(0)
         width_fade = ValueTracker(1)
 
@@ -2743,14 +3038,28 @@ class GeneralizeBitCount(InteractiveScene):
             return [width_low.animate.set_value(new_low), width_high.animate.set_value(new_high)]
 
         # Add bits until a tick lands in the target
-        k_label.add_updater(fade_in_k_label)
-        k_label.update(0)
-        self.add(k_label)
+        label_mix = ValueTracker(0)
+        width_labels = VGroup(
+            Tex(Rf"\frac{{1}}{{{2**intro_level}}}", font_size=36),
+            Tex(Rf"\frac{{1}}{{{2**k_label_level}}}", font_size=36),
+            Tex(R"2^{-k}", font_size=36),
+        )
+        width_labels.set_backstroke(BLACK, 3)
+
+        def update_width_labels(group):
+            for index, label in enumerate(group):
+                label.next_to(width_brace[0], UP, SMALL_BUFF)
+                weight = clip(1 - abs(label_mix.get_value() - index), 0, 1)
+                label.set_opacity(weight * width_grow.get_value())
+
+        width_labels.add_updater(update_width_labels)
+
         for k in range(1, hit_level + 1):
             k_number.set_value(k)
             anims = get_step_anims(k)
-            if k > brace_level:
-                self.play(*anims, *get_brace_anims(k), run_time=2.5)
+            if k > intro_level:
+                label_anims = [label_mix.animate.set_value(1)] if k == k_label_level else []
+                self.play(*anims, *get_brace_anims(k), *label_anims, run_time=2.5 if k <= 4 else 1.2 if k == 5 else 0.65)
                 self.wait(0.5)
             else:
                 self.play(
@@ -2760,14 +3069,28 @@ class GeneralizeBitCount(InteractiveScene):
                     run_time=2,
                 )
 
-            if k == brace_level:
-                k_label.remove_updater(fade_in_k_label)
-                k_label.set_opacity(1)
+            if k == intro_level:
                 width_low.set_value(get_closest_interval(k, *get_target_bounds())[0])
                 width_high.set_value(get_closest_interval(k, *get_target_bounds())[1])
                 width_brace.update()
-                self.add(width_brace)
+                width_labels.update()
+                self.add(width_brace, width_labels)
                 self.play(width_grow.animate.set_value(1), run_time=1)
+                self.wait()
+
+            if k == k_label_level:
+                k_label.set_opacity(0)
+                self.add(k_label)
+                self.play(
+                    k_label.animate.set_opacity(1),
+                    label_mix.animate.set_value(2),
+                    run_time=1.5,
+                )
+                width_brace.label_template = width_labels[2].copy().set_opacity(1)
+                width_brace.last_ends = None
+                width_brace.update()
+                width_labels.clear_updaters()
+                self.remove(width_labels)
                 self.wait()
 
             if k == region_level:
@@ -2783,17 +3106,15 @@ class GeneralizeBitCount(InteractiveScene):
                 goalposts.update()
                 self.add(goalposts, p_brace)
                 self.play(
-                    UpdateFromAlphaFunc(p_tracker, shrink_target, run_time=5),
+                    UpdateFromAlphaFunc(p_tracker, shrink_target, run_time=3),
                     target_fade.animate(time_span=(0, 1.5)).set_value(1),
+                    p_label_fade.animate.set_value(1)
                 )
                 p_tracker.set_value(p)
-                self.wait(1)
-                self.play(p_label_fade.animate.set_value(1))
                 self.wait()
 
         # Slide the target so no tick lands inside
-        self.play(target_low.animate.set_value(slid_low), run_time=3)
-        self.wait()
+        self.play(target_low.animate.set_value(slid_low), run_time=1.5)
 
         # Keep adding bits until the spacing is at most p
         k = hit_level
@@ -2902,22 +3223,17 @@ class GeneralizeBitCount(InteractiveScene):
         )
         self.remove(copy)
         self.add(algebra)
-        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.1)
-        self.play(ShowCreation(rect), run_time=2)
-        information_text = TexText("Information", font_size=34).next_to(algebra[19:], UP, buff=0.32)
-        self.play(Write(information_text))
-        self.wait(2)
 
         # Bring it to the center
         inequality = algebra[17:]
         self.play(
             FadeOut(algebra[:17], run_time=1),
-            VGroup(inequality, rect, information_text).animate(run_time=1.8).set_x(0).scale(1.2)
+            inequality.animate(run_time=1.8).set_x(0).scale(1.2)
         )
         self.wait(2)
-        self.play(FadeOut(VGroup(rect, information_text)))
 
         # Show non-whole numbers of bits
+        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.1)
         p_decimals = max(2, 2 - math.floor(math.log10(p)))
         p_value = VGroup(Tex("=", font_size=36), DecimalNumber(p, num_decimal_places=p_decimals, font_size=36))
         p_value.arrange(RIGHT, buff=SMALL_BUFF)
@@ -2958,7 +3274,7 @@ class GeneralizeBitCount(InteractiveScene):
         screen_margin = 1
         waypoints = []
         x = value_to_x(slid_low + p / 2)
-        for _ in range(4):
+        for _ in range(2):
             p_value_target = rng.uniform(p_min, p_max)
             half_width = p_value_target * scale / 2
             x_min = frame.get_left()[0] + screen_margin + half_width
@@ -2992,6 +3308,13 @@ class GeneralizeBitCount(InteractiveScene):
             FadeIn(VGroup(ceil_inequality[2], ceil_inequality[-1])),
             run_time=1.5,
         )
+        self.wait(2)
+
+        # Name the quantity
+        self.play(ceil_inequality[R"-\log_2 p"].animate.set_color(YELLOW))
+        self.wait(2)
+        information_text = TexText("Information", font_size=34).set_color(YELLOW).next_to(algebra[19:], UP, buff=0.32)
+        self.play(Write(information_text))
         self.wait(2)
 
         # Helpers for the word diagram
@@ -3409,9 +3732,9 @@ class ShowEncodingScene(InteractiveScene):
         arrow = Arrow(0.45 * LEFT, 0.45 * RIGHT, buff=0, thickness=4)
         arrow.set_y((self.area_top + self.area_bottom) / 2)
 
-        char_count = VGroup(Integer(0, font_size=36), Text("characters", font_size=36))
-        bit_count = VGroup(Integer(0, font_size=36), Text("bits", font_size=36))
-        counter_y = self.area_bottom - 0.6
+        char_count = VGroup(Integer(0, font_size=31), Text("characters", font_size=31))
+        bit_count = VGroup(Integer(0, font_size=31), Text("bits", font_size=31))
+        counter_y = self.area_bottom - 0.8
 
         def update_counters(group):
             for counter in (char_count, bit_count):
@@ -3667,13 +3990,10 @@ class EuclidInContextNanoGPT(ShowEncodingScene):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        char_rect = SurroundingRectangle(char_count, buff=0.15).set_stroke(TEAL, 3)
-        self.play(Transform(rect, char_rect), run_time=1.5)
-        self.wait()
-        self.play(FadeOut(rect))
-        self.wait()
+        bits_per_char = Tex(R"= 2 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
+        self.play(Write(bits_per_char), run_time=2)
+        self.wait(2)
         self.play_highlight()
-        self.wait()
 
 
 class EuclidInContextQwen(ShowEncodingScene):
@@ -3688,7 +4008,7 @@ class EuclidInContextQwen(ShowEncodingScene):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        bits_per_char = Tex(R"\approx 0.75 \text{ bits / char}", font_size=40).next_to(bit_count, UP)
+        bits_per_char = Tex(R"\approx 0.75 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
         self.play(Write(bits_per_char), run_time=2)
 
 
@@ -4860,7 +5180,12 @@ class InitialConstitutionExample(InteractiveScene):
             run_time=1.5
         )
 
+        self.turn_text_into_bits(paragraph, n_first, arrow)
+
+    def turn_text_into_bits(self, paragraph, n_first, arrow):
         # Turn the text into bits
+        frame = self.frame
+        frame_width = frame.get_width()
         row_length = self.bits_per_row
         n_white = row_length * self.n_white_rows
         n_bits = n_white + row_length
@@ -4952,6 +5277,190 @@ class InitialConstitutionExample(InteractiveScene):
             show_slot(slot)
             self.wait(0.13)
         self.wait(8)
+
+class InitialConstitutionTokens(InitialConstitutionExample):
+    corpus_chars = 5_000_000
+    encode_time = 10
+    token_gap = 0.8
+
+    def construct(self):
+        self.skip_animations = True
+        super().construct()
+
+    def turn_text_into_bits(self, paragraph, n_first, arrow):
+        # Encode the text token by token
+        self.skip_animations = False
+        frame = self.frame
+        frame_width = frame.get_width()
+        frame_height = frame.get_height()
+        text = " ".join("""
+            We the People of the United States,
+            in Order to form a more perfect Union,
+            establish Justice, insure domestic Tranquility,
+            provide for the common defence,
+            promote the general Welfare,
+            and secure the Blessings of Liberty to ourselves and our Posterity,
+            do ordain and establish this Constitution for the United States of America.
+        """.split())
+        pieces, token_codes = self.get_token_data(text)
+
+        glyph_ranges = []
+        glyph_index = 0
+        for piece in pieces:
+            n_glyphs = len("".join(piece.split()))
+            glyph_ranges.append((glyph_index, glyph_index + n_glyphs))
+            glyph_index += n_glyphs
+        if glyph_index != len(paragraph):
+            raise ValueError("Token pieces do not line up with the paragraph glyphs")
+
+        # Lay out the bits
+        all_bits = "".join(token_codes)
+        n_bits = len(all_bits)
+        area_left = arrow.get_right()[0] + 0.04 * frame_width
+        area_right = frame.get_right()[0] - 0.04 * frame_width
+        area_width = area_right - area_left
+        area_height = 0.68 * frame_height
+        probe = Text("0000000000", font="Consolas")
+        advance = (probe[-1].get_x() - probe[0].get_x()) / 9
+        line_ratio = 1.6 * probe.get_height() / advance
+        gap = self.token_gap
+        code_lengths = [len(code) for code in token_codes]
+
+        token_starts = set()
+        bit_token_index = []
+        for token_index, length in enumerate(code_lengths):
+            token_starts.add(len(bit_token_index))
+            bit_token_index.extend([token_index] * length)
+
+        per_row = 16
+        while math.ceil(n_bits / per_row) * line_ratio * area_width / per_row > area_height:
+            per_row += 1
+        n_rows = math.ceil(n_bits / per_row)
+
+        bit_lines = VGroup()
+        row_gap_counts = []
+        for row in range(n_rows):
+            line = Text(all_bits[row * per_row:(row + 1) * per_row], font="Consolas")
+            gap_counts = []
+            n_gaps = 0
+            for k in range(len(line)):
+                if k > 0 and row * per_row + k in token_starts:
+                    n_gaps += 1
+                gap_counts.append(n_gaps)
+            row_gap_counts.append(gap_counts)
+            bit_lines.add(line)
+
+        def get_natural_width(line, gap_counts):
+            return line.get_width() + gap_counts[-1] * gap * advance
+
+        full_rows = [row for row, line in enumerate(bit_lines) if len(line) == per_row]
+        justified_width = max((get_natural_width(bit_lines[row], row_gap_counts[row]) for row in full_rows), default=0)
+        for row, (line, gap_counts) in enumerate(zip(bit_lines, row_gap_counts)):
+            extra = justified_width - get_natural_width(line, gap_counts) if row in full_rows else 0
+            n_gaps = gap_counts[-1]
+            for k, (glyph, count) in enumerate(zip(line, gap_counts)):
+                shift = count * gap * advance
+                if n_gaps > 0:
+                    shift += count * extra / n_gaps
+                elif len(line) > 1:
+                    shift += k * extra / (len(line) - 1)
+                glyph.shift(shift * RIGHT)
+            line.refresh_bounding_box(recurse_down=True)
+        line_step = line_ratio * advance
+        for row, line in enumerate(bit_lines):
+            line.move_to(np.array([0, -row * line_step, 0]), DL)
+        bit_lines.refresh_bounding_box(recurse_down=True)
+        bit_lines.scale(min(area_width / bit_lines.get_width(), area_height / bit_lines.get_height()))
+        bit_lines.move_to(np.array([area_left, frame.get_y(), 0]), LEFT)
+
+        bit_glyphs = [glyph for line in bit_lines for glyph in line]
+        token_bit_glyphs = [VGroup() for _ in token_codes]
+        for glyph, token_index in zip(bit_glyphs, bit_token_index):
+            token_bit_glyphs[token_index].add(glyph)
+        bit_block = VGroup(*token_bit_glyphs)
+        bit_block.set_color(WHITE)
+        paragraph.set_color(WHITE)
+        paragraph.set_opacity(0.1)
+
+        # Encode one token at a time
+        step_time = self.encode_time / len(token_codes)
+        previous = None
+        for (g0, g1), token_bits in zip(glyph_ranges, token_bit_glyphs):
+            if previous is not None:
+                previous.set_color(WHITE)
+            paragraph[g0:g1].set_opacity(1)
+            current = VGroup(paragraph[g0:g1], token_bits)
+            current.set_color(YELLOW)
+            self.add(token_bits)
+            previous = current
+            self.wait(step_time)
+        previous.set_color(WHITE)
+        self.remove(*token_bit_glyphs)
+        self.add(bit_block)
+        self.wait()
+
+        # Show the total number of bits
+        count_label = Text(f"{n_bits:,} bits", font_size=48 * frame_height / FRAME_HEIGHT)
+        count_label.next_to(bit_block, DOWN, buff=0.05 * frame_height)
+        count_label.match_x(bit_block)
+        self.play(FadeIn(count_label, shift=0.02 * frame_height * DOWN))
+        self.wait(8)
+
+    def get_token_data(self, text):
+        import hashlib
+        import json
+        import os
+
+        key = json.dumps([text, self.corpus_chars])
+        digest = hashlib.md5(key.encode()).hexdigest()[:12]
+        cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"qwen_token_huffman_{digest}.json")
+        if os.path.exists(cache_path):
+            with open(cache_path) as fp:
+                data = json.load(fp)
+            return data["pieces"], data["codes"]
+
+        import heapq
+        import _2026.cross_entropy.next_char as next_char
+
+        next_char._ensure_qwen_loaded()
+        tokenizer = next_char._qwen_tokenizer
+        text_ids = tokenizer.encode(text, add_special_tokens=False)
+        pieces = [tokenizer.decode([token_id]) for token_id in text_ids]
+        if "".join(pieces) != text:
+            raise ValueError("The tokens do not decode back to the text")
+
+        corpus = next_char._wiki_char_text()[:self.corpus_chars]
+        chunk = 100_000
+        corpus_ids = []
+        for i in range(0, len(corpus), chunk):
+            corpus_ids.extend(tokenizer.encode(corpus[i:i + chunk], add_special_tokens=False))
+        vocab_size = max(len(tokenizer), max(corpus_ids) + 1, max(text_ids) + 1)
+        counts = np.bincount(np.array(corpus_ids), minlength=vocab_size) + 1
+
+        parents = [-1] * (2 * vocab_size - 1)
+        branch_bits = [0] * (2 * vocab_size - 1)
+        heap = [(int(count), index) for index, count in enumerate(counts)]
+        heapq.heapify(heap)
+        next_index = vocab_size
+        while len(heap) > 1:
+            c0, i0 = heapq.heappop(heap)
+            c1, i1 = heapq.heappop(heap)
+            parents[i0], branch_bits[i0] = next_index, 0
+            parents[i1], branch_bits[i1] = next_index, 1
+            heapq.heappush(heap, (c0 + c1, next_index))
+            next_index += 1
+
+        def get_code(index):
+            bits = []
+            while parents[index] != -1:
+                bits.append(str(branch_bits[index]))
+                index = parents[index]
+            return "".join(reversed(bits))
+
+        codes = [get_code(token_id) for token_id in text_ids]
+        with open(cache_path, "w") as fp:
+            json.dump(dict(pieces=pieces, codes=codes), fp)
+        return pieces, codes
 
 
 class CharacterCodeScene(InteractiveScene):
@@ -5051,7 +5560,7 @@ class CharacterCodeScene(InteractiveScene):
             glyph.set_color(self.bit_colors[char_index % 2])
         glyph_lines = [i for i, line in enumerate(bit_lines) for _ in line]
         bit_count = Integer(0, font_size=30)
-        bit_label = Text("bits", font_size=30)
+        bit_label = Text("bits").match_height(bit_count)
         count_group = VGroup(bit_count, bit_label)
         count_group.arrange(RIGHT, buff=0.15, aligned_edge=DOWN)
         count_group.move_to(np.array([right_center, -FRAME_HEIGHT / 2 + 0.45, 0]))
