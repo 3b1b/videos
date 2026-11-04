@@ -154,6 +154,43 @@ class RandomGrid(Grid):
         for row in range(n):
             self.add_hole(hole_col[row], row)
 
+        occupied = [[False] * n for _ in range(n)]
+        for row in range(n):
+            occupied[row][hole_col[row]] = True
+
+        def find_candidate_rectangles():
+            heights = [0] * n
+            candidates = []
+            for row in range(n):
+                for col in range(n):
+                    heights[col] = 0 if occupied[row][col] else heights[col] + 1
+                stack = []
+                for col in range(n + 1):
+                    h = heights[col] if col < n else 0
+                    start = col
+                    while stack and stack[-1][1] >= h:
+                        idx, height = stack.pop()
+                        area = height * (col - idx)
+                        candidates.append((area, row - height + 1, idx, row, col - 1))
+                        start = idx
+                    stack.append((start, h))
+            return candidates
+
+        empty_remaining = n * n - n
+        while empty_remaining > 0:
+            candidates = find_candidate_rectangles()
+            max_area = max(c[0] for c in candidates)
+            good = [c for c in candidates if c[0] >= max_area * 0.75]
+            area, top, left, bottom, right = random.choice(good)
+
+            self.add_tile(right - left + 1, bottom - top + 1, left, top)
+            for r in range(top, bottom + 1):
+                for c in range(left, right + 1):
+                    occupied[r][c] = True
+            empty_remaining -= area
+
+        self.filled_tiles = VGroup(*self.tiles)
+
 
 class OptimalArrangementMotivation(InteractiveScene):
     def construct(self):
@@ -1082,6 +1119,59 @@ class TexturedSphereExample(InteractiveScene):
         )
         textured_sphere = TexturedSurface(sphere, "RandomGrid.png")
         self.add(textured_sphere)
+
+        # Circle the final count
+        final_count = expanded_version[1:]
+        rect = SurroundingRectangle(final_count, buff = 0.4, fill_opacity = 0, stroke_width = 3, stroke_color = YELLOW)
+        self.play(ShowCreation(rect, run_time = 2), FadeOut(edge_tile_numbers), grid.animate.restore().move_to(grid))
+        self.wait(2)
+
+        # Compare the conjectured optimal arrangement with other random arrangements
+        grid.generate_target()
+        final_count.generate_target()
+        VGroup(final_count.target, grid.target).arrange(DOWN, buff = 2.5).match_x(grid).match_y(self.camera.frame)
+        edge_tile_numbers.set_z_index(100)
+        self.play(
+            AnimationGroup(
+                FadeOut(VGroup(formula_group, expanded_version_intermediate, expanded_version[0], rect)),
+                AnimationGroup(
+                    MoveToTarget(grid, run_time = 1),
+                    MoveToTarget(final_count, path_arc = PI*0.4, run_time = 1.5)
+                )
+            , lag_ratio = 0.3)
+        )
+
+        num_iters = 100
+        for i in range(num_iters):
+            other_grid = RandomGrid(int(k_tracker.get_value()**2)).match_y(grid).set_x(2*self.camera.frame.get_x() - grid.get_x())
+            for hole in other_grid.holes:
+                hole.border.set_stroke(color = WHITE)
+            self.add(other_grid)
+            if i == 0:
+                qms = TexText("???").match_height(final_count).match_y(final_count).match_x(other_grid)
+                self.play(FadeIn(VGroup(other_grid, qms)), run_time = 0.4)
+            elif i == 26:
+                arrow1 = Arrow(ORIGIN, RIGHT*4, thickness = 17).set_color(YELLOW).next_to(final_count, LEFT, buff = 1)
+                arrow2 = arrow1.copy().rotate(PI).next_to(final_count, RIGHT, buff = 1)
+                self.play(FadeIn(arrow1, shift = RIGHT), FadeIn(arrow2, shift = LEFT))
+            else:
+                self.wait(0.4)
+            if i < num_iters - 1:
+                self.remove(other_grid)
+
+class RandomGrids(InteractiveScene):
+    def construct(self):
+        # Show an animation cyclying through many random grids
+        num_iters = 900
+        for i in range(num_iters):
+            other_grid = RandomGrid(25)
+            self.camera.frame.set_height(other_grid.get_height()*1.1)
+            for hole in other_grid.holes:
+                hole.border.set_stroke(color = WHITE)
+            self.add(other_grid)
+            self.wait(0.4)
+            if i < num_iters - 1:
+                self.remove(other_grid)
 
 
 class ErdosSzekeres(InteractiveScene):
