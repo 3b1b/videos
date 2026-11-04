@@ -628,7 +628,7 @@ class PreviewAnalyticContinuation(InteractiveScene):
             lambda s: -1 * sum((np.divide(1, (s - p)) for p in pole_values))
         )
         graph.rotate(90 * DEG, about_point=plane.n2p(0))
-        graph.sort_faces_back_to_front(DOWN)
+        graph.set_sort_to_camera()
         graph.set_opacity(0.8)
 
         frame.reorient(-1, 75, 0, (0.35, 0.49, 1.27), 7.85)

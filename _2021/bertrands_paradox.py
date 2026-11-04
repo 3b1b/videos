@@ -432,7 +432,7 @@ class RandomPointsFromVariousSpaces(Scene):
         sphere.replace(circle)
         sphere.rotate(0.05 * PI)
         sphere.rotate(0.4 * PI, LEFT)
-        sphere.sort_faces_back_to_front()
+        sphere.set_sort_to_camera()
 
         mesh = SurfaceMesh(sphere)
         mesh.set_stroke(WHITE, 1, 0.5)
@@ -988,7 +988,7 @@ class CorrectionInsert(Scene):
         sphere_group = Group(mesh_shadow, sphere, mesh)
         sphere_group.rotate(80 * DEGREES, LEFT)
         sphere_group.rotate(2.5 * DEGREES, OUT)
-        sphere.sort_faces_back_to_front()
+        sphere.set_sort_to_camera()
 
         shapes = Group(interval, circle, sphere_group)
         shapes.arrange(RIGHT, buff=LARGE_BUFF)

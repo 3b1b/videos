@@ -45,7 +45,6 @@ class IntersectionAndUnion(InteractiveScene):
         inter.set_stroke(WHITE, 3)
         inter.set_fill(TEAL, 1.0)
         inter.flip()
-        inter.refresh_triangulation()
         self.play(
             DrawBorderThenFill(inter),
             circles.animate.set_fill(opacity=0.25)

@@ -388,7 +388,6 @@ class IntroduceTheComputation(Scene):
 
         # This is nonsense.
         morty = Mortimer()
-        morty.refresh_triangulation()
         morty.match_height(randy)
         morty.to_corner(DR)
         morty.set_opacity(0)

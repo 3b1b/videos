@@ -70,7 +70,7 @@ class ConvolutionIntroduction(InteractiveScene):
 
             h, w = kernel.shape
             pixels = np.array([
-                square.data["fill_rgba"][0]
+                square.uniforms["fill_rgba"]
                 for square in pixel_array
             ]).reshape((height, width, 4))
 
@@ -83,7 +83,10 @@ class ConvolutionIntroduction(InteractiveScene):
 
             kernel_array.move_to(pixel_array[pos])
             right_rect.move_to(new_array[pos])
-            new_array[pos].data["fill_rgba"][0] = rgba
+            # Rebound rather than written into, so that the change is noticed, and
+            # both ends set so that no gradient runs between them
+            new_array[pos].uniforms["fill_rgba"] = rgba
+            new_array[pos].uniforms["fill_rgba_end"] = rgba
 
         def walk(start, stop, time=5, surface=None):
             for n in range(start, stop):

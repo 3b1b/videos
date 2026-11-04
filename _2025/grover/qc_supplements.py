@@ -95,7 +95,6 @@ class Superposition(Group):
         glow_strokes = np.arange(*glow_stroke_range)
         glows = pieces.replicate(len(glow_strokes))
         glows.set_fill(opacity=0)
-        glows.set_joint_type('no_joint')
         for glow, sw in zip(glows, glow_strokes):
             glow.set_stroke(glow_color, width=float(sw), opacity=glow_stroke_opacity)
 

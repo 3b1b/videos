@@ -828,7 +828,7 @@ class ShowSphereVolumeDerivative(ShowCircleAreaDerivative):
             sphere = Sphere(radius=r + get_dr())
             sphere.set_color(RED_E, 0.5)
             sphere.set_clip_plane(IN, 0)
-            sphere.sort_faces_back_to_front(LEFT)
+            sphere.set_sort_to_camera()
             return sphere
 
         outer_sphere = always_redraw(get_outer_sphere)

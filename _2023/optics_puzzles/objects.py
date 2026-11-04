@@ -380,7 +380,7 @@ class TwistedRibbon(ParametricSurface):
             color=color,
             opacity=opacity,
             resolution=resolution,
-            prefered_creation_axis=0,
+            preferred_creation_axis=0,
         )
         self.shift(axes.c2p(*start_point) - axes.get_origin())
 

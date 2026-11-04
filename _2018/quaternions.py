@@ -3634,12 +3634,12 @@ class TwoDStereographicProjection(IntroduceFelix):
         n = len(south_hemisphere)
         south_hemisphere.remove(*south_hemisphere[:n // 2])
         south_hemisphere.remove(
-            *south_hemisphere[-sphere.resolution[1]:]
+            *south_hemisphere[-sphere.get_resolution()[1]:]
         )
         south_hemisphere.generate_target()
         self.project_mobject(south_hemisphere.target)
         south_hemisphere.set_fill(opacity=0.8)
-        south_hemisphere.target[-sphere.resolution[1] // 2:].set_fill(
+        south_hemisphere.target[-sphere.get_resolution()[1] // 2:].set_fill(
             opacity=0
         )
 

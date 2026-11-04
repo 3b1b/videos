@@ -10,6 +10,8 @@ directories:
     downloads: "manim_downloads"
     # Use the default value for the rest
 universal_import_line: "from manim_imports_ext import *"
+scene:
+  invert_zoom_scroll: True
 window:
   position_string: UR
   monitor_index: 0
