@@ -3818,6 +3818,9 @@ class ShowEncodingScene(InteractiveScene):
     highlight_afterwards = False
     two_pass = False
     keep_highlight_on_second_pass = False
+    counter_font_size = 31
+    message_length_bits = 8
+    message_length_scale = 0.75
 
     def construct(self):
         # Compute the encoding
@@ -3873,21 +3876,55 @@ class ShowEncodingScene(InteractiveScene):
         arrow = Arrow(0.45 * LEFT, 0.45 * RIGHT, buff=0, thickness=4)
         arrow.set_y((self.area_top + self.area_bottom) / 2)
 
-        char_count = VGroup(Integer(0, font_size=31), Text("characters", font_size=31))
-        bit_count = VGroup(Integer(0, font_size=31), Text("bits", font_size=31))
+        font_size = self.counter_font_size
         counter_y = self.area_bottom - 0.8
+        baseline = counter_y - 0.12
+        char_word = Text("characters", font_size=font_size)
+        bit_word = Text("bits", font_size=font_size)
+        self.char_counter = self.get_counter(font_size, left_x, baseline, "left", char_word)
+        self.bit_counter = self.get_counter(font_size, right_x, baseline, "left", bit_word)
+        char_count = VGroup(self.char_counter["digits"], char_word)
+        bit_count = VGroup(self.bit_counter["digits"], bit_word)
+        self.set_counter(self.char_counter, 0)
+        self.set_counter(self.bit_counter, 0)
 
-        def update_counters(group):
-            for counter in (char_count, bit_count):
-                counter.arrange(RIGHT, buff=0.15, aligned_edge=DOWN)
-            char_count.move_to(np.array([raw_title.get_x(), counter_y, 0]))
-            bit_count.move_to(np.array([encoded_title.get_x(), counter_y, 0]))
+        n_tokens = len(codes) - 1
+        n_length_bits = max(self.message_length_bits, n_tokens.bit_length())
+        widest = Text(f"Message length: {n_tokens} = " + "0" * n_length_bits, font_size=font_size)
+        bit_count_width = Text(f"{max_bits} bits", font_size=font_size).get_width()
+        length_scale = min(self.message_length_scale, (self.column_width - bit_count_width - 0.5) / widest.get_width())
+        length_font_size = font_size * length_scale
+        buff = 0.15 * length_scale
+        length_baseline = baseline
 
-        counters = VGroup(char_count, bit_count)
-        counters.add_updater(update_counters)
-        counters.update()
+        zeros = Text("0" * n_length_bits, font="Consolas", font_size=length_font_size)
+        ones = Text("1" * n_length_bits, font="Consolas", font_size=length_font_size)
+        zeros.shift((right_x + self.column_width + 0.35 - zeros.get_right()[0]) * RIGHT)
+        zeros.shift((length_baseline - zeros.get_bottom()[1]) * UP)
+        for zero, one in zip(zeros, ones):
+            one.move_to(zero)
+            one.shift((length_baseline - one.get_bottom()[1]) * UP)
+        equals = Text("=", font_size=length_font_size)
+        equals.next_to(zeros, LEFT, buff=buff)
+        number_right = equals.get_left()[0] - buff
+        self.length_counter = self.get_counter(length_font_size, number_right, length_baseline, "right", None)
+        number_width = len(str(n_tokens)) * self.length_counter["advance"]
+        length_label = Text("Message length:", font_size=length_font_size)
+        length_label.shift((number_right - number_width - buff - length_label.get_right()[0]) * RIGHT)
+        length_label.shift((length_baseline - length_label[0].get_bottom()[1]) * UP)
+        equals.set_y(length_label[0].get_y())
+        length_unit = Text("(characters)" if self.model_name == "nanogpt" else "(tokens)", font_size=16)
+        length_unit.set_color(GREY_B)
+        length_unit.next_to(length_label, DOWN, buff=0.08)
+        self.length_bits = (zeros, ones)
+        message_length = VGroup(length_label, self.length_counter["digits"], equals, zeros, ones)
+        self.set_message_length(0)
 
-        self.add(raw_title, encoded_title, divider, arrow, counters)
+        encoded_side = VGroup(arrow, encoded_title, bit_count, message_length, length_unit)
+        self.reveal_mobs = encoded_side if self.two_pass else VGroup()
+        self.add(raw_title, divider, char_count)
+        if not self.two_pass:
+            self.add(encoded_side)
         self.wait()
 
         # Type out the text
@@ -3940,6 +3977,7 @@ class ShowEncodingScene(InteractiveScene):
             for i, glyph in enumerate(char_glyphs)
         ]
         self.play(raw_glyphs.animate.set_fill(opacity=0.2))
+        self.add(self.reveal_mobs)
 
         def set_token_style(n, highlighted):
             for i in range(char_ends[n - 1], char_ends[n]):
@@ -3952,6 +3990,7 @@ class ShowEncodingScene(InteractiveScene):
                 set_token_style(n - 1, False)
             set_token_style(n, True)
             self.set_bits(codes[n], bit_dot, bit_slots, bit_count, added_start)
+            self.set_message_length(n)
             bit_slots[len(codes[n - 1]):len(codes[n])].set_fill(YELLOW)
             self.wait(token_time)
             if n == pause_token:
@@ -3966,6 +4005,34 @@ class ShowEncodingScene(InteractiveScene):
         if len(self.highlight_mobs) > 0:
             self.play(self.highlight_mobs.animate.set_color(YELLOW), run_time=run_time)
 
+    def get_counter(self, font_size, x, baseline, align, word):
+        probe = Text("00", font_size=font_size)
+        return dict(
+            digits=VGroup(), font_size=font_size, x=x, baseline=baseline, align=align, word=word,
+            advance=probe[1].get_x() - probe[0].get_x(), buff=0.15 * font_size / self.counter_font_size,
+        )
+
+    def set_counter(self, counter, n):
+        glyphs = Text(str(n), font_size=counter["font_size"])
+        n_digits = len(glyphs)
+        advance = counter["advance"]
+        start = counter["x"] if counter["align"] == "left" else counter["x"] - n_digits * advance
+        for i, glyph in enumerate(glyphs):
+            glyph.move_to(np.array([start + (i + 0.5) * advance, 0, 0]))
+            glyph.shift((counter["baseline"] - glyph.get_bottom()[1]) * UP)
+        counter["digits"].set_submobjects(list(glyphs))
+        word = counter["word"]
+        if word is not None:
+            word.shift((start + n_digits * advance + counter["buff"] - word.get_left()[0]) * RIGHT)
+            word.shift((counter["baseline"] - word.get_bottom()[1]) * UP)
+
+    def set_message_length(self, n):
+        self.set_counter(self.length_counter, n)
+        zeros, ones = self.length_bits
+        for bit, zero, one in zip(format(n, "b").zfill(len(zeros)), zeros, ones):
+            zero.set_fill(opacity=float(bit == "0"))
+            one.set_fill(opacity=float(bit == "1"))
+
     def set_bits(self, code, bit_dot, bit_slots, bit_count, added_start):
         bit_dot.set_fill(opacity=float(len(code) > 0))
         for i, (zero, one) in enumerate(bit_slots):
@@ -3973,7 +4040,7 @@ class ShowEncodingScene(InteractiveScene):
             color = YELLOW if added_start is not None and i >= added_start else WHITE
             zero.set_fill(color, opacity=float(bit == "0"))
             one.set_fill(color, opacity=float(bit == "1"))
-        bit_count[0].set_value(len(code))
+        self.set_counter(self.bit_counter, len(code))
 
     def get_encoding_updater(self, n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start, show_bits=True):
         state = {"n": None}
@@ -3988,7 +4055,8 @@ class ShowEncodingScene(InteractiveScene):
                 if glyph is not None:
                     glyph.set_fill(opacity=float(i < n_chars))
             self.set_bits(codes[n] if show_bits else "", bit_dot, bit_slots, bit_count, added_start)
-            char_count[0].set_value(n_chars)
+            self.set_message_length(n if show_bits else 0)
+            self.set_counter(self.char_counter, n_chars)
 
         return update_encoding
 
@@ -4170,7 +4238,7 @@ class EuclidInContextNanoGPT(ShowEncodingScene):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        bits_per_char = Tex(R"= 2 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
+        bits_per_char = Tex(R"= 2 \text{ bits/char}", font_size=24).next_to(bit_count, UP)
         self.play(Write(bits_per_char), run_time=2)
         self.wait(2)
         self.play_highlight()
@@ -4191,7 +4259,7 @@ class EuclidInContextQwen(ShowEncodingScene):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        bits_per_char = Tex(R"\approx 0.75 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
+        bits_per_char = Tex(R"\approx 0.75 \text{ bits/char}", font_size=24).next_to(bit_count, UP)
         self.play(Write(bits_per_char), run_time=2)
 
 
