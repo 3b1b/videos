@@ -3709,6 +3709,98 @@ class GeneralizeBitCount(InteractiveScene):
         self.wait(2)
 
 
+class LuckyVsRoundUp(InteractiveScene):
+    candidate_words = [
+        "math", "info", "bits", "shannon", "entropy", "code", "binary", "signal", "noise", "channel",
+        "message", "compression", "is", "intelligence", "encode", "decode", "symbol", "byte", "data",
+        "probability", "predict", "token", "model", "language", "arithmetic", "interval", "fraction", "decimal", "zero",
+        "one", "huffman", "ascii", "text", "string", "letter", "word", "prefix", "average", "expected",
+        "surprise", "logarithm", "number", "precision", "decoder", "encoder", "lossless", "lossy", "file", "zip",
+        "transmit", "theorem", "bound", "optimal", "claude", "gpt", "context", "next",
+    ]
+    lucky_color = GREEN
+    round_up_color = RED
+    box_size = 0.4
+    row_left = -5.8
+    word_y = 1.8
+    row_y = -0.8
+    dash_margin = 0.2
+
+    def construct(self):
+        # Compute the examples
+        examples = [self.get_example(word) for word in self.candidate_words]
+        examples = [example for example in examples if example is not None]
+
+        # Set up the row of boxes
+        size = self.box_size
+        n_boxes = math.ceil((FRAME_WIDTH / 2 - self.row_left) / size) + 1
+        boxes = VGroup(*(Square(size) for _ in range(n_boxes)))
+        boxes.arrange(RIGHT, buff=0)
+        boxes.set_fill(BLACK, 1)
+        boxes.set_stroke(WHITE, 2)
+        boxes.move_to(np.array([self.row_left, self.row_y, 0]), LEFT)
+        arrow = Arrow(
+            np.array([self.row_left - 0.15, self.word_y, 0]),
+            boxes[0].get_left() + 0.15 * LEFT,
+            path_arc=0.6 * PI,
+            buff=0.1,
+        )
+        self.add(boxes, arrow)
+
+        # Cycle through the examples
+        for example in examples:
+            shown = self.get_example_mobjects(example, boxes)
+            self.add(shown)
+            self.wait(1)
+            self.remove(shown)
+
+    def get_example(self, word):
+        if any(char not in CHAR_ALPHABET for char in word):
+            return None
+        low, high = 0.0, 1.0
+        for i, char in enumerate(word):
+            dist = cached_next_char_distribution(" " + word[:i]).copy()
+            dist /= dist.sum()
+            index = CHAR_ALPHABET.index(char)
+            start = dist[:index].sum()
+            low, high = low + (high - low) * start, low + (high - low) * (start + dist[index])
+        try:
+            bits = ArithmeticCodingDiagram.get_binary_code(low, high)
+        except ValueError:
+            return None
+        return dict(word=word, bits=bits, n_bits=len(bits), info=-math.log2(high - low))
+
+    def get_example_mobjects(self, example, boxes):
+        word = Text(example["word"], font_size=72)
+        word.move_to(np.array([self.row_left, self.word_y, 0]), LEFT)
+
+        color = self.lucky_color if example["n_bits"] < example["info"] else self.round_up_color
+        digits = VGroup()
+        for digit, box in zip(example["bits"], boxes):
+            char = Text(digit, font="Consolas")
+            char.set_height(0.55 * self.box_size)
+            char.move_to(box)
+            digits.add(char)
+        digits.set_color(color)
+
+        bottom_left = boxes.get_corner(DL)
+        info_width = example["info"] * self.box_size
+        dash_half_height = 1.5 * (self.box_size / 2 + self.dash_margin)
+        dash_x = bottom_left[0] + info_width
+        dash = DashedLine(
+            np.array([dash_x, self.row_y - dash_half_height, 0]),
+            np.array([dash_x, self.row_y + dash_half_height, 0]),
+        )
+        dash.set_stroke(WHITE, 4)
+
+        brace = Brace(Line(bottom_left, bottom_left + info_width * RIGHT), DOWN, buff=0)
+        brace.shift((dash.get_bottom()[1] - brace.get_top()[1]) * UP)
+        brace_label = Tex(R"-\log_2(p)", font_size=40)
+        brace_label.next_to(brace, DOWN, buff=0.15)
+
+        return VGroup(word, digits, brace, brace_label, dash)
+
+
 class ShowEncodingScene(InteractiveScene):
     text = "Euclid's Elements"
     highlight = None
