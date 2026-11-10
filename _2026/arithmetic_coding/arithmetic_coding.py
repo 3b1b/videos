@@ -5420,6 +5420,31 @@ class HamletWithDiagram(USConstitutionWithDiagram):
         return steps, pieces
 
 
+class MathWikipedia(USConstitutionWithDiagram):
+    text = """
+        Mathematics is a field of knowledge concerned with abstract concepts such as numbers,
+        geometric shapes, sets, functions, and probabilities. It uses logical reasoning and proof
+        to study and establish their properties, often expressed as theorems, formulas, and equations.
+        Mathematics is widely used to model and solve problems in science, engineering, technology,
+        economics, and everyday life.
+        There are many areas of mathematics, including number theory (the study of integers and
+        their properties), algebra (the study of operations and the structures they form), geometry
+        (the study of shapes and spaces that contain them), analysis (the quantitative study of
+        approximation and convergence), and set theory (presently used as a foundation for all mathematics).
+        Mathematics involves the description and manipulation of abstract objects that are either
+        abstractions from nature or purely abstract entities that are stipulated to have certain
+        properties, called axioms. Mathematics uses pure reason to prove the properties of objects
+        through proofs, which consist of a succession of applications of deductive rules to already
+        established results. These results, called theorems, include previously proved theorems,
+        axioms, and, in case of abstraction from nature, some basic properties that are considered
+        true starting points of the theory under consideration.
+    """
+    skip_coarse_levels = True
+    max_label_level = 12
+    max_text_chars = 140
+    max_bits_chars = 120
+
+
 class InitialConstitutionExample(InteractiveScene):
     bits_per_row = 10
     n_white_rows = 2
@@ -6202,3 +6227,104 @@ class HuffmanEncoding(CharacterCodeScene):
             heapq.heappush(heap, (p0 + p1, next_index))
             next_index += 1
         return codes
+
+
+class AnyDataType(InteractiveScene):
+    image_file = "images_and_videos/shannon.jpg"
+    video_file = "images_and_videos/klein_bottle.mp4"
+    item_height = 1.3
+    item_x = -4.6
+    bits_left = -0.2
+    row_spacing = 1.8
+    n_bits = 30
+    bit_font_size = 30
+
+    def construct(self):
+        # Build the data types
+        items = Group(
+            self.get_text_item(),
+            self.get_image_item(),
+            self.get_video_item(),
+            self.get_wave_item(),
+        )
+        for i, item in enumerate(items):
+            item.move_to(np.array([self.item_x, (1.5 - i) * self.row_spacing, 0]))
+
+        # Build the bits and arrows
+        rng = np.random.default_rng(1)
+        bit_strings = VGroup()
+        arrows = VGroup()
+        arrow_start_x = items[0].get_right()[0] + 0.3
+        arrow_end_x = self.bits_left - 0.3
+        for item in items:
+            bit_string = "".join(rng.choice(["0", "1"], self.n_bits)) + "..."
+            bits = Text(bit_string, font="Consolas", font_size=self.bit_font_size)
+            bits.move_to(np.array([self.bits_left, item.get_y(), 0]), LEFT)
+            arrow = Arrow(
+                np.array([arrow_start_x, item.get_y(), 0]),
+                np.array([arrow_end_x, item.get_y(), 0]),
+                buff=0,
+            )
+            arrow.set_color(GREY)
+            bit_strings.add(bits)
+            arrows.add(arrow)
+
+        # Show the data types
+        self.play(LaggedStartMap(FadeIn, items, shift=0.25 * RIGHT, lag_ratio=0.25))
+        self.wait()
+
+        # Convert everything to bits
+        for item, arrow, bits in zip(items, arrows, bit_strings):
+            if isinstance(item, VMobject):
+                self.play(
+                    GrowArrow(arrow, run_time=0.8),
+                    TransformFromCopy(item, bits, lag_ratio=0.03, run_time=1.3)
+                )
+                continue
+            lag_ratio = 0.03
+            total_time = 1.3
+            piece_time = total_time / (1 + lag_ratio * (len(bits) - 1))
+            self.play(
+                GrowArrow(arrow, run_time=0.8),
+                *(
+                    FadeTransform(
+                        item.copy(),
+                        glyph,
+                        time_span=(i * lag_ratio * piece_time, i * lag_ratio * piece_time + piece_time),
+                    )
+                    for i, glyph in enumerate(bits)
+                ),
+            )
+        self.wait(3)
+
+    def get_text_item(self):
+        text = Text("To be, or not to be,\nthat is the question", font_size=28)
+        text.set_max_width(3.0)
+        return text
+
+    def get_image_item(self):
+        image = ImageMobject(self.image_file)
+        image.set_height(self.item_height)
+        border = SurroundingRectangle(image, buff=0)
+        border.set_stroke(WHITE, 2)
+        return Group(image, border)
+
+    def get_video_item(self):
+        video = VideoMobject(self.video_file, height=self.item_height, loop=True)
+        video.play_from(0)
+        border = SurroundingRectangle(video, buff=0)
+        border.set_stroke(WHITE, 2)
+        return Group(video, border)
+
+    def get_wave_item(self):
+        rng = np.random.default_rng(3)
+        n_bars = 40
+        xs = np.linspace(-1.5, 1.5, n_bars)
+        envelope = 0.35 + 0.65 * np.exp(-0.8 * xs**2) * (0.75 + 0.25 * np.cos(3 * xs))
+        heights = self.item_height * envelope * rng.uniform(0.15, 1.0, n_bars)
+        wave = VGroup(*(
+            Line(0.5 * height * DOWN, 0.5 * height * UP).shift(x * RIGHT)
+            for x, height in zip(xs, heights)
+        ))
+        wave.set_stroke(BLUE, 4)
+        return wave
