@@ -2080,6 +2080,18 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
 
         self.play(FadeOut(VGroup(bits_brace, bits_label, avg_bits_per_char)))
 
+        # Compare the size of the target region to the size of the yellow interval
+        if False:
+            target_region_brace = Brace(target_lines, DOWN, buff=0.1)
+            self.play(GrowFromEdge(target_region_brace, UP))
+            self.wait(1)
+            yellow_interval_brace = Brace(highlight, DOWN).align_to(target_region_brace, UP).set_color(YELLOW)
+            self.play(
+                target_region_brace.animate.set_opacity(0.4),
+                TransformFromCopy(target_region_brace, yellow_interval_brace, run_time=1.5)
+            )
+            self.wait(2)
+
         # Helpers for extending the word
         def get_world_binary(bit_str):
             text = get_binary_text("." + bit_str)
@@ -2328,7 +2340,7 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
                 fade_thin_strokes=True,
             ),
             line_top.animate.set_value(line_y),
-            frame.animate.scale(1.05).shift(DOWN*0.6),
+            frame.animate.scale(1.05).shift(DOWN * 0.6),
             run_time=2.5,
         )
         brace.clear_updaters()
@@ -3172,150 +3184,116 @@ class GeneralizeBitCount(InteractiveScene):
         self.remove(tick_highlights)
         self.wait()
 
-        bound = Tex(R"2^{-k} \le p", font_size=48).to_edge(DOWN, buff=1)
+        bound = Tex(R"2^{-k} \le p", font_size=48).to_edge(UP, buff=-0.5)
+        bound.shift(0.5 * UP)
+        frame_shift = 1.5 * UP
+        k_label_x = k_label.get_x()
+        k_corner = frame.get_corner(UR) + frame_shift + np.array([-0.5, -0.4, 0])
 
         # Show the inequality
         self.play(
+            k_label.animate(run_time=1.3).scale(0.6).move_to(k_corner, UR),
+            self.camera.frame.animate(run_time=1.3).shift(frame_shift),
             AnimationGroup(
-                TransformMatchingShapes(width_brace[1].copy(), bound["2^{-k}"], path_arc=PI * 0.3),
+                TransformMatchingShapes(width_brace[1].copy(), bound["2^{-k}"], path_arc=-PI * 0.3),
                 Write(bound[R"\le"]),
-                TransformMatchingShapes(p_brace[1].copy(), bound["p"], path_arc=-PI * 0.3),
+                TransformMatchingShapes(p_brace[1].copy(), bound["p"], path_arc=PI * 0.3),
                 lag_ratio=0.4,
                 run_time=2
             )
         )
 
-        # Do the algebra
-        algebra = Tex(R"2^{-k} \le p\ \implies\ -k \le \log_2 p\ \implies\ k \ge -\log_2 p", font_size=48).move_to(bound)
-        self.play(TransformMatchingShapes(bound, algebra[:5]), run_time=1)
-        log_version = Tex(R"\log_2(2^{-k}) \le \log_2 p", font_size=48).match_y(bound).align_to(algebra[7], LEFT)
-        self.play(
-            AnimationGroup(
-                AnimationGroup(
-                    GrowFromEdge(algebra[5:7], LEFT),
-                    TransformFromCopy(algebra[:3], log_version[5:8]),
-                    TransformFromCopy(algebra[3], log_version[9]),
-                    TransformFromCopy(algebra[4], log_version[14]),
-                    run_time=2
-                ),
-                FadeIn(VGroup(log_version[:5], log_version[8], log_version[10:14])),
-                lag_ratio=0.7
-            )
+        # Rearrange over several lines
+        rearranged = VGroup(
+            Tex(R"2^{-k} \le p", font_size=48),
+            Tex(R"\log_2(2^{-k}) \le \log_2(p)", font_size=48),
+            Tex(R"-k \le \log_2(p)", font_size=48),
+            Tex(R"k \ge -\log_2(p)", font_size=48),
         )
-        self.play(
-            FadeOut(VGroup(log_version[:6], log_version[8])),
-            TransformMatchingShapes(log_version[6], algebra[7]),
-            TransformMatchingShapes(log_version[7], algebra[8]),
-            TransformMatchingShapes(log_version[8:], algebra[9:15])
-        )
-        self.wait(1)
-        copy = algebra[9].copy()
-        self.play(
-            GrowFromEdge(algebra[15:17], LEFT),
-            AnimationGroup(
-                TransformFromCopy(algebra[7], algebra[19], path_arc=-PI * 0.3),
-                TransformFromCopy(algebra[8], algebra[17], path_arc=-PI * 0.3),
-                copy.animate(path_arc=-PI * 0.3).move_to(algebra[18]).rotate(PI, axis=UP),
-                TransformFromCopy(algebra[10:15], algebra[20:], path_arc=-PI * 0.3),
-                lag_ratio=0.1,
-                run_time=2
-            )
-        )
-        self.remove(copy)
-        self.add(algebra)
+        rearranged.arrange(DOWN, buff=0.25)
+        relations = [line[R"\le"] for line in rearranged[:3]] + [rearranged[3][R"\ge"]]
+        for line, relation in zip(rearranged, relations):
+            line.shift((relations[0].get_x() - relation.get_x()) * RIGHT)
+        rearranged.shift(bound[R"\le"].get_center() - relations[0].get_center())
+        self.remove(bound)
+        self.add(rearranged[0])
+        line0, line1, line2, line3 = rearranged
 
-        # Bring it to the center
-        inequality = algebra[17:]
-        self.play(
-            FadeOut(algebra[:17], run_time=1),
-            inequality.animate(run_time=1.8).set_x(0).scale(1.2)
-        )
-        self.wait(2)
+        def get_rest(line, *parts):
+            used = {id(sm) for part in parts for sm in part.get_family()}
+            return VGroup(*(sm for sm in line.family_members_with_points() if id(sm) not in used))
 
-        # Show non-whole numbers of bits
-        rect = SurroundingRectangle(algebra[19:], fill_opacity=0, stroke_width=3, stroke_color=YELLOW, buff=0.1)
+        matched = [line1["2^{-k}"], line1[R"\le"], line1["p"]]
+        rest = get_rest(line1, *matched)
+        self.play(
+            TransformFromCopy(line0["2^{-k}"], matched[0]),
+            TransformFromCopy(line0[R"\le"], matched[1]),
+            TransformFromCopy(line0["p"], matched[2]),
+            FadeIn(rest, time_span=(0.6, 1.5)),
+            run_time=1.5,
+        )
+        self.remove(*matched, rest)
+        self.add(line1)
+        self.wait()
+
+        matched = [line1["-k"], line1[R"\le"], line1[R"\log_2(p)"]]
+        targets = [line2["-k"], line2[R"\le"], line2[R"\log_2(p)"]]
+        leftover = get_rest(line1, *matched).copy()
+        self.play(
+            *(TransformFromCopy(source, target) for source, target in zip(matched, targets)),
+            leftover.animate.move_to(targets[0]).set_opacity(0),
+            run_time=1.5,
+        )
+        self.remove(leftover, *targets)
+        self.add(line2)
+        self.wait()
+
+        relation_copy = line2[R"\le"].copy()
+        sources = [line2["k"], line2["-"], line2[R"\log_2(p)"]]
+        targets = [line3["k"], line3["-"], line3[R"\log_2(p)"]]
+        self.play(
+            *(TransformFromCopy(source, target, path_arc=-PI * 0.3) for source, target in zip(sources, targets)),
+            relation_copy.animate(path_arc=-PI * 0.3).move_to(line3[R"\ge"]).rotate(PI, axis=UP),
+            run_time=2,
+        )
+        self.remove(relation_copy, *targets)
+        self.add(line3)
+        self.wait()
+
+        inequality = line3
+
+        # Set up the rounded bit count
+        ceil_inequality = Tex(R"k = \lceil -\log_2(p) \rceil", font_size=48).scale(1.2)
         p_decimals = max(2, 2 - math.floor(math.log10(p)))
         p_value = VGroup(Tex("=", font_size=36), DecimalNumber(p, num_decimal_places=p_decimals, font_size=36))
         p_value.arrange(RIGHT, buff=SMALL_BUFF)
         label_shift = -(p_value.get_width() + SMALL_BUFF) / 2
-        p_value.next_to(p_brace[1], RIGHT, buff=SMALL_BUFF).shift(label_shift * RIGHT)
+        p_value_fade = ValueTracker(0)
 
         def update_p_value(group):
             group[1].set_value(p_tracker.get_value())
             group.next_to(p_brace[1], RIGHT, buff=SMALL_BUFF)
+            group.set_opacity(p_value_fade.get_value())
+
+        def get_bit_count(p_value_now):
+            return math.ceil(-math.log2(p_value_now) - 1e-9)
 
         info_value = VGroup(
             Tex("="),
-            DecimalNumber(-math.log2(p), num_decimal_places=2),
+            Integer(get_bit_count(p)),
             TexText("bits"),
         )
         info_value.arrange(RIGHT, buff=0.2)
         info_value[2].align_to(info_value[1], DOWN)
         info_value.scale(0.9)
-        info_value.next_to(rect, RIGHT, buff=0.1)
+        info_value.next_to(ceil_inequality, RIGHT, buff=0.2)
 
         def update_info_value(group):
-            group[1].set_value(-math.log2(p_tracker.get_value()))
+            group[1].set_value(get_bit_count(p_tracker.get_value()))
+            group[2].shift((group[1].get_right()[0] + group.bits_gap - group[2].get_left()[0]) * RIGHT)
 
-        self.play(
-            p_label_shift.animate.set_value(label_shift),
-            FadeIn(p_value, shift=LEFT * 0.8),
-            FadeIn(info_value),
-        )
         p_value.add_updater(update_p_value)
-        info_value.add_updater(update_info_value)
-
-        # Explore the range of p values
-        p_max = 0.95 * 2.0**-(k - 1)
-        p_min = 1.05 * 2.0**-k
-        spacing = 2.0**-k
-        rng = random.Random(10)
-        scale = get_scale()
-        screen_margin = 1
-        waypoints = []
-        x = value_to_x(slid_low + p / 2)
-        for _ in range(2):
-            p_value_target = rng.uniform(p_min, p_max)
-            half_width = p_value_target * scale / 2
-            x_min = frame.get_left()[0] + screen_margin + half_width
-            x_max = frame.get_right()[0] - screen_margin - half_width
-            step = rng.choice([-1, 1]) * rng.uniform(1, 3.5)
-            if not x_min <= x + step <= x_max:
-                step = -step
-            x = clip(x + step, x_min, x_max)
-            center = view_center.get_value() + x / scale
-            waypoints.append((p_value_target, center - p / 2, 1.5))
-        waypoints.append((p, slid_low, 1.75))
-        for p_value_target, low_target, run_time in waypoints:
-            self.play(
-                p_tracker.animate.set_value(p_value_target),
-                target_low.animate.set_value(low_target),
-                run_time=run_time,
-            )
-
-        # Round up to a whole number of bits
-        p_value.clear_updaters()
-        info_value.clear_updaters()
-        ceil_inequality = Tex(R"k = \lceil -\log_2 p \rceil", font_size=48).scale(1.2)
-        ceil_inequality.move_to(inequality)
-        self.play(
-            FadeOut(p_value, shift=RIGHT * 0.8),
-            FadeOut(info_value),
-            p_label_shift.animate.set_value(0),
-            TransformMatchingShapes(inequality[0], ceil_inequality[0]),
-            TransformMatchingShapes(inequality[1], ceil_inequality[1]),
-            TransformMatchingShapes(inequality[2:], ceil_inequality[3:-1]),
-            FadeIn(VGroup(ceil_inequality[2], ceil_inequality[-1])),
-            run_time=1.5,
-        )
-        self.wait(2)
-
-        # Name the quantity
-        self.play(ceil_inequality[R"-\log_2 p"].animate.set_color(YELLOW))
-        self.wait(2)
-        information_text = TexText("Information", font_size=34).set_color(YELLOW).next_to(algebra[19:], UP, buff=0.32)
-        self.play(Write(information_text))
-        self.wait(2)
+        p_value.update()
 
         # Helpers for the word diagram
         layer_buff = 0.1
@@ -3323,7 +3301,7 @@ class GeneralizeBitCount(InteractiveScene):
         first_layer_gap = 0.75
         below_word = 0.1 + 0.3 + 0.45
         stack_height = first_layer_gap + len(word) * (layer_height + layer_buff)
-        new_line_y = frame.get_bottom()[1] + 0.5 + below_word + stack_height
+        new_line_y = frame.get_bottom()[1] - frame_shift[1] + 0.5 + below_word + stack_height
         bits_bottom_y = new_line_y + 1.2
         new_goalpost_top = min(1.5, bits_bottom_y - 0.25 - new_line_y)
         new_goalpost_bottom = new_line_y - stack_height + layer_buff
@@ -3339,8 +3317,10 @@ class GeneralizeBitCount(InteractiveScene):
             layer.base_opacities = [(bar.get_fill_opacity(), bar.get_stroke_opacity()) for bar in layer.bars]
             layer.applied_fade = None
 
+        diagram_value = ValueTracker(word_center)
+
         def get_diagram_value():
-            return word_center if modes["diagram"] == "word" else get_arrow_value()
+            return diagram_value.get_value() if modes["diagram"] == "word" else get_arrow_value()
 
         layers_fade = ValueTracker(0)
         word_layer_group = VGroup()
@@ -3418,7 +3398,7 @@ class GeneralizeBitCount(InteractiveScene):
         char_advance = zeros[2].get_x() - zeros[1].get_x()
         bit_slots = VGroup(VGroup(zero, one) for zero, one in zip(zeros[1:], ones[1:]))
         bit_string = VGroup(zeros[0], bit_slots)
-        bit_string.match_x(k_label)
+        bit_string.set_x(k_label_x)
         bit_string.set_y(bits_bottom_y + bit_string.get_height() / 2)
         bit_fade = ValueTracker(0)
         bit_string.last_key = None
@@ -3430,7 +3410,7 @@ class GeneralizeBitCount(InteractiveScene):
             if key == group.last_key:
                 return
             group.last_key = key
-            group.match_x(k_label)
+            group.set_x(k_label_x)
             group[0].set_opacity(fade)
             n_significant = bits.rfind("1") + 1
             for i, (bit, slot) in enumerate(zip(bits, group[1])):
@@ -3443,6 +3423,7 @@ class GeneralizeBitCount(InteractiveScene):
 
         word_cache = dict()
         word_fade = ValueTracker(0)
+        word_drop = ValueTracker(bit_string.get_height())
         word_tracker = VGroup()
         word_tracker.last_key = None
         word_tracker.frozen_value = None
@@ -3451,20 +3432,23 @@ class GeneralizeBitCount(InteractiveScene):
             if string not in word_cache:
                 mob = Text(f"|{string.replace(' ', '_')}|").set_height(0.7)
                 mob.next_to(bit_string, UP, buff=MED_SMALL_BUFF)
-                mob.match_x(k_label)
+                mob.set_x(k_label_x)
                 mob.remove(mob[0], mob[-1])
+                mob.applied_drop = 0
                 word_cache[string] = mob
             return word_cache[string]
 
         def update_word_tracker(group):
             value = group.frozen_value if group.frozen_value is not None else get_arrow_value()
-            key = (value, word_fade.get_value())
+            key = (value, word_fade.get_value(), word_drop.get_value())
             if key == group.last_key:
                 return
             group.last_key = key
             mob = get_word_text(decode(key[0], len(word))[0])
             if group.submobjects != [mob]:
                 group.set_submobjects([mob])
+            mob.shift((key[2] - mob.applied_drop) * DOWN)
+            mob.applied_drop = key[2]
             mob.set_opacity(key[1])
 
         word_tracker.add_updater(update_word_tracker)
@@ -3499,12 +3483,31 @@ class GeneralizeBitCount(InteractiveScene):
         highlight.add_updater(update_highlight)
         highlight.update()
 
-        # Show things in terms of the diagram
+        # Recontextualize with the word diagram
         last_low, last_high = word_ranges[-2]
-        self.add(word_layer_group, highlight, value_arrow, bit_string, word_tracker)
+        top_group = VGroup(ceil_inequality, info_value)
+        final_frame_bottom = frame.get_bottom()[1] - frame_shift[1]
+        word_top = bit_string.get_top()[1] + MED_SMALL_BUFF + 0.7 - word_drop.get_value()
+        group_scale = 0.9
+        top_space = 0.65
+        needed_top = word_top + 0.35 + group_scale * top_group.get_height() + top_space
+        frame_scale = max(1, (needed_top - final_frame_bottom) / frame.get_height())
+        group_top = final_frame_bottom + frame_scale * frame.get_height() - top_space
+        top_group.scale(group_scale)
+        top_group.move_to(np.array([0, group_top, 0]), UP)
+        ceil_sources = [inequality[0], inequality[1], inequality[2:]]
+        ceil_targets = [ceil_inequality[0], ceil_inequality[1], ceil_inequality[3:-1]]
+        ceil_brackets = VGroup(ceil_inequality[2], ceil_inequality[-1])
+        self.add(word_layer_group, highlight, value_arrow, bit_string, word_tracker, p_value)
         self.play(
-            ceil_inequality.animate.scale(0.5).to_edge(DOWN, buff=0.4),
-            word_fade.animate(time_span=(2, 3)).set_value(1),
+            FadeOut(rearranged[:3], time_span=(0, 1)),
+            frame.animate.shift(-frame_shift).scale(frame_scale, about_edge=DOWN),
+            *(ReplacementTransform(source, target) for source, target in zip(ceil_sources, ceil_targets)),
+            FadeIn(ceil_brackets, time_span=(0.75, 1.5)),
+            FadeIn(info_value, time_span=(1, 1.5)),
+            p_label_shift.animate(time_span=(1, 1.5)).set_value(label_shift),
+            p_value_fade.animate(time_span=(1, 1.5)).set_value(1),
+            word_fade.animate(time_span=(1, 1.5)).set_value(1),
             line_y_tracker.animate.set_value(new_line_y),
             goalpost_bottom.animate.set_value(new_goalpost_bottom),
             goalpost_top.animate.set_value(new_goalpost_top),
@@ -3517,11 +3520,55 @@ class GeneralizeBitCount(InteractiveScene):
             arrow_opacity.animate.set_value(1),
             highlight_fade.animate.set_value(1),
             tick_label_boost.animate(time_span=(0, 0.3)).set_value(1),
-            bit_fade.animate(time_span=(2, 3)).set_value(1),
-            run_time=3,
+            run_time=1.5,
         )
-        self.remove(width_brace)
+        self.remove(width_brace, *ceil_targets, ceil_brackets)
+        self.add(ceil_inequality)
+        info_value.bits_gap = info_value[2].get_left()[0] - info_value[1].get_right()[0]
+        info_value.add_updater(update_info_value)
+
+        # Move the window across neighboring words
+        neighbor_edges = get_layer(word[:-1]).edges
+        word_index = CHAR_ALPHABET.index(word[-1])
+        neighbor_scale = line_width / (last_high - last_low)
+        visible = [
+            j for j, (a, b) in enumerate(neighbor_edges)
+            if j != word_index and (b - a) * (last_high - last_low) * neighbor_scale > 0.4
+        ]
+        neighbors = sorted(sorted(visible, key=lambda j: abs(j - word_index))[:3])
+        for j in [*neighbors, word_index]:
+            a, b = neighbor_edges[j]
+            low = last_low + (last_high - last_low) * a
+            high = last_low + (last_high - last_low) * b
+            self.play(
+                p_tracker.animate.set_value(high - low),
+                target_low.animate.set_value((low + high) / 2 - p / 2),
+                diagram_value.animate.set_value((low + high) / 2),
+                run_time=1.5,
+            )
+            self.wait()
+
+        # Name the quantity
+        self.play(ceil_inequality[R"-\log_2(p)"].animate.set_color(TEAL))
         self.wait(2)
+        information_text = TexText("Information", font_size=34).set_color(TEAL).next_to(ceil_inequality[R"-\log_2(p)"], UP, buff=0.2)
+        self.play(Write(information_text))
+        self.wait(2)
+
+        # Bring in the bits
+        p_value.clear_updaters()
+        info_value.clear_updaters()
+        self.play(
+            FadeOut(information_text),
+            FadeOut(info_value),
+            FadeOut(p_value, shift=RIGHT * 0.8),
+            p_label_shift.animate.set_value(0),
+            ceil_inequality.animate.scale(0.5).move_to(np.array([0, frame.get_bottom()[1] + 0.4, 0]), DOWN),
+            word_drop.animate.set_value(0),
+            bit_fade.animate(time_span=(0.5, 1.5)).set_value(1),
+            run_time=1.5,
+        )
+        self.wait()
 
         # Show a luckier position
         scale = get_scale()
@@ -3662,6 +3709,98 @@ class GeneralizeBitCount(InteractiveScene):
         self.wait(2)
 
 
+class LuckyVsRoundUp(InteractiveScene):
+    candidate_words = [
+        "math", "info", "bits", "shannon", "entropy", "code", "binary", "signal", "noise", "channel",
+        "message", "compression", "is", "intelligence", "encode", "decode", "symbol", "byte", "data",
+        "probability", "predict", "token", "model", "language", "arithmetic", "interval", "fraction", "decimal", "zero",
+        "one", "huffman", "ascii", "text", "string", "letter", "word", "prefix", "average", "expected",
+        "surprise", "logarithm", "number", "precision", "decoder", "encoder", "lossless", "lossy", "file", "zip",
+        "transmit", "theorem", "bound", "optimal", "claude", "gpt", "context", "next",
+    ]
+    lucky_color = GREEN
+    round_up_color = RED
+    box_size = 0.4
+    row_left = -5.8
+    word_y = 1.8
+    row_y = -0.8
+    dash_margin = 0.2
+
+    def construct(self):
+        # Compute the examples
+        examples = [self.get_example(word) for word in self.candidate_words]
+        examples = [example for example in examples if example is not None]
+
+        # Set up the row of boxes
+        size = self.box_size
+        n_boxes = math.ceil((FRAME_WIDTH / 2 - self.row_left) / size) + 1
+        boxes = VGroup(*(Square(size) for _ in range(n_boxes)))
+        boxes.arrange(RIGHT, buff=0)
+        boxes.set_fill(BLACK, 1)
+        boxes.set_stroke(WHITE, 2)
+        boxes.move_to(np.array([self.row_left, self.row_y, 0]), LEFT)
+        arrow = Arrow(
+            np.array([self.row_left - 0.15, self.word_y, 0]),
+            boxes[0].get_left() + 0.15 * LEFT,
+            path_arc=0.6 * PI,
+            buff=0.1,
+        )
+        self.add(boxes, arrow)
+
+        # Cycle through the examples
+        for example in examples:
+            shown = self.get_example_mobjects(example, boxes)
+            self.add(shown)
+            self.wait(1)
+            self.remove(shown)
+
+    def get_example(self, word):
+        if any(char not in CHAR_ALPHABET for char in word):
+            return None
+        low, high = 0.0, 1.0
+        for i, char in enumerate(word):
+            dist = cached_next_char_distribution(" " + word[:i]).copy()
+            dist /= dist.sum()
+            index = CHAR_ALPHABET.index(char)
+            start = dist[:index].sum()
+            low, high = low + (high - low) * start, low + (high - low) * (start + dist[index])
+        try:
+            bits = ArithmeticCodingDiagram.get_binary_code(low, high)
+        except ValueError:
+            return None
+        return dict(word=word, bits=bits, n_bits=len(bits), info=-math.log2(high - low))
+
+    def get_example_mobjects(self, example, boxes):
+        word = Text(example["word"], font_size=72)
+        word.move_to(np.array([self.row_left, self.word_y, 0]), LEFT)
+
+        color = self.lucky_color if example["n_bits"] < example["info"] else self.round_up_color
+        digits = VGroup()
+        for digit, box in zip(example["bits"], boxes):
+            char = Text(digit, font="Consolas")
+            char.set_height(0.55 * self.box_size)
+            char.move_to(box)
+            digits.add(char)
+        digits.set_color(color)
+
+        bottom_left = boxes.get_corner(DL)
+        info_width = example["info"] * self.box_size
+        dash_half_height = 1.5 * (self.box_size / 2 + self.dash_margin)
+        dash_x = bottom_left[0] + info_width
+        dash = DashedLine(
+            np.array([dash_x, self.row_y - dash_half_height, 0]),
+            np.array([dash_x, self.row_y + dash_half_height, 0]),
+        )
+        dash.set_stroke(WHITE, 4)
+
+        brace = Brace(Line(bottom_left, bottom_left + info_width * RIGHT), DOWN, buff=0)
+        brace.shift((dash.get_bottom()[1] - brace.get_top()[1]) * UP)
+        brace_label = Tex(R"-\log_2(p)", font_size=40)
+        brace_label.next_to(brace, DOWN, buff=0.15)
+
+        return VGroup(word, digits, brace, brace_label, dash)
+
+
 class ShowEncodingScene(InteractiveScene):
     text = "Euclid's Elements"
     highlight = None
@@ -3677,6 +3816,11 @@ class ShowEncodingScene(InteractiveScene):
     context_char_time = 0.04
     plain_char_time = 0.05
     highlight_afterwards = False
+    two_pass = False
+    keep_highlight_on_second_pass = False
+    counter_font_size = 31
+    message_length_bits = 8
+    message_length_scale = 0.75
 
     def construct(self):
         # Compute the encoding
@@ -3732,30 +3876,65 @@ class ShowEncodingScene(InteractiveScene):
         arrow = Arrow(0.45 * LEFT, 0.45 * RIGHT, buff=0, thickness=4)
         arrow.set_y((self.area_top + self.area_bottom) / 2)
 
-        char_count = VGroup(Integer(0, font_size=31), Text("characters", font_size=31))
-        bit_count = VGroup(Integer(0, font_size=31), Text("bits", font_size=31))
+        font_size = self.counter_font_size
         counter_y = self.area_bottom - 0.8
+        baseline = counter_y - 0.12
+        char_word = Text("characters", font_size=font_size)
+        bit_word = Text("bits", font_size=font_size)
+        self.char_counter = self.get_counter(font_size, left_x, baseline, "left", char_word)
+        self.bit_counter = self.get_counter(font_size, right_x, baseline, "left", bit_word)
+        char_count = VGroup(self.char_counter["digits"], char_word)
+        bit_count = VGroup(self.bit_counter["digits"], bit_word)
+        self.set_counter(self.char_counter, 0)
+        self.set_counter(self.bit_counter, 0)
 
-        def update_counters(group):
-            for counter in (char_count, bit_count):
-                counter.arrange(RIGHT, buff=0.15, aligned_edge=DOWN)
-            char_count.move_to(np.array([raw_title.get_x(), counter_y, 0]))
-            bit_count.move_to(np.array([encoded_title.get_x(), counter_y, 0]))
+        n_tokens = len(codes) - 1
+        n_length_bits = max(self.message_length_bits, n_tokens.bit_length())
+        widest = Text(f"Message length: {n_tokens} = " + "0" * n_length_bits, font_size=font_size)
+        bit_count_width = Text(f"{max_bits} bits", font_size=font_size).get_width()
+        length_scale = min(self.message_length_scale, (self.column_width - bit_count_width - 0.5) / widest.get_width())
+        length_font_size = font_size * length_scale
+        buff = 0.15 * length_scale
+        length_baseline = baseline
 
-        counters = VGroup(char_count, bit_count)
-        counters.add_updater(update_counters)
-        counters.update()
+        zeros = Text("0" * n_length_bits, font="Consolas", font_size=length_font_size)
+        ones = Text("1" * n_length_bits, font="Consolas", font_size=length_font_size)
+        zeros.shift((right_x + self.column_width + 0.35 - zeros.get_right()[0]) * RIGHT)
+        zeros.shift((length_baseline - zeros.get_bottom()[1]) * UP)
+        for zero, one in zip(zeros, ones):
+            one.move_to(zero)
+            one.shift((length_baseline - one.get_bottom()[1]) * UP)
+        equals = Text("=", font_size=length_font_size)
+        equals.next_to(zeros, LEFT, buff=buff)
+        number_right = equals.get_left()[0] - buff
+        self.length_counter = self.get_counter(length_font_size, number_right, length_baseline, "right", None)
+        number_width = len(str(n_tokens)) * self.length_counter["advance"]
+        length_label = Text("Message length:", font_size=length_font_size)
+        length_label.shift((number_right - number_width - buff - length_label.get_right()[0]) * RIGHT)
+        length_label.shift((length_baseline - length_label[0].get_bottom()[1]) * UP)
+        equals.set_y(length_label[0].get_y())
+        length_unit = Text("(characters)" if self.model_name == "nanogpt" else "(tokens)", font_size=16)
+        length_unit.set_color(GREY_B)
+        length_unit.next_to(length_label, DOWN, buff=0.08)
+        self.length_bits = (zeros, ones)
+        message_length = VGroup(length_label, self.length_counter["digits"], equals, zeros, ones)
+        self.set_message_length(0)
 
-        self.add(raw_title, encoded_title, divider, arrow, counters)
+        encoded_side = VGroup(arrow, encoded_title, bit_count, message_length, length_unit)
+        self.reveal_mobs = encoded_side if self.two_pass else VGroup()
+        self.add(raw_title, divider, char_count)
+        if not self.two_pass:
+            self.add(encoded_side)
         self.wait()
 
         # Type out the text
         n_tracker = ValueTracker(0)
         added_start = len(codes[highlight_token]) if has_highlight else None
         encoding_group = VGroup(raw_glyphs, bit_dot, bit_slots)
+        bits_added_start = None if defer_highlight else added_start
         encoding_group.add_updater(self.get_encoding_updater(
             n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count,
-            None if defer_highlight else added_start,
+            bits_added_start, show_bits=not self.two_pass,
         ))
         encoding_group.update()
         self.add(encoding_group)
@@ -3779,8 +3958,45 @@ class ShowEncodingScene(InteractiveScene):
             rate_func=linear,
             run_time=(len(text) - char_ends[start_token]) * char_time,
         )
+        if self.two_pass:
+            self.encode_by_letter(
+                codes, char_ends, char_glyphs, raw_glyphs, bit_dot, bit_slots, bit_count, encoding_group,
+                added_start if has_highlight and self.keep_highlight_on_second_pass else bits_added_start,
+                char_time, highlight_token if has_highlight and not defer_highlight else None,
+                highlight_start if has_highlight and self.keep_highlight_on_second_pass else len(text),
+            )
         self.wait(2)
         self.finish_encoding(char_count, bit_count)
+
+    def encode_by_letter(self, codes, char_ends, char_glyphs, raw_glyphs, bit_dot, bit_slots, bit_count, encoding_group, added_start, char_time, pause_token, yellow_start):
+        # Encode the text again letter by letter
+        self.wait()
+        encoding_group.clear_updaters()
+        base_colors = [
+            None if glyph is None else (YELLOW if i >= yellow_start else glyph.get_fill_color())
+            for i, glyph in enumerate(char_glyphs)
+        ]
+        self.play(raw_glyphs.animate.set_fill(opacity=0.2))
+        self.add(self.reveal_mobs)
+
+        def set_token_style(n, highlighted):
+            for i in range(char_ends[n - 1], char_ends[n]):
+                if char_glyphs[i] is not None:
+                    char_glyphs[i].set_fill(YELLOW if highlighted else base_colors[i], opacity=1)
+
+        token_time = char_ends[-1] * char_time / (len(codes) - 1)
+        for n in range(1, len(codes)):
+            if n > 1:
+                set_token_style(n - 1, False)
+            set_token_style(n, True)
+            self.set_bits(codes[n], bit_dot, bit_slots, bit_count, added_start)
+            self.set_message_length(n)
+            bit_slots[len(codes[n - 1]):len(codes[n])].set_fill(YELLOW)
+            self.wait(token_time)
+            if n == pause_token:
+                self.wait()
+        set_token_style(len(codes) - 1, False)
+        self.set_bits(codes[-1], bit_dot, bit_slots, bit_count, added_start)
 
     def finish_encoding(self, char_count, bit_count):
         pass
@@ -3789,7 +4005,44 @@ class ShowEncodingScene(InteractiveScene):
         if len(self.highlight_mobs) > 0:
             self.play(self.highlight_mobs.animate.set_color(YELLOW), run_time=run_time)
 
-    def get_encoding_updater(self, n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start):
+    def get_counter(self, font_size, x, baseline, align, word):
+        probe = Text("00", font_size=font_size)
+        return dict(
+            digits=VGroup(), font_size=font_size, x=x, baseline=baseline, align=align, word=word,
+            advance=probe[1].get_x() - probe[0].get_x(), buff=0.15 * font_size / self.counter_font_size,
+        )
+
+    def set_counter(self, counter, n):
+        glyphs = Text(str(n), font_size=counter["font_size"])
+        n_digits = len(glyphs)
+        advance = counter["advance"]
+        start = counter["x"] if counter["align"] == "left" else counter["x"] - n_digits * advance
+        for i, glyph in enumerate(glyphs):
+            glyph.move_to(np.array([start + (i + 0.5) * advance, 0, 0]))
+            glyph.shift((counter["baseline"] - glyph.get_bottom()[1]) * UP)
+        counter["digits"].set_submobjects(list(glyphs))
+        word = counter["word"]
+        if word is not None:
+            word.shift((start + n_digits * advance + counter["buff"] - word.get_left()[0]) * RIGHT)
+            word.shift((counter["baseline"] - word.get_bottom()[1]) * UP)
+
+    def set_message_length(self, n):
+        self.set_counter(self.length_counter, n)
+        zeros, ones = self.length_bits
+        for bit, zero, one in zip(format(n, "b").zfill(len(zeros)), zeros, ones):
+            zero.set_fill(opacity=float(bit == "0"))
+            one.set_fill(opacity=float(bit == "1"))
+
+    def set_bits(self, code, bit_dot, bit_slots, bit_count, added_start):
+        bit_dot.set_fill(opacity=float(len(code) > 0))
+        for i, (zero, one) in enumerate(bit_slots):
+            bit = code[i] if i < len(code) else None
+            color = YELLOW if added_start is not None and i >= added_start else WHITE
+            zero.set_fill(color, opacity=float(bit == "0"))
+            one.set_fill(color, opacity=float(bit == "1"))
+        self.set_counter(self.bit_counter, len(code))
+
+    def get_encoding_updater(self, n_tracker, codes, char_ends, char_glyphs, bit_dot, bit_slots, char_count, bit_count, added_start, show_bits=True):
         state = {"n": None}
 
         def update_encoding(group):
@@ -3801,15 +4054,9 @@ class ShowEncodingScene(InteractiveScene):
             for i, glyph in enumerate(char_glyphs):
                 if glyph is not None:
                     glyph.set_fill(opacity=float(i < n_chars))
-            code = codes[n]
-            bit_dot.set_fill(opacity=float(len(code) > 0))
-            for i, (zero, one) in enumerate(bit_slots):
-                bit = code[i] if i < len(code) else None
-                color = YELLOW if added_start is not None and i >= added_start else WHITE
-                zero.set_fill(color, opacity=float(bit == "0"))
-                one.set_fill(color, opacity=float(bit == "1"))
-            char_count[0].set_value(n_chars)
-            bit_count[0].set_value(len(code))
+            self.set_bits(codes[n] if show_bits else "", bit_dot, bit_slots, bit_count, added_start)
+            self.set_message_length(n if show_bits else 0)
+            self.set_counter(self.char_counter, n_chars)
 
         return update_encoding
 
@@ -3985,12 +4232,13 @@ class EuclidInContextNanoGPT(ShowEncodingScene):
     highlight = "Euclid's Elements"
     model_name = "nanogpt"
     highlight_afterwards = True
+    two_pass = True
 
     def finish_encoding(self, char_count, bit_count):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        bits_per_char = Tex(R"= 2 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
+        bits_per_char = Tex(R"= 2 \text{ bits/char}", font_size=24).next_to(bit_count, UP)
         self.play(Write(bits_per_char), run_time=2)
         self.wait(2)
         self.play_highlight()
@@ -4003,12 +4251,15 @@ class EuclidInContextQwen(ShowEncodingScene):
     """
     highlight = "Euclid's Elements"
     model_name = "qwen"
+    highlight_afterwards = True
+    two_pass = True
+    keep_highlight_on_second_pass = True
 
     def finish_encoding(self, char_count, bit_count):
         # Compare the bit count to the character count
         rect = SurroundingRectangle(bit_count, buff=0.15).set_stroke(TEAL, 3)
         self.play(ShowCreation(rect))
-        bits_per_char = Tex(R"\approx 0.75 \text{ bits/char}", font_size=30).next_to(bit_count, UP)
+        bits_per_char = Tex(R"\approx 0.75 \text{ bits/char}", font_size=24).next_to(bit_count, UP)
         self.play(Write(bits_per_char), run_time=2)
 
 
@@ -4378,6 +4629,15 @@ class InfiniteZoomDecimal(InfiniteZoom):
 
 
 class USConstitutionWithDiagram(InteractiveScene):
+    text = """
+        We the People of the United States,
+        in Order to form a more perfect Union,
+        establish Justice, insure domestic Tranquility,
+        provide for the common defence,
+        promote the general Welfare,
+        and secure the Blessings of Liberty to ourselves and our Posterity,
+        do ordain and establish this Constitution for the United States of America.
+    """
     qwen_start_text = "\n"
     top_n = 300
     neighbor_window = 3000
@@ -4407,34 +4667,33 @@ class USConstitutionWithDiagram(InteractiveScene):
     slow_steps = 3
     slow_step_time = 1.0
     fast_step_time = 0.4
+    char_labels = False
+    skip_coarse_levels = False
+    max_label_level = None
+    max_text_chars = None
+    max_bits_chars = None
+    label_extra_chars = ""
 
     def construct(self):
         # Compute the token intervals and codes
         D = decimal.Decimal
-        decimal.getcontext().prec = 120
         frame = self.frame
-        text = " ".join("""
-            We the People of the United States,
-            in Order to form a more perfect Union,
-            establish Justice, insure domestic Tranquility,
-            provide for the common defence,
-            promote the general Welfare,
-            and secure the Blessings of Liberty to ourselves and our Posterity,
-            do ordain and establish this Constitution for the United States of America.
-        """.split())
+        text = " ".join(self.text.split())
         steps, pieces = self.get_token_steps(text)
+        total_bits = sum(-math.log2(step["target_prob"] / step["total"]) for step in steps)
+        decimal.getcontext().prec = max(120, int(0.31 * total_bits) + 80)
 
         def to_decimal(value):
-            return D(value.numerator) / D(value.denominator)
+            return D(value)
 
-        intervals = [(Fraction(0), Fraction(1))]
+        intervals = [(D(0), D(1))]
         codes = [""]
         n_bits = 0
         for step in steps:
             low, width = intervals[-1]
-            total = Fraction(step["total"])
-            low += width * Fraction(step["target_start"]) / total
-            width *= Fraction(step["target_prob"]) / total
+            total = D(step["total"])
+            low += width * D(step["target_start"]) / total
+            width *= D(step["target_prob"]) / total
             intervals.append((low, width))
             code, n_bits = self.get_code(low, low + width, n_bits)
             codes.append(code)
@@ -4505,13 +4764,16 @@ class USConstitutionWithDiagram(InteractiveScene):
                 level_widths[level] = sample.get_width()
             return level_widths[level]
 
+        def has_level_labels(level):
+            return self.max_label_level is None or level <= self.max_label_level
+
         def get_level_opacity(level):
             low, high = self.tick_fade_spacing
-            if level > 0:
+            if level > 0 and has_level_labels(level):
                 width = get_level_width(level)
                 low = max(low, self.label_fade_widths[0] * width)
                 high = max(high, self.label_fade_widths[1] * width)
-            spacing = float(view_state["current"][1]) / 10**level
+            spacing = min(float(view_state["current"][1].scaleb(-level)), 1e300)
             return clip(inverse_interpolate(low, high, spacing), 0, 1)
 
         def get_level_indices(level, x_left, x_right):
@@ -4527,20 +4789,24 @@ class USConstitutionWithDiagram(InteractiveScene):
             number_line.put_start_and_end_on(np.array([left, line_y, 0]), np.array([right, line_y, 0]))
 
             frame_width = frame.get_width()
-            scale = float(view_state["current"][1])
+            scale = view_state["current"][1]
             n_used = 0
             active_labels = []
-            for level in range(200):
+            start_level = 0
+            if self.skip_coarse_levels:
+                start_level = max(0, scale.adjusted() - math.ceil(math.log10(frame_width)))
+            for level in range(start_level, start_level + 200):
                 opacity = get_level_opacity(level)
                 if opacity == 0:
                     break
-                spacing = scale / 10**level
+                spacing = min(float(scale.scaleb(-level)), 1e300)
                 depth = math.log10(frame_width / spacing)
                 height = self.max_tick_height * self.tick_height_ratio**clip(depth, 0, 6)
                 stroke_width = interpolate(1, 2.5, height / self.max_tick_height)
                 for i in get_level_indices(level, x_left, x_right):
-                    is_new_tick = level == 0 or i % 10 != 0
-                    has_label = level == 1 or (level > 1 and i % 10 != 0)
+                    is_new_tick = level == start_level or i % 10 != 0
+                    has_label = level == max(start_level, 1) or (level > 1 and i % 10 != 0)
+                    has_label = has_label and has_level_labels(level)
                     if not (is_new_tick or has_label):
                         continue
                     x = value_to_x(D(i).scaleb(-level))
@@ -4591,8 +4857,15 @@ class USConstitutionWithDiagram(InteractiveScene):
                 token = segment["token"]
                 if token not in label_templates:
                     display = token.replace("\n", "\\n").replace("\t", "\\t").replace(" ", "_")
-                    if display and all(32 <= ord(char) < 127 for char in display):
-                        label_templates[token] = Text(display, font_size=self.label_font_size)
+                    if display and all(32 <= ord(char) < 127 or char in self.label_extra_chars for char in display):
+                        if self.char_labels:
+                            full = Text(f"|{display}|", font_size=self.label_font_size)
+                            template = VGroup(*full[1:-1])
+                            template.y_offset = template.get_y() - full[0].get_y()
+                        else:
+                            template = Text(display, font_size=self.label_font_size)
+                            template.y_offset = 0
+                        label_templates[token] = template
                     else:
                         label_templates[token] = None
                 template = label_templates[token]
@@ -4600,6 +4873,7 @@ class USConstitutionWithDiagram(InteractiveScene):
                 if template is not None:
                     segment["label"].ref_width = template.get_width()
                     segment["label"].ref_height = template.get_height()
+                    segment["label"].y_offset = template.y_offset
             return segment["label"]
 
         def make_layer(index):
@@ -4744,12 +5018,17 @@ class USConstitutionWithDiagram(InteractiveScene):
                 label = get_label(segment)
                 if label is None:
                     continue
-                label_scale = min(1, 0.85 * (visible_right - visible_left) / label.ref_width)
-                fit = clip(inverse_interpolate(0.45, 0.6, label_scale), 0, 1)
+                if self.char_labels:
+                    label_scale = 1
+                    fit = clip(inverse_interpolate(1.1, 1.5, (visible_right - visible_left) / label.ref_width), 0, 1)
+                else:
+                    label_scale = min(1, 0.85 * (visible_right - visible_left) / label.ref_width)
+                    fit = clip(inverse_interpolate(0.45, 0.6, label_scale), 0, 1)
                 if fit == 0:
                     continue
-                label.set_height(label.ref_height * label_scale)
-                label.move_to(np.array([(visible_left + visible_right) / 2, y, 0]))
+                if not self.char_labels:
+                    label.set_height(label.ref_height * label_scale)
+                label.move_to(np.array([(visible_left + visible_right) / 2, y + label.y_offset, 0]))
                 label_opacity = layer.appear.get_value() * position_opacity**3 * (1 if is_target else other_opacity)
                 label.set_fill(opacity=fit * label_opacity)
                 labels.append(label)
@@ -4843,9 +5122,11 @@ class USConstitutionWithDiagram(InteractiveScene):
             x_right = frame.get_right()[0] + margin
             update_number_line(x_left, x_right)
             visible = []
-            for index, layer in enumerate(layers):
-                if update_layer(layer, index, x_left, x_right):
-                    visible.append(layer)
+            index_low = max(0, math.floor(scroll.get_value() / row_step) - 2)
+            index_high = min(len(layers), math.ceil((first_y - frame.get_bottom()[1] + scroll.get_value()) / row_step) + 2)
+            for index in range(index_low, index_high):
+                if update_layer(layers[index], index, x_left, x_right):
+                    visible.append(layers[index])
             layer_group.set_submobjects(visible)
             update_extras(x_left, x_right)
 
@@ -4855,16 +5136,62 @@ class USConstitutionWithDiagram(InteractiveScene):
         # Set up the text and bits
         text_right = -self.text_left
 
+        def get_shift_transitions(old, new, entering_shift=ORIGIN, kept_color=None):
+            offset = new.abs_start - old.abs_start
+            kept = VGroup()
+            entering = VGroup()
+            delta = ORIGIN
+            for k, glyph in enumerate(new):
+                j = k + offset
+                if 0 <= j < len(old):
+                    kept.add(old[j])
+                    delta = glyph.get_center() - old[j].get_center()
+                else:
+                    entering.add(glyph)
+            leaving = old[:max(min(offset, len(old)), 0)]
+            anims = []
+            if len(kept) > 0:
+                if kept_color is not None:
+                    anims.append(kept.animate.shift(delta).set_fill(kept_color))
+                elif np.linalg.norm(delta) > 1e-6:
+                    anims.append(kept.animate.shift(delta))
+            if len(entering) > 0:
+                anims.append(FadeIn(entering, shift=entering_shift))
+            if len(leaving) > 0:
+                anims.append(FadeOut(leaving))
+            new.transition_groups = [kept, entering]
+            return anims
+
+        bar_heights = dict()
+
+        def get_line_text(string, y, font=None):
+            kwargs = dict(font_size=self.text_font_size)
+            if font is not None:
+                kwargs["font"] = font
+            if font not in bar_heights:
+                bar_heights[font] = Text("|", **kwargs)[0].get_height()
+            full = Text(f"|{string}|", **kwargs)
+            full.scale(bar_heights[font] / full[0].get_height())
+            full.shift((y - full[0].get_y()) * UP)
+            return VGroup(*full[1:-1])
+
         def get_text_mob(n_tokens):
             string = "".join(pieces[:n_tokens])
+            window_start = 0
+            if self.max_text_chars is not None:
+                window_start = max(len(string) - self.max_text_chars, 0)
+            abs_start = len("".join(string[:window_start].split()))
+            string = string[window_start:]
             if not string.strip():
-                return VGroup()
-            mob = Text(string, font_size=self.text_font_size)
+                mob = VGroup()
+                mob.abs_start = abs_start
+                return mob
+            mob = get_line_text(string, self.text_y)
+            mob.abs_start = abs_start
             if n_tokens > 0:
                 n_new = len("".join(pieces[n_tokens - 1].split()))
                 if n_new > 0:
                     mob[-n_new:].set_color(YELLOW)
-            mob.set_y(self.text_y)
             if mob.get_width() < text_right - self.text_left:
                 mob.align_to(self.text_left * RIGHT, LEFT)
             else:
@@ -4874,8 +5201,18 @@ class USConstitutionWithDiagram(InteractiveScene):
             return mob
 
         def get_bits_mob(bits):
-            mob = Text("." + bits, font="Consolas", font_size=self.text_font_size)
-            mob.move_to(np.array([self.text_left, self.bits_y, 0]), LEFT)
+            if self.max_bits_chars is not None and len(bits) > self.max_bits_chars:
+                window_start = len(bits) - self.max_bits_chars
+                mob = get_line_text(bits[window_start:], self.bits_y, font="Consolas")
+                mob.abs_start = window_start
+            else:
+                mob = get_line_text("." + bits, self.bits_y, font="Consolas")
+                mob.abs_start = -1
+            mob.shift((self.text_left - mob.get_left()[0]) * RIGHT)
+            if self.max_bits_chars is not None and mob.get_width() > text_right - self.text_left:
+                mob.align_to(text_right * RIGHT, RIGHT)
+                for glyph in mob:
+                    glyph.set_opacity(clip((glyph.get_left()[0] - self.text_left) / 1.5, 0, 1))
             return mob
 
         text_mob = get_text_mob(0)
@@ -4905,19 +5242,17 @@ class USConstitutionWithDiagram(InteractiveScene):
                 bit_steps = [code]
 
             new_text = get_text_mob(index + 1)
-            n_old = len(text_mob)
             select_anims = [
                 layer.selected.animate.set_value(1),
                 get_goal_animation(index),
                 goal_opacity.animate.set_value(1),
-                *(ReplacementTransform(a, b) for a, b in zip(text_mob, new_text)),
-                FadeIn(new_text[n_old:], shift=0.1 * DOWN),
+                *get_shift_transitions(text_mob, new_text, entering_shift=0.1 * DOWN, kept_color=WHITE),
             ]
             is_last = index == len(steps) - 1
             if not bit_steps and not is_last:
                 select_anims.extend(get_zoom_animations(intervals[index + 1]))
             self.play(*select_anims, run_time=run_time)
-            self.remove(*new_text)
+            self.remove(text_mob, *new_text.transition_groups)
             text_mob = new_text
             self.add(text_mob)
 
@@ -4930,11 +5265,9 @@ class USConstitutionWithDiagram(InteractiveScene):
                 if cell_red.get_value() < 1:
                     self.play(cell_red.animate.set_value(1), run_time=0.5 * bit_time)
                 new_bits = get_bits_mob(step_bits)
+                new_bits.transition_groups = [new_bits]
                 if shown_bits:
-                    bit_anims = [
-                        *(ReplacementTransform(a, b) for a, b in zip(bits_mob, new_bits)),
-                        FadeIn(new_bits[len(bits_mob):]),
-                    ]
+                    bit_anims = get_shift_transitions(bits_mob, new_bits)
                 else:
                     self.remove(bits_mob)
                     bit_anims = [FadeIn(new_bits)]
@@ -4945,7 +5278,7 @@ class USConstitutionWithDiagram(InteractiveScene):
                     *bit_anims,
                     run_time=bit_time,
                 )
-                self.remove(*new_bits)
+                self.remove(bits_mob, *new_bits.transition_groups)
                 bits_mob = new_bits
                 self.add(bits_mob)
                 shown_bits = step_bits
@@ -5019,6 +5352,97 @@ class USConstitutionWithDiagram(InteractiveScene):
         with open(cache_path, "w") as fp:
             json.dump(dict(steps=steps, pieces=pieces), fp)
         return steps, pieces
+
+
+class HamletWithDiagram(USConstitutionWithDiagram):
+    text = """
+        To be, or not to be, that is the question:
+        Whether 'tis nobler in the mind to suffer
+        The slings and arrows of outrageous fortune,
+        Or to take arms against a sea of troubles
+        And by opposing end them. To die—to sleep,
+        No more; and by a sleep to say we end
+        The heart-ache and the thousand natural shocks
+        That flesh is heir to: 'tis a consummation
+        Devoutly to be wish'd.
+    """
+    nanogpt_start_text = " "
+    nanogpt_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,;:'!?-\u2014"
+    min_char_prob = 1e-6
+    label_extra_chars = "\u2014"
+    char_labels = True
+    skip_coarse_levels = True
+    max_label_level = 12
+    max_text_chars = 140
+    max_bits_chars = 120
+
+    def get_token_steps(self, text):
+        import hashlib
+        import json
+        import os
+
+        alphabet = self.nanogpt_alphabet
+        missing = sorted(set(text) - set(alphabet))
+        if missing:
+            raise ValueError(f"Characters not in the alphabet: {missing}")
+
+        key = json.dumps([self.nanogpt_start_text, text, alphabet, self.min_char_prob])
+        digest = hashlib.md5(key.encode()).hexdigest()[:12]
+        cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"nanogpt_char_steps_{digest}.json")
+        if os.path.exists(cache_path):
+            with open(cache_path) as fp:
+                data = json.load(fp)
+            return data["steps"], data["pieces"]
+
+        steps = []
+        for i, char in enumerate(text):
+            probs = np.array(get_next_char_distribution(self.nanogpt_start_text + text[:i], alphabet), dtype=float)
+            probs = probs / probs.sum()
+            probs = np.maximum(probs, self.min_char_prob)
+            probs = probs / probs.sum()
+            cum = np.cumsum(probs)
+            index = alphabet.index(char)
+            steps.append(dict(
+                vocab_size=len(alphabet),
+                total=float(cum[-1]),
+                target_id=index,
+                target_start=float(cum[index - 1]) if index > 0 else 0.0,
+                target_prob=float(probs[index]),
+                drawn=[
+                    [j, alphabet[j], float(cum[j - 1]) if j > 0 else 0.0, float(cum[j])]
+                    for j in range(len(alphabet))
+                ],
+            ))
+
+        pieces = list(text)
+        with open(cache_path, "w") as fp:
+            json.dump(dict(steps=steps, pieces=pieces), fp)
+        return steps, pieces
+
+
+class MathWikipedia(USConstitutionWithDiagram):
+    text = """
+        Mathematics is a field of knowledge concerned with abstract concepts such as numbers,
+        geometric shapes, sets, functions, and probabilities. It uses logical reasoning and proof
+        to study and establish their properties, often expressed as theorems, formulas, and equations.
+        Mathematics is widely used to model and solve problems in science, engineering, technology,
+        economics, and everyday life.
+        There are many areas of mathematics, including number theory (the study of integers and
+        their properties), algebra (the study of operations and the structures they form), geometry
+        (the study of shapes and spaces that contain them), analysis (the quantitative study of
+        approximation and convergence), and set theory (presently used as a foundation for all mathematics).
+        Mathematics involves the description and manipulation of abstract objects that are either
+        abstractions from nature or purely abstract entities that are stipulated to have certain
+        properties, called axioms. Mathematics uses pure reason to prove the properties of objects
+        through proofs, which consist of a succession of applications of deductive rules to already
+        established results. These results, called theorems, include previously proved theorems,
+        axioms, and, in case of abstraction from nature, some basic properties that are considered
+        true starting points of the theory under consideration.
+    """
+    skip_coarse_levels = True
+    max_label_level = 12
+    max_text_chars = 140
+    max_bits_chars = 120
 
 
 class InitialConstitutionExample(InteractiveScene):
@@ -5278,6 +5702,7 @@ class InitialConstitutionExample(InteractiveScene):
             self.wait(0.13)
         self.wait(8)
 
+
 class InitialConstitutionTokens(InitialConstitutionExample):
     corpus_chars = 5_000_000
     encode_time = 10
@@ -5370,7 +5795,8 @@ class InitialConstitutionTokens(InitialConstitutionExample):
         for row, line in enumerate(bit_lines):
             line.move_to(np.array([0, -row * line_step, 0]), DL)
         bit_lines.refresh_bounding_box(recurse_down=True)
-        bit_lines.scale(min(area_width / bit_lines.get_width(), area_height / bit_lines.get_height()))
+        bit_scale = min(area_width / bit_lines.get_width(), area_height / bit_lines.get_height())
+        bit_lines.scale(bit_scale)
         bit_lines.move_to(np.array([area_left, frame.get_y(), 0]), LEFT)
 
         bit_glyphs = [glyph for line in bit_lines for glyph in line]
@@ -5381,6 +5807,8 @@ class InitialConstitutionTokens(InitialConstitutionExample):
         bit_block.set_color(WHITE)
         paragraph.set_color(WHITE)
         paragraph.set_opacity(0.1)
+        paragraph.shift(UP * 0.5)
+        bit_lines.align_to(paragraph, UP)
 
         # Encode one token at a time
         step_time = self.encode_time / len(token_codes)
@@ -5397,14 +5825,140 @@ class InitialConstitutionTokens(InitialConstitutionExample):
         previous.set_color(WHITE)
         self.remove(*token_bit_glyphs)
         self.add(bit_block)
-        self.wait()
 
         # Show the total number of bits
         count_label = Text(f"{n_bits:,} bits", font_size=48 * frame_height / FRAME_HEIGHT)
         count_label.next_to(bit_block, DOWN, buff=0.05 * frame_height)
         count_label.match_x(bit_block)
         self.play(FadeIn(count_label, shift=0.02 * frame_height * DOWN))
-        self.wait(8)
+        self.wait()
+
+        # Highlight everything after the first comma
+        comma_index = text.index(",")
+        piece_starts = np.cumsum([0, *map(len, pieces[:-1])])
+        rest_indices = [i for i, start in enumerate(piece_starts) if start > comma_index]
+        rest_text = VGroup(*(paragraph[slice(*glyph_ranges[i])] for i in rest_indices))
+        rest_bits = VGroup(*(token_bit_glyphs[i] for i in rest_indices))
+        self.play(
+            rest_text.animate.set_color(YELLOW),
+            rest_bits.animate.set_color(YELLOW),
+        )
+        self.wait()
+
+        # Compress the rest into a single bit
+        last_white_glyph = token_bit_glyphs[rest_indices[0] - 1][-1]
+        bit_position = last_white_glyph.get_center() + (1 + gap) * advance * bit_scale * RIGHT
+        bit_options = []
+        for digit in "01":
+            option = Text(digit, font="Consolas")
+            option.scale(bit_scale)
+            option.set_color(YELLOW)
+            option.move_to(bit_position)
+            bit_options.append(option)
+        single_bit = bit_options[0].copy()
+        single_bit.set_opacity(0)
+        flicker_state = dict(time=0, active=False)
+
+        def flicker(mob, dt):
+            if not flicker_state["active"]:
+                return
+            flicker_state["time"] += dt
+            if flicker_state["time"] > 1 / 12:
+                flicker_state["time"] = 0
+                mob.become(bit_options[np.random.randint(2)])
+
+        rest_glyphs = rest_bits.family_members_with_points()
+
+        def start_flicker():
+            if flicker_state["active"]:
+                return
+            flicker_state["active"] = True
+            self.remove(*rest_glyphs)
+            single_bit.become(bit_options[np.random.randint(2)])
+
+        new_count = n_bits - sum(code_lengths[i] for i in rest_indices) + 1
+        count_font_size = 48 * frame_height / FRAME_HEIGHT
+        ref_height = count_label[-4].get_height()
+
+        def get_count_text(string):
+            mob = Text(string, font_size=count_font_size)
+            mob.scale(ref_height / mob[-5].get_height())
+            return mob
+
+        final_label = get_count_text(f"{new_count:,} bits?")
+        final_label.set_color(TEAL)
+        kept_bits = VGroup(*(token_bit_glyphs[i] for i in range(rest_indices[0])), single_bit)
+        final_label.next_to(kept_bits, DOWN, buff=0.05 * frame_height)
+        final_label.match_x(kept_bits)
+        start_anchor = np.array([count_label.get_left()[0], count_label[-4].get_bottom()[1], 0])
+        end_anchor = np.array([final_label.get_left()[0], final_label[-5].get_bottom()[1], 0])
+        compress_time = 1.5
+        lag = 0.5
+        count_delay = 0.25
+
+        def update_count(mob, alpha):
+            elapsed = alpha * (count_delay + compress_time)
+            if elapsed >= lag * (len(rest_glyphs) - 1) / len(rest_glyphs) + compress_time - lag:
+                start_flicker()
+            t = clip((elapsed - count_delay) / compress_time, 0, 1)
+            count = int(round(interpolate(n_bits, new_count, t)))
+            new_mob = get_count_text(f"{count:,} bits?")
+            new_mob.set_color(interpolate_color(WHITE, TEAL, t))
+            new_mob[-1].set_opacity(clip((t - 0.4) / 0.4, 0, 1))
+            anchor = interpolate(start_anchor, end_anchor, smooth(t))
+            new_mob.shift(anchor - np.array([new_mob.get_left()[0], new_mob[-5].get_bottom()[1], 0]))
+            mob.become(new_mob)
+
+        single_bit.add_updater(flicker)
+        self.add(single_bit)
+        self.play(
+            *(
+                Transform(
+                    glyph,
+                    bit_options[0].copy(),
+                    time_span=(lag * i / len(rest_glyphs), lag * i / len(rest_glyphs) + compress_time - lag),
+                )
+                for i, glyph in enumerate(rest_glyphs)
+            ),
+            UpdateFromAlphaFunc(count_label, update_count, run_time=count_delay + compress_time, rate_func=linear),
+        )
+        start_flicker()
+        bit_block.remove(*rest_bits)
+        self.remove(*rest_bits)
+        self.remove(count_label)
+        self.add(final_label)
+        self.wait(1.2)
+
+        # Add a handful more flickering bits
+        def get_flicker_updater(center):
+            state = dict(time=0)
+
+            def update(mob, dt):
+                state["time"] += dt
+                if state["time"] > 1 / 12:
+                    state["time"] = 0
+                    mob.become(bit_options[np.random.randint(2)].copy().move_to(center))
+
+            return update
+
+        step = advance * bit_scale
+        row_left = bit_lines[0][0].get_x()
+        row_right = max(line[-1].get_x() for line in bit_lines)
+        position = bit_position.copy()
+        kept_bottom = kept_bits.get_bottom()[1]
+        for _ in range(6):
+            position = position + step * RIGHT
+            if position[0] > row_right + 0.5 * step:
+                position = np.array([row_left, position[1] - line_step * bit_scale, 0])
+            extra_bit = bit_options[np.random.randint(2)].copy().move_to(position)
+            extra_bit.add_updater(get_flicker_updater(position.copy()))
+            self.add(extra_bit)
+            overlap = (kept_bottom - extra_bit.get_bottom()[1])
+            if overlap > 0:
+                final_label.shift(overlap * DOWN)
+                kept_bottom -= overlap
+            self.wait(0.08)
+        self.wait(10)
 
     def get_token_data(self, text):
         import hashlib
@@ -5673,3 +6227,104 @@ class HuffmanEncoding(CharacterCodeScene):
             heapq.heappush(heap, (p0 + p1, next_index))
             next_index += 1
         return codes
+
+
+class AnyDataType(InteractiveScene):
+    image_file = "images_and_videos/shannon.jpg"
+    video_file = "images_and_videos/klein_bottle.mp4"
+    item_height = 1.3
+    item_x = -4.6
+    bits_left = -0.2
+    row_spacing = 1.8
+    n_bits = 30
+    bit_font_size = 30
+
+    def construct(self):
+        # Build the data types
+        items = Group(
+            self.get_text_item(),
+            self.get_image_item(),
+            self.get_video_item(),
+            self.get_wave_item(),
+        )
+        for i, item in enumerate(items):
+            item.move_to(np.array([self.item_x, (1.5 - i) * self.row_spacing, 0]))
+
+        # Build the bits and arrows
+        rng = np.random.default_rng(1)
+        bit_strings = VGroup()
+        arrows = VGroup()
+        arrow_start_x = items[0].get_right()[0] + 0.3
+        arrow_end_x = self.bits_left - 0.3
+        for item in items:
+            bit_string = "".join(rng.choice(["0", "1"], self.n_bits)) + "..."
+            bits = Text(bit_string, font="Consolas", font_size=self.bit_font_size)
+            bits.move_to(np.array([self.bits_left, item.get_y(), 0]), LEFT)
+            arrow = Arrow(
+                np.array([arrow_start_x, item.get_y(), 0]),
+                np.array([arrow_end_x, item.get_y(), 0]),
+                buff=0,
+            )
+            arrow.set_color(GREY)
+            bit_strings.add(bits)
+            arrows.add(arrow)
+
+        # Show the data types
+        self.play(LaggedStartMap(FadeIn, items, shift=0.25 * RIGHT, lag_ratio=0.25))
+        self.wait()
+
+        # Convert everything to bits
+        for item, arrow, bits in zip(items, arrows, bit_strings):
+            if isinstance(item, VMobject):
+                self.play(
+                    GrowArrow(arrow, run_time=0.8),
+                    TransformFromCopy(item, bits, lag_ratio=0.03, run_time=1.3)
+                )
+                continue
+            lag_ratio = 0.03
+            total_time = 1.3
+            piece_time = total_time / (1 + lag_ratio * (len(bits) - 1))
+            self.play(
+                GrowArrow(arrow, run_time=0.8),
+                *(
+                    FadeTransform(
+                        item.copy(),
+                        glyph,
+                        time_span=(i * lag_ratio * piece_time, i * lag_ratio * piece_time + piece_time),
+                    )
+                    for i, glyph in enumerate(bits)
+                ),
+            )
+        self.wait(3)
+
+    def get_text_item(self):
+        text = Text("To be, or not to be,\nthat is the question", font_size=28)
+        text.set_max_width(3.0)
+        return text
+
+    def get_image_item(self):
+        image = ImageMobject(self.image_file)
+        image.set_height(self.item_height)
+        border = SurroundingRectangle(image, buff=0)
+        border.set_stroke(WHITE, 2)
+        return Group(image, border)
+
+    def get_video_item(self):
+        video = VideoMobject(self.video_file, height=self.item_height, loop=True)
+        video.play_from(0)
+        border = SurroundingRectangle(video, buff=0)
+        border.set_stroke(WHITE, 2)
+        return Group(video, border)
+
+    def get_wave_item(self):
+        rng = np.random.default_rng(3)
+        n_bars = 40
+        xs = np.linspace(-1.5, 1.5, n_bars)
+        envelope = 0.35 + 0.65 * np.exp(-0.8 * xs**2) * (0.75 + 0.25 * np.cos(3 * xs))
+        heights = self.item_height * envelope * rng.uniform(0.15, 1.0, n_bars)
+        wave = VGroup(*(
+            Line(0.5 * height * DOWN, 0.5 * height * UP).shift(x * RIGHT)
+            for x, height in zip(xs, heights)
+        ))
+        wave.set_stroke(BLUE, 4)
+        return wave
