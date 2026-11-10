@@ -17,11 +17,16 @@ CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 # CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyz .,'!?0123456789-"
 # CHAR_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,'!?"
 
-NANOGPT_DIR = R"C:\Users\aaron\3Blue1Brown Dropbox\3Blue1Brown\videos\2026\cross_entropy\nanoGPT"
-NANOGPT_CKPT = R"C:\Users\aaron\3Blue1Brown Dropbox\3Blue1Brown\videos\2026\cross_entropy\nanoGPT\out-wiki-char\ckpt.pt"
-
-# NANOGPT_DIR = "/Users/grant/cs/nanoGPT"
-# NANOGPT_CKPT = "/Users/grant/cs/nanoGPT/out-wiki-char/ckpt.pt"
+# Use whichever nanoGPT checkout exists on this machine
+_NANOGPT_DIR_CANDIDATES = [
+    "/Users/grant/cs/nanoGPT",
+    R"C:\Users\aaron\3Blue1Brown Dropbox\3Blue1Brown\videos\2026\cross_entropy\nanoGPT",
+]
+NANOGPT_DIR = next(
+    (d for d in _NANOGPT_DIR_CANDIDATES if os.path.isdir(d)),
+    _NANOGPT_DIR_CANDIDATES[0],
+)
+NANOGPT_CKPT = os.path.join(NANOGPT_DIR, "out-wiki-char", "ckpt.pt")
 
 
 _nano_model = None
@@ -428,4 +433,39 @@ def total_information(input_text: str, context: str = " ") -> float:
         total_nats += -log_probs[positions, targets].sum().item()
         i = j
 
+    return float(total_nats / np.log(2))
+
+
+def qwen_total_information(input_text: str, context: str = "") -> float:
+    """
+    Total information in bits Qwen2.5-0.5B assigns to `input_text` given
+    `context`: sum of -log2(P(t | context + earlier tokens)) over each token t
+    of `input_text`. Analogous to total_information, but per BPE token rather
+    than per character. Context and input are tokenized separately so the
+    token boundary falls exactly at the start of `input_text`. If `context` is
+    empty, the <|endoftext|> token is used as a start-of-sequence marker.
+
+    Note: a context ending in a space (e.g. " ") tends to inflate the count,
+    since BPE normally attaches the space to the following word (" the"), so
+    a lone " " token followed by "the" is an unusual tokenization.
+    """
+    _ensure_qwen_loaded()
+
+    context_ids = _qwen_tokenizer.encode(context, add_special_tokens=False)
+    target_ids = _qwen_tokenizer.encode(input_text, add_special_tokens=False)
+    if not target_ids:
+        return 0.0
+    if not context_ids:
+        context_ids = [_qwen_tokenizer.eos_token_id]
+
+    full_ids = torch.tensor([context_ids + target_ids])
+    with torch.no_grad():
+        logits = _qwen_model(full_ids).logits[0]
+    log_probs = torch.log_softmax(logits.float(), dim=-1)
+
+    # Logits at position k predict token k + 1
+    n_ctx = len(context_ids)
+    positions = torch.arange(n_ctx - 1, n_ctx - 1 + len(target_ids))
+    targets = torch.tensor(target_ids)
+    total_nats = -log_probs[positions, targets].sum().item()
     return float(total_nats / np.log(2))

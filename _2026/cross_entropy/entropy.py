@@ -22,8 +22,10 @@ def bit_string_mobject(
 
 def int_to_bit_string(n_bits, value=None, **kwargs):
     if value is None:
-        value = np.random.randint(0, 2**n_bits)
-    return bit_string_mobject(f"{value:0{n_bits}b}", **kwargs)
+        bits = "".join(random.choice(["0", "1"]) for _ in range(n_bits))
+    else:
+        bits = f"{value:0{n_bits}b}"
+    return bit_string_mobject(bits, **kwargs)
 
 
 class InstructionArrow(SVGMobject):
