@@ -6328,3 +6328,212 @@ class AnyDataType(InteractiveScene):
         ))
         wave.set_stroke(BLUE, 4)
         return wave
+
+class NegativeLogExpression(InteractiveScene):
+    word = "mathematics"
+    n_shown_terms = 5
+    log_tex = R"\log"
+    font_size = 36
+    example_words = [
+        "probability", "information", "entropy", "language", "prediction", "compression",
+        "shannon", "arithmetic", "theorem", "encoding", "message", "symbol", "channel",
+        "algorithm", "geometry", "function", "integer", "decimal",
+    ]
+    n_examples = 24
+
+    def construct(self):
+        # Build the full expression
+        fs = self.font_size
+        word = self.word
+        indices = [*range(self.n_shown_terms), None, len(word) - 1]
+
+        neg_log = Tex(R"-" + self.log_tex, font_size=48)
+        lhs_rows = VGroup()
+        rhs_rows = VGroup()
+        for n, index in enumerate(indices):
+            if index is None:
+                lhs_rows.add(Tex(R"\vdots", font_size=fs))
+                rhs_rows.add(Tex(R"\vdots", font_size=fs))
+                continue
+            is_last = n == len(indices) - 1
+            lhs_row = VGroup(self.get_prob_tex(word, index))
+            if not is_last:
+                lhs_row.add(Tex(R"\times", font_size=fs))
+            lhs_row.arrange(RIGHT, buff=0.15)
+            lhs_rows.add(lhs_row)
+            rhs_rows.add(self.get_log_row(word, index, plus=not is_last))
+        lhs_rows.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+        lhs_rows[self.n_shown_terms].match_x(lhs_rows[0][0])
+
+        lparen = Tex(R"\Bigg(", font_size=fs)
+        rparen = Tex(R"\Bigg)", font_size=fs)
+        for paren in (lparen, rparen):
+            paren.stretch_to_fit_height(lhs_rows.get_height() + 0.4)
+            paren.match_y(lhs_rows)
+        lparen.next_to(lhs_rows, LEFT, buff=0.15)
+        rparen.next_to(lhs_rows, RIGHT, buff=0.15)
+        neg_log.next_to(lparen, LEFT, buff=0.15)
+        equals = Tex("=", font_size=48)
+        equals.next_to(rparen, RIGHT, buff=0.4)
+        for lhs_row, rhs_row in zip(lhs_rows, rhs_rows):
+            rhs_row.match_y(lhs_row)
+        for rhs_row in rhs_rows:
+            rhs_row.move_to(np.array([equals.get_right()[0] + 0.4, rhs_row.get_y(), 0]), LEFT)
+        rhs_rows[self.n_shown_terms].match_x(rhs_rows[0][2])
+
+        lhs = VGroup(neg_log, lparen, lhs_rows, rparen)
+        full = VGroup(lhs, equals, rhs_rows)
+        full.center()
+        if full.get_width() > FRAME_WIDTH - 1:
+            full.set_width(FRAME_WIDTH - 1)
+        lhs_final = lhs.get_center().copy()
+
+        # Show the negative log of the whole word
+        intro = Tex(R"-" + self.log_tex + R"(P(\text{" + word + R"}))", font_size=48)
+        n_log = len(Tex(R"-" + self.log_tex, font_size=48))
+        self.play(Write(intro))
+        self.wait()
+
+        # Expand the probability as a product
+        lhs.center()
+        intro_p = intro[n_log + 1]
+        intro_open = intro[n_log + 2]
+        intro_letters = intro[n_log + 3:n_log + 3 + len(word)]
+        intro_close = intro[n_log + 3 + len(word)]
+        copy_anims = []
+        fade_ins = []
+        for index, row in zip(indices, lhs_rows):
+            if index is None:
+                fade_ins.append(row)
+                continue
+            prob = row[0]
+            copy_anims.extend([
+                TransformFromCopy(intro_p, prob[0]),
+                TransformFromCopy(intro_open, prob[1]),
+                TransformFromCopy(intro_letters[index], prob[2]),
+                TransformFromCopy(intro_close, prob[-1]),
+            ])
+            if index > 0:
+                fade_ins.append(prob[3])
+                copy_anims.extend(
+                    TransformFromCopy(intro_letters[j], prob[4 + j])
+                    for j in range(index)
+                )
+            fade_ins.extend(row[1:])
+        VGroup(intro_p, intro_open, intro_letters, intro_close).set_opacity(0)
+        self.play(
+            ReplacementTransform(intro[:n_log], neg_log),
+            ReplacementTransform(intro[n_log], lparen),
+            ReplacementTransform(intro[-1], rparen),
+            *copy_anims,
+            FadeIn(VGroup(*fade_ins), time_span=(1, 2)),
+            run_time=2,
+        )
+        self.clear()
+        self.add(lhs)
+        self.wait()
+
+        # Turn it into a sum of negative logs
+        lhs_shift = lhs_final - lhs.get_center()
+        move_time = 1.0
+        piece_time = 1.0
+        row_lag = 0.08
+        total_time = row_lag * (len(rhs_rows) - 1) + piece_time
+
+        def get_lhs_offset(alpha):
+            return smooth(clip(alpha * total_time / move_time, 0, 1)) * lhs_shift
+
+        lhs_state = dict(offset=np.zeros(3))
+
+        def update_lhs(mob, alpha):
+            offset = get_lhs_offset(alpha)
+            mob.shift(offset - lhs_state["offset"])
+            lhs_state["offset"] = offset
+
+        def get_follow_animation(source, target, start_time):
+            start = source.copy()
+            end = target.copy()
+            start.align_data_and_family(end)
+            mover = start.copy()
+            if hasattr(mover, "turn_off_interpolation_skip"):
+                mover.turn_off_interpolation_skip()
+
+            def update(mob, alpha):
+                t = clip((alpha * total_time - start_time) / piece_time, 0, 1)
+                moved_start = start.copy().shift(get_lhs_offset(alpha))
+                for sm, sm1, sm2 in zip(mob.get_family(), moved_start.get_family(), end.get_family()):
+                    sm.interpolate(sm1, sm2, smooth(t))
+
+            return mover, UpdateFromAlphaFunc(mover, update, run_time=total_time, rate_func=linear)
+
+        movers = []
+        row_anims = []
+        for n, (lhs_row, rhs_row) in enumerate(zip(lhs_rows, rhs_rows)):
+            start_time = row_lag * n
+            if isinstance(rhs_row, Tex):
+                pairs = [(lhs_row, rhs_row)]
+            else:
+                pairs = [(neg_log, rhs_row[0]), (lhs_row[0], rhs_row[2])]
+                row_anims.append(FadeIn(
+                    VGroup(rhs_row[1], rhs_row[3], *rhs_row[4:]),
+                    time_span=(start_time + 0.3 * piece_time, start_time + piece_time),
+                ))
+            for source, target in pairs:
+                mover, anim = get_follow_animation(source, target, start_time)
+                movers.append(mover)
+                row_anims.append(anim)
+        self.play(
+            UpdateFromAlphaFunc(lhs, update_lhs, run_time=total_time, rate_func=linear),
+            Write(equals, time_span=(0.2, 1.0)),
+            *row_anims,
+        )
+        self.remove(*movers)
+        self.clear()
+        self.add(lhs, equals, rhs_rows)
+        self.wait(2)
+
+        # Focus on a single term
+        focus_index = 3
+        focus = rhs_rows[focus_index]
+        others = VGroup(lhs, equals, *(row for row in rhs_rows if row is not focus))
+        plus = focus[4:]
+        self.play(
+            FadeOut(VGroup(others, plus)),
+            focus[:-1].animate(run_time=2).set_height(0.7).center()
+        )
+        focus = focus[:-1]
+        self.wait()
+
+        # Cycle through other single character predictions
+        rng = np.random.default_rng(2)
+        shown = focus
+        for _ in range(self.n_examples):
+            example_word = self.example_words[rng.integers(len(self.example_words))]
+            index = int(rng.integers(len(example_word)))
+            example = self.get_log_row(example_word, index, plus=False).match_height(shown).align_to(shown, LEFT)
+            self.remove(shown)
+            self.add(example)
+            shown = example
+            self.wait(1)
+        self.wait()
+
+    def get_prob_tex(self, word, index):
+        char = word[index]
+        if index == 0:
+            return Tex(R"P(\text{" + char + R"})", font_size=self.font_size)
+        return Tex(R"P(\text{" + char + R"} \mid \text{" + word[:index] + R"})", font_size=self.font_size)
+
+    def get_log_row(self, word, index, plus=True):
+        fs = self.font_size
+        row = VGroup(
+            Tex(R"-" + self.log_tex, font_size=fs),
+            Tex("(", font_size=fs),
+            self.get_prob_tex(word, index),
+            Tex(")", font_size=fs),
+        )
+        if plus:
+            row.add(Tex("+", font_size=fs))
+        row.arrange(RIGHT, buff=0.08)
+        if plus:
+            row[-1].shift(0.12 * RIGHT)
+        return row
