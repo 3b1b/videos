@@ -4006,14 +4006,22 @@ class ShowEncodingScene(InteractiveScene):
             self.play(self.highlight_mobs.animate.set_color(YELLOW), run_time=run_time)
 
     def get_counter(self, font_size, x, baseline, align, word):
-        probe = Text("00", font_size=font_size)
-        return dict(
+        counter = dict(
             digits=VGroup(), font_size=font_size, x=x, baseline=baseline, align=align, word=word,
-            advance=probe[1].get_x() - probe[0].get_x(), buff=0.15 * font_size / self.counter_font_size,
+            buff=0.15 * font_size / self.counter_font_size,
+            bar_height=Text("|", font_size=font_size)[0].get_height(),
         )
+        probe = self.get_counter_glyphs(counter, "00")
+        counter["advance"] = probe[1].get_x() - probe[0].get_x()
+        return counter
+
+    def get_counter_glyphs(self, counter, string):
+        full = Text(f"|{string}|", font_size=counter["font_size"])
+        full.scale(counter["bar_height"] / full[0].get_height())
+        return VGroup(*full[1:-1])
 
     def set_counter(self, counter, n):
-        glyphs = Text(str(n), font_size=counter["font_size"])
+        glyphs = self.get_counter_glyphs(counter, str(n))
         n_digits = len(glyphs)
         advance = counter["advance"]
         start = counter["x"] if counter["align"] == "left" else counter["x"] - n_digits * advance
