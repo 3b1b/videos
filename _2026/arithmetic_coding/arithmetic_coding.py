@@ -628,14 +628,14 @@ class IntroduceCharacterModel(InteractiveScene):
         out_arrow.shift(bar_chart.get_bottom() - out_arrow.get_end() + 5 * UP)
         model = ImageMobject(Path(
             self.file_writer.get_output_file_rootname().parent.parent,
-            "Paul Assets", "BigModel.png"
+            "Mitchell Animations", "LanguageModel-Vectorized", "LanguageModel-VectorStatic.png"
         ))
-        model.set_height(5)
+        model.set_width(5)
         model.rotate(-2 * DEG)
         model.next_to(out_arrow.get_start(), LEFT)
         in_arrow = Vector(RIGHT, thickness=5)
         in_arrow.next_to(model, LEFT)
-        in_arrow.scale(1.5, about_edge=LEFT)
+        in_arrow.scale(1.1, about_edge=LEFT)
 
         def get_in_text(s, font_size=72):
             result = Text(f"“{s}”", font_size=font_size)
@@ -886,14 +886,14 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
         chart = self.get_bar_chart(distribution, CHAR_ALPHABET.replace(" ", "_"))
         model = ImageMobject(Path(
             self.file_writer.get_output_file_rootname().parent.parent,
-            "Paul Assets", "BigModel.png"
+            "Mitchell Animations", "LanguageModel-Vectorized", "LanguageModel-VectorStatic.png"
         ))
-        model.set_height(0.8 * chart.get_height())
+        model.set_width(0.8 * chart.get_height())
         model.rotate(-2 * DEG)
         model.next_to(chart, LEFT, buff=2)
         out_arrow = Arrow(model.get_right(), chart.get_left(), buff=0.3, thickness=5)
         out_arrow.set_color(GREY_B)
-        in_arrow = Vector(1.5 * RIGHT, thickness=5)
+        in_arrow = Vector(1.1 * RIGHT, thickness=5)
         in_arrow.next_to(model, LEFT)
         in_text = Text(f"“{prefix}”", font_size=72)
         in_text.next_to(in_arrow, LEFT, buff=0.15)
@@ -4006,14 +4006,22 @@ class ShowEncodingScene(InteractiveScene):
             self.play(self.highlight_mobs.animate.set_color(YELLOW), run_time=run_time)
 
     def get_counter(self, font_size, x, baseline, align, word):
-        probe = Text("00", font_size=font_size)
-        return dict(
+        counter = dict(
             digits=VGroup(), font_size=font_size, x=x, baseline=baseline, align=align, word=word,
-            advance=probe[1].get_x() - probe[0].get_x(), buff=0.15 * font_size / self.counter_font_size,
+            buff=0.15 * font_size / self.counter_font_size,
+            bar_height=Text("|", font_size=font_size)[0].get_height(),
         )
+        probe = self.get_counter_glyphs(counter, "00")
+        counter["advance"] = probe[1].get_x() - probe[0].get_x()
+        return counter
+
+    def get_counter_glyphs(self, counter, string):
+        full = Text(f"|{string}|", font_size=counter["font_size"])
+        full.scale(counter["bar_height"] / full[0].get_height())
+        return VGroup(*full[1:-1])
 
     def set_counter(self, counter, n):
-        glyphs = Text(str(n), font_size=counter["font_size"])
+        glyphs = self.get_counter_glyphs(counter, str(n))
         n_digits = len(glyphs)
         advance = counter["advance"]
         start = counter["x"] if counter["align"] == "left" else counter["x"] - n_digits * advance
@@ -6328,3 +6336,628 @@ class AnyDataType(InteractiveScene):
         ))
         wave.set_stroke(BLUE, 4)
         return wave
+
+
+class NegativeLogExpression(InteractiveScene):
+    word = "mathematics"
+    n_shown_terms = 5
+    log_tex = R"\log"
+    font_size = 36
+    example_words = [
+        "probability", "information", "entropy", "language", "prediction", "compression",
+        "shannon", "arithmetic", "theorem", "encoding", "message", "symbol", "channel",
+        "algorithm", "geometry", "function", "integer", "decimal",
+    ]
+    n_examples = 24
+
+    def construct(self):
+        # Build the full expression
+        fs = self.font_size
+        word = self.word
+        indices = [*range(self.n_shown_terms), None, len(word) - 1]
+
+        neg_log = Tex(R"-" + self.log_tex, font_size=48)
+        lhs_rows = VGroup()
+        rhs_rows = VGroup()
+        for n, index in enumerate(indices):
+            if index is None:
+                lhs_rows.add(Tex(R"\vdots", font_size=fs))
+                rhs_rows.add(Tex(R"\vdots", font_size=fs))
+                continue
+            is_last = n == len(indices) - 1
+            lhs_row = VGroup(self.get_prob_tex(word, index))
+            if not is_last:
+                lhs_row.add(Tex(R"\times", font_size=fs))
+            lhs_row.arrange(RIGHT, buff=0.15)
+            lhs_rows.add(lhs_row)
+            rhs_rows.add(self.get_log_row(word, index, plus=not is_last))
+        lhs_rows.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+        lhs_rows[self.n_shown_terms].match_x(lhs_rows[0][0])
+
+        lparen = Tex(R"\Bigg(", font_size=fs)
+        rparen = Tex(R"\Bigg)", font_size=fs)
+        for paren in (lparen, rparen):
+            paren.stretch_to_fit_height(lhs_rows.get_height() + 0.4)
+            paren.match_y(lhs_rows)
+        lparen.next_to(lhs_rows, LEFT, buff=0.15)
+        rparen.next_to(lhs_rows, RIGHT, buff=0.15)
+        neg_log.next_to(lparen, LEFT, buff=0.15)
+        equals = Tex("=", font_size=48)
+        equals.next_to(rparen, RIGHT, buff=0.4)
+        for lhs_row, rhs_row in zip(lhs_rows, rhs_rows):
+            rhs_row.match_y(lhs_row)
+        for rhs_row in rhs_rows:
+            rhs_row.move_to(np.array([equals.get_right()[0] + 0.4, rhs_row.get_y(), 0]), LEFT)
+        rhs_rows[self.n_shown_terms].match_x(rhs_rows[0][2])
+
+        lhs = VGroup(neg_log, lparen, lhs_rows, rparen)
+        full = VGroup(lhs, equals, rhs_rows)
+        full.center()
+        if full.get_width() > FRAME_WIDTH - 1:
+            full.set_width(FRAME_WIDTH - 1)
+        lhs_final = lhs.get_center().copy()
+
+        # Show the negative log of the whole word
+        intro = Tex(R"-" + self.log_tex + R"(P(\text{" + word + R"}))", font_size=48)
+        n_log = len(Tex(R"-" + self.log_tex, font_size=48))
+        self.play(Write(intro))
+        self.wait()
+
+        # Expand the probability as a product
+        lhs.center()
+        intro_p = intro[n_log + 1]
+        intro_open = intro[n_log + 2]
+        intro_letters = intro[n_log + 3:n_log + 3 + len(word)]
+        intro_close = intro[n_log + 3 + len(word)]
+        copy_anims = []
+        fade_ins = []
+        for index, row in zip(indices, lhs_rows):
+            if index is None:
+                fade_ins.append(row)
+                continue
+            prob = row[0]
+            copy_anims.extend([
+                TransformFromCopy(intro_p, prob[0]),
+                TransformFromCopy(intro_open, prob[1]),
+                TransformFromCopy(intro_letters[index], prob[2]),
+                TransformFromCopy(intro_close, prob[-1]),
+            ])
+            if index > 0:
+                fade_ins.append(prob[3])
+                copy_anims.extend(
+                    TransformFromCopy(intro_letters[j], prob[4 + j])
+                    for j in range(index)
+                )
+            fade_ins.extend(row[1:])
+        VGroup(intro_p, intro_open, intro_letters, intro_close).set_opacity(0)
+        self.play(
+            ReplacementTransform(intro[:n_log], neg_log),
+            ReplacementTransform(intro[n_log], lparen),
+            ReplacementTransform(intro[-1], rparen),
+            *copy_anims,
+            FadeIn(VGroup(*fade_ins), time_span=(1, 2)),
+            run_time=2,
+        )
+        self.clear()
+        self.add(lhs)
+        self.wait()
+
+        # Turn it into a sum of negative logs
+        lhs_shift = lhs_final - lhs.get_center()
+        move_time = 1.0
+        piece_time = 1.0
+        row_lag = 0.08
+        total_time = row_lag * (len(rhs_rows) - 1) + piece_time
+
+        def get_lhs_offset(alpha):
+            return smooth(clip(alpha * total_time / move_time, 0, 1)) * lhs_shift
+
+        lhs_state = dict(offset=np.zeros(3))
+
+        def update_lhs(mob, alpha):
+            offset = get_lhs_offset(alpha)
+            mob.shift(offset - lhs_state["offset"])
+            lhs_state["offset"] = offset
+
+        def get_follow_animation(source, target, start_time):
+            start = source.copy()
+            end = target.copy()
+            start.align_data_and_family(end)
+            mover = start.copy()
+            if hasattr(mover, "turn_off_interpolation_skip"):
+                mover.turn_off_interpolation_skip()
+
+            def update(mob, alpha):
+                t = clip((alpha * total_time - start_time) / piece_time, 0, 1)
+                moved_start = start.copy().shift(get_lhs_offset(alpha))
+                for sm, sm1, sm2 in zip(mob.get_family(), moved_start.get_family(), end.get_family()):
+                    sm.interpolate(sm1, sm2, smooth(t))
+
+            return mover, UpdateFromAlphaFunc(mover, update, run_time=total_time, rate_func=linear)
+
+        movers = []
+        row_anims = []
+        for n, (lhs_row, rhs_row) in enumerate(zip(lhs_rows, rhs_rows)):
+            start_time = row_lag * n
+            if isinstance(rhs_row, Tex):
+                pairs = [(lhs_row, rhs_row)]
+            else:
+                pairs = [(neg_log, rhs_row[0]), (lhs_row[0], rhs_row[2])]
+                row_anims.append(FadeIn(
+                    VGroup(rhs_row[1], rhs_row[3], *rhs_row[4:]),
+                    time_span=(start_time + 0.3 * piece_time, start_time + piece_time),
+                ))
+            for source, target in pairs:
+                mover, anim = get_follow_animation(source, target, start_time)
+                movers.append(mover)
+                row_anims.append(anim)
+        self.play(
+            UpdateFromAlphaFunc(lhs, update_lhs, run_time=total_time, rate_func=linear),
+            Write(equals, time_span=(0.2, 1.0)),
+            *row_anims,
+        )
+        self.remove(*movers)
+        self.clear()
+        self.add(lhs, equals, rhs_rows)
+        self.wait(2)
+
+        # Focus on a single term
+        focus_index = 3
+        focus = rhs_rows[focus_index]
+        others = VGroup(lhs, equals, *(row for row in rhs_rows if row is not focus))
+        plus = focus[4:]
+        self.play(
+            FadeOut(VGroup(others, plus)),
+            focus[:-1].animate(run_time=2).set_height(0.7).center()
+        )
+        focus = focus[:-1]
+        self.wait()
+
+        # Cycle through other single character predictions
+        rng = np.random.default_rng(2)
+        shown = focus
+        for _ in range(self.n_examples):
+            example_word = self.example_words[rng.integers(len(self.example_words))]
+            index = int(rng.integers(len(example_word)))
+            example = self.get_log_row(example_word, index, plus=False).match_height(shown).align_to(shown, LEFT)
+            self.remove(shown)
+            self.add(example)
+            shown = example
+            self.wait(1)
+        self.wait()
+
+    def get_prob_tex(self, word, index):
+        char = word[index]
+        if index == 0:
+            return Tex(R"P(\text{" + char + R"})", font_size=self.font_size)
+        return Tex(R"P(\text{" + char + R"} \mid \text{" + word[:index] + R"})", font_size=self.font_size)
+
+    def get_log_row(self, word, index, plus=True):
+        fs = self.font_size
+        row = VGroup(
+            Tex(R"-" + self.log_tex, font_size=fs),
+            Tex("(", font_size=fs),
+            self.get_prob_tex(word, index),
+            Tex(")", font_size=fs),
+        )
+        if plus:
+            row.add(Tex("+", font_size=fs))
+        row.arrange(RIGHT, buff=0.08)
+        if plus:
+            row[-1].shift(0.12 * RIGHT)
+        return row
+
+
+class CompressionIsPrediction(InteractiveScene):
+    passage_lines = ["Mathematics is a field of", " knowledge concerned with", " abstract concepts such as"]
+    featured_token = " numbers"
+    qwen_start_text = "\n"
+    segment_min_prob = 0.0005
+    candidate_min_prob = 0.002
+    max_candidates = 25
+    n_before_brace = 10
+    n_before_diagram = 2
+    n_low_examples = 5
+    delta_example_rank = 2
+    slow_example_time = 0.9
+    fill_time = 10
+    token_time = 0.3
+    token_lag_ratio = 0.15
+    bit_lag_ratio = 0.05
+    text_font_size = 40
+    bit_font_size = 36
+    final_video_height = 1.8
+    top_buff = 0.3
+    shrink_time = 1.5
+    bar_width = 12.5
+    bar_height = 0.6
+    bar_y = -2.0
+    start_center_y = 0.3
+    label_font_size = 20
+
+    def construct(self):
+        passage = "".join(self.passage_lines)
+        data = self.get_data(passage)
+        pieces = data["pieces"]
+        codes = data["codes"]
+        base_code = codes[-1]
+
+        # Show the compressor
+        video = VideoMobject(
+            str(Path(self.file_writer.get_output_file_rootname().parent.parent, "Paul Assets", "compressor.mov")),
+            height=0.6 * FRAME_HEIGHT,
+            loop=True,
+        ).shift(DOWN * 0.7)
+        video.play_from(0)
+        title = Text("Compressor", font_size=70)
+        title.set_color(TEAL)
+        title.next_to(video, UP, buff=0.3)
+        self.play(FadeIn(video), Write(title))
+
+        # Lay out the passage, the arrow and the bits
+        compressor = Group(video, title)
+        video_scale = self.final_video_height / video.get_height()
+        video_center = video.get_center().copy()
+        final_video_width = video.get_width() * video_scale
+        scaled_top = video_center[1] + (compressor.get_top()[1] - video_center[1]) * video_scale
+        compressor_shift = np.array([-video_center[0], FRAME_HEIGHT / 2 - self.top_buff - scaled_top, 0])
+        arrow_y = video_center[1] + compressor_shift[1]
+
+        arrow = Arrow(LEFT * 2, RIGHT * 2)
+        arrow.set_color(GREY)
+        arrow.shift(arrow_y * UP)
+
+        text_left = -FRAME_WIDTH / 2 + 0.3
+        text_right = arrow.get_left()[0] - 0.3
+        lines = VGroup()
+        top_offset = 0.375 * (len(self.passage_lines) - 1)
+        for i, line in enumerate(self.passage_lines):
+            glyphs = self.get_glyphs(line, self.text_font_size)
+            glyphs.shift(np.array([-glyphs.get_left()[0], top_offset - 0.75 * i, 0]))
+            lines.add(glyphs)
+        text_scale = (text_right - text_left) / lines.get_width()
+        lines.scale(text_scale, about_point=ORIGIN)
+        self.bit_line_step = 0.75 * text_scale
+        self.first_line_y = arrow_y + top_offset * text_scale
+        lines.shift(np.array([text_left - lines.get_left()[0], arrow_y, 0]))
+
+        top_layout_top = FRAME_HEIGHT / 2 - self.top_buff
+        block_bottom = self.first_line_y - len(self.passage_lines) * self.bit_line_step - 0.25 * text_scale - 0.9
+        start_drop = (top_layout_top + block_bottom) / 2 - self.start_center_y
+        compressor_shift[1] -= start_drop
+        arrow.shift(start_drop * DOWN)
+        lines.shift(start_drop * DOWN)
+        self.first_line_y -= start_drop
+        all_glyphs = VGroup(*(glyph for line in lines for glyph in line))
+        glyph_ranges = []
+        n_glyphs = 0
+        for piece in pieces:
+            count = len("".join(piece.split()))
+            glyph_ranges.append((n_glyphs, n_glyphs + count))
+            n_glyphs += count
+        if n_glyphs != len(all_glyphs):
+            raise ValueError("Glyph count does not match the tokens")
+
+        bits_left = arrow.get_right()[0] + 0.3
+        probe = self.get_glyphs("00", self.bit_font_size, font="Consolas")
+        advance = probe[1].get_x() - probe[0].get_x()
+        available = FRAME_WIDTH / 2 - 0.3 - bits_left
+        self.bits_per_line = max(1, math.ceil(len(base_code) / 3))
+        self.fit_bit_font_size = self.bit_font_size * available / (self.bits_per_line * advance)
+        bits_mob = VGroup()
+        self.add(bits_mob)
+
+        def show_bits(code, n_old, split=None):
+            new_mob = self.get_bit_lines(code, n_old, bits_left, split)
+            bits_mob.set_submobjects(list(new_mob))
+            return new_mob
+
+        # Shrink the compressor
+        self.play(
+            compressor.animate(run_time=self.shrink_time).scale(video_scale, about_point=video_center).shift(compressor_shift)
+        )
+
+        # Write the passage
+        self.add(arrow)
+        self.bring_to_back(arrow)
+        write_start = 0.5 * self.shrink_time
+        write_time = len(pieces) * self.token_time
+        base_bits = show_bits(base_code, len(base_code))
+
+        def get_lagged_fades(mobs, lag_ratio):
+            piece_time = write_time / (1 + lag_ratio * (len(mobs) - 1))
+            return [
+                FadeIn(mob, time_span=(
+                    write_start + i * lag_ratio * piece_time,
+                    write_start + i * lag_ratio * piece_time + piece_time,
+                ))
+                for i, mob in enumerate(mobs)
+            ]
+
+        token_groups = [all_glyphs[g0:g1] for g0, g1 in glyph_ranges]
+        self.remove(bits_mob)
+        self.play(
+            FadeIn(arrow, time_span=(1, 2)),
+            *get_lagged_fades(token_groups, self.token_lag_ratio),
+            *get_lagged_fades(list(base_bits), self.bit_lag_ratio),
+        )
+        self.remove(*token_groups, *base_bits)
+        self.add(all_glyphs, bits_mob)
+        self.wait(2)
+
+        # Build the probability diagram
+        segments = data["segments"]
+        bar_group = self.get_distribution_bars(segments, data["total"])
+        segment_mobs = {seg["id"]: mob for seg, mob in zip(segments, bar_group.segment_mobs)}
+        shown_ids = set()
+
+        # Choose example continuations
+        rng = np.random.default_rng(4)
+        displayable = [seg for seg in segments if self.get_display(seg["token"]) is not None]
+        high = [seg for seg in displayable if len(segment_mobs[seg["id"]]) > 1]
+        low = [
+            seg for seg in displayable
+            if len(segment_mobs[seg["id"]]) == 1 and seg["prob"] >= self.candidate_min_prob
+        ]
+        if not high:
+            high = sorted(displayable, key=lambda seg: -seg["prob"])[:1]
+        by_prob = sorted(displayable, key=lambda seg: -seg["prob"])
+        delta_example = by_prob[min(self.delta_example_rank, len(by_prob) - 1)]
+        opening_pool = low if len(low) >= self.n_before_brace - 1 else by_prob[len(high):] or by_prob
+        opening = [opening_pool[i] for i in rng.permutation(len(opening_pool))[:self.n_before_brace - 1]]
+        later_pool = [seg for seg in high if seg is not by_prob[0] and seg is not delta_example] or high
+        if len(later_pool) >= self.n_before_diagram:
+            later = [later_pool[i] for i in rng.permutation(len(later_pool))[:self.n_before_diagram]]
+        else:
+            later = [later_pool[i] for i in rng.integers(len(later_pool), size=self.n_before_diagram)]
+        intro_order = [*opening, delta_example, *later]
+        high_order = [seg for seg in (high[i] for i in rng.permutation(len(high))) if seg is not intro_order[-1]]
+        low_order = [low[i] for i in rng.permutation(len(low))][:self.n_low_examples]
+        featured = [seg for seg in displayable if seg["token"] == self.featured_token]
+        if featured and featured[0] not in [intro_order[-1], *high_order, *low_order]:
+            low_order.insert(int(rng.integers(len(low_order) + 1)), featured[0])
+        used_ids = {seg["id"] for seg in [intro_order[-1], *high_order, *low_order]}
+        rest_order = [seg for seg in (displayable[i] for i in rng.permutation(len(displayable))) if seg["id"] not in used_ids]
+
+        candidate_mob = VGroup()
+        delta_brace = VGroup()
+        bar_brace = VGroup()
+        above_label = VGroup()
+        self.add(candidate_mob, above_label)
+
+        def show_example(seg, show_delta, show_bar):
+            code = seg["code"]
+            delta = len(code) - len(base_code)
+            word = self.get_glyphs(seg["token"].lstrip(" "), self.text_font_size)
+            word.scale(text_scale, about_point=ORIGIN)
+            word.shift(np.array([
+                text_left - word.get_left()[0],
+                self.first_line_y - len(self.passage_lines) * self.bit_line_step,
+                0,
+            ]))
+            candidate_mob.set_submobjects(list(word))
+            candidate_mob.set_color(YELLOW)
+            new_bits = show_bits(code, len(base_code), split=len(base_code))
+            if show_delta:
+                extra = VGroup(*new_bits.digit_glyphs[len(base_code):])
+                label = Tex(R"\Delta = " + str(delta), font_size=36)
+                if len(extra) > 0:
+                    brace = Brace(extra, DOWN, buff=0.1)
+                    label.next_to(brace, DOWN, buff=0.1)
+                else:
+                    n_prefix_rows = math.ceil(len(base_code) / self.bits_per_line)
+                    stand_in = self.get_glyphs("0", self.fit_bit_font_size, font="Consolas")
+                    stand_in.shift(np.array([bits_left, self.first_line_y - n_prefix_rows * self.bit_line_step, 0]))
+                    brace = Brace(stand_in, DOWN, buff=0.1).set_opacity(0)
+                    prefix_bits = VGroup(*new_bits.digit_glyphs[:len(base_code)])
+                    label.move_to(np.array([prefix_bits.get_x(), brace.get_y(), 0]))
+                delta_brace.set_submobjects([brace, label])
+            if show_bar:
+                mob = segment_mobs[seg["id"]]
+                if seg["id"] not in shown_ids:
+                    shown_ids.add(seg["id"])
+                    self.add(mob)
+                brace = Brace(mob[0], DOWN, buff=0.1)
+                label = Tex(R"\approx 2^{-" + str(delta) + "}", font_size=36)
+                label.next_to(brace, DOWN, buff=0.1)
+                bar_brace.set_submobjects([brace, label])
+                if len(mob) == 1:
+                    token_label = Text(self.get_display(seg["token"]), font_size=self.label_font_size)
+                    token_label.next_to(mob[0], UP, buff=0.1)
+                    above_label.set_submobjects([token_label])
+                else:
+                    above_label.set_submobjects([])
+
+        # Flash through continuations
+        index = 0
+        for _ in range(self.n_before_brace):
+            show_example(intro_order[index], False, False)
+            self.wait(self.slow_example_time)
+            index += 1
+        show_example(intro_order[index - 1], True, False)
+        self.play(GrowFromCenter(delta_brace[0]), FadeIn(delta_brace[1], 0.2 * DOWN))
+        self.remove(*delta_brace)
+        self.add(delta_brace)
+        self.wait()
+        for _ in range(self.n_before_diagram):
+            show_example(intro_order[index], True, False)
+            self.wait(self.slow_example_time)
+            index += 1
+
+        # Bring in the diagram
+        current = intro_order[-1]
+        show_example(current, True, True)
+        current_mob = segment_mobs[current["id"]]
+        self.remove(current_mob, bar_brace)
+        lower_content = VGroup(all_glyphs, bits_mob, candidate_mob, delta_brace)
+        bar_top = self.bar_y + self.bar_height / 2
+        move_up = 1
+        self.play(
+            Group(compressor, arrow, lower_content).animate.shift(move_up * UP),
+            FadeIn(current_mob, shift=UP * 0.2),
+            GrowFromCenter(bar_brace[0]),
+            FadeIn(bar_brace[1], 0.2 * DOWN),
+        )
+        self.remove(*bar_brace)
+        self.add(bar_brace)
+        self.first_line_y += move_up
+        self.wait()
+
+        # Tick off the likeliest tokens, then some less likely ones
+        for seg in [*high_order, *low_order]:
+            show_example(seg, True, True)
+            self.wait(self.slow_example_time)
+
+        # Rapidly fill in the rest
+        fps = getattr(self.camera, "fps", 30)
+        n_frames = max(1, min(len(rest_order), int(self.fill_time * fps)))
+        for chunk in np.array_split(np.arange(len(rest_order)), n_frames):
+            for i in chunk:
+                seg = rest_order[i]
+                shown_ids.add(seg["id"])
+                self.add(segment_mobs[seg["id"]])
+            if len(chunk) > 0:
+                show_example(rest_order[chunk[-1]], True, True)
+            self.wait(3 / fps)
+        self.add(*(mob for seg_id, mob in segment_mobs.items() if seg_id not in shown_ids), bar_group.fillers)
+        self.wait(4)
+
+    def get_glyphs(self, string, font_size, font=None):
+        kwargs = dict(font_size=font_size)
+        if font is not None:
+            kwargs["font"] = font
+        reference = Text("|", **kwargs)[0].get_height()
+        full = Text(f"|{string}|", **kwargs)
+        full.scale(reference / full[0].get_height())
+        full.shift(-full[0].get_center())
+        return VGroup(*full[1:-1])
+
+    def get_bit_lines(self, code, n_old, left_x, split=None):
+        parts = [code] if split is None else [code[:split], code[split:]]
+        per_line = self.bits_per_line
+        rows = []
+        for part in parts:
+            rows.extend(part[i:i + per_line] for i in range(0, len(part), per_line))
+        digit_glyphs = []
+        for row_index, chunk in enumerate(rows):
+            row = self.get_glyphs(chunk, self.fit_bit_font_size, font="Consolas")
+            row.shift(np.array([left_x - row[0].get_left()[0], self.first_line_y - self.bit_line_step * row_index, 0]))
+            digit_glyphs.extend(row)
+        glyphs = VGroup(*digit_glyphs)
+        digits = digit_glyphs
+        for i, glyph in enumerate(digits):
+            glyph.set_color(YELLOW if i >= n_old else WHITE)
+        glyphs.digit_glyphs = digits
+        return glyphs
+
+    def get_display(self, token):
+        display = token.replace(" ", "_")
+        if display.strip("_") and all(32 <= ord(char) < 127 for char in display):
+            return display
+        return None
+
+    def get_distribution_bars(self, segments, total):
+        left_x = -self.bar_width / 2
+        segment_mobs = []
+        fillers = VGroup()
+        prev_end = 0.0
+        for seg in segments:
+            start = seg["start"] / total
+            end = (seg["start"] + seg["prob"]) / total
+            if start > prev_end + 1e-9:
+                filler = Rectangle(self.bar_width * (start - prev_end), self.bar_height)
+                filler.move_to(np.array([left_x + self.bar_width * prev_end, self.bar_y, 0]), LEFT)
+                fillers.add(filler)
+            rect = Rectangle(self.bar_width * (end - start), self.bar_height)
+            rect.move_to(np.array([left_x + self.bar_width * start, self.bar_y, 0]), LEFT)
+            rect.set_fill(interpolate_color(BLUE_E, TEAL_E, seg["id"] / seg["vocab_size"]), 1)
+            rect.set_stroke(WHITE, 1)
+            mob = VGroup(rect)
+            display = self.get_display(seg["token"])
+            if display is not None:
+                label = Text(display, font_size=self.label_font_size)
+                if label.get_width() < 0.85 * rect.get_width():
+                    label.move_to(rect)
+                    mob.add(label)
+            segment_mobs.append(mob)
+            prev_end = end
+        if prev_end < 1 - 1e-9:
+            filler = Rectangle(self.bar_width * (1 - prev_end), self.bar_height)
+            filler.move_to(np.array([left_x + self.bar_width * prev_end, self.bar_y, 0]), LEFT)
+            fillers.add(filler)
+        fillers.set_fill(BLUE_E, 1)
+        fillers.set_stroke(WHITE, 0.5)
+        result = VGroup(*segment_mobs, fillers)
+        result.segment_mobs = segment_mobs
+        result.fillers = fillers
+        return result
+
+    def get_code(self, low, high, n_bits):
+        while True:
+            scale = 2**n_bits
+            numer = math.ceil(low * scale)
+            if numer < high * scale:
+                return (format(numer, "b").zfill(n_bits) if n_bits > 0 else ""), n_bits
+            n_bits += 1
+
+    def get_data(self, passage):
+        import hashlib
+        import json
+        import os
+
+        key = json.dumps([self.qwen_start_text, passage, self.segment_min_prob])
+        digest = hashlib.md5(key.encode()).hexdigest()[:12]
+        cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"compression_prediction_{digest}.json")
+        if os.path.exists(cache_path):
+            with open(cache_path) as fp:
+                return json.load(fp)
+
+        import torch
+        import _2026.cross_entropy.next_char as next_char
+
+        next_char._ensure_qwen_loaded()
+        tokenizer = next_char._qwen_tokenizer
+        model = next_char._qwen_model
+        start_ids = tokenizer.encode(self.qwen_start_text, add_special_tokens=False)
+        text_ids = tokenizer.encode(passage, add_special_tokens=False)
+        pieces = [tokenizer.decode([token_id]) for token_id in text_ids]
+        if "".join(pieces) != passage:
+            raise ValueError("The tokens do not decode back to the text")
+
+        def get_probs(ids):
+            with torch.no_grad():
+                logits = model(torch.tensor([start_ids + ids])).logits[0, -1].double()
+            return torch.softmax(logits, dim=-1).numpy()
+
+        low = Fraction(0)
+        width = Fraction(1)
+        codes = [""]
+        n_bits = 0
+        for i, token_id in enumerate(text_ids):
+            probs = get_probs(text_ids[:i])
+            total = Fraction(float(probs.sum()))
+            low += width * Fraction(float(probs[:token_id].sum())) / total
+            width *= Fraction(float(probs[token_id])) / total
+            code, n_bits = self.get_code(low, low + width, n_bits)
+            codes.append(code)
+
+        probs = get_probs(text_ids)
+        total = float(probs.sum())
+        cum = np.cumsum(probs)
+        segments = []
+        for token_id in np.nonzero(probs >= self.segment_min_prob)[0]:
+            token_id = int(token_id)
+            start = float(cum[token_id - 1]) if token_id > 0 else 0.0
+            prob = float(probs[token_id])
+            seg_low = low + width * Fraction(start) / Fraction(total)
+            seg_width = width * Fraction(prob) / Fraction(total)
+            code, _ = self.get_code(seg_low, seg_low + seg_width, n_bits)
+            segments.append(dict(
+                id=token_id, token=tokenizer.decode([token_id]), start=start, prob=prob,
+                code=code, vocab_size=len(probs),
+            ))
+
+        data = dict(pieces=pieces, codes=codes, segments=segments, total=total)
+        with open(cache_path, "w") as fp:
+            json.dump(data, fp)
+        return data
