@@ -1511,11 +1511,118 @@ class ArithmeticCodingExplanation(IntroduceCharacterModel):
             decoded = new_decoded
             self.play(diagram.zoom_in_on_letter(letter, layer_index=i))
 
+        # Show a new layer with the EOM token added
+        if False:
+            eom_prob = 0.05
+            char_dist = diagram.get_distribution(string)
+            eom_dist = np.append((1 - eom_prob) * char_dist / char_dist.sum(), eom_prob)
+
+            parent_bar = diagram.get_letter_bar(string[-1], layer_index=len(string) - 1)
+            h_low, h_high = diagram.get_text_range(string)
+            start_rel = (x_arrow.get_x() - parent_bar.get_left()[0]) / parent_bar.get_width()
+            end_rel = 1 - eom_prob / 2
+            slide_tracker = ValueTracker(0)
+
+            def update_arrow(arrow):
+                rel = interpolate(start_rel, end_rel, slide_tracker.get_value())
+                arrow.set_x(interpolate(parent_bar.get_left()[0], parent_bar.get_right()[0], rel))
+                x_tracker.set_value(interpolate(h_low, h_high, rel))
+
+            x_arrow.clear_updaters()
+            x_arrow.add_updater(update_arrow)
+            self.play(slide_tracker.animate.set_value(1), run_time=2)
+            self.wait(0.5)
+
+            eom_labels = VGroup(*diagram.char_labels_template.copy(), Text("EOM", font="Consolas").set_color(YELLOW))
+            eom_layer = StackedProbDistribution(
+                eom_dist,
+                labels=eom_labels,
+                width=parent_bar.get_width(),
+                label_height_ratio=diagram.label_to_bar_height_ratio,
+            )
+            eom_layer.next_to(parent_bar, DOWN, buff=0.1)
+            eom_layer.shift((parent_bar.get_left()[0] - eom_layer.bars.get_left()[0]) * RIGHT)
+            eom_layer.prefix = string
+            eom_layer.default_bar_style = [(bar.get_fill_color(), bar.get_fill_opacity()) for bar in eom_layer.bars]
+            first_bar = eom_layer.bars[0]
+            eom_layer.default_stroke_style = (
+                first_bar.get_stroke_color(),
+                float(first_bar.get_stroke_width()),
+                float(first_bar.get_stroke_opacity()),
+            )
+            eom_layer.highlight_state = "default"
+            diagram.update_bar_strokes(eom_layer)
+
+            model_group = self.get_decoding_model_group(string, eom_dist)
+            in_text, in_arrow, model, out_arrow, chart = model_group
+            eom_chart_label = Text("EOM", font="Consolas", font_size=24).set_color(YELLOW)
+            eom_chart_label.set_max_width(0.8 * (chart.bars[1].get_x() - chart.bars[0].get_x()))
+            eom_chart_label.match_x(chart.bars[-1]).align_to(chart.labels[0], DOWN)
+            chart.labels.add(eom_chart_label)
+            chart.remove(chart.dec_labels)
+            model_group.set_width(12)
+            if model_group.get_height() > 3.5:
+                model_group.set_height(3.5)
+            model_group.next_to(eom_layer, DOWN, buff=0.75)
+            model_group.set_x(frame.get_x())
+
+            frame.save_state()
+            frame_top = frame.get_top()[1]
+            frame_bottom = min(frame.get_bottom()[1], model_group.get_bottom()[1] - 0.4)
+            self.play(
+                frame.animate.set_height(frame_top - frame_bottom).set_y((frame_top + frame_bottom) / 2),
+                FadeIn(model),
+                GrowArrow(in_arrow),
+                FadeIn(VGroup(in_text[0], in_text[-1])),
+                TransformFromCopy(decoded, in_text[1:-1]),
+            )
+            self.play(
+                GrowArrow(out_arrow),
+                LaggedStart(*(GrowFromEdge(bar, DOWN) for bar in chart.bars), lag_ratio=0.02),
+                FadeIn(chart.labels, lag_ratio=0.02),
+                run_time=1.5,
+            )
+            self.wait()
+
+            for bar in chart.bars:
+                original = bar.copy()
+                bar.rotate(90 * DEG)
+                bar.replace(original, stretch=True)
+            kw = dict(run_time=2, lag_ratio=0.02)
+            self.play(
+                ReplacementTransform(chart.bars, eom_layer.bars, **kw),
+                ReplacementTransform(chart.labels, eom_layer.labels, **kw),
+                FadeOut(Group(in_text, in_arrow, model, out_arrow), shift=DOWN, run_time=1),
+                Restore(frame, run_time=2),
+            )
+            self.remove(eom_layer.bars, eom_layer.labels)
+            diagram.layers.add(eom_layer)
+            self.add(eom_layer)
+            self.wait()
+
+            # Zoom in on the EOM token
+            def bar_point(value):
+                return interpolate(parent_bar.get_left(), parent_bar.get_right(), (value - h_low) / (h_high - h_low))
+
+            zoom = diagram.renormalize_animation(
+                interpolate(h_low, h_high, 1 - eom_prob), h_high,
+                center_curr_text=True,
+                point_func=bar_point,
+                run_time=3,
+            )
+            eom_target = diagram.target.layers[-1]
+            eom_target.highlight(len(eom_dist) - 1)
+            diagram.update_bar_strokes(eom_target)
+            eom_layer.highlight_state = len(eom_dist) - 1
+            self.play(zoom)
+
         # Zoom back out to the full unit interval
         self.play(diagram.renormalize_animation(0, 1, fade_thin_strokes=True, run_time=3))
         self.wait()
 
         # Hand the readout back to the live word tracker
+        x_arrow.clear_updaters()
+        x_arrow.add_updater(lambda m: m.move_to(unit_interval.n2p(get_x()), DOWN))
         self.remove(*decoded)
         word_tracker.set_opacity(1)
         self.add(word_tracker)
@@ -4331,6 +4438,36 @@ class Alphabets(InteractiveScene):
             others.animate.restore(),
             lower.animate.restore(),
             run_time=2
+        )
+        self.wait()
+
+
+class EOMCharacter(InteractiveScene):
+    def construct(self):
+        # Show the nanogpt alphabet
+        def get_box(mob):
+            box = Square(side_length=0.53, fill_opacity=1, fill_color=BLACK, stroke_width=1.6, stroke_color=WHITE)
+            if mob.get_width() > 0.4:
+                box.set_width(mob.get_width() + 0.15, stretch=True)
+            box.match_x(mob)
+            return VGroup(box, mob)
+
+        chars = TexText(CHAR_ALPHABET.replace(" ", R"\_"), font_size=45).set_color(GREEN)
+        row = VGroup(*(get_box(char) for char in chars)).arrange(buff=0.1)
+        eom = get_box(Text("EOM", font="Consolas", font_size=40).set_color(YELLOW))
+        target = VGroup(row.copy(), eom).arrange(buff=0.1)
+        target.set_width(FRAME_WIDTH * 0.95)
+        target.center()
+        row.set_width(FRAME_WIDTH * 0.95)
+        row.center()
+        self.add(row)
+        self.wait()
+
+        # Add an end of message token
+        self.play(
+            Transform(row, target[0]),
+            FadeIn(eom, shift=LEFT),
+            run_time=2,
         )
         self.wait()
 
