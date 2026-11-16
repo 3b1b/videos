@@ -5612,6 +5612,7 @@ class InitialConstitutionExample(InteractiveScene):
             run_time=1.5
         )
 
+        # Turn the text into bits
         self.turn_text_into_bits(paragraph, n_first, arrow)
 
     def turn_text_into_bits(self, paragraph, n_first, arrow):
@@ -5949,6 +5950,14 @@ class InitialConstitutionTokens(InitialConstitutionExample):
 
             return update
 
+        def set_count(count):
+            new_mob = get_count_text(f"{count:,} bits?")
+            new_mob.set_color(TEAL)
+            new_mob.shift(np.array([0, final_label[-5].get_bottom()[1] - new_mob[-5].get_bottom()[1], 0]))
+            new_mob.match_x(final_label)
+            final_label.become(new_mob)
+
+        shown_count = new_count
         step = advance * bit_scale
         row_left = bit_lines[0][0].get_x()
         row_right = max(line[-1].get_x() for line in bit_lines)
@@ -5961,6 +5970,8 @@ class InitialConstitutionTokens(InitialConstitutionExample):
             extra_bit = bit_options[np.random.randint(2)].copy().move_to(position)
             extra_bit.add_updater(get_flicker_updater(position.copy()))
             self.add(extra_bit)
+            shown_count += 1
+            set_count(shown_count)
             overlap = (kept_bottom - extra_bit.get_bottom()[1])
             if overlap > 0:
                 final_label.shift(overlap * DOWN)
