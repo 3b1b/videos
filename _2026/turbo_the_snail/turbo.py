@@ -1771,7 +1771,7 @@ class QuadrantExplorerPart3(TurboScene):
         self.wait(1)
 
 
-class QuadrantExplorerWorstCase(TurboScene):
+class BinarySearchIntroduction(TurboScene):
     def __init__(self, *args, **kwargs):
         random.seed(1)
         n = perfect_quadrant_explorer_num_rows(5)
@@ -1796,7 +1796,11 @@ class QuadrantExplorerWorstCase(TurboScene):
 
         # Fade in a second monster up and to the left
         monster2_pos = (mid_col - 1, half_row - 1)
-        self.reset_grid(monster_positions=[monster1_pos, monster2_pos])
+        quadrant_cols = list(range(monster1_pos[0] + 1, n - 1))
+        quadrant_rows = list(range(monster1_pos[1] + 1, n - 1))
+        random.shuffle(quadrant_rows)
+        quadrant_monsters = list(zip(quadrant_cols[:-1], quadrant_rows))
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos] + quadrant_monsters)
         monster1 = self.grid.get_monster(*monster1_pos)
         monster1.set_time(monster1.BOB_END)
         monster2 = self.grid.get_monster(*monster2_pos)
@@ -1814,14 +1818,12 @@ class QuadrantExplorerWorstCase(TurboScene):
         # Turbo tries the middle column, and finds the first monster
         turbo.move_speed = 10
         turbo.try_col(mid_col)
-        self.wait(1)
 
         # Turbo tries to get around to the left, and finds the second monster
         turbo.move_to_col(mid_col)
         turbo.move_to_row(monster1_pos[1] - 1)
         turbo.move_speed = 2
         turbo.move(LEFT)
-        self.wait(1)
 
         # Turbo reaches the free lane to the right instead
         turbo.move_speed = 10
@@ -1829,7 +1831,6 @@ class QuadrantExplorerWorstCase(TurboScene):
         turbo.move_to_row(monster1_pos[1] - 1)
         turbo.move(RIGHT)
         turbo.move(DOWN)
-        self.wait(1)
 
         # Highlight the whole grid as size N
         box = SurroundingRectangle(
@@ -1847,7 +1848,6 @@ class QuadrantExplorerWorstCase(TurboScene):
             AnimationGroup(GrowFromEdge(brace, DOWN), Write(label), lag_ratio=0.1),
             self.camera.frame.animate.scale(1.15, about_point=self.grid.get_bottom())
         )
-        self.wait(2)
 
         # Shrink the highlight down to the bottom-right quadrant, sized N/2
         quadrant_box = SurroundingRectangle(
@@ -1868,5 +1868,131 @@ class QuadrantExplorerWorstCase(TurboScene):
             ReplacementTransform(brace, new_brace),
             ReplacementTransform(label, new_label),
             self.camera.frame.animate.restore()
+        )
+        self.wait(2)
+
+        # Brute force the subproblem, placing monsters to force the most attempts
+        def brute_force():
+            for col in quadrant_cols:
+                if turbo.try_col(col):
+                    return
+                turbo.move_to_col(mid_col)
+                turbo.move_to_row(monster1_pos[1] - 1)
+                turbo.move(RIGHT)
+                turbo.move(DOWN)
+        turbo.move_speed = 10
+        brute_force()
+        self.wait(2)
+
+        # Reset to the two known monsters, with turbo on the free lane
+        def reveal_known_monsters(positions):
+            tiles = []
+            for pos in positions:
+                monster = self.grid.get_monster(*pos)
+                monster.set_time(monster.X_START)
+                tiles += (
+                    list(self.grid.get_col(pos[0])[1:-1]) +
+                    list(self.grid.get_row(pos[1])) +
+                    [self.grid.get_tile(*pos)]
+                )
+            for tile in dict.fromkeys(tiles):
+                tile.rotate(PI * 0.5).flip(axis=RIGHT)
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos])
+        reveal_known_monsters([monster1_pos, monster2_pos])
+        self.play(self.turbo.move_to_position(monster1_pos[0] + 1, monster1_pos[1], run_time=0.001))
+        self.wait(1)
+
+        # Try the middle column of the subproblem, and find a monster
+        sub_min_col = monster1_pos[0] + 1
+        sub_max_col = n - 2
+        sub_min_row = monster1_pos[1]
+        sub_mid_col = sub_min_col + (sub_max_col - sub_min_col) // 2
+        monster3_row = dict(quadrant_monsters)[sub_mid_col]
+        monster3_pos = (sub_mid_col, monster3_row)
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos, monster3_pos])
+        reveal_known_monsters([monster1_pos, monster2_pos])
+        self.play(self.turbo.move_to_position(sub_min_col, sub_min_row, run_time=0.001))
+        turbo.move_speed = 10
+        turbo.try_col(sub_mid_col)
+        self.wait(1)
+
+        # Quickly flash the four smaller cases
+        def get_sub_quadrants(last_monster_pos):
+            rectangle_points = [
+                [
+                    self.grid.get_tile(sub_min_col, sub_min_row).get_corner(UL),
+                    self.grid.get_tile(last_monster_pos[0] - 1, last_monster_pos[1] - 1).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(last_monster_pos[0] + 1, sub_min_row).get_corner(UL),
+                    self.grid.get_tile(sub_max_col, last_monster_pos[1] - 1).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(sub_min_col, last_monster_pos[1]).get_corner(UL),
+                    self.grid.get_tile(last_monster_pos[0] - 1, n - 1).get_corner(DR)
+                ],
+                [
+                    self.grid.get_tile(last_monster_pos[0] + 1, last_monster_pos[1]).get_corner(UL),
+                    self.grid.get_tile(sub_max_col, n - 1).get_corner(DR)
+                ]
+            ]
+            return VGroup(*[
+                Rectangle(
+                    width=pts[1][0] - pts[0][0],
+                    height=pts[1][1] - pts[0][1],
+                    fill_opacity=0.4,
+                    fill_color=YELLOW,
+                    stroke_width=4,
+                    stroke_color=BLACK
+                ).align_to(pts[0], UL)
+                for pts in rectangle_points
+            ]).match_z(self.grid.tiles)
+        sub_quadrants = get_sub_quadrants(monster3_pos)
+        prev = VMobject()
+        for rect in sub_quadrants:
+            self.play(FadeIn(rect))
+            prev = rect
+
+        # Move the monster above/below the halfway point
+        sub_half_row = sub_min_row + (n - 1 - sub_min_row) // 2
+        target_row = sub_half_row - 1
+        rects = sub_quadrants
+
+        def reveal_monster3_at(row, rects):
+            pos = (sub_mid_col, row)
+            self.reset_grid(monster_positions=[monster1_pos, monster2_pos, pos])
+            reveal_known_monsters([monster1_pos, monster2_pos, pos])
+            self.remove(rects)
+            new_rects = get_sub_quadrants(pos)
+            self.add(new_rects)
+            self.wait(0.2)
+            return pos, new_rects
+
+        monster3_pos, rects = reveal_monster3_at(target_row, rects)
+        for _ in range(3):
+            monster3_pos, rects = reveal_monster3_at(monster3_pos[1] - 1, rects)
+        self.wait(0.3)
+        for _ in range(6):
+            monster3_pos, rects = reveal_monster3_at(monster3_pos[1] + 1, rects)
+        self.wait(0.3)
+        for _ in range(3):
+            monster3_pos, rects = reveal_monster3_at(monster3_pos[1] - 1, rects)
+        self.wait(1)
+
+        # Show the key property for the two sparser cases
+        half_row_1 = self.grid.get_row(monster3_pos[1])[sub_min_col:monster3_pos[0]]
+        brace1 = Brace(half_row_1, DOWN).align_to(half_row_1.get_top(), UP)
+        half_row_2 = self.grid.get_row(monster3_pos[1])[monster3_pos[0] + 1:sub_max_col + 1]
+        brace2 = Brace(half_row_2, DOWN).align_to(half_row_2.get_top(), UP)
+        label = Group(Tex(R"\# \text{cols} > \#"), DummyMonster()).arrange(buff=0.1).scale(0.4).next_to(brace1, DOWN, buff=0.2)
+        label1 = Group(BackgroundRectangle(label, buff=0.15).round_corners(0.1), label)
+        label2 = label1.copy().match_x(brace2)
+        final_quadrants = get_sub_quadrants(monster3_pos)
+        self.play(
+            FadeOut(rects[2:]),
+            GrowFromEdge(brace1, UP),
+            GrowFromEdge(brace2, UP),
+            AnimationGroup(FadeIn(label1[0], run_time=2), Write(label1[1][0]), FadeIn(label1[1][1]), lag_ratio=0.3),
+            AnimationGroup(FadeIn(label2[0], run_time=2), Write(label2[1][0]), FadeIn(label2[1][1]), lag_ratio=0.3)
         )
         self.wait(2)
