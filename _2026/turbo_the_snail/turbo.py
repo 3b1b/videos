@@ -1769,3 +1769,104 @@ class QuadrantExplorerPart3(TurboScene):
         turbo.move_to_col(turbo.last_monster_pos[0])
         turbo.move_to_row(n - 1)
         self.wait(1)
+
+
+class QuadrantExplorerWorstCase(TurboScene):
+    def __init__(self, *args, **kwargs):
+        random.seed(1)
+        n = perfect_quadrant_explorer_num_rows(5)
+        random.seed(2)
+        super().__init__(n, [], *args, **kwargs)
+
+    def construct(self):
+        # Add the grid
+        self.add(self.grid, self.turbo)
+        turbo = TurboController(self)
+        n = self.grid.n
+        mid_col = (n - 1) // 2
+
+        # Fade in the first monster just below the halfway point, from above
+        half_row = n // 2
+        monster1_pos = (mid_col, half_row)
+        self.reset_grid(monster_positions=[monster1_pos])
+        monster1 = self.grid.get_monster(*monster1_pos)
+        monster1.set_time(monster1.BOB_END)
+        self.play(FadeIn(monster1, shift=DOWN * 3), run_time=2)
+        self.wait(0.5)
+
+        # Fade in a second monster up and to the left
+        monster2_pos = (mid_col - 1, half_row - 1)
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos])
+        monster1 = self.grid.get_monster(*monster1_pos)
+        monster1.set_time(monster1.BOB_END)
+        monster2 = self.grid.get_monster(*monster2_pos)
+        monster2.set_time(monster1.BOB_END)
+        self.play(FadeIn(monster2, shift=IN * 0.3))
+        self.wait(0.5)
+
+        # Show that turbo doesn't know the monsters are there yet
+        self.play(
+            monster1.animate.set_opacity(0.7),
+            monster2.animate.set_opacity(0.7)
+        )
+        self.wait(1)
+
+        # Turbo tries the middle column, and finds the first monster
+        turbo.move_speed = 10
+        turbo.try_col(mid_col)
+        self.wait(1)
+
+        # Turbo tries to get around to the left, and finds the second monster
+        turbo.move_to_col(mid_col)
+        turbo.move_to_row(monster1_pos[1] - 1)
+        turbo.move_speed = 2
+        turbo.move(LEFT)
+        self.wait(1)
+
+        # Turbo reaches the free lane to the right instead
+        turbo.move_speed = 10
+        turbo.move_to_col(mid_col)
+        turbo.move_to_row(monster1_pos[1] - 1)
+        turbo.move(RIGHT)
+        turbo.move(DOWN)
+        self.wait(1)
+
+        # Highlight the whole grid as size N
+        box = SurroundingRectangle(
+            self.grid.tiles,
+            fill_opacity=0,
+            stroke_width=4,
+            stroke_color=YELLOW,
+            buff=0
+        ).match_z(self.grid.tiles)
+        brace = Brace(box, UP, buff=0)
+        label = brace.get_tex("N").set_stroke(width=10, color=BLACK, behind=True)
+        self.camera.frame.save_state()
+        self.play(
+            FadeIn(box),
+            AnimationGroup(GrowFromEdge(brace, DOWN), Write(label), lag_ratio=0.1),
+            self.camera.frame.animate.scale(1.15, about_point=self.grid.get_bottom())
+        )
+        self.wait(2)
+
+        # Shrink the highlight down to the bottom-right quadrant, sized N/2
+        quadrant_box = SurroundingRectangle(
+            Group(*[
+                self.grid.get_tile(i, j)
+                for i in range(monster1_pos[0] + 1, n - 1)
+                for j in range(monster1_pos[1], n)
+            ]),
+            fill_opacity=0,
+            stroke_width=4,
+            stroke_color=YELLOW,
+            buff=0
+        ).match_z(self.grid.tiles)
+        new_brace = Brace(quadrant_box, UP, buff=0)
+        new_label = new_brace.get_tex(R"\approx \frac{N}{2}").set_stroke(width=10, color=BLACK, behind=True)
+        self.play(
+            ReplacementTransform(box, quadrant_box),
+            ReplacementTransform(brace, new_brace),
+            ReplacementTransform(label, new_label),
+            self.camera.frame.animate.restore()
+        )
+        self.wait(2)
