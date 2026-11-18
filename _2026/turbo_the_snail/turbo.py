@@ -1897,26 +1897,13 @@ class BinarySearchIntroduction(TurboScene):
                 )
             for tile in dict.fromkeys(tiles):
                 tile.rotate(PI * 0.5).flip(axis=RIGHT)
-        self.reset_grid(monster_positions=[monster1_pos, monster2_pos])
-        reveal_known_monsters([monster1_pos, monster2_pos])
-        self.play(self.turbo.move_to_position(monster1_pos[0] + 1, monster1_pos[1], run_time=0.001))
-        self.wait(1)
-
-        # Try the middle column of the subproblem, and find a monster
         sub_min_col = monster1_pos[0] + 1
         sub_max_col = n - 2
         sub_min_row = monster1_pos[1]
         sub_mid_col = sub_min_col + (sub_max_col - sub_min_col) // 2
         monster3_row = dict(quadrant_monsters)[sub_mid_col]
         monster3_pos = (sub_mid_col, monster3_row)
-        self.reset_grid(monster_positions=[monster1_pos, monster2_pos, monster3_pos])
-        reveal_known_monsters([monster1_pos, monster2_pos])
-        self.play(self.turbo.move_to_position(sub_min_col, sub_min_row, run_time=0.001))
-        turbo.move_speed = 10
-        turbo.try_col(sub_mid_col)
-        self.wait(1)
 
-        # Quickly flash the four smaller cases
         def get_sub_quadrants(last_monster_pos):
             rectangle_points = [
                 [
@@ -1947,11 +1934,34 @@ class BinarySearchIntroduction(TurboScene):
                 ).align_to(pts[0], UL)
                 for pts in rectangle_points
             ]).match_z(self.grid.tiles)
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos, monster3_pos])
+        self.add(quadrant_box, new_brace, new_label)
+        reveal_known_monsters([monster1_pos, monster2_pos])
+        self.play(self.turbo.move_to_position(monster1_pos[0] + 1, monster1_pos[1], run_time=0.001))
+        self.wait(1)
+
+        # Try the middle column of the subproblem, and find a monster
+        turbo.move_speed = 2
+        turbo.try_col(sub_mid_col)
+        split_quadrants = get_sub_quadrants(monster3_pos)
+        split_braces = VGroup(*[Brace(rect, UP, buff=0) for rect in split_quadrants])
+        split_labels = VGroup(*[
+            brace.get_tex(R"\approx \frac{N}{4}").set_stroke(width=10, color=BLACK, behind=True)
+            for brace in split_braces
+        ]).set_z_index(100)
+        label_copies = [new_label.copy() for _ in range(3)]
         sub_quadrants = get_sub_quadrants(monster3_pos)
-        prev = VMobject()
-        for rect in sub_quadrants:
-            self.play(FadeIn(rect))
-            prev = rect
+        self.play(
+            FadeOut(quadrant_box),
+            ReplacementTransform(new_brace.set_z_index(100), split_braces[0]),
+            *[TransformFromCopy(new_brace.set_z_index(100), split_braces[i]) for i in range(1, 4)],
+            ReplacementTransform(new_label.set_z_index(100), split_labels[0]),
+            *[ReplacementTransform(label_copies[i - 1].set_z_index(100), split_labels[i]) for i in range(1, 4)],
+            FadeIn(sub_quadrants)
+        )
+        self.wait(2)
+        self.play(FadeOut(split_braces), FadeOut(split_labels))
+        self.wait(1)
 
         # Move the monster above/below the halfway point
         sub_half_row = sub_min_row + (n - 1 - sub_min_row) // 2
