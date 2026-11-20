@@ -2006,3 +2006,68 @@ class BinarySearchIntroduction(TurboScene):
             AnimationGroup(FadeIn(label2[0], run_time=2), Write(label2[1][0]), FadeIn(label2[1][1]), lag_ratio=0.3)
         )
         self.wait(2)
+
+        # Zoom in on the smaller subcase
+        turbo.move_speed = 10
+        turbo.move_to_col(monster1_pos[0])
+        self.set_camera_target_position(0, 0, 0, (1.77, -0.61, 0.00), 2.47, drift_time=2)
+        turbo.move_to_row(monster1_pos[1] - 1)
+        turbo.move(RIGHT)
+        turbo.move(DOWN)
+        self.play(
+            FadeOut(Group(label1, label2, brace1, brace2)),
+            rects[:2].animate.set_fill(opacity=0).set_stroke(width=7, color=YELLOW)
+        )
+        self.wait(1)
+
+        # Show the edge case
+        turbo.move_to_col((monster1_pos[0] + monster3_pos[0]) // 2)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+        for row in range(monster3_pos[1] - 1, monster1_pos[1] - 1, -1):
+            if row % 2 == 0:
+                turbo.move_to_col(monster3_pos[0] - 1)
+            else:
+                turbo.move_to_col(monster1_pos[0] + 1)
+            turbo.move_to_row(row)
+        self.wait(1)
+        turbo.move_speed = 2
+        turbo.move(RIGHT)
+        turbo.move(RIGHT)
+
+        turbo.move_speed = 10
+        turbo.move_to_col(2 * monster3_pos[0] - (monster1_pos[0] + monster3_pos[0]) // 2)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+        for row in range(monster3_pos[1] - 1, monster1_pos[1] - 1, -1):
+            if row % 2 == 0:
+                turbo.move_to_col(monster3_pos[0] + 1)
+            else:
+                turbo.move_to_col(n - 2)
+            turbo.move_to_row(row)
+        self.wait(1)
+        self.play(self.camera.frame.animate.reorient(0, 0, 0, (0.00, -0.53, 0.00), 4.08), run_time=2)
+
+        # Reveal the monsters in the rows for the two subproblems
+        left_side_monsters = [
+            (random.randint(0, mid_col - 1), row)
+            for row in range(monster1_pos[1] + 1, monster3_pos[1])
+        ]
+        left_monsters = Group(*[Monster(self.grid, *pos) for pos in left_side_monsters]).set_z_index(200)
+        self.grid.monsters.add(*left_monsters)
+        self.grid.monster_positions += left_side_monsters
+        self.add(left_monsters)
+        self.play(
+            AnimationGroup(
+                *[monster.animate_set_time(monster.BOB_END) for monster in left_monsters],
+                lag_ratio=0.3
+            )
+        )
+        self.wait(1)
+        self.play(
+            AnimationGroup(
+                *[monster.animate_set_time(monster.BOB_START) for monster in left_monsters[::-1]],
+                lag_ratio=0.1
+            )
+        )
+        self.wait(1)
