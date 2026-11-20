@@ -1862,7 +1862,7 @@ class BinarySearchIntroduction(TurboScene):
             buff=0
         ).match_z(self.grid.tiles)
         new_brace = Brace(quadrant_box, UP, buff=0)
-        new_label = new_brace.get_tex(R"\approx \frac{N}{2}").set_stroke(width=10, color=BLACK, behind=True)
+        new_label = new_brace.get_tex(R"\approx \frac{N}{2}", font_size=35).set_stroke(width=10, color=BLACK, behind=True)
         self.play(
             ReplacementTransform(box, quadrant_box),
             ReplacementTransform(brace, new_brace),
@@ -1946,7 +1946,7 @@ class BinarySearchIntroduction(TurboScene):
         split_quadrants = get_sub_quadrants(monster3_pos)
         split_braces = VGroup(*[Brace(rect, UP, buff=0) for rect in split_quadrants])
         split_labels = VGroup(*[
-            brace.get_tex(R"\approx \frac{N}{4}").set_stroke(width=10, color=BLACK, behind=True)
+            brace.get_tex(R"\approx \frac{N}{4}", font_size=35).set_stroke(width=10, color=BLACK, behind=True)
             for brace in split_braces
         ]).set_z_index(100)
         label_copies = [new_label.copy() for _ in range(3)]
@@ -2071,3 +2071,208 @@ class BinarySearchIntroduction(TurboScene):
             )
         )
         self.wait(1)
+
+        # Highlight the open lane underneath the initial monster
+        monster1_lane = SurroundingRectangle(
+            self.grid.get_col(monster1_pos[0])[monster1_pos[1] + 1:],
+            fill_opacity=0.4,
+            fill_color=YELLOW,
+            stroke_width=0,
+            buff=0
+        ).match_z(self.grid.tiles)
+        self.play(FadeIn(monster1_lane))
+        self.wait(1)
+
+        # Reveal the connecting path, and take it to the bottom, with the camera following
+        self.camera.frame.save_state()
+        turbo.move_speed = 10
+        turbo.move_to_col(sub_min_col)
+        start_tile = self.grid.get_tile(sub_min_col, monster1_pos[1] + 1)
+        end_tile = self.grid.get_tile(monster1_pos[0], n - 1)
+        aspect = self.camera.frame.get_width() / self.camera.frame.get_height()
+        follow_center = (start_tile.get_center() + end_tile.get_center()) / 2
+        follow_height = max(
+            abs(end_tile.get_y() - start_tile.get_y()) + start_tile.get_height() * 4,
+            start_tile.get_width() / aspect
+        )
+        self.set_camera_target_position(0, 0, 0, follow_center, follow_height, drift_time=1.5)
+        turbo.move_to_row(monster1_pos[1] + 1)
+        turbo.move_to_col(monster1_pos[0])
+        turbo.move_to_row(n - 1)
+        self.wait(1)
+
+        # Reset to the edge case, and try a single probe of the left subcase instead
+        self.play(self.camera.frame.animate.restore())
+        left_subcase_mid_col = sub_min_col + (monster3_pos[0] - 1 - sub_min_col) // 2
+        self.reset_grid(monster_positions=[monster1_pos, monster2_pos, monster3_pos])
+        self.add(monster1_lane)
+        self.add(rects[:2])
+        reveal_known_monsters([monster1_pos, monster2_pos, monster3_pos])
+        self.play(self.turbo.move_to_position(sub_min_col, sub_min_row, run_time=0.001))
+        self.wait(1)
+        turbo.move_speed = 4
+        turbo.move_to_col(left_subcase_mid_col)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+
+        # It comes up empty too, so just take the known lane to the bottom
+        self.set_camera_target_position(0, 0, 0, follow_center, follow_height, drift_time=1)
+        turbo.move_speed = 10
+        turbo.move_to_col(monster1_pos[0])
+        turbo.move_to_row(n - 1)
+        self.wait(1)
+
+        # Reset and push the initial monster further above the halfway point
+        self.play(self.camera.frame.animate.reorient(0, 0, 0, (0, 0, 0), 8))
+        self.reset_grid(monster_positions=[monster1_pos])
+        reveal_known_monsters([monster1_pos])
+        self.wait(0.5)
+        for i in range(1, 5):
+            monster1_pos = (mid_col, half_row - i)
+            self.reset_grid(monster_positions=[monster1_pos])
+            reveal_known_monsters([monster1_pos])
+            self.wait(0.2)
+        monster1_pos = (mid_col, half_row - 5)
+        ul_min_col, ul_max_col = 0, mid_col - 1
+        ul_min_row, ul_max_row = 0, monster1_pos[1] - 1
+        ul_mid_col = ul_min_col + (ul_max_col - ul_min_col) // 2
+        ul_half_row = ul_min_row + (ul_max_row - ul_min_row) // 2
+        monster3_pos = (ul_mid_col, ul_half_row - 1)
+        self.reset_grid(monster_positions=[monster1_pos, monster3_pos])
+        reveal_known_monsters([monster1_pos])
+        self.wait(0.2)
+        self.wait(1)
+
+        # Zoom the camera in on the top-left quadrant of the overall board
+        ul_corners = [
+            self.grid.get_tile(ul_min_col, ul_min_row).get_corner(UL),
+            self.grid.get_tile(ul_max_col, ul_max_row).get_corner(DR)
+        ]
+        ul_quadrant = Rectangle(
+            width=ul_corners[1][0] - ul_corners[0][0],
+            height=ul_corners[1][1] - ul_corners[0][1],
+            fill_opacity=0,
+            stroke_width=7,
+            stroke_color=YELLOW
+        ).align_to(ul_corners[0], UL).match_z(self.grid.tiles)
+        self.play(FadeIn(ul_quadrant))
+        aspect = self.camera.frame.get_width() / self.camera.frame.get_height()
+        zoom_height = max(ul_quadrant.get_height(), ul_quadrant.get_width() / aspect) * 1.3
+        self.set_camera_target_position(0, 0, 0, ul_quadrant.get_center(), zoom_height, drift_time=2)
+        self.wait(1)
+
+        # Try the middle column of the top-left quadrant, finding another monster
+        turbo.move_speed = 2
+        turbo.try_col(ul_mid_col)
+        self.wait(1)
+
+        # Try the middle column of that quadrant, finding no monsters
+        subsub_min_col = ul_min_col
+        subsub_max_col = monster3_pos[0] - 1
+        subsub_min_row = ul_min_row
+        subsub_max_row = monster3_pos[1] - 1
+        subsub_mid_col = subsub_min_col + (subsub_max_col - subsub_min_col) // 2
+        turbo.move_speed = 2
+        turbo.move_to_col(subsub_mid_col)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+
+        # Do a comprehensive sweep of the top-left subcase of the top-left subcase
+        turbo.move_speed = 10
+        turbo.move_to_col((subsub_min_col + monster3_pos[0]) // 2)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+        for row in range(monster3_pos[1] - 1, subsub_min_row - 1, -1):
+            if row % 2 == 0:
+                turbo.move_to_col(monster3_pos[0] - 1)
+            else:
+                turbo.move_to_col(subsub_min_col)
+            turbo.move_to_row(row)
+        self.wait(1)
+        turbo.move_speed = 2
+        turbo.move(RIGHT)
+        turbo.move(RIGHT)
+
+        # Then a sweep of the top-right subcase of the top-left subcase
+        turbo.move_speed = 10
+        turbo.move_to_col(2 * monster3_pos[0] - (subsub_min_col + monster3_pos[0]) // 2)
+        turbo.move_to_row(monster3_pos[1])
+        self.wait(1)
+        for row in range(monster3_pos[1] - 1, subsub_min_row - 1, -1):
+            if row % 2 == 0:
+                turbo.move_to_col(monster3_pos[0] + 1)
+            else:
+                turbo.move_to_col(ul_max_col)
+            turbo.move_to_row(row)
+        self.wait(1)
+
+        # Turbo struggles to get around the monsters
+        self.set_camera_target_position(0, 0, 0, (0, 0, 0), 8)
+        turbo.move_to_row(monster3_pos[1])
+        for _ in range(3):
+            turbo.move_to_col(monster1_pos[0])
+            turbo.move_to_row(monster1_pos[1] - 1)
+            turbo.move_to_row(monster3_pos[1])
+            turbo.move_to_col(monster3_pos[0] + 1)
+            turbo.move(UP)
+            turbo.move(LEFT)
+            turbo.move(LEFT)
+            turbo.move(DOWN)
+            turbo.move_to_col(0)
+            turbo.move_to_col(monster3_pos[0] - 1)
+            turbo.move(UP)
+            turbo.move(RIGHT)
+            turbo.move(RIGHT)
+            turbo.move(DOWN)
+        self.wait(1)
+        turbo.move_speed = 2
+        turbo.move(UP)
+        turbo.move(LEFT)
+        turbo.move(LEFT)
+        turbo.move(DOWN)
+
+        # Highlight the two known-free squares beside the monster
+        left_square = SurroundingRectangle(
+            self.grid.get_tile(monster3_pos[0] - 1, monster3_pos[1]),
+            fill_opacity=0.3,
+            fill_color=YELLOW,
+            stroke_width=0,
+            buff=0
+        ).match_z(self.grid.tiles)
+        right_square = SurroundingRectangle(
+            self.grid.get_tile(monster3_pos[0] + 1, monster3_pos[1]),
+            fill_opacity=0.3,
+            fill_color=YELLOW,
+            stroke_width=0,
+            buff=0
+        ).match_z(self.grid.tiles)
+        self.play(FadeIn(left_square), FadeIn(right_square))
+        self.wait(1)
+
+        # Try to get around the monster on the left, and run into a monster there
+        monster4_pos = (monster3_pos[0] - 1, monster3_pos[1] + 1)
+        monster4 = Monster(self.grid, *monster4_pos)
+        self.grid.monsters.add(monster4)
+        self.grid.monster_positions.append(monster4_pos)
+        self.grid.get_tile(*monster4_pos).set_has_monster(True)
+        self.add(monster4)
+        turbo.move_speed = 2
+        turbo.move(DOWN)
+        self.wait(1)
+
+        # Get around on the right instead, and go underneath the monster
+        turbo.move_speed = 10
+        turbo.move_to_col(monster3_pos[0] + 1)
+        turbo.move_to_row(monster3_pos[1])
+        turbo.move_speed = 2
+        turbo.move(DOWN)
+        turbo.move(LEFT)
+        self.wait(1)
+
+        # Take the lane to the bottom, with the camera following along
+        turbo.move_speed = 5
+        start_tile = self.grid.get_tile(monster3_pos[0], monster3_pos[1] + 1)
+        end_tile = self.grid.get_tile(monster3_pos[0], n - 1)
+        self.set_camera_target_position(0, 0, 0, (-1.50, -2.66, 0.02), 2.70, drift_time=3)
+        turbo.move_to_row(n - 1)
+        self.wait(2)
