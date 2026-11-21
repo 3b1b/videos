@@ -110,11 +110,11 @@ def month_value(year, month):
     return year + (month - 1) / 12
 
 
-class TimelineExample(InteractiveScene):
+class TimelineProgression(InteractiveScene):
     def construct(self):
         dates = [
-            (2025, 6), (2026, 10), (2025, 8), (2026, 5), (2026, 3), (2026, 6),
-            (2025, 8), (2025, 8), (2025, 8), (2026, 9), (2025, 8), (2025, 6),
+            (2025, 6), (2025, 8), (2025, 8), (2026, 10), (2026, 5), (2026, 3),
+            (2025, 8), (2025, 8), (2025, 8), (2026, 9), (2026, 6),
         ]
 
         # Start in June 2025
