@@ -134,6 +134,58 @@ class TimelineProgression(InteractiveScene):
             self.wait(1)
 
 
+class TimelineAugToMay(InteractiveScene):
+    def construct(self):
+        dates = [
+            (2025, 8), (2026, 5), (2025, 8),
+        ]
+
+        # Add the timeline
+        timeline = Timeline(2020, 2031, month_value(*dates[0]))
+        rh_marker = timeline.get_marker(
+            R"RH Solved",
+            month_value(2026, 11),
+            font_size=35,
+            shift=DOWN * 2.5,
+            fade_months=3
+        )
+        rh_marker.text.set_color(YELLOW)
+        rh_marker.text.set_backstroke(BLACK, 2)
+        self.add(timeline, rh_marker)
+        self.wait(1)
+
+        # Hop from date to date
+        for year, month in dates[1:]:
+            self.play(timeline.year_tracker.animate.set_value(month_value(year, month)), run_time=2)
+            self.wait(1)
+
+
+class TimelineSepToJun(InteractiveScene):
+    def construct(self):
+        dates = [
+            (2026, 9), (2026, 5), (2026, 6),
+        ]
+
+        # Add the timeline
+        timeline = Timeline(2020, 2031, month_value(*dates[0]))
+        rh_marker = timeline.get_marker(
+            R"RH Solved",
+            month_value(2026, 11),
+            font_size=35,
+            shift=DOWN * 2.5,
+            fade_months=3
+        )
+        rh_marker.text.set_color(YELLOW)
+        rh_marker.text.set_backstroke(BLACK, 2)
+        self.add(timeline, rh_marker)
+        self.wait(1)
+
+        # Hop from date to date
+        for year, month in dates[1:]:
+            self.play(timeline.year_tracker.animate.set_value(month_value(year, month)), run_time=2)
+            self.wait(1)
+
+
 class EndCard(InteractiveScene):
     def construct(self):
         paragraph_texts = [
