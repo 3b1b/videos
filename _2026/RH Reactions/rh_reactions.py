@@ -71,34 +71,31 @@ class Timeline(Group):
     def get_month_label(self, year, month):
         return self.month_labels[(year - self.start_year) * 12 + (month - 1)]
 
-    def get_marker(self, marker_text, year, font_size=60, shift=0, fade_months=None):
+    def get_marker(self, marker_text, year, font_size=60, shift=0, fade_months=None, fade_width=5):
         text = TexText(marker_text, font_size=font_size).next_to(self.n2p(year), UP).shift(UP * 2.5 + shift)
-        ul = Underline(text)
-        heading = VGroup(text, ul)
+        heading = VGroup(text)
 
-        dot = Dot(radius=0.12).move_to(self.n2p(year)).set_z_index(1)
-        line = Line(dot.get_center(), ul.get_center(), buff=0, stroke_width=3)
+        dot = Dot(radius=0.09).move_to(self.n2p(year)).set_z_index(1)
+        line = Line(dot.get_center(), text.get_bottom() + 0.1 * DOWN, buff=0, stroke_width=3)
 
         marker = Group(dot, line, heading)
         marker.create = AnimationGroup(
             FadeIn(dot),
             ShowCreation(line),
-            Write(text),
-            GrowFromPoint(ul, ul.get_left()), lag_ratio=0.2)
+            Write(text), lag_ratio=0.2)
         marker.year_tracker = ValueTracker(year)
         marker.add_updater(lambda m: m.shift(self.n2p(m.year_tracker.get_value()) - dot.get_center()))
 
         if fade_months is not None:
             def update_marker_opacity(m):
                 months_away = 12 * abs(m.year_tracker.get_value() - self.year_tracker.get_value())
-                alpha = np.clip((fade_months + 1 - months_away) / 2, 0, 1)
+                alpha = np.clip((fade_months + fade_width / 2 - months_away) / fade_width, 0, 1)
                 m.set_opacity(smooth(alpha))
             marker.add_updater(update_marker_opacity)
 
         self.markers.add(marker)
 
         marker.text = text
-        marker.ul = ul
         marker.heading = heading
         marker.dot = dot
         marker.line = line
@@ -120,13 +117,14 @@ class TimelineProgression(InteractiveScene):
         # Add the timeline
         timeline = Timeline(2020, 2031, month_value(*dates[0]))
         rh_marker = timeline.get_marker(
-            R"Riemann Hypothesis \\ Solved",
+            R"RH Solved",
             month_value(2026, 11),
-            font_size=48,
-            shift=DOWN * 0.8,
+            font_size=35,
+            shift=DOWN * 2.5,
             fade_months=3
         )
         rh_marker.text.set_color(YELLOW)
+        rh_marker.text.set_backstroke(BLACK, 2)
         self.add(timeline, rh_marker)
         self.wait(1)
 
