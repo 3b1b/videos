@@ -113,11 +113,11 @@ def month_value(year, month):
 class TimelineProgression(InteractiveScene):
     def construct(self):
         dates = [
-            (2025, 6), (2025, 8), (2025, 8), (2026, 10), (2026, 5), (2026, 3),
-            (2025, 8), (2025, 8), (2025, 8), (2026, 9), (2026, 6),
+            (2026, 11), (2025, 6), (2025, 8), (2025, 8), (2026, 10), (2026, 5),
+            (2026, 3), (2025, 8), (2025, 8), (2025, 8), (2026, 9), (2026, 6),
         ]
 
-        # Start in June 2025
+        # Add the timeline
         timeline = Timeline(2020, 2031, month_value(*dates[0]))
         rh_marker = timeline.get_marker(
             R"Riemann Hypothesis \\ Solved",
